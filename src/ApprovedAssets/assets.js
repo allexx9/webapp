@@ -1,0 +1,1 @@
+['ethusdcfd', 'ethusd']

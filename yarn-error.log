@@ -1,0 +1,42 @@
+Arguments: 
+  /usr/local/bin/node /usr/share/yarn/bin/yarn.js add babel-core
+
+PATH: 
+  /home/gabriele/bin:/home/gabriele/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+
+Yarn version: 
+  1.1.0
+
+Node version: 
+  7.8.0
+
+Platform: 
+  linux x64
+
+npm manifest: 
+  {
+    "name": "rigoblock2web",
+    "version": "0.1.0",
+    "private": true,
+    "dependencies": {
+      "react": "^16.0.0",
+      "react-dom": "^16.0.0",
+      "react-scripts": "1.0.14",
+      "yarn": "^1.1.0"
+    },
+    "scripts": {
+      "start": "react-scripts start",
+      "build": "react-scripts build",
+      "test": "react-scripts test --env=jsdom",
+      "eject": "react-scripts eject"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
+
+Trace: 
+  Error: EACCES: permission denied, unlink '/home/gabriele/rigoblock2web/node_modules/yarn/package.json'

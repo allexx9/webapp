@@ -1,0 +1,17 @@
+// Copyright 2016-2017 Gabrele Rigo
+
+import styles from './loading.css';
+
+import React, { Component } from 'react';
+
+import { CircularProgress } from 'material-ui';
+
+export default class Loading extends Component {
+  render () {
+    return (
+      <div className={ styles.loading }>
+        <CircularProgress size={ 120 } thickness={ 7 } />
+      </div>
+    );
+  }
+}
