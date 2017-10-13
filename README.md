@@ -48,8 +48,22 @@ create a symlink to Parity dapp folder such as:
 
     ln -s /home/rigoblock/html/appdev.endpoint.network/public_html/rigoblock-david/build/ /home/rigoblock/cluster/parity-config/dapps/my-new-app
 
-and user yarn or npm to download the modules:
+and restart Parity:
 
+    cd /home/rigoblock/cluster
+    screen -r parity
+
+enter CTRL+C to stop Parity and then restart:
+
+    ./start-parity-node.sh
+
+detach from screen with CTRL+A+D. You can reattach at any time to Parity screen session with:
+
+    screen -r parity
+
+User yarn or npm to download the modules:
+
+    cd /home/rigoblock/html/appdev.endpoint.network/public_html/my-new-app
     yarn
 
 You can now start the node development server with `yarn start`. The app will be available at `https://appdev.endpoint.network/:3000`or if that port is not available it will ask you to run the server on a different port. for example, if port `3000` is not available, the server will run on port `3001`.
