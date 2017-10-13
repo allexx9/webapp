@@ -3,7 +3,11 @@
 import IdentityIcon from '../IdentityIcon';
 import styles from './accounts.css';
 
-import React, { Component, PropTypes } from 'react';
+import React, { Component} from 'react';
+
+// React.PropTypes is deprecated since React 15.5.0, use the npm module prop-types instead
+import PropTypes from 'prop-types';
+
 import { Chip } from 'material-ui';
 
 export default class Accounts extends Component {

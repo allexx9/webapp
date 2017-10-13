@@ -3,8 +3,11 @@
 import AccountItem from './AccountItem';
 
 import BigNumber from 'bignumber.js';
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import { MenuItem, SelectField } from 'material-ui';
+
+// React.PropTypes is deprecated since React 15.5.0, use the npm module prop-types instead
+import PropTypes from 'prop-types';
 
 const NAME_ID = ' ';
 let lastSelectedAccount = {};
