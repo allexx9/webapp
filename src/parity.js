@@ -1,14 +1,27 @@
 // Copyright 2016-2017 Gabriele Rigo
 
-//import Api from '@parity/api';
-import Api from '@parity/parity.js';
+// import Api from '@parity/api';
+// import { Api } from '@parity/parity.js';
+// const { api } = window.parity;
 
-//const provider = new Api.Provider.Http('https://srv03.blconsulting.co.uk:8545');
-//the below is a --public-node
-//const provider = new Api.Provider.Http('https://wallet.parity.io');
-//const provider = new Api.Provider.Http('https://node.rigoblock.com');
-const provider = new Api.Provider.Http('http://45.79.159.114:8545/');
-const api = new Api(provider);
+// API reference: https://gitlab.parity.io/parity/parity/blob/d2394d3ac30b589f92676eec401c50d6b388f911/js/npm/parity/README.md
+// Converted rpc calls to use provider
+
+import { Api } from '@parity/parity.js';
+
+// Debugging
+var keys = Object.keys(Api);
+console.log(keys);
+
+const transport = new Api.Transport.Http('https://srv03.endpoint.network:8545');
+
+// Debugging
+var keys = Object.keys(transport);
+console.log(keys);
+
+const api = new Api(transport);
+
+// Debugging
 console.log(api);
 
 export {

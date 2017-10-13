@@ -3,6 +3,7 @@
 import ReactDOM from 'react-dom';
 import React from 'react';
 import Application from './Application';
+import registerServiceWorker from './registerServiceWorker';
 //import {Web3Provider} from 'react-web3';
 
 import injectTapEventPlugin from 'react-tap-event-plugin';

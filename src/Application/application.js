@@ -42,19 +42,19 @@ export default class Application extends Component {
         <Tabs
           value={this.state.value}
           onChange={this.handleChange}>
-          <Tab
+          {/* <Tab
             icon={<ActionHome />}
             label='HOME'
             value='a'>
             <ApplicationHome />
-          </Tab>
-          <Tab
+          </Tab> */}
+          {/* <Tab
             icon={<ActionLightBulb />}
             label='VAULT'
             value='b'>
             <ApplicationGabcoin />
             <ApplicationGabcoinEventful />
-          </Tab>
+          </Tab> */}
           <Tab
             icon={<ActionLightBulb />}
             label='DRAGO'
@@ -62,7 +62,7 @@ export default class Application extends Component {
             <ApplicationDrago />
             <ApplicationDragoEventful />
           </Tab>
-          <Tab
+          {/* <Tab
             icon={<ActionPolymer />}
             label='EXCHANGE'
             value='d'>
@@ -70,8 +70,9 @@ export default class Application extends Component {
             <ApplicationExchangeEventful />
           </Tab>
           <Tab />
-          <Tab />
+          <Tab /> */}
         </Tabs>
+        
     );
   }
 
