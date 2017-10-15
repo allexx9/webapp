@@ -6,10 +6,13 @@ import { api } from '../../parity';
 import AccountSelector from '../../AccountSelector';
 import { ERRORS, validateAccount, validatePositiveNumber } from '../validation';
 
-import styles from '../actions.css';
+import styles from '../actions.module.css';
 
 import BigNumber from 'bignumber.js';
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+
+// React.PropTypes is deprecated since React 15.5.0, use the npm module prop-types instead
+import PropTypes from 'prop-types';
 
 import { Dialog, FlatButton, TextField } from 'material-ui';
 

@@ -3,7 +3,7 @@
 import { api } from '../parity';
 import * as abis from '../contracts';
 
-import styles from './applicationExchange.css';
+import styles from './applicationExchange.module.css';
 import bgimage from '../assets/images/blockchainLight.jpg';
 
 import Accounts from '../Accounts';
@@ -15,7 +15,10 @@ import Loading from '../Loading';
 import Status from '../Status';
 
 import BigNumber from 'bignumber.js';
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+
+// React.PropTypes is deprecated since React 15.5.0, use the npm module prop-types instead
+import PropTypes from 'prop-types';
 import {GridList, GridTile} from 'material-ui/GridList';
 import IconButton from 'material-ui/IconButton';
 import Subheader from 'material-ui/Subheader';

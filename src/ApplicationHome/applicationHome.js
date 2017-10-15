@@ -1,9 +1,12 @@
 // Copyright 2016-2017 Gabriele Rigo
 
-import styles from './applicationHome.css';
+import styles from './applicationHome.module.css';
 import bgimage from '../assets/images/blockchainLight.jpg';
 
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+
+// React.PropTypes is deprecated since React 15.5.0, use the npm module prop-types instead
+import PropTypes from 'prop-types';
 import Slider from 'material-ui/Slider';
 import Drawer from 'material-ui/Drawer';
 import AppBar from 'material-ui/AppBar';
@@ -14,6 +17,8 @@ import ApplicationGabcoinFactory from '../ApplicationGabcoinFactory';
 
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
+import injectTapEventPlugin from 'react-tap-event-plugin';
+injectTapEventPlugin();
 
 const muiTheme = getMuiTheme(lightBaseTheme);
 
@@ -36,6 +41,7 @@ export default class ApplicationHome extends Component {
   };
 
   render() {
+    console.log(styles);
     return (
       <div className={ styles.body } style={ bgstyle }>
         <h1 className={styles.headline}>RigoBlock: Decentralized Pools of Digital Tokens </h1>
@@ -56,15 +62,15 @@ export default class ApplicationHome extends Component {
           <p>
             RigoBlock Exchange: trade derivatives contracts with leverage
           </p>
-          <p>
-            <div>RigoBlock offers a diverse set of tools and the Proof-of-Performance algorithm</div>
-            <div>
+
+            <p>RigoBlock offers a diverse set of tools and the Proof-of-Performance algorithm</p>
+            <p>
               download our whitepaper at<a href='https://rigoblock.com'> www.rigoblock.com </a>
-            </div>
-            <div> Give us a shout!
+            </p>
+            <p> Give us a shout!
               <a href="mailto:admin@rigoblock.com?Subject=RigoBlock%20contact" target="_top">admin@rigoblock.com</a>
-            </div>
-          </p>
+            </p>
+
         </div>
         <div>
           <RaisedButton

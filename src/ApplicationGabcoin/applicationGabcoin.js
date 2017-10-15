@@ -3,17 +3,24 @@
 import { api } from '../parity';
 import * as abis from '../contracts';
 
-import styles from './applicationGabcoin.css';
+import styles from './applicationGabcoin.module.css';
 import bgimage from '../assets/images/blockchainLight.jpg';
 
 import Accounts from '../Accounts';
-import { ActionsGabcoin, ActionBuyGabcoin, ActionSellGabcoin/*, ActionTransfer, ActionDeploy */} from '../ActionsGabcoin';
+// import { ActionsGabcoin, ActionBuyGabcoin, ActionSellGabcoin/*, ActionTransfer, ActionDeploy */} from '../ActionsGabcoin';
+import { ActionsGabcoin } from '../ActionsGabcoin';
+import { ActionBuyGabcoin } from '../ActionsGabcoin';
+import { ActionSellGabcoin } from '../ActionsGabcoin';
+
 //import EventsGabcoin from '../EventsGabcoin';
 import Loading from '../Loading';
 import Status from '../Status';
 
 import BigNumber from 'bignumber.js';
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+
+// React.PropTypes is deprecated since React 15.5.0, use the npm module prop-types instead
+import PropTypes from 'prop-types';
 
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';

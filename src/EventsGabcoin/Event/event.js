@@ -3,10 +3,13 @@
 import IdentityIcon from '../../IdentityIcon';
 import { formatCoins, formatEth, formatHash } from '../../format';
 
-import styles from '../events.css';
+import styles from '../events.module.css';
 
 import moment from 'moment';
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+
+// React.PropTypes is deprecated since React 15.5.0, use the npm module prop-types instead
+import PropTypes from 'prop-types';
 
 const EMPTY_COLUMN = (
   <td></td>

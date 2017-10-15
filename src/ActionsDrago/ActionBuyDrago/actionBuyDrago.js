@@ -5,7 +5,7 @@ import { api } from '../../parity';
 import AccountSelector from '../../AccountSelector';
 import { ERRORS, validateAccount, validatePositiveNumber } from '../validation';
 
-import styles from '../actions.css';
+import styles from '../actions.module.css';
 
 import BigNumber from 'bignumber.js';
 import React, { Component } from 'react';

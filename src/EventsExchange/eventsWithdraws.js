@@ -9,9 +9,12 @@ import EventOrderMatched from './EventOrderMatched';
 import EventOrderCancelled from './EventOrderCancelled';
 import EventDealFinalized from './EventDealFinalized';
 
-import styles from './events.css';
+import styles from './events.module.css';
 
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+
+// React.PropTypes is deprecated since React 15.5.0, use the npm module prop-types instead
+import PropTypes from 'prop-types';
 
 export default class EventsWithdraws extends Component {
   static childContextTypes = {

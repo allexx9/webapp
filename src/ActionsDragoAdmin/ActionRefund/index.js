@@ -1,8 +1,9 @@
 // Copyright 2016-2017 Gabriele Rigo
 
-//export default from './actionRefund';
-import ActionRefund from './actionRefund';
+/export { default } from './actionRefund';
 
-export default {
-  ActionRefund: ActionRefund
-};
+// import ActionRefund from './actionRefund';
+
+// export default {
+//   ActionRefund: ActionRefund
+// };

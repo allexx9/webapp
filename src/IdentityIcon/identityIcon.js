@@ -1,7 +1,7 @@
 // Copyright 2016-2017 Gabriele Rigo
 
 import { api } from '../parity';
-import styles from './identityIcon.css';
+import styles from './identityIcon.module.css';
 
 import React, { Component} from 'react';
 

@@ -1,7 +1,7 @@
 // Copyright 2016-2017 Gabriele Rigo
 
 import IdentityIcon from '../IdentityIcon';
-import styles from './accounts.css';
+import styles from './accounts.module.css';
 
 import React, { Component} from 'react';
 

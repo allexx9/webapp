@@ -1,8 +1,9 @@
 // Copyright 2016-2017 Gabriele Rigo
 
-//export default from './eventBuyDrago';
-import EventBuyDrago from './eventBuyDrago';
+export { default } from './eventBuyDrago';
 
-export default {
-  EventBuyDrago: EventBuyDrago
-};
+// import EventBuyDrago from './eventBuyDrago';
+
+// export default {
+//   EventBuyDrago: EventBuyDrago
+// };

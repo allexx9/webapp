@@ -11,11 +11,14 @@ import Accounts from '../Accounts';
 //this is eventful contract only
 import { EventsExchange, EventsOrdersPlaced, EventsOrdersCancelled, EventsMatched, EventsFinalized } from '../EventsExchange';
 
-import styles from './application.css';
+import styles from './application.module.css';
 import bgimage from '../assets/images/blockchainLight.jpg';
 
 import BigNumber from 'bignumber.js';
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+
+// React.PropTypes is deprecated since React 15.5.0, use the npm module prop-types instead
+import PropTypes from 'prop-types';
 import {GridList, GridTile} from 'material-ui/GridList';
 
 import getMuiTheme from 'material-ui/styles/getMuiTheme';

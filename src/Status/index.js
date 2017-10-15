@@ -1,8 +1,9 @@
 // Copyright 2016-2017 Gabriele Rigo
 
-//export default from './status';
-import Status from './status';
+export { default } from './status';
 
-export default {
-  Status: Status
-};
+// import Status from './status';
+
+// export default {
+//   Status: Status
+// };
