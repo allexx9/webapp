@@ -22,7 +22,7 @@ export default class EventOrderMatched extends Component {
         fromAddress={ stable }
         dragoAddress={ id }
         price = { strike }
-        dragoname={ is_stable } />
+        isStable={ is_stable } />
     );
   }
 }

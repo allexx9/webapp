@@ -50,8 +50,8 @@ export default class ApplicationGabcoinAdmin extends Component {
     api: PropTypes.object,
     //gabcoinAddress: PropTypes.object,
     gabcoin: PropTypes.object,
-    gabcoinAddress: PropTypes.object,
-    instance: PropTypes.object, //moved into contextTypes
+    gabcoinAddress: PropTypes.string, //gabcoinAddress: PropTypes.object,
+    instance: PropTypes.string, //instance: PropTypes.object, //moved into contextTypes
     //allEvents: PropTypes.object,
     muiTheme: PropTypes.object
   };

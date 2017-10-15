@@ -50,8 +50,8 @@ export default class ApplicationDragoAdmin extends Component {
     api: PropTypes.object,
     //dragoAddress: PropTypes.object,
     drago: PropTypes.object,
-    dragoAddress: PropTypes.object,
-    instance: PropTypes.object, //moved into contextTypes
+    dragoAddress: PropTypes.string, //dragoAddress: PropTypes.object,
+    instance: PropTypes.string, //instance: PropTypes.object, //moved into contextTypes
     //allEvents: PropTypes.object,
     muiTheme: PropTypes.object
   };

@@ -36,8 +36,8 @@ export default class ActionsGabcoin extends Component {
   };
 
   static propTypes = {
-    onChangeGabcoinName: PropTypes.func.isRequired,
-    onChangeGabcoinSymbol: PropTypes.func.isRequired,
+    onChangeGabcoinName: PropTypes.func, //onChangeGabcoinName: PropTypes.func.isRequired,
+    onChangeGabcoinSymbol: PropTypes.func, //onChangeGabcoinSymbol: PropTypes.func.isRequired,
     onAction: PropTypes.func.isRequired,
     gabBalance: PropTypes.object.isRequired
   }

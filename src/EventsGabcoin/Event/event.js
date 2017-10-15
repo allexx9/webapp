@@ -25,9 +25,9 @@ export default class Event extends Component {
     event: PropTypes.object,
     value: PropTypes.object,
     price: PropTypes.object,
-    gabcoinname: PropTypes.object,
-    gabcoinsymbol: PropTypes.object,
-    gabcoinAddress: PropTypes.object,
+    gabcoinname: PropTypes.string, //gabcoinname: PropTypes.object,
+    gabcoinsymbol: PropTypes.string, //gabcoinsymbol: PropTypes.object,
+    gabcoinAddress: PropTypes.string, //gabcoinAddress: PropTypes.object,
     fromAddress: PropTypes.string,
     toAddress: PropTypes.string
   }

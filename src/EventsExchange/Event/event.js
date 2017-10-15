@@ -25,10 +25,11 @@ export default class Event extends Component {
     event: PropTypes.object,
     value: PropTypes.object,
     price: PropTypes.object,
-    dragoname: PropTypes.object,  //check: dragoName??
-    cfd: PropTypes.object,
+    dragoname: PropTypes.object, //dragoname: PropTypes.object,  //check: dragoName??
+    cfd: PropTypes.string, //cfd: PropTypes.object,
     fromAddress: PropTypes.string,
-    toAddress: PropTypes.string
+    toAddress: PropTypes.string,
+    isStable: PropTypes.bool
   }
 
   state = {
@@ -40,7 +41,7 @@ export default class Event extends Component {
   }
 
   render () {
-    const { event, fromAddress, toAddress, price, value, ethvalue, dragoname, cfd } = this.props;
+    const { event, fromAddress, toAddress, price, value, ethvalue, dragoname, cfd, isStable } = this.props;
     const { block } = this.state;
     const { state, type } = event;
     const cls = `${styles.event} ${styles[state]} ${styles[type.toLowerCase()]}`;
