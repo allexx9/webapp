@@ -1,8 +1,11 @@
 // Copyright 2016-2017 Gabriele Rigo
 
-import styles from './actions.css';
+import styles from './actions.module.css';
 
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+
+// React.PropTypes is deprecated since React 15.5.0, use the npm module prop-types instead
+import PropTypes from 'prop-types';
 
 import { RaisedButton } from 'material-ui';
 import ActionAddShoppingCart from 'material-ui/svg-icons/action/add-shopping-cart';

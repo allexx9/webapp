@@ -3,7 +3,7 @@
 import IdentityIcon from '../IdentityIcon';
 import AccountSelector from '../AccountSelector';
 
-import styles from './accountSelectorText.css';
+import styles from './accountSelectorText.module.css';
 
 import React, { Component } from 'react';
 

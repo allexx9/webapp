@@ -2,7 +2,7 @@
 
 import IdentityIcon from '../../IdentityIcon';
 
-import styles from './accountItem.css';
+import styles from './accountItem.module.css';
 
 import React, { Component } from 'react';
 

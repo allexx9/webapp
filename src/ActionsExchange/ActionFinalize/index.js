@@ -1,8 +1,9 @@
 // Copyright 2016-2017 Gabriele Rigo
 
-//export default from './actionFinalize';
-import ActionFinalize from './actionFinalize';
+export { default } from './actionFinalize';
 
-export default {
-  ActionFinalize: ActionFinalize
-};
+// import ActionFinalize from './actionFinalize';
+
+// export default {
+//   ActionFinalize: ActionFinalize
+// };

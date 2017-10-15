@@ -4,10 +4,13 @@ import AccountSelector from '../../AccountSelector';
 import AccountSelectorText from '../../AccountSelectorText';
 import { ERRORS, validateAccount, validatePositiveNumber } from '../validation';
 
-import styles from '../actionsGabcoin.css';
+import styles from '../actionsGabcoin.module.css';
 
 import BigNumber from 'bignumber.js';
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+
+// React.PropTypes is deprecated since React 15.5.0, use the npm module prop-types instead
+import PropTypes from 'prop-types';
 
 import { Dialog, FlatButton, TextField, Toggle } from 'material-ui';
 

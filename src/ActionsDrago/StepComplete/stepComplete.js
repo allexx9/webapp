@@ -1,6 +1,6 @@
 // Copyright 2016-2017 Gabriele Rigo
 
-import styles from '../actions.css';
+import styles from '../actions.module.css';
 
 import React, { Component } from 'react';
 

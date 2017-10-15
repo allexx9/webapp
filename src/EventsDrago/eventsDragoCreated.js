@@ -9,9 +9,12 @@ import EventTransfer from './EventTransfer';
 import EventDragoCreated from './EventDragoCreated';
 import EventSellDrago from './EventSellDrago';
 
-import styles from './events.css';
+import styles from './events.module.css';
 
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+
+// React.PropTypes is deprecated since React 15.5.0, use the npm module prop-types instead
+import PropTypes from 'prop-types';
 
 export default class EventsDragoCreated extends Component {
   static childContextTypes = {

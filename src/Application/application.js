@@ -1,9 +1,13 @@
 // Copyright 2016-2017 Gabriele Rigo
 
-import styles from './application.css';
+import styles from './application.module.css';
 
-import React, { Component, PropTypes } from 'react';
-import {Tabs, Tab} from 'material-ui/Tabs';
+import React, { Component } from 'react';
+
+// React.PropTypes is deprecated since React 15.5.0, use the npm module prop-types instead
+import PropTypes from 'prop-types';
+
+import { Tabs, Tab } from 'material-ui/Tabs';
 import FontIcon from 'material-ui/FontIcon';
 import ActionLightBulb from 'material-ui/svg-icons/action/lightbulb-outline';
 import ActionHome from 'material-ui/svg-icons/action/home';
@@ -15,7 +19,7 @@ import ApplicationExchange from '../ApplicationExchange';
 import ApplicationExchangeEventful from '../ApplicationExchangeEventful';
 import ApplicationDrago from '../ApplicationDrago';
 import ApplicationDragoEventful from '../ApplicationDragoEventful';
-//import ApplicationDragoFactory from '../ApplicationDragoFactory';
+// import ApplicationDragoFactory from '../ApplicationDragoFactory';
 import ApplicationHome from '../ApplicationHome';
 
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
@@ -33,10 +37,12 @@ export default class Application extends Component {
     muiTheme: PropTypes.object
   };
 
+
+
 //<div style={{backgroundColor: 'sameAsTabs'}}>
 //style={{width: 1000, float: 'left'}}>
 //fixedTabWidth={200} //in Tabs
-
+ 
   render() {
     return (
         <Tabs
@@ -69,10 +75,7 @@ export default class Application extends Component {
             <ApplicationExchange />
             <ApplicationExchangeEventful />
           </Tab>
-          <Tab />
-          <Tab />
-        </Tabs>
-        
+        </Tabs>   
     );
   }
 

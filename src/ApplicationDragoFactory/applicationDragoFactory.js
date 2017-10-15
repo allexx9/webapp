@@ -10,10 +10,13 @@ import { ActionsDragoFactory, ActionDeployDrago } from '../ActionsDragoFactory';
 import Loading from '../Loading';
 import Status from '../Status';
 
-import styles from './applicationDragoFactory.css';
+import styles from './applicationDragoFactory.module.css';
 
 import BigNumber from 'bignumber.js';
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+
+// React.PropTypes is deprecated since React 15.5.0, use the npm module prop-types instead
+import PropTypes from 'prop-types';
 
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';

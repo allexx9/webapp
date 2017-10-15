@@ -2,7 +2,7 @@
 
 import IdentityIcon from '../../IdentityIcon';
 
-import styles from './exchangeItem.css';
+import styles from './exchangeItem.module.css';
 
 import React, { Component, PropTypes } from 'react';
 
