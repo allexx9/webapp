@@ -68,7 +68,7 @@ User yarn or npm to download the modules:
 
 You can now start the node development server with `yarn start`. The app will be available at `http://appdev.endpoint.network:3000`or if that port is not available it will ask you to run the server on a different port. for example, if port `3000` is not available, the server will run on port `3001`.
 
-Alternatively you can ran `yarn watch` and the app bill be build into the build directory and therefore made available in Parity UI under the application tabs.
+Alternatively you can ran `yarn watch` and the app bill be built into the build directory and therefore made available in Parity UI under the application tabs.
 
 ## Visual Studio Code
 
