@@ -1,9 +1,9 @@
 process.env.NODE_ENV = 'development';
 
 const fs = require('fs-extra');
-const paths = require('react-scripts/config/paths');
+const paths = require('custom-react-scripts/config/paths');
 const webpack = require('webpack');
-const config = require('react-scripts/config/webpack.config.dev.js');
+const config = require('custom-react-scripts/config/webpack.config.dev.js');
 
 // removes react-dev-utils/webpackHotDevClient.js at first in the array
 config.entry.shift();
