@@ -1,8 +1,6 @@
 // Copyright 2016-2017 Gabriele Rigo
 
-// import Api from '@parity/api';
-// import { Api } from '@parity/parity.js';
-// const { api } = window.parity;
+//const { api } = window.parity;
 
 // API reference: https://gitlab.parity.io/parity/parity/blob/d2394d3ac30b589f92676eec401c50d6b388f911/js/npm/parity/README.md
 // Converted rpc calls to use provider
@@ -13,13 +11,17 @@ import { Api } from '@parity/parity.js';
 var keys = Object.keys(Api);
 console.log(keys);
 
-const transport = new Api.Transport.Http('https://srv03.endpoint.network:8545');
+if(!window.parity) {
+  var transport = new Api.Transport.Http('https://srv03.endpoint.network:8545');
 
-// Debugging
-var keys = Object.keys(transport);
-console.log(keys);
+  // Debugging
+  var keys = Object.keys(transport);
+  console.log(keys);
 
-const api = new Api(transport);
+  var api = new Api(transport);
+} else {
+  var { api } = window.parity;
+}
 
 // Debugging
 console.log(api);
