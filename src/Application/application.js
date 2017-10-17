@@ -42,10 +42,11 @@ export default class Application extends Component {
 //<div style={{backgroundColor: 'sameAsTabs'}}>
 //style={{width: 1000, float: 'left'}}>
 //fixedTabWidth={200} //in Tabs
- 
+
   render() {
     return (
         <Tabs
+          className={ styles.tabs }
           value={this.state.value}
           onChange={this.handleChange}>
           <Tab
@@ -75,7 +76,7 @@ export default class Application extends Component {
             <ApplicationExchange />
             <ApplicationExchangeEventful />
           </Tab>
-        </Tabs>   
+        </Tabs>
     );
   }
 

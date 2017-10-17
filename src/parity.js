@@ -1,25 +1,40 @@
 // Copyright 2016-2017 Gabriele Rigo
 
-// import Api from '@parity/api';
-// import { Api } from '@parity/parity.js';
-// const { api } = window.parity;
+//const { api } = window.parity;
 
 // API reference: https://gitlab.parity.io/parity/parity/blob/d2394d3ac30b589f92676eec401c50d6b388f911/js/npm/parity/README.md
 // Converted rpc calls to use provider
 
 import { Api } from '@parity/parity.js';
 
+
 // Debugging
 var keys = Object.keys(Api);
 console.log(keys);
+console.log("windows parity " + window.parity);
+if (typeof window.parity !== 'undefined') {
+  console.log("Connecting to window.parity");
+  
 
-const transport = new Api.Transport.Http('https://srv03.endpoint.network:8545');
+  // If I do var { api } = window.parity; later on I get this error on the attachInterface functionss:
+  //
+  // Error: only absolute urls are supported
+  //
+  // so I am setting the absolute url to http://127.0.0.1:8545
+  var transport = new Api.Transport.Http('http://127.0.0.1:8545');
+  // var { api } = window.parity;
+  var api = new Api(transport);
+  
 
-// Debugging
-var keys = Object.keys(transport);
-console.log(keys);
+} else {
+  console.log("Connecting to https://srv03.endpoint.network:8545");
+  var transport = new Api.Transport.Http('https://srv03.endpoint.network:8545');
+  var api = new Api(transport);
 
-const api = new Api(transport);
+  // Debugging
+  var keys = Object.keys(transport);
+  console.log(keys);
+}
 
 // Debugging
 console.log(api);

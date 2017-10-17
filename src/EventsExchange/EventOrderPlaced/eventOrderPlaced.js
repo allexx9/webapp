@@ -22,7 +22,7 @@ export default class EventOrderPlaced extends Component {
         //dragoAddress={ who }
         fromAddress={ who }
         cfd={ cfd }
-        dragoname={ is_stable } />
+        isStable={ is_stable } />
     );
   }
 }

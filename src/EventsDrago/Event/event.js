@@ -25,9 +25,9 @@ export default class Event extends Component {
     event: PropTypes.object,
     value: PropTypes.object,
     price: PropTypes.object,
-    dragoname: PropTypes.object,
-    dragosymbol: PropTypes.object,
-    dragoAddress: PropTypes.object,
+    dragoname: PropTypes.string, //dragoname: PropTypes.object,
+    dragosymbol: PropTypes.string, //dragosymbol: PropTypes.object,
+    dragoAddress: PropTypes.string, //dragoAddress: PropTypes.object,
     fromAddress: PropTypes.string,
     toAddress: PropTypes.string
   }

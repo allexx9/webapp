@@ -37,8 +37,8 @@ export default class ActionsDrago extends Component {
   };
 
   static propTypes = {
-    onChangeDragoName: PropTypes.func.isRequired,
-    onChangeDragoSymbol: PropTypes.func.isRequired,
+    onChangeDragoName: PropTypes.func, //onChangeDragoName: PropTypes.func.isRequired,
+    onChangeDragoSymbol: PropTypes.func, //onChangeDragoSymbol: PropTypes.func.isRequired,
     onAction: PropTypes.func.isRequired,
     gabBalance: PropTypes.object.isRequired
   }
