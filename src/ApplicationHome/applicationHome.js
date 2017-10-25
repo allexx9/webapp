@@ -14,6 +14,7 @@ import Slider from 'material-ui/Slider';
 import Drawer from 'material-ui/Drawer';
 import AppBar from 'material-ui/AppBar';
 import RaisedButton from 'material-ui/RaisedButton';
+import { Row, Col, GridSystem, Visible, Hidden, ScreenClassRender} from 'react-grid-system';
 
 import ApplicationDragoFactory from '../ApplicationDragoFactory';
 import ApplicationGabcoinFactory from '../ApplicationGabcoinFactory';

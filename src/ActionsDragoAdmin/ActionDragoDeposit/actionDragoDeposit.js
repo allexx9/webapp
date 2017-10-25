@@ -4,7 +4,7 @@
 
 import * as abis from '../../contracts';
 
-import { api } from '../../parity';
+// import { api } from '../../parity';
 import AccountSelector from '../../AccountSelector';
 import { ERRORS, validateAccount, validatePositiveNumber } from '../validation';
 
@@ -32,7 +32,8 @@ export default class ActionDragoDeposit extends Component {
   static contextTypes = {
     instance: PropTypes.object.isRequired, //instance arrives from application, here we have to find exchanges and assets
     //approvedExchanges: PropTypes.array.isRequired
-    dragoAddress: PropTypes.object.isRequired
+    dragoAddress: PropTypes.object.isRequired,
+    api: PropTypes.object
   }
 
   static propTypes = {
@@ -165,9 +166,10 @@ export default class ActionDragoDeposit extends Component {
 This has to be set when we have a list of items, otherwise it crashes the application
 */
   onChangeAddress = (account) => {
+	const { api } = this.context;
     this.setState({
       account,
-      accountError: validateAccount(account)
+      accountError: validateAccount(account,api)
     }, this.validateTotal);
   }
 
@@ -195,7 +197,7 @@ This has to be set when we have a list of items, otherwise it crashes the applic
 
   onFindExchange = () => {
     const { dragoAddress } = this.context;
-
+    const { api } = this.context;
     api.parity
       .registryAddress()
       .then((registryAddress) => {
@@ -261,6 +263,7 @@ This has to be set when we have a list of items, otherwise it crashes the applic
   }
 
   onSend = () => {
+    const { api } = this.context;
     const { instance } = this.context;
     //const deposit0 = new BigNumber(0);
     //const deposit0 = api.util.toWei(this.state.amount);

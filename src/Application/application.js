@@ -30,6 +30,7 @@ import ApplicationBottomBar from './ApplicationBottomBar';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
+import { Row, Col, GridSystem, Visible, Hidden, ScreenClassRender, Container} from 'react-grid-system';
 
 // Router
 // import { Link, Route, withRouter } from 'react-router-dom'
@@ -41,12 +42,35 @@ const muiTheme = getMuiTheme(lightBaseTheme);
 // }
 
 // This function accepts children components to display below the Tabs top menu.
-const TopTabsMenu = ({children}) =>
+// const TemplateLayout = ({children}) =>
+// (
+//   <div className="">
+//     <Container>
+//       <Row>
+//         <Col sm={12}>
+//           <ApplicationTabsMenu />
+//         </Col>
+//       </Row>
+//       <Row>
+//         <Col sm={12}>      
+//         {children}
+//         </Col>
+//       </Row>
+//       <Row>
+//         <Col sm={12}>      
+//         <ApplicationBottomBar />
+//         </Col>
+//       </Row>
+//     </Container>
+//   </div>
+// )
+
+const TemplateLayout = ({children}) =>
 (
   <div className="">
-      <ApplicationTabsMenu />
+    <ApplicationTabsMenu />
       {children}
-      <ApplicationBottomBar />
+    <ApplicationBottomBar />
   </div>
 )
 
@@ -61,11 +85,11 @@ export class Whoops404 extends Component {
   console.log(location);
     return (
       <MuiThemeProvider>
-          <TopTabsMenu>
+          <TemplateLayout>
           <div className="">
               <h1>Page not found. Resource not found at '{location.pathname}'</h1>
           </div>
-          </TopTabsMenu>
+          </TemplateLayout>
       </MuiThemeProvider>
     )
   }
@@ -96,12 +120,11 @@ export class ApplicationHomePage extends Component {
   const { location } = this.props
   console.log(location);
     return (
-
-          <TopTabsMenu>
-              {/* <p>Locaton is {location.pathname}</p> */}
-              <ApplicationHome />
-          </TopTabsMenu>
-
+      <MuiThemeProvider>
+        <TemplateLayout>
+          <ApplicationHome></ApplicationHome>
+        </TemplateLayout>
+      </MuiThemeProvider>
     )
   }
 }
@@ -132,11 +155,11 @@ export class ApplicationGabcoinPage extends Component {
   console.log(location);
     return (
       <MuiThemeProvider>
-          <TopTabsMenu>
+          <TemplateLayout>
           <ApplicationGabcoin />
           <ApplicationGabcoinEventful />
               {/* <p>Locaton is {location.pathname}</p> */}
-          </TopTabsMenu>
+          </TemplateLayout>
       </MuiThemeProvider>
     )
   }
@@ -168,11 +191,11 @@ export class ApplicationDragoPage extends Component {
   console.log(location);
     return (
       <MuiThemeProvider>
-          <TopTabsMenu>
+          <TemplateLayout>
           <ApplicationDrago />
           <ApplicationDragoEventful />
           {/* <p>Locaton is {location.pathname}</p> */}
-          </TopTabsMenu>
+          </TemplateLayout>
       </MuiThemeProvider>
     )
   }
@@ -204,11 +227,11 @@ export class ApplicationExchangePage extends Component {
   console.log(location);
     return (
       <MuiThemeProvider>
-          <TopTabsMenu>
+          <TemplateLayout>
           <ApplicationExchange />
           <ApplicationExchangeEventful />
           {/* <p>Locaton is {location.pathname}</p> */}
-          </TopTabsMenu>
+          </TemplateLayout>
       </MuiThemeProvider>
     )
   }

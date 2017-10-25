@@ -1,6 +1,6 @@
 // Copyright 2016-2017 Gabriele Rigo
 
-import { api } from '../../parity';
+// import { api } from '../../parity';
 import AccountSelector from '../../AccountSelector';
 import { ERRORS, validateAccount, validatePositiveNumber } from '../validation';
 
@@ -20,6 +20,7 @@ const DRAGO_FACTORY = '0x4e05a023AbC61c38c9dC994633fD3ccfE648AD06';
 export default class ActionDeploy extends Component {
   static contextTypes = {
     instance: PropTypes.object.isRequired,
+    api: PropTypes.object
     //dragoFactory: PropTypes.object
   }
 
@@ -133,9 +134,10 @@ export default class ActionDeploy extends Component {
   }
 
   onChangeAddress = (account) => {
+	const { api } = this.context;
     this.setState({
       account,
-      accountError: validateAccount(account)
+      accountError: validateAccount(account,api)
     }, this.validateTotal);
   }
 

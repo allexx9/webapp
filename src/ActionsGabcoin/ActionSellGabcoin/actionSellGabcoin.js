@@ -157,7 +157,7 @@ export default class ActionSellGabcoin extends Component {
   onChangeAccount = (account) => {
     this.setState({
       account,
-      accountError: validateAccount(account)
+      accountError: validateAccount(account,api)
     });
   }
 

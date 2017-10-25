@@ -56,8 +56,10 @@ const CheckTransport = () => {
   }
 }
 
-const api = CheckTransport();
+var api = CheckTransport();
 console.log(api);
+console.log(api.isConnected);
+
 export {
   api
 };

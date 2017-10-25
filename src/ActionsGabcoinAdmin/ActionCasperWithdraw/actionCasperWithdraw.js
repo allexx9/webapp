@@ -2,7 +2,7 @@
 
 import * as abis from '../../contracts';
 
-import { api } from '../../parity';
+// import { api } from '../../parity';
 import AccountSelector from '../../AccountSelector';
 import { ERRORS, validateAccount, validatePositiveNumber } from '../validation';
 
@@ -21,7 +21,8 @@ const NAME_ID = ' ';
 export default class ActionCasperWithdraw extends Component {
   static contextTypes = {
     instance: PropTypes.object.isRequired,
-    gabcoinAddress: PropTypes.object.isRequired
+    gabcoinAddress: PropTypes.object.isRequired,
+    api: PropTypes.object
   }
 
   static propTypes = {
@@ -117,9 +118,10 @@ export default class ActionCasperWithdraw extends Component {
   }
 
   onChangeAddress = (account) => {
+	const { api } = this.context;
     this.setState({
       account,
-      accountError: validateAccount(account)
+      accountError: validateAccount(account,api)
     }, this.validateTotal);
   }
 
@@ -145,6 +147,7 @@ export default class ActionCasperWithdraw extends Component {
   }
 
   onSend = () => {
+    const { api } = this.context;
     const { instance } = this.context;
 
     const amount = new BigNumber(this.state.amount);

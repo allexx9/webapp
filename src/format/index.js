@@ -1,6 +1,6 @@
 // Copyright 2016-2017 Gabriele Rigo
 
-import { api } from '../parity';
+// import { api } from '../parity';
 
 import BigNumber from 'bignumber.js';
 
@@ -33,7 +33,7 @@ export function formatCoins (amount, decimals = 1) {  //prev. decimals = 6
   return adjusted.toFormat(decimals);
 }
 
-export function formatEth (eth, decimals = 2) {
+export function formatEth (eth, decimals = 2, api) {
   return api.util.fromWei(eth).toFormat(decimals);
 }
 
