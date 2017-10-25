@@ -200,7 +200,7 @@ export default class Event extends Component {
 
     return (
 
-        formatEth(ethvalue,api)
+        formatEth(ethvalue,null,api)
 
     );
   }
