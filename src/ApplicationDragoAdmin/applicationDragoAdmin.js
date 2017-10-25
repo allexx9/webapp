@@ -89,7 +89,7 @@ export default class ApplicationDragoAdmin extends Component {
     dragoAddress: ' ',
     drago: ' ',
     dragoError: null,
-    instance: ' ',
+    instance: {},
     instanceError: null,
     loading: true,
     //price: null,

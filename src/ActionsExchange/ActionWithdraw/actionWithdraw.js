@@ -133,7 +133,6 @@ export default class ActionWithdraw extends Component {
 */
 
   onChangeAddress = (account) => {
-	const { api } = this.context;
     const { api } = this.context;
     this.setState({
       account,

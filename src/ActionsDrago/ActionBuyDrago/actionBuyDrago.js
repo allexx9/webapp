@@ -155,6 +155,7 @@ export default class ActionBuyDrago extends Component {
   }
 
   onChangeAccounts = (account) => {
+    const { api } = this.context;
     this.setState({
       account,
       accountError: validateAccount(account,api)

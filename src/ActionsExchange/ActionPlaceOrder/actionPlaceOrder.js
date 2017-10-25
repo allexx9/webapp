@@ -174,7 +174,6 @@ export default class ActionPlaceOrder extends Component {
 //automatically calculated??? double check
 
   onChangeAddress = (account) => {
-	const { api } = this.context;
     const { api } = this.context;
     // I have added a second variable to the validateAccount to pass the api
     this.setState({

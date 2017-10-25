@@ -193,13 +193,14 @@ export default class Event extends Component {
   }
 
   renderEthValue (ethvalue) {
+	const { api } = this.context;
     if (!ethvalue) {
       return '';
     }
 
     return (
 
-        formatEth(ethvalue)
+        formatEth(ethvalue,api)
 
     );
   }
