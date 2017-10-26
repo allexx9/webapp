@@ -65,7 +65,7 @@ export default class ApplicationDrago extends Component {
     gabBalance: new BigNumber(0),
     //instance: null,
     loading: true,
-    subscriptionIDDrago: null,
+    subscriptionIDDrago: null
     //dragoName: 'martinuz',
     //price: null,
     //eventful: null

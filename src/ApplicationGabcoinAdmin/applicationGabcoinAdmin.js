@@ -323,8 +323,8 @@ look for in events how fo JSON.stringify JSON.parse
         //gabQueries is amended sees account(0) as undefined //ToBeFixed
         //fix: tokens[0][_who]  //amend deposit functions
         const gabQueries = accounts.map((account) => instance.balanceOf.call({}, [account.address]));
-        const ethQueries = accounts.map((account) => api.eth.getBalance(account.address));
-
+        // const ethQueries = accounts.map((account) => api.eth.getBalance(account.address));
+        const ethQueries = gabQueries;
         return Promise.all([
           Promise.all(gabQueries),
           Promise.all(ethQueries)

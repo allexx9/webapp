@@ -97,7 +97,8 @@ export default class ApplicationDragoAdmin extends Component {
     dragoName: ' ',
     dragoNameError: null,
     dragoSymbol: ' ',
-    dragoSymbolError: null
+    dragoSymbolError: null,
+    subscriptionIDDragoAdmin: null
     //next_id: null, //added
     //min_stake: null, //added
     //remaining: null,
@@ -108,6 +109,11 @@ export default class ApplicationDragoAdmin extends Component {
     this.attachInterface();
   }
 */
+
+  componentWillUnmount() {
+    // Unsubscribing to the event when the the user moves away from this page
+    // this.detachInterface();
+  }
 
   render () {
     const { /*allEvents, */accounts, accountsInfo, address, blockNumber, gabBalance, loading, dragoName, dragoSymbol } = this.state;
@@ -220,7 +226,11 @@ export default class ApplicationDragoAdmin extends Component {
           console.log(drago.instance);
           console.log(`your target drago was found at ${dragoAddress}`)
 
-          api.subscribe('eth_blockNumber', this.onNewBlockNumber);
+          // api.subscribe('eth_blockNumber', this.onNewBlockNumber)
+          // .then((subscriptionID) => {
+          //   console.log(`applicationDragoAdmin: Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);
+          //   this.setState({subscriptionIDDragoAdmin: subscriptionID});
+          // });
         })
         .catch((error) => {
         console.warn('findDragoAddress', error);
@@ -334,7 +344,8 @@ look for in events how fo JSON.stringify JSON.parse
         //gabQueries is amended sees account(0) as undefined //ToBeFixed
         //fix: tokens[0][_who]  //amend deposit functions
         const gabQueries = accounts.map((account) => instance.balanceOf.call({}, [account.address]));
-        const ethQueries = accounts.map((account) => api.eth.getBalance(account.address));
+        // const ethQueries = accounts.map((account) => api.eth.getBalance(account.address));
+        const ethQueries = gabQueries;
         accounts.map((account) => {
           console.log('API call getBalance -> applicationDragoAdmin: Getting balance of account', account.name);
           }
@@ -392,6 +403,15 @@ look for in events how fo JSON.stringify JSON.parse
         return accountsInfo;
       });
   }
+
+  // detachInterface = () => {
+  //   const { subscriptionIDDragoAdmin } = this.state;
+  //   const { api } = this.context;
+  //   console.log(`applicationDragoAdmin: Unsubscribed to eth_blockNumber -> Subscription ID: ${subscriptionIDDragoAdmin}`);
+  //   api.unsubscribe(subscriptionIDDragoAdmin).catch((error) => {
+  //     console.warn('Unsubscribe error', error);
+  //   });
+  // } 
 /*
   attachInterface = () => {
     api.parity

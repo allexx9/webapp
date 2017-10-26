@@ -192,7 +192,7 @@ renderName (gabcoinname) {
   loadBlock () {
     const { api } = this.context;
     const { event } = this.props;
-
+    
     if (!event || !event.blockNumber || event.blockNumber.eq(0)) {
       return;
     }
