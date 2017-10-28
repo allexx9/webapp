@@ -30,7 +30,10 @@ import ApplicationBottomBar from './ApplicationBottomBar';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
-import { Row, Col, GridSystem, Visible, Hidden, ScreenClassRender, Container} from 'react-grid-system';
+import { Grid, Row, Col } from 'react-flexbox-grid';
+
+import styles from './application.module.css';
+import classNames from 'classnames';
 
 // Router
 // import { Link, Route, withRouter } from 'react-router-dom'
@@ -42,36 +45,32 @@ const muiTheme = getMuiTheme(lightBaseTheme);
 // }
 
 // This function accepts children components to display below the Tabs top menu.
-// const TemplateLayout = ({children}) =>
-// (
-//   <div className="">
-//     <Container>
-//       <Row>
-//         <Col sm={12}>
-//           <ApplicationTabsMenu />
-//         </Col>
-//       </Row>
-//       <Row>
-//         <Col sm={12}>      
-//         {children}
-//         </Col>
-//       </Row>
-//       <Row>
-//         <Col sm={12}>      
-//         <ApplicationBottomBar />
-//         </Col>
-//       </Row>
-//     </Container>
-//   </div>
-// )
-
+// Flex box grid system: https://github.com/roylee0704/react-flexbox-grid
 const TemplateLayout = ({children}) =>
 (
-  <div className="">
-    <ApplicationTabsMenu />
-      {children}
-    <ApplicationBottomBar />
-  </div>
+    <MuiThemeProvider>
+      <Grid fluid className={styles.maincontainer}>
+        <Row>
+          <Col xs={12}>
+            <ApplicationTabsMenu />
+          </Col>
+        </Row>
+        <Row className={classNames(styles.content)}>
+
+            <Col xs={12}>
+            <div  >
+            {children}
+            </div>
+            </Col>
+
+        </Row>
+        <Row>
+          <Col xs={12} className={classNames(styles.bottombar)}>
+            <ApplicationBottomBar />
+          </Col>
+        </Row>
+      </Grid>
+    </MuiThemeProvider>
 )
 
 export class Whoops404 extends Component {
@@ -84,13 +83,11 @@ export class Whoops404 extends Component {
   const { location } = this.props
   console.log(location);
     return (
-      <MuiThemeProvider>
           <TemplateLayout>
           <div className="">
               <h1>Page not found. Resource not found at '{location.pathname}'</h1>
           </div>
           </TemplateLayout>
-      </MuiThemeProvider>
     )
   }
 }
@@ -118,13 +115,11 @@ export class ApplicationHomePage extends Component {
   render() {
   // we access the props passed to the component
   const { location } = this.props
-  console.log(location);
+  // console.log(location);
     return (
-      <MuiThemeProvider>
         <TemplateLayout>
           <ApplicationHome></ApplicationHome>
         </TemplateLayout>
-      </MuiThemeProvider>
     )
   }
 }
@@ -154,13 +149,11 @@ export class ApplicationGabcoinPage extends Component {
   const { location } = this.props
   console.log(location);
     return (
-      <MuiThemeProvider>
           <TemplateLayout>
           <ApplicationGabcoin />
           <ApplicationGabcoinEventful />
               {/* <p>Locaton is {location.pathname}</p> */}
           </TemplateLayout>
-      </MuiThemeProvider>
     )
   }
 }
@@ -190,13 +183,11 @@ export class ApplicationDragoPage extends Component {
   const { location } = this.props
   console.log(location);
     return (
-      <MuiThemeProvider>
           <TemplateLayout>
           <ApplicationDrago />
           <ApplicationDragoEventful />
           {/* <p>Locaton is {location.pathname}</p> */}
           </TemplateLayout>
-      </MuiThemeProvider>
     )
   }
 }
@@ -226,13 +217,11 @@ export class ApplicationExchangePage extends Component {
   const { location } = this.props
   console.log(location);
     return (
-      <MuiThemeProvider>
           <TemplateLayout>
           <ApplicationExchange />
           <ApplicationExchangeEventful />
           {/* <p>Locaton is {location.pathname}</p> */}
           </TemplateLayout>
-      </MuiThemeProvider>
     )
   }
 }

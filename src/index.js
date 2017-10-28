@@ -3,11 +3,12 @@ import ReactDOM from 'react-dom';
 import {
     HashRouter,
     Route,
-    Switch
+    Switch,
+    Redirect
   } from 'react-router-dom'
 
 // import App from './App';
-// import registerServiceWorker from './registerServiceWorker';
+import registerServiceWorker from './registerServiceWorker';
 
 // import { 
 //     ApplicationHomePage, 
@@ -25,24 +26,40 @@ import {
 
 import './index.module.css';
 
+var appHashPath = true;
+
 // window.React = React
 
 // ReactDOM.render(<App />, document.getElementById('root'));
 
 // We set the routes. 
 // Component Whoops404 is loaded if a page does not exist.
+
+
+// console.log(location);
+var pathArray = window.location.hash.split( '/' );
+console.log(pathArray[2]);
+if (typeof window.parity !== 'undefined') {
+    appHashPath = pathArray[2];
+    } else {
+    appHashPath = 'web';
+    }
+console.log(appHashPath);
+
 ReactDOM.render(
     <HashRouter>
-      <div className="">
         <Switch>
-          <Route exact path="/" component={ApplicationHomePage} />
-          <Route path="/vault" component={ApplicationGabcoinPage} />
-          <Route path="/drago" component={ApplicationDragoPage} />
-          <Route path="/exchange" component={ApplicationExchangePage} />
+          <Route exact path={ "/app/" + appHashPath + "/" } component={ApplicationHomePage} />
+          <Route path={ "/app/" + appHashPath + "/vault/" } component={ApplicationGabcoinPage} />
+          <Route path={ "/app/" + appHashPath + "/drago/" } component={ApplicationDragoPage} />
+          <Route path={ "/app/" + appHashPath + "/exchange/" } component={ApplicationExchangePage} />
+          <Redirect from="/exchange" to={ "/app/" + appHashPath + "/exchange/" } /> 
+          <Redirect from="/vault/" to={ "/app/" + appHashPath + "/vault/" } />
+          <Redirect from="/drago" to={ "/app/" + appHashPath + "/drago/" } />
+          <Redirect from="/" to={ "/app/" + appHashPath + "/" } />
           <Route component={Whoops404} />
         </Switch>
-      </div>
     </HashRouter>,
     document.getElementById('root'))
 
-// registerServiceWorker()
+registerServiceWorker()

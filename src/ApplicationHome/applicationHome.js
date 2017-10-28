@@ -14,12 +14,18 @@ import Slider from 'material-ui/Slider';
 import Drawer from 'material-ui/Drawer';
 import AppBar from 'material-ui/AppBar';
 import RaisedButton from 'material-ui/RaisedButton';
-import { Row, Col, GridSystem, Visible, Hidden, ScreenClassRender} from 'react-grid-system';
+import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
+import Paper from 'material-ui/Paper';
+import { Grid, Row, Col } from 'react-flexbox-grid';
 
 import ApplicationDragoFactory from '../ApplicationDragoFactory';
 import ApplicationGabcoinFactory from '../ApplicationGabcoinFactory';
 
 import Loading from '../Loading';
+
+import {
+  Link
+} from 'react-router-dom'
 
 // import getMuiTheme from 'material-ui/styles/getMuiTheme';
 // import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
@@ -78,11 +84,77 @@ export default class ApplicationHome extends Component {
 
     return (
       <div className={ styles.body } style={ bgstyle }>
-        <h1 className={styles.headline}>RigoBlock: Decentralized Pools of Digital Tokens </h1>
+      <Row>
+        <Col xs={12} className={ styles.body }>
+          <Row>
+            <Col xs={12}>
+            <h1 className={styles.headline}>RigoBlock: Decentralized Pools of Digital Tokens </h1>
+            <h2>Ever dreamed of running your own hedge fund?</h2>
+            </Col>
+          </Row>
+          <Row>
+            <Col xs={4}>
+              <Card className={ styles.column }>
+                <CardTitle title="RigoBlock Vault" className={ styles.cardtitle } titleColor="white"/>
+                <CardText>
+                Pools of ether and proof-of-stake mining
+                </CardText>
+                <CardActions>
+                    <ApplicationGabcoinFactory />
+                </CardActions>
+              </Card>
+            </Col>
+            <Col xs={4}>
+              <Card className={ styles.column }>
+                <CardTitle title="RigoBlock Drago" className={ styles.cardtitle } titleColor="white" />
+                <CardText>
+                Pools of ether and trading on decentralized exchanges
+                </CardText>
+                <CardActions >
+                  <ApplicationDragoFactory />
+                </CardActions>
+              </Card>
+            </Col>
+            <Col xs={4} >
+              <Card className={ styles.column }>
+                <CardTitle title="RigoBlock Exchange" className={ styles.cardtitle } titleColor="white" />
+                <CardText>
+                Trade derivatives contracts with leverage
+                </CardText>
+                <CardActions>
+                  <Link to="/exchange">
+                    <RaisedButton label="Trade" className={ styles.exchangebutton } labelColor="white"/>
+                  </Link>
+                </CardActions>
+              </Card>
+            </Col>
+          </Row>
+          <Row>
+            <Col xs={12}>
+              <p></p>
+            </Col>
+          </Row>
+          <Row>
+            <Col xs={12}>
+              <Paper zDepth={1}>
+              <p>&nbsp;</p>
+              <p>
+              Download our whitepaper at <a href='https://rigoblock.com'>www.rigoblock.com </a>
+              </p>
+              <p>Give us a shout! <a href="mailto:admin@rigoblock.com?Subject=RigoBlock%20contact" target="_top">admin@rigoblock.com</a>
+              </p>
+              <p>&nbsp;</p>
+              </Paper>
+            </Col>
+          </Row>
+        </Col>
+        </Row>
+      
+        {/* <h1 className={styles.headline}>RigoBlock: Decentralized Pools of Digital Tokens </h1>
         <div className={styles.content}>
           <h2>create your own decentralized pool of tokens</h2>
           <p>
-            ever dreamed of running your own hedge fund?
+          ever dreamed of running your own hedge fund?
           </p>
           <p>
             RigoBlock is serverless and built on top of our in-house smart contracts protocol
@@ -105,8 +177,8 @@ export default class ApplicationHome extends Component {
               <a href="mailto:admin@rigoblock.com?Subject=RigoBlock%20contact" target="_top">admin@rigoblock.com</a>
             </p>
 
-        </div>
-        <div>
+        </div> */}
+        {/* <div>
           <RaisedButton
             label='create your own pool'
             onTouchTap={this.handleToggle} />
@@ -123,7 +195,7 @@ export default class ApplicationHome extends Component {
               <ApplicationDragoFactory />
             </div>
           </Drawer>
-        </div>
+        </div> */}
       </div>
     );
   }

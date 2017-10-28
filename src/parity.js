@@ -36,7 +36,7 @@ if (typeof window.parity !== 'undefined') {
   WsSecureUrl = 'wss://srv03.endpoint.network:8546';
 }
 
-const CheckTransport = () => {
+const checkTransport = () => {
   if (OverHttps) {
     try {
       const transport = new Api.Provider.Http(HttpsUrl, timeout);
@@ -56,9 +56,9 @@ const CheckTransport = () => {
   }
 }
 
-var api = CheckTransport();
+var api = checkTransport();
 console.log(api);
-console.log(api.isConnected);
+console.log('Connected to Node:', api.isConnected);
 
 export {
   api

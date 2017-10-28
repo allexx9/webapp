@@ -19,6 +19,7 @@ const NAME_ID = ' ';
 export default class ActionDeployGabcoin extends Component {
   static contextTypes = {
     instance: PropTypes.object.isRequired,
+    api: PropTypes.object
     //gabcoinFactory: PropTypes.object
   }
 

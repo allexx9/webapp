@@ -25,7 +25,7 @@ class ApplicationTabsMenu extends Component {
     }
 
     state = {
-        value: this.props.location.pathname,
+        // value: this.props.location.pathname,
     }
 
     handleCallToRouter = (value) => {
@@ -33,47 +33,13 @@ class ApplicationTabsMenu extends Component {
       }
 
     render() {
-    // we access the props passed to the component
+    // match  and location are passed by the Router
+    // match contains the url parameters
     const { location } = this.props
-    console.log(location);
+    const { match } = this.props
+    // console.log(match);
+    // console.log(location);
       return (
-        // <MuiThemeProvider>
-        // <Tabs
-        //     className={ styles.tabs }
-        //     value={this.props.history.location.pathname}
-        //     onChange={this.handleCallToRouter}
-        //     >
-        //     <Tab
-        //     icon={<ActionHome />}
-        //     label="Home"
-        //     value="/"
-        //     >
-        //     {/* {logMsg('Tab Home')} */}
-        //     </Tab>
-        //     <Tab
-        //     icon={<ActionLightBulb />}
-        //     label="Vault"
-        //     value="/vault"
-        //     >
-        //     {/* {logMsg('Tab 1')} */}
-        //     </Tab>
-        //     <Tab
-        //     icon={<ActionLightBulb />}
-        //     label="Drago"
-        //     value="/drago"
-        //     >
-        //     {/* {logMsg('Tab 2')} */}
-        //     </Tab>
-        //     <Tab
-        //     icon={<ActionPolymer />}
-        //     label="Exchange"
-        //     value="/exchange"
-        //     >
-        //     {/* {logMsg('Tab 3')} */}
-        //     </Tab>
-        // </Tabs>
-
-        // <MuiThemeProvider>
         <Tabs
             className={ styles.tabs }
             value={this.props.history.location.pathname}

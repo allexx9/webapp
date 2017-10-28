@@ -11,21 +11,22 @@
   margin: 0;
   padding: 0;
   vertical-align: top;
+
 }
 
-:root,
+/* :root,
 :root body,
 :root :global(#root) {
   min-height: 100%;
   width: 100%;
   display: flex;
   flex: 1;
-}
+} */
 
 :root * {
   font-weight: 300 !important;
 }
 
-:root :global(#root) > div {
-  flex: 1;
-}
+
+
+
