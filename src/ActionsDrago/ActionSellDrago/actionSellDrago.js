@@ -2,7 +2,7 @@
 
 import * as abis from '../../contracts';
 
-import { api } from '../../parity';
+// import { api } from '../../parity';
 import AccountSelector from '../../AccountSelector';
 import { ERRORS, validateAccount, validatePositiveNumber } from '../validation';
 
@@ -21,6 +21,7 @@ const NAME_ID = ' ';
 
 export default class ActionSellDrago extends Component {
   static contextTypes = {
+    api: PropTypes.object
     //instance: PropTypes.object.isRequired
     //contract: PropTypes.object, //contract and instance are selected manually
     //instance: PropTypes.object,
@@ -156,9 +157,10 @@ export default class ActionSellDrago extends Component {
   }
 
   onChangeAccount = (account) => {
+    const { api } = this.context;
     this.setState({
       account,
-      accountError: validateAccount(account)
+      accountError: validateAccount(account,api)
     });
   }
 
@@ -184,6 +186,7 @@ export default class ActionSellDrago extends Component {
   }
 
   onFindDragoAddress = () => {
+    const { api } = this.context;
     api.parity
       .registryAddress()
       .then((registryAddress) => {
@@ -241,6 +244,7 @@ export default class ActionSellDrago extends Component {
   }
 
   onSend = () => {
+    const { api } = this.context;
     //const { instance } = this.context;
     const instance = this.state.instance;
 

@@ -128,13 +128,14 @@ export default class Event extends Component {
   }
 
   renderEthValue (ethvalue) {
+	const { api } = this.context;
     if (!ethvalue) {
       return EMPTY_COLUMN;
     }
 
     return (
       <td className={ styles.ethvalue }>
-        { formatEth(ethvalue) }<small> ETH</small>
+        { formatEth(ethvalue,api) }<small> ETH</small>
       </td>
     );
   }
@@ -191,7 +192,7 @@ renderName (gabcoinname) {
   loadBlock () {
     const { api } = this.context;
     const { event } = this.props;
-
+    
     if (!event || !event.blockNumber || event.blockNumber.eq(0)) {
       return;
     }

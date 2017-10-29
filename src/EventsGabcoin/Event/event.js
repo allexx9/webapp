@@ -128,13 +128,14 @@ export default class Event extends Component {
   }
 
   renderEthValue (ethvalue) {
+	  const { api } = this.context;
     if (!ethvalue) {
       return EMPTY_COLUMN;
     }
 
     return (
       <td className={ styles.ethvalue }>
-        { formatEth(ethvalue) }<small> ETH</small>
+        { formatEth(ethvalue,null,api) }<small> ETH</small>
       </td>
     );
   }

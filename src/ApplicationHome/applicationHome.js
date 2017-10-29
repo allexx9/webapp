@@ -1,5 +1,8 @@
 // Copyright 2016-2017 Gabriele Rigo
 
+// import { api } from '../parity';
+
+
 import styles from './applicationHome.module.css';
 import bgimage from '../assets/images/blockchainLight.jpg';
 
@@ -11,16 +14,25 @@ import Slider from 'material-ui/Slider';
 import Drawer from 'material-ui/Drawer';
 import AppBar from 'material-ui/AppBar';
 import RaisedButton from 'material-ui/RaisedButton';
+import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
+import Paper from 'material-ui/Paper';
+import { Grid, Row, Col } from 'react-flexbox-grid';
 
 import ApplicationDragoFactory from '../ApplicationDragoFactory';
 import ApplicationGabcoinFactory from '../ApplicationGabcoinFactory';
 
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
+import Loading from '../Loading';
+
+import {
+  Link
+} from 'react-router-dom'
+
+// import getMuiTheme from 'material-ui/styles/getMuiTheme';
+// import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin();
 
-const muiTheme = getMuiTheme(lightBaseTheme);
+// const muiTheme = getMuiTheme(lightBaseTheme);
 
 const bgstyle = {
   backgroundImage: `url(${bgimage})`
@@ -32,23 +44,119 @@ export default class ApplicationHome extends Component {
 
   state = {
         open: false,
+        connected: true
   }
 
-// style={ bgstyle }
-
+  // We define the properties of the context variables passed down to the children
   static childContextTypes = {
-    muiTheme: PropTypes.object
+    // api: PropTypes.object,
+    // muiTheme: PropTypes.object
   };
 
+  // We check the type of the context variable that we receive by the parent
+  static contextTypes = {
+    api: PropTypes.object.isRequired,
+    muiTheme: PropTypes.object.isRequired
+  };
+  
+  // We pass down the context variables passed down to the children
+  getChildContext () {
+    return {
+      // api,
+      // muiTheme
+    };
+  }
+
+  componentDidMount () {
+    // this.setState()
+    // this.checkConnectionToNode();
+    console.log(this.context);
+  }
+
   render() {
-    console.log(styles);
+    const { connected } = this.state;
+
+    if (!connected) {
+      return (
+        <Loading />
+      );
+    }
+
     return (
       <div className={ styles.body } style={ bgstyle }>
-        <h1 className={styles.headline}>RigoBlock: Decentralized Pools of Digital Tokens </h1>
+      <Row>
+        <Col xs={12} className={ styles.body }>
+          <Row>
+            <Col xs={12}>
+            <h1 className={styles.headline}>RigoBlock: Decentralized Pools of Digital Tokens </h1>
+            <h2>Ever dreamed of running your own hedge fund?</h2>
+            <p>&nbsp;</p>
+            <p>&nbsp;</p>
+            </Col>
+          </Row>
+          <Row>
+            <Col xs={4}>
+              <Card className={ styles.column }>
+                <CardTitle title="RigoBlock Vault" className={ styles.cardtitle } titleColor="white"/>
+                <CardText>
+                Pools of ether and proof-of-stake mining
+                </CardText>
+                <CardActions>
+                    <ApplicationGabcoinFactory />
+                </CardActions>
+              </Card>
+            </Col>
+            <Col xs={4}>
+              <Card className={ styles.column }>
+                <CardTitle title="RigoBlock Drago" className={ styles.cardtitle } titleColor="white" />
+                <CardText>
+                Pools of ether and trading on decentralized exchanges
+                </CardText>
+                <CardActions >
+                  <ApplicationDragoFactory />
+                </CardActions>
+              </Card>
+            </Col>
+            <Col xs={4} >
+              <Card className={ styles.column }>
+                <CardTitle title="RigoBlock Exchange" className={ styles.cardtitle } titleColor="white" />
+                <CardText>
+                Trade derivatives contracts with leverage
+                </CardText>
+                <CardActions>
+                  <Link to="/exchange">
+                    <RaisedButton label="Trade" className={ styles.exchangebutton } labelColor="white"/>
+                  </Link>
+                </CardActions>
+              </Card>
+            </Col>
+          </Row>
+          <Row>
+            <Col xs={12}>
+              <p></p>
+            </Col>
+          </Row>
+          <Row>
+            <Col xs={12}>
+              <Paper zDepth={1}>
+              <p>&nbsp;</p>
+              <p>
+              Download our whitepaper at <a href='https://rigoblock.com'>www.rigoblock.com </a>
+              </p>
+              <p>Give us a shout! <a href="mailto:admin@rigoblock.com?Subject=RigoBlock%20contact" target="_top">admin@rigoblock.com</a>
+              </p>
+              <p>&nbsp;</p>
+              </Paper>
+            </Col>
+          </Row>
+        </Col>
+        </Row>
+      
+        {/* <h1 className={styles.headline}>RigoBlock: Decentralized Pools of Digital Tokens </h1>
         <div className={styles.content}>
           <h2>create your own decentralized pool of tokens</h2>
           <p>
-            ever dreamed of running your own hedge fund?
+          ever dreamed of running your own hedge fund?
           </p>
           <p>
             RigoBlock is serverless and built on top of our in-house smart contracts protocol
@@ -71,8 +179,8 @@ export default class ApplicationHome extends Component {
               <a href="mailto:admin@rigoblock.com?Subject=RigoBlock%20contact" target="_top">admin@rigoblock.com</a>
             </p>
 
-        </div>
-        <div>
+        </div> */}
+        {/* <div>
           <RaisedButton
             label='create your own pool'
             onTouchTap={this.handleToggle} />
@@ -89,7 +197,7 @@ export default class ApplicationHome extends Component {
               <ApplicationDragoFactory />
             </div>
           </Drawer>
-        </div>
+        </div> */}
       </div>
     );
   }
@@ -100,11 +208,22 @@ export default class ApplicationHome extends Component {
     });
   }
 
-  getChildContext () {
-    return {
-      muiTheme
-    };
-  }
+  // isUp = () => {
+  //   console.log(`applicationHome: checking node`);
+  //   this.setState({connected: true})
+  // }
+
+  // checkConnectionToNode = () => {
+  //   const { api } = this.context;
+  //     api.subscribe('net_listening', this.isUp)
+  //     .catch((error) => {
+  //       console.warn('net_listening', error);
+  //       this.setState({connected: false});
+  //       console.log(`applicationHome: Parity node is DOWN`);
+  //     })
+  // }
+
+
 }
 
 //<Slider name='slider0' defaultValue={0.5} />

@@ -1,6 +1,6 @@
 // Copyright 2016-2017 Gabriele Rigo
 
-import { api } from '../../parity';
+// import { api } from '../../parity';
 import AccountSelector from '../../AccountSelector';
 import { ERRORS, validateAccount, validatePositiveNumber } from '../validation';
 
@@ -133,9 +133,10 @@ export default class ActionRefund extends Component {
   }
 
   onChangeAddress = (account) => {
+	const { api } = this.context;
     this.setState({
       account,
-      accountError: validateAccount(account)
+      accountError: validateAccount(account,api)
     });
   }
 

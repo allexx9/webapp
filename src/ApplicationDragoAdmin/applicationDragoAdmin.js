@@ -1,6 +1,6 @@
 // Copyright 2016-2017 Gabriele Rigo
 
-import { api } from '../parity';
+// import { api } from '../parity';
 
 import * as abis from '../contracts';
 
@@ -40,10 +40,12 @@ const DIVISOR = 10 ** 18;  // calculations in ETH
 const NAME_ID = ' ';
 
 export default class ApplicationDragoAdmin extends Component {
+  
   static contextTypes = {
     //instance: PropTypes.object.isRequired
     //drago: PropTypes.object,
     //instance: PropTypes.object,
+    api: PropTypes.object
   }
 
   static childContextTypes = {
@@ -51,10 +53,24 @@ export default class ApplicationDragoAdmin extends Component {
     //dragoAddress: PropTypes.object,
     drago: PropTypes.object,
     dragoAddress: PropTypes.string, //dragoAddress: PropTypes.object,
-    instance: PropTypes.string, //instance: PropTypes.object, //moved into contextTypes
+    instance: PropTypes.object, //instance: PropTypes.object, //moved into contextTypes
     //allEvents: PropTypes.object,
     muiTheme: PropTypes.object
   };
+
+  getChildContext () {
+    const { /*allEvents, */dragoName, dragoSymbol, dragoAddress, instance } = this.state;
+    //const { allEvents } = this.props;
+
+    return {
+      // api,
+      dragoAddress,
+      instance,
+      //drago,
+      //allEvents,
+      muiTheme
+    };
+  }
 
 /*
   static propTypes = {
@@ -73,7 +89,7 @@ export default class ApplicationDragoAdmin extends Component {
     dragoAddress: ' ',
     drago: ' ',
     dragoError: null,
-    instance: ' ',
+    instance: {},
     instanceError: null,
     loading: true,
     //price: null,
@@ -81,7 +97,8 @@ export default class ApplicationDragoAdmin extends Component {
     dragoName: ' ',
     dragoNameError: null,
     dragoSymbol: ' ',
-    dragoSymbolError: null
+    dragoSymbolError: null,
+    subscriptionIDDragoAdmin: null
     //next_id: null, //added
     //min_stake: null, //added
     //remaining: null,
@@ -93,11 +110,16 @@ export default class ApplicationDragoAdmin extends Component {
   }
 */
 
+  componentWillUnmount() {
+    // Unsubscribing to the event when the the user moves away from this page
+    // this.detachInterface();
+  }
+
   render () {
     const { /*allEvents, */accounts, accountsInfo, address, blockNumber, gabBalance, loading, dragoName, dragoSymbol } = this.state;
 
-    const dragoNameLabel ='your target drago';
-    const dragoSymbolLabel ='and input the symbol!';
+    const dragoNameLabel ='Your target drago';
+    const dragoSymbolLabel ='And input the symbol!';
 /*
     if (loading) {
       return (
@@ -152,6 +174,7 @@ export default class ApplicationDragoAdmin extends Component {
   }
 
   onFindDragoAddress = () => {
+    const { api } = this.context;
     api.parity
       .registryAddress()
       .then((registryAddress) => {
@@ -200,10 +223,14 @@ export default class ApplicationDragoAdmin extends Component {
                 };
               })
           });
-
+          console.log(drago.instance);
           console.log(`your target drago was found at ${dragoAddress}`)
 
-          api.subscribe('eth_blockNumber', this.onNewBlockNumber);
+          // api.subscribe('eth_blockNumber', this.onNewBlockNumber)
+          // .then((subscriptionID) => {
+          //   console.log(`applicationDragoAdmin: Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);
+          //   this.setState({subscriptionIDDragoAdmin: subscriptionID});
+          // });
         })
         .catch((error) => {
         console.warn('findDragoAddress', error);
@@ -280,20 +307,6 @@ look for in events how fo JSON.stringify JSON.parse
     }
   }
 
-  getChildContext () {
-    const { /*allEvents, */dragoName, dragoSymbol, dragoAddress, instance } = this.state;
-    //const { allEvents } = this.props;
-
-    return {
-      api,
-      dragoAddress,
-      instance,
-      //drago,
-      //allEvents,
-      muiTheme
-    };
-  }
-
   onAction = (action) => {
     this.setState({
       action
@@ -307,6 +320,7 @@ look for in events how fo JSON.stringify JSON.parse
   }
 
   onNewBlockNumber = (_error, blockNumber) => {
+    const { api } = this.context;
     const { instance, accounts } = this.state;
 
     if (_error) {
@@ -330,8 +344,12 @@ look for in events how fo JSON.stringify JSON.parse
         //gabQueries is amended sees account(0) as undefined //ToBeFixed
         //fix: tokens[0][_who]  //amend deposit functions
         const gabQueries = accounts.map((account) => instance.balanceOf.call({}, [account.address]));
-        const ethQueries = accounts.map((account) => api.eth.getBalance(account.address));
-
+        // const ethQueries = accounts.map((account) => api.eth.getBalance(account.address));
+        const ethQueries = gabQueries;
+        accounts.map((account) => {
+          console.log('API call getBalance -> applicationDragoAdmin: Getting balance of account', account.name);
+          }
+        )
         return Promise.all([
           Promise.all(gabQueries),
           Promise.all(ethQueries)
@@ -359,6 +377,7 @@ look for in events how fo JSON.stringify JSON.parse
   }
 
   getAccounts () {
+    const { api } = this.context;
     return api.parity
       .accountsInfo()
       .catch((error) => {
@@ -384,6 +403,15 @@ look for in events how fo JSON.stringify JSON.parse
         return accountsInfo;
       });
   }
+
+  // detachInterface = () => {
+  //   const { subscriptionIDDragoAdmin } = this.state;
+  //   const { api } = this.context;
+  //   console.log(`applicationDragoAdmin: Unsubscribed to eth_blockNumber -> Subscription ID: ${subscriptionIDDragoAdmin}`);
+  //   api.unsubscribe(subscriptionIDDragoAdmin).catch((error) => {
+  //     console.warn('Unsubscribe error', error);
+  //   });
+  // } 
 /*
   attachInterface = () => {
     api.parity

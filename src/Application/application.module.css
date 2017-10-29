@@ -20,3 +20,27 @@
 
 .tab {
 }
+
+.copyright {
+  font-size: 0.9em;
+}
+
+.bottombar {
+  /* position: fixed;
+  width: 100%;
+  bottom: 0; */
+  align-self: flex-end !important;
+  /* flex: none !important; */
+}
+
+.maincontainer {
+  display: flex !important;
+  min-height: 100vh !important;
+  flex-direction: column !important;
+}
+
+
+
+.content {
+  flex: 1 0 auto !important;
+}

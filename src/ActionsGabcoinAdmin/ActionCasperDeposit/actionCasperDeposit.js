@@ -4,7 +4,7 @@
 
 import * as abis from '../../contracts';
 
-import { api } from '../../parity';
+// import { api } from '../../parity';
 import AccountSelector from '../../AccountSelector';
 import { ERRORS, validateAccount, validatePositiveNumber } from '../validation';
 
@@ -28,7 +28,8 @@ export default class ActionCasperDeposit extends Component {
   static contextTypes = {
     instance: PropTypes.object.isRequired, //instance arrives from application, here we have to find exchanges and assets
     //approvedExchanges: PropTypes.array.isRequired
-    gabcoinAddress: PropTypes.object.isRequired
+    gabcoinAddress: PropTypes.object.isRequired,
+    api: PropTypes.object
   }
 
   static propTypes = {
@@ -133,9 +134,10 @@ export default class ActionCasperDeposit extends Component {
   }
 
   onChangeAddress = (account) => {
+	const { api } = this.context;
     this.setState({
       account,
-      accountError: validateAccount(account)
+      accountError: validateAccount(account,api)
     }, this.validateTotal);
   }
 
@@ -161,6 +163,7 @@ export default class ActionCasperDeposit extends Component {
   }
 
   onSend = () => {
+    const { api } = this.context;
     const { instance } = this.context;
 
     const values = [this.state.account.address, this.state.account.address, api.util.toWei(this.state.amount).toString()];

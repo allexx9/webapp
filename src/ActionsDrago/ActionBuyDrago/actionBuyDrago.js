@@ -1,7 +1,7 @@
 // Copyright 2016-2017 Gabriele Rigo
 
 import * as abis from '../../contracts';
-import { api } from '../../parity';
+// import { api } from '../../parity';
 import AccountSelector from '../../AccountSelector';
 import { ERRORS, validateAccount, validatePositiveNumber } from '../validation';
 
@@ -20,6 +20,7 @@ const NAME_ID = ' ';
 
 export default class ActionBuyDrago extends Component {
   static contextTypes = {
+    api: PropTypes.object
     //instance: PropTypes.object.isRequired
     //drago: PropTypes.object, //contract an instance are defined in this component
     //instance: PropTypes.object //so that they are dynamic and not static
@@ -154,9 +155,10 @@ export default class ActionBuyDrago extends Component {
   }
 
   onChangeAccounts = (account) => {
+    const { api } = this.context;
     this.setState({
       account,
-      accountError: validateAccount(account)
+      accountError: validateAccount(account,api)
     }, this.validateTotal);
   }
 
@@ -182,6 +184,7 @@ export default class ActionBuyDrago extends Component {
   }
 
   onFindDragoAddress = () => {
+    const { api } = this.context;
     api.parity
       .registryAddress()
       .then((registryAddress) => {
@@ -239,7 +242,7 @@ export default class ActionBuyDrago extends Component {
   }
 
   onSend = () => {
-
+    const { api } = this.context;
     //const { instance } = this.context;
     const instance = this.state.instance;
 

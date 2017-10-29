@@ -1,6 +1,6 @@
 // Copyright 2016-2017 Gabriele Rigo
 
-import { api } from '../../parity';
+// import { api } from '../../parity';
 import AccountSelector from '../../AccountSelector';
 import { ERRORS, validateAccount, validatePositiveNumber } from '../validation';
 
@@ -19,6 +19,7 @@ const NAME_ID = ' ';
 export default class ActionDeployGabcoin extends Component {
   static contextTypes = {
     instance: PropTypes.object.isRequired,
+    api: PropTypes.object
     //gabcoinFactory: PropTypes.object
   }
 
@@ -132,9 +133,10 @@ export default class ActionDeployGabcoin extends Component {
   }
 
   onChangeAddress = (account) => {
+	const { api } = this.context;
     this.setState({
       account,
-      accountError: validateAccount(account)
+      accountError: validateAccount(account,api)
     }, this.validateTotal);
   }
 

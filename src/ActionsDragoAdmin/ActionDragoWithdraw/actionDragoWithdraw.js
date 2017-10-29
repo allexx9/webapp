@@ -2,7 +2,7 @@
 
 import * as abis from '../../contracts';
 
-import { api } from '../../parity';
+// import { api } from '../../parity';
 import AccountSelector from '../../AccountSelector';
 import { ERRORS, validateAccount, validatePositiveNumber } from '../validation';
 
@@ -29,7 +29,8 @@ const APPROVED_EXCHANGES = ['exchange2', 'exchangenot']; //we have to add a comp
 export default class ActionDragoWithdraw extends Component {
   static contextTypes = {
     instance: PropTypes.object.isRequired,
-    dragoAddress: PropTypes.object.isRequired
+    dragoAddress: PropTypes.object.isRequired,
+    api: PropTypes.object
   }
 
   static propTypes = {
@@ -157,9 +158,10 @@ export default class ActionDragoWithdraw extends Component {
 */
 
   onChangeAddress = (account) => {
+	const { api } = this.context;
     this.setState({
       account,
-      accountError: validateAccount(account)
+      accountError: validateAccount(account,api)
     }, this.validateTotal);
   }
 
@@ -189,7 +191,7 @@ export default class ActionDragoWithdraw extends Component {
 
   onFindExchange = () => {
     const { dragoAddress } = this.context;
-
+    const { api } = this.context;
     api.parity
       .registryAddress()
       .then((registryAddress) => {
@@ -255,6 +257,7 @@ export default class ActionDragoWithdraw extends Component {
   }
 
   onSend = () => {
+    const { api } = this.context;
     const { instance } = this.context;
 
     const exchangeAddress = this.state.exchangeAddress;

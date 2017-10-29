@@ -2,7 +2,7 @@
 
 import * as abis from '../../contracts';
 
-import { api } from '../../parity';
+// import { api } from '../../parity';
 import AccountSelector from '../../AccountSelector';
 import { ERRORS, validateAccount, validatePositiveNumber } from '../validation';
 
@@ -28,7 +28,8 @@ const ADDRESS_0 = '0x0000000000000000000000000000000000000000';
 export default class ActionDragoPlaceOrder extends Component {
   static contextTypes = {
     instance: PropTypes.object.isRequired,
-    dragoAddress: PropTypes.object.isRequired
+    dragoAddress: PropTypes.object.isRequired,
+    api: PropTypes.object
     //is_stable: PropTypes.bool.isRequired
   }
 
@@ -192,9 +193,10 @@ export default class ActionDragoPlaceOrder extends Component {
 //automatically calculated??? double check
 
   onChangeAddress = (account) => {
+	const { api } = this.context;
     this.setState({
       account,
-      accountError: validateAccount(account)
+      accountError: validateAccount(account,api)
     }, this.validateTotal);
   }
 
@@ -243,7 +245,7 @@ export default class ActionDragoPlaceOrder extends Component {
 
   onFindExchange = () => {
     const { dragoAddress } = this.context;
-
+    const { api } = this.context;
     api.parity
       .registryAddress()
       .then((registryAddress) => {
@@ -297,7 +299,7 @@ export default class ActionDragoPlaceOrder extends Component {
   //an alternative is to create a list of assets traded on the exchange, and map throug a promise in onFindExchange
   onFindAsset = () => {
     const { dragoAddress } = this.context;
-
+    const { api } = this.context;
     api.parity
       .registryAddress()
       .then((registryAddress) => {
