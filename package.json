@@ -2,7 +2,7 @@
   "name": "rigoblock-david",
   "version": "0.1.0",
   "private": true,
-  "homepage": "webapp-david",
+  "homepage": "./",
   "dependencies": {
     "@parity/api": "^2.0.13",
     "@parity/parity.js": "^1.8.11",
@@ -23,7 +23,7 @@
     "prop-types": "^15.6.0",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
-    "react-flexbox-grid": "^1.1.5",
+    "react-flexbox-grid": "^2.0.0",
     "react-grid-system": "^3.0.7",
     "react-router": "^4.2.0",
     "react-router-dom": "^4.2.2",
