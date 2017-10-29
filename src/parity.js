@@ -5,14 +5,14 @@
 // API reference: https://gitlab.parity.io/parity/parity/blob/d2394d3ac30b589f92676eec401c50d6b388f911/js/npm/parity/README.md
 // Converted rpc calls to use provider
 
-// import { Api } from '@parity/parity.js';
+import { Api } from '@parity/parity.js';
 
 
 // For refenences:
 // https://github.com/paritytech/js-api
 
 
-import Api from '@parity/api';
+// import Api from '@parity/api';
 
 var HttpsUrl = true;
 var WsSecureUrl = true;
@@ -39,7 +39,10 @@ if (typeof window.parity !== 'undefined') {
 const checkTransport = () => {
   if (OverHttps) {
     try {
-      const transport = new Api.Provider.Http(HttpsUrl, timeout);
+      // for @parity/api
+      // const transport = new Api.Provider.Http(HttpsUrl, timeout);
+      // @parity/parity.js
+      const transport = new Api.Transport.Http(HttpsUrl, timeout);
       console.log("Connecting to ", HttpsUrl);
       return new Api(transport);
     } catch (err) {
@@ -48,7 +51,10 @@ const checkTransport = () => {
   } else {
     try {
       console.log("Connecting to ", WsSecureUrl);
-      const transport = new Api.Provider.WsSecure(WsSecureUrl);
+      // for @parity/api
+      // const transport = new Api.Provider.WsSecure(WsSecureUrl);
+      // @parity/parity.js
+      const transport = new Api.Transport.WsSecure(WsSecureUrl);
       return new Api(transport);
   } catch (err) {
       console.warn('Connection error: ', err);

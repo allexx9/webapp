@@ -49,14 +49,14 @@ console.log(appHashPath);
 ReactDOM.render(
     <HashRouter>
         <Switch>
-          <Route exact path={ "/app/" + appHashPath + "/" } component={ApplicationHomePage} />
-          <Route path={ "/app/" + appHashPath + "/vault/" } component={ApplicationGabcoinPage} />
-          <Route path={ "/app/" + appHashPath + "/drago/" } component={ApplicationDragoPage} />
-          <Route path={ "/app/" + appHashPath + "/exchange/" } component={ApplicationExchangePage} />
-          <Redirect from="/exchange" to={ "/app/" + appHashPath + "/exchange/" } /> 
-          <Redirect from="/vault/" to={ "/app/" + appHashPath + "/vault/" } />
-          <Redirect from="/drago" to={ "/app/" + appHashPath + "/drago/" } />
-          <Redirect from="/" to={ "/app/" + appHashPath + "/" } />
+          <Route exact path={ "/app/" + appHashPath + "" } component={ApplicationHomePage} />
+          <Route path={ "/app/" + appHashPath + "/vault" } component={ApplicationGabcoinPage} />
+          <Route path={ "/app/" + appHashPath + "/drago" } component={ApplicationDragoPage} />
+          <Route path={ "/app/" + appHashPath + "/exchange" } component={ApplicationExchangePage} />
+          <Redirect from="/exchange" to={ "/app/" + appHashPath + "/exchange" } /> 
+          <Redirect from="/vault/" to={ "/app/" + appHashPath + "/vault" } />
+          <Redirect from="/drago" to={ "/app/" + appHashPath + "/drago" } />
+          <Redirect from="/" to={ "/app/" + appHashPath + "" } />
           <Route component={Whoops404} />
         </Switch>
     </HashRouter>,

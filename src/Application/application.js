@@ -56,13 +56,11 @@ const TemplateLayout = ({children}) =>
           </Col>
         </Row>
         <Row className={classNames(styles.content)}>
-
-            <Col xs={12}>
-            <div  >
+          <Col xs={12}>
+            <div>
             {children}
             </div>
-            </Col>
-
+          </Col>
         </Row>
         <Row>
           <Col xs={12} className={classNames(styles.bottombar)}>

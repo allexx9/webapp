@@ -33,8 +33,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build-parity": "PUBLIC_URL=./ react-scripts build",
-    "build": "react-scripts build",
+    "build": "PUBLIC_URL=./rigoblock-david react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "watch": "node scripts/watch.js",

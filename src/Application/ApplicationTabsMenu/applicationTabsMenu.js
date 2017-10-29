@@ -25,30 +25,41 @@ class ApplicationTabsMenu extends Component {
     }
 
     state = {
-        // value: this.props.location.pathname,
+        // value: this.props.location.pathname
+        // value: "/vault"
     }
 
     handleCallToRouter = (value) => {
         this.props.history.push(value);
+        // console.log(this.props.location.pathname);
+        // var lastElementPath = this.props.location.pathname.split( '/' ).pop();
+        // console.log(lastElementPath);
       }
+
+    componentWillMount () {
+      const { location } = this.props
+      // const { match } = this.props
+      var lastElementPath = "/" + location.pathname.split( '/' ).pop();
+      this.setState({value: lastElementPath})
+      // console.log(match);
+      // console.log(location);
+      // console.log(lastElementPath);
+    }
 
     render() {
     // match  and location are passed by the Router
     // match contains the url parameters
-    const { location } = this.props
-    const { match } = this.props
-    // console.log(match);
-    // console.log(location);
+
       return (
         <Tabs
             className={ styles.tabs }
-            value={this.props.history.location.pathname}
+            value={this.state.value}
             onChange={this.handleCallToRouter}
             >
             <Tab
             icon={<ActionHome />}
             label="Home"
-            value="/"
+            value="/web"
             >
             {/* {logMsg('Tab Home')} */}
             </Tab>
