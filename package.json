@@ -39,5 +39,14 @@
     "eject": "react-scripts eject",
     "watch": "node scripts/watch.js",
     "build-ui": "node scripts/build-ui.js"
+  },
+  "devDependencies": {
+    "eslint": "^4.10.0",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-node": "^5.2.1",
+    "eslint-plugin-promise": "^3.6.0",
+    "eslint-plugin-react": "^7.4.0",
+    "eslint-plugin-standard": "^3.0.1"
   }
 }

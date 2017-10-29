@@ -72,14 +72,14 @@
   /* margin-left: 60px; */
   font-size: 14px !important;
   padding: 10px 5px 10px 5px !important;
-  text-align: right !important;
+  /* text-align: right !important; */
 }
 
 .listiteminfotextamount {
   /* margin-left: 60px; */
   font-size: 14px !important;
   padding: 10px 5px 10px 5px !important;
-  text-align: right !important;
+  /* text-align: right !important; */
 }
 
 .listiteminfotextavatarrow {
@@ -153,4 +153,10 @@
 
 .newtranch {
   background: rgba(255, 175, 0, 0.125); /*rgba(68, 51, 0, 0.15);*/
+}
+
+.columnheight {
+  max-height: 500px;
+  overflow: auto;
+  flex: 1 0 0;
 }

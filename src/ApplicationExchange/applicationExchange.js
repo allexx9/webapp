@@ -24,6 +24,8 @@ import IconButton from 'material-ui/IconButton';
 import Subheader from 'material-ui/Subheader';
 import StarBorder from 'material-ui/svg-icons/toggle/star-border';
 
+import { Grid, Row, Col } from 'react-flexbox-grid';
+
 // import getMuiTheme from 'material-ui/styles/getMuiTheme';
 // import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 
@@ -111,12 +113,16 @@ export default class ApplicationExchange extends Component {
     }
 
     return (
-      <div className={ styles.body } style={ bgstyle }>
-        { this.renderModals() }
-        <ActionsExchange
-          gabBalance={ gabBalance }
-          onAction={ this.onAction } />
-      </div>
+      // <div className={ styles.body } style={ bgstyle }>
+        <Row>
+          <Col xs={12}>       
+            { this.renderModals() }
+            <ActionsExchange
+              gabBalance={ gabBalance }
+              onAction={ this.onAction } />
+          </Col>
+        </Row>
+      // </div>
     );
   }
 /*

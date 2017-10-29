@@ -9,7 +9,7 @@ import EventOrderMatched from './EventOrderMatched';
 import EventOrderCancelled from './EventOrderCancelled';
 import EventDealFinalized from './EventDealFinalized';
 
-import { Container, Row, Col } from 'react-grid-system';
+import { Grid, Row, Col } from 'react-flexbox-grid';
 
 import styles from './events.module.css';
 
@@ -60,85 +60,50 @@ export default class EventsExchange extends Component {
 
   render () {
     return (
-    //   <div className={ styles.events }>
-    //     <div className={ styles.container }>
-    //       <table className={ styles.list }>
-    //         <tbody>
-    //           { this.renderEvents() }
-    //         </tbody>
-    //       </table>
-    //     </div>
-    //   </div>
-    // <div>
-    // <Container fluid>
-    //   <Container fluid>
-    //     <Row>
-    //       <Col lg={6}>
-    //       <h2>Withdraws and Deposits</h2>
-    //       { this.renderEvents(['Deposit', 'Withdraw']) }
-    //       </Col>
-    //       <Col lg={6}>
-    //       <h2>Cancelled Orders</h2>
-    //       { this.renderEvents(['OrderCancelled']) }
-    //       </Col>
-    //     </Row>
-    //   </Container>
-    //   <Container fluid>
-    //     <Row>
-    //       <Col>
-    //       <h2>Placed Orders</h2>
-    //       { this.renderEvents(['OrderPlaced']) }
-    //       </Col>
-    //       <h2>Matched Orders</h2>
-    //       <Col>
-    //       { this.renderEvents(['OrderMatched']) }
-    //       </Col>
-    //     </Row>
-    //   </Container>
-    // </Container>
-    <Container fluid>
     <Row>
-      <Col xl={6}>
-      <h3>Withdraws and Deposits</h3>
-      <Table>
-        <TableBody> 
-        { this.renderEvents(['Deposit', 'Withdraw']) }
-        {/* </div> */}
-        </TableBody>
-      </Table>
-      </Col>
-      <Col xl={6}>
-      <h3>Cancelled Orders</h3>
-      <Table>
-        <TableBody> 
-        { this.renderEvents(['OrderCancelled']) }
-        {/* </div> */}
-        </TableBody>
-      </Table>
+      <Col xs={12}>
+        <Row>
+          <Col xs={6} className={styles.columnheight}>
+            <h3>Withdraws and Deposits OK</h3>
+            <Table>
+              <TableBody> 
+              { this.renderEvents(['Deposit', 'Withdraw']) }
+              {/* </div> */}
+              </TableBody>
+            </Table>
+          </Col>
+          <Col xs={6} className={styles.columnheight}>
+            <h3>Cancelled Orders</h3>
+            <Table>
+              <TableBody> 
+              { this.renderEvents(['OrderCancelled']) }
+              {/* </div> */}
+              </TableBody>
+            </Table>
+          </Col>
+        </Row>
+        <Row>
+          <Col xs={6} className={styles.columnheight}>
+            <h3>Placed Placed</h3>
+            <Table>
+              <TableBody> 
+              { this.renderEvents(['OrderPlaced']) }
+              {/* </div> */}
+              </TableBody>
+            </Table>
+          </Col>
+          <Col xs={6} className={styles.columnheight}>
+            <h3>Matched Orders</h3>
+            <Table>
+              <TableBody> 
+              { this.renderEvents(['OrderMatched']) }
+              {/* </div> */}
+              </TableBody>
+            </Table>
+          </Col>
+        </Row>
       </Col>
     </Row>
-    <Row>
-      <Col xl={6}>
-      <h3>Placed Placed</h3>
-      <Table>
-        <TableBody> 
-        { this.renderEvents(['OrderPlaced']) }
-        {/* </div> */}
-        </TableBody>
-      </Table>
-      </Col>
-      <Col xl={6}>
-      <h3>Matched Orders</h3>
-      <Table>
-        <TableBody> 
-        { this.renderEvents(['OrderMatched']) }
-        {/* </div> */}
-        </TableBody>
-      </Table>
-      </Col>
-    </Row>
-  </Container>
-    
     );
   }
 
@@ -239,7 +204,7 @@ export default class EventsExchange extends Component {
     const options = {
       fromBlock: 0,
       toBlock: 'pending',
-      limit: 10  //how many transactions to filter
+      limit: 100  //how many transactions to filter
     };
 
     contract.subscribe(null, options, (error, _logs) => {

@@ -12,7 +12,7 @@ import Accounts from '../Accounts';
 // import { EventsExchange, EventsOrdersPlaced, EventsOrdersCancelled, EventsMatched, EventsFinalized } from '../EventsExchange';
 import { EventsExchange } from '../EventsExchange';
 
-import { Container, Row, Col } from 'react-grid-system';
+// import { Container, Row, Col } from 'react-grid-system';
 
 import styles from './application.module.css';
 import bgimage from '../assets/images/blockchainLight.jpg';
@@ -23,6 +23,8 @@ import React, { Component } from 'react';
 // React.PropTypes is deprecated since React 15.5.0, use the npm module prop-types instead
 import PropTypes from 'prop-types';
 import {GridList, GridTile} from 'material-ui/GridList';
+
+import { Grid, Row, Col } from 'react-flexbox-grid';
 
 // import getMuiTheme from 'material-ui/styles/getMuiTheme';
 // import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
@@ -121,10 +123,13 @@ export default class ApplicationExchangeEventful extends Component {
           <EventsFinalized
             accountsInfo = { accountsInfo } />
         </GridList> */}
-        <Container>
-          <EventsExchange
-              accountsInfo = { accountsInfo } />
-        </Container>
+        <Row>
+          <Col xs={12}>       
+            <EventsExchange
+                accountsInfo = { accountsInfo } />
+          </Col>
+        </Row>
+
       </div>
     );
   }

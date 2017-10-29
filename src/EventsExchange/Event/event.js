@@ -4,7 +4,7 @@ import IdentityIcon from '../../IdentityIcon';
 import { formatCoins, formatEth, formatHash } from '../../format';
 
 import styles from '../events.module.css';
-import { Container, Row, Col } from 'react-grid-system';
+import { Grid, Row, Col } from 'react-flexbox-grid';
 
 import moment from 'moment';
 import React, { Component } from 'react';
@@ -74,17 +74,16 @@ export default class Event extends Component {
         // </TableRow>
         // </span>
         <TableRow>
-        <TableRowColumn colSpan={3} className={styles.listiteminfotextavatarrow}>
-        <Container fluid>
-        <Row>
-            <Col className={styles.listiteminfotext}>{ this.renderTimestamp(block) }</Col>
-            <Col className={styles.listiteminfotexttype}>{ this.renderType(type) }</Col>
-            <Col className={styles.listiteminfotextamount}>{ this.renderEthValue(ethvalue) } ETH</Col>
+        <TableRowColumn colSpan={3}>
+          <Row>
+            <Col md={4} xs={12} className={styles.listiteminfotext}>{ this.renderTimestamp(block) }</Col>
+            <Col md={4} xs={12} className={styles.listiteminfotexttype}>{ this.renderType(type) }</Col>
+            <Col md={4} xs={12} className={styles.listiteminfotextamount}>{ this.renderEthValue(ethvalue) } ETH</Col>
           </Row>
           <Row>
-            <Col className={styles.listiteminfotextavatar}>{ this.renderAddress(fromAddress) } { this.renderAddress(toAddress) }</Col>
+            <Col xs={12} md={6}>{ this.renderAddress(fromAddress) }</Col>
+            <Col xs={12} md={6}>{ this.renderAddress(toAddress) }</Col>
           </Row>
-        </Container>
         </TableRowColumn>
         </TableRow>
 
@@ -134,13 +133,13 @@ export default class Event extends Component {
     return (
         <List>
           <ListItem
+            primaryText={ this.renderAddressName(address) }
             disabled={true}
             leftAvatar={
               <Avatar size={30} src={ api.util.createIdentityImg(address, 4) } />
             }
           className={styles.listitemavatartext}
           >
-          { this.renderAddressName(address) }
           </ListItem>
         </List>
     );
