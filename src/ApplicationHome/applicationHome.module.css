@@ -11,6 +11,16 @@
   height: 100%;
 }
 
+.shadow {
+  box-shadow: -60px 0px 40px -90px #000000, 60px 0px 40px -90px #000000 !important;
+}
+
+@supports (-webkit-appearance:none) {
+  .shadow {  
+    box-shadow: -60px 0px 90px -90px #000000, 60px 0px 90px -90px #000000 !important;
+  }
+} 
+
 .headline {
   font-size: 24;
   padding-top: 16;

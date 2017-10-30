@@ -85,7 +85,8 @@ export default class ApplicationHome extends Component {
     return (
       <div className={ styles.body } style={ bgstyle }>
       <Row>
-        <Col xs={12} className={ styles.body }>
+        <Col xs={12} >
+        <div className={ styles.shadow }>
           <Row>
             <Col xs={12}>
             <h1 className={styles.headline}>RigoBlock: Decentralized Pools of Digital Tokens </h1>
@@ -149,6 +150,7 @@ export default class ApplicationHome extends Component {
               </Paper>
             </Col>
           </Row>
+        </div>
         </Col>
         </Row>
       

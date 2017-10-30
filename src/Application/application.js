@@ -26,10 +26,12 @@ import ApplicationHome from '../ApplicationHome';
 
 import ApplicationTabsMenu from './ApplicationTabsMenu';
 import ApplicationBottomBar from './ApplicationBottomBar';
+import ApplicationTopBar from './ApplicationTopBar';
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
+import Paper from 'material-ui/Paper';
 import { Grid, Row, Col } from 'react-flexbox-grid';
 
 import styles from './application.module.css';
@@ -48,18 +50,17 @@ const muiTheme = getMuiTheme(lightBaseTheme);
 // Flex box grid system: https://github.com/roylee0704/react-flexbox-grid
 const TemplateLayout = ({children}) =>
 (
-    <MuiThemeProvider>
+
       <Grid fluid className={styles.maincontainer}>
         <Row>
           <Col xs={12}>
-            <ApplicationTabsMenu />
+            {/* <ApplicationTabsMenu /> */}
+            <ApplicationTopBar />
           </Col>
         </Row>
         <Row className={classNames(styles.content)}>
           <Col xs={12}>
-            <div>
             {children}
-            </div>
           </Col>
         </Row>
         <Row>
@@ -68,7 +69,7 @@ const TemplateLayout = ({children}) =>
           </Col>
         </Row>
       </Grid>
-    </MuiThemeProvider>
+
 )
 
 export class Whoops404 extends Component {
