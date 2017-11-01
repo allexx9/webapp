@@ -95,7 +95,7 @@ export default class ApplicationHome extends Component {
             <p>&nbsp;</p>
             </Col>
           </Row>
-          <Row>
+          <Row className={ styles.cards }>
             <Col xs={4}>
               <Card className={ styles.column }>
                 <CardTitle title="RigoBlock Vault" className={ styles.cardtitle } titleColor="white"/>

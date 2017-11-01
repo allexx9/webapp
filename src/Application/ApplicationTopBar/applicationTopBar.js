@@ -17,6 +17,8 @@ import DropDownMenu from 'material-ui/DropDownMenu';
 import RaisedButton from 'material-ui/RaisedButton';
 import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
 
+import NavLinks from '../../elements/topBarLinksMenu';
+
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 
@@ -27,64 +29,6 @@ function handleTouchTap() {
 }
 function logMsg(message) {
     console.log(message);
-  }
-
-
-
-class NavLinks extends Component {
-    constructor(props) {
-      super(props)
-
-    }
-
-    state = {
-        // value: this.props.location.pathname
-        // value: "/vault"
-    }
-
-    handleCallToRouter = (value) => {
-        this.props.history.push(value);
-        // console.log(this.props.location.pathname);
-        // var lastElementPath = this.props.location.pathname.split( '/' ).pop();
-        // console.log(lastElementPath);
-      }
-
-    componentWillMount () {
-      const { location } = this.props
-      // const { match } = this.props
-      var lastElementPath = "/" + location.pathname.split( '/' ).pop();
-      this.setState({value: lastElementPath})
-      // console.log(match);
-      // console.log(location);
-      // console.log(lastElementPath);
-    }
-
-    render() {
-    // match  and location are passed by the Router
-    // match contains the url parameters
-
-      return (
-        <ToolbarGroup>
-          {/* <ToolbarSeparator /> */}
-          <FlatButton label="Home" containerElement={<Link to="/web"/>} disableTouchRipple={true} 
-            hoverColor="rgb(0, 188, 212)" className={styles.topbarbuttons}
-            icon={<ActionHome color="white"/>}
-            />
-          <FlatButton label="Vault" containerElement={<Link to="/vault" />} disableTouchRipple={true} 
-            hoverColor="rgb(0, 188, 212)" className={styles.topbarbuttons}
-            icon={<ActionLightBulb color="white"/>}
-            />
-          <FlatButton label="Drago" containerElement={<Link to="/drago" />} disableTouchRipple={true} 
-            hoverColor="rgb(0, 188, 212)" className={styles.topbarbuttons}
-            icon={<ActionShowChart color="white"/>}
-            />
-          <FlatButton label="Exchange" containerElement={<Link to="/exchange" />} disableTouchRipple={true} 
-            hoverColor="rgb(0, 188, 212)" className={styles.topbarbuttons}
-            icon={<ActionPolymer color="white"/>}
-            />
-        </ToolbarGroup>
-      )
-    }
   }
 
 
