@@ -248,6 +248,79 @@ export default class ApplicationDragoFactory extends Component {
       });
   }
 
+  // attachInterface = () => {
+  //   const { api } = this.context;
+  //   api.parity
+  //     .registryAddress()
+  //     .then((registryAddress) => {
+  //       console.log(`the registry was found at ${registryAddress}`);
+
+  //       const registry = api.newContract(abis.registry, registryAddress).instance;
+
+  //       return Promise
+  //         .all([
+  //           registry.getAddress.call({}, [api.util.sha3('dragofactory'), 'A']),
+  //           this.getAccounts()
+  //         ]);
+  //     })
+  //     .then(([address, accountsInfo]) => {
+  //       console.log(`drago factory was found at ${address}`);
+
+  //       const contract = api.newContract(abis.dragofactory, address);
+
+  //       this.setState({
+  //         loading: false,
+  //         address,
+  //         contract,
+  //         accountsInfo,
+  //         instance: contract.instance,
+  //         accounts: Object
+  //           .keys(accountsInfo)
+  //           .map((address) => {
+  //             const info = accountsInfo[address] || {};
+
+  //             return {
+  //               address,
+  //               name: info.name
+  //             };
+  //           })
+  //       });
+
+  //       // Getting the accounts balances. The AccountSelector will need this information.
+  //       // I have moved this code here from the onNewBlockNumber function.
+  //       const { accounts } = this.state;
+  //       const gabQueries = accounts.map((account) => api.eth.getBalance(account.address));
+  //       const ethQueries = accounts.map((account) => api.eth.getBalance(account.address));
+
+  //       Promise.all([
+  //         Promise.all(gabQueries),
+  //         Promise.all(ethQueries)
+  //       ]).then(([gabBalances, ethBalances]) => {
+  //         this.setState({
+  //           ethBalance: ethBalances.reduce((total, balance) => total.add(balance), new BigNumber(0)),
+  //           gabBalance: gabBalances.reduce((total, balance) => total.add(balance), new BigNumber(0)),
+  //           accounts: accounts.map((account, index) => {
+  //             const ethBalance = ethBalances[index];
+  //             const gabBalance = gabBalances[index];
+  
+  //             account.ethBalance = api.util.fromWei(ethBalance).toFormat(3);
+  //             account.gabBalance = gabBalance.div(DIVISOR).toFormat(6);
+  //             account.hasGab = gabBalance.gt(0);
+  
+  //             return account;
+  //           })
+  //         });
+  //       });
+  //       console.log(`Accounts: ${accounts}`);
+        
+  //       // Removed unnecessary connections to the RPC server.
+  //       // api.subscribe('eth_blockNumber', this.onNewBlockNumber);
+  //     })
+  //     .catch((error) => {
+  //       console.warn('attachInterface', error);
+  //     });
+  // }
+
   attachInterface = () => {
     const { api } = this.context;
     api.parity
@@ -260,31 +333,29 @@ export default class ApplicationDragoFactory extends Component {
         return Promise
           .all([
             registry.getAddress.call({}, [api.util.sha3('dragofactory'), 'A']),
-            this.getAccounts()
+            // this.getAccounts()
           ]);
       })
-      .then(([address, accountsInfo]) => {
+      .then(([address]) => {
         console.log(`drago factory was found at ${address}`);
 
         const contract = api.newContract(abis.dragofactory, address);
-
+        var testAccount = [
+          {
+              address : '0x00a79Fa87cFb12A05205CaEa3870C1A9C322ae5C',
+              name: 'DAVID2',
+              ethBalance : '11.166'
+          }
+        ]
         this.setState({
           loading: false,
           address,
           contract,
-          accountsInfo,
+          // accountsInfo,
           instance: contract.instance,
-          accounts: Object
-            .keys(accountsInfo)
-            .map((address) => {
-              const info = accountsInfo[address] || {};
-
-              return {
-                address,
-                name: info.name
-              };
-            })
+          accounts: testAccount
         });
+
 
         // Getting the accounts balances. The AccountSelector will need this information.
         // I have moved this code here from the onNewBlockNumber function.
@@ -320,4 +391,5 @@ export default class ApplicationDragoFactory extends Component {
         console.warn('attachInterface', error);
       });
   }
+
 }

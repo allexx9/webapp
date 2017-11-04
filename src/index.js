@@ -51,6 +51,8 @@ ReactDOM.render(
         <Switch>
           <Route exact path={ "/app/" + appHashPath + "" } component={ApplicationHomePage} />
           <Route path={ "/app/" + appHashPath + "/vault" } component={ApplicationGabcoinPage} />
+          {/* <Route exact path={ "/app/" + appHashPath + "/drago/dashboard" } component={ApplicationDragoPage} /> */}
+          {/* <Route exact path={ "/app/" + appHashPath + "/drago/funds" } component={ApplicationDragoPage} /> */}
           <Route path={ "/app/" + appHashPath + "/drago" } component={ApplicationDragoPage} />
           <Route path={ "/app/" + appHashPath + "/exchange" } component={ApplicationExchangePage} />
           <Redirect from="/exchange" to={ "/app/" + appHashPath + "/exchange" } /> 
@@ -63,3 +65,8 @@ ReactDOM.render(
     document.getElementById('root'))
 
 registerServiceWorker()
+
+// Hot Module Reload
+if (module.hot) {
+    module.hot.accept();
+}

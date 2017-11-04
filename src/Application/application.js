@@ -1,46 +1,43 @@
 // Copyright 2016-2017 Gabriele Rigo
 import { api } from '../parity';
 
-
-// import styles from './application.module.css';
-
 import React, { Component } from 'react';
 
 // React.PropTypes is deprecated since React 15.5.0, use the npm module prop-types instead
 import PropTypes from 'prop-types';
 
-// import { Tabs, Tab } from 'material-ui/Tabs';
-// import FontIcon from 'material-ui/FontIcon';
-// import ActionLightBulb from 'material-ui/svg-icons/action/lightbulb-outline';
-// import ActionHome from 'material-ui/svg-icons/action/home';
-// import ActionPolymer from 'material-ui/svg-icons/action/polymer';
-
 import ApplicationGabcoin from '../ApplicationGabcoin';
 import ApplicationGabcoinEventful from '../ApplicationGabcoinEventful';
 import ApplicationExchange from '../ApplicationExchange';
 import ApplicationExchangeEventful from '../ApplicationExchangeEventful';
-import ApplicationDrago from '../ApplicationDrago';
-import ApplicationDragoEventful from '../ApplicationDragoEventful';
+import ApplicationDragoHome from '../ApplicationDragoHome';
 // import ApplicationDragoFactory from '../ApplicationDragoFactory';
 import ApplicationHome from '../ApplicationHome';
 
-import ApplicationTabsMenu from './ApplicationTabsMenu';
 import ApplicationBottomBar from './ApplicationBottomBar';
 import ApplicationTopBar from './ApplicationTopBar';
 
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
-import Paper from 'material-ui/Paper';
 import { Grid, Row, Col } from 'react-flexbox-grid';
 
 import styles from './application.module.css';
 import classNames from 'classnames';
 
+import * as Colors from 'material-ui/styles/colors';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+
 // Router
 // import { Link, Route, withRouter } from 'react-router-dom'
 
-const muiTheme = getMuiTheme(lightBaseTheme);
+// const muiTheme = getMuiTheme(lightBaseTheme);
+
+const muiTheme = getMuiTheme({
+  palette: {
+    "primary1Color": "#2196f3",
+
+  }
+});
 
 // function logMsg(message) {
 //   console.log(message);
@@ -73,9 +70,9 @@ const TemplateLayout = ({children}) =>
 )
 
 export class Whoops404 extends Component {
-  constructor(props) {
-    super(props)
-  }
+  // constructor(props) {
+  //   super(props)
+  // }
 
   render() {
   // we access the props passed to the component
@@ -92,10 +89,6 @@ export class Whoops404 extends Component {
 }
 
 export class ApplicationHomePage extends Component {
-  constructor(props) {
-    super(props)
-
-  }
 
   // We define the properties of the context variables passed down to the children
   static childContextTypes = {
@@ -113,21 +106,16 @@ export class ApplicationHomePage extends Component {
 
   render() {
   // we access the props passed to the component
-  const { location } = this.props
   // console.log(location);
     return (
-        <TemplateLayout>
-          <ApplicationHome></ApplicationHome>
-        </TemplateLayout>
+      <TemplateLayout>
+          <ApplicationHome />
+      </TemplateLayout>
     )
   }
 }
 
 export class ApplicationGabcoinPage extends Component {
-  constructor(props) {
-    super(props)
-
-  }
 
     // We define the properties of the context variables passed down to the children
     static childContextTypes = {
@@ -158,10 +146,6 @@ export class ApplicationGabcoinPage extends Component {
 }
 
 export class ApplicationDragoPage extends Component {
-  constructor(props) {
-    super(props)
-
-  }
 
   // We define the properties of the context variables passed down to the children
   static childContextTypes = {
@@ -177,25 +161,56 @@ export class ApplicationDragoPage extends Component {
     };
   }
 
+  // Callback function to handle account type selection in the Top Bar
+  // value = 1 = Trader
+  // value = 2 = Manager
+  handleTopBarSelectAccountType = (event, index, value) => { 
+    const accountType = {
+      false: false,
+      true: true
+    }
+    this.setState({
+      isManager: accountType[value],
+    }); 
+  };
+
+  static PropTypes = {
+    location: PropTypes.object.isRequired,
+  };
+
+  state = {
+    isManager: false,
+  }
+
   render() {
-  // we access the props passed to the component
+  // console.log(location);
   const { location } = this.props
-  console.log(location);
     return (
-          <TemplateLayout>
-          <ApplicationDrago />
-          <ApplicationDragoEventful />
-          {/* <p>Locaton is {location.pathname}</p> */}
-          </TemplateLayout>
+      <MuiThemeProvider muiTheme={muiTheme}>
+        <Grid fluid className={styles.maincontainer}>
+          <Row>
+            <Col xs={12}>
+              {/* <ApplicationTabsMenu /> */}
+              <ApplicationTopBar handleTopBarSelectAccountType={ this.handleTopBarSelectAccountType } isManager={this.state.isManager} />
+            </Col>
+          </Row>
+          <Row className={classNames(styles.content)}>
+            <Col xs={12}>
+            <ApplicationDragoHome isManager={this.state.isManager} location={location}/>
+            </Col>
+          </Row>
+          <Row>
+            <Col xs={12} className={classNames(styles.bottombar)}>
+              <ApplicationBottomBar />
+            </Col>
+          </Row>
+        </Grid>
+      </MuiThemeProvider>
     )
   }
 }
 
 export class ApplicationExchangePage extends Component {
-  constructor(props) {
-    super(props)
-
-  }
 
   // We define the properties of the context variables passed down to the children
   static childContextTypes = {

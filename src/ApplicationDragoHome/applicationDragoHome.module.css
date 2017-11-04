@@ -1,0 +1,32 @@
+/* Copyright 2016 Gabriele Rigo */
+
+.body {
+  background-size: cover;
+  background-repeat: no-repeat;
+  width: 100%;
+}
+
+
+/* applicationDragoHome */
+
+.maincontainer {
+  height: 100%
+}
+
+
+/* pageDashboardDragoTrade */
+
+.transactionsStyle {
+  height: 100%;
+  width: 100%;
+  margin: 20px;
+  display: 'inline-block';
+}
+
+
+/* eventTransactions */
+
+.transactionsDivider {
+  padding-top: 5px !important;
+  padding-bottom: 5px !important;
+}

@@ -59,22 +59,22 @@ export default class EventsDrago extends Component {
   render () {
     return (
       <div className={ styles.events }>
-      <div className={ styles.container }>
-      <h1>New Drago</h1>
-        <table className={ styles.list }>
-          <tbody>
-            { this.renderEvents(['DragoCreated']) }
-          </tbody>
-        </table>
-        <br />
-        <h1>Drago Transactions</h1>
-        <table className={ styles.list }>
-          <tbody>
-            { this.renderEvents(['BuyDrago', 'SellDrago']) }
-          </tbody>
-        </table>
+        <div className={ styles.container }>
+        <h1>New Drago</h1>
+          <table className={ styles.list }>
+            <tbody>
+              { this.renderEvents(['DragoCreated']) }
+            </tbody>
+          </table>
+          <br />
+          <h1>Drago Transactions</h1>
+          <table className={ styles.list }>
+            <tbody>
+              { this.renderEvents(['BuyDrago', 'SellDrago']) }
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
     );
   }
 

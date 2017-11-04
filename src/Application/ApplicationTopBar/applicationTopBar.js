@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Link, Route, withRouter } from 'react-router-dom'
 import AppBar from 'material-ui/AppBar';
 import NavigationClose from 'material-ui/svg-icons/navigation/close';
@@ -17,7 +18,7 @@ import DropDownMenu from 'material-ui/DropDownMenu';
 import RaisedButton from 'material-ui/RaisedButton';
 import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
 
-import NavLinks from '../../elements/topBarLinksMenu';
+import NavLinks from '../../elements/topBarMenuLinks';
 
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
@@ -39,40 +40,23 @@ class ApplicationTopBar extends Component {
 
     }
 
+    static PropTypes = {
+      location: PropTypes.object.isRequired,
+      handleTopBarSelectAccountType: PropTypes.object.isRequired,
+    };
+
     state = {
         // value: this.props.location.pathname
         // value: "/vault"
     }
-
-    handleCallToRouter = (value) => {
-        this.props.history.push(value);
-        // console.log(this.props.location.pathname);
-        // var lastElementPath = this.props.location.pathname.split( '/' ).pop();
-        // console.log(lastElementPath);
-      }
-
-    handleChange = (event, index, value) => this.setState({value});
-
-    componentWillMount () {
-    // match and location are passed by the Router
-    // match contains the url parameters
-      const { location } = this.props
-      // const { match } = this.props
-      var lastElementPath = "/" + location.pathname.split( '/' ).pop();
-      this.setState({value: lastElementPath})
-      // console.log(match);
-      // console.log(location);
-      // console.log(lastElementPath);
-    }
-
     
     render() {
-      const { location } = this.props
+      const { location, handleTopBarSelectAccountType, isManager } = this.props
       return (
         <AppBar
           title="RigoBlock"
           showMenuIconButton={false}
-          iconElementRight={<NavLinks location={location}/>}
+          iconElementRight={<NavLinks location={location} handleTopBarSelectAccountType={ handleTopBarSelectAccountType } isManager={isManager}/>}
         />  
       )
     }

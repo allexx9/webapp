@@ -43,7 +43,7 @@
 }
 
 .cardtitle {
-  background-color: rgb(0, 188, 212);
+  background-color: rgb(33, 150, 243);
   color: white !important;
 }
 
@@ -61,7 +61,7 @@
 }
 
 .exchangebutton button {
-  background-color: #00BCD4 !important;
+  background-color: rgb(33, 150, 243) !important;
   height: 56px !important;
   padding: 0 10px !important;
 }
