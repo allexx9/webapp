@@ -28,8 +28,6 @@ class applicationDragoTrader extends Component {
 
     render() {
       const { ethBalance, location, blockNumber, accounts, match, allEvents, accountsInfo } = this.props;
-      // const section = utils.pathLast(location);
-      // console.log(this.props)
       return (
         <Switch>
           <Route path={match.path+"/dashboard"} 
@@ -41,53 +39,19 @@ class applicationDragoTrader extends Component {
                 accountsInfo={accountsInfo} />
               } 
           />
-          <Route path={match.path+"/funds"}
+          <Route path={match.path+"/pools"}
             render={(props) => <PageFundsDragoTrader {...props}               
             blockNumber={blockNumber}
             accounts={accounts}
-            ethBalance={ethBalance} />
+            ethBalance={ethBalance} 
+            allEvents={allEvents}
+            accountsInfo={accountsInfo}
+            />
           } 
           />
+          <Redirect from={match.path} to={match.path+"/dashboard"}  />
         </Switch>
       );
-    //   switch (section) {
-    //   case 'dashboard':
-    //   return (
-    //     <Row>
-    //       <Col xs={12}>
-    //       <PageProfileDragoTrader 
-    //         location={location}
-    //         blockNumber={blockNumber}
-    //         accounts={accounts}
-    //         ethBalance={ethBalance}
-    //       />
-    //       </Col>
-    //     </Row>
-    //   );
-    //   return (
-    //     <Row>
-    //       <Col xs={12}>
-    //         <h1>Funds</h1>
-    //       </Col>
-    //     </Row>
-    //   );
-    //   /*case 'Transfer':
-    //     return (
-    //       <ActionTransfer
-    //         accounts={ accounts }
-    //         onClose={ this.onActionClose } />
-    //     );*/
-    //   default:
-    //     return null;
-    // }
-
-      // return (
-      //   <Row>
-      //     <Col xs={12}>
-      //       <h1></h1>
-      //     </Col>
-      //   </Row>
-      // )
     }
   }
 

@@ -14,7 +14,7 @@ let lastSelectedAccount = {};
 
 export default class AccountSelect extends Component {
   static propTypes = {
-    accounts: PropTypes.array,
+    accounts: PropTypes.array.isRequired,
     account: PropTypes.object,
     anyAccount: PropTypes.bool,
     gabBalance: PropTypes.bool,
@@ -30,7 +30,7 @@ export default class AccountSelect extends Component {
 
   render () {
     const { account, accounts, anyAccount, errorText, floatingLabelText, gabBalance, hintText } = this.props;
-
+    console.log(this.props)
     return (
       <SelectField
         autoComplete='off'
@@ -68,7 +68,7 @@ export function renderAccounts (accounts, options = {}) {
       if (options.anyAccount) {
         return true;
       }
-
+      console.log(account)
       return isPositive(account[options.gabBalance ? 'gabBalance' : 'ethBalance']);
     })
     .map((account) => {

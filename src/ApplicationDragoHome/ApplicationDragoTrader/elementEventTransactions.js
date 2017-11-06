@@ -54,7 +54,6 @@ export default class ElementEventTransactions extends Component {
     const { event, fromAddress, toAddress, price, value, ethvalue, dragoname, dragosymbol, dragoAddress } = this.props;
     const { block } = this.state;
     const { state, type } = event;
-    console.log(styles.transactionsDivider)
     return (
       <Grid fluid>
       <Row>

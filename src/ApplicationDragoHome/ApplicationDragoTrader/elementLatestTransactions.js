@@ -28,6 +28,7 @@ import Divider from 'material-ui/Divider';
 
 import ElementEventTransactions from './elementEventTransactions';
 
+
 import styles from '../applicationDragoHome.module.css';
 
 

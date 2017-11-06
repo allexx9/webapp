@@ -28,6 +28,15 @@
   width: 200% !important;
 }
 
+.activeLink {
+  font-weight: 900 !important;
+  color: red !important;
+}
+
+a.selected {
+  color: red !important;
+}
+
 
 @media screen and (max-width: 480px) {
   .responsiveLinks {

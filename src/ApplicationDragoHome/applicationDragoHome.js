@@ -22,10 +22,20 @@ export default class ApplicationDragoHome extends Component {
 
   // Checking the type of the context variable that we receive by the parent
   static contextTypes = {
-    api: PropTypes.object.isRequired,
-    muiTheme: PropTypes.object.isRequired
+    api: PropTypes.object.isRequired
+  };
+
+  static childContextTypes = {
+    contract: PropTypes.object
   };
   
+  getChildContext () {   
+    const {contract} = this.state 
+    return {
+      contract,
+    };
+  }
+
   static PropTypes = {
     location: PropTypes.object.isRequired,
   };
@@ -66,7 +76,7 @@ export default class ApplicationDragoHome extends Component {
 
     if (isManager) {
       return (
-        <Loading />
+        <h1>Manager</h1>
       );
     }
 
@@ -91,9 +101,6 @@ export default class ApplicationDragoHome extends Component {
       );
     }
   }
-
-//the following function should be used in drago status application, user has to select her own drago
-//think about creating component FindDragoFromNameSymbol  and then use it in the different parts of the dapp
 
   onNewBlockNumber = (_error, blockNumber) => {
     const { accounts } = this.state;
@@ -130,6 +137,7 @@ export default class ApplicationDragoHome extends Component {
           })
         });
         console.log(this.state.ethBalance);
+        console.log(this.state.accounts);
       })
       .catch((error) => {
         console.warn('onNewBlockNumber', error);
@@ -193,13 +201,11 @@ export default class ApplicationDragoHome extends Component {
               return {
                 address,
                 name: info.name,
-                source: "parity"
+                source: "parity",
+                ethBalance: "0"
               };
             })
         });
-        console.log(contract);
-        // this.setupFilters();
-        // console.log(this.state.accounts)
         api.subscribe('eth_blockNumber', this.onNewBlockNumber)
         .then((subscriptionID) => {
           console.log(`applicationDragoHome: Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);

@@ -47,9 +47,7 @@ export default class ApplicationDrago extends Component {
   };
   
   // Passing down the context variables to the children
-  getChildContext () {
-
-    
+  getChildContext () {    
     return {
       
     };

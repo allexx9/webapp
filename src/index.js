@@ -38,13 +38,13 @@ var appHashPath = true;
 
 // console.log(location);
 var pathArray = window.location.hash.split( '/' );
-console.log(pathArray[2]);
+// console.log(pathArray[2]);
 if (typeof window.parity !== 'undefined') {
     appHashPath = pathArray[2];
     } else {
     appHashPath = 'web';
     }
-console.log(appHashPath);
+// console.log(appHashPath);
 
 ReactDOM.render(
     <HashRouter>

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Link, Route, withRouter } from 'react-router-dom';
+import { Link, Route, withRouter, NavLink } from 'react-router-dom';
 import {APP, DS} from '../utils/const.js'
 
 import styles from './elements.module.css';
@@ -17,12 +17,10 @@ import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
 import { Visible, Hidden } from 'react-grid-system'
 
 var drawerStyle = {
-  container: {
-      width: "100% !important"
-  },
-  menu: {
-    width: "200px !important"
-}
+  activeLink: {
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    color: 'black'
+   },
 };
 
 class LeftSideDrawer extends Component {
@@ -31,16 +29,12 @@ class LeftSideDrawer extends Component {
     super(props);
   }
 
-
-
-
   static PropTypes = {
       location: PropTypes.object.isRequired,
     };
 
-
-
-  componentWillMount () {
+    state = {
+      selectedItem: this.props.location.pathname
   }
 
 
@@ -51,6 +45,9 @@ class LeftSideDrawer extends Component {
   return path[2]
   }
 
+  setSelectedLink = (location) => {
+    return location.pathname.split( '/' ).pop()
+    }
 
   render() {
     var { location} = this.props
@@ -59,11 +56,16 @@ class LeftSideDrawer extends Component {
       <Drawer open={true}
       containerClassName={styles.containerleftDrawer} className={styles.leftDrawer}>
       <Hidden xs sm>
-        <Menu>
-          <MenuItem primaryText="Dashboard" leftIcon={<ActionAssessment />} 
-            containerElement={<Link to={DS+APP+DS+this.buildUrlPath(location)+DS+"drago"+DS+"dashboard"} />}/>
-          <MenuItem primaryText="Funds" leftIcon={<ActionShowChart />} 
-            containerElement={<Link to={DS+APP+DS+this.buildUrlPath(location)+DS+"drago"+DS+"funds"} />}/>
+        <Menu
+          selectedMenuItemStyle={ drawerStyle.activeLink }
+          value={this.setSelectedLink(location)}        
+          >
+          <MenuItem checked={true} primaryText="Dashboard" leftIcon={<ActionAssessment />} 
+            containerElement={<Link to={DS+APP+DS+this.buildUrlPath(location)+DS+"drago"+DS+"dashboard"} />}
+            value='dashboard'/>
+          <MenuItem primaryText="Pools" leftIcon={<ActionShowChart />} 
+            containerElement={<Link to={DS+APP+DS+this.buildUrlPath(location)+DS+"drago"+DS+"pools"} />}
+            value='pools' />
         </Menu>
       </Hidden>
       </Drawer>

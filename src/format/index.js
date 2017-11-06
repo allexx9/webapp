@@ -40,3 +40,16 @@ export function formatEth (eth, decimals = 2, api) {
 export function formatHash (hash) {
   return `${hash.substr(0, 10)}...${hash.substr(-8)}`;
 }
+
+export function toHex (str) {
+  if (str && str.toString) {
+    str = str.toString(16);
+  }
+
+  if (str && str.substr(0, 2) === '0x') {
+    return str.toLowerCase();
+  }
+
+  return `0x${(str || '').toLowerCase()}`;
+}
+

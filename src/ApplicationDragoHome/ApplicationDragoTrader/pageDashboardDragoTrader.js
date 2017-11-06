@@ -13,20 +13,15 @@ import IconButton from 'material-ui/IconButton';
 import { Grid, Row, Col } from 'react-flexbox-grid';
 import Avatar from 'material-ui/Avatar';
 import {List, ListItem} from 'material-ui/List';
-import { formatCoins, formatEth, formatHash } from '../../format';
-import moment from 'moment';
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 import Paper from 'material-ui/Paper';
 import IdentityIcon from '../../IdentityIcon';
+import Chip from 'material-ui/Chip';
 
-import EventBuyDrago from '../../EventsDrago/EventBuyDrago';
-import EventNewTranch from '../../EventsDrago/EventNewTranch';
-import EventRefund from '../../EventsDrago/EventRefund';
-import EventTransfer from '../../EventsDrago/EventTransfer';
-import EventDragoCreated from '../../EventsDrago/EventDragoCreated';
-import EventSellDrago from '../../EventsDrago/EventSellDrago';
 
 import ElementLatestTransactions from './elementLatestTransactions'
+import ElementTradeBox from './elementTradeBox'
+import ElementListTransactions from './elementListTransactions';
 
 import styles from '../applicationDragoHome.module.css';
 
@@ -48,60 +43,76 @@ class PageDashboardDragoTrader extends Component {
       accountsInfo: PropTypes.object.isRequired, 
     };
 
+    subTitle = (account) => {
+      return (
+        account.address
+      )     
+    }
+
     render() {
-      const subTitle = (account) => {
-        return (
-          account.address+" "+account.source
-        )     
-      }
 
       const { location, accounts, accountsInfo, allEvents } = this.props
+      console.log(accounts);
       const listAccounts = accounts.map((account) => {
         const { api } = this.context;
         return (
-          <Row key={account.address}>
+          <Row key={account.address} between="xs">
             <Col xs={12}>
               <Card>
-                <CardHeader
-                  title={account.name}
-                  subtitle={subTitle(account)}
-                  avatar={<IdentityIcon address={ account.address } />}
-                />
-                <CardText>
-                  ETH { account.ethBalance }
-                </CardText>
+                <Row between="xs">
+                  <Col xs >
+                    <CardHeader
+                      title={account.name}
+                      subtitle={this.subTitle(account)}
+                      subtitleStyle={{fontSize: 12}}
+                      avatar={<IdentityIcon address={ account.address } />}
+                    />
+                    <CardText>
+                      ETH { account.ethBalance }
+                    </CardText>
+                  </Col>
+                    <Col xs >
+                      <Chip className={styles.accountChip}>
+                      <Avatar size={32}>W</Avatar>
+                        {account.source}
+                      </Chip>
+                    </Col>
+                </Row>
               </Card>
             </Col>
           </Row>
-        )
-      }
+          )
+        }
       );
       return (
       <Row>
         <Col xs={12}>
           <Row>
             <Col xs={6}>
-              <h1>Accounts</h1>
+              <h2>Accounts</h2>
                 {listAccounts}
-            </Col>
-            <Col xs={6}>
-              <h1>Trade</h1>
-              <Paper zDepth={1}>
+                <h2>My Dragos</h2>
+                <Paper zDepth={1}>
                 <Row>
                   <Col className={styles.transactionsStyle} xs={12}>
-                        
+                    {/* <ElementTradeBox
+                      accounts={ accounts }
+                      /> */}
+
+                      <ElementListTransactions />
+
                   </Col>
                 </Row>
               </Paper>
             </Col>
-          </Row>
-          <Row>
-            <Col xs={12}>
-              <h1>Latest Transactions</h1>
-                <Paper zDepth={1}>
+            <Col xs={6}>
+              <h2>My Transactions</h2>
+
+              <Paper zDepth={1}>
                   <Row>
                     <Col className={styles.transactionsStyle} xs={12}>
-                      <ElementLatestTransactions accountsInfo={accountsInfo} allEvents={allEvents} /> 
+                      {/* <ElementLatestTransactions accountsInfo={accountsInfo} allEvents={allEvents} />  */}
+                      
                     </Col>
                   </Row>
                 </Paper>
