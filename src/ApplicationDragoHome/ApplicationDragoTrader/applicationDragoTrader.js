@@ -6,6 +6,7 @@ import {APP, DS} from '../../utils/const.js'
 import utils from '../../utils/utils.js'
 import PageDashboardDragoTrader from './pageDashboardDragoTrader'
 import PageFundsDragoTrader from './pageFundsDragoTrader'
+import PageFundDetailsDragoTrader from './pageFundDetailsDragoTrader'
 
 import {
   Switch,
@@ -23,6 +24,8 @@ class applicationDragoTrader extends Component {
       ethBalance: PropTypes.object.isRequired,
       accounts: PropTypes.object.isRequired,
       accountsInfo: PropTypes.object.isRequired,
+      location: PropTypes.object.isRequired,
+      match: PropTypes.object.isRequired,
     };
 
 
@@ -39,8 +42,18 @@ class applicationDragoTrader extends Component {
                 accountsInfo={accountsInfo} />
               } 
           />
-          <Route path={match.path+"/pools"}
+          <Route exact path={match.path+"/pools"}
             render={(props) => <PageFundsDragoTrader {...props}               
+            blockNumber={blockNumber}
+            accounts={accounts}
+            ethBalance={ethBalance} 
+            allEvents={allEvents}
+            accountsInfo={accountsInfo}
+            />
+          } 
+          />
+          <Route path={match.path+"/pools/:dragoid/:dragocode"}
+            render={(props) => <PageFundDetailsDragoTrader {...props}               
             blockNumber={blockNumber}
             accounts={accounts}
             ethBalance={ethBalance} 

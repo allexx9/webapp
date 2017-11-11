@@ -11,6 +11,12 @@
     "copy-webpack-plugin": "^4.1.1",
     "css-loader": "^0.28.7",
     "custom-react-scripts": "^0.2.0",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-node": "^5.2.1",
+    "eslint-plugin-promise": "^3.6.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "eslint-watch": "^3.1.3",
     "immutable": "^3.8.2",
     "jss": "^9.0.0",
     "lodash": "^4.17.0",
@@ -24,6 +30,7 @@
     "node-sass-chokidar": "^0.0.3",
     "prop-types": "^15.6.0",
     "react": "^16.0.0",
+    "react-copy-to-clipboard": "^5.0.1",
     "react-dom": "^16.0.0",
     "react-flexbox-grid": "^1.1.5",
     "react-grid-system": "^3.1.0",
@@ -43,5 +50,9 @@
     "eject": "react-scripts eject",
     "watch": "node scripts/watch.js",
     "build-ui": "node scripts/build-ui.js"
+  },
+  "devDependencies": {
+    "eslint": "^4.10.0",
+    "eslint-plugin-react": "^7.4.0"
   }
 }

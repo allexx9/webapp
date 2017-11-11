@@ -55,6 +55,11 @@ export default class ApplicationDragoHome extends Component {
     pendingEvents: [],
   }
 
+  componentWillMount () {
+    // this.attachInterface();
+    // this.setupFilters();
+  } 
+
   componentDidMount () {
     this.attachInterface();
     // this.setupFilters();
@@ -65,9 +70,19 @@ export default class ApplicationDragoHome extends Component {
     this.detachInterface();
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    var sourceLogClass = this.constructor.name
+    console.log(`${sourceLogClass} -> componentDidUpdate`);
+    if (this.state.contract !== prevState.contract) {
+      // this.setupFilters();  
+
+    }
+  }
+
   render () {
     const { ethBalance, loading, blockNumber, accounts, allEvents, accountsInfo } = this.state;
     const {isManager, location} = this.props
+
     if (loading) {
       return (
         <Loading />
@@ -127,7 +142,7 @@ export default class ApplicationDragoHome extends Component {
         ]);
       })
       .then(([ethBalances]) => {
-        console.log(ethBalances);
+        // console.log(ethBalances);
         this.setState({
           ethBalance: ethBalances.reduce((total, balance) => total.add(balance), new BigNumber(0)),
           accounts: accounts.map((account, index) => {
@@ -136,8 +151,8 @@ export default class ApplicationDragoHome extends Component {
             return account;
           })
         });
-        console.log(this.state.ethBalance);
-        console.log(this.state.accounts);
+        // console.log(this.state.ethBalance);
+        // console.log(this.state.accounts);
       })
       .catch((error) => {
         console.warn('onNewBlockNumber', error);
@@ -173,10 +188,12 @@ export default class ApplicationDragoHome extends Component {
 
   attachInterface = () => {
     const { api } = this.context;
+    var sourceLogClass = this.constructor.name
+    
     api.parity
       .registryAddress()
       .then((registryAddress) => {
-        console.log(`The Registry was found at ${registryAddress}`);
+        console.log(`${sourceLogClass} -> The Registry was found at ${registryAddress}`);
         const registry = api.newContract(abis.registry, registryAddress).instance;
         return Promise
           .all([
@@ -186,7 +203,7 @@ export default class ApplicationDragoHome extends Component {
       })
       .then(([address, accountsInfo]) => {
         // console.log(accountsInfo);
-        console.log(`Drago Eventful was found at ${address}`);
+        console.log(`${sourceLogClass} -> Drago Eventful was found at ${address}`);
         const contract = api.newContract(abis.eventful, address);
         this.setState({
           accountsInfo,
@@ -206,23 +223,24 @@ export default class ApplicationDragoHome extends Component {
               };
             })
         });
+        console.log(this.state.ginopino)
         api.subscribe('eth_blockNumber', this.onNewBlockNumber)
         .then((subscriptionID) => {
           console.log(`applicationDragoHome: Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);
           this.setState({subscriptionIDDrago: subscriptionID});
-        }).then(() => {
-          this.setupFilters();
         })
+        return contract
+      })
+      .then((contract) => {
+        this.setupFilters(contract);
       })
       .catch((error) => {
         console.warn('attachInterface', error);
       });
   }
 
-  setupFilters () {
-    const { contract } = this.state;
+  setupFilters (contract) {
     const { api } = this.context;
-
     const sortEvents = (a, b) => b.blockNumber.cmp(a.blockNumber) || b.logIndex.cmp(a.logIndex);
     const logToEvent = (log) => {
       const key = api.util.sha3(JSON.stringify(log));
@@ -289,72 +307,6 @@ export default class ApplicationDragoHome extends Component {
     });
   }
 
-  // attachInterface = () => {
-  //   const { api } = this.context;
-  //   api.parity
-  //     .registryAddress()
-  //     .then((registryAddress) => {
-  //       console.log(`The registry was found at ${registryAddress}`);
-  //       // return Promise
-  //       //   .all([
-  //       //     this.getAccounts() //THIS FUNCTION RETURNS THE ACCOUNTS OF THE USER
-  //       //   ]);
-  //       var testAccount = [
-  //         {
-  //             address : '0x00a79Fa87cFb12A05205CaEa3870C1A9C322ae5C',
-  //             name: 'DAVID2',
-  //             ethBalance : '11.166'
-  //         }
-  //       ]
-  //       console.log(testAccount);
-  //       this.setState({
-  //         loading: false,
-  //         //address,
-  //         //contract,
-  //         //accountsInfo,
-  //         //instance: contract.instance,
-  //         accounts: testAccount
-  //       });
-  //     })
-  //     // .then(([accountsInfo]) => {
-  //     //   console.log(accountsInfo);
-  //     //   this.setState({
-  //     //     loading: false,
-  //     //     //address,
-  //     //     //contract,
-  //     //     accountsInfo,
-  //     //     //instance: contract.instance,
-  //     //     accounts: Object
-  //     //       .keys(accountsInfo)
-  //     //       .map((address) => {
-  //     //         const info = accountsInfo[address] || {};
-
-  //     //         return {
-  //     //           address,
-  //     //           name: info.name
-  //     //         };
-  //     //       })
-  //     //   });
-  //     //   var test = [
-  //     //     {
-  //     //         address : '0x00a79Fa87cFb12A05205CaEa3870C1A9C322ae5C',
-  //     //         name: 'DAVID2',
-  //     //         ethBalance : '11.166'
-              
-  //     //     }
-  //     //   ];
-  //     //   console.log(test)
-  //     //   console.log(this.state.accounts)
-  //     //   api.subscribe('eth_blockNumber', this.onNewBlockNumber)
-  //     //   .then((subscriptionID) => {
-  //     //     console.log(`applicationDrago: Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);
-  //     //     this.setState({subscriptionIDDrago: subscriptionID});
-  //     //   })
-  //     // })
-  //     .catch((error) => {
-  //       console.warn('attachInterface', error);
-  //     });
-  // }
 
   detachInterface = () => {
     const { subscriptionIDDrago, contract, subscriptionIDContractDrago } = this.state;

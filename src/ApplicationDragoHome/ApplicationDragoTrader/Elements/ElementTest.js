@@ -1,3 +1,4 @@
+/** @flow */
 import { Grid, Row, Col } from 'react-flexbox-grid';
 import { Link, Route, withRouter, HashRouter } from 'react-router-dom'
 import { List, Column, Table, AutoSizer, SortDirection, SortIndicator } from 'react-virtualized';
@@ -5,47 +6,41 @@ import FlatButton from 'material-ui/FlatButton';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import React, {PureComponent} from 'react';
+import Immutable from 'immutable';
 
 import { generateRandomList } from './utils';
 import {LabeledInput, InputRow} from './labeledInput';
 import utils from '../../../utils/utils'
-
-import styles from './elementListFunds.module.css';
+import styles from './Table.example.module.css';
 import 'react-virtualized/styles.css'
 
-// const list = Immutable.List(generateRandomList());
-
-class ElementListFunds extends PureComponent {
-
-  static PropTypes = {
-    allEvents: PropTypes.object.isRequired,
-    accountsInfo: PropTypes.object.isRequired, 
-    list: PropTypes.object.isRequired,
-    location: PropTypes.object.isRequired,
-    match: PropTypes.object.isRequired,
+export default class TableExample extends PureComponent {
+  static contextTypes = {
+    // list: PropTypes.instanceOf(Immutable.List).isRequired,
   };
+
+
 
   constructor(props, context) {
     super(props, context);
-    const { accountsInfo, list } = this.props
-    const sortBy = 'symbol';
+    
+    const sortBy = 'index';
     const sortDirection = SortDirection.ASC;
     const sortedList = this._sortList({sortBy, sortDirection});
-    const rowCount = list.size
 
     this.state = {
       disableHeader: false,
       headerHeight: 30,
-      height: 500,
+      height: 270,
       hideIndexRow: false,
       overscanRowCount: 10,
       rowHeight: 40,
-      rowCount: rowCount,
+      rowCount: 1000,
       scrollToIndex: undefined,
       sortBy,
       sortDirection,
       sortedList,
-      useDynamicRowHeight: false
+      useDynamicRowHeight: false,
     };
 
     this._getRowHeight = this._getRowHeight.bind(this);
@@ -71,64 +66,14 @@ class ElementListFunds extends PureComponent {
       sortDirection,
       sortedList,
       useDynamicRowHeight,
-      list
     } = this.state;
-
-    const { accountsInfo } = this.props
-
-    // console.log(allEvents)
-
-    // // var obj = {"1":5,"2":7,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0}
-    // var result = Object.keys(allEvents).map(function(key) {
-    //   return [Number(key), allEvents[key]];
-    // });
-    
-    // console.log(result);
 
     const rowGetter = ({index}) => this._getDatum(sortedList, index);
 
-
     return (
+      <div>
 
-        <Row>
-          <Col xs={12}>
-          {/* <label className={styles.checkboxLabel}>
-            <input
-              aria-label="Use dynamic row heights?"
-              checked={useDynamicRowHeight}
-              className={styles.checkbox}
-              type="checkbox"
-              onChange={event =>
-                this._updateUseDynamicRowHeight(event.target.checked)}
-            />
-            Use dynamic row heights?
-          </label> */}
-
-          {/* <label className={styles.checkboxLabel}>
-            <input
-              aria-label="Hide index?"
-              checked={hideIndexRow}
-              className={styles.checkbox}
-              type="checkbox"
-              onChange={event =>
-                this.setState({hideIndexRow: event.target.checked})}
-            />
-            Hide index?
-          </label>
-
-          <label className={styles.checkboxLabel}>
-            <input
-              aria-label="Hide header?"
-              checked={disableHeader}
-              className={styles.checkbox}
-              type="checkbox"
-              onChange={event =>
-                this.setState({disableHeader: event.target.checked})}
-            />
-            Hide header?
-          </label> */}
-        
-        {/* <InputRow>
+        <InputRow>
           <LabeledInput
             label="Num rows"
             name="rowCount"
@@ -177,9 +122,9 @@ class ElementListFunds extends PureComponent {
               })}
             value={overscanRowCount}
           />
-        </InputRow> */}
+        </InputRow>
 
-
+        <div>
           <AutoSizer disableHeight>
             {({width}) => (
               <Table
@@ -202,72 +147,32 @@ class ElementListFunds extends PureComponent {
                 {!hideIndexRow && (
                   <Column
                     label="Index"
-                    cellDataGetter={({rowData}) => rowData.params.dragoID.value.c}
+                    cellDataGetter={({rowData}) => rowData.index}
                     dataKey="index"
                     disableSort={!this._isSortEnabled()}
                     width={60}
                   />
                 )}
-                {/* <Column
-                  width={100}
-                  disableSort
-                  label="Blocknumber"
-                  cellDataGetter={({rowData}) => rowData.blockNumber.c[0]}
-                  dataKey="blocknumber"
-                  className={styles.exampleColumn}
-                  cellRenderer={({cellData}) => cellData}
-                /> */}
                 <Column
-                  width={100}
-                  disableSort
-                  label="Drago Code"
-                  cellDataGetter={({rowData}) => rowData.params.symbol.value}
-                  dataKey="dragocode"
-                  className={styles.exampleColumn}
-                  cellRenderer={({cellData, rowData}) => utils.dragoISIN(cellData, rowData.params.dragoID.value.c)}
-                  flexGrow={1}
-                />
-                <Column
-                  width={100}
-                  label="Symbol"
-                  cellDataGetter={({rowData}) => rowData.params.symbol.value.toUpperCase()}
-                  dataKey="symbol"
-                  className={styles.exampleColumn}
-                  cellRenderer={({cellData}) => cellData}
-                />
-                <Column
-                  width={210}
-                  disableSort
-                  label="Name"
-                  cellDataGetter={({rowData}) => rowData.params.name.value}
                   dataKey="name"
-                  className={styles.exampleColumn}
-                  cellRenderer={({cellData}) => cellData}
-                  flexGrow={1}
+                  disableSort={!this._isSortEnabled()}
+                  headerRenderer={this._headerRenderer}
+                  width={90}
                 />
                 <Column
                   width={210}
                   disableSort
-                  label="Actions"
-                  cellDataGetter={({rowData}) => rowData.params.symbol.value}
-                  dataKey="actions"
-                  className={styles.exampleColumn}
-                  cellRenderer={({cellData, rowData}) => this.actionButton(cellData, rowData)}
-                  flexShrink={1}
+                  label="The description label is really long so that it will be truncated"
+                  dataKey="random"
+                  cellRenderer={({cellData}) => cellData}
+                  flexGrow={1}
                 />
               </Table>
             )}
           </AutoSizer>
-
-      </Col>
-      </Row>
+        </div>
+        </div>
     );
-  }
-
-  actionButton (cellData, rowData) {
-    const { match} = this.props;
-    const url =  rowData.params.dragoID.value.c + "/" + utils.dragoISIN(cellData, rowData.params.dragoID.value.c)
-    return <FlatButton label="View" primary={true} containerElement={<Link to={match.path+"/"+url} />} />
   }
 
   _getDatum(list, index) {
@@ -275,7 +180,7 @@ class ElementListFunds extends PureComponent {
   }
 
   _getRowHeight({index}) {
-    const {list} = this.state;
+    const {list} = this.context;
 
     return this._getDatum(list, index).size;
   }
@@ -290,7 +195,7 @@ class ElementListFunds extends PureComponent {
   }
 
   _isSortEnabled() {
-    const {list} = this.props;
+    const list = Immutable.List(generateRandomList())
     const {rowCount} = this.state;
 
     return rowCount <= list.size;
@@ -335,9 +240,11 @@ class ElementListFunds extends PureComponent {
   }
 
   _sortList({sortBy, sortDirection}) {
-    const {list} = this.props;
+    // const {list} = this.state;
+    const list = Immutable.List(generateRandomList())
+
     return list
-      .sortBy(item => item.params.symbol.value)
+      .sortBy(item => item[sortBy])
       .update(
         list => (sortDirection === SortDirection.DESC ? list.reverse() : list),
       );
@@ -349,5 +256,3 @@ class ElementListFunds extends PureComponent {
     });
   }
 }
-
-export default withRouter(ElementListFunds)

@@ -13,7 +13,7 @@ export function formatBlockNumber (blockNumber) {
     : `#${blockNumber.toFormat()}`;
 }
 
-export function formatCoins (amount, decimals = 1) {  //prev. decimals = 6
+export function formatCoins (amount, decimals = 1, api) {  //prev. decimals = 6
   const adjusted = amount.div(DIVISOR);
 
   if (decimals === -1) {
