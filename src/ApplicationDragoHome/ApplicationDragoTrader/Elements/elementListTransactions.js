@@ -93,9 +93,9 @@ class ElementListTransactions extends PureComponent {
 
       <Row>
         <Col xs={12}>
-          <div>
+          <div style={{ flex: '1 1 auto' }}>
             <AutoSizer disableHeight>
-              {({width}) => (
+              {({ width }) => (
                 <Table
                   ref="Table"
                   disableHeader={disableHeader}
@@ -121,7 +121,7 @@ class ElementListTransactions extends PureComponent {
                     dataKey="blocknumber"
                     className={styles.exampleColumn}
                     cellRenderer={({cellData}) => cellData}
-                  /> */}
+                  />  */}
                   <Column
                     width={200}
                     disableSort
@@ -145,10 +145,10 @@ class ElementListTransactions extends PureComponent {
                   <Column
                     width={100}
                     disableSort
-                    label="State"
-                    cellDataGetter={({rowData}) => rowData.state}
-                    dataKey="state"
-                    cellRenderer={({cellData}) => cellData.state}
+                    label=""
+                    cellDataGetter={({rowData}) => rowData.symbol}
+                    dataKey="symbol"
+                    cellRenderer={({cellData}) => cellData.symbol}
                     className={styles.exampleColumn}
                     cellRenderer={({cellData}) => cellData}
                     flexShrink={1}

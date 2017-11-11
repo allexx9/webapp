@@ -36,7 +36,7 @@ class ElementListFunds extends PureComponent {
     this.state = {
       disableHeader: false,
       headerHeight: 30,
-      height: 500,
+      height: 600,
       hideIndexRow: false,
       overscanRowCount: 10,
       rowHeight: 40,
@@ -89,9 +89,10 @@ class ElementListFunds extends PureComponent {
 
 
     return (
-
+      
         <Row>
           <Col xs={12}>
+          <div style={{ flex: '1 1 auto' }}>
           {/* <label className={styles.checkboxLabel}>
             <input
               aria-label="Use dynamic row heights?"
@@ -258,9 +259,10 @@ class ElementListFunds extends PureComponent {
               </Table>
             )}
           </AutoSizer>
-
+          </div>
       </Col>
       </Row>
+      
     );
   }
 
