@@ -6,12 +6,14 @@ import moment from 'moment';
 import PropTypes from 'prop-types';
 import React, {PureComponent} from 'react';
 
+import 'react-virtualized/styles.css'
+
 import { generateRandomList } from './utils';
+import {APP, DS} from '../../../utils/const.js'
 import {LabeledInput, InputRow} from './labeledInput';
 import utils from '../../../utils/utils'
 
 import styles from './elementListTransactions.module.css';
-import 'react-virtualized/styles.css'
 
 // const list = Immutable.List(generateRandomList());
 
@@ -135,6 +137,16 @@ class ElementListBalances extends PureComponent {
                     cellRenderer={({rowData}) => this.renderDrgValue(rowData.balance)}
                     flexShrink={1}
                   />
+                  <Column
+                    width={210}
+                    disableSort
+                    label="Actions"
+                    cellDataGetter={({rowData}) => rowData.symbol}
+                    dataKey="actions"
+                    className={styles.exampleColumn}
+                    cellRenderer={({cellData, rowData}) => this.actionButton(cellData, rowData)}
+                    flexShrink={1}
+                  />
                 </Table>
               )}
             </AutoSizer>
@@ -146,8 +158,9 @@ class ElementListBalances extends PureComponent {
 
   actionButton(cellData, rowData) {
     const { match} = this.props;
-    const url =  rowData.params.dragoID.value.c + "/" + utils.dragoISIN(cellData, rowData.params.dragoID.value.c)
-    return <FlatButton label="View" primary={true} containerElement={<Link to={match.path+"/"+url} />} />
+    console.log(match)
+    const url =  rowData.dragoID + "/" + utils.dragoISIN(cellData, rowData.dragoID)
+    return <FlatButton label="View" primary={true} containerElement={<Link to={utils.rootPath(match.path)+DS+"drago/pools/"+url} />} />
   }
 
   renderEthValue(ethValue) {

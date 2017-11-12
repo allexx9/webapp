@@ -314,25 +314,25 @@ class PageDashboardDragoTrader extends Component {
           .then((dragoDetails) => {
             console.log(`${sourceLogClass} ->  dragoDetails Symbol: ${dragoDetails[0][2]}`)
             const symbol = dragoDetails[0][2]
+            const dragoID = dragoDetails[0][3].c[0]
             var amount = () => {
-              console.log(log.type)
               if (log.type === 'BuyDrago') {
-                console.log("buy")
-                console.log(log.params.revenue.value)
                 return new BigNumber(log.params.revenue.value)
               } else {
-                console.log("sell")
-                console.log(log.params.revenue.value)
                 return new BigNumber(-log.params.amount.value)
               } 
             }
             // amount = new BigNumber(amount)
-            if (typeof dragoBalances[symbol] !== 'undefined') {
-              var balance = dragoBalances[symbol].add(amount())
+            if (typeof dragoBalances[dragoID] !== 'undefined') {
+              var balance = dragoBalances[dragoID].balance.add(amount())
             } else {
               var balance = amount()
             }
-            dragoBalances[symbol] = balance
+            dragoBalances[dragoID] = {
+              balance: balance,
+              symbol: dragoDetails[0][2],
+              dragoID: dragoID
+            }
             log.symbol = symbol
             return log
           });
@@ -350,13 +350,13 @@ class PageDashboardDragoTrader extends Component {
           .then((results) => {
             var balances = [];
             console.log(`${sourceLogClass} -> Transactions list loaded`);
-            console.log(results)
             console.log(dragoBalances)
             // Reorganizing the balances array
             for(var v in dragoBalances) {
               var balance = {
-                symbol: v,
-                balance: formatCoins(dragoBalances[v],4,api)
+                symbol: dragoBalances[v].symbol,
+                dragoID: dragoBalances[v].dragoID,
+                balance: formatCoins(dragoBalances[v].balance,4,api)
               }
               balances.push(balance)
             }
@@ -366,6 +366,7 @@ class PageDashboardDragoTrader extends Component {
               dragoBalances: balances,
               loading: false,
             })
+
           })
         })
       })

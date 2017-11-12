@@ -1,5 +1,6 @@
 import { DRG_ISIN } from './const';
 import { toHex } from '../format';
+import {APP, DS} from './const.js'
 
 // Getting events signatures
 const dragoFactoryEventsSignatures = (contract) => {
@@ -13,6 +14,41 @@ const dragoFactoryEventsSignatures = (contract) => {
 }
 
 export {dragoFactoryEventsSignatures};
+
+class utilities {
+  
+    pathExplode (path) {
+      var explodedPath = path.pathname.split( '/' );
+      return explodedPath
+    }
+
+    rootPath (location) {
+      var path = location.split( '/' );
+      // path.splice(-1,1);
+      // var url = path.join('/');
+      return DS+APP+DS+path[2]
+      }
+  
+    pathLast (path) {
+      return path.pathname.split( '/' ).pop();
+    }
+  
+    dragoISIN(symbol, dragoID) {
+      return DRG_ISIN+dragoID.toString().padStart(7, "0")+symbol;
+    }
+  }
+  
+    //
+    // If we're not in production then log to the `console` with the format:
+    // `${info.level}: ${info.message} JSON.stringify({ ...rest }) `
+    // 
+    // if (process.env.NODE_ENV !== 'production') {
+    //   logger.add(new winston.transports.Console({
+    //     format: winston.format.simple()
+    //   }));
+    // }
+    var utils = new utilities();
+    export default utils;
 
 /**
  * Generate random data for use in examples.
@@ -242,30 +278,3 @@ const loremIpsum = [
 ];
 
 
-class utilities {
-
-  pathExplode (path) {
-    var explodedPath = path.pathname.split( '/' );
-    return explodedPath
-  }
-
-  pathLast (path) {
-    return path.pathname.split( '/' ).pop();
-  }
-
-  dragoISIN(symbol, dragoID) {
-    return DRG_ISIN+dragoID.toString().padStart(7, "0")+symbol;
-  }
-}
-
-  //
-  // If we're not in production then log to the `console` with the format:
-  // `${info.level}: ${info.message} JSON.stringify({ ...rest }) `
-  // 
-  // if (process.env.NODE_ENV !== 'production') {
-  //   logger.add(new winston.transports.Console({
-  //     format: winston.format.simple()
-  //   }));
-  // }
-  var utils = new utilities();
-  export default utils;
