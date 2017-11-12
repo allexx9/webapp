@@ -29,7 +29,7 @@ class ElementListTransactions extends PureComponent {
     super(props, context);
     const { accountsInfo, list } = this.props
     const sortBy = 'symbol';
-    const sortDirection = SortDirection.ASC;
+    const sortDirection = SortDirection.DESC;
     const sortedList = this._sortList({sortBy, sortDirection});
     console.log(sortedList)
     const rowCount = list.size
@@ -291,7 +291,7 @@ class ElementListTransactions extends PureComponent {
     return list
       .sortBy(item => item.blocknumber)
       .update(
-        list => (sortDirection === SortDirection.DESC ? list.reverse() : list.reverse()),
+        list => (sortDirection === SortDirection.DESC ? list : list.reverse()),
       );
   }
 

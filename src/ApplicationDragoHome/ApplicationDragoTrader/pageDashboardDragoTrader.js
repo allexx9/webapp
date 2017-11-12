@@ -17,7 +17,7 @@ import MenuItem from 'material-ui/MenuItem';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import Paper from 'material-ui/Paper';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { Component, PureComponent } from 'react';
 
 import { dragoFactoryEventsSignatures } from '../../utils/utils.js'
 import { formatCoins, formatEth, formatHash, toHex } from '../../format';
@@ -27,6 +27,7 @@ import ElementListTransactions from './Elements/elementListTransactions'
 import ElementTradeBox from './elementTradeBox'
 import IdentityIcon from '../../IdentityIcon';
 import Loading from '../../Loading';
+import utils from '../../utils/utils'
 
 import styles from '../applicationDragoHome.module.css';
 
@@ -53,10 +54,62 @@ class PageDashboardDragoTrader extends Component {
       loading: true,
     }
 
-    componentDidMount() {
+    componentWillMount() {
       const { api, contract } = this.context
       const {accounts } = this.props
       this.getTransactions (null, contract, accounts)
+    }
+
+
+
+    shouldComponentUpdate(nextProps, nextState){
+      // Checking if the accounts balances have changed. If positive then let the component update.
+      // const { api } = this.context
+      const  sourceLogClass = this.constructor.name
+      // const  prevAccountsBalance = this.props.ethBalance
+      // const  nextAccountsBalance = nextProps.ethBalance
+      // const  newBalance = (prevAccountsBalance.equals(nextAccountsBalance))
+      console.log(`${sourceLogClass} -> Received new props`);
+      // console.log(this.props)
+      // console.log(nextProps)
+      // console.log(formatEth(nextProps.ethBalance,6,api))
+      // console.log(newTrasactions)
+      // return newTrasactions
+      // console.log(newBalance)
+      // return (newBalance) ? false : true
+      // Checking if logs have been loaded
+      // (this.state.dragoTransactionsLogs.length == 0 
+      //   && nextState.dragoTransactionsLog.length != 0) ? true : false
+        
+      // (this.state.dragoBalances.length == 0 
+      //   && nextState.dragoBalances.length != 0) ? true : false
+      // const  prevAccountsBalance = this.props.ethBalance
+      // const  nextAccountsBalance = nextProps.ethBalance
+      // const  newBalance = (prevAccountsBalance.equals(nextAccountsBalance))
+      // console.log(`${sourceLogClass} -> State. False = they are the same`)
+      // console.log(!this.shallowEqual(this.state, nextState))
+      // console.log(`${sourceLogClass} -> ---------------------------------`)
+      // console.log(this.state)
+      // console.log(nextState)
+      // console.log(`${sourceLogClass} -> Props. False = they are the same`)
+      // console.log(!this.shallowEqual(this.props.accounts, nextProps.accounts))
+      // console.log(`${sourceLogClass} -> ---------------------------------`)
+      // console.log(this.props)
+      // console.log(nextProps)
+      const stateUpdate = !utils.shallowEqual(this.state, nextState)
+      const propsUpdate = (!utils.shallowEqual(this.props.accounts, nextProps.accounts))
+      console.log(`${sourceLogClass} -> Received new props. Need update: ${sourceLogClass}`);
+      console.log(stateUpdate || propsUpdate)
+      return stateUpdate || propsUpdate
+    }
+
+    componentDidUpdate(nextProps) {
+      // Updating the lists on each new block
+      // const sourceLogClass = this.constructor.name
+      // const { api, contract } = this.context
+      // const {accounts } = this.props
+      // console.log(`${sourceLogClass} -> Updating component with new props`);
+      // this.getTransactions (null, contract, accounts)
     }
 
     subTitle = (account) => {
@@ -103,13 +156,6 @@ class PageDashboardDragoTrader extends Component {
         }
       );
 
-      // Waiting to render component until transaction events are retrieved
-      // if (dragoTransactionList.size == 0) {
-      //   return (
-      //     null
-      //   );
-      // }
-
       return (
       <Row>
         <Col xs={12}>
@@ -143,9 +189,9 @@ class PageDashboardDragoTrader extends Component {
                 <Paper zDepth={1}>
                   <Row>
                     <Col className={styles.transactionsStyle} xs={12}>
-                    {(dragoBalancesList.size == 0) 
-                              ? <Loading /> 
-                              : <ElementListBalances accountsInfo={accountsInfo} list={dragoBalancesList}/>}
+                      {(dragoBalancesList.size == 0) 
+                                ? <Loading /> 
+                                : <ElementListBalances accountsInfo={accountsInfo} list={dragoBalancesList}/>}
                     </Col>
                   </Row>
                 </Paper>
@@ -312,7 +358,7 @@ class PageDashboardDragoTrader extends Component {
             dragoRegistryInstance.fromAddress.call({}, [log.params.drago.value])
           ])
           .then((dragoDetails) => {
-            console.log(`${sourceLogClass} ->  dragoDetails Symbol: ${dragoDetails[0][2]}`)
+            // console.log(`${sourceLogClass} ->  dragoDetails Symbol: ${dragoDetails[0][2]}`)
             const symbol = dragoDetails[0][2]
             const dragoID = dragoDetails[0][3].c[0]
             var amount = () => {
@@ -322,7 +368,6 @@ class PageDashboardDragoTrader extends Component {
                 return new BigNumber(-log.params.amount.value)
               } 
             }
-            // amount = new BigNumber(amount)
             if (typeof dragoBalances[dragoID] !== 'undefined') {
               var balance = dragoBalances[dragoID].balance.add(amount())
             } else {
@@ -350,7 +395,6 @@ class PageDashboardDragoTrader extends Component {
           .then((results) => {
             var balances = [];
             console.log(`${sourceLogClass} -> Transactions list loaded`);
-            console.log(dragoBalances)
             // Reorganizing the balances array
             for(var v in dragoBalances) {
               var balance = {
@@ -360,12 +404,12 @@ class PageDashboardDragoTrader extends Component {
               }
               balances.push(balance)
             }
-            console.log(balances)
             this.setState({
               dragoTransactionsLogs: results,
               dragoBalances: balances,
+            }, this.setState({
               loading: false,
-            })
+            }))
 
           })
         })

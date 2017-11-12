@@ -56,12 +56,12 @@ export default class ApplicationDragoHome extends Component {
   }
 
   componentWillMount () {
-    // this.attachInterface();
+    this.attachInterface();
     // this.setupFilters();
   } 
 
   componentDidMount () {
-    this.attachInterface();
+    // this.attachInterface();
     // this.setupFilters();
   }
 
@@ -69,6 +69,20 @@ export default class ApplicationDragoHome extends Component {
     // Unsubscribing to the event when the the user moves away from this page
     this.detachInterface();
   }
+
+  // shouldComponentUpdate(nextProps, nextState){
+  //   // Checking if the accounts balances have changed. If positive then let the component update.
+  //   const  sourceLogClass = this.constructor.name
+  //   console.log(this.state.ethBalance)
+  //   console.log(nextState.ethBalance)
+  //   console.log(`${sourceLogClass} -> Received new props`);
+  //   // const prevEthBalance = new BigNumber(this.state.ethBalance)
+  //   // const nextEthBalance = new BigNumber(nextState.ethBalance)
+  //   const newBalance = this.state.ethBalance.equals(nextState.ethBalance)
+  //   console.log(newBalance)
+  //   return (newBalance) ? false : true
+
+  // }
 
   componentDidUpdate(prevProps, prevState) {
     var sourceLogClass = this.constructor.name
@@ -129,9 +143,9 @@ export default class ApplicationDragoHome extends Component {
       .all([
       ])
       .then(() => {
-        this.setState({
-          blockNumber: blockNumber.c[0]
-        });
+        // this.setState({
+        //   blockNumber: blockNumber.c[0]
+        // })
         const ethQueries = accounts.map((account) => api.eth.getBalance(account.address));
         accounts.map((account) => {
           console.log('API call getBalance -> applicationDragoHome: Getting balance of account', account.name);
@@ -232,7 +246,7 @@ export default class ApplicationDragoHome extends Component {
         return contract
       })
       .then((contract) => {
-        this.setupFilters(contract);
+        // this.setupFilters(contract);
       })
       .catch((error) => {
         console.warn('attachInterface', error);
@@ -315,10 +329,10 @@ export default class ApplicationDragoHome extends Component {
     api.unsubscribe(subscriptionIDDrago).catch((error) => {
       console.warn('Unsubscribe error', error);
     });
-    console.log(`applicationDragoHome: Unsubscribed from contract ${contract._address} -> Subscription ID: ${subscriptionIDContractDrago}`);
-    contract.unsubscribe(subscriptionIDContractDrago).catch((error) => {
-      console.warn('Unsubscribe error', error);
-    });
+    // console.log(`applicationDragoHome: Unsubscribed from contract ${contract._address} -> Subscription ID: ${subscriptionIDContractDrago}`);
+    // contract.unsubscribe(subscriptionIDContractDrago).catch((error) => {
+    //   console.warn('Unsubscribe error', error);
+    // });
     console.log(this.context);
   } 
 }
