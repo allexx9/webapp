@@ -5,6 +5,7 @@ import {List, ListItem} from 'material-ui/List';
 import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
 import AccountIcon from 'material-ui/svg-icons/action/account-circle';
 import Avatar from 'material-ui/Avatar';
+import BigNumber from 'bignumber.js';
 import Chip from 'material-ui/Chip';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import FlatButton from 'material-ui/FlatButton';
@@ -20,12 +21,12 @@ import React, { Component } from 'react';
 
 import { dragoFactoryEventsSignatures } from '../../utils/utils.js'
 import { formatCoins, formatEth, formatHash, toHex } from '../../format';
-
+import * as abis from '../../contracts';
+import ElementListBalances from './Elements/elementListBalances'
 import ElementListTransactions from './Elements/elementListTransactions'
 import ElementTradeBox from './elementTradeBox'
 import IdentityIcon from '../../IdentityIcon';
 import Loading from '../../Loading';
-import * as abis from '../../contracts';
 
 import styles from '../applicationDragoHome.module.css';
 
@@ -48,6 +49,7 @@ class PageDashboardDragoTrader extends Component {
 
     state = {
       dragoTransactionsLogs: [],
+      dragoBalances:[],
       loading: true,
     }
 
@@ -65,9 +67,10 @@ class PageDashboardDragoTrader extends Component {
 
     render() {
       const { location, accounts, accountsInfo, allEvents } = this.props
-      const { dragoTransactionsLogs, loading } = this.state
-      var dragoTransactionList = Immutable.List(dragoTransactionsLogs)
-      console.log(accounts);
+      const { dragoTransactionsLogs, loading, dragoBalances } = this.state 
+      const dragoTransactionList = Immutable.List(dragoTransactionsLogs)
+      const dragoBalancesList = Immutable.List(dragoBalances)
+      console.log(dragoBalancesList)
       const listAccounts = accounts.map((account) => {
         const { api } = this.context;
         return (
@@ -101,11 +104,11 @@ class PageDashboardDragoTrader extends Component {
       );
 
       // Waiting to render component until transaction events are retrieved
-      if (dragoTransactionList.size == 0) {
-        return (
-          null
-        );
-      }
+      // if (dragoTransactionList.size == 0) {
+      //   return (
+      //     null
+      //   );
+      // }
 
       return (
       <Row>
@@ -124,7 +127,9 @@ class PageDashboardDragoTrader extends Component {
                     <Paper zDepth={1}>
                       <Row>
                         <Col className={styles.transactionsStyle} xs={12}>
-                            <ElementListTransactions accountsInfo={accountsInfo} list={dragoTransactionList}/>
+                            {(dragoTransactionList.size == 0) 
+                              ? <Loading /> 
+                              : <ElementListTransactions accountsInfo={accountsInfo} list={dragoTransactionList}/>}
                         </Col>
                       </Row>
                     </Paper>
@@ -138,8 +143,9 @@ class PageDashboardDragoTrader extends Component {
                 <Paper zDepth={1}>
                   <Row>
                     <Col className={styles.transactionsStyle} xs={12}>
-                      {/* <ElementListTransactions /> */}
-                      {/* <ElementListTransactions accountsInfo={accountsInfo} list={dragoTransactionList}/> */}
+                    {(dragoBalancesList.size == 0) 
+                              ? <Loading /> 
+                              : <ElementListBalances accountsInfo={accountsInfo} list={dragoBalancesList}/>}
                     </Col>
                   </Row>
                 </Paper>
@@ -197,8 +203,8 @@ class PageDashboardDragoTrader extends Component {
       const logToEvent = (log) => {
         const key = api.util.sha3(JSON.stringify(log))
         const { blockNumber, logIndex, transactionHash, transactionIndex, params, type } = log   
-        var ethvalue = (log.event === 'BuyDrago') ? formatEth(params.amount.value,null,api) : formatEth(params.revenue.value,null,api);
-        var drgvalue = (log.event === 'SellDrago') ? formatCoins(params.amount.value,null,api) : formatCoins(params.revenue.value,null,api);
+        const ethvalue = (log.event === 'BuyDrago') ? formatEth(params.amount.value,null,api) : formatEth(params.revenue.value,null,api);
+        const drgvalue = (log.event === 'SellDrago') ? formatCoins(params.amount.value,null,api) : formatCoins(params.revenue.value,null,api);
         // let ethvalue = null
         // let drgvalue = null     
         // if ((log.event === 'BuyDrago')) {
@@ -290,9 +296,10 @@ class PageDashboardDragoTrader extends Component {
         // Creating an array of promises that will be executed to add timestamp and symbol to each entry
         // Doing so because for each entry we need to make an async call to the client
         // For additional refernce: https://stackoverflow.com/questions/39452083/using-promise-function-inside-javascript-array-map
-        const dragoTransactionsLog = [...results[0], ...results[1]]
+        var dragoTransactionsLog = [...results[0], ...results[1]]
         const dragoRegistryInstance = results[2]
-        var promisesTimestamp = dragoTransactionsLog.map((log) => {
+        var dragoBalances = [] 
+        const promisesTimestamp = dragoTransactionsLog.map((log) => {
           return api.eth
           .getBlockByNumber(log.blockNumber.c[0])
           .then((block) => {
@@ -300,13 +307,33 @@ class PageDashboardDragoTrader extends Component {
             return log
           })
         })
-        var promisesSymbol = dragoTransactionsLog.map((log) => {
+        const promisesSymbol = dragoTransactionsLog.map((log) => {
           return Promise.all([
             dragoRegistryInstance.fromAddress.call({}, [log.params.drago.value])
           ])
           .then((dragoDetails) => {
             console.log(`${sourceLogClass} ->  dragoDetails Symbol: ${dragoDetails[0][2]}`)
-            log.symbol = dragoDetails[0][2]
+            const symbol = dragoDetails[0][2]
+            var amount = () => {
+              console.log(log.type)
+              if (log.type === 'BuyDrago') {
+                console.log("buy")
+                console.log(log.params.revenue.value)
+                return new BigNumber(log.params.revenue.value)
+              } else {
+                console.log("sell")
+                console.log(log.params.revenue.value)
+                return new BigNumber(-log.params.amount.value)
+              } 
+            }
+            // amount = new BigNumber(amount)
+            if (typeof dragoBalances[symbol] !== 'undefined') {
+              var balance = dragoBalances[symbol].add(amount())
+            } else {
+              var balance = amount()
+            }
+            dragoBalances[symbol] = balance
+            log.symbol = symbol
             return log
           });
         })
@@ -321,10 +348,22 @@ class PageDashboardDragoTrader extends Component {
         .then (()=>{
           Promise.all(promisesSymbol)
           .then((results) => {
+            var balances = [];
             console.log(`${sourceLogClass} -> Transactions list loaded`);
             console.log(results)
+            console.log(dragoBalances)
+            // Reorganizing the balances array
+            for(var v in dragoBalances) {
+              var balance = {
+                symbol: v,
+                balance: formatCoins(dragoBalances[v],4,api)
+              }
+              balances.push(balance)
+            }
+            console.log(balances)
             this.setState({
               dragoTransactionsLogs: results,
+              dragoBalances: balances,
               loading: false,
             })
           })
