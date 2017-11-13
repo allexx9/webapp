@@ -60,56 +60,29 @@ class PageDashboardDragoTrader extends Component {
       this.getTransactions (null, contract, accounts)
     }
 
+    // shouldComponentUpdate(nextProps, nextState){
+    //   const  sourceLogClass = this.constructor.name
+    //   console.log(`${sourceLogClass} -> Received new props`);
+    //   const stateUpdate = !utils.shallowEqual(this.state, nextState)
+    //   const propsUpdate = (!utils.shallowEqual(this.props.accounts, nextProps.accounts))
+    //   console.log(`${sourceLogClass} -> Received new props. Need update: ${sourceLogClass}`);
+    //   console.log(stateUpdate || propsUpdate)
+    //   return stateUpdate || propsUpdate
+    // }
 
-
-    shouldComponentUpdate(nextProps, nextState){
-      // Checking if the accounts balances have changed. If positive then let the component update.
-      // const { api } = this.context
-      const  sourceLogClass = this.constructor.name
-      // const  prevAccountsBalance = this.props.ethBalance
-      // const  nextAccountsBalance = nextProps.ethBalance
-      // const  newBalance = (prevAccountsBalance.equals(nextAccountsBalance))
-      console.log(`${sourceLogClass} -> Received new props`);
-      // console.log(this.props)
-      // console.log(nextProps)
-      // console.log(formatEth(nextProps.ethBalance,6,api))
-      // console.log(newTrasactions)
-      // return newTrasactions
-      // console.log(newBalance)
-      // return (newBalance) ? false : true
-      // Checking if logs have been loaded
-      // (this.state.dragoTransactionsLogs.length == 0 
-      //   && nextState.dragoTransactionsLog.length != 0) ? true : false
-        
-      // (this.state.dragoBalances.length == 0 
-      //   && nextState.dragoBalances.length != 0) ? true : false
-      // const  prevAccountsBalance = this.props.ethBalance
-      // const  nextAccountsBalance = nextProps.ethBalance
-      // const  newBalance = (prevAccountsBalance.equals(nextAccountsBalance))
-      // console.log(`${sourceLogClass} -> State. False = they are the same`)
-      // console.log(!this.shallowEqual(this.state, nextState))
-      // console.log(`${sourceLogClass} -> ---------------------------------`)
-      // console.log(this.state)
-      // console.log(nextState)
-      // console.log(`${sourceLogClass} -> Props. False = they are the same`)
-      // console.log(!this.shallowEqual(this.props.accounts, nextProps.accounts))
-      // console.log(`${sourceLogClass} -> ---------------------------------`)
-      // console.log(this.props)
-      // console.log(nextProps)
-      const stateUpdate = !utils.shallowEqual(this.state, nextState)
-      const propsUpdate = (!utils.shallowEqual(this.props.accounts, nextProps.accounts))
-      console.log(`${sourceLogClass} -> Received new props. Need update: ${sourceLogClass}`);
-      console.log(stateUpdate || propsUpdate)
-      return stateUpdate || propsUpdate
+    componentWillReceiveProps() {
+      // Updating the lists on each new block
+      const { api, contract } = this.context
+      const {accounts } = this.props
+      const sourceLogClass = this.constructor.name
+      console.log(`${sourceLogClass} -> componentWillReceiveProps`);
+      this.getTransactions (null, contract, accounts)
     }
 
     componentDidUpdate(nextProps) {
       // Updating the lists on each new block
-      // const sourceLogClass = this.constructor.name
-      // const { api, contract } = this.context
-      // const {accounts } = this.props
-      // console.log(`${sourceLogClass} -> Updating component with new props`);
-      // this.getTransactions (null, contract, accounts)
+      const sourceLogClass = this.constructor.name
+      console.log(`${sourceLogClass} -> Updating component with new props`);
     }
 
     subTitle = (account) => {
@@ -121,9 +94,8 @@ class PageDashboardDragoTrader extends Component {
     render() {
       const { location, accounts, accountsInfo, allEvents } = this.props
       const { dragoTransactionsLogs, loading, dragoBalances } = this.state 
-      const dragoTransactionList = Immutable.List(dragoTransactionsLogs)
-      const dragoBalancesList = Immutable.List(dragoBalances)
-      console.log(dragoBalancesList)
+      console.log(Immutable.List(dragoTransactionsLogs))
+      console.log(Immutable.List(dragoBalances))
       const listAccounts = accounts.map((account) => {
         const { api } = this.context;
         return (
@@ -167,15 +139,15 @@ class PageDashboardDragoTrader extends Component {
                     {listAccounts}
                   </Col>
                 </Row>
-                <Row>
-                  <Col xs={12}>
+                <Row style={{outline: 'none'}}>
+                  <Col xs={12} style={{outline: 'none'}}>
                     <h2>My Transactions</h2>
                     <Paper zDepth={1}>
-                      <Row>
+                      <Row style={{outline: 'none'}}>
                         <Col className={styles.transactionsStyle} xs={12}>
-                            {(dragoTransactionList.size == 0) 
+                            {(Immutable.List(dragoTransactionsLogs).size == 0) 
                               ? <Loading /> 
-                              : <ElementListTransactions accountsInfo={accountsInfo} list={dragoTransactionList}/>}
+                              : <ElementListTransactions list={Immutable.List(dragoTransactionsLogs)}/>}
                         </Col>
                       </Row>
                     </Paper>
@@ -189,9 +161,9 @@ class PageDashboardDragoTrader extends Component {
                 <Paper zDepth={1}>
                   <Row>
                     <Col className={styles.transactionsStyle} xs={12}>
-                      {(dragoBalancesList.size == 0) 
+                      {(Immutable.List(dragoBalances).size == 0) 
                                 ? <Loading /> 
-                                : <ElementListBalances accountsInfo={accountsInfo} list={dragoBalancesList}/>}
+                                : <ElementListBalances list={Immutable.List(dragoBalances)}/>}
                     </Col>
                   </Row>
                 </Paper>
@@ -405,8 +377,8 @@ class PageDashboardDragoTrader extends Component {
               balances.push(balance)
             }
             this.setState({
-              dragoTransactionsLogs: results,
               dragoBalances: balances,
+              dragoTransactionsLogs: results,
             }, this.setState({
               loading: false,
             }))

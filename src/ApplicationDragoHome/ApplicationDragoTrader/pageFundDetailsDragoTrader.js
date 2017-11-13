@@ -87,7 +87,7 @@ class PageFundDetailsDragoTrader extends Component {
     }
 
     componentWillReceiveProps () {
-      // Updating the list on each new block
+      // Updating the accounts information and other lists
       var sourceLogClass = this.constructor.name
       console.log(`${sourceLogClass} -> Updating the transactions list`);
       const dragoID = this.props.match.params.dragoid

@@ -16,6 +16,7 @@ import MenuItem from 'material-ui/MenuItem';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom'
 
 import { generateRandomList } from './Elements/utils';
 import { toHex } from '../../format';
@@ -59,9 +60,28 @@ class PageFundsDragoTrader extends Component {
       dragoCreatedLogs: [],
     }
 
+    scrollPosition = 0
+
     componentDidMount () {
       this.getDragos();
     }
+
+    // componentWillReceiveProps () {
+    //   const element = ReactDOM.findDOMNode(this);
+    //   if (element != null) {
+    //     this.scrollPosition = window.scrollY
+    //   }
+    // }
+
+    componentWillUpdate() {
+    }
+
+    // componentDidUpdate () {
+    //   const element = ReactDOM.findDOMNode(this);
+    //   if (element != null) {
+    //     window.scrollTo(0, this.scrollPosition)
+    //   }
+    // }
 
     render() {
       var { location, accountsInfo, allEvents } = this.props
@@ -76,10 +96,11 @@ class PageFundsDragoTrader extends Component {
       }
 
       return (
-        <div>        
+        <div style={{outline: 'none', overflow: 'hidden', flex: '1'}}>        
           <h1>Dragos</h1>
-          <Grid fluid>
+          <Grid fluid style={{outline: 'none', overflow: 'hidden'}}>
             <ElementListFunds accountsInfo={accountsInfo} list={dragoCreatedList}/>
+            {/* <TableExample></TableExample> */}
           </Grid>
         </div>
 

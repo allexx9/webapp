@@ -60,16 +60,22 @@ class ElementListBalances extends PureComponent {
     this._sort = this._sort.bind(this);
   }
 
-  componentWillReceiveProps () {
-    const { accountsInfo, list } = this.props
+  componentWillReceiveProps (nextProps, nextState) {
+    const { accountsInfo, list } = nextProps
+    console.log(nextProps)
     const sortBy = 'symbol';
     const sortDirection = SortDirection.ASC;
-    const sortedList = this._sortList({sortBy, sortDirection});
+    const sortedList = list.sortBy(item => item.symbol)
+                      .update(
+                        list => (sortDirection === SortDirection.ASC ? list : list.reverse()),
+                      );
     const rowCount = list.size
     this.setState({
       sortedList: sortedList,
       rowCount: rowCount,
     })
+    const sourceLogClass = this.constructor.name
+    console.log(`${sourceLogClass} -> componentWillReceiveProps`);
   }
 
   render() {
@@ -90,6 +96,8 @@ class ElementListBalances extends PureComponent {
     } = this.state;
 
     const rowGetter = ({index}) => this._getDatum(sortedList, index);
+    console.log(sortedList)        
+    
 
     return (
 
@@ -243,7 +251,7 @@ class ElementListBalances extends PureComponent {
     return list
       .sortBy(item => item.symbol)
       .update(
-        list => (sortDirection === SortDirection.DESC ? list.reverse() : list),
+        list => (sortDirection === SortDirection.ASC ? list : list.reverse()),
       );
   }
 

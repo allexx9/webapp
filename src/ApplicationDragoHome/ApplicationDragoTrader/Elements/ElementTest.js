@@ -19,7 +19,15 @@ export default class TableExample extends PureComponent {
     // list: PropTypes.instanceOf(Immutable.List).isRequired,
   };
 
+  componentDidUpdate () {
+    var sourceLogClass = this.constructor.name
+    console.log(`${sourceLogClass} -> Updating the test table`);
+    }
 
+    componentDidMount () {
+      var sourceLogClass = this.constructor.name
+      console.log(`${sourceLogClass} -> didMount`);
+      }
 
   constructor(props, context) {
     super(props, context);
@@ -31,7 +39,7 @@ export default class TableExample extends PureComponent {
     this.state = {
       disableHeader: false,
       headerHeight: 30,
-      height: 270,
+      height: 900,
       hideIndexRow: false,
       overscanRowCount: 10,
       rowHeight: 40,
@@ -71,60 +79,60 @@ export default class TableExample extends PureComponent {
     const rowGetter = ({index}) => this._getDatum(sortedList, index);
 
     return (
-      <div>
 
-        <InputRow>
-          <LabeledInput
-            label="Num rows"
-            name="rowCount"
-            onChange={this._onRowCountChange}
-            value={rowCount}
-          />
-          <LabeledInput
-            label="Scroll to"
-            name="onScrollToRow"
-            placeholder="Index..."
-            onChange={this._onScrollToRowChange}
-            value={scrollToIndex || ''}
-          />
-          <LabeledInput
-            label="List height"
-            name="height"
-            onChange={event =>
-              this.setState({height: parseInt(event.target.value, 10) || 1})}
-            value={height}
-          />
-          <LabeledInput
-            disabled={useDynamicRowHeight}
-            label="Row height"
-            name="rowHeight"
-            onChange={event =>
-              this.setState({
-                rowHeight: parseInt(event.target.value, 10) || 1,
-              })}
-            value={rowHeight}
-          />
-          <LabeledInput
-            label="Header height"
-            name="headerHeight"
-            onChange={event =>
-              this.setState({
-                headerHeight: parseInt(event.target.value, 10) || 1,
-              })}
-            value={headerHeight}
-          />
-          <LabeledInput
-            label="Overscan"
-            name="overscanRowCount"
-            onChange={event =>
-              this.setState({
-                overscanRowCount: parseInt(event.target.value, 10) || 0,
-              })}
-            value={overscanRowCount}
-          />
-        </InputRow>
 
-        <div>
+        // <InputRow>
+        //   <LabeledInput
+        //     label="Num rows"
+        //     name="rowCount"
+        //     onChange={this._onRowCountChange}
+        //     value={rowCount}
+        //   />
+        //   <LabeledInput
+        //     label="Scroll to"
+        //     name="onScrollToRow"
+        //     placeholder="Index..."
+        //     onChange={this._onScrollToRowChange}
+        //     value={scrollToIndex || ''}
+        //   />
+        //   <LabeledInput
+        //     label="List height"
+        //     name="height"
+        //     onChange={event =>
+        //       this.setState({height: parseInt(event.target.value, 10) || 1})}
+        //     value={height}
+        //   />
+        //   <LabeledInput
+        //     disabled={useDynamicRowHeight}
+        //     label="Row height"
+        //     name="rowHeight"
+        //     onChange={event =>
+        //       this.setState({
+        //         rowHeight: parseInt(event.target.value, 10) || 1,
+        //       })}
+        //     value={rowHeight}
+        //   />
+        //   <LabeledInput
+        //     label="Header height"
+        //     name="headerHeight"
+        //     onChange={event =>
+        //       this.setState({
+        //         headerHeight: parseInt(event.target.value, 10) || 1,
+        //       })}
+        //     value={headerHeight}
+        //   />
+        //   <LabeledInput
+        //     label="Overscan"
+        //     name="overscanRowCount"
+        //     onChange={event =>
+        //       this.setState({
+        //         overscanRowCount: parseInt(event.target.value, 10) || 0,
+        //       })}
+        //     value={overscanRowCount}
+        //   />
+        // </InputRow>
+
+        
           <AutoSizer disableHeight>
             {({width}) => (
               <Table
@@ -170,8 +178,8 @@ export default class TableExample extends PureComponent {
               </Table>
             )}
           </AutoSizer>
-        </div>
-        </div>
+      
+
     );
   }
 

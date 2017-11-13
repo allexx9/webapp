@@ -2,6 +2,7 @@
 
 import React, { Component } from 'react';
 import * as abis from '../contracts';
+import ReactDOM from 'react-dom'
 
 
 import Accounts from '../Accounts';
@@ -15,6 +16,7 @@ import BigNumber from 'bignumber.js';
 import { Grid, Row, Col } from 'react-flexbox-grid';
 import LeftSideDrawer from '../elements/leftSideDrawer';
 import PropTypes from 'prop-types';
+import utils from '../utils/utils'
 
 const DIVISOR = 10 ** 6;  //tokens are divisible by one million
 
@@ -43,16 +45,38 @@ export default class ApplicationDragoHome extends Component {
   state = {
     accounts: [],
     accountsInfo: null,
-    blockNumber: new BigNumber(-1),
+    // blockNumber: new BigNumber(-1),
     ethBalance: new BigNumber(0),
     loading: true,
     subscriptionIDDrago: null,
     subscriptionIDContractDrago: null,
     contract: null,
     instance: null,
-    allEvents: [],
-    minedEvents: [],
-    pendingEvents: [],
+    // allEvents: [],
+    // minedEvents: [],
+    // pendingEvents: [],
+  }
+
+  scrollPosition = 0
+
+  shouldComponentUpdate(nextProps, nextState){
+    // Checking if the total accounts balance has changed.
+    // If positive a render is trigged so that the childrens are aware that something has changed.
+    const  sourceLogClass = this.constructor.name
+    console.log(`${sourceLogClass} -> shouldComponentUpdate`);
+    const accountsUpdate = !this.state.ethBalance.eq(nextState.ethBalance)
+    const propsUpdate = (!utils.shallowEqual(this.props, nextProps))
+    console.log (`${sourceLogClass} -> Received new props. Need update? ${accountsUpdate || propsUpdate}`);
+
+
+    // Saving the scroll position. Neede in componentDidUpdate in order to avoid the the page scroll to be
+    // set top
+    const element = ReactDOM.findDOMNode(this);
+    if (element != null) {
+      this.scrollPosition = window.scrollY
+    }
+
+    return accountsUpdate || propsUpdate
   }
 
   componentWillMount () {
@@ -60,9 +84,8 @@ export default class ApplicationDragoHome extends Component {
     // this.setupFilters();
   } 
 
-  componentDidMount () {
-    // this.attachInterface();
-    // this.setupFilters();
+  componentDidMount() {
+    // alert(element);
   }
 
   componentWillUnmount() {
@@ -70,27 +93,18 @@ export default class ApplicationDragoHome extends Component {
     this.detachInterface();
   }
 
-  // shouldComponentUpdate(nextProps, nextState){
-  //   // Checking if the accounts balances have changed. If positive then let the component update.
-  //   const  sourceLogClass = this.constructor.name
-  //   console.log(this.state.ethBalance)
-  //   console.log(nextState.ethBalance)
-  //   console.log(`${sourceLogClass} -> Received new props`);
-  //   // const prevEthBalance = new BigNumber(this.state.ethBalance)
-  //   // const nextEthBalance = new BigNumber(nextState.ethBalance)
-  //   const newBalance = this.state.ethBalance.equals(nextState.ethBalance)
-  //   console.log(newBalance)
-  //   return (newBalance) ? false : true
-
-  // }
+  componentWillUpdate() {
+  }
 
   componentDidUpdate(prevProps, prevState) {
+    // Setting the page scroll position
     var sourceLogClass = this.constructor.name
     console.log(`${sourceLogClass} -> componentDidUpdate`);
-    if (this.state.contract !== prevState.contract) {
-      // this.setupFilters();  
-
+    const element = ReactDOM.findDOMNode(this);
+    if (element != null) {
+      window.scrollTo(0, this.scrollPosition)
     }
+
   }
 
   render () {
@@ -237,7 +251,6 @@ export default class ApplicationDragoHome extends Component {
               };
             })
         });
-        console.log(this.state.ginopino)
         api.subscribe('eth_blockNumber', this.onNewBlockNumber)
         .then((subscriptionID) => {
           console.log(`applicationDragoHome: Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);

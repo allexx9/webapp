@@ -1,6 +1,6 @@
 import { Grid, Row, Col } from 'react-flexbox-grid';
 import { Link, Route, withRouter, HashRouter } from 'react-router-dom'
-import { List, Column, Table, AutoSizer, SortDirection, SortIndicator } from 'react-virtualized';
+import { List, Column, Table, AutoSizer, SortDirection, SortIndicator, WindowScroller } from 'react-virtualized';
 import FlatButton from 'material-ui/FlatButton';
 import moment from 'moment';
 import PropTypes from 'prop-types';
@@ -29,7 +29,7 @@ class ElementListTransactions extends PureComponent {
     super(props, context);
     const { accountsInfo, list } = this.props
     const sortBy = 'symbol';
-    const sortDirection = SortDirection.DESC;
+    const sortDirection = SortDirection.ASC;
     const sortedList = this._sortList({sortBy, sortDirection});
     console.log(sortedList)
     const rowCount = list.size
@@ -38,6 +38,7 @@ class ElementListTransactions extends PureComponent {
       disableHeader: false,
       headerHeight: 30,
       height: 500,
+      width: 600,
       hideIndexRow: false,
       overscanRowCount: 10,
       rowHeight: 40,
@@ -58,16 +59,21 @@ class ElementListTransactions extends PureComponent {
     this._sort = this._sort.bind(this);
   }
 
-  componentWillReceiveProps () {
-    const { accountsInfo, list } = this.props
+  componentWillReceiveProps (nextProps, nextState) {
+    const { list } = nextProps
     const sortBy = 'symbol';
     const sortDirection = SortDirection.ASC;
-    const sortedList = this._sortList({sortBy, sortDirection});
+    const sortedList = list.sortBy(item => item.timestamp)
+                      .update(
+                        list => (sortDirection === SortDirection.DESC ? list : list.reverse()),
+                      );
     const rowCount = list.size
     this.setState({
       sortedList: sortedList,
       rowCount: rowCount,
     })
+    const sourceLogClass = this.constructor.name
+    console.log(`${sourceLogClass} -> componentWillReceiveProps`);
   }
 
   render() {
@@ -88,15 +94,16 @@ class ElementListTransactions extends PureComponent {
     } = this.state;
 
     const rowGetter = ({index}) => this._getDatum(sortedList, index);
-
+    
     return (
 
       <Row>
         <Col xs={12}>
-          <div style={{ flex: '1 1 auto' }}>
+        <div style={{ flex: '1 1 auto' }}>
             <AutoSizer disableHeight>
               {({ width }) => (
                 <Table
+                  id={"transactions-table"}
                   ref="Table"
                   disableHeader={disableHeader}
                   headerClassName={styles.headerColumn}
@@ -112,7 +119,8 @@ class ElementListTransactions extends PureComponent {
                   sort={this._sort}
                   sortBy={sortBy}
                   sortDirection={sortDirection}
-                  width={width}>
+                  width={width}
+                  >
                   {/* <Column
                     width={100}
                     disableSort
@@ -196,9 +204,9 @@ class ElementListTransactions extends PureComponent {
                     flexShrink={1}
                   /> */}
                 </Table>
-              )}
-            </AutoSizer>
-          </div>
+               )} 
+              </AutoSizer>
+              </div>
         </Col>
       </Row>
     );
@@ -289,7 +297,7 @@ class ElementListTransactions extends PureComponent {
   _sortList({sortBy, sortDirection}) {
     const {list} = this.props;
     return list
-      .sortBy(item => item.blocknumber)
+      .sortBy(item => item.timestamp)
       .update(
         list => (sortDirection === SortDirection.DESC ? list : list.reverse()),
       );
