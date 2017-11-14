@@ -80,18 +80,22 @@ class NavLinks extends Component {
                   <FlatButton label="Home" containerElement={<Link to="/web"/>} disableTouchRipple={true} 
                       hoverColor="#2196f3" className={styles.topbarbuttons}
                       icon={<ActionHome color="white"/>}
+                      labelStyle={{fontWeight: 700}}
                       />
                   <FlatButton label="Vault" containerElement={<Link to="/vault" />} disableTouchRipple={true} 
                       hoverColor="#2196f3" className={styles.topbarbuttons}
                       icon={<ActionLightBulb color="white"/>}
+                      labelStyle={{fontWeight: 700}}
                       />
                   <FlatButton label="Drago" containerElement={<Link to="/drago" />} disableTouchRipple={true} 
                       hoverColor="#2196f3" className={styles.topbarbuttons}
                       icon={<ActionShowChart color="white"/>}
+                      labelStyle={{fontWeight: 700}}
                       />
                   <FlatButton label="Exchange" containerElement={<Link to="/exchange" />} disableTouchRipple={true} 
                       hoverColor="#2196f3" className={styles.topbarbuttons}
                       icon={<ActionPolymer color="white"/>}
+                      labelStyle={{fontWeight: 700}}
                       />
               </ToolbarGroup>
               <ToolbarSeparator style={menuStyles.separator}/>

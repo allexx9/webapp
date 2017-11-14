@@ -23,6 +23,7 @@ import PropTypes from 'prop-types';
 import RaisedButton from 'material-ui/RaisedButton';
 import React, { Component } from 'react';
 import Snackbar from 'material-ui/Snackbar';
+import ElementFundActions from './Elements/elementFundActions'
 
 import { dragoFactoryEventsSignatures } from '../../utils/utils.js'
 import { formatCoins, formatEth, formatHash, toHex } from '../../format';
@@ -134,10 +135,6 @@ class PageFundDetailsDragoTrader extends Component {
         return null;
       }
       
-      const snackBar = () =>{
-        this.setState({snackBar: true})
-      }
-      
       return (
       <a href={'https://kovan.etherscan.io/address/' + text} target='_blank'><Search className={styles.copyAddress}/></a>
       );
@@ -230,7 +227,7 @@ class PageFundDetailsDragoTrader extends Component {
                       {this.renderAddress(dragoDetails)}
                     </ToolbarGroup>
                     <ToolbarGroup>
-                    <RaisedButton label="Actions" primary={true} />
+                    <ElementFundActions dragoDetails={dragoDetails}/>
                   </ToolbarGroup>
                 </Toolbar>
                 <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle} className={styles.test}>
