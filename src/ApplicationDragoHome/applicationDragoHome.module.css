@@ -6,26 +6,6 @@
   width: 100%;
 } */
 
-/* elementFundActions */
-
-.modalHeaderActions {
-  background-color: rgb(33, 150, 243);
-  padding: 5px
-  /* background-color: rgb(232, 232, 232); */
-}
-
-.modalHeader {
-  padding: 0 !important;
-}
-
-.modalTitle {
-  background-color: #e8e8e8;
-}
-
-.modalTitle small{
-  font-size: 14px;
-}
-
 /* pageFundDetailsTrader */
 
 .cardtitle {

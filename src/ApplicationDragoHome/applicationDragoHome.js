@@ -75,7 +75,7 @@ export default class ApplicationDragoHome extends Component {
     if (element != null) {
       this.scrollPosition = window.scrollY
     }
-
+    // Returning false if no need to update children, true if needed.
     return accountsUpdate || propsUpdate
   }
 
@@ -112,9 +112,7 @@ export default class ApplicationDragoHome extends Component {
     const {isManager, location} = this.props
 
     if (loading) {
-      return (
-        <Loading />
-      );
+      return null
     }
 
     if (isManager) {

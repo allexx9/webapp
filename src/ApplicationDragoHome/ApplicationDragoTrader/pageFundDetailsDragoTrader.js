@@ -70,7 +70,8 @@ class PageFundDetailsDragoTrader extends Component {
       },
       dragoTransactionsLogs: [],
       loading: true,
-      snackBar: false
+      snackBar: false,
+      snackBarMsg: ''
     }
   
 
@@ -113,18 +114,21 @@ class PageFundDetailsDragoTrader extends Component {
       );
     }
 
+    snackBar = (msg) =>{
+      this.setState({
+        snackBar: true,
+        snackBarMsg: msg
+      })
+    }
+
     renderCopyButton = (text) =>{
       if (!text ) {
         return null;
       }
       
-      const snackBar = () =>{
-        this.setState({snackBar: true})
-      }
-      
       return (
         <CopyToClipboard text={text}
-            onCopy={() => snackBar()}>
+            onCopy={() => this.snackBar('Copied to clilpboard')}>
             <Link to={'#'} ><CopyContent className={styles.copyAddress}/></Link>
         </CopyToClipboard>
       );
@@ -227,7 +231,7 @@ class PageFundDetailsDragoTrader extends Component {
                       {this.renderAddress(dragoDetails)}
                     </ToolbarGroup>
                     <ToolbarGroup>
-                    <ElementFundActions dragoDetails={dragoDetails}/>
+                    <ElementFundActions dragoDetails={dragoDetails} accounts={accounts} snackBar={this.snackBar}/>
                   </ToolbarGroup>
                 </Toolbar>
                 <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle} className={styles.test}>
@@ -271,8 +275,10 @@ class PageFundDetailsDragoTrader extends Component {
         </Col>
         <Snackbar
           open={this.state.snackBar}
-          message="Copied to clilpboard"
+          message={this.state.snackBarMsg}
           autoHideDuration={4000}
+          action="close"
+          onActionTouchTap={this.handleRequestClose}
           onRequestClose={this.handleRequestClose}
         />
       </Row>
@@ -368,6 +374,10 @@ class PageFundDetailsDragoTrader extends Component {
         const hexAccount = '0x' + account.address.substr(2).padStart(64,'0')
         return hexAccount
       })
+      const options = {
+        fromBlock: 0,
+        toBlock: 'pending',
+      }
       const eventsFilterBuy = {
         topics: [ 
           [dragoFactoryEventsSignatures(contract).BuyDrago.hexSignature], 
