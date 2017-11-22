@@ -14,8 +14,8 @@ export function formatBlockNumber (blockNumber) {
 }
 
 export function formatCoins (amount, decimals = 1, api) {  //prev. decimals = 6
+  // console.log(amount.toNumber())
   const adjusted = amount.div(DIVISOR);
-
   if (decimals === -1) {
     if (adjusted.gte(10000)) {
       decimals = 0;

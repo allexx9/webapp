@@ -3,11 +3,11 @@
 import BigNumber from 'bignumber.js';
 
 export const ERRORS = {
-  invalidAccount: 'please select an account to transact with',
-  invalidRecipient: 'please select an account to send to',
-  invalidAddress: 'the address is not in the correct format',
-  invalidAmount: 'please enter a positive amount > 0',
-  invalidTotal: 'the amount is greater than the availale balance'
+  invalidAccount: 'Please select an account to transact with',
+  invalidRecipient: 'Please select an account to send to',
+  invalidAddress: 'The address is not in the correct format',
+  invalidAmount: 'Please enter a positive number > 0',
+  invalidTotal: 'The amount is greater than the availale balance'
 };
 
 export function validatePositiveNumber (value) {

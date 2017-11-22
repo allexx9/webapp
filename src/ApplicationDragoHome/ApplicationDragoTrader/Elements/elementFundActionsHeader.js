@@ -23,7 +23,8 @@ export default class ElementFundActionsHeader extends React.Component {
   headerButtonsStyle = {
     selected: {
       fontWeight: 700,
-      fontSize: 20
+      fontSize: 20,
+      color: '#E3F2FD'
     },
     notSelected: {
       fontWeight: 700,

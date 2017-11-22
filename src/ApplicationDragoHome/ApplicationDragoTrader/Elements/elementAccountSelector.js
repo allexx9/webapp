@@ -30,7 +30,7 @@ export default class AccountSelect extends Component {
 
   render () {
     const { account, accounts, anyAccount, errorText, floatingLabelText, gabBalance, hintText } = this.props;
-    console.log(this.props)
+    // console.log(this.props)
     return (
       <SelectField
         autoComplete='off'
@@ -70,7 +70,7 @@ export function renderAccounts (accounts, options = {}) {
       if (options.anyAccount) {
         return true;
       }
-      console.log(account)
+      // console.log(account)
       return isPositive(account[options.gabBalance ? 'gabBalance' : 'ethBalance']);
     })
     .map((account) => {

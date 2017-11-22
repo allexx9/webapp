@@ -134,10 +134,10 @@ class ElementListTransactions extends PureComponent {
                     width={200}
                     disableSort
                     label="Date"
-                    cellDataGetter={({rowData}) => rowData.timestamp.toISOString()}
+                    cellDataGetter={({rowData}) => rowData.timestamp}
                     dataKey="date"
                     className={styles.exampleColumn}
-                    cellRenderer={({cellData}) => cellData}
+                    cellRenderer={({cellData}) => this.renderTime(cellData)}
                     flexShrink={1}
                   />
                   <Column
@@ -147,7 +147,7 @@ class ElementListTransactions extends PureComponent {
                     cellDataGetter={({rowData}) => rowData.type}
                     dataKey="action"
                     className={styles.exampleColumn}
-                    cellRenderer={({cellData}) => cellData}
+                    cellRenderer={({cellData}) => this.renderAction(cellData)}
                     flexShrink={1}
                   />
                   <Column
@@ -189,7 +189,7 @@ class ElementListTransactions extends PureComponent {
                     cellDataGetter={({rowData}) => rowData.transactionHash}
                     dataKey="tx"
                     className={styles.exampleColumn}
-                    cellRenderer={({cellData}) => cellData}
+                    cellRenderer={({rowData}) => this.renderTx(rowData.transactionHash)}
                     flexGrow={1}
                   />
                   {/* <Column
@@ -223,6 +223,33 @@ class ElementListTransactions extends PureComponent {
       <div>{ethValue} <small>ETH</small></div>
     )
   }
+
+  renderTx(transactionHash) {
+    return (
+      <span>{this.props.renderCopyButton(transactionHash)} {this.props.renderEtherscanButton('tx', transactionHash)}</span>
+    )
+  }
+
+  renderAction(action) {
+    switch(action) {
+      case "BuyDrago":
+        return <span>Buy</span>
+        break
+      case "SellDrago":
+        return <span>Sell</span>
+        break
+    } 
+  }
+
+  renderTime(timestamp) {
+    const day = ("0" + timestamp.getDate()).slice(-2)
+    const month = ("0" + (timestamp.getMonth() + 1)).slice(-2)
+    const date = timestamp.getFullYear()+'-'+month+'-'+day+' '+timestamp.getHours()+':'+timestamp.getMinutes()+':'+timestamp.getSeconds()
+    return (
+      <span>{date}</span>
+    )
+  }
+
   renderDrgValue(drgvalue) {
     return (
       <div>{drgvalue} <small>DRG</small></div>

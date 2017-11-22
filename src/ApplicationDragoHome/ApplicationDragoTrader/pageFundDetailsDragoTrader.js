@@ -1,6 +1,6 @@
 import { Grid, Row, Col } from 'react-flexbox-grid';
 import { Link, Route, withRouter } from 'react-router-dom'
-import {blue500} from 'material-ui/styles/colors';
+import  * as Colors from 'material-ui/styles/colors';
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 import {List, ListItem} from 'material-ui/List';
@@ -73,7 +73,8 @@ class PageFundDetailsDragoTrader extends Component {
       snackBar: false,
       snackBarMsg: ''
     }
-  
+
+
 
     subTitle = (account) => {
       return (
@@ -134,13 +135,13 @@ class PageFundDetailsDragoTrader extends Component {
       );
     }
 
-    renderEtherscanButton = (text) =>{
+    renderEtherscanButton = (type, text) =>{
       if (!text ) {
         return null;
       }
       
       return (
-      <a href={'https://kovan.etherscan.io/address/' + text} target='_blank'><Search className={styles.copyAddress}/></a>
+      <a href={'https://kovan.etherscan.io/'+type+'/' + text} target='_blank'><Search className={styles.copyAddress}/></a>
       );
     }
 
@@ -151,7 +152,11 @@ class PageFundDetailsDragoTrader extends Component {
     };
 
     renderInfoTable (dragoDetails) {  
+      const detailsBox = {
+        padding: 20,
+      }
       return (
+        <Paper style={detailsBox} zDepth={1}>
         <Table selectable={false} className={styles.detailsTable}>
           <TableBody displayRowCheckbox={false}>
             <TableRow hoverable={false} >
@@ -170,7 +175,7 @@ class PageFundDetailsDragoTrader extends Component {
               </TableRowColumn>
               <TableRowColumn className={styles.detailsTableCell3}>
               {this.renderCopyButton(dragoDetails.address)}
-              &nbsp;{this.renderEtherscanButton(dragoDetails.address)}
+              &nbsp;{this.renderEtherscanButton('address', dragoDetails.address)}
               </TableRowColumn>
             </TableRow>
             <TableRow hoverable={false} >
@@ -179,11 +184,50 @@ class PageFundDetailsDragoTrader extends Component {
                 </TableRowColumn>
                 <TableRowColumn className={styles.detailsTableCell2}>
                 {this.renderCopyButton(dragoDetails.address)}
-                &nbsp;{this.renderEtherscanButton(dragoDetails.address)}
+                &nbsp;{this.renderEtherscanButton('address', dragoDetails.address)}
                 </TableRowColumn>
             </TableRow>
           </TableBody>
         </Table>
+        </Paper>
+      );
+    }
+
+    renderPriceTable (dragoDetails) {  
+      const buyText = {
+        color: Colors.green300,
+      }
+  
+      const sellText = {
+        color: Colors.red300,
+      }
+
+      const priceBox = {
+        padding: 20,
+        textAlign: 'center',
+        fontSize: 25,
+        fontWeight: 600
+      }
+    
+      return (
+        <Paper style={priceBox} zDepth={1}>
+          <Row center="xs" style={{padding: 10}}>
+            <Col xs={6} style={buyText}>
+            BUY
+            </Col>
+            <Col xs={6}>
+            {dragoDetails.buyPrice} ETH
+            </Col>
+          </Row>
+          <Row center="xs">
+            <Col xs={6} style={sellText}>
+            SELL
+            </Col>
+            <Col xs={6}>
+            {dragoDetails.sellPrice} ETH
+            </Col>
+          </Row>
+        </Paper>
       );
     }
 
@@ -236,11 +280,14 @@ class PageFundDetailsDragoTrader extends Component {
                 </Toolbar>
                 <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle} className={styles.test}>
                   <Tab label="Info" className={styles.detailsTab}
-                    icon={<ActionList color={blue500} />}>
+                    icon={<ActionList color={Colors.blue500} />}>
                     <Grid fluid>
                       <Row>
                         <Col xs={6} className={styles.detailsTabContent}>
                           {this.renderInfoTable (dragoDetails)} 
+                        </Col>
+                        <Col xs={6}>
+                          {this.renderPriceTable (dragoDetails)} 
                         </Col>
                       </Row>
                       <Row>
@@ -250,14 +297,16 @@ class PageFundDetailsDragoTrader extends Component {
                           </h3>   
                           <p>Your last 20 transactions on this Drago.</p>
                           <Paper style={paperStyle} zDepth={1} >
-                            <ElementListTransactions accountsInfo={accountsInfo} list={dragoTransactionList}/>
+                            <ElementListTransactions accountsInfo={accountsInfo} list={dragoTransactionList} 
+                            renderCopyButton={this.renderCopyButton}
+                            renderEtherscanButton={this.renderEtherscanButton}/>
                           </Paper>
                         </Col>
                       </Row>
                     </Grid>
                   </Tab>
                   <Tab label="Stats" className={styles.detailsTab}
-                    icon={<ActionAssessment color={blue500} />}>
+                    icon={<ActionAssessment color={Colors.blue500} />}>
                     <Grid fluid>
                       <Row>
                         <Col xs={12} className={styles.detailsTabContent}>
@@ -276,7 +325,6 @@ class PageFundDetailsDragoTrader extends Component {
         <Snackbar
           open={this.state.snackBar}
           message={this.state.snackBarMsg}
-          autoHideDuration={4000}
           action="close"
           onActionTouchTap={this.handleRequestClose}
           onRequestClose={this.handleRequestClose}
@@ -303,27 +351,33 @@ class PageFundDetailsDragoTrader extends Component {
         .then((address) => {
           console.log(`${sourceLogClass} -> The drago registry was found at ${address}`);
           const dragoRegistry = api.newContract(abis.dragoregistry, address).instance;
-  
           return Promise.all([
               dragoRegistry.drago.call({}, [dragoID])
           ])
           .then((dragoDetails) => {
             console.log(`${sourceLogClass} ->  dragoDetails: ${dragoDetails}`)
-            this.setState({
-              dragoDetails: {
-                address: dragoDetails[0][0],
-                name: dragoDetails[0][1],
-                symbol: dragoDetails[0][2],
-                dragoID: dragoDetails[0][3].c[0],
-                addresssOwner: dragoDetails[0][4],
-                addressGroup: dragoDetails[0][5]
-              },
-              loading: false
+            const dragoToken = api.newContract(abis.drago, dragoDetails[0][0]).instance;
+            dragoToken.getData.call({})
+            .then((dragoPrices) => {
+              this.setState({
+                dragoDetails: {
+                  address: dragoDetails[0][0],
+                  name: dragoDetails[0][1],
+                  symbol: dragoDetails[0][2],
+                  dragoID: dragoDetails[0][3].c[0],
+                  addresssOwner: dragoDetails[0][4],
+                  addressGroup: dragoDetails[0][5],
+                  sellPrice: api.util.fromWei(dragoPrices[2].toNumber(4)).toFormat(4),
+                  buyPrice: api.util.fromWei(dragoPrices[3].toNumber(4)).toFormat(4),
+                },
+                loading: false
+              })
             })
+
             this.getTransactions (dragoDetails[0][0], contract, accounts)
           });
         });
-    }  
+      }  
 
     // Getting last transactions
     getTransactions = (dragoAddress, contract, accounts) => {
