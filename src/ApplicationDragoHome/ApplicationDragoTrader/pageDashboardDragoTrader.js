@@ -1,12 +1,14 @@
 import { Grid, Row, Col } from 'react-flexbox-grid';
 import { Link, Route, withRouter } from 'react-router-dom'
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
+import {CopyToClipboard} from 'react-copy-to-clipboard';
 import {List, ListItem} from 'material-ui/List';
 import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
 import AccountIcon from 'material-ui/svg-icons/action/account-circle';
 import Avatar from 'material-ui/Avatar';
 import BigNumber from 'bignumber.js';
 import Chip from 'material-ui/Chip';
+import CopyContent from 'material-ui/svg-icons/content/content-copy';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
@@ -18,6 +20,7 @@ import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import Paper from 'material-ui/Paper';
 import PropTypes from 'prop-types';
 import React, { Component, PureComponent } from 'react';
+import Search from 'material-ui/svg-icons/action/search';
 
 import { dragoFactoryEventsSignatures } from '../../utils/utils.js'
 import { formatCoins, formatEth, formatHash, toHex } from '../../format';
@@ -85,6 +88,29 @@ class PageDashboardDragoTrader extends Component {
       console.log(`${sourceLogClass} -> Updating component with new props`);
     }
 
+    renderCopyButton = (text) =>{
+      if (!text ) {
+        return null;
+      }
+      
+      return (
+        <CopyToClipboard text={text}
+            onCopy={() => this.snackBar('Copied to clilpboard')}>
+            <Link to={'#'} ><CopyContent className={styles.copyAddress}/></Link>
+        </CopyToClipboard>
+      );
+    }
+
+    renderEtherscanButton = (type, text) =>{
+      if (!text ) {
+        return null;
+      }
+      
+      return (
+      <a href={'https://kovan.etherscan.io/'+type+'/' + text} target='_blank'><Search className={styles.copyAddress}/></a>
+      );
+    }
+
     subTitle = (account) => {
       return (
         account.address
@@ -147,7 +173,9 @@ class PageDashboardDragoTrader extends Component {
                         <Col className={styles.transactionsStyle} xs={12}>
                             {(Immutable.List(dragoTransactionsLogs).size == 0) 
                               ? <Loading /> 
-                              : <ElementListTransactions list={Immutable.List(dragoTransactionsLogs)}/>}
+                              : <ElementListTransactions list={Immutable.List(dragoTransactionsLogs)}
+                              renderCopyButton={this.renderCopyButton}
+                              renderEtherscanButton={this.renderEtherscanButton}/>}
                         </Col>
                       </Row>
                     </Paper>

@@ -23,6 +23,8 @@ class ElementListTransactions extends PureComponent {
     list: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
+    renderCopyButton: PropTypes.func.isRequired,
+    renderEtherscanButton: PropTypes.func.isRequired
   };
 
   constructor(props, context) {
