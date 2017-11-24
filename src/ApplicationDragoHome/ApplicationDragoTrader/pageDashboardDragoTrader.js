@@ -1,15 +1,22 @@
+import  * as Colors from 'material-ui/styles/colors';
 import { Grid, Row, Col } from 'react-flexbox-grid';
 import { Link, Route, withRouter } from 'react-router-dom'
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 import {List, ListItem} from 'material-ui/List';
+import {scroller} from 'react-scroll'; //Imports scroller mixin, can use as scroller.scrollTo()
+import {Tabs, Tab} from 'material-ui/Tabs';
 import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
 import AccountIcon from 'material-ui/svg-icons/action/account-circle';
+import ActionAssessment from 'material-ui/svg-icons/action/assessment';
+import ActionHome from 'material-ui/svg-icons/action/home';
+import ActionList from 'material-ui/svg-icons/action/list';
 import Avatar from 'material-ui/Avatar';
 import BigNumber from 'bignumber.js';
 import Chip from 'material-ui/Chip';
 import CopyContent from 'material-ui/svg-icons/content/content-copy';
 import DropDownMenu from 'material-ui/DropDownMenu';
+import FileFolder from 'material-ui/svg-icons/file/folder';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
 import IconButton from 'material-ui/IconButton';
@@ -20,7 +27,11 @@ import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import Paper from 'material-ui/Paper';
 import PropTypes from 'prop-types';
 import React, { Component, PureComponent } from 'react';
+import ReactDOM from 'react-dom'
+// import Scroll from 'react-scroll'; // Imports all Mixins
 import Search from 'material-ui/svg-icons/action/search';
+import ActionShowChart from 'material-ui/svg-icons/editor/show-chart';
+import scrollToComponent from 'react-scroll-to-component'
 
 import { dragoFactoryEventsSignatures } from '../../utils/utils.js'
 import { formatCoins, formatEth, formatHash, toHex } from '../../format';
@@ -32,7 +43,15 @@ import IdentityIcon from '../../IdentityIcon';
 import Loading from '../../Loading';
 import utils from '../../utils/utils'
 
-import styles from '../applicationDragoHome.module.css';
+import styles from './pageDashboardDragoTrader.module.css';
+import { spacing } from 'material-ui/styles';
+
+
+// let ScrollLink       = Scroll.Link;
+// let Element    = Scroll.Element;
+// let Events     = Scroll.Events;
+// let scroll     = Scroll.animateScroll;
+// let scrollSpy  = Scroll.scrollSpy;
 
 class PageDashboardDragoTrader extends Component {
 
@@ -55,12 +74,77 @@ class PageDashboardDragoTrader extends Component {
       dragoTransactionsLogs: [],
       dragoBalances:[],
       loading: true,
+      topBarClassName: null,
+      topBarInitialPosition: null,
+      topBarLinksPosition: null
+    }
+
+
+    componentDidMount() {
+      // Events.scrollEvent.register('begin', function(to, element) {
+      //   console.log("begin", arguments);
+      // });
+
+      // Events.scrollEvent.register('end', function(to, element) {
+      //   console.log("end", arguments);
+      // });
+      // window.addEventListener('scroll', this.handleTopBarPosition);
+      // scrollSpy.update()
+      // Saving the initial position of the link nav bar.
+      // const topPosition =  ReactDOM
+      //   .findDOMNode(this.refs['topBar'])
+      //   .getBoundingClientRect().top
+      // this.setState({
+      //   topBarLinksPosition: topPosition
+      //   }
+      // )
+    }
+
+    componentWillUnmount() {
+      // window.removeEventListener('scroll', this.handleTopBarPosition);
     }
 
     componentWillMount() {
       const { api, contract } = this.context
       const {accounts } = this.props
       this.getTransactions (null, contract, accounts)
+    }
+
+    // handleTopBarPosition = (event) => {
+    //   // Setting fixed position windows is scrolled down.
+    //   // Setting relative position if the windows is scrolled back to top
+    //   const {topBarLinksPosition} = this.state
+    //   if (window.pageYOffset >= topBarLinksPosition) {
+    //     this.setState({
+    //       topBarClassName: styles.topFixedLinkBar
+    //       }
+    //     )
+    //   } else {
+    //     this.setState({
+    //       topBarClassName: styles.topRelativeLinkBar
+    //       }
+    //     )
+    //   }
+    // }
+
+    scrollToTop() {
+      scroller.scrollToTop();
+    }
+
+    scrollToBottom() {
+      scroller.scrollToBottom();
+    }
+
+    scrollTo() {
+      scroller.scrollTo(100);
+    }
+
+    scrollMore() {
+      scroller.scrollMore(100);
+    }
+
+    handleSetActive = (to) => {
+      console.log(to);
     }
 
     // shouldComponentUpdate(nextProps, nextState){
@@ -120,8 +204,18 @@ class PageDashboardDragoTrader extends Component {
     render() {
       const { location, accounts, accountsInfo, allEvents } = this.props
       const { dragoTransactionsLogs, loading, dragoBalances } = this.state 
-      console.log(Immutable.List(dragoTransactionsLogs))
-      console.log(Immutable.List(dragoBalances))
+      const tabButtons = {
+        inkBarStyle: {
+          margin: 'auto',
+          width: 100,
+          backgroundColor: 'white'
+          },
+        tabItemContainerStyle: {
+          margin: 'auto',
+          width: 300,
+        }
+      }
+
       const listAccounts = accounts.map((account) => {
         const { api } = this.context;
         return (
@@ -153,54 +247,198 @@ class PageDashboardDragoTrader extends Component {
           )
         }
       );
-
       return (
+        
       <Row>
         <Col xs={12}>
-          <Row>
-            <Col xs={6}>
-                <Row>
-                  <Col className={styles.transactionsStyle} xs={12}>
-                    <h2>Accounts</h2>
-                    {listAccounts}
+          <Paper className={styles.paperContainer} zDepth={1}>
+            <Toolbar className={styles.detailsToolbar}>
+                <ToolbarGroup className={styles.detailsToolbarGroup}>
+                  <Row className={styles.detailsToolbarGroup}>
+                    <Col xs={12} md={1} className={styles.dragoTitle}>
+                      <h2><Avatar size={50} icon={<ActionHome />} /></h2>
+                    </Col>
+                    <Col xs={12} md={11} className={styles.dragoTitle}>
+                    <p>Dashboard</p>
+                    <small></small>
+                    </Col>
+                  </Row>
+                </ToolbarGroup> 
+                <ToolbarGroup>
+                <p>&nbsp;</p>
+                </ToolbarGroup>
+            </Toolbar>
+            <Row>
+              <Col xs={12}>
+                <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle}>
+                  <Tab label="Accounts" className={styles.detailsTab}
+                  onActive={() => scrollToComponent(this.Accounts, { offset: 0, align: 'top', duration: 500})}
+                    icon={<ActionList color={Colors.blue500} />}>
+                  </Tab>
+                  <Tab label="Holding" className={styles.detailsTab} 
+                    onActive={() => scrollToComponent(this.Dragos, { offset: 0, align: 'top', duration: 500})}
+                    icon={<ActionAssessment color={Colors.blue500} />}>
+                  </Tab>
+                  <Tab label="Transactions" className={styles.detailsTab}
+                  onActive={() => scrollToComponent(this.Transactions, { offset: 0, align: 'top', duration: 500})}
+                    icon={<ActionShowChart color={Colors.blue500} />}>
+                  </Tab>
+                </Tabs>
+                {/* <Row  id= {'topBarLinks'} className={this.state.topBarClassName}>
+                  <Col xs>
+                    <ScrollLink activeClass={styles.navLinkMenuActive} to="test1" spy={true} smooth={true} duration={500} onSetActive={this.handleSetActive}>
+                      Test 1
+                    </ScrollLink>
                   </Col>
-                </Row>
-                <Row style={{outline: 'none'}}>
-                  <Col xs={12} style={{outline: 'none'}}>
-                    <h2>My Transactions</h2>
+                  <Col xs>
+                    <ScrollLink activeClass={styles.navLinkMenuActive} to="test2" spy={true} smooth={true} duration={500} onSetActive={this.handleSetActive}>
+                    Test 2
+                    </ScrollLink>
+                  </Col>
+                  <Col xs>
+                    <ScrollLink activeClass={styles.navLinkMenuActive} to="test3" spy={true} smooth={true} duration={500} onSetActive={this.handleSetActive}>
+                      Test 3
+                    </ScrollLink>
+                  </Col>
+                </Row> */}
+              </Col>
+            </Row>
+            <Row className={styles.transactionsStyle}>
+              <Col xs>
+              <span ref={(section) => { this.Actions = section; }}></span>
+
+                  <h2>My Accounts</h2>
+                  {listAccounts}
+
+              </Col>
+            </Row>
+            <Row className={styles.transactionsStyle}>
+              <Col  xs >
+                <span ref={(section) => { this.Dragos = section; }}></span>
+
+                    <h2>My Dragos</h2>
                     <Paper zDepth={1}>
-                      <Row style={{outline: 'none'}}>
+                      <Row>
                         <Col className={styles.transactionsStyle} xs={12}>
-                            {(Immutable.List(dragoTransactionsLogs).size == 0) 
-                              ? <Loading /> 
-                              : <ElementListTransactions list={Immutable.List(dragoTransactionsLogs)}
-                              renderCopyButton={this.renderCopyButton}
-                              renderEtherscanButton={this.renderEtherscanButton}/>}
+                          {(Immutable.List(dragoBalances).size == 0) 
+                                    ? <Loading /> 
+                                    : <ElementListBalances list={Immutable.List(dragoBalances)}/>}
                         </Col>
                       </Row>
                     </Paper>
-                  </Col>
-                </Row>
-            </Col>
-            <Col xs={6}>
-            <Row>
-              <Col className={styles.transactionsStyle} xs={12}>
-                <h2>My Dragos</h2>
-                <Paper zDepth={1}>
-                  <Row>
-                    <Col className={styles.transactionsStyle} xs={12}>
-                      {(Immutable.List(dragoBalances).size == 0) 
-                                ? <Loading /> 
-                                : <ElementListBalances list={Immutable.List(dragoBalances)}/>}
-                    </Col>
-                  </Row>
-                </Paper>
+
+                </Col>
+            </Row>
+            <Row className={styles.transactionsStyle}>
+              <Col xs>
+                <span ref={(section) => { this.Transactions = section; }}></span>
+
+                  <h2>My Transactions</h2>
+                  <Paper zDepth={1}>
+                    <Row style={{outline: 'none'}}>
+                      <Col className={styles.transactionsStyle} xs={12}>
+                          {(Immutable.List(dragoTransactionsLogs).size == 0) 
+                            ? <Loading /> 
+                            : <ElementListTransactions list={Immutable.List(dragoTransactionsLogs)}
+                            renderCopyButton={this.renderCopyButton}
+                            renderEtherscanButton={this.renderEtherscanButton}/>}
+                      </Col>
+                    </Row>
+                  </Paper>
+
               </Col>
             </Row>
-            </Col>
-          </Row>
+
+
+              {/* <Col xs={12}>
+                <div ref={'topBar'}>
+                  <Row  id= {'topBarLinks'}className={this.state.topBarClassName}>
+                    <Col xs>
+                      <ScrollLink activeClass={styles.navLinkMenuActive} to="test1" spy={true} smooth={true} duration={500} onSetActive={this.handleSetActive}>
+                        Test 1
+                      </ScrollLink>
+                    </Col>
+                    <Col xs>
+                      <ScrollLink activeClass={styles.navLinkMenuActive} to="test2" spy={true} smooth={true} duration={500} onSetActive={this.handleSetActive}>
+                      Test 2
+                      </ScrollLink>
+                    </Col>
+                    <Col xs>
+                      <ScrollLink activeClass={styles.navLinkMenuActive} to="test3" spy={true} smooth={true} duration={500} onSetActive={this.handleSetActive}>
+                        Test 3
+                      </ScrollLink>
+                    </Col>
+                  </Row>
+                </div>
+                <Row>
+                  <Col xs={12}>
+                    <Element name="test1" className={styles.element}>
+                      test 1
+                      test
+                    </Element>
+
+                    <Element name="test2" className={styles.element}>
+                      test 2
+                      test
+                    </Element>
+
+                    <Element name="test3" className={styles.element}>
+                      test 3
+                      test
+                    </Element>
+                  </Col> */}
+
+
+
+          </Paper>
         </Col>
-      </Row>
+      </Row>  
+      // <Row>
+      //   <Col xs={12}>
+      //     <Row>
+      //       <Col xs={6}>
+      //           <Row>
+      //             <Col className={styles.transactionsStyle} xs={12}>
+      //               <h2>Accounts</h2>
+      //               {listAccounts}
+      //             </Col>
+      //           </Row>
+      //           <Row style={{outline: 'none'}}>
+      //             <Col xs={12} style={{outline: 'none'}}>
+                    // <h2>My Transactions</h2>
+                    // <Paper zDepth={1}>
+                    //   <Row style={{outline: 'none'}}>
+                    //     <Col className={styles.transactionsStyle} xs={12}>
+                    //         {(Immutable.List(dragoTransactionsLogs).size == 0) 
+                    //           ? <Loading /> 
+                    //           : <ElementListTransactions list={Immutable.List(dragoTransactionsLogs)}
+                    //           renderCopyButton={this.renderCopyButton}
+                    //           renderEtherscanButton={this.renderEtherscanButton}/>}
+                    //     </Col>
+                    //   </Row>
+                    // </Paper>
+      //             </Col>
+      //           </Row>
+      //       </Col>
+      //       <Col xs={6}>
+      //       <Row>
+      //         <Col className={styles.transactionsStyle} xs={12}>
+      //           <h2>My Dragos</h2>
+      //           <Paper zDepth={1}>
+      //             <Row>
+      //               <Col className={styles.transactionsStyle} xs={12}>
+      //                 {(Immutable.List(dragoBalances).size == 0) 
+      //                           ? <Loading /> 
+      //                           : <ElementListBalances list={Immutable.List(dragoBalances)}/>}
+      //               </Col>
+      //             </Row>
+      //           </Paper>
+      //         </Col>
+      //       </Row>
+      //       </Col>
+      //     </Row>
+      //   </Col>
+      // </Row>
       )
     }
 

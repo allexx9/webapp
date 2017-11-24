@@ -8,6 +8,11 @@
 
 /* pageFundDetailsTrader */
 
+.paperContainer {
+  margin-top: 10px;
+  display: 'inline-block';
+}
+
 .cardtitle {
   background-color: #EEEEEE;
   color: black !important;
@@ -88,20 +93,6 @@
 
 .maincontainer {
   height: 100%
-}
-
-
-/* pageDashboardDragoTrade */
-
-.transactionsStyle {
-  height: 100%;
-  width: 100%;
-  padding: 20px;
-  display: 'inline-block';
-}
-
-.accountChip {
-  margin: 5px !important;
 }
 
 

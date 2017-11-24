@@ -267,60 +267,56 @@ class PageFundDetailsDragoTrader extends Component {
       return (
       <Row>
         <Col xs={12}>
-          <Row>
-            <Col xs={12}>
-              <Paper style={paperContainer} zDepth={1}>
-                <Toolbar className={styles.detailsToolbar}>
-                  <ToolbarGroup className={styles.detailsToolbarGroup}>
-                      {this.renderAddress(dragoDetails)}
-                    </ToolbarGroup>
-                    <ToolbarGroup>
-                    <ElementFundActions dragoDetails={dragoDetails} accounts={accounts} snackBar={this.snackBar}/>
-                  </ToolbarGroup>
-                </Toolbar>
-                <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle} className={styles.test}>
-                  <Tab label="Info" className={styles.detailsTab}
-                    icon={<ActionList color={Colors.blue500} />}>
-                    <Grid fluid>
-                      <Row>
-                        <Col xs={6} className={styles.detailsTabContent}>
-                          {this.renderInfoTable (dragoDetails)} 
-                        </Col>
-                        <Col xs={6}>
-                          {this.renderPriceTable (dragoDetails)} 
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col xs={12} className={styles.detailsTabContent}>
-                          <h3>
-                            Last transactions
-                          </h3>   
-                          <p>Your last 20 transactions on this Drago.</p>
-                          <Paper style={paperStyle} zDepth={1} >
-                            <ElementListTransactions accountsInfo={accountsInfo} list={dragoTransactionList} 
-                            renderCopyButton={this.renderCopyButton}
-                            renderEtherscanButton={this.renderEtherscanButton}/>
-                          </Paper>
-                        </Col>
-                      </Row>
-                    </Grid>
-                  </Tab>
-                  <Tab label="Stats" className={styles.detailsTab}
-                    icon={<ActionAssessment color={Colors.blue500} />}>
-                    <Grid fluid>
-                      <Row>
-                        <Col xs={12} className={styles.detailsTabContent}>
-                          <p>
-                            Stats
-                          </p>   
-                        </Col>
-                      </Row>
-                    </Grid>
-                  </Tab>
-                </Tabs>
-              </Paper>
-            </Col>
-          </Row>
+          <Paper className={styles.paperContainer} zDepth={1}>
+            <Toolbar className={styles.detailsToolbar}>
+              <ToolbarGroup className={styles.detailsToolbarGroup}>
+                {this.renderAddress(dragoDetails)}
+              </ToolbarGroup>
+              <ToolbarGroup>
+                <ElementFundActions dragoDetails={dragoDetails} accounts={accounts} snackBar={this.snackBar}/>
+              </ToolbarGroup>
+            </Toolbar>
+            <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle} className={styles.test}>
+              <Tab label="Info" className={styles.detailsTab}
+                icon={<ActionList color={Colors.blue500} />}>
+                <Grid fluid>
+                  <Row>
+                    <Col xs={6} className={styles.detailsTabContent}>
+                      {this.renderInfoTable (dragoDetails)} 
+                    </Col>
+                    <Col xs={6}>
+                      {this.renderPriceTable (dragoDetails)} 
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col xs={12} className={styles.detailsTabContent}>
+                      <h3>
+                        Last transactions
+                      </h3>   
+                      <p>Your last 20 transactions on this Drago.</p>
+                      <Paper style={paperStyle} zDepth={1} >
+                        <ElementListTransactions accountsInfo={accountsInfo} list={dragoTransactionList} 
+                        renderCopyButton={this.renderCopyButton}
+                        renderEtherscanButton={this.renderEtherscanButton}/>
+                      </Paper>
+                    </Col>
+                  </Row>
+                </Grid>
+              </Tab>
+              <Tab label="Stats" className={styles.detailsTab}
+                icon={<ActionAssessment color={Colors.blue500} />}>
+                <Grid fluid>
+                  <Row>
+                    <Col xs={12} className={styles.detailsTabContent}>
+                      <p>
+                        Stats
+                      </p>   
+                    </Col>
+                  </Row>
+                </Grid>
+              </Tab>
+            </Tabs>
+          </Paper>
         </Col>
         <Snackbar
           open={this.state.snackBar}
