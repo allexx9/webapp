@@ -495,6 +495,7 @@ export default class ElementFundActions extends React.Component {
   }
 
 
+
   render() {
     const { dragoDetails, accounts } = this.props
     const { actionStyle } = this.state
@@ -526,9 +527,10 @@ export default class ElementFundActions extends React.Component {
               handleBuyAction={this.handleBuyAction}
             />}
             actions={actions}
-            modal={true}
+            modal={false}
             open={this.state.open}
             contentStyle={customContentStyle}
+            onRequestClose={this.handleClose}
           >
           <Row>
             <Col xs={12}>
