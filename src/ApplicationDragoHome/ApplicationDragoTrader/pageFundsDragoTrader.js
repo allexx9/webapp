@@ -2,31 +2,36 @@ import { Grid, Row, Col } from 'react-flexbox-grid';
 import { Link, Route, withRouter } from 'react-router-dom'
 import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
 import AccountIcon from 'material-ui/svg-icons/action/account-circle';
+import ActionAssessment from 'material-ui/svg-icons/action/assessment'
 import ActionHome from 'material-ui/svg-icons/action/home';
 import ActionLightBulb from 'material-ui/svg-icons/action/lightbulb-outline';
-import ActionPolymer from 'material-ui/svg-icons/action/polymer';
-import ActionShowChart from 'material-ui/svg-icons/editor/show-chart';
-import DropDownMenu from 'material-ui/DropDownMenu';
-import FlatButton from 'material-ui/FlatButton';
-import FontIcon from 'material-ui/FontIcon';
-import IconButton from 'material-ui/IconButton';
-import IconMenu from 'material-ui/IconMenu';
-import Immutable from 'immutable';
-import MenuItem from 'material-ui/MenuItem';
+import ActionPolymer from 'material-ui/svg-icons/action/polymer'
+import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
+import Avatar from 'material-ui/Avatar';
+import DropDownMenu from 'material-ui/DropDownMenu'
+import FlatButton from 'material-ui/FlatButton'
+import FontIcon from 'material-ui/FontIcon'
+import IconButton from 'material-ui/IconButton'
+import IconMenu from 'material-ui/IconMenu'
+import Immutable from 'immutable'
+import MenuItem from 'material-ui/MenuItem'
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom'
+
 
 import { generateRandomList } from './Elements/utils';
 import { toHex } from '../../format';
 import * as abis from '../../contracts';
 import ElementListFunds from './Elements/elementListFunds'
+import FilterFunds from './Elements/elementFilterFunds'
 import Loading from '../../Loading';
-
-import styles from '../applicationDragoHome.module.css';
-
+import SearchFunds from './Elements/elementSearchFunds'
 import TableExample from './Elements/ElementTest'
+
+import styles from './pageFundsDragoTrader.module.css'
 
 // Getting events signatures
 const dragoFactoryEventsSignatures = (contract) => {
@@ -41,6 +46,11 @@ const dragoFactoryEventsSignatures = (contract) => {
 
 
 class PageFundsDragoTrader extends Component {
+
+  constructor() {
+    super()
+    this.filterList = this.filterList.bind(this);
+  }
 
   static contextTypes = {
     api: PropTypes.object.isRequired,
@@ -76,6 +86,14 @@ class PageFundsDragoTrader extends Component {
     componentWillUpdate() {
     }
 
+    filterList (filteredList) {
+      const { dragoCreatedLogs } = this.state;
+      console.log(filteredList)
+      this.setState({
+        dragoFilteredList: filteredList
+      })
+    }
+
     // componentDidUpdate () {
     //   const element = ReactDOM.findDOMNode(this);
     //   if (element != null) {
@@ -85,25 +103,56 @@ class PageFundsDragoTrader extends Component {
 
     render() {
       var { location, accountsInfo, allEvents } = this.props
-      const { dragoCreatedLogs } = this.state;
-      const dragoCreatedList = Immutable.List(dragoCreatedLogs)
-
-      // Waiting to render ElementListFunds component until DragoCreated events are retrieved
-      if (dragoCreatedList.size == 0) {
-        return (
-          null
-        );
+      const { dragoCreatedLogs, dragoFilteredList } = this.state;
+      const dragoSearchList = Immutable.List(dragoCreatedLogs)
+      const dragoList = Immutable.List(dragoFilteredList)
+      const detailsBox = {
+        padding: 20,
       }
 
-      return (
-        <div style={{outline: 'none', overflow: 'hidden', flex: '1'}}>        
-          <h1>Dragos</h1>
-          <Grid fluid style={{outline: 'none', overflow: 'hidden'}}>
-            <ElementListFunds accountsInfo={accountsInfo} list={dragoCreatedList}/>
-            {/* <TableExample></TableExample> */}
-          </Grid>
-        </div>
+      // Waiting to render ElementListFunds component until DragoCreated events are retrieved
+      // if (dragoList.size == 0) {
+      //   return (
+      //     null
+      //   );
+      // }
 
+      return (
+        <Row>
+        <Col xs={12}>
+          <Paper className={styles.paperContainer} zDepth={1}>
+            <Toolbar className={styles.detailsToolbar}>
+                <ToolbarGroup className={styles.detailsToolbarGroup}>
+                  <Row className={styles.detailsToolbarGroup}>
+                    <Col xs={12} md={1} className={styles.dragoTitle}>
+                      <h2><Avatar size={50} icon={<ActionShowChart />} /></h2>
+                    </Col>
+                    <Col xs={12} md={11} className={styles.dragoTitle}>
+                    <p>Dragos</p>
+                    <small></small>
+                    </Col>
+                  </Row>
+                </ToolbarGroup> 
+                <ToolbarGroup>
+                <p>&nbsp;</p>
+                </ToolbarGroup>
+            </Toolbar>
+            <Row className={styles.transactionsStyle}>
+              <Col xs>
+                <Paper style={detailsBox} zDepth={1}>
+                  <FilterFunds fundsList={dragoSearchList} filterList={this.filterList}></FilterFunds> 
+                </Paper>
+                <p></p>
+              </Col>
+            </Row>
+            <Row className={styles.transactionsStyle}>
+              <Col xs>
+                <ElementListFunds accountsInfo={accountsInfo} list={dragoList}/>
+              </Col>
+            </Row>
+          </Paper>
+        </Col>
+      </Row>
       )
     }
 
@@ -141,7 +190,8 @@ class PageFundsDragoTrader extends Component {
       .then((dragoCreatedLogs) => {
         const logs = dragoCreatedLogs.map(logToEvent)
         this.setState({
-          dragoCreatedLogs: logs
+          dragoCreatedLogs: logs,
+          dragoFilteredList: logs
         })
       }
       )

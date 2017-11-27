@@ -11,7 +11,7 @@ import AccountIcon from 'material-ui/svg-icons/action/account-circle';
 import ActionAssessment from 'material-ui/svg-icons/action/assessment';
 import ActionHome from 'material-ui/svg-icons/action/home';
 import ActionList from 'material-ui/svg-icons/action/list';
-import Avatar from 'material-ui/Avatar';
+import Avatar from 'material-ui/Avatar'
 import BigNumber from 'bignumber.js';
 import Chip from 'material-ui/Chip';
 import CopyContent from 'material-ui/svg-icons/content/content-copy';
@@ -24,11 +24,10 @@ import IconMenu from 'material-ui/IconMenu';
 import Immutable from 'immutable';
 import MenuItem from 'material-ui/MenuItem';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
-import Paper from 'material-ui/Paper';
+import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types';
 import React, { Component, PureComponent } from 'react';
 import ReactDOM from 'react-dom'
-// import Scroll from 'react-scroll'; // Imports all Mixins
 import Search from 'material-ui/svg-icons/action/search';
 import ActionShowChart from 'material-ui/svg-icons/editor/show-chart';
 import scrollToComponent from 'react-scroll-to-component'
@@ -40,8 +39,9 @@ import ElementListBalances from './Elements/elementListBalances'
 import ElementListTransactions from './Elements/elementListTransactions'
 import ElementTradeBox from './elementTradeBox'
 import IdentityIcon from '../../IdentityIcon';
-import Loading from '../../Loading';
+import Loading from '../../Loading'
 import utils from '../../utils/utils'
+
 
 import styles from './pageDashboardDragoTrader.module.css';
 import { spacing } from 'material-ui/styles';
@@ -219,8 +219,7 @@ class PageDashboardDragoTrader extends Component {
       const listAccounts = accounts.map((account) => {
         const { api } = this.context;
         return (
-          <Row key={account.address} between="xs">
-            <Col xs={12}>
+            <Col xs={6} key={account.name}>
               <Card>
                 <Row between="xs">
                   <Col xs >
@@ -243,7 +242,6 @@ class PageDashboardDragoTrader extends Component {
                 </Row>
               </Card>
             </Col>
-          </Row>
           )
         }
       );
@@ -284,32 +282,15 @@ class PageDashboardDragoTrader extends Component {
                     icon={<ActionShowChart color={Colors.blue500} />}>
                   </Tab>
                 </Tabs>
-                {/* <Row  id= {'topBarLinks'} className={this.state.topBarClassName}>
-                  <Col xs>
-                    <ScrollLink activeClass={styles.navLinkMenuActive} to="test1" spy={true} smooth={true} duration={500} onSetActive={this.handleSetActive}>
-                      Test 1
-                    </ScrollLink>
-                  </Col>
-                  <Col xs>
-                    <ScrollLink activeClass={styles.navLinkMenuActive} to="test2" spy={true} smooth={true} duration={500} onSetActive={this.handleSetActive}>
-                    Test 2
-                    </ScrollLink>
-                  </Col>
-                  <Col xs>
-                    <ScrollLink activeClass={styles.navLinkMenuActive} to="test3" spy={true} smooth={true} duration={500} onSetActive={this.handleSetActive}>
-                      Test 3
-                    </ScrollLink>
-                  </Col>
-                </Row> */}
               </Col>
             </Row>
             <Row className={styles.transactionsStyle}>
               <Col xs>
               <span ref={(section) => { this.Actions = section; }}></span>
-
                   <h2>My Accounts</h2>
-                  {listAccounts}
-
+                  <Row between="xs">
+                    {listAccounts}
+                  </Row>
               </Col>
             </Row>
             <Row className={styles.transactionsStyle}>
@@ -345,100 +326,11 @@ class PageDashboardDragoTrader extends Component {
                       </Col>
                     </Row>
                   </Paper>
-
               </Col>
             </Row>
-
-
-              {/* <Col xs={12}>
-                <div ref={'topBar'}>
-                  <Row  id= {'topBarLinks'}className={this.state.topBarClassName}>
-                    <Col xs>
-                      <ScrollLink activeClass={styles.navLinkMenuActive} to="test1" spy={true} smooth={true} duration={500} onSetActive={this.handleSetActive}>
-                        Test 1
-                      </ScrollLink>
-                    </Col>
-                    <Col xs>
-                      <ScrollLink activeClass={styles.navLinkMenuActive} to="test2" spy={true} smooth={true} duration={500} onSetActive={this.handleSetActive}>
-                      Test 2
-                      </ScrollLink>
-                    </Col>
-                    <Col xs>
-                      <ScrollLink activeClass={styles.navLinkMenuActive} to="test3" spy={true} smooth={true} duration={500} onSetActive={this.handleSetActive}>
-                        Test 3
-                      </ScrollLink>
-                    </Col>
-                  </Row>
-                </div>
-                <Row>
-                  <Col xs={12}>
-                    <Element name="test1" className={styles.element}>
-                      test 1
-                      test
-                    </Element>
-
-                    <Element name="test2" className={styles.element}>
-                      test 2
-                      test
-                    </Element>
-
-                    <Element name="test3" className={styles.element}>
-                      test 3
-                      test
-                    </Element>
-                  </Col> */}
-
-
-
           </Paper>
         </Col>
       </Row>  
-      // <Row>
-      //   <Col xs={12}>
-      //     <Row>
-      //       <Col xs={6}>
-      //           <Row>
-      //             <Col className={styles.transactionsStyle} xs={12}>
-      //               <h2>Accounts</h2>
-      //               {listAccounts}
-      //             </Col>
-      //           </Row>
-      //           <Row style={{outline: 'none'}}>
-      //             <Col xs={12} style={{outline: 'none'}}>
-                    // <h2>My Transactions</h2>
-                    // <Paper zDepth={1}>
-                    //   <Row style={{outline: 'none'}}>
-                    //     <Col className={styles.transactionsStyle} xs={12}>
-                    //         {(Immutable.List(dragoTransactionsLogs).size == 0) 
-                    //           ? <Loading /> 
-                    //           : <ElementListTransactions list={Immutable.List(dragoTransactionsLogs)}
-                    //           renderCopyButton={this.renderCopyButton}
-                    //           renderEtherscanButton={this.renderEtherscanButton}/>}
-                    //     </Col>
-                    //   </Row>
-                    // </Paper>
-      //             </Col>
-      //           </Row>
-      //       </Col>
-      //       <Col xs={6}>
-      //       <Row>
-      //         <Col className={styles.transactionsStyle} xs={12}>
-      //           <h2>My Dragos</h2>
-      //           <Paper zDepth={1}>
-      //             <Row>
-      //               <Col className={styles.transactionsStyle} xs={12}>
-      //                 {(Immutable.List(dragoBalances).size == 0) 
-      //                           ? <Loading /> 
-      //                           : <ElementListBalances list={Immutable.List(dragoBalances)}/>}
-      //               </Col>
-      //             </Row>
-      //           </Paper>
-      //         </Col>
-      //       </Row>
-      //       </Col>
-      //     </Row>
-      //   </Col>
-      // </Row>
       )
     }
 
@@ -613,6 +505,7 @@ class PageDashboardDragoTrader extends Component {
             }
             dragoBalances[dragoID] = {
               balance: balance,
+              name: dragoDetails[0][1],
               symbol: dragoDetails[0][2],
               dragoID: dragoID
             }
@@ -637,6 +530,7 @@ class PageDashboardDragoTrader extends Component {
             for(var v in dragoBalances) {
               var balance = {
                 symbol: dragoBalances[v].symbol,
+                name: dragoBalances[v].name,
                 dragoID: dragoBalances[v].dragoID,
                 balance: formatCoins(dragoBalances[v].balance,4,api)
               }

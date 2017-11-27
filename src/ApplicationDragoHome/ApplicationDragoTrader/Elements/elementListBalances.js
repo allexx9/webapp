@@ -124,7 +124,7 @@ class ElementListBalances extends PureComponent {
                   sortDirection={sortDirection}
                   width={width}>
                   <Column
-                    width={width}
+                    width={150}
                     disableSort
                     label="Symbol"
                     cellDataGetter={({rowData}) => rowData.symbol}
@@ -132,11 +132,21 @@ class ElementListBalances extends PureComponent {
                     cellRenderer={({cellData}) => cellData.symbol}
                     className={styles.exampleColumn}
                     cellRenderer={({cellData}) => cellData}
-                    flexGrow={1}
+                    flexShrink={1}
                   />
-                  {/* formatEth(price) }<small> ETH</small> */}
                   <Column
-                    width={200}
+                    width={width}
+                    disableSort
+                    label="Name"
+                    cellDataGetter={({rowData}) => rowData.name}
+                    dataKey="name"
+                    cellRenderer={({cellData}) => cellData.name}
+                    className={styles.exampleColumn}
+                    cellRenderer={({cellData}) => cellData}
+                    flexShrink={1}
+                  />
+                  <Column
+                    width={250}
                     disableSort
                     label="Balance"
                     cellDataGetter={({rowData}) => rowData.balance}

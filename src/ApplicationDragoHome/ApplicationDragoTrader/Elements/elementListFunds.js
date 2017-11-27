@@ -28,11 +28,19 @@ class ElementListFunds extends PureComponent {
   constructor(props, context) {
     super(props, context);
     const { accountsInfo, list } = this.props
+
+    // Saving the list in the state
+    this.state = {
+      list: list,
+    };
+
+    // Preparing the sorted list to be displayed
     const sortBy = 'symbol';
     const sortDirection = SortDirection.ASC;
-    const sortedList = this._sortList({sortBy, sortDirection});
+    const sortedList = this._sortList({sortBy, sortDirection, });
     const rowCount = list.size
 
+    // Initializing the state
     this.state = {
       disableHeader: false,
       headerHeight: 30,
@@ -45,7 +53,8 @@ class ElementListFunds extends PureComponent {
       sortBy,
       sortDirection,
       sortedList,
-      useDynamicRowHeight: false
+      useDynamicRowHeight: false,
+      list: list
     };
 
     this._getRowHeight = this._getRowHeight.bind(this);
@@ -55,6 +64,22 @@ class ElementListFunds extends PureComponent {
     this._onScrollToRowChange = this._onScrollToRowChange.bind(this);
     this._rowClassName = this._rowClassName.bind(this);
     this._sort = this._sort.bind(this);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    // Updating the list
+    const rowCount = nextProps.list.size
+    const {list, sortDirection, sortBy} = nextProps
+    const sortedList = list
+      .sortBy(item => item.params.symbol.value)
+      .update(
+        list => (sortDirection === SortDirection.DESC ? list.reverse() : list),
+      );
+    this.setState({
+      sortedList, sortedList,
+      rowCount: rowCount,
+      list: nextProps.list
+    })
   }
 
   render() {
@@ -87,100 +112,9 @@ class ElementListFunds extends PureComponent {
 
     const rowGetter = ({index}) => this._getDatum(sortedList, index);
 
-
     return (
-      
-        <Row>
-          <Col xs={12}>
-          <div style={{ flex: '1 1 auto' }}>
-          {/* <label className={styles.checkboxLabel}>
-            <input
-              aria-label="Use dynamic row heights?"
-              checked={useDynamicRowHeight}
-              className={styles.checkbox}
-              type="checkbox"
-              onChange={event =>
-                this._updateUseDynamicRowHeight(event.target.checked)}
-            />
-            Use dynamic row heights?
-          </label> */}
-
-          {/* <label className={styles.checkboxLabel}>
-            <input
-              aria-label="Hide index?"
-              checked={hideIndexRow}
-              className={styles.checkbox}
-              type="checkbox"
-              onChange={event =>
-                this.setState({hideIndexRow: event.target.checked})}
-            />
-            Hide index?
-          </label>
-
-          <label className={styles.checkboxLabel}>
-            <input
-              aria-label="Hide header?"
-              checked={disableHeader}
-              className={styles.checkbox}
-              type="checkbox"
-              onChange={event =>
-                this.setState({disableHeader: event.target.checked})}
-            />
-            Hide header?
-          </label> */}
-        
-        {/* <InputRow>
-          <LabeledInput
-            label="Num rows"
-            name="rowCount"
-            onChange={this._onRowCountChange}
-            value={rowCount}
-          />
-          <LabeledInput
-            label="Scroll to"
-            name="onScrollToRow"
-            placeholder="Index..."
-            onChange={this._onScrollToRowChange}
-            value={scrollToIndex || ''}
-          />
-          <LabeledInput
-            label="List height"
-            name="height"
-            onChange={event =>
-              this.setState({height: parseInt(event.target.value, 10) || 1})}
-            value={height}
-          />
-          <LabeledInput
-            disabled={useDynamicRowHeight}
-            label="Row height"
-            name="rowHeight"
-            onChange={event =>
-              this.setState({
-                rowHeight: parseInt(event.target.value, 10) || 1,
-              })}
-            value={rowHeight}
-          />
-          <LabeledInput
-            label="Header height"
-            name="headerHeight"
-            onChange={event =>
-              this.setState({
-                headerHeight: parseInt(event.target.value, 10) || 1,
-              })}
-            value={headerHeight}
-          />
-          <LabeledInput
-            label="Overscan"
-            name="overscanRowCount"
-            onChange={event =>
-              this.setState({
-                overscanRowCount: parseInt(event.target.value, 10) || 0,
-              })}
-            value={overscanRowCount}
-          />
-        </InputRow> */}
-
-
+      <Row>
+        <Col xs={12}>
           <AutoSizer disableHeight>
             {({width}) => (
               <Table
@@ -205,7 +139,7 @@ class ElementListFunds extends PureComponent {
                     label="Index"
                     cellDataGetter={({rowData}) => rowData.params.dragoID.value.c}
                     dataKey="index"
-                    disableSort={!this._isSortEnabled()}
+                    // disableSort={!this._isSortEnabled()}
                     width={60}
                   />
                 )}
@@ -259,8 +193,7 @@ class ElementListFunds extends PureComponent {
               </Table>
             )}
           </AutoSizer>
-          </div>
-      </Col>
+        </Col>
       </Row>
       
     );
@@ -292,7 +225,7 @@ class ElementListFunds extends PureComponent {
   }
 
   _isSortEnabled() {
-    const {list} = this.props;
+    const {list} = this.state;
     const {rowCount} = this.state;
 
     return rowCount <= list.size;
@@ -333,11 +266,15 @@ class ElementListFunds extends PureComponent {
   _sort({sortBy, sortDirection}) {
     const sortedList = this._sortList({sortBy, sortDirection});
 
-    this.setState({sortBy, sortDirection, sortedList});
+    this.setState({ 
+      sortBy, 
+      sortDirection, 
+      sortedList
+    });
   }
 
   _sortList({sortBy, sortDirection}) {
-    const {list} = this.props;
+    const {list} = this.state
     return list
       .sortBy(item => item.params.symbol.value)
       .update(

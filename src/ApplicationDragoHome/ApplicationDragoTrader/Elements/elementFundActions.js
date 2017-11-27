@@ -152,20 +152,32 @@ export default class ElementFundActions extends React.Component {
   }
 
   handleSellAction = () => {
+    const {dragoDetails} = this.props
     return this.setState({
       action: 'sell',
       amount: 0,
       actionSummary: 'SELLING',
-      actionStyleBuySell: this.actionSellStyle
+      actionStyleBuySell: this.actionSellStyle,
+      switchButton: {
+        label: 'Amount',
+        denomination: dragoDetails.symbol,
+        hint: 'Amount'
+      }
     })
   }
 
   handleBuyAction = () => {
+    const {dragoDetails} = this.props
     return this.setState({
       action: 'buy',
       amount: 0,
       actionSummary: 'BUYING',
-      actionStyleBuySell: this.actionBuyStyle
+      actionStyleBuySell: this.actionBuyStyle,
+      switchButton: {
+        label: 'Units',
+        denomination: 'ETH',
+        hint: 'Amount'
+      }
     })
   }
 
@@ -373,7 +385,6 @@ export default class ElementFundActions extends React.Component {
 
   unitsSwitch = () => {
     const {dragoDetails} = this.props
-    console.log('switch')
     this.setState({
       switchButton: { 
         label: this.state.switchButton.label == 'Units' ? 'Amount' : 'Units',
@@ -470,7 +481,6 @@ export default class ElementFundActions extends React.Component {
     const { amount, action, newDrgBalance, drgBalance, drgOrder } = this.state
     const { dragoDetails } = this.props
     return (
-      <Col xs={6}>
         <Table selectable={false} className={styles.detailsTable}>
           <TableBody displayRowCheckbox={false}>
             <TableRow hoverable={false} >
@@ -490,7 +500,6 @@ export default class ElementFundActions extends React.Component {
             </TableRow>
           </TableBody>
         </Table>
-      </Col>
     )
   }
 
@@ -551,8 +560,11 @@ export default class ElementFundActions extends React.Component {
               </Col>
           </Row>
           <Row>
-            {this.holding()}
+            <Col xs={6}>
+              {this.holding()}
+            </Col>
             {this.state.action =='buy' ? this.buyFields() : this.sellFields()}
+
           </Row>
           <Row>
             <Col xs={12} className={styles.grossAmountWarning}>

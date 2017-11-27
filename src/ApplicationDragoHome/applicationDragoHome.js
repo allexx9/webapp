@@ -63,10 +63,10 @@ export default class ApplicationDragoHome extends Component {
     // Checking if the total accounts balance has changed.
     // If positive a render is trigged so that the childrens are aware that something has changed.
     const  sourceLogClass = this.constructor.name
-    console.log(`${sourceLogClass} -> shouldComponentUpdate`);
+    // console.log(`${sourceLogClass} -> shouldComponentUpdate`);
     const accountsUpdate = !this.state.ethBalance.eq(nextState.ethBalance)
     const propsUpdate = (!utils.shallowEqual(this.props, nextProps))
-    console.log (`${sourceLogClass} -> Received new props. Need update? ${accountsUpdate || propsUpdate}`);
+    // console.log (`${sourceLogClass} -> Received new props. Need update? ${accountsUpdate || propsUpdate}`);
 
 
     // Saving the scroll position. Neede in componentDidUpdate in order to avoid the the page scroll to be
@@ -160,7 +160,7 @@ export default class ApplicationDragoHome extends Component {
         // })
         const ethQueries = accounts.map((account) => api.eth.getBalance(account.address));
         accounts.map((account) => {
-          console.log('API call getBalance -> applicationDragoHome: Getting balance of account', account.name);
+          // console.log('API call getBalance -> applicationDragoHome: Getting balance of account', account.name);
           }
         )
         return Promise.all([

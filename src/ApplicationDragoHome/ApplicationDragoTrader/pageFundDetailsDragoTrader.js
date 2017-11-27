@@ -1,6 +1,6 @@
+import  * as Colors from 'material-ui/styles/colors';
 import { Grid, Row, Col } from 'react-flexbox-grid';
 import { Link, Route, withRouter } from 'react-router-dom'
-import  * as Colors from 'material-ui/styles/colors';
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 import {List, ListItem} from 'material-ui/List';
@@ -8,10 +8,9 @@ import {Tabs, Tab} from 'material-ui/Tabs';
 import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
 import ActionAssessment from 'material-ui/svg-icons/action/assessment';
 import ActionList from 'material-ui/svg-icons/action/list';
-import Search from 'material-ui/svg-icons/action/search';
-import CopyContent from 'material-ui/svg-icons/content/content-copy';
 import Avatar from 'material-ui/Avatar';
 import Chip from 'material-ui/Chip';
+import CopyContent from 'material-ui/svg-icons/content/content-copy';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
@@ -22,14 +21,16 @@ import Paper from 'material-ui/Paper';
 import PropTypes from 'prop-types';
 import RaisedButton from 'material-ui/RaisedButton';
 import React, { Component } from 'react';
+import Search from 'material-ui/svg-icons/action/search';
 import Snackbar from 'material-ui/Snackbar';
-import ElementFundActions from './Elements/elementFundActions'
 
 import { dragoFactoryEventsSignatures } from '../../utils/utils.js'
 import { formatCoins, formatEth, formatHash, toHex } from '../../format';
 import * as abis from '../../contracts';
+import ElementFundActions from './Elements/elementFundActions'
 import IdentityIcon from '../../IdentityIcon';
 import Loading from '../../Loading';
+import InfoTable from './Elements/elementInfoTable'
 
 import {
   Table,
@@ -151,48 +152,6 @@ class PageFundDetailsDragoTrader extends Component {
       });
     };
 
-    renderInfoTable (dragoDetails) {  
-      const detailsBox = {
-        padding: 20,
-      }
-      return (
-        <Paper style={detailsBox} zDepth={1}>
-        <Table selectable={false} className={styles.detailsTable}>
-          <TableBody displayRowCheckbox={false}>
-            <TableRow hoverable={false} >
-              <TableRowColumn className={styles.detailsTableCell}>Symbol</TableRowColumn>
-              <TableRowColumn className={styles.detailsTableCell2}>{dragoDetails.symbol}</TableRowColumn>
-              <TableRowColumn className={styles.detailsTableCell3}></TableRowColumn>
-            </TableRow>
-            <TableRow hoverable={false} >
-              <TableRowColumn className={styles.detailsTableCell}>Name</TableRowColumn>
-              <TableRowColumn className={styles.detailsTableCell2}>{dragoDetails.name}</TableRowColumn>
-              <TableRowColumn className={styles.detailsTableCell3}></TableRowColumn>
-            </TableRow>
-            <TableRow hoverable={false} >
-              <TableRowColumn className={styles.detailsTableCell}>Address</TableRowColumn>
-              <TableRowColumn className={styles.detailsTableCell2}>{dragoDetails.address}
-              </TableRowColumn>
-              <TableRowColumn className={styles.detailsTableCell3}>
-              {this.renderCopyButton(dragoDetails.address)}
-              &nbsp;{this.renderEtherscanButton('address', dragoDetails.address)}
-              </TableRowColumn>
-            </TableRow>
-            <TableRow hoverable={false} >
-              <TableRowColumn className={styles.detailsTableCell}>Owner</TableRowColumn>
-              <TableRowColumn className={styles.detailsTableCell3}>{dragoDetails.addresssOwner} 
-                </TableRowColumn>
-                <TableRowColumn className={styles.detailsTableCell2}>
-                {this.renderCopyButton(dragoDetails.address)}
-                &nbsp;{this.renderEtherscanButton('address', dragoDetails.address)}
-                </TableRowColumn>
-            </TableRow>
-          </TableBody>
-        </Table>
-        </Paper>
-      );
-    }
-
     renderPriceTable (dragoDetails) {  
       const buyText = {
         color: Colors.green300,
@@ -248,8 +207,17 @@ class PageFundDetailsDragoTrader extends Component {
           margin: 'auto',
           width: 200,
         }
-      };
+      }
+      const detailsBox = {
+        padding: 20,
+      }
 
+      const columnsStyle = [styles.detailsTableCell, styles.detailsTableCell2, styles.detailsTableCell3]
+      const tableButtons = [this.renderCopyButton(dragoDetails.address), this.renderEtherscanButton('address', dragoDetails.address)]
+      const tableTest = [['Symbol', dragoDetails.symbol, ''], 
+        ['Name', dragoDetails.name, ''], 
+        ['Address', dragoDetails.address, tableButtons],
+        ['Owner', dragoDetails.addresssOwner, tableButtons]]
       const paperStyle = {
         textAlign: 'center',
       };
@@ -281,8 +249,10 @@ class PageFundDetailsDragoTrader extends Component {
                 icon={<ActionList color={Colors.blue500} />}>
                 <Grid fluid>
                   <Row>
-                    <Col xs={6} className={styles.detailsTabContent}>
-                      {this.renderInfoTable (dragoDetails)} 
+                    <Col xs={6}>
+                      <Paper style={detailsBox} zDepth={1}>
+                        <InfoTable className={styles.detailsTabContent} rows={tableTest} columnsStyle={columnsStyle}/>
+                      </Paper>
                     </Col>
                     <Col xs={6}>
                       {this.renderPriceTable (dragoDetails)} 
