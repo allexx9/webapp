@@ -38,6 +38,7 @@ a.selected {
 }
 
 
+
 @media screen and (max-width: 480px) {
   .responsiveLinks {
     visibility: hidden;
