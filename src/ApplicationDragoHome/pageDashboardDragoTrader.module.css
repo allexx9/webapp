@@ -71,12 +71,3 @@
 .topRelativeLinkBar {    
   position: relative; /* Set the navbar to fixed position */
 }
-
-.tabsRow {
-  background-color: #FFFFFF;
-  margin-left: 0px !important;
-  margin-right: 0px !important;
-  padding-left: 0px !important;
-  padding-right: 0px !important;
-  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 4px;
-}

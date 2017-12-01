@@ -6,7 +6,8 @@ import ReactDOM from 'react-dom'
 
 
 import Accounts from '../Accounts';
-import ApplicationDragoTrader from './ApplicationDragoTrader';
+import ApplicationDragoTrader from './ApplicationDragoTrader'
+import ApplicationDragoManager from './ApplicationDragoManager'
 import Loading from '../Loading';
 import Status from '../Status';
 
@@ -117,7 +118,20 @@ export default class ApplicationDragoHome extends Component {
 
     if (isManager) {
       return (
-        <h1>Manager</h1>
+        <Row className={styles.maincontainer}>
+        <Col xs={2}>
+          <LeftSideDrawer location={location}/>
+        </Col>
+        <Col xs={10}>
+          <ApplicationDragoManager 
+            blockNumber={blockNumber}
+            accounts={accounts}
+            ethBalance={ethBalance}
+            allEvents={allEvents}
+            accountsInfo={accountsInfo}
+          />
+        </Col>
+      </Row>
       );
     }
 

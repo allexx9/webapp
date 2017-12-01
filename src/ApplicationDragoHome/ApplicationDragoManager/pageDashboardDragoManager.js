@@ -5,7 +5,7 @@ import { spacing } from 'material-ui/styles'
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card'
 import {CopyToClipboard} from 'react-copy-to-clipboard'
 import {List, ListItem} from 'material-ui/List'
-import {scroller} from 'react-scroll'; //Imports scroller mixin, can use as scroller.scrollTo()
+import {scroller} from 'react-scroll' //Imports scroller mixin, can use as scroller.scrollTo()
 import {Tabs, Tab} from 'material-ui/Tabs'
 import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar'
 import AccountIcon from 'material-ui/svg-icons/action/account-circle'
@@ -28,7 +28,7 @@ import Immutable from 'immutable'
 import MenuItem from 'material-ui/MenuItem'
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert'
 import Paper from 'material-ui/Paper'
-import PropTypes from 'prop-types';
+import PropTypes from 'prop-types'
 import React, { Component, PureComponent } from 'react'
 import ReactDOM from 'react-dom'
 import scrollToComponent from 'react-scroll-to-component'
@@ -38,14 +38,15 @@ import Sticky from 'react-stickynode'
 
 import { dragoFactoryEventsSignatures } from '../../utils/utils.js'
 import { formatCoins, formatEth, formatHash, toHex } from '../../format'
-import * as abis from '../../contracts';
-import ElementListBalances from './Elements/elementListBalances'
-import ElementListTransactions from './Elements/elementListTransactions'
-import IdentityIcon from '../../IdentityIcon';
+import * as abis from '../../contracts'
+import ElementFundCreateAction from '../Elements/elementFundCreateAction'
+import ElementListSupply from '../Elements/elementListSupply'
+import ElementListTransactions from '../Elements/elementListTransactions'
+import IdentityIcon from '../../IdentityIcon'
 import Loading from '../../Loading'
-import utils from '../../utils/utils'
+import utils, {dragoApi} from '../../utils/utils'
 
-import styles from './pageDashboardDragoTrader.module.css'
+import styles from './pageDashboardDragoManager.module.css'
 
 // let ScrollLink       = Scroll.Link;
 // let Element    = Scroll.Element;
@@ -53,7 +54,7 @@ import styles from './pageDashboardDragoTrader.module.css'
 // let scroll     = Scroll.animateScroll;
 // let scrollSpy  = Scroll.scrollSpy;
 
-class PageDashboardDragoTrader extends Component {
+class PageDashboardDragoManager extends Component {
 
   // Checking the type of the context variable that we receive by the parent
   static contextTypes = {
@@ -72,7 +73,7 @@ class PageDashboardDragoTrader extends Component {
 
     state = {
       dragoTransactionsLogs: [],
-      dragoBalances:[],
+      dragoList:[],
       loading: true,
       topBarClassName: null,
       topBarInitialPosition: null,
@@ -219,19 +220,19 @@ class PageDashboardDragoTrader extends Component {
 
     render() {
       const { location, accounts, accountsInfo, allEvents } = this.props
-      const { dragoTransactionsLogs, loading, dragoBalances } = this.state 
+      const { dragoTransactionsLogs, loading, dragoList } = this.state 
       const tabButtons = {
         inkBarStyle: {
           margin: 'auto',
           width: 100,
           backgroundColor: 'white'
           },
-          tabItemContainerStyle: {
-            margin: 'auto',
-            width: 300,
-            backgroundColor: '#FFFFFF',
-            zIndex: 9999
-          }
+        tabItemContainerStyle: {
+          margin: 'auto',
+          width: 300,
+          backgroundColor: '#FFFFFF',
+          zIndex: 9999
+        }
       }
 
       const listAccounts = accounts.map((account) => {
@@ -262,7 +263,9 @@ class PageDashboardDragoTrader extends Component {
             </Col>
           )
         }
-      );
+      )
+
+
       return (
         
       <Row>
@@ -275,7 +278,7 @@ class PageDashboardDragoTrader extends Component {
                       <h2><Avatar size={50} icon={<ActionHome />} /></h2>
                     </Col>
                     <Col xs={12} md={11} className={styles.dragoTitle}>
-                    <p>Dashboard</p>
+                    <p>Dashboard Wizard</p>
                     <small></small>
                     </Col>
                   </Row>
@@ -292,7 +295,7 @@ class PageDashboardDragoTrader extends Component {
                     onActive={() => scrollToComponent(this.Accounts, { offset: -80, align: 'top', duration: 500})}
                       icon={<ActionList color={Colors.blue500} />}>
                     </Tab>
-                    <Tab label="Holding" className={styles.detailsTab} 
+                    <Tab label="Drago" className={styles.detailsTab} 
                       onActive={() => scrollToComponent(this.Dragos, { offset: -80, align: 'top', duration: 500})}
                       icon={<ActionAssessment color={Colors.blue500} />}>
                     </Tab>
@@ -306,8 +309,8 @@ class PageDashboardDragoTrader extends Component {
             </Sticky>
             <Row className={styles.transactionsStyle}>
               <Col xs>
-                <span ref={(section) => { this.Accounts = section; }}></span>
-                <AppBar
+              <span ref={(section) => { this.Accounts = section; }}></span>
+                  <AppBar
                     title='My Accounts'
                     showMenuIconButton={false}
                   />
@@ -318,29 +321,31 @@ class PageDashboardDragoTrader extends Component {
             </Row>
             <Row className={styles.transactionsStyle}>
               <Col  xs >
-                  <span ref={(section) => { this.Dragos = section; }}></span>
+                <span ref={(section) => { this.Dragos = section; }}></span>
                   <AppBar
-                      title='My Dragos'
-                      showMenuIconButton={false}
-                    />
-                    <Paper zDepth={1}>
-                      <Row>
-                        <Col className={styles.transactionsStyle} xs={12}>
-                          {(Immutable.List(dragoBalances).size == 0) 
-                                    ? <Loading /> 
-                                    : <ElementListBalances list={Immutable.List(dragoBalances)}/>}
-                        </Col>
-                      </Row>
-                    </Paper>
+                    title='My Dragos'
+                    showMenuIconButton={false}
+                    iconElementRight={<ElementFundCreateAction accounts={accounts} snackBar={this.snackBar}
+                    iconStyleRight={{marginTop: 'auto', marginBottom: 'auto'}}/>}
+                  />
+                  <Paper zDepth={1}>
+                    <Row>
+                      <Col className={styles.transactionsStyle} xs={12}>
+                        {(Immutable.List(dragoList).size == 0) 
+                                  ? <Loading /> 
+                                  : <ElementListSupply list={Immutable.List(dragoList)}/>}
+                      </Col>
+                    </Row>
+                  </Paper>
 
                 </Col>
             </Row>
             <Row className={styles.transactionsStyle}>
               <Col xs>
-                  <span ref={(section) => { this.Transactions = section; }}></span>
+                <span ref={(section) => { this.Transactions = section; }}></span>
                   <AppBar
-                  title='My Transactions'
-                  showMenuIconButton={false}
+                    title='My Transactions'
+                    showMenuIconButton={false}
                   />
                   <Paper zDepth={1}>
                     <Row style={{outline: 'none'}}>
@@ -373,6 +378,8 @@ class PageDashboardDragoTrader extends Component {
       const { api, contract } = this.context
       const {accounts } = this.props
       var sourceLogClass = this.constructor.name
+
+      
 
       api.parity
         .registryAddress()
@@ -413,8 +420,8 @@ class PageDashboardDragoTrader extends Component {
       const logToEvent = (log) => {
         const key = api.util.sha3(JSON.stringify(log))
         const { blockNumber, logIndex, transactionHash, transactionIndex, params, type } = log   
-        const ethvalue = (log.event === 'BuyDrago') ? formatEth(params.amount.value,null,api) : formatEth(params.revenue.value,null,api);
-        const drgvalue = (log.event === 'SellDrago') ? formatCoins(params.amount.value,null,api) : formatCoins(params.revenue.value,null,api);
+        const ethvalue = 0
+        const drgvalue = 0
         // let ethvalue = null
         // let drgvalue = null     
         // if ((log.event === 'BuyDrago')) {
@@ -456,37 +463,23 @@ class PageDashboardDragoTrader extends Component {
         return hexAccount
       })
 
-      // Filter for buy events
-      const eventsFilterBuy = {
+      // Filter for DragoCreated events
+      // The 4th item in the array is the address of the owner/creator of the Drago
+      // event DragoCreated(address indexed drago, address indexed group, address indexed owner, uint dragoID, string name, string symbol);
+      const eventsFilterCreated = {
         topics: [ 
-          [dragoFactoryEventsSignatures(contract).BuyDrago.hexSignature], 
-          null, 
-          hexAccounts,
-          null
-        ]
-      }
-      // Filter for sell events
-      const eventsFilterSell = {
-        topics: [ 
-          [dragoFactoryEventsSignatures(contract).SellDrago.hexSignature], 
+          [dragoFactoryEventsSignatures(contract).DragoCreated.hexSignature], 
           null, 
           null,
           hexAccounts
         ]
       }
-      const buyDragoEvents = contract
-        .getAllLogs(eventsFilterBuy)
+
+      const createdDragoEvents = contract
+        .getAllLogs(eventsFilterCreated)
         .then((dragoTransactionsLog) => {
-          const buyLogs = dragoTransactionsLog.map(logToEvent)
-          return buyLogs
-        }
-        )
-      const sellDragoEvents = contract
-        .getAllLogs(eventsFilterSell)
-        .then((dragoTransactionsLog) => {
-          const sellLogs = dragoTransactionsLog.map(logToEvent)
-          console.log(dragoTransactionsLog)
-          return sellLogs
+          const createdLogs = dragoTransactionsLog.map(logToEvent)
+          return createdLogs
         }
         )
       const dragoRegistry = api.parity
@@ -501,15 +494,15 @@ class PageDashboardDragoTrader extends Component {
           console.log(`${sourceLogClass} -> The drago registry was found at ${address}`);
           return api.newContract(abis.dragoregistry, address).instance
         });
-      Promise.all([buyDragoEvents, sellDragoEvents, dragoRegistry])
+      Promise.all([createdDragoEvents, dragoRegistry])
       .then ((results) =>{
         // Creating an array of promises that will be executed to add timestamp and symbol to each entry
         // Doing so because for each entry we need to make an async call to the client
         // For additional refernce: https://stackoverflow.com/questions/39452083/using-promise-function-inside-javascript-array-map
-        var dragoTransactionsLog = [...results[0], ...results[1]]
-        const dragoRegistryInstance = results[2]
-        var dragoBalances = [] 
-        const promisesTimestamp = dragoTransactionsLog.map((log, index) => {
+        var dragoTransactionsLog = results[0]
+        const dragoRegistryInstance = results[1]
+        var dragoList = [] 
+        const promisesTimestamp = dragoTransactionsLog.map((log) => {
           return api.eth
           .getBlockByNumber(log.blockNumber.c[0])
           .then((block) => {
@@ -517,33 +510,21 @@ class PageDashboardDragoTrader extends Component {
             return log
           })
         })
-        const promisesSymbol = dragoTransactionsLog.map((log) => {
+        const promisesSupply = dragoTransactionsLog.map((log, index) => {
           return Promise.all([
-            dragoRegistryInstance.fromAddress.call({}, [log.params.drago.value])
+            dragoApi.getDragoSupply(log.params.drago.value, api),
           ])
-          .then((dragoDetails) => {
+          .then((dragoSupply) => {
             // console.log(`${sourceLogClass} ->  dragoDetails Symbol: ${dragoDetails[0][2]}`)
-            const symbol = dragoDetails[0][2]
-            const dragoID = dragoDetails[0][3].c[0]
-            var amount = () => {
-              if (log.type === 'BuyDrago') {
-                return new BigNumber(log.params.revenue.value)
-              } else {
-                return new BigNumber(-log.params.amount.value)
-              } 
-            }
-            if (typeof dragoBalances[dragoID] !== 'undefined') {
-              var balance = dragoBalances[dragoID].balance.add(amount())
-            } else {
-              var balance = amount()
-            }
-            dragoBalances[dragoID] = {
-              balance: balance,
-              name: dragoDetails[0][1],
-              symbol: dragoDetails[0][2],
+            const symbol = log.params.symbol.value
+            const name = log.params.name.value
+            const dragoID = log.params.dragoID.value.c[0]
+            dragoList[index] = {
+              supply: formatCoins(new BigNumber (dragoSupply),4,api),
+              name: name,
+              symbol: symbol,
               dragoID: dragoID
             }
-            log.symbol = symbol
             return log
           });
         })
@@ -556,22 +537,23 @@ class PageDashboardDragoTrader extends Component {
             })
         })
         .then (()=>{
-          Promise.all(promisesSymbol)
+          Promise.all(promisesSupply)
           .then((results) => {
-            var balances = [];
-            console.log(`${sourceLogClass} -> Transactions list loaded`);
-            // Reorganizing the balances array
-            for(var v in dragoBalances) {
-              var balance = {
-                symbol: dragoBalances[v].symbol,
-                name: dragoBalances[v].name,
-                dragoID: dragoBalances[v].dragoID,
-                balance: formatCoins(dragoBalances[v].balance,4,api)
-              }
-              balances.push(balance)
-            }
+
+            // console.log(`${sourceLogClass} -> Transactions list loaded`);
+            // // Reorganizing the balances array
+            // for(var v in dragoBalances) {
+            //   var supply = {
+            //     symbol: dragoBalances[v].symbol,
+            //     name: dragoBalances[v].name,
+            //     dragoID: dragoBalances[v].dragoID,
+            //     balance: formatCoins(dragoBalances[v].balance,4,api)
+            //   }
+            //   balances.push(balance)
+            // }
+            console.log(dragoList)
             this.setState({
-              dragoBalances: balances,
+              dragoList: dragoList,
               dragoTransactionsLogs: results,
             }, this.setState({
               loading: false,
@@ -583,4 +565,4 @@ class PageDashboardDragoTrader extends Component {
     }
   }
 
-  export default withRouter(PageDashboardDragoTrader)
+  export default withRouter(PageDashboardDragoManager)

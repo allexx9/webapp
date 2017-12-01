@@ -102,8 +102,8 @@ class NavLinks extends Component {
               <ToolbarGroup>
                   <DropDownMenu value={isManager} onChange={handleTopBarSelectAccountType}
                   labelStyle={menuStyles.dropDown} disabled={userTypeDisabled}>
-                      <MenuItem value={false} primaryText="Trader"  />
-                      <MenuItem value={true} primaryText="Manager" />
+                      <MenuItem value={false} primaryText="Holder"  />
+                      <MenuItem value={true} primaryText="Wizard" />
                   </DropDownMenu>
                   <IconMenu
                   iconButtonElement={<IconButton><AccountIcon /></IconButton>}

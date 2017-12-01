@@ -1,35 +1,35 @@
-import  * as Colors from 'material-ui/styles/colors';
-import { Grid, Row, Col } from 'react-flexbox-grid';
+import  * as Colors from 'material-ui/styles/colors'
+import { Grid, Row, Col } from 'react-flexbox-grid'
 import { Link, Route, withRouter } from 'react-router-dom'
-import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
-import {CopyToClipboard} from 'react-copy-to-clipboard';
-import {List, ListItem} from 'material-ui/List';
-import {Tabs, Tab} from 'material-ui/Tabs';
-import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
-import ActionAssessment from 'material-ui/svg-icons/action/assessment';
-import ActionList from 'material-ui/svg-icons/action/list';
-import Avatar from 'material-ui/Avatar';
-import Chip from 'material-ui/Chip';
-import CopyContent from 'material-ui/svg-icons/content/content-copy';
-import DropDownMenu from 'material-ui/DropDownMenu';
-import FlatButton from 'material-ui/FlatButton';
-import IconButton from 'material-ui/IconButton';
-import IconMenu from 'material-ui/IconMenu';
-import Immutable from 'immutable';
-import NavigationExpandMoreIcon from 'material-ui/svg-icons/navigation/expand-more';
-import Paper from 'material-ui/Paper';
-import PropTypes from 'prop-types';
-import RaisedButton from 'material-ui/RaisedButton';
-import React, { Component } from 'react';
-import Search from 'material-ui/svg-icons/action/search';
-import Snackbar from 'material-ui/Snackbar';
+import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card'
+import {CopyToClipboard} from 'react-copy-to-clipboard'
+import {List, ListItem} from 'material-ui/List'
+import {Tabs, Tab} from 'material-ui/Tabs'
+import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar'
+import ActionAssessment from 'material-ui/svg-icons/action/assessment'
+import ActionList from 'material-ui/svg-icons/action/list'
+import Avatar from 'material-ui/Avatar'
+import Chip from 'material-ui/Chip'
+import CopyContent from 'material-ui/svg-icons/content/content-copy'
+import DropDownMenu from 'material-ui/DropDownMenu'
+import FlatButton from 'material-ui/FlatButton'
+import IconButton from 'material-ui/IconButton'
+import IconMenu from 'material-ui/IconMenu'
+import Immutable from 'immutable'
+import NavigationExpandMoreIcon from 'material-ui/svg-icons/navigation/expand-more'
+import Paper from 'material-ui/Paper'
+import PropTypes from 'prop-types'
+import RaisedButton from 'material-ui/RaisedButton'
+import React, { Component } from 'react'
+import Search from 'material-ui/svg-icons/action/search'
+import Snackbar from 'material-ui/Snackbar'
 
 import { dragoFactoryEventsSignatures } from '../../utils/utils.js'
-import { formatCoins, formatEth, formatHash, toHex } from '../../format';
+import { formatCoins, formatEth, formatHash, toHex } from '../../format'
 import * as abis from '../../contracts';
 import ElementFundActions from './Elements/elementFundActions'
-import IdentityIcon from '../../IdentityIcon';
-import Loading from '../../Loading';
+import IdentityIcon from '../../IdentityIcon'
+import Loading from '../../Loading'
 import InfoTable from './Elements/elementInfoTable'
 
 import {
@@ -146,11 +146,12 @@ class PageFundDetailsDragoTrader extends Component {
       );
     }
 
-    handleRequestClose = () => {
+    handlesnackBarRequestClose = () => {
       this.setState({
         snackBar: false,
-      });
-    };
+        snackBarMsg: ''
+      })
+    }
 
     renderPriceTable (dragoDetails) {  
       const buyText = {
@@ -292,8 +293,8 @@ class PageFundDetailsDragoTrader extends Component {
           open={this.state.snackBar}
           message={this.state.snackBarMsg}
           action="close"
-          onActionTouchTap={this.handleRequestClose}
-          onRequestClose={this.handleRequestClose}
+          onActionTouchTap={this.handlesnackBarRequestClose}
+          onRequestClose={this.handlesnackBarRequestClose}
         />
       </Row>
       )

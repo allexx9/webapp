@@ -8,7 +8,7 @@ import React, {PureComponent} from 'react';
 
 import { generateRandomList } from './utils';
 import {LabeledInput, InputRow} from './labeledInput';
-import utils from '../../../utils/utils'
+import utils from '../../utils/utils'
 
 import styles from './elementListTransactions.module.css';
 import 'react-virtualized/styles.css'
@@ -33,7 +33,6 @@ class ElementListTransactions extends PureComponent {
     const sortBy = 'symbol';
     const sortDirection = SortDirection.ASC;
     const sortedList = this._sortList({sortBy, sortDirection});
-    console.log(sortedList)
     const rowCount = list.size
 
     this.state = {
@@ -75,7 +74,7 @@ class ElementListTransactions extends PureComponent {
       rowCount: rowCount,
     })
     const sourceLogClass = this.constructor.name
-    console.log(`${sourceLogClass} -> componentWillReceiveProps`);
+    // console.log(`${sourceLogClass} -> componentWillReceiveProps`);
   }
 
   render() {
@@ -156,9 +155,9 @@ class ElementListTransactions extends PureComponent {
                     width={100}
                     disableSort
                     label=""
-                    cellDataGetter={({rowData}) => rowData.symbol}
+                    cellDataGetter={({rowData}) => rowData.params.symbol.value}
                     dataKey="symbol"
-                    cellRenderer={({cellData}) => cellData.symbol}
+                    cellRenderer={({cellData}) => cellData.params.symbol.value}
                     className={styles.exampleColumn}
                     cellRenderer={({cellData}) => cellData}
                     flexShrink={1}
@@ -168,7 +167,7 @@ class ElementListTransactions extends PureComponent {
                     width={100}
                     disableSort
                     label="DRG"
-                    cellDataGetter={({rowData}) => rowData.params.ethvalue}
+                    cellDataGetter={({rowData}) => rowData.drgvalue}
                     dataKey="drg"
                     className={styles.exampleColumn}
                     cellRenderer={({rowData}) => this.renderDrgValue(rowData.drgvalue)}
@@ -178,7 +177,7 @@ class ElementListTransactions extends PureComponent {
                     width={100}
                     disableSort
                     label="ETH"
-                    cellDataGetter={({rowData}) => rowData.params.ethvalue}
+                    cellDataGetter={({rowData}) => rowData.ethvalue}
                     dataKey="eth"
                     className={styles.exampleColumn}
                     cellRenderer={({rowData}) => this.renderEthValue(rowData.ethvalue)}
@@ -233,9 +232,7 @@ class ElementListTransactions extends PureComponent {
   }
 
   renderAction(action) {
-    console.log(action)
     switch(action) {
-
       case "BuyDrago":
         return <span>Buy</span>
         break

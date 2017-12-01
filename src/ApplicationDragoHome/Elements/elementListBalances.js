@@ -1,21 +1,23 @@
 import { Grid, Row, Col } from 'react-flexbox-grid';
 import { Link, Route, withRouter, HashRouter } from 'react-router-dom'
-import { List, Column, Table, AutoSizer, SortDirection, SortIndicator, WindowScroller } from 'react-virtualized';
+import { List, Column, Table, AutoSizer, SortDirection, SortIndicator } from 'react-virtualized';
 import FlatButton from 'material-ui/FlatButton';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import React, {PureComponent} from 'react';
 
+import 'react-virtualized/styles.css'
+
 import { generateRandomList } from './utils';
+import {APP, DS} from '../../utils/const.js'
 import {LabeledInput, InputRow} from './labeledInput';
-import utils from '../../../utils/utils'
+import utils from '../../utils/utils'
 
 import styles from './elementListTransactions.module.css';
-import 'react-virtualized/styles.css'
 
 // const list = Immutable.List(generateRandomList());
 
-class ElementListTransactions extends PureComponent {
+class ElementListBalances extends PureComponent {
 
   static PropTypes = {
     allEvents: PropTypes.object.isRequired,
@@ -23,8 +25,6 @@ class ElementListTransactions extends PureComponent {
     list: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
-    renderCopyButton: PropTypes.func.isRequired,
-    renderEtherscanButton: PropTypes.func.isRequired
   };
 
   constructor(props, context) {
@@ -40,7 +40,6 @@ class ElementListTransactions extends PureComponent {
       disableHeader: false,
       headerHeight: 30,
       height: 500,
-      width: 600,
       hideIndexRow: false,
       overscanRowCount: 10,
       rowHeight: 40,
@@ -62,12 +61,13 @@ class ElementListTransactions extends PureComponent {
   }
 
   componentWillReceiveProps (nextProps, nextState) {
-    const { list } = nextProps
+    const { accountsInfo, list } = nextProps
+    console.log(nextProps)
     const sortBy = 'symbol';
     const sortDirection = SortDirection.ASC;
-    const sortedList = list.sortBy(item => item.timestamp)
+    const sortedList = list.sortBy(item => item.symbol)
                       .update(
-                        list => (sortDirection === SortDirection.DESC ? list : list.reverse()),
+                        list => (sortDirection === SortDirection.ASC ? list : list.reverse()),
                       );
     const rowCount = list.size
     this.setState({
@@ -96,16 +96,17 @@ class ElementListTransactions extends PureComponent {
     } = this.state;
 
     const rowGetter = ({index}) => this._getDatum(sortedList, index);
+    console.log(sortedList)        
     
+
     return (
 
       <Row>
         <Col xs={12}>
-        <div style={{ flex: '1 1 auto' }}>
+          <div style={{ flex: '1 1 auto' }}>
             <AutoSizer disableHeight>
               {({ width }) => (
                 <Table
-                  id={"transactions-table"}
                   ref="Table"
                   disableHeader={disableHeader}
                   headerClassName={styles.headerColumn}
@@ -121,41 +122,11 @@ class ElementListTransactions extends PureComponent {
                   sort={this._sort}
                   sortBy={sortBy}
                   sortDirection={sortDirection}
-                  width={width}
-                  >
-                  {/* <Column
-                    width={100}
-                    disableSort
-                    label="Blocknumber"
-                    cellDataGetter={({rowData}) => rowData.blockNumber.c[0]}
-                    dataKey="blocknumber"
-                    className={styles.exampleColumn}
-                    cellRenderer={({cellData}) => cellData}
-                  />  */}
+                  width={width}>
                   <Column
-                    width={200}
+                    width={150}
                     disableSort
-                    label="Date"
-                    cellDataGetter={({rowData}) => rowData.timestamp}
-                    dataKey="date"
-                    className={styles.exampleColumn}
-                    cellRenderer={({cellData}) => this.renderTime(cellData)}
-                    flexShrink={1}
-                  />
-                  <Column
-                    width={100}
-                    disableSort
-                    label="Action"
-                    cellDataGetter={({rowData}) => rowData.type}
-                    dataKey="action"
-                    className={styles.exampleColumn}
-                    cellRenderer={({cellData}) => this.renderAction(cellData)}
-                    flexShrink={1}
-                  />
-                  <Column
-                    width={100}
-                    disableSort
-                    label=""
+                    label="Symbol"
                     cellDataGetter={({rowData}) => rowData.symbol}
                     dataKey="symbol"
                     cellRenderer={({cellData}) => cellData.symbol}
@@ -163,52 +134,41 @@ class ElementListTransactions extends PureComponent {
                     cellRenderer={({cellData}) => cellData}
                     flexShrink={1}
                   />
-                  {/* formatEth(price) }<small> ETH</small> */}
                   <Column
-                    width={100}
+                    width={width}
                     disableSort
-                    label="DRG"
-                    cellDataGetter={({rowData}) => rowData.params.ethvalue}
+                    label="Name"
+                    cellDataGetter={({rowData}) => rowData.name}
+                    dataKey="name"
+                    cellRenderer={({cellData}) => cellData.name}
+                    className={styles.exampleColumn}
+                    cellRenderer={({cellData}) => cellData}
+                    flexShrink={1}
+                  />
+                  <Column
+                    width={250}
+                    disableSort
+                    label="Balance"
+                    cellDataGetter={({rowData}) => rowData.balance}
                     dataKey="drg"
                     className={styles.exampleColumn}
-                    cellRenderer={({rowData}) => this.renderDrgValue(rowData.drgvalue)}
+                    cellRenderer={({rowData}) => this.renderDrgValue(rowData.balance)}
                     flexShrink={1}
                   />
                   <Column
-                    width={100}
-                    disableSort
-                    label="ETH"
-                    cellDataGetter={({rowData}) => rowData.params.ethvalue}
-                    dataKey="eth"
-                    className={styles.exampleColumn}
-                    cellRenderer={({rowData}) => this.renderEthValue(rowData.ethvalue)}
-                    flexShrink={1}
-                  />
-                  <Column
-                    width={210}
-                    disableSort
-                    label="Tx"
-                    cellDataGetter={({rowData}) => rowData.transactionHash}
-                    dataKey="tx"
-                    className={styles.exampleColumn}
-                    cellRenderer={({rowData}) => this.renderTx(rowData.transactionHash)}
-                    flexGrow={1}
-                  />
-                  {/* <Column
                     width={210}
                     disableSort
                     label="Actions"
-                    cellDataGetter={({rowData}) => rowData.transactionHash}
+                    cellDataGetter={({rowData}) => rowData.symbol}
                     dataKey="actions"
                     className={styles.exampleColumn}
-                    cellRenderer={({cellData}) => cellData}
                     cellRenderer={({cellData, rowData}) => this.actionButton(cellData, rowData)}
                     flexShrink={1}
-                  /> */}
+                  />
                 </Table>
-               )} 
-              </AutoSizer>
-              </div>
+              )}
+            </AutoSizer>
+          </div>
         </Col>
       </Row>
     );
@@ -216,8 +176,8 @@ class ElementListTransactions extends PureComponent {
 
   actionButton(cellData, rowData) {
     const { match} = this.props;
-    const url =  rowData.params.dragoID.value.c + "/" + utils.dragoISIN(cellData, rowData.params.dragoID.value.c)
-    return <FlatButton label="View" primary={true} containerElement={<Link to={match.path+"/"+url} />} />
+    const url =  rowData.dragoID + "/" + utils.dragoISIN(cellData, rowData.dragoID)
+    return <FlatButton label="View" primary={true} containerElement={<Link to={utils.rootPath(match.path)+DS+"drago/pools/"+url} />} />
   }
 
   renderEthValue(ethValue) {
@@ -225,38 +185,6 @@ class ElementListTransactions extends PureComponent {
       <div>{ethValue} <small>ETH</small></div>
     )
   }
-
-  renderTx(transactionHash) {
-    return (
-      <span>{this.props.renderCopyButton(transactionHash)} {this.props.renderEtherscanButton('tx', transactionHash)}</span>
-    )
-  }
-
-  renderAction(action) {
-    console.log(action)
-    switch(action) {
-
-      case "BuyDrago":
-        return <span>Buy</span>
-        break
-      case "SellDrago":
-        return <span>Sell</span>
-        break
-      case "DragoCreated":
-        return <span>Created</span>
-        break
-    } 
-  }
-
-  renderTime(timestamp) {
-    const day = ("0" + timestamp.getDate()).slice(-2)
-    const month = ("0" + (timestamp.getMonth() + 1)).slice(-2)
-    const date = timestamp.getFullYear()+'-'+month+'-'+day+' '+timestamp.getHours()+':'+timestamp.getMinutes()+':'+timestamp.getSeconds()
-    return (
-      <span>{date}</span>
-    )
-  }
-
   renderDrgValue(drgvalue) {
     return (
       <div>{drgvalue} <small>DRG</small></div>
@@ -331,9 +259,9 @@ class ElementListTransactions extends PureComponent {
   _sortList({sortBy, sortDirection}) {
     const {list} = this.props;
     return list
-      .sortBy(item => item.timestamp)
+      .sortBy(item => item.symbol)
       .update(
-        list => (sortDirection === SortDirection.DESC ? list : list.reverse()),
+        list => (sortDirection === SortDirection.ASC ? list : list.reverse()),
       );
   }
 
@@ -344,4 +272,4 @@ class ElementListTransactions extends PureComponent {
   }
 }
 
-export default withRouter(ElementListTransactions)
+export default withRouter(ElementListBalances)

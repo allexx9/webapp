@@ -72,6 +72,11 @@
   position: relative; /* Set the navbar to fixed position */
 }
 
+.newDragoButton {
+  margin-top: auto !important;
+  margin-bottom: auto !important;
+}
+
 .tabsRow {
   background-color: #FFFFFF;
   margin-left: 0px !important;
