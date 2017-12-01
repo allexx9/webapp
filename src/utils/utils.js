@@ -21,7 +21,6 @@ class dragoAPI {
   getDragoSupply = (dragoAddress, api, callBack) => {
     const instance = api.newContract(abis.drago, dragoAddress).instance
     var sourceLogClass = this.constructor.name
-    console.log(dragoAddress)
     return instance.totalSupply
       .call({},[])
     }

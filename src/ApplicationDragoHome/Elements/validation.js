@@ -1,7 +1,6 @@
 // Copyright 2016-2017 Gabriele Rigo
 
 import BigNumber from 'bignumber.js'
-import striptags from 'striptags'
 
 export const ERRORS = {
   invalidAccount: 'Please select an account to transact with',
@@ -43,10 +42,13 @@ export function validateAccount (account, api) {
 
 export function validateNewName(name) {
   // Checking if html in name 
+  var tmp = document.createElement("DIV")
+  tmp.innerHTML = name
+  console.log(tmp.textContent)
   if (!name) {
     return ERRORS.invalidName
   }
-  if (name !== striptags(name)) {
+  if (name !== tmp.textContent) {
     return ERRORS.invalidName
   }
   return null

@@ -68,11 +68,6 @@ class NavLinks extends Component {
     activeSectionPath = () => {
         const {location, match} = this.props
         var path = match.path.split( '/' )
-
-        // path.splice(-1,1);
-        // var url = path.join('/');
-        console.log(path[3])
-        console.log(match)
         return path[3]
         }
 
@@ -82,7 +77,7 @@ class NavLinks extends Component {
       return links.map((link) => {
         link.to === activeLink ? backgroundColorActive = Colors.blue300 : backgroundColorActive = Colors.blue500
         return (
-          <FlatButton label={link.label.toUpperCase()} containerElement={<Link to={'/'+link.to} />} disableTouchRipple={true} 
+          <FlatButton key={link.label} label={link.label.toUpperCase()} containerElement={<Link to={'/'+link.to} />} disableTouchRipple={true} 
           hoverColor="#2196f3" className={styles.topbarbuttons}
           icon={link.icon}
           labelStyle={{fontWeight: 700}}

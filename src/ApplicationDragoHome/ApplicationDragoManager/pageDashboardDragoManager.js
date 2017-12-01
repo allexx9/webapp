@@ -161,7 +161,6 @@ class PageDashboardDragoManager extends Component {
     }
 
     handleSetActive = (to) => {
-      console.log(to);
     }
 
     // shouldComponentUpdate(nextProps, nextState){
@@ -231,7 +230,7 @@ class PageDashboardDragoManager extends Component {
           margin: 'auto',
           width: 300,
           backgroundColor: '#FFFFFF',
-          zIndex: 9999
+          zIndex: 1000
         }
       }
 
@@ -287,7 +286,7 @@ class PageDashboardDragoManager extends Component {
                 <p>&nbsp;</p>
                 </ToolbarGroup>
             </Toolbar>
-            <Sticky enabled={true} innerZ={9999}>
+            <Sticky enabled={true} innerZ={1400}>
               <Row className={styles.tabsRow}>
                 <Col xs={12}>
                   <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle}>
@@ -551,7 +550,6 @@ class PageDashboardDragoManager extends Component {
             //   }
             //   balances.push(balance)
             // }
-            console.log(dragoList)
             this.setState({
               dragoList: dragoList,
               dragoTransactionsLogs: results,

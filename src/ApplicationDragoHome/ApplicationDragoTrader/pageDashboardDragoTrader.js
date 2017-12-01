@@ -230,7 +230,7 @@ class PageDashboardDragoTrader extends Component {
             margin: 'auto',
             width: 300,
             backgroundColor: '#FFFFFF',
-            zIndex: 9999
+            zIndex: 1000
           }
       }
 
@@ -284,7 +284,7 @@ class PageDashboardDragoTrader extends Component {
                 <p>&nbsp;</p>
                 </ToolbarGroup>
             </Toolbar>
-            <Sticky enabled={true} innerZ={9999}>
+            <Sticky enabled={true} innerZ={1400}>
               <Row className={styles.tabsRow}>
                 <Col xs={12}>
                   <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle}>

@@ -33,7 +33,6 @@ class ElementListSupply extends PureComponent {
     const sortBy = 'symbol';
     const sortDirection = SortDirection.ASC;
     const sortedList = this._sortList({sortBy, sortDirection});
-    console.log(sortedList)
     const rowCount = list.size
 
     this.state = {
@@ -62,7 +61,6 @@ class ElementListSupply extends PureComponent {
 
   componentWillReceiveProps (nextProps, nextState) {
     const { accountsInfo, list } = nextProps
-    console.log(nextProps)
     const sortBy = 'symbol';
     const sortDirection = SortDirection.ASC;
     const sortedList = list.sortBy(item => item.symbol)
@@ -96,9 +94,7 @@ class ElementListSupply extends PureComponent {
     } = this.state;
 
     const rowGetter = ({index}) => this._getDatum(sortedList, index);
-    console.log(sortedList)        
     
-
     return (
 
       <Row>
@@ -258,10 +254,8 @@ class ElementListSupply extends PureComponent {
 
   _sortList({sortBy, sortDirection}) {
     const {list} = this.props
-    console.log(list)
     return list
       .sortBy(item => {
-        console.log(item)
         item.symbol
       })
       .update(
