@@ -27,10 +27,10 @@ import Snackbar from 'material-ui/Snackbar'
 import { dragoFactoryEventsSignatures } from '../../utils/utils.js'
 import { formatCoins, formatEth, formatHash, toHex } from '../../format'
 import * as abis from '../../contracts';
-import ElementFundActions from './Elements/elementFundActions'
+import ElementFundActions from '../Elements/elementFundActions'
 import IdentityIcon from '../../IdentityIcon'
+import InfoTable from '../Elements/elementInfoTable'
 import Loading from '../../Loading'
-import InfoTable from './Elements/elementInfoTable'
 
 import {
   Table,
@@ -40,7 +40,7 @@ import {
   TableRow,
   TableRowColumn,
 } from 'material-ui/Table';
-import ElementListTransactions from './Elements/elementListTransactions'
+import ElementListTransactions from '../Elements/elementListTransactions'
 import styles from '../applicationDragoHome.module.css';
 
 class PageFundDetailsDragoTrader extends Component {
@@ -51,12 +51,10 @@ class PageFundDetailsDragoTrader extends Component {
     contract: PropTypes.object.isRequired
   };
 
-  static PropTypes = {
+  static propTypes = {
       location: PropTypes.object.isRequired,
-      blockNumber: PropTypes.object.isRequired,
       ethBalance: PropTypes.object.isRequired,
-      accounts: PropTypes.object.isRequired,
-      allEvents: PropTypes.object.isRequired,
+      accounts: PropTypes.array.isRequired,
       accountsInfo: PropTypes.object.isRequired, 
     };
 

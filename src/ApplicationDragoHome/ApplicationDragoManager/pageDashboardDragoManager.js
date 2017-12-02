@@ -524,6 +524,7 @@ class PageDashboardDragoManager extends Component {
               symbol: symbol,
               dragoID: dragoID
             }
+            log.symbol = symbol
             return log
           });
         })

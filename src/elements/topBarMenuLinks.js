@@ -55,10 +55,10 @@ class NavLinks extends Component {
       }
 
 
-    static PropTypes = {
+    static propTypes = {
         location: PropTypes.object.isRequired,
-        handleTopBarSelectAccountType: PropTypes.object.isRequired,
-        isManager: PropTypes.bool.isRequired
+        handleTopBarSelectAccountType: PropTypes.func.isRequired,
+        isManager: PropTypes.bool
       };
 
     componentDidMount () {

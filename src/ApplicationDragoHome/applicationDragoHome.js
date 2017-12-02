@@ -25,7 +25,8 @@ export default class ApplicationDragoHome extends Component {
 
   // Checking the type of the context variable that we receive by the parent
   static contextTypes = {
-    api: PropTypes.object.isRequired
+    api: PropTypes.object.isRequired,
+    isConnected: PropTypes.func.isRequired
   };
 
   static childContextTypes = {
@@ -39,7 +40,7 @@ export default class ApplicationDragoHome extends Component {
     };
   }
 
-  static PropTypes = {
+  static propTypes = {
     location: PropTypes.object.isRequired,
   };
 
@@ -105,7 +106,6 @@ export default class ApplicationDragoHome extends Component {
     if (element != null) {
       window.scrollTo(0, this.scrollPosition)
     }
-
   }
 
   render () {
@@ -161,28 +161,22 @@ export default class ApplicationDragoHome extends Component {
     const { accounts } = this.state;
     const { api } = this.context;
     if (_error) {
-      console.error('onNewBlockNumber', _error);
-      return;
+      console.error('onNewBlockNumber', _error)
+      // this.context.isConnected(false)
+      return
     }
-
-    Promise
-      .all([
-      ])
-      .then(() => {
-        // this.setState({
-        //   blockNumber: blockNumber.c[0]
-        // })
-        const ethQueries = accounts.map((account) => api.eth.getBalance(account.address));
-        accounts.map((account) => {
-          // console.log('API call getBalance -> applicationDragoHome: Getting balance of account', account.name);
-          }
-        )
-        return Promise.all([
-          Promise.all(ethQueries)
-        ]);
+    const sourceLogClass = this.constructor.name
+    const ethQueries = accounts.map((account) => {
+      console.log(`${sourceLogClass} API call getBalance -> applicationDragoHome: Getting balance of account ${account.name}`)
+      return api.eth.getBalance(account.address)
+      .catch(error => {
+        console.warn('super error')
       })
-      .then(([ethBalances]) => {
-        // console.log(ethBalances);
+    })
+    Promise
+      .all(ethQueries)
+      .then((ethBalances) => {
+        // this.context.isConnected(true)
         this.setState({
           ethBalance: ethBalances.reduce((total, balance) => total.add(balance), new BigNumber(0)),
           accounts: accounts.map((account, index) => {
@@ -191,8 +185,6 @@ export default class ApplicationDragoHome extends Component {
             return account;
           })
         });
-        // console.log(this.state.ethBalance);
-        // console.log(this.state.accounts);
       })
       .catch((error) => {
         console.warn('onNewBlockNumber', error);
@@ -268,13 +260,13 @@ export default class ApplicationDragoHome extends Component {
           console.log(`applicationDragoHome: Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);
           this.setState({subscriptionIDDrago: subscriptionID});
         })
+        .catch((error) => {
+          console.warn('error subscription', error)
+        });
         return contract
       })
-      .then((contract) => {
-        // this.setupFilters(contract);
-      })
       .catch((error) => {
-        console.warn('attachInterface', error);
+        console.warn('attachInterface', error)
       });
   }
 
@@ -358,6 +350,5 @@ export default class ApplicationDragoHome extends Component {
     // contract.unsubscribe(subscriptionIDContractDrago).catch((error) => {
     //   console.warn('Unsubscribe error', error);
     // });
-    console.log(this.context);
   } 
 }

@@ -20,16 +20,13 @@ import {
 } from 'material-ui/Table';
 
 import { ERRORS, validateAccount, validatePositiveNumber } from './validation';
-import { formatCoins, formatEth, formatHash, toHex } from '../../../format';
-import * as abis from '../../../contracts';
+import { formatCoins, formatEth, formatHash, toHex } from '../../format';
+import * as abis from '../../contracts';
 import AccountSelector from './elementAccountSelector'
 import ElementFundActionsHeader from './elementFundActionsHeader'
-import IdentityIcon from '../../../IdentityIcon';
+import IdentityIcon from '../../IdentityIcon';
 
 import styles from './elementFundActions.module.css';
-
-
-
 
 const customContentStyle = {
   minHeight: '500px',
@@ -41,9 +38,8 @@ export default class ElementFundActions extends React.Component {
     api: PropTypes.object.isRequired
   };
 
-  static PropTypes = {
+  static propTypes = {
     dragoDetails: PropTypes.object.isRequired, 
-    accounts: PropTypes.object.isRequired
   };
   
   state = {

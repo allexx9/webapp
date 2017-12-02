@@ -164,7 +164,7 @@ export default class ApplicationDrago extends Component {
 //think about creating component FindDragoFromNameSymbol  and then use it in the different parts of the dapp
 
   onNewBlockNumber = (_error, blockNumber) => {
-    const { /*instance,*/ accounts } = this.state;
+    const { accounts } = this.state;
     const { api } = this.context;
 
     if (_error) {
@@ -174,44 +174,26 @@ export default class ApplicationDrago extends Component {
 
     Promise
       .all([
-        //instance.getEventful.call()//,
-        //instance.getData.call([1]) //[1] returns name, symbol, sellPrice, buyPrice, totalSupply
-        //instance.getAdminData.call(), //[1] feeCollector, dragodAO, ratio, transactionFee, minPeriod
-        //these values can then be passed to admin (status)
       ])
       .then(([eventful]) => {
         this.setState({
           blockNumber
-          //eventful
-          //version,
-          //base
-          //fee,
-          //nextDragoID
         });
-
-        //const gabQueries = accounts.map((account) => instance.balanceOf.call({}, [account.address]));
         const ethQueries = accounts.map((account) => api.eth.getBalance(account.address));
         accounts.map((account) => {
           console.log('API call getBalance -> applicationDrago: Getting balance of account', account.name);
           }
         )
         return Promise.all([
-          //Promise.all(gabQueries),
           Promise.all(ethQueries)
         ]);
       })
-      .then(([/*gabBalances, */ethBalances]) => {
+      .then(([ethBalances]) => {
         this.setState({
           ethBalance: ethBalances.reduce((total, balance) => total.add(balance), new BigNumber(0)),
-          //gabBalance: gabBalances.reduce((total, balance) => total.add(balance), new BigNumber(0)),
           accounts: accounts.map((account, index) => {
             const ethBalance = ethBalances[index];
-            //const gabBalance = gabBalances[index];
-
             account.ethBalance = api.util.fromWei(ethBalance).toFormat(3);
-            //account.gabBalance = gabBalance.div(DIVISOR).toFormat(6);
-            //account.hasGab = gabBalance.gt(0);
-
             return account;
           })
         });

@@ -5,19 +5,19 @@
 // API reference: https://gitlab.parity.io/parity/parity/blob/d2394d3ac30b589f92676eec401c50d6b388f911/js/npm/parity/README.md
 // Converted rpc calls to use provider
 
-import { Api } from '@parity/parity.js';
+// import { Api } from '@parity/parity.js'
 
 
 // For refenences:
 // https://github.com/paritytech/js-api
 
 
-// import Api from '@parity/api';
+import Api from '@parity/api'
 
 var HttpsUrl = true;
 var WsSecureUrl = true;
 const OverHttps = true;
-const timeout = 1000; // to set the delay between each ping to the Http server. Default = 1000 (1 sec)
+const timeout = 10000; // to set the delay between each ping to the Http server. Default = 1000 (1 sec)
 
 
 if (typeof window.parity !== 'undefined') {
@@ -28,7 +28,6 @@ if (typeof window.parity !== 'undefined') {
   // For RPC over Websocket
   // WsSecureUrl = 'wss://srv03.endpoint.network:8546';
   WsSecureUrl = 'ws://localhost:8546';
-  console.log(HttpsUrl);
 } else {
   // For RPC over Https
   HttpsUrl = 'https://srv03.endpoint.network:8545';
@@ -40,10 +39,12 @@ const checkTransport = () => {
   if (OverHttps) {
     try {
       // for @parity/api
-      // const transport = new Api.Provider.Http(HttpsUrl, timeout);
+      const transport = new Api.Provider.Http(HttpsUrl, timeout)
+      
+      console.log(transport.isConnected)
       // @parity/parity.js
-      const transport = new Api.Transport.Http(HttpsUrl, timeout);
-      console.log("Connecting to ", HttpsUrl);
+      // const transport = new Api.Transport.Http(HttpsUrl, timeout);
+      console.log("Connecting to ", HttpsUrl)
       return new Api(transport);
     } catch (err) {
       console.warn('Connection error: ', err);
@@ -52,9 +53,9 @@ const checkTransport = () => {
     try {
       console.log("Connecting to ", WsSecureUrl);
       // for @parity/api
-      // const transport = new Api.Provider.WsSecure(WsSecureUrl);
+      const transport = new Api.Provider.WsSecure(WsSecureUrl);
       // @parity/parity.js
-      const transport = new Api.Transport.WsSecure(WsSecureUrl);
+      // const transport = new Api.Transport.WsSecure(WsSecureUrl);
       return new Api(transport);
   } catch (err) {
       console.warn('Connection error: ', err);
@@ -62,9 +63,46 @@ const checkTransport = () => {
   }
 }
 
-var api = checkTransport();
-console.log(api);
-console.log('Connected to Node:', api.isConnected);
+var api = checkTransport()
+console.log(api)
+// console.log(api.net.listening())
+// api.net.listening()
+// .then(listening =>{
+//   console.log(listening)
+// })
+// .catch((error) => {
+//   console.warn(error)
+
+// })
+api.isConnected ? console.log('Connected to Node:', api.isConnected) : console.log('Could not connect to node.')
+
+
+
+// window.onerror = function myErrorHandler(errorMsg, url, lineNumber) {
+//   console.log("Error occured: " + errorMsg);//or any message
+//   console.log('bla bla bla bla bla')
+//   return true;
+// }
+
+// window.addEventListener("error", function (e) {
+//   console.log("Error occured: " + e.error.message)
+//   console.log('bla bla bla bla bla')
+//   return true;
+// })
+
+// // set timeout
+// var tid = setTimeout(checkConnection, 2000);
+
+// function checkConnection() {
+//   api.net.listening()
+//   .then(listening =>{
+//     console.log(listening)
+//   })
+//   .catch((error) => {
+//     console.warn(error)
+//   })
+//   tid = setTimeout(checkConnection, 2000); // repeat myself
+// }
 
 export {
   api

@@ -22,14 +22,14 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom'
 
 
-import { generateRandomList } from './Elements/utils';
+import { generateRandomList } from '../Elements/utils';
 import { toHex } from '../../format';
 import * as abis from '../../contracts';
-import ElementListFunds from './Elements/elementListFunds'
-import FilterFunds from './Elements/elementFilterFunds'
+import ElementListFunds from '../Elements/elementListFunds'
+import FilterFunds from '../Elements/elementFilterFunds'
 import Loading from '../../Loading';
-import SearchFunds from './Elements/elementSearchFunds'
-import TableExample from './Elements/ElementTest'
+import SearchFunds from '../Elements/elementSearchFunds'
+import TableExample from '../Elements/ElementTest'
 
 import styles from './pageFundsDragoTrader.module.css'
 
@@ -59,9 +59,8 @@ class PageFundsDragoTrader extends Component {
   
   static PropTypes = {
     location: PropTypes.object.isRequired,
-    blockNumber: PropTypes.object.isRequired,
     ethBalance: PropTypes.object.isRequired,
-    accounts: PropTypes.object.isRequired,
+    accounts: PropTypes.array.isRequired,
     allEvents: PropTypes.object.isRequired,
     accountsInfo: PropTypes.object.isRequired, 
   };

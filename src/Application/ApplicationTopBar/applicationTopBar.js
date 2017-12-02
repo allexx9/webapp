@@ -40,9 +40,9 @@ class ApplicationTopBar extends Component {
 
     }
 
-    static PropTypes = {
+    static propTypes = {
       location: PropTypes.object.isRequired,
-      handleTopBarSelectAccountType: PropTypes.object.isRequired,
+      handleTopBarSelectAccountType: PropTypes.func
     };
 
     state = {

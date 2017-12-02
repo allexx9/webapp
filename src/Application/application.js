@@ -26,6 +26,7 @@ import classNames from 'classnames';
 
 import * as Colors from 'material-ui/styles/colors';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import NotConnected from '../elements/notConnected'
 
 // Router
 // import { Link, Route, withRouter } from 'react-router-dom'
@@ -52,7 +53,7 @@ const TemplateLayout = ({children}) =>
         <Row>
           <Col xs={12}>
             {/* <ApplicationTabsMenu /> */}
-            <ApplicationTopBar />
+            <ApplicationTopBar handleTopBarSelectAccountType={()=>{}}/>
           </Col>
         </Row>
         <Row className={classNames(styles.content)}>
@@ -68,6 +69,8 @@ const TemplateLayout = ({children}) =>
       </Grid>
 
 )
+
+
 
 export class Whoops404 extends Component {
   // constructor(props) {
@@ -94,7 +97,28 @@ export class ApplicationHomePage extends Component {
   static childContextTypes = {
     muiTheme: PropTypes.object,
     api: PropTypes.object
-  };
+  }
+
+  state = {
+    isConnected: false,
+    isManager: false
+  }
+
+  checkConnectionToNode = () =>{
+    api.net.listening()
+    .then(listening =>{
+      console.log(listening)
+      this.setState({
+        isConnected: true
+      })
+    })
+    .catch((error) => {
+      this.setState({
+        isConnected: false
+      })
+      console.warn(error)
+    })
+  }
 
   // We pass down the context variables passed down to the children
   getChildContext () {
@@ -104,12 +128,20 @@ export class ApplicationHomePage extends Component {
     };
   }
 
+  componentDidMount() {
+    this.checkConnectionToNode()
+  }
+
   render() {
   // we access the props passed to the component
   // console.log(location);
     return (
-      <TemplateLayout>
+      <TemplateLayout isManager={this.state.isManager}>
+        {this.state.isConnected ? (
           <ApplicationHome />
+        ) : (
+          <NotConnected />
+        )}
       </TemplateLayout>
     )
   }
@@ -134,7 +166,6 @@ export class ApplicationGabcoinPage extends Component {
   render() {
   // we access the props passed to the component
   const { location } = this.props
-  console.log(location);
     return (
           <TemplateLayout>
           <ApplicationGabcoin />
@@ -150,14 +181,59 @@ export class ApplicationDragoPage extends Component {
   // We define the properties of the context variables passed down to the children
   static childContextTypes = {
     muiTheme: PropTypes.object,
-    api: PropTypes.object
+    api: PropTypes.object,
+    isConnected: PropTypes.func
   };
+
+  state = {
+    isConnected: false,
+  }
+
+  td = null
+
+  componentWillMount() {
+    this.checkConnectionToNode()
+  }
+
+  componentWillUnmount () {
+    clearTimeout(this.td)
+  }
+
+  // This function is passed down with context and used as a call back function to show a warning page
+  // if the connection with the node drops
+  isConnected = (status) => {
+    // console.log('isConnected')
+    this.setState({
+      isConnected: status
+    })
+  }
+
+  checkConnectionToNode = () =>{
+    api.net.listening()
+    .then((listening) =>{
+      console.log('timeout')
+      // console.log(listening)
+      this.td = setTimeout(this.checkConnectionToNode,15000)
+      this.setState({
+        isConnected: true
+      })
+    })
+    .catch((error) => {
+      this.td = setTimeout(this.checkConnectionToNode,15000)
+      this.setState({
+        isConnected: false
+      })
+      console.warn(error)
+    })
+    
+  }
 
   // We pass down the context variables passed down to the children
   getChildContext () {
     return {
       muiTheme,
-      api
+      api,
+      isConnected: this.isConnected
     };
   }
 
@@ -174,12 +250,13 @@ export class ApplicationDragoPage extends Component {
     }); 
   };
 
-  static PropTypes = {
+  static propTypes = {
     location: PropTypes.object.isRequired,
   };
 
   state = {
     isManager: false,
+    isConnected: true
   }
 
   render() {
@@ -196,7 +273,11 @@ export class ApplicationDragoPage extends Component {
           </Row>
           <Row className={classNames(styles.content)}>
             <Col xs={12}>
-            <ApplicationDragoHome isManager={this.state.isManager} location={location}/>
+            {this.state.isConnected ? (
+              <ApplicationDragoHome isManager={this.state.isManager} location={location}/>
+            ) : (
+              <NotConnected isConnected={this.state.isConnected}/>
+            )}
             </Col>
           </Row>
           <Row>
@@ -229,7 +310,6 @@ export class ApplicationExchangePage extends Component {
   render() {
   // we access the props passed to the component
   const { location } = this.props
-  console.log(location);
     return (
           <TemplateLayout>
           <ApplicationExchange />

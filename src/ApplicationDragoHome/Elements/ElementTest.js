@@ -10,7 +10,7 @@ import Immutable from 'immutable';
 
 import { generateRandomList } from './utils';
 import {LabeledInput, InputRow} from './labeledInput';
-import utils from '../../../utils/utils'
+import utils from '../../utils/utils'
 import styles from './Table.example.module.css';
 import 'react-virtualized/styles.css'
 

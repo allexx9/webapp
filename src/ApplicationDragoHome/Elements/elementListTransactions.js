@@ -17,9 +17,7 @@ import 'react-virtualized/styles.css'
 
 class ElementListTransactions extends PureComponent {
 
-  static PropTypes = {
-    allEvents: PropTypes.object.isRequired,
-    accountsInfo: PropTypes.object.isRequired, 
+  static propTypes = {
     list: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
@@ -154,12 +152,11 @@ class ElementListTransactions extends PureComponent {
                   <Column
                     width={100}
                     disableSort
-                    label=""
-                    cellDataGetter={({rowData}) => rowData.params.symbol.value}
+                    label="Symbol"
+                    cellDataGetter={({rowData}) => rowData}
                     dataKey="symbol"
-                    cellRenderer={({cellData}) => cellData.params.symbol.value}
+                    cellRenderer={({cellData}) => this.renderSymbol(cellData)}
                     className={styles.exampleColumn}
-                    cellRenderer={({cellData}) => cellData}
                     flexShrink={1}
                   />
                   {/* formatEth(price) }<small> ETH</small> */}
@@ -217,6 +214,12 @@ class ElementListTransactions extends PureComponent {
     const { match} = this.props;
     const url =  rowData.params.dragoID.value.c + "/" + utils.dragoISIN(cellData, rowData.params.dragoID.value.c)
     return <FlatButton label="View" primary={true} containerElement={<Link to={match.path+"/"+url} />} />
+  }
+
+  renderSymbol(input) {
+    return (
+      <div>{input.symbol}</div>
+    )
   }
 
   renderEthValue(ethValue) {

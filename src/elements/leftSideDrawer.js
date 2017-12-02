@@ -29,7 +29,7 @@ class LeftSideDrawer extends Component {
     super(props);
   }
 
-  static PropTypes = {
+  static propTypes = {
       location: PropTypes.object.isRequired,
     };
 

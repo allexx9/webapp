@@ -39,8 +39,8 @@ import Sticky from 'react-stickynode'
 import { dragoFactoryEventsSignatures } from '../../utils/utils.js'
 import { formatCoins, formatEth, formatHash, toHex } from '../../format'
 import * as abis from '../../contracts';
-import ElementListBalances from './Elements/elementListBalances'
-import ElementListTransactions from './Elements/elementListTransactions'
+import ElementListBalances from '../Elements/elementListBalances'
+import ElementListTransactions from '../Elements/elementListTransactions'
 import IdentityIcon from '../../IdentityIcon';
 import Loading from '../../Loading'
 import utils from '../../utils/utils'
@@ -61,12 +61,10 @@ class PageDashboardDragoTrader extends Component {
     contract: PropTypes.object.isRequired
   };
 
-  static PropTypes = {
+  static propTypes = {
       location: PropTypes.object.isRequired,
-      blockNumber: PropTypes.object.isRequired,
       ethBalance: PropTypes.object.isRequired,
-      accounts: PropTypes.object.isRequired,
-      allEvents: PropTypes.object.isRequired,
+      accounts: PropTypes.array.isRequired,
       accountsInfo: PropTypes.object.isRequired, 
     };
 
@@ -485,7 +483,6 @@ class PageDashboardDragoTrader extends Component {
         .getAllLogs(eventsFilterSell)
         .then((dragoTransactionsLog) => {
           const sellLogs = dragoTransactionsLog.map(logToEvent)
-          console.log(dragoTransactionsLog)
           return sellLogs
         }
         )
@@ -543,7 +540,12 @@ class PageDashboardDragoTrader extends Component {
               symbol: dragoDetails[0][2],
               dragoID: dragoID
             }
-            log.symbol = symbol
+            // log.params.symbol = {
+            //       type: "string",
+            //       value: symbol
+            //       }
+            log.symbol = symbol  
+            
             return log
           });
         })

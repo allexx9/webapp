@@ -14,11 +14,11 @@ import styles from './elementFundActionsHeader.module.css';
 
 export default class ElementFundActionsHeader extends React.Component {
 
-  static PropTypes = {
+  static propTypes = {
     dragoDetails: PropTypes.object.isRequired, 
-    action: PropTypes.object.isRequired, 
-    handlebuyAction: PropTypes.func.isRequired,
-    handleSellAction: PropTypes.func.isRequired,
+    action: PropTypes.string.isRequired, 
+    // handlebuyAction: PropTypes.func.isRequired,
+    // handleSellAction: PropTypes.func.isRequired,
   };
 
   headerButtonsStyle = {
@@ -74,14 +74,14 @@ export default class ElementFundActionsHeader extends React.Component {
             <Col xsOffset={4} xs={2}><FlatButton label="Sell" style={this.buttonsStyle} 
               backgroundColor={this.setButtonStyle(action).sellButtonStyleBg}
               labelStyle={this.setButtonStyle(action).sellButtonStyle}
-              hoverColor=colors.blue300
+              hoverColor={Colors.blue300}
               fullWidth={true}  
               onClick={handleSellAction}/>
             </Col>
             <Col xs={2}><FlatButton label="Buy" style={this.buttonsStyle} 
               backgroundColor={this.setButtonStyle(action).buyButtonStyleBg}
               labelStyle={this.setButtonStyle(action).buyButtonStyle}
-              hoverColor=colors.blue300
+              hoverColor={Colors.blue300}
               fullWidth={true}  
               onClick={handleBuyAction}/>
             </Col>

@@ -20,8 +20,6 @@ import styles from './elementListTransactions.module.css';
 class ElementListSupply extends PureComponent {
 
   static PropTypes = {
-    allEvents: PropTypes.object.isRequired,
-    accountsInfo: PropTypes.object.isRequired, 
     list: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,

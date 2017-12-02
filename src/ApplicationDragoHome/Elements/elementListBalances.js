@@ -19,9 +19,7 @@ import styles from './elementListTransactions.module.css';
 
 class ElementListBalances extends PureComponent {
 
-  static PropTypes = {
-    allEvents: PropTypes.object.isRequired,
-    accountsInfo: PropTypes.object.isRequired, 
+  static propTypes = {
     list: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
@@ -33,7 +31,6 @@ class ElementListBalances extends PureComponent {
     const sortBy = 'symbol';
     const sortDirection = SortDirection.ASC;
     const sortedList = this._sortList({sortBy, sortDirection});
-    console.log(sortedList)
     const rowCount = list.size
 
     this.state = {
@@ -96,7 +93,7 @@ class ElementListBalances extends PureComponent {
     } = this.state;
 
     const rowGetter = ({index}) => this._getDatum(sortedList, index);
-    console.log(sortedList)        
+   
     
 
     return (
