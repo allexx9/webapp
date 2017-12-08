@@ -1,5 +1,7 @@
+import  * as Colors from 'material-ui/styles/colors';
 import { Grid, Row, Col } from 'react-flexbox-grid';
 import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
+import ActionSwapHoriz from 'material-ui/svg-icons/action/swap-horiz';
 import BigNumber from 'bignumber.js';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
@@ -7,8 +9,6 @@ import PropTypes from 'prop-types';
 import RaisedButton from 'material-ui/RaisedButton';
 import React from 'react';
 import TextField from 'material-ui/TextField';
-import  * as Colors from 'material-ui/styles/colors';
-import ActionSwapHoriz from 'material-ui/svg-icons/action/swap-horiz';
 
 import {
   Table,
@@ -25,6 +25,7 @@ import * as abis from '../../contracts';
 import AccountSelector from './elementAccountSelector'
 import ElementFundActionsHeader from './elementFundActionsHeader'
 import IdentityIcon from '../../IdentityIcon';
+import DragoApi from '../../DragoApi/src'
 
 import styles from './elementFundActions.module.css';
 
@@ -114,10 +115,39 @@ export default class ElementFundActions extends React.Component {
 
 
   handleOpen = () => {
-    this.setState({open: true});
+    console.log('open')
+    console.log(this.state.account)
+    this.setState({
+      open: true,
+      action: 'buy',
+      actionSummary: 'BUYING',
+      account: {},
+      accountError: ERRORS.invalidAccount,
+      accountCorrect: false,
+      amount: 0,
+      newDrgBalance: 0,
+      drgBalance: 0,
+      drgOrder: 0,
+      amountError: ERRORS.invalidAmount,
+      amountFieldDisabled: true,
+      unitsSummary: 0,
+      amountSummary: 0,
+      actionStyleBuySell: { 
+        color: Colors.green300
+      },
+      canSubmit: false,
+      sending: false,
+      complete: false,
+      switchButton: {
+        label: 'Units',
+        denomination: 'ETH',
+        hint: 'Amount'
+      }    
+    });
   }
 
   handleClose = () => {
+    console.log('close')
     this.setState({
       open: false,
       action: 'buy',
@@ -146,6 +176,7 @@ export default class ElementFundActions extends React.Component {
       }
     });
   }
+  
 
   handleSellAction = () => {
     const {dragoDetails} = this.props
@@ -158,7 +189,21 @@ export default class ElementFundActions extends React.Component {
         label: 'Amount',
         denomination: dragoDetails.symbol,
         hint: 'Amount'
-      }
+      },
+      canSubmit: false,
+      sending: false,
+      complete: false,
+      account: {},
+      accountError: ERRORS.invalidAccount,
+      accountCorrect: false,
+      amount: 0,
+      newDrgBalance: 0,
+      drgBalance: 0,
+      drgOrder: 0,
+      amountError: ERRORS.invalidAmount,
+      amountFieldDisabled: true,
+      unitsSummary: 0,
+      amountSummary: 0,
     })
   }
 
@@ -173,7 +218,21 @@ export default class ElementFundActions extends React.Component {
         label: 'Units',
         denomination: 'ETH',
         hint: 'Amount'
-      }
+      },
+      canSubmit: false,
+      sending: false,
+      complete: false,
+      account: {},
+      accountError: ERRORS.invalidAccount,
+      accountCorrect: false,
+      amount: 0,
+      newDrgBalance: 0,
+      drgBalance: 0,
+      drgOrder: 0,
+      amountError: ERRORS.invalidAmount,
+      amountFieldDisabled: true,
+      unitsSummary: 0,
+      amountSummary: 0,
     })
   }
 
@@ -342,7 +401,7 @@ export default class ElementFundActions extends React.Component {
 
   }
 
-  onSend = () => {
+  onSendBuy = () => {
     const { api } = this.context;
     const {dragoDetails} = this.props
     const values = []
@@ -350,21 +409,36 @@ export default class ElementFundActions extends React.Component {
       from: this.state.account.address,
       value: api.util.toWei(this.state.amountSummary).toString()
     }
-    const instance = api.newContract(abis.drago, dragoDetails.address).instance
-    
-    this.setState({
-      sending: true
-    })
-    instance.buyDrago
-      .estimateGas(options, values)
-      .then((gasEstimate) => {
-        options.gas =  gasEstimate.mul(1.2).toFixed(0); //problem with estimate cause of blank before dragoAddress
-        console.log(`Buy drago: gas estimated as ${gasEstimate.toFixed(0)} setting to ${options.gas}`);
-
-        return instance.buyDrago.postTransaction(options, values);
-      })
+    if(this.state.account.source === 'MetaMask') {
+      const web3 = window.web3
+      const dragoApi = new DragoApi(web3)
+      dragoApi.contract.drago.instance(dragoDetails.address)
+      dragoApi.contract.drago.buyDrago(options, values)
       .then(() => {
-        // this.props.onClose();
+
+      })
+      .catch((error) => {
+        console.error('error', error);
+        this.setState({
+          sending: false
+        })
+      })
+      this.props.snackBar('Order waiting for authorization for ' + this.state.amountSummary + ' ETH')
+      this.setState({
+        sending: false,
+        complete: true
+      }, this.setState({open: false}))
+      this.handleClose()
+    } else {
+      this.setState({
+        sending: true
+      })
+      console.log(options)
+      console.log(values)
+      const dragoApi = new DragoApi(api)
+      dragoApi.contract.drago.instance(dragoDetails.address)
+      dragoApi.contract.drago.buyDrago(options, values)
+      .then(() => {
         this.props.snackBar('Order waiting for authorization for ' + this.state.amountSummary + ' ETH')
         this.setState({
           sending: false,
@@ -377,6 +451,73 @@ export default class ElementFundActions extends React.Component {
           sending: false
         })
       })
+      this.handleClose()
+    }
+  }
+
+  onSendSell = () => {
+    const { api } = this.context;
+    const {dragoDetails} = this.props
+    const DIVISOR = 10 ** 6;  //dragos are divisible by 1 million
+    const amount = new BigNumber(this.state.amountSummary).mul(DIVISOR);    
+    const values = amount.toFixed(0); //[dragoAddress.toString(), amount.toFixed(0)]; in new version direct trade wth instance
+    const options = {
+      from: this.state.account.address
+    }
+    if(this.state.account.source === 'MetaMask') {
+      const web3 = window.web3
+      const dragoApi = new DragoApi(web3)
+      dragoApi.contract.drago.instance(dragoDetails.address)
+      dragoApi.contract.drago.sellDrago(options, values)
+      .then(() => {
+
+      })
+      .catch((error) => {
+        console.error('error', error);
+        this.setState({
+          sending: false
+        })
+      })
+      this.props.snackBar('Order waiting for authorization for ' + this.state.amountSummary + ' ETH')
+      this.setState({
+        sending: false,
+        complete: true
+      }, this.setState({open: false}))
+      this.handleClose()
+    } else {
+    this.setState({
+      sending: true
+    })
+      const dragoApi = new DragoApi(api)
+      console.log(options)
+      console.log(values)
+      dragoApi.contract.drago.instance(dragoDetails.address)
+      dragoApi.contract.drago.sellDrago(options, values)
+      .then(() => {
+        this.props.snackBar('Order waiting for authorization for ' + this.state.amountSummary + ' '+ dragoDetails.symbol.toUpperCase())
+        this.setState({
+          sending: false,
+          complete: true
+        }, this.setState({open: false}))
+      })
+      .catch((error) => {
+        console.error('error', error);
+        this.setState({
+          sending: false
+        })
+      })
+    }
+  }
+
+  onSend = () => {
+    switch(this.state.action) {
+      case "buy":
+        this.onSendBuy()
+        break
+      case "sell":
+        this.onSendSell()
+        break
+    } 
   }
 
   unitsSwitch = () => {
@@ -392,6 +533,7 @@ export default class ElementFundActions extends React.Component {
   }
 
   buyFields = () => {
+    console.log(this.state.account)
     return (
       <Col xs={6}>
         <Row middle="xs" >
@@ -402,7 +544,7 @@ export default class ElementFundActions extends React.Component {
           errorText={ this.state.accountError }
           floatingLabelText='From account'
           hintText='The account the transaction will be made from'
-        onSelect={ this.onChangeAccounts } />
+          onSelect={ this.onChangeAccounts } />
           </Col>
           <Col xs={6}>
             <TextField
@@ -521,6 +663,8 @@ export default class ElementFundActions extends React.Component {
       />,
     ];
     // console.log(dragoDetails)
+    // const key = Math.random().toString(36).substring(7)
+    // console.log(key)
     return (
       <div>
         <RaisedButton label="Actions" primary={true} onClick={this.handleOpen} 

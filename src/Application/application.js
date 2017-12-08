@@ -1,7 +1,7 @@
 // Copyright 2016-2017 Gabriele Rigo
-import { api } from '../parity';
-
 import React, { Component } from 'react';
+
+import { api } from '../parity';
 
 // React.PropTypes is deprecated since React 15.5.0, use the npm module prop-types instead
 import PropTypes from 'prop-types';
@@ -27,6 +27,7 @@ import classNames from 'classnames';
 import * as Colors from 'material-ui/styles/colors';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import NotConnected from '../elements/notConnected'
+
 
 // Router
 // import { Link, Route, withRouter } from 'react-router-dom'
@@ -130,6 +131,7 @@ export class ApplicationHomePage extends Component {
 
   componentDidMount() {
     this.checkConnectionToNode()
+    
   }
 
   render() {
@@ -211,7 +213,6 @@ export class ApplicationDragoPage extends Component {
   checkConnectionToNode = () =>{
     api.net.listening()
     .then((listening) =>{
-      console.log('timeout')
       // console.log(listening)
       this.td = setTimeout(this.checkConnectionToNode,15000)
       this.setState({
@@ -256,11 +257,18 @@ export class ApplicationDragoPage extends Component {
 
   state = {
     isManager: false,
-    isConnected: true
+    isConnected: true,
+    notificationsOpen: false
+  }
+
+  handleToggleNotifications = () => {
+    console.log('open')
+    this.setState({notificationsOpen: !this.state.notificationsOpen})
   }
 
   render() {
   // console.log(location);
+  const {notificationsOpen} = this.state
   const { location } = this.props
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
@@ -268,13 +276,23 @@ export class ApplicationDragoPage extends Component {
           <Row>
             <Col xs={12}>
               {/* <ApplicationTabsMenu /> */}
-              <ApplicationTopBar handleTopBarSelectAccountType={ this.handleTopBarSelectAccountType } isManager={this.state.isManager} />
+              <ApplicationTopBar 
+                handleTopBarSelectAccountType={ this.handleTopBarSelectAccountType } 
+                isManager={this.state.isManager} 
+                handleToggleNotifications={this.handleToggleNotifications} 
+                />
             </Col>
           </Row>
           <Row className={classNames(styles.content)}>
             <Col xs={12}>
             {this.state.isConnected ? (
-              <ApplicationDragoHome isManager={this.state.isManager} location={location}/>
+              <ApplicationDragoHome 
+                isManager={this.state.isManager} 
+                location={location}
+                notificationsOpen={notificationsOpen}
+                handleToggleNotifications={this.handleToggleNotifications}
+                notificationsOpen={notificationsOpen}
+                />
             ) : (
               <NotConnected isConnected={this.state.isConnected}/>
             )}

@@ -1,11 +1,13 @@
+import  * as Colors from 'material-ui/styles/colors'
 import { Link, Route, withRouter } from 'react-router-dom'
 import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar'
 import AccountIcon from 'material-ui/svg-icons/action/account-circle'
-import ActionHome from 'material-ui/svg-icons/action/home'
 import ActionAccountBalance from 'material-ui/svg-icons/action/account-balance'
+import ActionHome from 'material-ui/svg-icons/action/home'
 import ActionLightBulb from 'material-ui/svg-icons/action/lightbulb-outline'
 import ActionPolymer from 'material-ui/svg-icons/action/polymer'
 import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
+import Drawer from 'material-ui/Drawer'
 import DropDownMenu from 'material-ui/DropDownMenu'
 import FlatButton from 'material-ui/FlatButton'
 import FontIcon from 'material-ui/FontIcon'
@@ -17,9 +19,10 @@ import MenuItem from 'material-ui/MenuItem'
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
-import  * as Colors from 'material-ui/styles/colors'
+import NotificationWifi from 'material-ui/svg-icons/notification/wifi';
 
 import {APP, DS} from '../utils/const.js'
+import ElementNotificationsDrawer from '../ApplicationDragoHome/Elements/elementNotificationsDrawer'
 
 import styles from './elements.module.css'
 
@@ -54,12 +57,20 @@ class NavLinks extends Component {
         super(props);
       }
 
-
     static propTypes = {
         location: PropTypes.object.isRequired,
         handleTopBarSelectAccountType: PropTypes.func.isRequired,
-        isManager: PropTypes.bool
+        isManager: PropTypes.bool,
+        handleToggleNotifications: PropTypes.func.isRequired,
       };
+
+    state = {
+      notificationsOpen: false,
+      allEvents: null,
+      minedEvents: null,
+      pendingEvents: null,
+      subscriptionIDDrago: null
+    }
 
     componentDidMount () {
         this.activeSectionPath()
@@ -87,8 +98,10 @@ class NavLinks extends Component {
       })
     }
 
+
+
     render() {
-      var { location, handleTopBarSelectAccountType, isManager } = this.props
+      var { location, handleTopBarSelectAccountType, isManager, handleToggleNotifications } = this.props
       let userTypeDisabled = false;
       const links = [
         {label: 'home', to: 'home', icon: <ActionHome color="white"/>},
@@ -127,10 +140,16 @@ class NavLinks extends Component {
                       <MenuItem value="2" primaryText="Accounts" />
                       <MenuItem value="3" primaryText="Help" />
                   </IconMenu>
+                  <IconButton tooltip="Network" onClick={handleToggleNotifications} iconStyle={menuStyles.profileIcon}>
+                    <NotificationWifi />
+                  </IconButton>
+                    {/* <ElementNotificationsDrawer handleToggleNotifications={this.handleToggleNotifications} accounts={accounts}/> */}
               </ToolbarGroup>
           </ToolbarGroup>
       )
     }
   }
+
+
 
   export default withRouter(NavLinks)

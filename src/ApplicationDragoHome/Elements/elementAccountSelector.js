@@ -25,12 +25,12 @@ export default class AccountSelect extends Component {
   }
 
   componentDidMount () {
-    this.props.onSelect(lastSelectedAccount);
+    // this.props.onSelect(lastSelectedAccount);
   }
 
   render () {
     const { account, accounts, anyAccount, errorText, floatingLabelText, gabBalance, hintText } = this.props;
-    // console.log(this.props)
+    console.log(this.props)
     return (
       <SelectField
         autoComplete='off'
@@ -52,6 +52,7 @@ export default class AccountSelect extends Component {
 
   onSelect = (event, idx, account) => {
     lastSelectedAccount = account || {};
+    
     this.props.onSelect(lastSelectedAccount);
   }
 }

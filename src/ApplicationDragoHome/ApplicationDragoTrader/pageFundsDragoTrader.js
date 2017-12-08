@@ -57,11 +57,9 @@ class PageFundsDragoTrader extends Component {
     contract: PropTypes.object.isRequired
   };
   
-  static PropTypes = {
+  static propTypes = {
     location: PropTypes.object.isRequired,
-    ethBalance: PropTypes.object.isRequired,
     accounts: PropTypes.array.isRequired,
-    allEvents: PropTypes.object.isRequired,
     accountsInfo: PropTypes.object.isRequired, 
   };
 

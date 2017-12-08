@@ -255,7 +255,6 @@ export default class ActionSellDrago extends Component {
     const options = {
       from: this.state.account.address
     };
-
     this.setState({
       sending: true
     });

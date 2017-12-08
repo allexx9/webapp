@@ -59,7 +59,6 @@ class ElementListBalances extends PureComponent {
 
   componentWillReceiveProps (nextProps, nextState) {
     const { accountsInfo, list } = nextProps
-    console.log(nextProps)
     const sortBy = 'symbol';
     const sortDirection = SortDirection.ASC;
     const sortedList = list.sortBy(item => item.symbol)
@@ -72,7 +71,7 @@ class ElementListBalances extends PureComponent {
       rowCount: rowCount,
     })
     const sourceLogClass = this.constructor.name
-    console.log(`${sourceLogClass} -> componentWillReceiveProps`);
+    // console.log(`${sourceLogClass} -> componentWillReceiveProps`);
   }
 
   render() {

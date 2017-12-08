@@ -13,6 +13,7 @@
 
 
 import Api from '@parity/api'
+import Web3 from 'web3'
 
 var HttpsUrl = true;
 var WsSecureUrl = true;
@@ -34,6 +35,25 @@ if (typeof window.parity !== 'undefined') {
   // For RPC over Websocket
   WsSecureUrl = 'wss://srv03.endpoint.network:8546';
 }
+
+
+    console.log(window)
+    // Checking if Web3 has been injected by the browser (Mist/MetaMask)
+
+    if (typeof window.web3 !== 'undefined') {
+      // Use Mist/MetaMask's provider
+      console.log('Found MetaMask!')
+      window.web3 = new Web3(window.web3.currentProvider)
+      console.log(window.web3.currentProvider)
+    } else {
+      console.log('No web3? You should consider trying MetaMask!')
+      // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
+      // window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"))
+    }
+  
+    // Now you can start your app & access web3 freely:
+
+
 
 const checkTransport = () => {
   if (OverHttps) {

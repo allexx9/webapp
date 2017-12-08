@@ -1,7 +1,8 @@
 import { DRG_ISIN } from './const';
-import { toHex } from '../format';
+import { toHex, formatCoins, formatEth } from '../format';
 import {APP, DS} from './const.js'
 import * as abis from '../contracts';
+import BigNumber from 'bignumber.js'
 
 // Getting events signatures
 const dragoFactoryEventsSignatures = (contract) => {
@@ -62,37 +63,201 @@ export {dragoApi}
 
 class utilities {
 
-  shallowEqual(objA: mixed, objB: mixed): boolean {
-    const  sourceLogClass = this.constructor.name
-    if (objA === objB) {
-      // console.log(`${sourceLogClass} -> objA === objB`)
-      return true;
+    getTransactionsAll = (contract, accounts, api) => {
+      var sourceLogClass = this.constructor.name
+      const logToEvent = (log) => {
+        const key = api.util.sha3(JSON.stringify(log))
+        const { blockNumber, logIndex, transactionHash, transactionIndex, params, type } = log   
+        const ethvalue = (log.event === 'BuyDrago') ? formatEth(params.amount.value,null,api) : formatEth(params.revenue.value,null,api);
+        const drgvalue = (log.event === 'SellDrago') ? formatCoins(params.amount.value,null,api) : formatCoins(params.revenue.value,null,api);
+        // let ethvalue = null
+        // let drgvalue = null     
+        // if ((log.event === 'BuyDrago')) {
+        //   ethvalue = formatEth(params.amount.value,null,api)
+        //   drgvalue = formatCoins(params.revenue.value,null,api)     
+        // }
+        // if ((log.event === 'SellDrago')) {
+        //   ethvalue = formatEth(params.revenue.value,null,api)
+        //   drgvalue = formatCoins(params.amount.value,null,api)     
+        // }
+        return {
+          type: log.event,
+          state: type,
+          blockNumber,
+          logIndex,
+          transactionHash,
+          transactionIndex,
+          params,
+          key,
+          ethvalue,
+          drgvalue
+        }
+      }
+      
+      // Getting all buyDrago and selDrago events since block 0.
+      // dragoFactoryEventsSignatures accesses the contract ABI, gets all the events and for each creates a hex signature
+      // to be passed to getAllLogs. Events are indexed and filtered by topics
+      // more at: http://solidity.readthedocs.io/en/develop/contracts.html?highlight=event#events
+
+      // The second param of the topics array is the drago address
+      // The third param of the topics array is the from address
+      // The third param of the topics array is the to address
+      //
+      //  https://github.com/RigoBlock/Books/blob/master/Solidity_01_Events.MD
+
+      // const hexDragoAddress = '0x' + dragoAddress.substr(2).padStart(64,'0')
+      const hexAccounts = accounts.map((account) => {
+        const hexAccount = '0x' + account.address.substr(2).padStart(64,'0')
+        return hexAccount
+      })
+
+      // Filter for buy events
+      const eventsFilterBuy = {
+        topics: [ 
+          [dragoFactoryEventsSignatures(contract).BuyDrago.hexSignature], 
+          null, 
+          hexAccounts,
+          null
+        ]
+      }
+      // Filter for sell events
+      const eventsFilterSell = {
+        topics: [ 
+          [dragoFactoryEventsSignatures(contract).SellDrago.hexSignature], 
+          null, 
+          null,
+          hexAccounts
+        ]
+      }
+      const buyDragoEvents = contract
+        .getAllLogs(eventsFilterBuy)
+        .then((dragoTransactionsLog) => {
+          const buyLogs = dragoTransactionsLog.map(logToEvent)
+          return buyLogs
+        }
+        )
+      const sellDragoEvents = contract
+        .getAllLogs(eventsFilterSell)
+        .then((dragoTransactionsLog) => {
+          const sellLogs = dragoTransactionsLog.map(logToEvent)
+          return sellLogs
+        }
+        )
+      const dragoRegistry = api.parity
+        .registryAddress()
+        .then((registryAddress) => {
+          const registry = api.newContract(abis.registry, registryAddress).instance;
+          return Promise.all([
+              registry.getAddress.call({}, [api.util.sha3('dragoregistry'), 'A'])
+          ]);
+        })
+        .then((address) => {
+          console.log(`${sourceLogClass} -> The drago registry was found at ${address}`);
+          return api.newContract(abis.dragoregistry, address).instance
+        });
+      Promise.all([buyDragoEvents, sellDragoEvents, dragoRegistry])
+      .then ((results) =>{
+        // Creating an array of promises that will be executed to add timestamp and symbol to each entry
+        // Doing so because for each entry we need to make an async call to the client
+        // For additional refernce: https://stackoverflow.com/questions/39452083/using-promise-function-inside-javascript-array-map
+        var dragoTransactionsLog = [...results[0], ...results[1]]
+        const dragoRegistryInstance = results[2]
+        var dragoBalances = [] 
+        const promisesTimestamp = dragoTransactionsLog.map((log, index) => {
+          return api.eth
+          .getBlockByNumber(log.blockNumber.c[0])
+          .then((block) => {
+            log.timestamp = block.timestamp
+            return log
+          })
+        })
+        const promisesSymbol = dragoTransactionsLog.map((log) => {
+          return Promise.all([
+            dragoRegistryInstance.fromAddress.call({}, [log.params.drago.value])
+          ])
+          .then((dragoDetails) => {
+            // console.log(`${sourceLogClass} ->  dragoDetails Symbol: ${dragoDetails[0][2]}`)
+            const symbol = dragoDetails[0][2]
+            const dragoID = dragoDetails[0][3].c[0]
+            var amount = () => {
+              if (log.type === 'BuyDrago') {
+                return new BigNumber(log.params.revenue.value)
+              } else {
+                return new BigNumber(-log.params.amount.value)
+              } 
+            }
+            if (typeof dragoBalances[dragoID] !== 'undefined') {
+              var balance = dragoBalances[dragoID].balance.add(amount())
+            } else {
+              var balance = amount()
+            }
+            dragoBalances[dragoID] = {
+              balance: balance,
+              name: dragoDetails[0][1],
+              symbol: dragoDetails[0][2],
+              dragoID: dragoID
+            }
+            log.symbol = symbol  
+            
+            return log
+          });
+        })
+
+        // Running all promises
+        Promise.all(promisesTimestamp)
+        .then (()=>{
+          Promise.all(promisesSymbol)
+          .then((results) => {
+            var balances = [];
+            console.log(`${sourceLogClass} -> Transactions list loaded`);
+            // Reorganizing the balances array
+            for(var v in dragoBalances) {
+              var balance = {
+                symbol: dragoBalances[v].symbol,
+                name: dragoBalances[v].name,
+                dragoID: dragoBalances[v].dragoID,
+                balance: formatCoins(dragoBalances[v].balance,4,api)
+              }
+              balances.push(balance)
+            }
+            return [balances, results]
+          })
+        })
+      })
     }
   
-    if (typeof objA !== 'object' || objA === null ||
-        typeof objB !== 'object' || objB === null) {
-      // console.log(`${sourceLogClass} -> objA !== 'object'`)
-      return false;
-    }
-  
-    var keysA = Object.keys(objA);
-    var keysB = Object.keys(objB);
-  
-    if (keysA.length !== keysB.length) {
-      // console.log(`${sourceLogClass} -> keysA.length`);
-      return false;
-    }
-  
-    // Test for A's keys different from B.
-    var bHasOwnProperty = hasOwnProperty.bind(objB);
-    for (var i = 0; i < keysA.length; i++) {
-      if (!bHasOwnProperty(keysA[i]) || objA[keysA[i]] !== objB[keysA[i]]) {
-        // console.log(`${sourceLogClass} -> Test for A's keys different from B`)
+
+    shallowEqual(objA: mixed, objB: mixed): boolean {
+      const  sourceLogClass = this.constructor.name
+      if (objA === objB) {
+        // console.log(`${sourceLogClass} -> objA === objB`)
+        return true;
+      }
+    
+      if (typeof objA !== 'object' || objA === null ||
+          typeof objB !== 'object' || objB === null) {
+        // console.log(`${sourceLogClass} -> objA !== 'object'`)
         return false;
       }
+    
+      var keysA = Object.keys(objA);
+      var keysB = Object.keys(objB);
+    
+      if (keysA.length !== keysB.length) {
+        // console.log(`${sourceLogClass} -> keysA.length`);
+        return false;
+      }
+    
+      // Test for A's keys different from B.
+      var bHasOwnProperty = hasOwnProperty.bind(objB);
+      for (var i = 0; i < keysA.length; i++) {
+        if (!bHasOwnProperty(keysA[i]) || objA[keysA[i]] !== objB[keysA[i]]) {
+          // console.log(`${sourceLogClass} -> Test for A's keys different from B`)
+          return false;
+        }
+      }
+      return true;
     }
-    return true;
-  }
   
     pathExplode (path) {
       var explodedPath = path.pathname.split( '/' );

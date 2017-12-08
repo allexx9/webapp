@@ -18,6 +18,7 @@ import DropDownMenu from 'material-ui/DropDownMenu';
 import RaisedButton from 'material-ui/RaisedButton';
 import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
 
+
 import NavLinks from '../../elements/topBarMenuLinks';
 
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
@@ -25,15 +26,6 @@ import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 
 import styles from '../application.module.css';
 
-function handleTouchTap() {
-  alert('onClick triggered on the title component');
-}
-function logMsg(message) {
-    console.log(message);
-  }
-
-
-// Router and material-ui tabs: https://stackoverflow.com/questions/41638688/material-uis-tabs-integration-with-react-router-4
 class ApplicationTopBar extends Component {
     constructor(props) {
       super(props)
@@ -42,21 +34,21 @@ class ApplicationTopBar extends Component {
 
     static propTypes = {
       location: PropTypes.object.isRequired,
-      handleTopBarSelectAccountType: PropTypes.func
+      handleTopBarSelectAccountType: PropTypes.func,
+      handleToggleNotifications: PropTypes.func.isRequired,
     };
 
     state = {
-        // value: this.props.location.pathname
-        // value: "/vault"
     }
-    
+
     render() {
-      const { location, handleTopBarSelectAccountType, isManager } = this.props
+      const { location, handleTopBarSelectAccountType, isManager, handleToggleNotifications } = this.props
       return (
         <AppBar
           title="RigoBlock"
           showMenuIconButton={false}
-          iconElementRight={<NavLinks location={location} handleTopBarSelectAccountType={ handleTopBarSelectAccountType } isManager={isManager}/>}
+          iconElementRight={<NavLinks handleToggleNotifications={handleToggleNotifications}
+          location={location} handleTopBarSelectAccountType={ handleTopBarSelectAccountType } isManager={isManager}/>}
         />  
       )
     }

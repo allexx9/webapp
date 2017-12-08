@@ -31,6 +31,7 @@ import ElementFundActions from '../Elements/elementFundActions'
 import IdentityIcon from '../../IdentityIcon'
 import InfoTable from '../Elements/elementInfoTable'
 import Loading from '../../Loading'
+import DragoApi from '../../DragoApi/src'
 
 import {
   Table,
@@ -127,9 +128,9 @@ class PageFundDetailsDragoTrader extends Component {
       }
       
       return (
-        <CopyToClipboard text={text}
+        <CopyToClipboard text={text} key={"address"+text}
             onCopy={() => this.snackBar('Copied to clilpboard')}>
-            <Link to={'#'} ><CopyContent className={styles.copyAddress}/></Link>
+            <Link to={'#'} key={"addresslink"+text}><CopyContent className={styles.copyAddress}/></Link>
         </CopyToClipboard>
       );
     }
@@ -140,7 +141,7 @@ class PageFundDetailsDragoTrader extends Component {
       }
       
       return (
-      <a href={'https://kovan.etherscan.io/'+type+'/' + text} target='_blank'><Search className={styles.copyAddress}/></a>
+      <a key={"addressether"+text} href={'https://kovan.etherscan.io/'+type+'/' + text} target='_blank'><Search className={styles.copyAddress}/></a>
       );
     }
 
@@ -221,6 +222,7 @@ class PageFundDetailsDragoTrader extends Component {
         textAlign: 'center',
       };
       
+      const web3 = window.web3
 
       var dragoTransactionList = Immutable.List(this.state.dragoTransactionsLogs)
       // console.log(dragoTransactionList)
@@ -303,27 +305,33 @@ class PageFundDetailsDragoTrader extends Component {
       const { api, contract } = this.context
       const {accounts } = this.props
       var sourceLogClass = this.constructor.name
-      console.log(this.context)
-
-      api.parity
-        .registryAddress()
-        .then((registryAddress) => {
-          const registry = api.newContract(abis.registry, registryAddress).instance;
-          return Promise.all([
-              registry.getAddress.call({}, [api.util.sha3('dragoregistry'), 'A'])
-          ]);
-        })
-        .then((address) => {
-          console.log(`${sourceLogClass} -> The drago registry was found at ${address}`);
-          const dragoRegistry = api.newContract(abis.dragoregistry, address).instance;
-          return Promise.all([
-              dragoRegistry.drago.call({}, [dragoID])
-          ])
+      //
+      // Initializing Drago API
+      // Passing Parity API
+      //      
+      const dragoApi = new DragoApi(api)
+      //
+      // Initializing registry contract
+      //
+      dragoApi.contract.dragoregistry
+        .instance()
+        .then((address) =>{
+          //
+          // Looking for drago from dragoID
+          //
+          dragoApi.contract.dragoregistry
+          .drago(dragoID)
           .then((dragoDetails) => {
-            console.log(`${sourceLogClass} ->  dragoDetails: ${dragoDetails}`)
-            const dragoToken = api.newContract(abis.drago, dragoDetails[0][0]).instance;
-            dragoToken.getData.call({})
-            .then((dragoPrices) => {
+            const dragoAddress = dragoDetails[0][0]
+            //
+            // Initializing drago contract
+            //
+            dragoApi.contract.drago.instance(dragoAddress)
+            //
+            // Calling getData method
+            //
+            dragoApi.contract.drago.getData()
+            .then((data) =>{
               this.setState({
                 dragoDetails: {
                   address: dragoDetails[0][0],
@@ -332,16 +340,16 @@ class PageFundDetailsDragoTrader extends Component {
                   dragoID: dragoDetails[0][3].c[0],
                   addresssOwner: dragoDetails[0][4],
                   addressGroup: dragoDetails[0][5],
-                  sellPrice: api.util.fromWei(dragoPrices[2].toNumber(4)).toFormat(4),
-                  buyPrice: api.util.fromWei(dragoPrices[3].toNumber(4)).toFormat(4),
+                  sellPrice: api.util.fromWei(data[2].toNumber(4)).toFormat(4),
+                  buyPrice: api.util.fromWei(data[3].toNumber(4)).toFormat(4),
                 },
                 loading: false
               })
             })
-
             this.getTransactions (dragoDetails[0][0], contract, accounts)
-          });
-        });
+          })
+        })
+
       }  
 
     // Getting last transactions

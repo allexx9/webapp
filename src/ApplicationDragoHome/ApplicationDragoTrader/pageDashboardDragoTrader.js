@@ -39,6 +39,7 @@ import Sticky from 'react-stickynode'
 import { dragoFactoryEventsSignatures } from '../../utils/utils.js'
 import { formatCoins, formatEth, formatHash, toHex } from '../../format'
 import * as abis from '../../contracts';
+import DragoApi from '../../DragoApi/src'
 import ElementListBalances from '../Elements/elementListBalances'
 import ElementListTransactions from '../Elements/elementListTransactions'
 import IdentityIcon from '../../IdentityIcon';
@@ -81,23 +82,6 @@ class PageDashboardDragoTrader extends Component {
 
 
     componentDidMount() {
-      // Events.scrollEvent.register('begin', function(to, element) {
-      //   console.log("begin", arguments);
-      // });
-
-      // Events.scrollEvent.register('end', function(to, element) {
-      //   console.log("end", arguments);
-      // });
-      // window.addEventListener('scroll', this.handleTopBarPosition);
-      // scrollSpy.update()
-      // Saving the initial position of the link nav bar.
-      // const topPosition =  ReactDOM
-      //   .findDOMNode(this.refs['topBar'])
-      //   .getBoundingClientRect().top
-      // this.setState({
-      //   topBarLinksPosition: topPosition
-      //   }
-      // )
     }
 
     componentWillUnmount() {
@@ -109,23 +93,6 @@ class PageDashboardDragoTrader extends Component {
       const {accounts } = this.props
       this.getTransactions (null, contract, accounts)
     }
-
-    // handleTopBarPosition = (event) => {
-    //   // Setting fixed position windows is scrolled down.
-    //   // Setting relative position if the windows is scrolled back to top
-    //   const {topBarLinksPosition} = this.state
-    //   if (window.pageYOffset >= topBarLinksPosition) {
-    //     this.setState({
-    //       topBarClassName: styles.topFixedLinkBar
-    //       }
-    //     )
-    //   } else {
-    //     this.setState({
-    //       topBarClassName: styles.topRelativeLinkBar
-    //       }
-    //     )
-    //   }
-    // }
 
     snackBar = (msg) =>{
       this.setState({
@@ -181,9 +148,6 @@ class PageDashboardDragoTrader extends Component {
     }
 
     componentDidUpdate(nextProps) {
-      // Updating the lists on each new block
-      const sourceLogClass = this.constructor.name
-      console.log(`${sourceLogClass} -> Updating component with new props`);
     }
 
     renderCopyButton = (text) =>{
@@ -228,7 +192,6 @@ class PageDashboardDragoTrader extends Component {
             margin: 'auto',
             width: 300,
             backgroundColor: '#FFFFFF',
-            zIndex: 1000
           }
       }
 
@@ -282,7 +245,7 @@ class PageDashboardDragoTrader extends Component {
                 <p>&nbsp;</p>
                 </ToolbarGroup>
             </Toolbar>
-            <Sticky enabled={true} innerZ={1400}>
+            <Sticky enabled={true} innerZ={1}>
               <Row className={styles.tabsRow}>
                 <Col xs={12}>
                   <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle}>
@@ -308,6 +271,7 @@ class PageDashboardDragoTrader extends Component {
                 <AppBar
                     title='My Accounts'
                     showMenuIconButton={false}
+                    className={styles.appBar}
                   />
                   <Row between="xs">
                     {listAccounts}
@@ -317,7 +281,7 @@ class PageDashboardDragoTrader extends Component {
             <Row className={styles.transactionsStyle}>
               <Col  xs >
                   <span ref={(section) => { this.Dragos = section; }}></span>
-                  <AppBar
+                  <AppBar className={styles.appBar}
                       title='My Dragos'
                       showMenuIconButton={false}
                     />
@@ -325,8 +289,8 @@ class PageDashboardDragoTrader extends Component {
                       <Row>
                         <Col className={styles.transactionsStyle} xs={12}>
                           {(Immutable.List(dragoBalances).size == 0) 
-                                    ? <Loading /> 
-                                    : <ElementListBalances list={Immutable.List(dragoBalances)}/>}
+                            ? <Loading /> 
+                            : <ElementListBalances list={Immutable.List(dragoBalances)}/>}
                         </Col>
                       </Row>
                     </Paper>
@@ -370,38 +334,33 @@ class PageDashboardDragoTrader extends Component {
     getDragoDetails = (dragoID) => {
       const { api, contract } = this.context
       const {accounts } = this.props
-      var sourceLogClass = this.constructor.name
-
-      api.parity
-        .registryAddress()
-        .then((registryAddress) => {
-          const registry = api.newContract(abis.registry, registryAddress).instance;
-          return Promise.all([
-              registry.getAddress.call({}, [api.util.sha3('dragoregistry'), 'A'])
-          ]);
-        })
-        .then((address) => {
-          console.log(`${sourceLogClass} -> The drago registry was found at ${address}`);
-          const dragoRegistry = api.newContract(abis.dragoregistry, address).instance;
-  
-          return Promise.all([
-              dragoRegistry.drago.call({}, [dragoID])
-          ])
+      var sourceLogClass = this.constructor.name 
+      const dragoApi = new DragoApi(api)
+      dragoApi.contract.dragoregistry.instance()
+        .then((address) =>{
+          dragoApi.contract.dragoregistry.drago(dragoID)
           .then((dragoDetails) => {
-            console.log(`${sourceLogClass} ->  dragoDetails: ${dragoDetails}`)
-            this.setState({
-              dragoDetails: {
-                address: dragoDetails[0][0],
-                name: dragoDetails[0][1],
-                symbol: dragoDetails[0][2],
-                dragoID: dragoDetails[0][3].c[0],
-                addresssOwner: dragoDetails[0][4],
-                addressGroup: dragoDetails[0][5]
-              },
-              loading: false
+            const dragoAddress = dragoDetails[0][0]
+            dragoApi.contract.drago.instance(dragoAddress)
+            dragoApi.contract.drago.getData()
+            .then((data) =>{
+              this.setState({
+                dragoDetails: {
+                  address: dragoDetails[0][0],
+                  name: dragoDetails[0][1],
+                  symbol: dragoDetails[0][2],
+                  dragoID: dragoDetails[0][3].c[0],
+                  addresssOwner: dragoDetails[0][4],
+                  addressGroup: dragoDetails[0][5],
+                  sellPrice: api.util.fromWei(data[2].toNumber(4)).toFormat(4),
+                  buyPrice: api.util.fromWei(data[3].toNumber(4)).toFormat(4),
+                },
+                loading: false
+              })
             })
-          });
-        });
+            this.getTransactions (dragoDetails[0][0], contract, accounts)
+          })
+        })
     } 
 
     // Getting last transactions
@@ -540,10 +499,6 @@ class PageDashboardDragoTrader extends Component {
               symbol: dragoDetails[0][2],
               dragoID: dragoID
             }
-            // log.params.symbol = {
-            //       type: "string",
-            //       value: symbol
-            //       }
             log.symbol = symbol  
             
             return log
@@ -578,7 +533,6 @@ class PageDashboardDragoTrader extends Component {
             }, this.setState({
               loading: false,
             }))
-
           })
         })
       })

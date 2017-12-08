@@ -14,6 +14,7 @@
 .leftDrawer {
   height: 100% !important;
   position: relative !important;
+  z-index: 1 !important;
 }
 
 .containerleftDrawer {
@@ -37,6 +38,9 @@ a.selected {
   color: red !important;
 }
 
+.notifications {
+
+}
 
 
 @media screen and (max-width: 480px) {
