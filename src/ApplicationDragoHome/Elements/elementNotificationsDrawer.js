@@ -106,7 +106,6 @@ export default class ElementNotificationsDrawer extends Component {
   attachInterface = () => {
     const { api } = this.context;
     var sourceLogClass = this.constructor.name
-    console.log(api)
     api.parity
       .registryAddress()
       .then((registryAddress) => {

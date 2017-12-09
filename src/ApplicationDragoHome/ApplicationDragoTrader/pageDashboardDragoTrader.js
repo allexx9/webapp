@@ -91,7 +91,7 @@ class PageDashboardDragoTrader extends Component {
     componentWillMount() {
       const { api, contract } = this.context
       const {accounts } = this.props
-      this.getTransactions (null, contract, accounts)
+      this.getTransactions (null, accounts)
     }
 
     snackBar = (msg) =>{
@@ -336,8 +336,9 @@ class PageDashboardDragoTrader extends Component {
       const {accounts } = this.props
       var sourceLogClass = this.constructor.name 
       const dragoApi = new DragoApi(api)
+      console.log(contract)
       dragoApi.contract.dragoregistry.instance()
-        .then((address) =>{
+        .then(() =>{
           dragoApi.contract.dragoregistry.drago(dragoID)
           .then((dragoDetails) => {
             const dragoAddress = dragoDetails[0][0]
@@ -358,183 +359,26 @@ class PageDashboardDragoTrader extends Component {
                 loading: false
               })
             })
-            this.getTransactions (dragoDetails[0][0], contract, accounts)
+            this.getTransactions(dragoDetails[0][0], accounts)
           })
         })
     } 
 
     // Getting last transactions
-    getTransactions = (dragoAddress, contract, accounts) => {
+    getTransactions = (dragoAddress, accounts) =>{
       const { api } = this.context
-      var sourceLogClass = this.constructor.name
-      const logToEvent = (log) => {
-        const key = api.util.sha3(JSON.stringify(log))
-        const { blockNumber, logIndex, transactionHash, transactionIndex, params, type } = log   
-        const ethvalue = (log.event === 'BuyDrago') ? formatEth(params.amount.value,null,api) : formatEth(params.revenue.value,null,api);
-        const drgvalue = (log.event === 'SellDrago') ? formatCoins(params.amount.value,null,api) : formatCoins(params.revenue.value,null,api);
-        // let ethvalue = null
-        // let drgvalue = null     
-        // if ((log.event === 'BuyDrago')) {
-        //   ethvalue = formatEth(params.amount.value,null,api)
-        //   drgvalue = formatCoins(params.revenue.value,null,api)     
-        // }
-        // if ((log.event === 'SellDrago')) {
-        //   ethvalue = formatEth(params.revenue.value,null,api)
-        //   drgvalue = formatCoins(params.amount.value,null,api)     
-        // }
-        return {
-          type: log.event,
-          state: type,
-          blockNumber,
-          logIndex,
-          transactionHash,
-          transactionIndex,
-          params,
-          key,
-          ethvalue,
-          drgvalue
-        }
-      }
-      
-      // Getting all buyDrago and selDrago events since block 0.
-      // dragoFactoryEventsSignatures accesses the contract ABI, gets all the events and for each creates a hex signature
-      // to be passed to getAllLogs. Events are indexed and filtered by topics
-      // more at: http://solidity.readthedocs.io/en/develop/contracts.html?highlight=event#events
-
-      // The second param of the topics array is the drago address
-      // The third param of the topics array is the from address
-      // The third param of the topics array is the to address
-      //
-      //  https://github.com/RigoBlock/Books/blob/master/Solidity_01_Events.MD
-
-      // const hexDragoAddress = '0x' + dragoAddress.substr(2).padStart(64,'0')
-      const hexAccounts = accounts.map((account) => {
-        const hexAccount = '0x' + account.address.substr(2).padStart(64,'0')
-        return hexAccount
-      })
-
-      // Filter for buy events
-      const eventsFilterBuy = {
-        topics: [ 
-          [dragoFactoryEventsSignatures(contract).BuyDrago.hexSignature], 
-          null, 
-          hexAccounts,
-          null
-        ]
-      }
-      // Filter for sell events
-      const eventsFilterSell = {
-        topics: [ 
-          [dragoFactoryEventsSignatures(contract).SellDrago.hexSignature], 
-          null, 
-          null,
-          hexAccounts
-        ]
-      }
-      const buyDragoEvents = contract
-        .getAllLogs(eventsFilterBuy)
-        .then((dragoTransactionsLog) => {
-          const buyLogs = dragoTransactionsLog.map(logToEvent)
-          return buyLogs
-        }
-        )
-      const sellDragoEvents = contract
-        .getAllLogs(eventsFilterSell)
-        .then((dragoTransactionsLog) => {
-          const sellLogs = dragoTransactionsLog.map(logToEvent)
-          return sellLogs
-        }
-        )
-      const dragoRegistry = api.parity
-        .registryAddress()
-        .then((registryAddress) => {
-          const registry = api.newContract(abis.registry, registryAddress).instance;
-          return Promise.all([
-              registry.getAddress.call({}, [api.util.sha3('dragoregistry'), 'A'])
-          ]);
+      utils.getTransactionsDrago(api, dragoAddress, accounts)
+      .then(results =>{
+        console.log(results[1])
+        const buySellLogs = results[1].filter(event =>{
+          return event.type !== 'DragoCreated'
         })
-        .then((address) => {
-          console.log(`${sourceLogClass} -> The drago registry was found at ${address}`);
-          return api.newContract(abis.dragoregistry, address).instance
-        });
-      Promise.all([buyDragoEvents, sellDragoEvents, dragoRegistry])
-      .then ((results) =>{
-        // Creating an array of promises that will be executed to add timestamp and symbol to each entry
-        // Doing so because for each entry we need to make an async call to the client
-        // For additional refernce: https://stackoverflow.com/questions/39452083/using-promise-function-inside-javascript-array-map
-        var dragoTransactionsLog = [...results[0], ...results[1]]
-        const dragoRegistryInstance = results[2]
-        var dragoBalances = [] 
-        const promisesTimestamp = dragoTransactionsLog.map((log, index) => {
-          return api.eth
-          .getBlockByNumber(log.blockNumber.c[0])
-          .then((block) => {
-            log.timestamp = block.timestamp
-            return log
-          })
-        })
-        const promisesSymbol = dragoTransactionsLog.map((log) => {
-          return Promise.all([
-            dragoRegistryInstance.fromAddress.call({}, [log.params.drago.value])
-          ])
-          .then((dragoDetails) => {
-            // console.log(`${sourceLogClass} ->  dragoDetails Symbol: ${dragoDetails[0][2]}`)
-            const symbol = dragoDetails[0][2]
-            const dragoID = dragoDetails[0][3].c[0]
-            var amount = () => {
-              if (log.type === 'BuyDrago') {
-                return new BigNumber(log.params.revenue.value)
-              } else {
-                return new BigNumber(-log.params.amount.value)
-              } 
-            }
-            if (typeof dragoBalances[dragoID] !== 'undefined') {
-              var balance = dragoBalances[dragoID].balance.add(amount())
-            } else {
-              var balance = amount()
-            }
-            dragoBalances[dragoID] = {
-              balance: balance,
-              name: dragoDetails[0][1],
-              symbol: dragoDetails[0][2],
-              dragoID: dragoID
-            }
-            log.symbol = symbol  
-            
-            return log
-          });
-        })
-
-        // Running all promises
-        Promise.all(promisesTimestamp)
-        .then((results) => {
-            this.setState({
-              dragoTransactionsLogs: results,
-            })
-        })
-        .then (()=>{
-          Promise.all(promisesSymbol)
-          .then((results) => {
-            var balances = [];
-            console.log(`${sourceLogClass} -> Transactions list loaded`);
-            // Reorganizing the balances array
-            for(var v in dragoBalances) {
-              var balance = {
-                symbol: dragoBalances[v].symbol,
-                name: dragoBalances[v].name,
-                dragoID: dragoBalances[v].dragoID,
-                balance: formatCoins(dragoBalances[v].balance,4,api)
-              }
-              balances.push(balance)
-            }
-            this.setState({
-              dragoBalances: balances,
-              dragoTransactionsLogs: results,
-            }, this.setState({
-              loading: false,
-            }))
-          })
-        })
+        this.setState({
+          dragoBalances: results[0],
+          dragoTransactionsLogs: buySellLogs,
+        }, this.setState({
+          loading: false,
+        }))
       })
     }
   }
