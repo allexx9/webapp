@@ -256,7 +256,7 @@ export class ApplicationDragoPage extends Component {
   };
 
   state = {
-    isManager: false,
+    isManager: true,
     isConnected: true,
     notificationsOpen: false
   }

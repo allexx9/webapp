@@ -62,12 +62,11 @@ class PageDashboardDragoManager extends Component {
     contract: PropTypes.object.isRequired
   };
 
-  static PropTypes = {
+  static propTypes = {
       location: PropTypes.object.isRequired,
-      blockNumber: PropTypes.object.isRequired,
       ethBalance: PropTypes.object.isRequired,
-      accounts: PropTypes.object.isRequired,
-      allEvents: PropTypes.object.isRequired,
+      accounts: PropTypes.array.isRequired,
+      allEvents: PropTypes.array.isRequired,
       accountsInfo: PropTypes.object.isRequired, 
     };
 
@@ -286,7 +285,7 @@ class PageDashboardDragoManager extends Component {
                 <p>&nbsp;</p>
                 </ToolbarGroup>
             </Toolbar>
-            <Sticky enabled={true} innerZ={1400}>
+            <Sticky enabled={true} innerZ={1}>
               <Row className={styles.tabsRow}>
                 <Col xs={12}>
                   <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle}>
@@ -312,6 +311,7 @@ class PageDashboardDragoManager extends Component {
                   <AppBar
                     title='My Accounts'
                     showMenuIconButton={false}
+                    className={styles.appBar}
                   />
                   <Row between="xs">
                     {listAccounts}

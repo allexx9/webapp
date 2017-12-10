@@ -201,7 +201,6 @@ export default class ElementNotificationsDrawer extends Component {
     const logToEvent = (log) => {
       const key = api.util.sha3(JSON.stringify(log));
       const { blockNumber, logIndex, transactionHash, transactionIndex, params, type } = log;
-      console.log(transactionHash)
       return {
         type: log.event,
         state: type,
@@ -232,7 +231,6 @@ export default class ElementNotificationsDrawer extends Component {
       if (!_logs.length) {
         return;
       }
-      console.log(_logs)
       const logs = _logs.map(logToEvent);
 
       const minedEvents = logs
@@ -240,7 +238,6 @@ export default class ElementNotificationsDrawer extends Component {
         .reverse()
         .concat(this.state.minedEvents)
         .sort(sortEvents);
-      console.log(minedEvents)
       const pendingEvents = logs
         .filter((log) => log.state === 'pending')
         .reverse()

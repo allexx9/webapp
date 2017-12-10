@@ -38,9 +38,9 @@ export default class ElementFundCreateAction extends React.Component {
     api: PropTypes.object.isRequired
   };
 
-  static PropTypes = {
-    dragoDetails: PropTypes.object.isRequired, 
-    accounts: PropTypes.object.isRequired
+  static propTypes = {
+    // dragoDetails: PropTypes.object.isRequired, 
+    accounts: PropTypes.array.isRequired
   };
   
   state = {

@@ -18,13 +18,11 @@ import styles from '../applicationDragoHome.module.css';
 
 class applicationDragoManager extends Component {
 
-    static PropTypes = {
+    static propTypes = {
       location: PropTypes.object.isRequired,
-      blockNumber: PropTypes.object.isRequired,
       ethBalance: PropTypes.object.isRequired,
-      accounts: PropTypes.object.isRequired,
+      accounts: PropTypes.array.isRequired,
       accountsInfo: PropTypes.object.isRequired,
-      location: PropTypes.object.isRequired,
       match: PropTypes.object.isRequired,
     };
 

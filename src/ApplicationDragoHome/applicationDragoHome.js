@@ -150,12 +150,25 @@ export default class ApplicationDragoHome extends Component {
     }
 
     if (isManager) {
+
+      var notificationStyle = {
+        NotificationItem: { // Override the notification item
+          DefaultStyle: { // Applied to every notification, regardless of the notification level
+            margin: '0px 0px 0px 0px'
+          },
+      
+          info: { // Applied only to the success notification item
+            backgroundColor: 'white'
+          }
+        }
+      }
       return (
         <Row className={styles.maincontainer}>
           <Col xs={2}>
             <LeftSideDrawer location={location}/>
           </Col>
           <Col xs={10}>
+            <NotificationSystem ref={n => this._notificationSystem = n} style={notificationStyle}/>
             <ApplicationDragoManager 
               blockNumber={blockNumber}
               accounts={accounts}
@@ -262,13 +275,14 @@ export default class ApplicationDragoHome extends Component {
             var eventType = 'balanceChange'
             var secondaryText = ''
             var balDifference = account.ethBalance - newBalance
-            // console.log(balDifference)
+            console.log(balDifference)
             if (balDifference > 0) {
               secondaryText = `You transferred ${balDifference.toFixed(4)} ETH!`
             } else {
               secondaryText = `You received ${Math.abs(balDifference).toFixed(4)} ETH!`
             }
             if (this._notificationSystem) {
+              console.log('notification fired')
               this._notificationSystem.addNotification({
                   level: 'info',
                   position: 'br',
