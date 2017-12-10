@@ -1,3 +1,4 @@
+import  * as Colors from 'material-ui/styles/colors'
 import { Grid, Row, Col } from 'react-flexbox-grid';
 import { Link, Route, withRouter } from 'react-router-dom'
 import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
@@ -106,13 +107,6 @@ class PageFundsDragoTrader extends Component {
       const detailsBox = {
         padding: 20,
       }
-
-      // Waiting to render ElementListFunds component until DragoCreated events are retrieved
-      // if (dragoList.size == 0) {
-      //   return (
-      //     null
-      //   );
-      // }
 
       return (
         <Row>

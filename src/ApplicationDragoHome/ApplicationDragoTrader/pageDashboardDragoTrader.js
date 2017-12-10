@@ -67,6 +67,7 @@ class PageDashboardDragoTrader extends Component {
       ethBalance: PropTypes.object.isRequired,
       accounts: PropTypes.array.isRequired,
       accountsInfo: PropTypes.object.isRequired, 
+      ethBalance: PropTypes.object.isRequired,
     };
 
     state = {
@@ -128,23 +129,31 @@ class PageDashboardDragoTrader extends Component {
       console.log(to);
     }
 
-    // shouldComponentUpdate(nextProps, nextState){
-    //   const  sourceLogClass = this.constructor.name
-    //   console.log(`${sourceLogClass} -> Received new props`);
-    //   const stateUpdate = !utils.shallowEqual(this.state, nextState)
-    //   const propsUpdate = (!utils.shallowEqual(this.props.accounts, nextProps.accounts))
-    //   console.log(`${sourceLogClass} -> Received new props. Need update: ${sourceLogClass}`);
-    //   console.log(stateUpdate || propsUpdate)
-    //   return stateUpdate || propsUpdate
-    // }
+    shouldComponentUpdate(nextProps, nextState){
+      const  sourceLogClass = this.constructor.name
+      var stateUpdate = true
+      var propsUpdate = true
+      console.log(`${sourceLogClass} -> Received new props`);
+      console.log(nextProps.ethBalance.toFormat())
+      console.log(this.props.ethBalance.toFormat())
+      // stateUpdate = !utils.shallowEqual(this.state, nextState)
+      propsUpdate = !this.props.ethBalance.eq(nextProps.ethBalance)
+      // propsUpdate = (!utils.shallowEqual(this.props.accounts, nextProps.accounts))
+      console.log(`${sourceLogClass} -> Received new props. Need update: ${sourceLogClass}`);
+      console.log(stateUpdate || propsUpdate)
+      return stateUpdate || propsUpdate
+    }
 
-    componentWillReceiveProps() {
+    componentWillReceiveProps(nextProps) {
       // Updating the lists on each new block
       const { api, contract } = this.context
       const {accounts } = this.props
       const sourceLogClass = this.constructor.name
       console.log(`${sourceLogClass} -> componentWillReceiveProps`);
-      this.getTransactions (null, contract, accounts)
+      (!utils.shallowEqual(this.props.accounts, nextProps.accounts)) ? this.getTransactions (null, accounts) : null
+      console.log(this.props.accounts)
+      console.log(nextProps.accounts)
+      // this.getTransactions (null, accounts)
     }
 
     componentDidUpdate(nextProps) {
@@ -367,6 +376,7 @@ class PageDashboardDragoTrader extends Component {
     // Getting last transactions
     getTransactions = (dragoAddress, accounts) =>{
       const { api } = this.context
+      console.log('getTransactions')
       utils.getTransactionsDrago(api, dragoAddress, accounts)
       .then(results =>{
         console.log(results[1])

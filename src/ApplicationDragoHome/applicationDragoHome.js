@@ -78,12 +78,30 @@ export default class ApplicationDragoHome extends Component {
   scrollPosition = 0
 
   shouldComponentUpdate(nextProps, nextState){
+    // WE NEED TO LOOK INTO THIS FUNCTION. 
+    //
+    // After a change in the accounts balances:
+    // this.state.accounts and nextState.accounts are the same. They should not.
+    // this.state.ethBalance and nextState.ethBalance are different, thus behaving correctly.
+    //
+    // It might have something to do with immutability in React
+
+
     // Checking if the total accounts balance has changed.
     // If positive a render is trigged so that the childrens are aware that something has changed.
     const  sourceLogClass = this.constructor.name
     // console.log(`${sourceLogClass} -> shouldComponentUpdate`);
+    // console.log(nextState.ethBalance.toFormat())
+    // console.log(this.state.ethBalance.toFormat())
     const accountsUpdate = !this.state.ethBalance.eq(nextState.ethBalance)
     const propsUpdate = (!utils.shallowEqual(this.props, nextProps))
+    // console.log(this.state.accounts.length)
+    // if (this.state.accounts.length > 0) {
+    //   console.log(this.state.accounts[0].ethBalance)
+    //   console.log(nextState.accounts[0].ethBalance)
+    // }
+    // console.log(this.state.accounts[0])
+    // console.log(nextState.accounts[0])
     // console.log (`${sourceLogClass} -> Received new props. Need update? ${accountsUpdate || propsUpdate}`);
 
 
@@ -99,11 +117,9 @@ export default class ApplicationDragoHome extends Component {
 
   componentWillMount () {
     this.attachInterface();
-    // this.setupFilters();
   } 
 
   componentDidMount() {
-    // alert(element);
     this._notificationSystem = this.refs.notificationSystem
   }
 
@@ -207,16 +223,7 @@ export default class ApplicationDragoHome extends Component {
     }
   }
 
-//   _addNotification(event) {
-//     event.preventDefault();
-//     if (this._notificationSystem) {
-//         this._notificationSystem.addNotification({
-//             level: 'success'
-//         });
-//     }
-// }
-
-  notificationAlert = (primaryText, secondaryText, eventType) => {
+  notificationAlert = (primaryText, secondaryText, eventType = 'transfer') => {
 
     return (
       <ElementNotification 
@@ -228,15 +235,10 @@ export default class ApplicationDragoHome extends Component {
   }
 
   onNewBlockNumber = (_error, blockNumber) => {
-    const { accounts } = this.state;
+    // const accounts = this.state.accounts
+    // const accounts = Object.assign({}, this.state.accounts);
+    const accounts = [].concat(this.state.accounts);
     const { api } = this.context;
-    // if (this._notificationSystem) {
-    //   this._notificationSystem.addNotification({
-    //       level: 'info',
-    //       position: 'br',
-    //       children: this.notificationAlert()
-    //   });
-    // }
     if (_error) {
       console.error('onNewBlockNumber', _error)
       return
@@ -252,19 +254,25 @@ export default class ApplicationDragoHome extends Component {
     Promise
       .all(ethQueries)
       .then((ethBalances) => {
-        const prevAccount = this.state.accounts
-        prevAccount.map((account,index) =>{
+        const prevAccounts = [].concat(this.state.accounts)
+        prevAccounts.map((account,index) =>{
           const newBalance = api.util.fromWei(ethBalances[index]).toFormat(3)
           if (account.ethBalance !== newBalance) {
             console.log(`${account.name} balance changed`)
+            var eventType = 'balanceChange'
+            var secondaryText = ''
             var balDifference = account.ethBalance - newBalance
-            const eventType = 'balanceChange'
-            const secondaryText = 'You received XXX ETH!'
+            // console.log(balDifference)
+            if (balDifference > 0) {
+              secondaryText = `You transferred ${balDifference.toFixed(4)} ETH!`
+            } else {
+              secondaryText = `You received ${Math.abs(balDifference).toFixed(4)} ETH!`
+            }
             if (this._notificationSystem) {
               this._notificationSystem.addNotification({
                   level: 'info',
                   position: 'br',
-                  children: this.notificationAlert(account.name, secondaryText, balDifference, eventType)
+                  children: this.notificationAlert(account.name, secondaryText)
               });
             }
           }
@@ -277,7 +285,7 @@ export default class ApplicationDragoHome extends Component {
             account.ethBalance = api.util.fromWei(ethBalance).toFormat(3);
             return account;
           })
-        });
+        })
       })
       .catch((error) => {
         console.warn('onNewBlockNumber', error);
@@ -395,74 +403,6 @@ export default class ApplicationDragoHome extends Component {
       });
   }
 
-  // setupFilters () {
-  //   const { api, instance } = this.context;
-  //   const sortEvents = (a, b) => b.blockNumber.cmp(a.blockNumber) || b.logIndex.cmp(a.logIndex);
-  //   const logToEvent = (log) => {
-  //     const key = api.util.sha3(JSON.stringify(log));
-  //     const { blockNumber, logIndex, transactionHash, transactionIndex, params, type } = log;
-
-  //     return {
-  //       type: log.event,
-  //       state: type,
-  //       blockNumber,
-  //       logIndex,
-  //       transactionHash,
-  //       transactionIndex,
-  //       params: Object.keys(params).reduce((data, name) => {
-  //         data[name] = params[name].value;
-  //         return data;
-  //       }, {}),
-  //       key
-  //     };
-  //   };
-
-  //   const options = {
-  //     fromBlock: 0,
-  //     toBlock: 'pending',
-  //     limit: 50
-  //   };
-
-  //   instance.subscribe(null, options, (error, _logs) => {
-  //     if (error) {
-  //       console.error('setupFilters', error);
-  //       return;
-  //     }
-
-  //     if (!_logs.length) {
-  //       return;
-  //     }
-
-  //     const logs = _logs.map(logToEvent);
-
-  //     const minedEvents = logs
-  //       .filter((log) => log.state === 'mined')
-  //       .reverse()
-  //       .concat(this.state.minedEvents)
-  //       .sort(sortEvents);
-  //     const pendingEvents = logs
-  //       .filter((log) => log.state === 'pending')
-  //       .reverse()
-  //       .concat(this.state.pendingEvents.filter((event) => {
-  //         return !logs.find((log) => {
-  //           const isMined = (log.state === 'mined') && (log.transactionHash === event.transactionHash);
-  //           const isPending = (log.state === 'pending') && (log.key === event.key);
-  //           return isMined || isPending;
-  //         });
-  //       }))
-  //       .sort(sortEvents);
-  //     const allEvents = pendingEvents.concat(minedEvents);
-  //     this.setState({
-  //       allEvents,
-  //       minedEvents,
-  //       pendingEvents
-  //     });
-  //   }).then((subscriptionID) => {
-  //     console.log(`applicationDragoHome: Subscribed to contract ${contract._address} -> Subscription ID: ${subscriptionID}`);
-  //     this.setState({subscriptionIDContractDrago: subscriptionID});
-  //   });
-  // }
-
 
   detachInterface = () => {
     const { subscriptionIDDrago, contract, subscriptionIDContractDrago } = this.state;
@@ -471,9 +411,5 @@ export default class ApplicationDragoHome extends Component {
     api.unsubscribe(subscriptionIDDrago).catch((error) => {
       console.warn('Unsubscribe error', error);
     });
-    // console.log(`applicationDragoHome: Unsubscribed from contract ${contract._address} -> Subscription ID: ${subscriptionIDContractDrago}`);
-    // contract.unsubscribe(subscriptionIDContractDrago).catch((error) => {
-    //   console.warn('Unsubscribe error', error);
-    // });
   } 
 }

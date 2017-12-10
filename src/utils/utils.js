@@ -175,7 +175,6 @@ class utilities {
             // Creating an array of promises that will be executed to add timestamp and symbol to each entry
             // Doing so because for each entry we need to make an async call to the client
             // For additional refernce: https://stackoverflow.com/questions/39452083/using-promise-function-inside-javascript-array-map
-            console.log(results)
             var dragoTransactionsLog = [...results[0], ...results[1], ...results[2]]
             var dragoBalances = [] 
             const promisesTimestamp = dragoTransactionsLog.map((log, index) => {

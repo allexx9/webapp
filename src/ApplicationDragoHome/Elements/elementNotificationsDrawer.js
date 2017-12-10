@@ -8,6 +8,10 @@ import React, { Component } from 'react';
 import Subheader from 'material-ui/Subheader';
 import Immutable from 'immutable'
 import ElementNotification from './elementNotification'
+import { formatCoins, formatEth } from '../../format'
+import { Grid, Row, Col } from 'react-flexbox-grid'
+import AppBar from 'material-ui/AppBar';
+
 
 import * as abis from '../../contracts';
 
@@ -34,17 +38,21 @@ export default class ElementNotificationsDrawer extends Component {
 
   state = {
     notificationsOpen: false,
-    allEvents: null,
-    minedEvents: null,
-    pendingEvents: null,
+    allEvents: [],
+    minedEvents: [],
+    pendingEvents: [],
     subscriptionIDContractDrago: [],
     contract: null
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.notificationsOpen) {
-      this.attachInterface()
+      this.detachInterface()
     }
+  }
+
+  componentDidMount () {
+    this.attachInterface()
   }
 
   componentWillUnmount () {
@@ -55,34 +63,66 @@ export default class ElementNotificationsDrawer extends Component {
     // Setting a small timeout to make sure that the state is updated with 
     // the subscription ID before trying to unsubscribe. Otherwise, if an user opens and closes the element very quickly
     // the state would not be updated fast enough and the element could crash
-    setTimeout(this.detachInterface, 3000)
+    // setTimeout(this.detachInterface, 3000)
+    this.setState({
+      // allEvents: [],
+      // minedEvents: [],
+      // pendingEvents: []
+    });
+    this.detachInterface()
     this.props.handleToggleNotifications()
   }
 
   renderNotification = (events) =>{
+    const {api} = this.context
     const eventType = 'transaction'
-    console.log(events)
+    var primaryText = null
+    var secondaryText = null
+    var drgvalue = null
+    var symbol = null
     if (events !==null) {
-      return events.map( event => {
-        console.log(event)
-        // switch(event.type ==="BuyDrao") {
-        //   case n:
-        //       const primaryText = "Buy"
-        //       break;
-        //   case n:
-        //       code block
-        //       break;
-        //   default:
-        //       code block
-        // } 
+      return events.map( (event, index) => {
+        switch(event.type) {
+          case "BuyDrago":
+            drgvalue = formatEth(event.params.amount,null,api)
+            symbol = event.symbol
+            primaryText = "Buy " + drgvalue
+            secondaryText = event.state.charAt(0).toUpperCase() + event.state.slice(1)
+            break;
+          case "SellDrago":
+            drgvalue = formatCoins(event.params.amount,null,api)
+            symbol = event.symbol
+            primaryText = "Sell " + drgvalue
+            secondaryText = event.state.charAt(0).toUpperCase() + event.state.slice(1)
+            break;
+            case "DragoCreated":
+            symbol = event.params.symbol
+            primaryText = "Deploy " + symbol
+            secondaryText = event.state.charAt(0).toUpperCase() + event.state.slice(1)
+            break;
+        } 
         return (
-          <ElementNotification 
-            primaryText={event.type}
-            secondaryText={event.state}
+          <ElementNotification key={index}
+            primaryText={primaryText}
+            secondaryText={secondaryText}
             eventType={eventType}
-            />)
+            > 
+            </ElementNotification>)
       })
+    } else {
+      return (
+        <List className={styles.blur}>
+        <ListItem className={styles.blur}
+          disabled={true}
+          primaryText='Transaction'
+          secondaryText='Mined'
+          leftAvatar={<Avatar src="img/ETH.svg" />}
+        >
+        </ListItem>
+      </List>
+      )
     }
+
 
   }
 
@@ -96,8 +136,15 @@ export default class ElementNotificationsDrawer extends Component {
           className={styles.notifications}
           onRequestChange={this.handleToggleNotifications}
           >
-          {this.renderNotification(this.state.allEvents)}
-          
+          <AppBar
+            title={<span>Network</span>}
+            showMenuIconButton={false}
+          />
+            <Row>
+              <Col xs>
+              {this.renderNotification(this.state.allEvents)}
+              </Col>
+          </Row>
         </Drawer>
       </span>
     )
@@ -146,16 +193,15 @@ export default class ElementNotificationsDrawer extends Component {
   }
 
   setupFilters (contract) {
+    // const { contract } = this.context;
     const { api } = this.context;
-    // const sortEvents = (a, b) => b.blockNumber.cmp(a.blockNumber) || b.logIndex.cmp(a.logIndex);
-    // const sortEvents = (a, b) => {
-    //   console.log(a)
-    //   // console.log(b.blockNumber)
-    // }
+    console.log(contract);
+
+    const sortEvents = (a, b) => b.blockNumber.cmp(a.blockNumber) || b.logIndex.cmp(a.logIndex)
     const logToEvent = (log) => {
       const key = api.util.sha3(JSON.stringify(log));
       const { blockNumber, logIndex, transactionHash, transactionIndex, params, type } = log;
-
+      console.log(transactionHash)
       return {
         type: log.event,
         state: type,
@@ -174,10 +220,9 @@ export default class ElementNotificationsDrawer extends Component {
     const options = {
       fromBlock: 0,
       toBlock: 'pending',
-      limit: 10
+      limit: 5
     };
 
-    console.log(contract)
     contract.subscribe(null, options, (error, _logs) => {
       if (error) {
         console.error('setupFilters', error);
@@ -187,46 +232,38 @@ export default class ElementNotificationsDrawer extends Component {
       if (!_logs.length) {
         return;
       }
-
+      console.log(_logs)
       const logs = _logs.map(logToEvent);
-      // console.log(_logs)
-      // console.log(logs)
 
-      // const minedEvents = logs
-      //   .filter((log) => log.state === 'mined')
-      //   .reverse()
-      //   .concat(this.state.minedEvents)
-      //   // .sort(sortEvents);
-      // const pendingEvents = logs
-      //   .filter((log) => log.state === 'pending')
-      //   .reverse()
-      //   .concat(this.state.pendingEvents.filter((event) => {
-      //     return !logs.find((log) => {
-      //       const isMined = (log.state === 'mined') && (log.transactionHash === event.transactionHash);
-      //       const isPending = (log.state === 'pending') && (log.key === event.key);
-      //       return isMined || isPending;
-      //     });
-      //   }))
-      //   // .sort(sortEvents);
-      // const allEvents = pendingEvents.concat(minedEvents);
-      
-      const allEvents = Immutable.List(logs)
-      console.log(allEvents)
+      const minedEvents = logs
+        .filter((log) => log.state === 'mined')
+        .reverse()
+        .concat(this.state.minedEvents)
+        .sort(sortEvents);
+      console.log(minedEvents)
+      const pendingEvents = logs
+        .filter((log) => log.state === 'pending')
+        .reverse()
+        .concat(this.state.pendingEvents.filter((event) => {
+          return !logs.find((log) => {
+            const isMined = (log.state === 'mined') && (log.transactionHash === event.transactionHash);
+            const isPending = (log.state === 'pending') && (log.key === event.key);
+
+            return isMined || isPending;
+          });
+        }))
+        .sort(sortEvents);
+      const allEvents = pendingEvents.concat(minedEvents);
+
       this.setState({
-        allEvents: logs,
-        contract: contract
-        // minedEvents,
-        // pendingEvents
+        allEvents,
+        minedEvents,
+        pendingEvents
       });
     }).then((subscriptionID) => {
-      // Pushing the contract subscription ID into an array to make sure that
-      // all subscriptions are terminated when the elementis is closed, see 
-      // detachInterface function
       var sourceLogClass = this.constructor.name
-      var { subscriptionIDContractDrago } = this.state
-      subscriptionIDContractDrago.push(subscriptionID)
-      console.log(`${sourceLogClass} Subscribed to contract ${contract._address} -> Subscription ID: ${subscriptionID}`);
-      this.setState({subscriptionIDContractDrago: subscriptionIDContractDrago});
+      console.log(`${sourceLogClass}: Subscribed to contract ${contract._address} -> Subscription ID: ${subscriptionID}`);
+      this.setState({subscriptionIDContractDrago: subscriptionID});
     });
   }
 
@@ -236,11 +273,15 @@ export default class ElementNotificationsDrawer extends Component {
     const { subscriptionIDContractDrago } = this.state;
     var sourceLogClass = this.constructor.name
     console.log(`${sourceLogClass} Unsubscribed from contract -> Subscription ID: ${subscriptionIDContractDrago}`);
-    subscriptionIDContractDrago.map(subscription => {
-      (typeof subscription !== 'undefined') ? contract.unsubscribe(subscription).catch((error) => {
-        console.warn('Unsubscribe error', error);
-      }) : null
-    })
-    this.setState({subscriptionIDContractDrago: []})
+    console.log(subscriptionIDContractDrago.length)
+    if(subscriptionIDContractDrago.length > 0) {
+      this.setState({subscriptionIDContractDrago: []}, () => {
+        subscriptionIDContractDrago.map(subscription => {
+          (typeof subscription !== 'undefined') ? contract.unsubscribe(subscription).catch((error) => {
+            console.warn('Unsubscribe error', error);
+          }) : null
+        })
+      })
+    }
   }  
 }

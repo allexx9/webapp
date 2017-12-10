@@ -27,7 +27,8 @@ export default class ElementNotification extends Component {
           primaryText={primaryText}
           secondaryText={secondaryText}
           leftAvatar={<Avatar src="img/ETH.svg" />}
-        />
+        >
+        </ListItem>
       </List>
     );
   }

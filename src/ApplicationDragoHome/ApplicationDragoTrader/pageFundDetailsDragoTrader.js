@@ -32,6 +32,7 @@ import IdentityIcon from '../../IdentityIcon'
 import InfoTable from '../Elements/elementInfoTable'
 import Loading from '../../Loading'
 import DragoApi from '../../DragoApi/src'
+import AppBar from 'material-ui/AppBar';
 
 import {
   Table,
@@ -43,6 +44,7 @@ import {
 } from 'material-ui/Table';
 import ElementListTransactions from '../Elements/elementListTransactions'
 import styles from '../applicationDragoHome.module.css';
+import ElementPriceBox from '../Elements/elementPricesBox'
 
 class PageFundDetailsDragoTrader extends Component {
 
@@ -152,44 +154,6 @@ class PageFundDetailsDragoTrader extends Component {
       })
     }
 
-    renderPriceTable (dragoDetails) {  
-      const buyText = {
-        color: Colors.green300,
-      }
-  
-      const sellText = {
-        color: Colors.red300,
-      }
-
-      const priceBox = {
-        padding: 20,
-        textAlign: 'center',
-        fontSize: 25,
-        fontWeight: 600
-      }
-    
-      return (
-        <Paper style={priceBox} zDepth={1}>
-          <Row center="xs" style={{padding: 10}}>
-            <Col xs={6} style={buyText}>
-            BUY
-            </Col>
-            <Col xs={6}>
-            {dragoDetails.buyPrice} ETH
-            </Col>
-          </Row>
-          <Row center="xs">
-            <Col xs={6} style={sellText}>
-            SELL
-            </Col>
-            <Col xs={6}>
-            {dragoDetails.sellPrice} ETH
-            </Col>
-          </Row>
-        </Paper>
-      );
-    }
-
     render() {
       const { location, accounts, accountsInfo, allEvents } = this.props
       const { dragoDetails, dragoTransactionsLogs, loading } = this.state
@@ -233,6 +197,7 @@ class PageFundDetailsDragoTrader extends Component {
           <Loading />
         );
       }
+      console.log(styles.detailsTabContent)
       return (
       <Row>
         <Col xs={12}>
@@ -251,12 +216,18 @@ class PageFundDetailsDragoTrader extends Component {
                 <Grid fluid>
                   <Row>
                     <Col xs={6}>
-                      <Paper style={detailsBox} zDepth={1}>
-                        <InfoTable className={styles.detailsTabContent} rows={tableTest} columnsStyle={columnsStyle}/>
+                      <Paper zDepth={1}>
+                        <AppBar
+                          title="Details"
+                          showMenuIconButton={false}
+                        />
+                        <div className={styles.detailsTabContent}>
+                        <InfoTable  rows={tableTest} columnsStyle={columnsStyle}/>
+                        </div>
                       </Paper>
                     </Col>
                     <Col xs={6}>
-                      {this.renderPriceTable (dragoDetails)} 
+                      <ElementPriceBox dragoDetails={dragoDetails} />
                     </Col>
                   </Row>
                   <Row>
@@ -314,7 +285,7 @@ class PageFundDetailsDragoTrader extends Component {
       // Initializing registry contract
       //
       dragoApi.contract.dragoregistry
-        .instance()
+        .init()
         .then((address) =>{
           //
           // Looking for drago from dragoID
