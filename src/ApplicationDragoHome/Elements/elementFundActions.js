@@ -115,8 +115,6 @@ export default class ElementFundActions extends React.Component {
 
 
   handleOpen = () => {
-    console.log('open')
-    console.log(this.state.account)
     this.setState({
       open: true,
       action: 'buy',
@@ -147,7 +145,6 @@ export default class ElementFundActions extends React.Component {
   }
 
   handleClose = () => {
-    console.log('close')
     this.setState({
       open: false,
       action: 'buy',
@@ -297,16 +294,12 @@ export default class ElementFundActions extends React.Component {
       // } 
       // Checking if the amount is expressed in ETH 
       if (this.state.switchButton.label == 'Units') { // Buy in ETH amount
-        console.log('ETH')
-        console.log(ratio.toNumber())
         let amountDRG = orderAmount.times(ratio)
         let amountETH = new BigNumber(amount)
         return {amountETH: amountETH, amountDRG: amountDRG} 
       }
       // Checking if the amount is expressed in DRG
       if (this.state.switchButton.label == 'Amount') { // Buy in DRG units
-        console.log('DRG')
-        console.log(ratio.toNumber())
         let amountDRG = orderAmount
         let amountETH = new BigNumber(amount).times(ratio)
         return {amountETH: amountETH, amountDRG: amountDRG} 
@@ -327,7 +320,6 @@ export default class ElementFundActions extends React.Component {
     var newDrgBalance = action == 'buy' 
       ? getAmounts(action, amount).amountDRG.plus(drgCurrent) 
       : drgCurrent.minus(getAmounts(action, amount).amountDRG)
-    console.log('balance')
     this.setState({
       newDrgBalance: newDrgBalance.toFormat(4),
       drgOrder: getAmounts(action, amount).amountDRG.toFormat(4),
@@ -386,7 +378,6 @@ export default class ElementFundActions extends React.Component {
         }
         break
       case "sell":
-      console.log(calculateAmount(amount).toNumber())
         if (calculateAmount(amount).gt(drgBalance)) {
           this.setState({
             amountError: ERRORS.invalidTotal,
@@ -433,10 +424,8 @@ export default class ElementFundActions extends React.Component {
       this.setState({
         sending: true
       })
-      console.log(options)
-      console.log(values)
       const dragoApi = new DragoApi(api)
-      dragoApi.contract.drago.instance(dragoDetails.address)
+      dragoApi.contract.drago.init(dragoDetails.address)
       dragoApi.contract.drago.buyDrago(options, values)
       .then(() => {
         this.props.snackBar('Order waiting for authorization for ' + this.state.amountSummary + ' ETH')
@@ -467,7 +456,7 @@ export default class ElementFundActions extends React.Component {
     if(this.state.account.source === 'MetaMask') {
       const web3 = window.web3
       const dragoApi = new DragoApi(web3)
-      dragoApi.contract.drago.instance(dragoDetails.address)
+      dragoApi.contract.drago.init(dragoDetails.address)
       dragoApi.contract.drago.sellDrago(options, values)
       .then(() => {
 
@@ -489,8 +478,6 @@ export default class ElementFundActions extends React.Component {
       sending: true
     })
       const dragoApi = new DragoApi(api)
-      console.log(options)
-      console.log(values)
       dragoApi.contract.drago.instance(dragoDetails.address)
       dragoApi.contract.drago.sellDrago(options, values)
       .then(() => {
@@ -533,7 +520,6 @@ export default class ElementFundActions extends React.Component {
   }
 
   buyFields = () => {
-    console.log(this.state.account)
     return (
       <Col xs={6}>
         <Row middle="xs" >
@@ -662,9 +648,6 @@ export default class ElementFundActions extends React.Component {
         onClick={this.onSend}
       />,
     ];
-    // console.log(dragoDetails)
-    // const key = Math.random().toString(36).substring(7)
-    // console.log(key)
     return (
       <div>
         <RaisedButton label="Actions" primary={true} onClick={this.handleOpen} 

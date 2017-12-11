@@ -25,6 +25,7 @@ import * as abis from '../../contracts';
 import AccountSelector from './elementAccountSelector'
 import IdentityIcon from '../../IdentityIcon'
 import utils, {dragoApi} from '../../utils/utils'
+import DragoApi from '../../DragoApi/src'
 
 import styles from './elementFundCreateAction.module.css';
 
@@ -105,22 +106,24 @@ export default class ElementFundCreateAction extends React.Component {
       const dragoName = this.state.dragoName.toString();
       const dragoSymbol = this.state.dragoSymbol.toString();
       const values = [dragoName, dragoSymbol, this.state.account.address]
-      const options = {
-        from: this.state.account.address
-      };
-  
+      var dragoApi = null;
+
       this.setState({
         sending: true
       })
 
-      dragoApi.deployDrago(dragoName, dragoSymbol, this.state.account.address, api, values)
-        .then(() => {
-          // this.props.onClose();
+      if(this.state.account.source === 'MetaMask') {
+        const web3 = window.web3
+        dragoApi = new DragoApi(web3)
+        dragoApi.contract.dragofactory.init()
+        dragoApi.contract.dragofactory.createDrago(dragoName, dragoSymbol, this.state.account.address)
+        .then ((result) =>{
+          console.log(result)
           this.props.snackBar('Deploy awaiting for authorization')
-          this.setState({
-            sending: false,
-            complete: true
-          });
+          // this.setState({
+          //   sending: false,
+          //   complete: true
+          // });
         })
         .catch((error) => {
           console.error('error', error)
@@ -128,44 +131,27 @@ export default class ElementFundCreateAction extends React.Component {
             sending: false
           })
         })
-      // api.parity
-      // .registryAddress()
-      // .then((registryAddress) => {
-      //   console.log(`the registry was found at ${registryAddress}`);
-
-      //   const registry = api.newContract(abis.registry, registryAddress).instance;
-
-      //   return Promise
-      //     .all([
-      //       registry.getAddress.call({}, [api.util.sha3('dragofactory'), 'A']),
-      //     ])
-      // })
-      // .then(([address]) =>{
-      //   console.log(`drago factory was found at ${address}`);
-      //   const instance = api.newContract(abis.dragofactory, address).instance
-      //   instance.createDrago
-      //   .estimateGas(options, values)
-      //   .then((gasEstimate) => {
-      //     options.gas = gasEstimate.mul(1.2).toFixed(0);
-      //     console.log(`deploy: gas estimated as ${gasEstimate.toFixed(0)} setting to ${options.gas}`)
-  
-      //     return instance.createDrago.postTransaction(options, values)
-      //   })
-      //   .then(() => {
-      //     // this.props.onClose();
-      //     this.props.snackBar('Deploy awaiting for authorization')
-      //     this.setState({
-      //       sending: false,
-      //       complete: true
-      //     });
-      //   })
-      //   .catch((error) => {
-      //     console.error('error', error);
-      //     this.setState({
-      //       sending: false
-      //     });
-      //   });
-      // })
+      } else {
+        dragoApi = new DragoApi(api)
+        dragoApi.contract.dragofactory.init()
+        .then(()=>{
+          dragoApi.contract.dragofactory.createDrago(dragoName, dragoSymbol, this.state.account.address)
+        })
+        .then (() =>{
+          this.props.snackBar('Deploy awaiting for authorization')
+          // this.setState({
+          //   sending: false,
+          //   complete: true
+          // });
+        })
+        .catch((error) => {
+          console.error('error', error)
+          this.setState({
+            sending: false
+          })
+        })
+      }
+      console.log(dragoApi)
     }
 
     renderActions () {

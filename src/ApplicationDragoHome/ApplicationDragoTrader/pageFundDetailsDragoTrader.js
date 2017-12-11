@@ -197,7 +197,6 @@ class PageFundDetailsDragoTrader extends Component {
           <Loading />
         );
       }
-      console.log(styles.detailsTabContent)
       return (
       <Row>
         <Col xs={12}>
@@ -297,7 +296,7 @@ class PageFundDetailsDragoTrader extends Component {
             //
             // Initializing drago contract
             //
-            dragoApi.contract.drago.instance(dragoAddress)
+            dragoApi.contract.drago.init(dragoAddress)
             //
             // Calling getData method
             //

@@ -30,7 +30,6 @@ export default class AccountSelect extends Component {
 
   render () {
     const { account, accounts, anyAccount, errorText, floatingLabelText, gabBalance, hintText } = this.props;
-    console.log(this.props)
     return (
       <SelectField
         autoComplete='off'

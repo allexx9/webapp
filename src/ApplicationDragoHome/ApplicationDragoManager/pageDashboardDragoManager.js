@@ -109,7 +109,7 @@ class PageDashboardDragoManager extends Component {
     componentWillMount() {
       const { api, contract } = this.context
       const {accounts } = this.props
-      this.getTransactions (null, contract, accounts)
+      this.getTransactions (null, accounts)
     }
 
     // handleTopBarPosition = (event) => {
@@ -178,7 +178,7 @@ class PageDashboardDragoManager extends Component {
       const {accounts } = this.props
       const sourceLogClass = this.constructor.name
       console.log(`${sourceLogClass} -> componentWillReceiveProps`);
-      this.getTransactions (null, contract, accounts)
+      this.getTransactions (null, accounts)
     }
 
     componentDidUpdate(nextProps) {
@@ -265,301 +265,127 @@ class PageDashboardDragoManager extends Component {
 
 
       return (
-        
-      <Row>
-        <Col xs={12}>
-          <Paper className={styles.paperContainer} zDepth={1}>
-            <Toolbar className={styles.detailsToolbar}>
-                <ToolbarGroup className={styles.detailsToolbarGroup}>
-                  <Row className={styles.detailsToolbarGroup}>
-                    <Col xs={12} md={1} className={styles.dragoTitle}>
-                      <h2><Avatar size={50} icon={<ActionHome />} /></h2>
-                    </Col>
-                    <Col xs={12} md={11} className={styles.dragoTitle}>
-                    <p>Dashboard Wizard</p>
-                    <small></small>
-                    </Col>
-                  </Row>
-                </ToolbarGroup> 
-                <ToolbarGroup>
-                <p>&nbsp;</p>
-                </ToolbarGroup>
-            </Toolbar>
-            <Sticky enabled={true} innerZ={1}>
-              <Row className={styles.tabsRow}>
-                <Col xs={12}>
-                  <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle}>
-                    <Tab label="Accounts" className={styles.detailsTab}
-                    onActive={() => scrollToComponent(this.Accounts, { offset: -80, align: 'top', duration: 500})}
-                      icon={<ActionList color={Colors.blue500} />}>
-                    </Tab>
-                    <Tab label="Drago" className={styles.detailsTab} 
-                      onActive={() => scrollToComponent(this.Dragos, { offset: -80, align: 'top', duration: 500})}
-                      icon={<ActionAssessment color={Colors.blue500} />}>
-                    </Tab>
-                    <Tab label="Transactions" className={styles.detailsTab}
-                    onActive={() => scrollToComponent(this.Transactions, { offset: -80, align: 'top', duration: 500})}
-                      icon={<ActionShowChart color={Colors.blue500} />}>
-                    </Tab>
-                  </Tabs>
+        <Row>
+          <Col xs={12}>
+            <Paper className={styles.paperContainer} zDepth={1}>
+              <Toolbar className={styles.detailsToolbar}>
+                  <ToolbarGroup className={styles.detailsToolbarGroup}>
+                    <Row className={styles.detailsToolbarGroup}>
+                      <Col xs={12} md={1} className={styles.dragoTitle}>
+                        <h2><Avatar size={50} icon={<ActionHome />} /></h2>
+                      </Col>
+                      <Col xs={12} md={11} className={styles.dragoTitle}>
+                      <p>Dashboard Wizard</p>
+                      <small></small>
+                      </Col>
+                    </Row>
+                  </ToolbarGroup> 
+                  <ToolbarGroup>
+                  <p>&nbsp;</p>
+                  </ToolbarGroup>
+              </Toolbar>
+              <Sticky enabled={true} innerZ={1}>
+                <Row className={styles.tabsRow}>
+                  <Col xs={12}>
+                    <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle}>
+                      <Tab label="Accounts" className={styles.detailsTab}
+                      onActive={() => scrollToComponent(this.Accounts, { offset: -80, align: 'top', duration: 500})}
+                        icon={<ActionList color={Colors.blue500} />}>
+                      </Tab>
+                      <Tab label="Drago" className={styles.detailsTab} 
+                        onActive={() => scrollToComponent(this.Dragos, { offset: -80, align: 'top', duration: 500})}
+                        icon={<ActionAssessment color={Colors.blue500} />}>
+                      </Tab>
+                      <Tab label="Transactions" className={styles.detailsTab}
+                      onActive={() => scrollToComponent(this.Transactions, { offset: -80, align: 'top', duration: 500})}
+                        icon={<ActionShowChart color={Colors.blue500} />}>
+                      </Tab>
+                    </Tabs>
+                  </Col>
+                </Row>
+              </Sticky>
+              <Row className={styles.transactionsStyle}>
+                <Col xs>
+                <span ref={(section) => { this.Accounts = section; }}></span>
+                    <AppBar
+                      title='My Accounts'
+                      showMenuIconButton={false}
+                      className={styles.appBar}
+                    />
+                    <Row between="xs">
+                      {listAccounts}
+                    </Row>
                 </Col>
               </Row>
-            </Sticky>
-            <Row className={styles.transactionsStyle}>
-              <Col xs>
-              <span ref={(section) => { this.Accounts = section; }}></span>
-                  <AppBar
-                    title='My Accounts'
-                    showMenuIconButton={false}
-                    className={styles.appBar}
-                  />
-                  <Row between="xs">
-                    {listAccounts}
-                  </Row>
-              </Col>
-            </Row>
-            <Row className={styles.transactionsStyle}>
-              <Col  xs >
-                <span ref={(section) => { this.Dragos = section; }}></span>
-                  <AppBar
-                    title='My Dragos'
-                    showMenuIconButton={false}
-                    iconElementRight={<ElementFundCreateAction accounts={accounts} snackBar={this.snackBar}
-                    iconStyleRight={{marginTop: 'auto', marginBottom: 'auto'}}/>}
-                  />
-                  <Paper zDepth={1}>
-                    <Row>
-                      <Col className={styles.transactionsStyle} xs={12}>
-                        {(Immutable.List(dragoList).size == 0) 
-                                  ? <Loading /> 
-                                  : <ElementListSupply list={Immutable.List(dragoList)}/>}
-                      </Col>
-                    </Row>
-                  </Paper>
+              <Row className={styles.transactionsStyle}>
+                <Col  xs >
+                  <span ref={(section) => { this.Dragos = section; }}></span>
+                    <AppBar
+                      title='My Dragos'
+                      showMenuIconButton={false}
+                      iconElementRight={<ElementFundCreateAction accounts={accounts} snackBar={this.snackBar}
+                      iconStyleRight={{marginTop: 'auto', marginBottom: 'auto'}}/>}
+                    />
+                    <Paper zDepth={1}>
+                      <Row>
+                        <Col className={styles.transactionsStyle} xs={12}>
+                          {(Immutable.List(dragoList).size == 0) 
+                                    ? <Loading /> 
+                                    : <ElementListSupply list={Immutable.List(dragoList)}/>}
+                        </Col>
+                      </Row>
+                    </Paper>
 
+                  </Col>
+              </Row>
+              <Row className={styles.transactionsStyle}>
+                <Col xs>
+                  <span ref={(section) => { this.Transactions = section; }}></span>
+                    <AppBar
+                      title='My Transactions'
+                      showMenuIconButton={false}
+                    />
+                    <Paper zDepth={1}>
+                      <Row style={{outline: 'none'}}>
+                        <Col className={styles.transactionsStyle} xs={12}>
+                            {(Immutable.List(dragoTransactionsLogs).size == 0) 
+                              ? <Loading /> 
+                              : <ElementListTransactions list={Immutable.List(dragoTransactionsLogs)}
+                              renderCopyButton={this.renderCopyButton}
+                              renderEtherscanButton={this.renderEtherscanButton}/>}
+                        </Col>
+                      </Row>
+                    </Paper>
                 </Col>
-            </Row>
-            <Row className={styles.transactionsStyle}>
-              <Col xs>
-                <span ref={(section) => { this.Transactions = section; }}></span>
-                  <AppBar
-                    title='My Transactions'
-                    showMenuIconButton={false}
-                  />
-                  <Paper zDepth={1}>
-                    <Row style={{outline: 'none'}}>
-                      <Col className={styles.transactionsStyle} xs={12}>
-                          {(Immutable.List(dragoTransactionsLogs).size == 0) 
-                            ? <Loading /> 
-                            : <ElementListTransactions list={Immutable.List(dragoTransactionsLogs)}
-                            renderCopyButton={this.renderCopyButton}
-                            renderEtherscanButton={this.renderEtherscanButton}/>}
-                      </Col>
-                    </Row>
-                  </Paper>
-              </Col>
-            </Row>
-          </Paper>
-        </Col>
-        <Snackbar
-          open={this.state.snackBar}
-          message={this.state.snackBarMsg}
-          action="close"
-          onActionTouchTap={this.handlesnackBarRequestClose}
-          onRequestClose={this.handlesnackBarRequestClose}
-        />
-      </Row>  
+              </Row>
+            </Paper>
+          </Col>
+          <Snackbar
+            open={this.state.snackBar}
+            message={this.state.snackBarMsg}
+            action="close"
+            onActionTouchTap={this.handlesnackBarRequestClose}
+            onRequestClose={this.handlesnackBarRequestClose}
+          />
+        </Row>  
       )
     }
 
-    // Getting the drago details from dragoID
-    getDragoDetails = (dragoID) => {
-      const { api, contract } = this.context
-      const {accounts } = this.props
-      var sourceLogClass = this.constructor.name
-
-      
-
-      api.parity
-        .registryAddress()
-        .then((registryAddress) => {
-          const registry = api.newContract(abis.registry, registryAddress).instance;
-          return Promise.all([
-              registry.getAddress.call({}, [api.util.sha3('dragoregistry'), 'A'])
-          ]);
-        })
-        .then((address) => {
-          console.log(`${sourceLogClass} -> The drago registry was found at ${address}`);
-          const dragoRegistry = api.newContract(abis.dragoregistry, address).instance;
-  
-          return Promise.all([
-              dragoRegistry.drago.call({}, [dragoID])
-          ])
-          .then((dragoDetails) => {
-            console.log(`${sourceLogClass} ->  dragoDetails: ${dragoDetails}`)
-            this.setState({
-              dragoDetails: {
-                address: dragoDetails[0][0],
-                name: dragoDetails[0][1],
-                symbol: dragoDetails[0][2],
-                dragoID: dragoDetails[0][3].c[0],
-                addresssOwner: dragoDetails[0][4],
-                addressGroup: dragoDetails[0][5]
-              },
-              loading: false
-            })
-          });
-        });
-    } 
-
     // Getting last transactions
-    getTransactions = (dragoAddress, contract, accounts) => {
+    getTransactions = (dragoAddress, accounts) =>{
       const { api } = this.context
-      var sourceLogClass = this.constructor.name
-      const logToEvent = (log) => {
-        const key = api.util.sha3(JSON.stringify(log))
-        const { blockNumber, logIndex, transactionHash, transactionIndex, params, type } = log   
-        const ethvalue = 0
-        const drgvalue = 0
-        // let ethvalue = null
-        // let drgvalue = null     
-        // if ((log.event === 'BuyDrago')) {
-        //   ethvalue = formatEth(params.amount.value,null,api)
-        //   drgvalue = formatCoins(params.revenue.value,null,api)     
-        // }
-        // if ((log.event === 'SellDrago')) {
-        //   ethvalue = formatEth(params.revenue.value,null,api)
-        //   drgvalue = formatCoins(params.amount.value,null,api)     
-        // }
-        return {
-          type: log.event,
-          state: type,
-          blockNumber,
-          logIndex,
-          transactionHash,
-          transactionIndex,
-          params,
-          key,
-          ethvalue,
-          drgvalue
-        }
-      }
-      
-      // Getting all buyDrago and selDrago events since block 0.
-      // dragoFactoryEventsSignatures accesses the contract ABI, gets all the events and for each creates a hex signature
-      // to be passed to getAllLogs. Events are indexed and filtered by topics
-      // more at: http://solidity.readthedocs.io/en/develop/contracts.html?highlight=event#events
-
-      // The second param of the topics array is the drago address
-      // The third param of the topics array is the from address
-      // The third param of the topics array is the to address
-      //
-      //  https://github.com/RigoBlock/Books/blob/master/Solidity_01_Events.MD
-
-      // const hexDragoAddress = '0x' + dragoAddress.substr(2).padStart(64,'0')
-      const hexAccounts = accounts.map((account) => {
-        const hexAccount = '0x' + account.address.substr(2).padStart(64,'0')
-        return hexAccount
-      })
-
-      // Filter for DragoCreated events
-      // The 4th item in the array is the address of the owner/creator of the Drago
-      // event DragoCreated(address indexed drago, address indexed group, address indexed owner, uint dragoID, string name, string symbol);
-      const eventsFilterCreated = {
-        topics: [ 
-          [dragoFactoryEventsSignatures(contract).DragoCreated.hexSignature], 
-          null, 
-          null,
-          hexAccounts
-        ]
-      }
-
-      const createdDragoEvents = contract
-        .getAllLogs(eventsFilterCreated)
-        .then((dragoTransactionsLog) => {
-          const createdLogs = dragoTransactionsLog.map(logToEvent)
-          return createdLogs
-        }
-        )
-      const dragoRegistry = api.parity
-        .registryAddress()
-        .then((registryAddress) => {
-          const registry = api.newContract(abis.registry, registryAddress).instance;
-          return Promise.all([
-              registry.getAddress.call({}, [api.util.sha3('dragoregistry'), 'A'])
-          ]);
+      const options = {balance: false, supply: true}
+      utils.getTransactionsDrago(api, dragoAddress, accounts, options)
+      .then(results =>{
+        const createdLogs = results[1].filter(event =>{
+          return event.type !== 'BuyDrago' && event.type !== 'SellDrago'
         })
-        .then((address) => {
-          console.log(`${sourceLogClass} -> The drago registry was found at ${address}`);
-          return api.newContract(abis.dragoregistry, address).instance
-        });
-      Promise.all([createdDragoEvents, dragoRegistry])
-      .then ((results) =>{
-        // Creating an array of promises that will be executed to add timestamp and symbol to each entry
-        // Doing so because for each entry we need to make an async call to the client
-        // For additional refernce: https://stackoverflow.com/questions/39452083/using-promise-function-inside-javascript-array-map
-        var dragoTransactionsLog = results[0]
-        const dragoRegistryInstance = results[1]
-        var dragoList = [] 
-        const promisesTimestamp = dragoTransactionsLog.map((log) => {
-          return api.eth
-          .getBlockByNumber(log.blockNumber.c[0])
-          .then((block) => {
-            log.timestamp = block.timestamp
-            return log
-          })
-        })
-        const promisesSupply = dragoTransactionsLog.map((log, index) => {
-          return Promise.all([
-            dragoApi.getDragoSupply(log.params.drago.value, api),
-          ])
-          .then((dragoSupply) => {
-            // console.log(`${sourceLogClass} ->  dragoDetails Symbol: ${dragoDetails[0][2]}`)
-            const symbol = log.params.symbol.value
-            const name = log.params.name.value
-            const dragoID = log.params.dragoID.value.c[0]
-            dragoList[index] = {
-              supply: formatCoins(new BigNumber (dragoSupply),4,api),
-              name: name,
-              symbol: symbol,
-              dragoID: dragoID
-            }
-            log.symbol = symbol
-            return log
-          });
-        })
-
-        // Running all promises
-        Promise.all(promisesTimestamp)
-        .then((results) => {
-            this.setState({
-              dragoTransactionsLogs: results,
-            })
-        })
-        .then (()=>{
-          Promise.all(promisesSupply)
-          .then((results) => {
-
-            // console.log(`${sourceLogClass} -> Transactions list loaded`);
-            // // Reorganizing the balances array
-            // for(var v in dragoBalances) {
-            //   var supply = {
-            //     symbol: dragoBalances[v].symbol,
-            //     name: dragoBalances[v].name,
-            //     dragoID: dragoBalances[v].dragoID,
-            //     balance: formatCoins(dragoBalances[v].balance,4,api)
-            //   }
-            //   balances.push(balance)
-            // }
-            this.setState({
-              dragoList: dragoList,
-              dragoTransactionsLogs: results,
-            }, this.setState({
-              loading: false,
-            }))
-
-          })
-        })
+        this.setState({
+          dragoList: results[2],
+          dragoTransactionsLogs: createdLogs,
+        }, this.setState({
+          loading: false,
+        }))
       })
     }
   }

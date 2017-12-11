@@ -345,7 +345,6 @@ class PageDashboardDragoTrader extends Component {
       const {accounts } = this.props
       var sourceLogClass = this.constructor.name 
       const dragoApi = new DragoApi(api)
-      console.log(contract)
       dragoApi.contract.dragoregistry.instance()
         .then(() =>{
           dragoApi.contract.dragoregistry.drago(dragoID)
@@ -377,7 +376,8 @@ class PageDashboardDragoTrader extends Component {
     getTransactions = (dragoAddress, accounts) =>{
       const { api } = this.context
       console.log('getTransactions')
-      utils.getTransactionsDrago(api, dragoAddress, accounts)
+      const options = {balance: true, supply: false}
+      utils.getTransactionsDrago(api, dragoAddress, accounts, options)
       .then(results =>{
         console.log(results[1])
         const buySellLogs = results[1].filter(event =>{

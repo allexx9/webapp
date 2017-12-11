@@ -52,7 +52,7 @@ export default class ElementNotificationsDrawer extends Component {
   }
 
   componentDidMount () {
-    this.attachInterface()
+    (this.state.notificationsOpen) ? this.attachInterface() : null
   }
 
   componentWillUnmount () {

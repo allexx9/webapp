@@ -44,7 +44,6 @@ export function validateNewName(name) {
   // Checking if html in name 
   var tmp = document.createElement("DIV")
   tmp.innerHTML = name
-  console.log(tmp.textContent)
   if (!name) {
     return ERRORS.invalidName
   }
@@ -56,7 +55,6 @@ export function validateNewName(name) {
 
 export function validateNewSymbol (symbol) {
   var reg = /[^A-Za-z0-9 ]/
-  console.log(symbol.length)
   if (!symbol) {
     return ERRORS.invalidSymbol
   }

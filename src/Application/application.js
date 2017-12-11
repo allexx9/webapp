@@ -102,7 +102,7 @@ export class ApplicationHomePage extends Component {
 
   state = {
     isConnected: false,
-    isManager: false
+    isManager: true
   }
 
   checkConnectionToNode = () =>{
@@ -137,6 +137,7 @@ export class ApplicationHomePage extends Component {
   render() {
   // we access the props passed to the component
   // console.log(location);
+    console.log('is Manager = '+this.state.isManager)
     return (
       <TemplateLayout isManager={this.state.isManager}>
         {this.state.isConnected ? (
@@ -270,6 +271,7 @@ export class ApplicationDragoPage extends Component {
   // console.log(location);
   const {notificationsOpen} = this.state
   const { location } = this.props
+  console.log('is Manager = '+this.state.isManager)
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
         <Grid fluid className={styles.maincontainer}>

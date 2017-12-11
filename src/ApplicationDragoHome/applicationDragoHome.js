@@ -73,6 +73,7 @@ export default class ApplicationDragoHome extends Component {
     allEvents: [],
     minedEvents: [],
     pendingEvents: [],
+    infura: false
   }
 
   scrollPosition = 0
@@ -116,7 +117,11 @@ export default class ApplicationDragoHome extends Component {
   }
 
   componentWillMount () {
-    this.attachInterface();
+    if (this.state.infura) {
+      this.attachInterfaceInfura()
+    } else {
+      this.attachInterface();
+    }
   } 
 
   componentDidMount() {
@@ -277,12 +282,14 @@ export default class ApplicationDragoHome extends Component {
             var balDifference = account.ethBalance - newBalance
             console.log(balDifference)
             if (balDifference > 0) {
+              console.log(`You transferred ${balDifference.toFixed(4)} ETH!`)
               secondaryText = `You transferred ${balDifference.toFixed(4)} ETH!`
             } else {
+              console.log(`You received ${Math.abs(balDifference).toFixed(4)} ETH!`)
               secondaryText = `You received ${Math.abs(balDifference).toFixed(4)} ETH!`
             }
             if (this._notificationSystem) {
-              console.log('notification fired')
+              console.log('Notification fired')
               this._notificationSystem.addNotification({
                   level: 'info',
                   position: 'br',
@@ -346,7 +353,6 @@ export default class ApplicationDragoHome extends Component {
     // const balance = web3.fromWei(web3.eth.getBalance(web3.eth.accounts[0]))
     return web3.eth.getAccounts()
       .then(accounts => {
-        
         const balance = web3.eth.getBalance(accounts[0])
         .then(balance => {
           return balance
@@ -357,7 +363,6 @@ export default class ApplicationDragoHome extends Component {
             source: "MetaMask"
           }
         }
-
         return accountsMetaMask
       })
       .catch(() =>{
@@ -365,10 +370,53 @@ export default class ApplicationDragoHome extends Component {
       })
   }
 
+  attachInterfaceInfura = () => {
+    const { api } = this.context;
+    var sourceLogClass = this.constructor.name
+    const registry = api.newContract(abis.registry, '0xfAb104398BBefbd47752E7702D9fE23047E1Bca3').instance
+    Promise
+    .all([
+      registry.getAddress.call({}, [api.util.sha3('eventful'), 'A']),
+      this.getAccountsMetamask()
+    ])
+    .then(([address, accountsMetaMask]) => {
+      console.log(`${sourceLogClass} -> Drago Eventful was found at ${address}`);
+      const contract = api.newContract(abis.eventful, address);
+      const allAccounts = {...accountsMetaMask}
+      this.setState({
+        loading: false,
+        contract: contract,
+        instance: contract.instance,
+        accounts: Object
+          .keys(allAccounts)
+          .map((address) => {
+            const info = allAccounts[address] || {};
+            return {
+              address,
+              name: info.name,
+              source: info.source,
+              ethBalance: "0"
+            };
+          })
+        });
+        api.subscribe('eth_blockNumber', this.onNewBlockNumber)
+        .then((subscriptionID) => {
+          console.log(`applicationDragoHome: Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);
+          this.setState({subscriptionIDDrago: subscriptionID});
+        })
+        .catch((error) => {
+          console.warn('error subscription', error)
+        });
+        return contract
+      })
+      .catch((error) => {
+        console.warn('attachInterface', error)
+      });
+  }
+
   attachInterface = () => {
     const { api } = this.context;
     var sourceLogClass = this.constructor.name
-    this.getAccountsMetamask()
     api.parity
       .registryAddress()
       .then((registryAddress) => {

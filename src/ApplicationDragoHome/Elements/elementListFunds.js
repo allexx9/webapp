@@ -17,7 +17,7 @@ import 'react-virtualized/styles.css'
 
 class ElementListFunds extends PureComponent {
 
-  static PropTypes = {
+  static propTypes = {
     allEvents: PropTypes.object.isRequired,
     accountsInfo: PropTypes.object.isRequired, 
     list: PropTypes.object.isRequired,

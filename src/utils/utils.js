@@ -63,15 +63,31 @@ var dragoApi = new dragoAPI();
 export {dragoApi} 
 
 class utilities {
+
+
+    getDragoSupply = (dragoAddress, api, callBack, options) => {
+      const instance = api.newContract(abis.drago, dragoAddress).instance
+      var sourceLogClass = this.constructor.name
+      return instance.totalSupply
+        .call({},[])
+    }
     /**
      * Get the event logs from a the Drago registry
      * @param  {object} api - The Parity Api
      * @param  {sting} dragoAddress - The drago contract address
      * @param  {array} accounts - The ethereum accounts to filter
-     * @param  {object} options - The block options 
+     * @param  {object} options - Set the information to return
      * @returns {promise} Promise object represents returning array of balances and transactions
-     */
-    getTransactionsDrago = (api, dragoAddress, accounts) => {
+     *
+     * 
+      * This function returns an array of arrays: balances, list of transacions and supply.
+      * The parameter options set the arrays to be populated
+      * The functions always returns all the arrays. Setting the options will 
+      * make the function to return an empty array
+      * 
+      * This function can be a performance hit, so it will need to be optimized as much as possible.
+      **/
+    getTransactionsDrago = (api, dragoAddress, accounts, options = {balance: true, supply: false}) => {
       const sourceLogClass = this.constructor.name
       var resultsAll = null
       const dragoApi = new DragoApi(api)
@@ -176,7 +192,9 @@ class utilities {
             // Doing so because for each entry we need to make an async call to the client
             // For additional refernce: https://stackoverflow.com/questions/39452083/using-promise-function-inside-javascript-array-map
             var dragoTransactionsLog = [...results[0], ...results[1], ...results[2]]
+            dragoTransactionsLog.filter(function(val) { return val !== null; })
             var dragoBalances = [] 
+            var supply = [] 
             const promisesTimestamp = dragoTransactionsLog.map((log, index) => {
               return api.eth
               .getBlockByNumber(log.blockNumber.c[0])
@@ -184,8 +202,15 @@ class utilities {
                 log.timestamp = block.timestamp
                 return log
               })
+              .catch((error) =>{
+                // Sometimes Infura returns null for api.eth.getBlockByNumber, therefore we are assigning a fake timestamp to avoid
+                // other issues in the app.
+                log.timestamp = new Date()
+                return log
+              })
             })
-            
+            // This is an inefficient way to get the symbol for each transactions. 
+            // In the future the symbol will have to be saved in the eventful logs.
             const promisesSymbol = dragoTransactionsLog.map((log) => {
               return dragoApi.contract.dragoregistry.init()
                 .then(() =>{
@@ -206,25 +231,52 @@ class utilities {
                             return new BigNumber(0)
                       } 
                     }
-                    if (typeof dragoBalances[dragoID] !== 'undefined') {
-                      var balance = dragoBalances[dragoID].balance.add(amount())
-                    } else {
-                      var balance = amount()
-                    }
-                    dragoBalances[dragoID] = {
-                      balance: balance,
-                      name,
-                      symbol,
-                      dragoID,
+                    if (options.balance) {
+                      if (typeof dragoBalances[dragoID] !== 'undefined') {
+                        var balance = dragoBalances[dragoID].balance.add(amount())
+                      } else {
+                        var balance = amount()
+                      }
+                      dragoBalances[dragoID] = {
+                        balance: balance,
+                        name,
+                        symbol,
+                        dragoID,
+                      }
                     }
                     log.symbol = symbol  
                     return log
                   })
+                  .then ((log) => {
+                    if (log.type === 'DragoCreated' && options.supply) {
+                      // return Promise.all([
+                      //   this.getDragoSupply(log.params.drago.value, api),
+                      // ])
+                      dragoApi.contract.drago.init(log.params.drago.value)
+                      return dragoApi.contract.drago.totalSupply()
+                      .then((dragoSupply) => {
+                        // console.log(`${sourceLogClass} ->  dragoDetails Symbol: ${dragoDetails[0][2]}`)
+                        const symbol = log.params.symbol.value
+                        const name = log.params.name.value
+                        const dragoID = log.params.dragoID.value.c[0]
+                        supply.push({
+                          supply: formatCoins(new BigNumber (dragoSupply),4,api),
+                          name: name,
+                          symbol: symbol,
+                          dragoID: dragoID
+                        })
+                        log.symbol = symbol
+                        return log
+                      })
+                    }
+                    return log
+                  })
                 })
             })
+
             // Running all promises
             return Promise.all(promisesTimestamp)
-            .then (()=>{
+            .then ((results)=>{
               return Promise.all(promisesSymbol)
               .then((results) => {
                 var balances = [];
@@ -239,8 +291,7 @@ class utilities {
                   }
                   balances.push(balance)
                 }
-                // console.log(balances)
-                results = [balances, results]
+                results = [balances, results, supply]
                 return results
               })
             })
