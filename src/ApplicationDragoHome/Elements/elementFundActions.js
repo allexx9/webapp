@@ -395,18 +395,16 @@ export default class ElementFundActions extends React.Component {
   onSendBuy = () => {
     const { api } = this.context;
     const {dragoDetails} = this.props
-    const values = []
-    const options = {
-      from: this.state.account.address,
-      value: api.util.toWei(this.state.amountSummary).toString()
-    }
+    console.log(this.state.amountSummary.toString())
+    const accountAddress = this.state.account.address
+    const amount = api.util.toWei(this.state.amountSummary).toString()
     if(this.state.account.source === 'MetaMask') {
       const web3 = window.web3
       const dragoApi = new DragoApi(web3)
-      dragoApi.contract.drago.instance(dragoDetails.address)
-      dragoApi.contract.drago.buyDrago(options, values)
-      .then(() => {
-
+      dragoApi.contract.drago.init(dragoDetails.address)
+      dragoApi.contract.drago.buyDrago(accountAddress, amount)
+      .then((receipt) =>{ 
+        console.log(receipt)
       })
       .catch((error) => {
         console.error('error', error);
@@ -414,25 +412,27 @@ export default class ElementFundActions extends React.Component {
           sending: false
         })
       })
-      this.props.snackBar('Order waiting for authorization for ' + this.state.amountSummary + ' ETH')
+      this.props.snackBar('Order waiting for authorization for ' + this.state.amountSummary.toString() + ' ETH')
       this.setState({
         sending: false,
-        complete: true
-      }, this.setState({open: false}))
-      this.handleClose()
+        complete: true,
+        open: false
+      }, this.handleClose)
     } else {
       this.setState({
         sending: true
       })
       const dragoApi = new DragoApi(api)
       dragoApi.contract.drago.init(dragoDetails.address)
-      dragoApi.contract.drago.buyDrago(options, values)
+      dragoApi.contract.drago.buyDrago(accountAddress, amount)
       .then(() => {
-        this.props.snackBar('Order waiting for authorization for ' + this.state.amountSummary + ' ETH')
+        const soldAmount = this.state.amountSummary.toString()
+        this.props.snackBar(`Order waiting for authorization for ${soldAmount} ETH`)
         this.setState({
           sending: false,
-          complete: true
-        }, this.setState({open: false}))
+          complete: true,
+          open: false
+        },this.handleClose)
       })
       .catch((error) => {
         console.error('error', error);
@@ -440,7 +440,6 @@ export default class ElementFundActions extends React.Component {
           sending: false
         })
       })
-      this.handleClose()
     }
   }
 
@@ -448,18 +447,20 @@ export default class ElementFundActions extends React.Component {
     const { api } = this.context;
     const {dragoDetails} = this.props
     const DIVISOR = 10 ** 6;  //dragos are divisible by 1 million
-    const amount = new BigNumber(this.state.amountSummary).mul(DIVISOR);    
-    const values = amount.toFixed(0); //[dragoAddress.toString(), amount.toFixed(0)]; in new version direct trade wth instance
-    const options = {
-      from: this.state.account.address
-    }
+    // const amount = new BigNumber(this.state.amountSummary).mul(DIVISOR);    
+    // const values = amount.toFixed(0); 
+    // const options = {
+    //   from: this.state.account.address
+    // }
+    const accountAddress = this.state.account.address
+    const amount = new BigNumber(this.state.amountSummary).mul(DIVISOR).toFixed(0)
     if(this.state.account.source === 'MetaMask') {
       const web3 = window.web3
       const dragoApi = new DragoApi(web3)
       dragoApi.contract.drago.init(dragoDetails.address)
-      dragoApi.contract.drago.sellDrago(options, values)
-      .then(() => {
-
+      dragoApi.contract.drago.sellDrago(accountAddress, amount)
+      .then((receipt) =>{ 
+        console.log(receipt)
       })
       .catch((error) => {
         console.error('error', error);
@@ -470,22 +471,23 @@ export default class ElementFundActions extends React.Component {
       this.props.snackBar('Order waiting for authorization for ' + this.state.amountSummary + ' ETH')
       this.setState({
         sending: false,
-        complete: true
-      }, this.setState({open: false}))
-      this.handleClose()
+        complete: true,
+        open: false
+      }, this.handleClose)
     } else {
     this.setState({
       sending: true
     })
       const dragoApi = new DragoApi(api)
-      dragoApi.contract.drago.instance(dragoDetails.address)
-      dragoApi.contract.drago.sellDrago(options, values)
+      dragoApi.contract.drago.init(dragoDetails.address)
+      dragoApi.contract.drago.sellDrago(accountAddress, amount)
       .then(() => {
-        this.props.snackBar('Order waiting for authorization for ' + this.state.amountSummary + ' '+ dragoDetails.symbol.toUpperCase())
+        this.props.snackBar('Order waiting for authorization for ' + this.state.amountSummary + ' ' + dragoDetails.symbol.toUpperCase())
         this.setState({
           sending: false,
-          complete: true
-        }, this.setState({open: false}))
+          complete: true,
+          open: false
+        }, this.handleClose)
       })
       .catch((error) => {
         console.error('error', error);

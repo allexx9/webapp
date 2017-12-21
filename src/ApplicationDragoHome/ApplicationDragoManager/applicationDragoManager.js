@@ -6,7 +6,7 @@ import {APP, DS} from '../../utils/const.js'
 import utils from '../../utils/utils.js'
 import PageDashboardDragoManager from './pageDashboardDragoManager'
 // import PageFundsDragoTrader from './pageFundsDragoTrader'
-// import PageFundDetailsDragoTrader from './pageFundDetailsDragoTrader'
+import PageFundDetailsDragoManager from './pageFundDetailsDragoManager'
 
 import {
   Switch,
@@ -49,9 +49,9 @@ class applicationDragoManager extends Component {
             // accountsInfo={accountsInfo}
             />
           } 
-          />
+          /> */}
           <Route path={match.path+"/pools/:dragoid/:dragocode"}
-            render={(props) => <PageFundDetailsDragoTrader {...props}               
+            render={(props) => <PageFundDetailsDragoManager {...props}               
             blockNumber={blockNumber}
             accounts={accounts}
             ethBalance={ethBalance} 
@@ -59,7 +59,7 @@ class applicationDragoManager extends Component {
             accountsInfo={accountsInfo}
             />
           } 
-          /> */}
+          />
           <Redirect from={match.path} to={match.path+"/dashboard"}  />
         </Switch>
       );

@@ -26,6 +26,7 @@ import AccountSelector from './elementAccountSelector'
 import IdentityIcon from '../../IdentityIcon'
 import utils, {dragoApi} from '../../utils/utils'
 import DragoApi from '../../DragoApi/src'
+import ElementDialogHeadTitle from '../Elements/elementDialogHeadTitle'
 
 import styles from './elementFundCreateAction.module.css';
 
@@ -107,51 +108,40 @@ export default class ElementFundCreateAction extends React.Component {
       const dragoSymbol = this.state.dragoSymbol.toString();
       const values = [dragoName, dragoSymbol, this.state.account.address]
       var dragoApi = null;
+      var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
 
       this.setState({
         sending: true
       })
-
-      if(this.state.account.source === 'MetaMask') {
-        const web3 = window.web3
-        dragoApi = new DragoApi(web3)
-        dragoApi.contract.dragofactory.init()
+      dragoApi = new DragoApi(provider)
+      dragoApi.contract.dragofactory.init()
+      .then(()=>{
         dragoApi.contract.dragofactory.createDrago(dragoName, dragoSymbol, this.state.account.address)
-        .then ((result) =>{
-          console.log(result)
-          this.props.snackBar('Deploy awaiting for authorization')
-          // this.setState({
-          //   sending: false,
-          //   complete: true
-          // });
+      })
+      .then ((result) =>{
+        // console.log(result)
+        this.props.snackBar('Deploy awaiting for authorization')
+        this.setState({
+          sending: false,
+          complete: true
+        });
+      })
+      .catch((error) => {
+        console.error('error', error)
+        this.setState({
+          sending: false
         })
-        .catch((error) => {
-          console.error('error', error)
-          this.setState({
-            sending: false
-          })
-        })
-      } else {
-        dragoApi = new DragoApi(api)
-        dragoApi.contract.dragofactory.init()
-        .then(()=>{
-          dragoApi.contract.dragofactory.createDrago(dragoName, dragoSymbol, this.state.account.address)
-        })
-        .then (() =>{
-          this.props.snackBar('Deploy awaiting for authorization')
-          // this.setState({
-          //   sending: false,
-          //   complete: true
-          // });
-        })
-        .catch((error) => {
-          console.error('error', error)
-          this.setState({
-            sending: false
-          })
-        })
-      }
-      console.log(dragoApi)
+      })
+    }
+
+    renderHeader = () => {
+      const { dragoDetails } = this.props
+      return (
+        <div>
+            <ElementDialogHeadTitle primaryText='Deploy new Drago' />
+        </div>
+  
+      )
     }
 
     renderActions () {
@@ -190,6 +180,11 @@ export default class ElementFundCreateAction extends React.Component {
         color: '#FFFFFF',
         fontWeight: 700
       }
+      const titleStyle = {
+        padding: 0,
+        lineHeight: '20px',
+        fontSize: 16
+      }
       const nameLabel = 'The name of your brand new drago';
       const symbolLabel = 'The symbol of your brand new drago';
 
@@ -202,10 +197,11 @@ export default class ElementFundCreateAction extends React.Component {
             hoverColor={Colors.blue300}
             />
             <Dialog
-              title='Deploy new Drago'
+              title={this.renderHeader()}
               actions={ this.renderActions() }
               modal={false}
               open={this.state.open}
+              titleStyle={titleStyle}
               contentStyle={customContentStyle}
               onRequestClose={this.handleClose}
             >

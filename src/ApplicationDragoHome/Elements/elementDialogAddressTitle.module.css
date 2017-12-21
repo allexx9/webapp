@@ -1,26 +1,8 @@
-/* elementFundActions */
-
-.modalHeaderActions {
-  background-color: rgb(33, 150, 243);
-  padding: 5px;
-  border-top-left-radius: 2px;
-  border-top-right-radius: 2px;
-
-  /* background-color: rgb(232, 232, 232); */
-}
-
-.modalHeader {
-  padding: 0 !important;
-  margin: 0 !important;
-  border-radius: 2px;
-  font-size: 16px !important;
-  line-height: 20px !important;
-}
-
 .modalTitle {
   background-color: #e8e8e8;
   padding-left: 10px !important;
   padding-right: 10px !important;
+  margin: 0;
 }
 
 .modalTitle small{

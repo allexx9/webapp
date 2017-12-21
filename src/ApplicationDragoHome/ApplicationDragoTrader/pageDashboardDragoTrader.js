@@ -339,39 +339,6 @@ class PageDashboardDragoTrader extends Component {
       )
     }
 
-    // Getting the drago details from dragoID
-    getDragoDetails = (dragoID) => {
-      const { api, contract } = this.context
-      const {accounts } = this.props
-      var sourceLogClass = this.constructor.name 
-      const dragoApi = new DragoApi(api)
-      dragoApi.contract.dragoregistry.instance()
-        .then(() =>{
-          dragoApi.contract.dragoregistry.drago(dragoID)
-          .then((dragoDetails) => {
-            const dragoAddress = dragoDetails[0][0]
-            dragoApi.contract.drago.instance(dragoAddress)
-            dragoApi.contract.drago.getData()
-            .then((data) =>{
-              this.setState({
-                dragoDetails: {
-                  address: dragoDetails[0][0],
-                  name: dragoDetails[0][1],
-                  symbol: dragoDetails[0][2],
-                  dragoID: dragoDetails[0][3].c[0],
-                  addresssOwner: dragoDetails[0][4],
-                  addressGroup: dragoDetails[0][5],
-                  sellPrice: api.util.fromWei(data[2].toNumber(4)).toFormat(4),
-                  buyPrice: api.util.fromWei(data[3].toNumber(4)).toFormat(4),
-                },
-                loading: false
-              })
-            })
-            this.getTransactions(dragoDetails[0][0], accounts)
-          })
-        })
-    } 
-
     // Getting last transactions
     getTransactions = (dragoAddress, accounts) =>{
       const { api } = this.context

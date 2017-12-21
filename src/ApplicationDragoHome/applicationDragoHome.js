@@ -255,6 +255,8 @@ export default class ApplicationDragoHome extends Component {
   onNewBlockNumber = (_error, blockNumber) => {
     // const accounts = this.state.accounts
     // const accounts = Object.assign({}, this.state.accounts);
+    console.log(blockNumber)
+    console.log('New block')
     const accounts = [].concat(this.state.accounts);
     const { api } = this.context;
     if (_error) {

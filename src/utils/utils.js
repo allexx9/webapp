@@ -136,6 +136,8 @@ class utilities {
           return hexAccount
         })
       }
+
+      // Initializing the eventful contract
       return dragoApi.contract.eventful.init()
         .then (() => {
           // Filter for create events

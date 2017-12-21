@@ -11,7 +11,10 @@ export const ERRORS = {
   invalidName: 'Please enter a valid name',
   invalidSymbol: 'Please enter a valid symbol',
   invalidSymbolLeng: 'Symbol has to be 3 chars long',
-  invalidSymbolReg: 'Only alphanumeric symbols allowed'
+  invalidSymbolReg: 'Only alphanumeric symbols allowed',
+  tradeIdError: 'Please enter a positive number > 0',
+  exchangeNameError: 'Please select an exchange',
+  cfdError: 'Please select an CDF',
 };
 
 export function validatePositiveNumber (value) {
