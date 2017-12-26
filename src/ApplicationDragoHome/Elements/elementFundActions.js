@@ -412,7 +412,7 @@ export default class ElementFundActions extends React.Component {
           sending: false
         })
       })
-      this.props.snackBar('Buyr order waiting for authorization for ' + this.state.amountSummary.toString() + ' ETH')
+      this.props.snackBar('Buy order waiting for authorization for ' + this.state.amountSummary.toString() + ' ETH')
       this.setState({
         sending: false,
         complete: true,

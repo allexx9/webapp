@@ -15,7 +15,6 @@ import Toggle from 'material-ui/Toggle';
 import ElementBoxHeadTitle from '../Elements/elementBoxHeadTitle'
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
-import checkAuth from '../Elements/checkAuth'
 
 
 
