@@ -36,6 +36,7 @@ import Search from 'material-ui/svg-icons/action/search'
 import Snackbar from 'material-ui/Snackbar'
 import Sticky from 'react-stickynode'
 
+
 import { dragoFactoryEventsSignatures } from '../../utils/utils.js'
 import { formatCoins, formatEth, formatHash, toHex } from '../../format'
 import * as abis from '../../contracts';
@@ -59,7 +60,6 @@ class PageDashboardDragoTrader extends Component {
   // Checking the type of the context variable that we receive by the parent
   static contextTypes = {
     api: PropTypes.object.isRequired,
-    contract: PropTypes.object.isRequired
   };
 
   static propTypes = {
@@ -67,12 +67,11 @@ class PageDashboardDragoTrader extends Component {
       ethBalance: PropTypes.object.isRequired,
       accounts: PropTypes.array.isRequired,
       accountsInfo: PropTypes.object.isRequired, 
-      ethBalance: PropTypes.object.isRequired,
     };
 
     state = {
-      dragoTransactionsLogs: [],
-      dragoBalances:[],
+      dragoTransactionsLogs: null,
+      dragoBalances: null,
       loading: true,
       topBarClassName: null,
       topBarInitialPosition: null,
@@ -85,14 +84,39 @@ class PageDashboardDragoTrader extends Component {
     componentDidMount() {
     }
 
-    componentWillUnmount() {
-      // window.removeEventListener('scroll', this.handleTopBarPosition);
-    }
-
     componentWillMount() {
       const { api, contract } = this.context
       const {accounts } = this.props
       this.getTransactions (null, accounts)
+    }
+
+    componentWillReceiveProps(nextProps) {
+      // Updating the lists on each new block if the accounts balances have changed
+      // Doing this this to improve performances by avoiding useless re-rendering
+      const { api, contract } = this.context
+      const {accounts } = this.props
+      const sourceLogClass = this.constructor.name
+      if (!this.props.ethBalance.eq(nextProps.ethBalance)) {
+        this.getTransactions (null, accounts)
+        console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
+      } else {
+        null
+      }
+    }
+
+    shouldComponentUpdate(nextProps, nextState){
+      const  sourceLogClass = this.constructor.name
+      var stateUpdate = true
+      var propsUpdate = true
+      stateUpdate = !utils.shallowEqual(this.state, nextState)
+      propsUpdate = !this.props.ethBalance.eq(nextProps.ethBalance)
+      if (stateUpdate || propsUpdate) {
+        console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
+      }
+      return stateUpdate || propsUpdate
+    }
+
+    componentDidUpdate(nextProps) {
     }
 
     snackBar = (msg) =>{
@@ -129,36 +153,6 @@ class PageDashboardDragoTrader extends Component {
       console.log(to);
     }
 
-    shouldComponentUpdate(nextProps, nextState){
-      const  sourceLogClass = this.constructor.name
-      var stateUpdate = true
-      var propsUpdate = true
-      console.log(`${sourceLogClass} -> Received new props`);
-      console.log(nextProps.ethBalance.toFormat())
-      console.log(this.props.ethBalance.toFormat())
-      // stateUpdate = !utils.shallowEqual(this.state, nextState)
-      propsUpdate = !this.props.ethBalance.eq(nextProps.ethBalance)
-      // propsUpdate = (!utils.shallowEqual(this.props.accounts, nextProps.accounts))
-      console.log(`${sourceLogClass} -> Received new props. Need update: ${sourceLogClass}`);
-      console.log(stateUpdate || propsUpdate)
-      return stateUpdate || propsUpdate
-    }
-
-    componentWillReceiveProps(nextProps) {
-      // Updating the lists on each new block
-      const { api, contract } = this.context
-      const {accounts } = this.props
-      const sourceLogClass = this.constructor.name
-      console.log(`${sourceLogClass} -> componentWillReceiveProps`);
-      (!utils.shallowEqual(this.props.accounts, nextProps.accounts)) ? this.getTransactions (null, accounts) : null
-      console.log(this.props.accounts)
-      console.log(nextProps.accounts)
-      // this.getTransactions (null, accounts)
-    }
-
-    componentDidUpdate(nextProps) {
-    }
-
     renderCopyButton = (text) =>{
       if (!text ) {
         return null;
@@ -191,6 +185,7 @@ class PageDashboardDragoTrader extends Component {
     render() {
       const { location, accounts, accountsInfo, allEvents } = this.props
       const { dragoTransactionsLogs, loading, dragoBalances } = this.state 
+      console.log(this.props.ethBalance)
       const tabButtons = {
         inkBarStyle: {
           margin: 'auto',
@@ -207,29 +202,33 @@ class PageDashboardDragoTrader extends Component {
       const listAccounts = accounts.map((account) => {
         const { api } = this.context;
         return (
-            <Col xs={6} key={account.name}>
-              <Card>
-                <Row between="xs">
-                  <Col xs >
-                    <CardHeader
-                      title={account.name}
-                      subtitle={this.subTitle(account)}
-                      subtitleStyle={{fontSize: 12}}
-                      avatar={<IdentityIcon address={ account.address } />}
-                    />
-                    <CardText>
-                      ETH { account.ethBalance }
-                    </CardText>
-                  </Col>
-                    <Col xs >
-                      <Chip className={styles.accountChip}>
-                      <Avatar size={32}>W</Avatar>
-                        {account.source}
-                      </Chip>
-                    </Col>
-                </Row>
-              </Card>
-            </Col>
+          <Col xs={6} key={account.name}>
+            <Card>
+              <Row between="xs">
+                <Col xs >
+                  <CardHeader
+                    title={account.name}
+                    subtitle={this.subTitle(account)}
+                    subtitleStyle={{ fontSize: 12 }}
+                    avatar={<IdentityIcon address={account.address} />}
+                  />
+                  <CardText>
+                    <Row middle="xs" between="xs">
+                      <Col xs >
+                        <Chip className={styles.accountChip}>
+                          <Avatar size={32}>W</Avatar>
+                          {account.source}
+                        </Chip>
+                      </Col>
+                      <Col xs between="xs" className={styles.accountAmount}>
+                        ETH {account.ethBalance}
+                      </Col>
+                    </Row>
+                  </CardText>
+                </Col>
+              </Row>
+            </Card>
+          </Col>
           )
         }
       );
@@ -297,7 +296,7 @@ class PageDashboardDragoTrader extends Component {
                     <Paper zDepth={1}>
                       <Row>
                         <Col className={styles.transactionsStyle} xs={12}>
-                          {(Immutable.List(dragoBalances).size == 0) 
+                          {(dragoBalances === null) 
                             ? <Loading /> 
                             : <ElementListBalances list={Immutable.List(dragoBalances)}/>}
                         </Col>
@@ -316,7 +315,7 @@ class PageDashboardDragoTrader extends Component {
                   <Paper zDepth={1}>
                     <Row style={{outline: 'none'}}>
                       <Col className={styles.transactionsStyle} xs={12}>
-                          {(Immutable.List(dragoTransactionsLogs).size == 0) 
+                          {(dragoTransactionsLogs === null) 
                             ? <Loading /> 
                             : <ElementListTransactions list={Immutable.List(dragoTransactionsLogs)}
                             renderCopyButton={this.renderCopyButton}
@@ -342,17 +341,17 @@ class PageDashboardDragoTrader extends Component {
     // Getting last transactions
     getTransactions = (dragoAddress, accounts) =>{
       const { api } = this.context
-      console.log('getTransactions')
-      const options = {balance: true, supply: false}
-      utils.getTransactionsDrago(api, dragoAddress, accounts, options)
+      const options = {balance: true, supply: false, limit: 10, trader: true}
+      var sourceLogClass = this.constructor.name
+      utils.getTransactionsDragoOpt(api, dragoAddress, accounts, options)
       .then(results =>{
-        console.log(results[1])
-        const buySellLogs = results[1].filter(event =>{
-          return event.type !== 'DragoCreated'
-        })
+        console.log(`${sourceLogClass} -> Transactions list loaded`)
+        // const buySellLogs = results[1].filter(event =>{
+        //   return event.type !== 'DragoCreated'
+        // })
         this.setState({
           dragoBalances: results[0],
-          dragoTransactionsLogs: buySellLogs,
+          dragoTransactionsLogs: results[1],
         }, this.setState({
           loading: false,
         }))

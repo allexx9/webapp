@@ -9,7 +9,7 @@ import { generateRandomList } from './utils'
 
 class FilterFunds extends Component {
 
-  static PropTypes = {
+  static propTypes = {
     fundsList: PropTypes.object.isRequired,
     filterList: PropTypes.func.isRequired,
   };
@@ -24,7 +24,6 @@ class FilterFunds extends Component {
       fund.params.name.value.toLowerCase().slice(0, inputLength) === inputValue)
     }
     filterList(filteredFunds())
-    console.log(filteredFunds())
   }
 
   render() {

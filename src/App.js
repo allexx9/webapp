@@ -24,7 +24,8 @@ export {
     ApplicationHomePage, 
     ApplicationGabcoinPage, 
     ApplicationDragoPage, 
-    ApplicationExchangePage, 
+    ApplicationConfigPage,
+    // ApplicationExchangePage, 
     Whoops404} from './Application';
 // export { default } from './Application';
 

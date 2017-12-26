@@ -14,13 +14,19 @@
 
 import Api from '@parity/api'
 import Web3 from 'web3'
+import {EP_INFURA_KV, EP_RIGOBLOCK_KV} from './utils/const.js'
 
-var HttpsUrl = true;
-var WsSecureUrl = true;
+var HttpsUrl = '';
+var WsSecureUrl = '';
 const OverHttps = true;
 const timeout = 1000; // to set the delay between each ping to the Http server. Default = 1000 (1 sec)
-const infuraKovan = 'https://kovan.infura.io/2ASdH9dmgwMfPLkdThXS'
-const rigoBlockEnd = 'https://srv03.endpoint.network:8545'
+const infuraKovan = EP_INFURA_KV
+const rigoBlockEnd = EP_RIGOBLOCK_KV
+const endpoint = localStorage.getItem('endpoint')
+
+console.log(endpoint)
+
+
 
 if (typeof window.parity !== 'undefined') {
   // Change to 'http://localhost:8545' and 'ws://localhost:8546' before building
@@ -32,21 +38,32 @@ if (typeof window.parity !== 'undefined') {
   WsSecureUrl = 'ws://localhost:8546';
 } else {
   // For RPC over Https
-  HttpsUrl = rigoBlockEnd;
+  // HttpsUrl = rigoBlockEnd;
   // HttpsUrl = infuraKovan;
+  if (endpoint !== null) {
+    switch (endpoint) {
+      case "infura":
+        HttpsUrl = EP_INFURA_KV
+      break;
+      case "rigoblock":
+        HttpsUrl = EP_RIGOBLOCK_KV
+      break;
+      
+    }
+  } else {
+    localStorage.setItem('endpoint', 'rigoblock')
+    HttpsUrl = rigoBlockEnd;
+  }
   // For RPC over Websocket
   WsSecureUrl = 'wss://srv03.endpoint.network:8546';
 }
 
-
-console.log(window)
 // Checking if Web3 has been injected by the browser (Mist/MetaMask)
 
 if (typeof window.web3 !== 'undefined') {
   // Use Mist/MetaMask's provider
   console.log('Found MetaMask!')
   window.web3 = new Web3(window.web3.currentProvider)
-  console.log(window.web3.currentProvider)
 } else {
   console.log('No web3? You should consider trying MetaMask!')
   // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
@@ -63,7 +80,7 @@ const checkTransport = () => {
       // for @parity/api
       const transport = new Api.Provider.Http(HttpsUrl, timeout)
       
-      console.log(transport.isConnected)
+      // console.log(transport.isConnected)
       // @parity/parity.js
       // const transport = new Api.Transport.Http(HttpsUrl, timeout);
       console.log("Connecting to ", HttpsUrl)
@@ -86,7 +103,7 @@ const checkTransport = () => {
 }
 
 var api = checkTransport()
-console.log(api)
+// console.log(api)
 // console.log(api.net.listening())
 // api.net.listening()
 // .then(listening =>{

@@ -12,18 +12,19 @@ import Menu from 'material-ui/Menu';
 import Divider from 'material-ui/Divider';
 import ArrowDropRight from 'material-ui/svg-icons/navigation-arrow-drop-right';
 import ActionHome from 'material-ui/svg-icons/action/home';
+import ActionSwapHoriz from 'material-ui/svg-icons/action/swap-horiz';
 import ActionAssessment from 'material-ui/svg-icons/action/assessment';
 import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
 import { Visible, Hidden } from 'react-grid-system'
 
 var drawerStyle = {
   activeLink: {
-    backgroundColor: 'rgba(0, 0, 0, 0.1)',
-    color: 'black'
+    backgroundColor: '#E0E0E0',
+    color: '#757575',
    },
 };
 
-class LeftSideDrawer extends Component {
+class LeftSideDrawerConfig extends Component {
 
   constructor(props) {
     super(props);
@@ -31,7 +32,6 @@ class LeftSideDrawer extends Component {
 
   static propTypes = {
       location: PropTypes.object.isRequired,
-      isManager: PropTypes.bool.isRequired,
     };
 
     state = {
@@ -50,53 +50,27 @@ class LeftSideDrawer extends Component {
     return location.pathname.split( '/' ).pop()
     }
 
-  renderMenuTrader = () =>{
-    var { location} = this.props
-    return (
-      <Drawer open={true}
-      containerClassName={styles.containerleftDrawer} className={styles.leftDrawer}>
-      <Hidden xs sm>
-        <Menu
-          selectedMenuItemStyle={ drawerStyle.activeLink }
-          value={this.setSelectedLink(location)}        
-          >
-          <MenuItem checked={true} primaryText="Dashboard" leftIcon={<ActionAssessment />} 
-            containerElement={<Link to={DS+APP+DS+this.buildUrlPath(location)+DS+"drago"+DS+"dashboard"} />}
-            value='dashboard'/>
-          <MenuItem primaryText="Dragos" leftIcon={<ActionShowChart />} 
-            containerElement={<Link to={DS+APP+DS+this.buildUrlPath(location)+DS+"drago"+DS+"pools"} />}
-            value='pools' />
-        </Menu>
-      </Hidden>
-      </Drawer>
-    )
-  }
-
-  renderMenuManager = () =>{
-    var { location} = this.props
-    return (
-      <Drawer open={true}
-      containerClassName={styles.containerleftDrawer} className={styles.leftDrawer}>
-      <Hidden xs sm>
-        <Menu
-          selectedMenuItemStyle={ drawerStyle.activeLink }
-          value={this.setSelectedLink(location)}        
-          >
-          <MenuItem checked={true} primaryText="Dashboard" leftIcon={<ActionAssessment />} 
-            containerElement={<Link to={DS+APP+DS+this.buildUrlPath(location)+DS+"drago"+DS+"dashboard"} />}
-            value='dashboard'/>
-        </Menu>
-      </Hidden>
-      </Drawer>
-    )
-  }
-
   render() {
-    var { isManager } = this.props
-    return isManager
-      ? this.renderMenuManager()
-      : this.renderMenuTrader()
+    var { location} = this.props
+    return (
+
+      <Drawer open={true}
+      containerClassName={styles.containerleftDrawer} className={styles.leftDrawer}>
+      <Hidden xs sm>
+        <Menu
+          selectedMenuItemStyle={ drawerStyle.activeLink }
+          value={this.setSelectedLink(location)}        
+          >
+          <MenuItem checked={true} primaryText="Network" leftIcon={<ActionSwapHoriz />} 
+            containerElement={<Link to={DS+APP+DS+this.buildUrlPath(location)+DS+"network"} />}
+            value='network'/>
+        </Menu>
+      </Hidden>
+      </Drawer>
+
+
+    )
   }
 }
 
-export default withRouter(LeftSideDrawer)
+export default withRouter(LeftSideDrawerConfig)

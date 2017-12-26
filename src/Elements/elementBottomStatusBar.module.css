@@ -1,0 +1,27 @@
+.networkStatus {
+  position: fixed;
+  width: 100%;
+  background-color: #E0E0E0;
+  z-index: 1400;
+  font-size: .75em;
+  padding: .4em .5em;
+  height: 25px;
+  margin-left: 0px !important;
+  margin-right: 0px !important;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.networkStatusCounter{
+  text-align: right;
+}
+
+.networkName {
+  border-radius: .4em;
+  line-height: 1.2;
+  padding: .25em .5em;
+  text-transform: uppercase;
+  background: #9C27B0;
+  color: #fff;
+}

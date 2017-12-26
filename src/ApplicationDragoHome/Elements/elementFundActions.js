@@ -412,7 +412,7 @@ export default class ElementFundActions extends React.Component {
           sending: false
         })
       })
-      this.props.snackBar('Order waiting for authorization for ' + this.state.amountSummary.toString() + ' ETH')
+      this.props.snackBar('Buyr order waiting for authorization for ' + this.state.amountSummary.toString() + ' ETH')
       this.setState({
         sending: false,
         complete: true,
@@ -426,8 +426,7 @@ export default class ElementFundActions extends React.Component {
       dragoApi.contract.drago.init(dragoDetails.address)
       dragoApi.contract.drago.buyDrago(accountAddress, amount)
       .then(() => {
-        const soldAmount = this.state.amountSummary.toString()
-        this.props.snackBar(`Order waiting for authorization for ${soldAmount} ETH`)
+        this.props.snackBar('Buy order waiting for authorization for ' + this.state.amountSummary.toString() + ' ETH')
         this.setState({
           sending: false,
           complete: true,
@@ -468,7 +467,7 @@ export default class ElementFundActions extends React.Component {
           sending: false
         })
       })
-      this.props.snackBar('Order waiting for authorization for ' + this.state.amountSummary + ' ETH')
+      this.props.snackBar('Sell order waiting for authorization for ' + this.state.amountSummary + ' ' + dragoDetails.symbol.toUpperCase())
       this.setState({
         sending: false,
         complete: true,
@@ -482,7 +481,7 @@ export default class ElementFundActions extends React.Component {
       dragoApi.contract.drago.init(dragoDetails.address)
       dragoApi.contract.drago.sellDrago(accountAddress, amount)
       .then(() => {
-        this.props.snackBar('Order waiting for authorization for ' + this.state.amountSummary + ' ' + dragoDetails.symbol.toUpperCase())
+        this.props.snackBar('Sell order waiting for authorization for ' + this.state.amountSummary + ' ' + dragoDetails.symbol.toUpperCase())
         this.setState({
           sending: false,
           complete: true,

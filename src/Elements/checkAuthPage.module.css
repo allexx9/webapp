@@ -1,0 +1,17 @@
+.paperContainer {
+  padding: 10px;
+  display: 'inline-block';
+}
+.title {
+  text-align: center;
+}
+
+.walletTitle {
+  font-size: 30px !important;
+  border-bottom: 1px solid #e4e6e8;
+}
+
+.walletBox {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}

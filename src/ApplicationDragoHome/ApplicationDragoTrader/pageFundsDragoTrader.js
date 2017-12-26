@@ -22,15 +22,13 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom'
 
-
-import { generateRandomList } from '../Elements/utils';
 import { toHex } from '../../format';
-import * as abis from '../../contracts';
+import DragoApi from '../../DragoApi/src'
 import ElementListFunds from '../Elements/elementListFunds'
 import FilterFunds from '../Elements/elementFilterFunds'
 import Loading from '../../Loading';
 import SearchFunds from '../Elements/elementSearchFunds'
-import TableExample from '../Elements/ElementTest'
+import utils from '../../utils/utils'
 
 import styles from './pageFundsDragoTrader.module.css'
 
@@ -55,11 +53,11 @@ class PageFundsDragoTrader extends Component {
 
   static contextTypes = {
     api: PropTypes.object.isRequired,
-    contract: PropTypes.object.isRequired
   };
   
   static propTypes = {
     location: PropTypes.object.isRequired,
+    ethBalance: PropTypes.object.isRequired,
     accounts: PropTypes.array.isRequired,
     accountsInfo: PropTypes.object.isRequired, 
   };
@@ -70,34 +68,45 @@ class PageFundsDragoTrader extends Component {
 
     scrollPosition = 0
 
-    componentDidMount () {
+    componentWillMount () {
       this.getDragos();
     }
 
-    // componentWillReceiveProps () {
-    //   const element = ReactDOM.findDOMNode(this);
-    //   if (element != null) {
-    //     this.scrollPosition = window.scrollY
-    //   }
-    // }
+    componentWillReceiveProps(nextProps) {
+      // Updating the lists on each new block if the accounts balances have changed
+      // Doing this this to improve performances by avoiding useless re-rendering
+      const { api, contract } = this.context
+      const {accounts } = this.props
+      const sourceLogClass = this.constructor.name
+      if (!this.props.ethBalance.eq(nextProps.ethBalance)) {
+        this.getTransactions (null, accounts)
+        console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
+      } else {
+        null
+      }
+    }
 
-    componentWillUpdate() {
+    shouldComponentUpdate(nextProps, nextState){
+      const  sourceLogClass = this.constructor.name
+      var stateUpdate = true
+      var propsUpdate = true
+      stateUpdate = !utils.shallowEqual(this.state, nextState)
+      propsUpdate = !this.props.ethBalance.eq(nextProps.ethBalance)
+      if (stateUpdate || propsUpdate) {
+        console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
+      }
+      return stateUpdate || propsUpdate
+    }
+
+    componentDidUpdate(nextProps) {
     }
 
     filterList (filteredList) {
       const { dragoCreatedLogs } = this.state;
-      console.log(filteredList)
       this.setState({
         dragoFilteredList: filteredList
       })
     }
-
-    // componentDidUpdate () {
-    //   const element = ReactDOM.findDOMNode(this);
-    //   if (element != null) {
-    //     window.scrollTo(0, this.scrollPosition)
-    //   }
-    // }
 
     render() {
       var { location, accountsInfo, allEvents } = this.props
@@ -148,7 +157,8 @@ class PageFundsDragoTrader extends Component {
     }
 
     getDragos () {
-      const { api, contract } = this.context;
+      const { api } = this.context;
+      const dragoApi = new DragoApi(api)
       const logToEvent = (log) => {
         const key = api.util.sha3(JSON.stringify(log))
         const { blockNumber, logIndex, transactionHash, transactionIndex, params, type } = log        
@@ -174,19 +184,36 @@ class PageFundsDragoTrader extends Component {
       // dragoFactoryEventsSignatures accesses the contract ABI, gets all the events and for each creates a hex signature
       // to be passed to getAllLogs. Events are indexed and filtered by topics
       // more at: http://solidity.readthedocs.io/en/develop/contracts.html?highlight=event#events
-      contract
-      .getAllLogs({
-        topics: [ dragoFactoryEventsSignatures(contract).DragoCreated.hexSignature ]
-      })
-      .then((dragoCreatedLogs) => {
-        const logs = dragoCreatedLogs.map(logToEvent)
-        this.setState({
-          dragoCreatedLogs: logs,
-          dragoFilteredList: logs
+      dragoApi.contract.eventful.init()
+      .then(() =>{
+        dragoApi.contract.eventful.getAllLogs({
+          topics: [ dragoApi.contract.eventful.hexSignature.DragoCreated ]
         })
-      }
-      )
+        .then((dragoCreatedLogs) => {
+          const logs = dragoCreatedLogs.map(logToEvent)
+          this.setState({
+            dragoCreatedLogs: logs,
+            dragoFilteredList: logs
+          })
+        }
+        )
+      })
+
+      // contract
+      // .getAllLogs({
+      //   topics: [ dragoFactoryEventsSignatures(contract).DragoCreated.hexSignature ]
+      // })
+      // .then((dragoCreatedLogs) => {
+      //   const logs = dragoCreatedLogs.map(logToEvent)
+      //   this.setState({
+      //     dragoCreatedLogs: logs,
+      //     dragoFilteredList: logs
+      //   })
+      // }
+      // )
     }
   }
 
   export default withRouter(PageFundsDragoTrader)
+
+ 

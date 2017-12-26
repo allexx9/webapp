@@ -3,19 +3,18 @@
 import React, { Component } from 'react';
 import * as abis from '../contracts';
 import ReactDOM from 'react-dom'
+import { Link, Route, withRouter, HashRouter, Switch, Redirect } from 'react-router-dom'
 
 
 import Accounts from '../Accounts';
-import ApplicationDragoTrader from './ApplicationDragoTrader'
-import ApplicationDragoManager from './ApplicationDragoManager'
 import Loading from '../Loading';
 import Status from '../Status';
 
-import styles from './applicationDragoHome.module.css';
+import styles from './applicationConfig.module.css';
 import BigNumber from 'bignumber.js';
 
 import { Grid, Row, Col } from 'react-flexbox-grid';
-import LeftSideDrawer from '../Elements/leftSideDrawer';
+import LeftSideDrawerConfig from '../Elements/leftSideDrawerConfig';
 import PropTypes from 'prop-types';
 import utils from '../utils/utils'
 import NotificationSystem from 'react-notification-system'
@@ -25,13 +24,14 @@ import Paper from 'material-ui/Paper';
 import Avatar from 'material-ui/Avatar';
 import ElementNotification from '../Elements/elementNotification'
 import ElementNotificationsDrawer from '../Elements/elementNotificationsDrawer'
+import PageNetworkConfig from './pageNetworkConfig'
 import CheckAuthPage from '../Elements/checkAuthPage'
 import ElementBottomStatusBar from '../Elements/elementBottomStatusBar'
 
 
 const DIVISOR = 10 ** 6;  //tokens are divisible by one million
 
-export default class ApplicationDragoHome extends Component {
+export class ApplicationConfig extends Component {
 
   constructor() {
     super();
@@ -44,22 +44,12 @@ export default class ApplicationDragoHome extends Component {
     isConnected: PropTypes.func.isRequired
   };
 
-  static childContextTypes = {
-    contract: PropTypes.object
-  };
-  
-  getChildContext () {   
-    const {contract} = this.state 
-    return {
-      contract,
-    };
-  }
-
   static propTypes = {
     location: PropTypes.object.isRequired,
     handleToggleNotifications: PropTypes.func.isRequired,
     isManager: PropTypes.bool.isRequired, 
-    notificationsOpen: PropTypes.bool.isRequired
+    notificationsOpen: PropTypes.bool.isRequired,
+    match: PropTypes.object.isRequired,
   };
 
   state = {
@@ -67,7 +57,7 @@ export default class ApplicationDragoHome extends Component {
     accountsInfo: {},
     accountsBalanceError: false,
     // blockNumber: new BigNumber(-1),
-    ethBalance: null,
+    ethBalance: new BigNumber(0),
     loading: true,
     subscriptionIDDrago: null,
     subscriptionIDContractDrago: null,
@@ -81,32 +71,6 @@ export default class ApplicationDragoHome extends Component {
   }
 
   scrollPosition = 0
-
-  shouldComponentUpdate(nextProps, nextState){
-    // WE NEED TO LOOK INTO THIS FUNCTION. 
-    //
-    // After a change in the accounts balances:
-    // this.state.accounts and nextState.accounts are the same. They should not.
-    // this.state.ethBalance and nextState.ethBalance are different, thus behaving correctly.
-    //
-    // It might have something to do with immutability in React
-
-    // Checking if the total accounts balance has changed.
-    // If positive a render is trigged so that the childrens are aware that something has changed.
-    const  sourceLogClass = this.constructor.name
-    const propsUpdate = (!utils.shallowEqual(this.props, nextProps))
-    const stateUpdate = (!utils.shallowEqual(this.state, this.state.loading))
-
-    // Saving the scroll position. Neede in componentDidUpdate in order to avoid the the page scroll to be
-    // set top
-    const element = ReactDOM.findDOMNode(this);
-    if (element != null) {
-      this.scrollPosition = window.scrollY
-    }
-    // Returning false if no need to update children, true if needed.
-    // return accountsUpdate || propsUpdate || accountsBalanceUpdate
-    return stateUpdate || propsUpdate 
-  }
 
   componentWillMount () {
     const endpoint = localStorage.getItem('endpoint')
@@ -136,29 +100,12 @@ export default class ApplicationDragoHome extends Component {
   componentWillUpdate() {
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    // Setting the page scroll position
-    var sourceLogClass = this.constructor.name
-    console.log(`${sourceLogClass} -> componentDidUpdate`);
-    const element = ReactDOM.findDOMNode(this);
-    if (element != null) {
-      window.scrollTo(0, this.scrollPosition)
-    }
-  }
-
   render () {
-    const { ethBalance, loading, blockNumber, accounts, allEvents, accountsInfo  } = this.state;
-    const {isManager, location, handleToggleNotifications, notificationsOpen}  = this.props
-    // console.log(loading)
+    const { ethBalance, loading, blockNumber, accounts, allEvents, accountsInfo } = this.state;
+    const {isManager, location, handleToggleNotifications, notificationsOpen, match }  = this.props
     if (loading) {
-      return null
+      return <Loading></Loading>
     }
-
-    if (ethBalance === null) {
-      return null
-    }
-
-    // console.log(accounts.length)
     if (accounts.length === 0) {
       return (
         <span>
@@ -167,112 +114,78 @@ export default class ApplicationDragoHome extends Component {
             networkName='Kovan' />
         </span>
     )
-
     }
 
-    if (isManager) {
-
-      var notificationStyle = {
-        NotificationItem: { // Override the notification item
-          DefaultStyle: { // Applied to every notification, regardless of the notification level
-            margin: '0px 0px 0px 0px'
-          },
-      
-          info: { // Applied only to the success notification item
-            backgroundColor: 'white'
-          }
+    var notificationStyle = {
+      NotificationItem: { // Override the notification item
+        DefaultStyle: { // Applied to every notification, regardless of the notification level
+          margin: '0px 0px 0px 0px'
+        },
+    
+        info: { // Applied only to the success notification item
+          backgroundColor: 'white'
         }
       }
-      return (
-        <span>
-          <Row className={styles.maincontainer}>
-            <Col xs={2}>
-              <LeftSideDrawer location={location} isManager={isManager}/>
-            </Col>
-            <Col xs={10}>
-              <NotificationSystem ref={n => this._notificationSystem = n} style={notificationStyle} />
-              <ApplicationDragoManager
-                blockNumber={blockNumber}
-                accounts={accounts}
-                ethBalance={ethBalance}
-                allEvents={allEvents}
-                accountsInfo={accountsInfo}
-              />
-            </Col>
-            <Row>
-              <Col xs>
-                {notificationsOpen ? (
-                  <ElementNotificationsDrawer
-                    handleToggleNotifications={handleToggleNotifications}
-                    notificationsOpen={notificationsOpen}
-                    accounts={accounts}
-                    events={allEvents}
-                  />
-                ) : (
-                    null
-                  )}
-              </Col>
-            </Row>
-          </Row>
-          <ElementBottomStatusBar blockNumber={this.state.prevBlockNumber}
-            networkName='Kovan' />
-        </span>
-      );
     }
-
-    if (!isManager) {
-
-      var notificationStyle = {
-        NotificationItem: { // Override the notification item
-          DefaultStyle: { // Applied to every notification, regardless of the notification level
-            margin: '0px 0px 0px 0px'
-          },
-      
-          info: { // Applied only to the success notification item
-            backgroundColor: 'white'
-          }
-        }
-      }
-      return (
-        <span>
-          <Row className={styles.maincontainer}>
-            <Col xs={2}>
-            <LeftSideDrawer location={location} isManager={isManager}/>
-            </Col>
-            <Col xs={10}>
-              <NotificationSystem ref={n => this._notificationSystem = n} style={notificationStyle}/>
-              <ApplicationDragoTrader 
-                blockNumber={blockNumber}
-                accounts={accounts}
-                ethBalance={ethBalance}
-                allEvents={allEvents}
-                accountsInfo={accountsInfo}
+    return (
+      <span>
+        <Row className={styles.maincontainer}>
+          <Col xs={2}>
+            <LeftSideDrawerConfig location={location}/>
+          </Col>
+          <Col xs={10}>
+            <NotificationSystem ref={n => this._notificationSystem = n} style={notificationStyle}/>
+            <Switch>
+            <Route path={match.path+"/network"} 
+                render={(props) => <PageNetworkConfig {...props}               
+                  blockNumber={blockNumber}
+                  accounts={accounts}
+                  ethBalance={ethBalance}
+                  allEvents={allEvents}
+                  accountsInfo={accountsInfo} />
+                } 
+            />
+            {/* <Route exact path={match.path+"/pools"}
+              render={(props) => <PageFundsDragoTrader {...props}               
+              // blockNumber={blockNumber}
+              // accounts={accounts}
+              // ethBalance={ethBalance} 
+              // allEvents={allEvents}
+              // accountsInfo={accountsInfo}
               />
-            </Col>
-          </Row>
-            <Row>
-            <Col xs>
-              {notificationsOpen ? (
-                <ElementNotificationsDrawer 
-                handleToggleNotifications={handleToggleNotifications} 
-                notificationsOpen={notificationsOpen}
-                accounts={accounts}
-                events={allEvents}
-                />
-              ) : (
-                null
-              )}
-            </Col>
-          </Row>
-          <ElementBottomStatusBar blockNumber={this.state.prevBlockNumber}
+            } 
+            /> */}
+            {/* <Route path={match.path+"/pools/:dragoid/:dragocode"}
+              render={(props) => <PageFundDetailsDragoTrader {...props}               
+              blockNumber={blockNumber}
+              accounts={accounts}
+              ethBalance={ethBalance} 
+              allEvents={allEvents}
+              accountsInfo={accountsInfo}
+              /> */}
+            } 
+            />
+            <Redirect from={match.path} to={match.path+"/network"}  />
+          </Switch>
+          </Col>
+        </Row>
+          <Row>
+          <Col xs>
+            <ElementNotificationsDrawer 
+              handleToggleNotifications={handleToggleNotifications} 
+              notificationsOpen={notificationsOpen}
+              accounts={accounts}
+              events={allEvents}
+              />
+          </Col>
+        </Row>
+        <ElementBottomStatusBar blockNumber={this.state.prevBlockNumber}
           networkName='Kovan' />
-        </span>
-      );
-    }
+      </span>
+    )
   }
 
   notificationAlert = (primaryText, secondaryText, eventType = 'transfer') => {
-
     return (
       <ElementNotification 
         primaryText={primaryText}
@@ -436,7 +349,7 @@ export default class ApplicationDragoHome extends Component {
     ])
     .then(([accountsMetaMask]) => {
       const allAccounts = {...accountsMetaMask}
-      console.log('accounts loaded')
+      console.log('account loaded')
       this.setState({
         accountsInfo: accountsMetaMask,
         loading: false,
@@ -512,9 +425,11 @@ export default class ApplicationDragoHome extends Component {
     const { subscriptionIDDrago, contract, subscriptionIDContractDrago } = this.state;
     const { api } = this.context;
     var sourceLogClass = this.constructor.name
-    console.log(`applicationDragoHome: Unsubscribed to eth_blockNumber -> Subscription ID: ${subscriptionIDDrago}`);
+    console.log(`${sourceLogClass}: Unsubscribed to eth_blockNumber -> Subscription ID: ${subscriptionIDDrago}`);
     api.unsubscribe(subscriptionIDDrago).catch((error) => {
       console.warn('Unsubscribe error', error);
     });
   } 
 }
+
+export default withRouter(ApplicationConfig)

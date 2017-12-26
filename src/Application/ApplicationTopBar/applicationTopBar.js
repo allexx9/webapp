@@ -19,7 +19,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
 
 
-import NavLinks from '../../elements/topBarMenuLinks';
+import NavLinks from '../../Elements/topBarMenuLinks';
 
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';

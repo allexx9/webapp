@@ -45,13 +45,13 @@ import {
 import ElementListTransactions from '../Elements/elementListTransactions'
 import styles from '../applicationDragoHome.module.css';
 import ElementPriceBox from '../Elements/elementPricesBox'
+import utils from '../../utils/utils'
 
 class PageFundDetailsDragoTrader extends Component {
 
   // Checking the type of the context variable that we receive by the parent
   static contextTypes = {
     api: PropTypes.object.isRequired,
-    contract: PropTypes.object.isRequired
   };
 
   static propTypes = {
@@ -84,19 +84,41 @@ class PageFundDetailsDragoTrader extends Component {
       )     
     }
 
-    componentDidMount () {
+    componentWillMount () {
       // Getting dragoid from the url parameters passed by router and then
       // the list of last transactions
       const dragoID = this.props.match.params.dragoid
       this.getDragoDetails(dragoID)
     }
 
-    componentWillReceiveProps () {
-      // Updating the accounts information and other lists
-      var sourceLogClass = this.constructor.name
-      console.log(`${sourceLogClass} -> Updating the transactions list`);
+    componentWillReceiveProps(nextProps) {
+      // Updating the lists on each new block if the accounts balances have changed
+      // Doing this this to improve performances by avoiding useless re-rendering
+      const { api } = this.context
       const dragoID = this.props.match.params.dragoid
-      this.getDragoDetails(dragoID)
+      const {accounts } = this.props
+      const sourceLogClass = this.constructor.name
+      if (!this.props.ethBalance.eq(nextProps.ethBalance)) {
+        this.getDragoDetails(dragoID)
+        console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
+      } else {
+        null
+      }
+    }
+
+    shouldComponentUpdate(nextProps, nextState){
+      const  sourceLogClass = this.constructor.name
+      var stateUpdate = true
+      var propsUpdate = true
+      stateUpdate = !utils.shallowEqual(this.state, nextState)
+      propsUpdate = !this.props.ethBalance.eq(nextProps.ethBalance)
+      if (stateUpdate || propsUpdate) {
+        console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
+      }
+      return stateUpdate || propsUpdate
+    }
+
+    componentDidUpdate(nextProps) {
     }
 
     renderAddress (dragoDetails) {
@@ -272,7 +294,7 @@ class PageFundDetailsDragoTrader extends Component {
 
     // Getting the drago details from dragoID
     getDragoDetails = (dragoID) => {
-      const { api, contract } = this.context
+      const { api } = this.context
       const {accounts } = this.props
       var sourceLogClass = this.constructor.name
       //
@@ -316,7 +338,12 @@ class PageFundDetailsDragoTrader extends Component {
                 loading: false
               })
             })
-            this.getTransactions (dragoDetails[0][0], contract, accounts)
+            dragoApi.contract.eventful.init()
+              .then(() => {
+                this.getTransactions (dragoDetails[0][0], dragoApi.contract.eventful, accounts)
+              }
+              )
+            // this.getTransactions (dragoDetails[0][0], contract, accounts)
           })
         })
 
@@ -377,7 +404,7 @@ class PageFundDetailsDragoTrader extends Component {
       }
       const eventsFilterBuy = {
         topics: [ 
-          [dragoFactoryEventsSignatures(contract).BuyDrago.hexSignature], 
+          [contract.hexSignature.BuyDrago], 
           [hexDragoAddress], 
           hexAccounts,
           null
@@ -385,7 +412,7 @@ class PageFundDetailsDragoTrader extends Component {
       }
       const eventsFilterSell = {
         topics: [ 
-          [dragoFactoryEventsSignatures(contract).SellDrago.hexSignature], 
+          [contract.hexSignature.SellDrago], 
           [hexDragoAddress], 
           null,
           hexAccounts

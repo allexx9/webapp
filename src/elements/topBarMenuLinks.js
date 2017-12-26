@@ -22,7 +22,7 @@ import React, { Component } from 'react'
 import NotificationWifi from 'material-ui/svg-icons/notification/wifi';
 
 import {APP, DS} from '../utils/const.js'
-import ElementNotificationsDrawer from '../ApplicationDragoHome/Elements/elementNotificationsDrawer'
+// import ElementNotificationsDrawer from '.Elements/elementNotificationsDrawer'
 
 import styles from './elements.module.css'
 
@@ -98,7 +98,12 @@ class NavLinks extends Component {
       })
     }
 
-
+    buildUrlPath = (location) => {
+      var path = location.pathname.split( '/' );
+      // path.splice(-1,1);
+      // var url = path.join('/');
+      return path[2]
+      }
 
     render() {
       var { location, handleTopBarSelectAccountType, isManager, handleToggleNotifications } = this.props
@@ -107,7 +112,7 @@ class NavLinks extends Component {
         {label: 'home', to: 'home', icon: <ActionHome color="white"/>},
         {label: 'vault', to: 'vault', icon: <ActionAccountBalance color="white"/>},
         {label: 'drago', to: 'drago', icon: <ActionShowChart color="white"/>},
-        {label: 'exchange', to: 'exchange', icon: <ActionPolymer color="white"/>}
+        // {label: 'exchange', to: 'exchange', icon: <ActionPolymer color="white"/>}
          ]
 
       // Disabling user type if isManager not defined
@@ -136,9 +141,11 @@ class NavLinks extends Component {
                   onChange={this.handleSelectProfile}
                   iconStyle={menuStyles.profileIcon}
                   >
-                      <MenuItem value="1" primaryText="Profile" />
-                      <MenuItem value="2" primaryText="Accounts" />
-                      <MenuItem value="3" primaryText="Help" />
+                      {/* <MenuItem value="2" primaryText="Accounts" /> */}
+                      <MenuItem value="config" primaryText="Config" 
+                      containerElement={<Link to={DS+APP+DS+this.buildUrlPath(location)+DS+"config"} />}/>
+                      {/* <MenuItem value="1" primaryText="Profile" /> */}
+                      <MenuItem value="help" primaryText="Help" />
                   </IconMenu>
                   <IconButton tooltip="Network" onClick={handleToggleNotifications} iconStyle={menuStyles.profileIcon}>
                     <NotificationWifi />

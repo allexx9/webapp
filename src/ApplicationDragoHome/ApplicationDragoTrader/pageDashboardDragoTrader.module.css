@@ -25,7 +25,11 @@
 }
 
 .accountChip {
-  margin: 5px !important;
+  /* margin: 5px !important; */
+}
+
+.accountAmount {
+  text-align: right;
 }
 
 .detailsToolbar {

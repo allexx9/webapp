@@ -119,7 +119,6 @@ export default class ElementFundCreateAction extends React.Component {
         dragoApi.contract.dragofactory.createDrago(dragoName, dragoSymbol, this.state.account.address)
       })
       .then ((result) =>{
-        // console.log(result)
         this.props.snackBar('Deploy awaiting for authorization')
         this.setState({
           sending: false,

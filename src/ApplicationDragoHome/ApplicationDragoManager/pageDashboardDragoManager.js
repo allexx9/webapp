@@ -59,7 +59,6 @@ class PageDashboardDragoManager extends Component {
   // Checking the type of the context variable that we receive by the parent
   static contextTypes = {
     api: PropTypes.object.isRequired,
-    contract: PropTypes.object.isRequired
   };
 
   static propTypes = {
@@ -83,27 +82,6 @@ class PageDashboardDragoManager extends Component {
 
 
     componentDidMount() {
-      // Events.scrollEvent.register('begin', function(to, element) {
-      //   console.log("begin", arguments);
-      // });
-
-      // Events.scrollEvent.register('end', function(to, element) {
-      //   console.log("end", arguments);
-      // });
-      // window.addEventListener('scroll', this.handleTopBarPosition);
-      // scrollSpy.update()
-      // Saving the initial position of the link nav bar.
-      // const topPosition =  ReactDOM
-      //   .findDOMNode(this.refs['topBar'])
-      //   .getBoundingClientRect().top
-      // this.setState({
-      //   topBarLinksPosition: topPosition
-      //   }
-      // )
-    }
-
-    componentWillUnmount() {
-      // window.removeEventListener('scroll', this.handleTopBarPosition);
     }
 
     componentWillMount() {
@@ -112,22 +90,34 @@ class PageDashboardDragoManager extends Component {
       this.getTransactions (null, accounts)
     }
 
-    // handleTopBarPosition = (event) => {
-    //   // Setting fixed position windows is scrolled down.
-    //   // Setting relative position if the windows is scrolled back to top
-    //   const {topBarLinksPosition} = this.state
-    //   if (window.pageYOffset >= topBarLinksPosition) {
-    //     this.setState({
-    //       topBarClassName: styles.topFixedLinkBar
-    //       }
-    //     )
-    //   } else {
-    //     this.setState({
-    //       topBarClassName: styles.topRelativeLinkBar
-    //       }
-    //     )
-    //   }
-    // }
+    componentWillReceiveProps(nextProps) {
+      // Updating the lists on each new block if the accounts balances have changed
+      // Doing this this to improve performances by avoiding useless re-rendering
+      const { api, contract } = this.context
+      const {accounts } = this.props
+      const sourceLogClass = this.constructor.name
+      if (!this.props.ethBalance.eq(nextProps.ethBalance)) {
+        this.getTransactions (null, accounts)
+        console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
+      } else {
+        null
+      }
+    }
+
+    shouldComponentUpdate(nextProps, nextState){
+      const  sourceLogClass = this.constructor.name
+      var stateUpdate = true
+      var propsUpdate = true
+      stateUpdate = !utils.shallowEqual(this.state, nextState)
+      propsUpdate = !this.props.ethBalance.eq(nextProps.ethBalance)
+      if (stateUpdate || propsUpdate) {
+        console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
+      }
+      return stateUpdate || propsUpdate
+    }
+
+    componentDidUpdate(nextProps) {
+    }
 
     snackBar = (msg) =>{
       this.setState({
@@ -160,31 +150,6 @@ class PageDashboardDragoManager extends Component {
     }
 
     handleSetActive = (to) => {
-    }
-
-    // shouldComponentUpdate(nextProps, nextState){
-    //   const  sourceLogClass = this.constructor.name
-    //   console.log(`${sourceLogClass} -> Received new props`);
-    //   const stateUpdate = !utils.shallowEqual(this.state, nextState)
-    //   const propsUpdate = (!utils.shallowEqual(this.props.accounts, nextProps.accounts))
-    //   console.log(`${sourceLogClass} -> Received new props. Need update: ${sourceLogClass}`);
-    //   console.log(stateUpdate || propsUpdate)
-    //   return stateUpdate || propsUpdate
-    // }
-
-    componentWillReceiveProps() {
-      // Updating the lists on each new block
-      const { api, contract } = this.context
-      const {accounts } = this.props
-      const sourceLogClass = this.constructor.name
-      console.log(`${sourceLogClass} -> componentWillReceiveProps`);
-      this.getTransactions (null, accounts)
-    }
-
-    componentDidUpdate(nextProps) {
-      // Updating the lists on each new block
-      const sourceLogClass = this.constructor.name
-      console.log(`${sourceLogClass} -> Updating component with new props`);
     }
 
     renderCopyButton = (text) =>{
@@ -374,8 +339,9 @@ class PageDashboardDragoManager extends Component {
     // Getting last transactions
     getTransactions = (dragoAddress, accounts) =>{
       const { api } = this.context
-      const options = {balance: false, supply: true}
-      utils.getTransactionsDrago(api, dragoAddress, accounts, options)
+      // const options = {balance: false, supply: true}
+      const options = {balance: false, supply: true, limit: 10, trader: false}
+      utils.getTransactionsDragoOpt(api, dragoAddress, accounts, options)
       .then(results =>{
         const createdLogs = results[1].filter(event =>{
           return event.type !== 'BuyDrago' && event.type !== 'SellDrago'

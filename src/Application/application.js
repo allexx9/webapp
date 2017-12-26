@@ -8,11 +8,12 @@ import PropTypes from 'prop-types';
 
 import ApplicationGabcoin from '../ApplicationGabcoin';
 import ApplicationGabcoinEventful from '../ApplicationGabcoinEventful';
-import ApplicationExchange from '../ApplicationExchange';
-import ApplicationExchangeEventful from '../ApplicationExchangeEventful';
+// import ApplicationExchange from '../ApplicationExchange';
+// import ApplicationExchangeEventful from '../ApplicationExchangeEventful';
 import ApplicationDragoHome from '../ApplicationDragoHome';
 // import ApplicationDragoFactory from '../ApplicationDragoFactory';
 import ApplicationHome from '../ApplicationHome';
+import ApplicationConfig from '../ApplicationConfig';
 
 import ApplicationBottomBar from './ApplicationBottomBar';
 import ApplicationTopBar from './ApplicationTopBar';
@@ -26,7 +27,7 @@ import classNames from 'classnames';
 
 import * as Colors from 'material-ui/styles/colors';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import NotConnected from '../elements/notConnected'
+import NotConnected from '../Elements/notConnected'
 
 
 // Router
@@ -88,6 +89,134 @@ export class Whoops404 extends Component {
               <h1>Page not found. Resource not found at '{location.pathname}'</h1>
           </div>
           </TemplateLayout>
+    )
+  }
+}
+
+export class ApplicationConfigPage extends Component {
+
+  // We define the properties of the context variables passed down to the children
+  static childContextTypes = {
+    muiTheme: PropTypes.object,
+    api: PropTypes.object,
+    isConnected: PropTypes.func
+  };
+
+  state = {
+    isManager: false,
+    isConnected: true,
+    notificationsOpen: false
+  }
+
+  td = null
+
+  componentWillMount() {
+    this.checkConnectionToNode()
+  }
+
+  componentWillUnmount () {
+    clearTimeout(this.td)
+  }
+
+  // This function is passed down with context and used as a call back function to show a warning page
+  // if the connection with the node drops
+  isConnected = (status) => {
+    // console.log('isConnected')
+    this.setState({
+      isConnected: status
+    })
+  }
+
+  checkConnectionToNode = () =>{
+    api.net.listening()
+    .then((listening) =>{
+      // console.log(listening)
+      this.td = setTimeout(this.checkConnectionToNode,15000)
+      this.setState({
+        isConnected: true
+      })
+    })
+    .catch((error) => {
+      this.td = setTimeout(this.checkConnectionToNode,15000)
+      this.setState({
+        isConnected: false
+      })
+      console.warn(error)
+    })
+    
+  }
+
+  // We pass down the context variables passed down to the children
+  getChildContext () {
+    return {
+      muiTheme,
+      api,
+      isConnected: this.isConnected
+    };
+  }
+
+  // Callback function to handle account type selection in the Top Bar
+  // value = 1 = Trader
+  // value = 2 = Manager
+  handleTopBarSelectAccountType = (event, index, value) => { 
+    const accountType = {
+      false: false,
+      true: true
+    }
+    this.setState({
+      isManager: accountType[value],
+    }); 
+  };
+
+  static propTypes = {
+    location: PropTypes.object.isRequired,
+  };
+
+  handleToggleNotifications = () => {
+    console.log('open')
+    this.setState({notificationsOpen: !this.state.notificationsOpen})
+  }
+
+  render() {
+  const {notificationsOpen} = this.state
+  const { location, match } = this.props
+  console.log('is Manager = '+this.state.isManager)
+    return (
+      <MuiThemeProvider muiTheme={muiTheme}>
+        <Grid fluid className={styles.maincontainer}>
+          <Row>
+            <Col xs={12}>
+              {/* <ApplicationTabsMenu /> */}
+              <ApplicationTopBar 
+                handleTopBarSelectAccountType={ this.handleTopBarSelectAccountType } 
+                isManager={this.state.isManager} 
+                handleToggleNotifications={this.handleToggleNotifications} 
+                />
+            </Col>
+          </Row>
+          <Row className={classNames(styles.content)}>
+            <Col xs={12}>
+            {this.state.isConnected ? (
+              <ApplicationConfig 
+                match={match}
+                isManager={this.state.isManager} 
+                location={location}
+                notificationsOpen={notificationsOpen}
+                handleToggleNotifications={this.handleToggleNotifications}
+                notificationsOpen={notificationsOpen}
+                />
+            ) : (
+              <NotConnected isConnected={this.state.isConnected}/>
+            )}
+            </Col>
+          </Row>
+          {/* <Row>
+            <Col xs={12} className={classNames(styles.bottombar)}>
+              <ApplicationBottomBar />
+            </Col>
+          </Row> */}
+        </Grid>
+      </MuiThemeProvider>
     )
   }
 }
@@ -189,7 +318,9 @@ export class ApplicationDragoPage extends Component {
   };
 
   state = {
-    isConnected: false,
+    isManager: false,
+    isConnected: true,
+    notificationsOpen: false
   }
 
   td = null
@@ -256,12 +387,6 @@ export class ApplicationDragoPage extends Component {
     location: PropTypes.object.isRequired,
   };
 
-  state = {
-    isManager: true,
-    isConnected: true,
-    notificationsOpen: false
-  }
-
   handleToggleNotifications = () => {
     console.log('open')
     this.setState({notificationsOpen: !this.state.notificationsOpen})
@@ -271,7 +396,7 @@ export class ApplicationDragoPage extends Component {
   // console.log(location);
   const {notificationsOpen} = this.state
   const { location } = this.props
-  console.log('is Manager = '+this.state.isManager)
+  // console.log('is Manager = '+this.state.isManager)
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
         <Grid fluid className={styles.maincontainer}>
@@ -300,44 +425,44 @@ export class ApplicationDragoPage extends Component {
             )}
             </Col>
           </Row>
-          <Row>
+          {/* <Row>
             <Col xs={12} className={classNames(styles.bottombar)}>
               <ApplicationBottomBar />
             </Col>
-          </Row>
+          </Row> */}
         </Grid>
       </MuiThemeProvider>
     )
   }
 }
 
-export class ApplicationExchangePage extends Component {
+// export class ApplicationExchangePage extends Component {
 
-  // We define the properties of the context variables passed down to the children
-  static childContextTypes = {
-    muiTheme: PropTypes.object,
-    api: PropTypes.object
-  };
+//   // We define the properties of the context variables passed down to the children
+//   static childContextTypes = {
+//     muiTheme: PropTypes.object,
+//     api: PropTypes.object
+//   };
 
-  // We pass down the context variables passed down to the children
-  getChildContext () {
-    return {
-      muiTheme,
-      api
-    };
-  }
+//   // We pass down the context variables passed down to the children
+//   getChildContext () {
+//     return {
+//       muiTheme,
+//       api
+//     };
+//   }
 
-  render() {
-  // we access the props passed to the component
-  const { location } = this.props
-    return (
-          <TemplateLayout>
-          <ApplicationExchange />
-          <ApplicationExchangeEventful />
-          {/* <p>Locaton is {location.pathname}</p> */}
-          </TemplateLayout>
-    )
-  }
-}
+//   render() {
+//   // we access the props passed to the component
+//   const { location } = this.props
+//     return (
+//           <TemplateLayout>
+//           <ApplicationExchange />
+//           <ApplicationExchangeEventful />
+//           {/* <p>Locaton is {location.pathname}</p> */}
+//           </TemplateLayout>
+//     )
+//   }
+// }
 
 

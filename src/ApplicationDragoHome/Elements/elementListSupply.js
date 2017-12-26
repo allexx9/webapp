@@ -30,7 +30,10 @@ class ElementListSupply extends PureComponent {
     const { accountsInfo, list } = this.props
     const sortBy = 'symbol';
     const sortDirection = SortDirection.ASC;
-    const sortedList = this._sortList({sortBy, sortDirection});
+    const sortedList = list.sortBy(item => item.symbol)
+                      .update(
+                        list => (sortDirection === SortDirection.ASC ? list : list.reverse()),
+                      );
     const rowCount = list.size
 
     this.state = {
