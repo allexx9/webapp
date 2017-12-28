@@ -77,7 +77,9 @@ export default class ApplicationDragoHome extends Component {
     minedEvents: [],
     pendingEvents: [],
     infura: false,
-    prevBlockNumber: 0
+    prevBlockNumber: 0,
+    networkStatus: 'Service is operating normally.',
+    networkError: 'networkOk'
   }
 
   scrollPosition = 0
@@ -147,8 +149,8 @@ export default class ApplicationDragoHome extends Component {
   }
 
   render () {
-    const { ethBalance, loading, blockNumber, accounts, allEvents, accountsInfo  } = this.state;
-    const {isManager, location, handleToggleNotifications, notificationsOpen}  = this.props
+    const { ethBalance, loading, blockNumber, accounts, allEvents, accountsInfo, networkError, networkStatus  } = this.state;
+    const { isManager, location, handleToggleNotifications, notificationsOpen }  = this.props
     // console.log(loading)
     if (loading) {
       return null
@@ -264,8 +266,11 @@ export default class ApplicationDragoHome extends Component {
               )}
             </Col>
           </Row>
-          <ElementBottomStatusBar blockNumber={this.state.prevBlockNumber}
-          networkName='Kovan' />
+          <ElementBottomStatusBar 
+          blockNumber={this.state.prevBlockNumber}
+          networkName='Kovan'
+          networkError={networkError}
+          networkStatus={networkStatus} />
         </span>
       );
     }
@@ -344,6 +349,8 @@ export default class ApplicationDragoHome extends Component {
       })
       .then((ethBalances) => {
         this.setState({
+          networkError: 'networkOk',
+          networkStatus: 'Service is operating normally.',
           accountsBalanceError: false,
           ethBalance: ethBalances.reduce((total, balance) => total.add(balance), new BigNumber(0)),
           accounts: [].concat(accounts.map((account, index) => {
@@ -358,6 +365,8 @@ export default class ApplicationDragoHome extends Component {
         console.warn(`${sourceLogClass} -> ${error}`)
         // Setting the balances to 0 if receiving an error from the endpoint. It happens with Infura.
         this.setState({
+          networkError: 'networkWarning',
+          networkStatus: 'Service disruption. Cannot update accounts balances. Account balances could be out of date.',
           accountsBalanceError: true,
           ethBalance: new BigNumber(0),
           accounts: [].concat(accounts.map((account, index) => {

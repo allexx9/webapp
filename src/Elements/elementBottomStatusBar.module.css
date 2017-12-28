@@ -25,3 +25,67 @@
   background: #9C27B0;
   color: #fff;
 }
+
+.networkIcon {
+  height: 15px !important;
+  width: 15px !important;
+  margin-bottom: -2px !important;
+}
+
+.networkDataContainer {
+  width: 150px !important;
+  height: 17px !important;
+  float: right;
+}
+
+.toolTipCustomSyle {
+  /* position: fixed !important; */
+  /* width: 100% !important; */
+  /* right: 0px !important;
+  bottom: 0px !important;
+  left: 0px !important; */
+  /* bottom: 30px !important; */
+  /* width: 100px !important; */
+}
+
+/* Tooltip */
+/* From: https://www.w3schools.com/css/tryit.asp?filename=trycss_tooltip_arrow_bottom */
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  /* border-bottom: 1px dotted#222; */
+}
+
+.tooltip .tooltiptext {
+  opacity: 0;
+  visibility: hidden;
+  background-color: #222;
+  color: #fff;
+  text-align: center;
+  border-radius: 2px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 150%;
+  left: 50%;
+  margin-left: -505px;
+  width: 525px;
+  transition: opacity 0.3s ease-out;
+}
+
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  right: 15px;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #222 transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+  opacity: 0.9;
+  visibility: visible;
+}
