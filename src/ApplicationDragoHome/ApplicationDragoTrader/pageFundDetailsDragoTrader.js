@@ -44,7 +44,7 @@ import {
   TableRowColumn,
 } from 'material-ui/Table';
 import ElementListTransactions from '../Elements/elementListTransactions'
-import styles from '../applicationDragoHome.module.css';
+import styles from './pageFundDetailsDragoTrader.module.css';
 import ElementPriceBox from '../Elements/elementPricesBox'
 import utils from '../../utils/utils'
 
@@ -206,12 +206,12 @@ class PageFundDetailsDragoTrader extends Component {
         ['Address', dragoDetails.address, tableButtons],
         ['Owner', dragoDetails.addresssOwner, tableButtons]]
       const paperStyle = {
-        textAlign: 'center',
+        marginTop: "10px"
       };
       
       const web3 = window.web3
 
-      var dragoTransactionList = Immutable.List(this.state.dragoTransactionsLogs)
+      var dragoTransactionList = this.state.dragoTransactionsLogs
       // console.log(dragoTransactionList)
 
       // Waiting until getDragoDetails returns the drago details
@@ -254,14 +254,19 @@ class PageFundDetailsDragoTrader extends Component {
                   </Row>
                   <Row>
                     <Col xs={12} className={styles.detailsTabContent}>
-                      <h3>
-                        Last transactions
-                      </h3>   
-                      <p>Your last 20 transactions on this Drago.</p>
                       <Paper style={paperStyle} zDepth={1} >
-                      <ElementListWrapper accountsInfo={accountsInfo} list={dragoTransactionList} 
-                        renderCopyButton={this.renderCopyButton}
-                        renderEtherscanButton={this.renderEtherscanButton}>
+                        <AppBar
+                          title="Last transactions"
+                          showMenuIconButton={false}
+                        />
+                        <div className={styles.detailsTabContent}>
+                          <p>Your last 20 transactions on this Drago.</p>
+                        </div>
+
+
+                        <ElementListWrapper accountsInfo={accountsInfo} list={dragoTransactionList}
+                          renderCopyButton={this.renderCopyButton}
+                          renderEtherscanButton={this.renderEtherscanButton}>
                           <ElementListTransactions />
                         </ElementListWrapper>
                       </Paper>
