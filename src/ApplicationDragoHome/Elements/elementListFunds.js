@@ -18,8 +18,6 @@ import 'react-virtualized/styles.css'
 class ElementListFunds extends PureComponent {
 
   static propTypes = {
-    allEvents: PropTypes.object.isRequired,
-    accountsInfo: PropTypes.object.isRequired, 
     list: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
@@ -27,7 +25,7 @@ class ElementListFunds extends PureComponent {
 
   constructor(props, context) {
     super(props, context);
-    const { accountsInfo, list } = this.props
+    const { list } = this.props
 
     // Saving the list in the state
     this.state = {
@@ -98,17 +96,6 @@ class ElementListFunds extends PureComponent {
       useDynamicRowHeight,
       list
     } = this.state;
-
-    const { accountsInfo } = this.props
-
-    // console.log(allEvents)
-
-    // // var obj = {"1":5,"2":7,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0}
-    // var result = Object.keys(allEvents).map(function(key) {
-    //   return [Number(key), allEvents[key]];
-    // });
-    
-    // console.log(result);
 
     const rowGetter = ({index}) => this._getDatum(sortedList, index);
 

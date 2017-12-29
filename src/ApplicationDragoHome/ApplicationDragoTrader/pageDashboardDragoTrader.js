@@ -35,6 +35,7 @@ import scrollToComponent from 'react-scroll-to-component'
 import Search from 'material-ui/svg-icons/action/search'
 import Snackbar from 'material-ui/Snackbar'
 import Sticky from 'react-stickynode'
+import ElementListWrapper from '../../Elements/elementListWrapper'
 
 
 import { dragoFactoryEventsSignatures } from '../../utils/utils.js'
@@ -296,9 +297,9 @@ class PageDashboardDragoTrader extends Component {
                     <Paper zDepth={1}>
                       <Row>
                         <Col className={styles.transactionsStyle} xs={12}>
-                          {(dragoBalances === null) 
-                            ? <Loading /> 
-                            : <ElementListBalances list={Immutable.List(dragoBalances)}/>}
+                        <ElementListWrapper list={dragoBalances}>
+                          <ElementListBalances />
+                        </ElementListWrapper>
                         </Col>
                       </Row>
                     </Paper>
@@ -315,11 +316,12 @@ class PageDashboardDragoTrader extends Component {
                   <Paper zDepth={1}>
                     <Row style={{outline: 'none'}}>
                       <Col className={styles.transactionsStyle} xs={12}>
-                          {(dragoTransactionsLogs === null) 
-                            ? <Loading /> 
-                            : <ElementListTransactions list={Immutable.List(dragoTransactionsLogs)}
-                            renderCopyButton={this.renderCopyButton}
-                            renderEtherscanButton={this.renderEtherscanButton}/>}
+                        <ElementListWrapper list={dragoTransactionsLogs}
+                          renderCopyButton={this.renderCopyButton}
+                          renderEtherscanButton={this.renderEtherscanButton}
+                        >
+                          <ElementListTransactions />
+                        </ElementListWrapper>
                       </Col>
                     </Row>
                   </Paper>

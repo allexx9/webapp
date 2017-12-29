@@ -1,11 +1,9 @@
-import Autosuggest from 'react-autosuggest'
 import Immutable from 'immutable'
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom'
 import TextField from 'material-ui/TextField';
 import PropTypes from 'prop-types';
 
-import { generateRandomList } from './utils'
 
 class FilterFunds extends Component {
 

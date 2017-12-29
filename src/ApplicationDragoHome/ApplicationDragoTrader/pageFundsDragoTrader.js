@@ -29,6 +29,7 @@ import FilterFunds from '../Elements/elementFilterFunds'
 import Loading from '../../Loading';
 import SearchFunds from '../Elements/elementSearchFunds'
 import utils from '../../utils/utils'
+import ElementListWrapper from '../../Elements/elementListWrapper'
 
 import styles from './pageFundsDragoTrader.module.css'
 
@@ -109,7 +110,7 @@ class PageFundsDragoTrader extends Component {
     }
 
     render() {
-      var { location, accountsInfo, allEvents } = this.props
+      var { location, accountsInfo, allEvents, match } = this.props
       const { dragoCreatedLogs, dragoFilteredList } = this.state;
       const dragoSearchList = Immutable.List(dragoCreatedLogs)
       const dragoList = Immutable.List(dragoFilteredList)
@@ -147,7 +148,9 @@ class PageFundsDragoTrader extends Component {
             </Row>
             <Row className={styles.transactionsStyle}>
               <Col xs>
-                <ElementListFunds accountsInfo={accountsInfo} list={dragoList}/>
+                <ElementListWrapper list={dragoList} location={location} match={match}>
+                  <ElementListFunds/>
+                </ElementListWrapper>
               </Col>
             </Row>
           </Paper>

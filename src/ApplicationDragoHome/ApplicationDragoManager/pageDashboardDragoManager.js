@@ -35,6 +35,7 @@ import scrollToComponent from 'react-scroll-to-component'
 import Search from 'material-ui/svg-icons/action/search'
 import Snackbar from 'material-ui/Snackbar'
 import Sticky from 'react-stickynode'
+import ElementListWrapper from '../../Elements/elementListWrapper'
 
 import { dragoFactoryEventsSignatures } from '../../utils/utils.js'
 import { formatCoins, formatEth, formatHash, toHex } from '../../format'
@@ -70,8 +71,8 @@ class PageDashboardDragoManager extends Component {
     };
 
     state = {
-      dragoTransactionsLogs: [],
-      dragoList:[],
+      dragoTransactionsLogs: null,
+      dragoList: null,
       loading: true,
       topBarClassName: null,
       topBarInitialPosition: null,
@@ -294,9 +295,9 @@ class PageDashboardDragoManager extends Component {
                     <Paper zDepth={1}>
                       <Row>
                         <Col className={styles.transactionsStyle} xs={12}>
-                          {(Immutable.List(dragoList).size == 0) 
-                                    ? <Loading /> 
-                                    : <ElementListSupply list={Immutable.List(dragoList)}/>}
+                        <ElementListWrapper list={dragoList}>
+                          <ElementListSupply />
+                        </ElementListWrapper>
                         </Col>
                       </Row>
                     </Paper>
@@ -313,11 +314,13 @@ class PageDashboardDragoManager extends Component {
                     <Paper zDepth={1}>
                       <Row style={{outline: 'none'}}>
                         <Col className={styles.transactionsStyle} xs={12}>
-                            {(Immutable.List(dragoTransactionsLogs).size == 0) 
-                              ? <Loading /> 
-                              : <ElementListTransactions list={Immutable.List(dragoTransactionsLogs)}
-                              renderCopyButton={this.renderCopyButton}
-                              renderEtherscanButton={this.renderEtherscanButton}/>}
+                        <ElementListWrapper 
+                          list={dragoTransactionsLogs}
+                          renderCopyButton={this.renderCopyButton}
+                              renderEtherscanButton={this.renderEtherscanButton}
+                          >
+                          <ElementListTransactions />
+                        </ElementListWrapper>
                         </Col>
                       </Row>
                     </Paper>

@@ -25,6 +25,8 @@ import React, { Component } from 'react'
 import Search from 'material-ui/svg-icons/action/search'
 import Snackbar from 'material-ui/Snackbar'
 import Subheader from 'material-ui/Subheader'
+import ElementListWrapper from '../../Elements/elementListWrapper'
+
 
 
 import { dragoFactoryEventsSignatures } from '../../utils/utils.js'
@@ -260,9 +262,14 @@ class PageFundDetailsDragoManager extends Component {
                       </h3>   
                       <p>Your last 20 transactions on this Drago.</p>
                       <Paper style={paperStyle} zDepth={1} >
-                        <ElementListTransactions accountsInfo={accountsInfo} list={dragoTransactionList} 
+                          <ElementListWrapper>
+                            <ElementListTransactions accountsInfo={accountsInfo} list={dragoTransactionList}
+                              renderCopyButton={this.renderCopyButton}
+                              renderEtherscanButton={this.renderEtherscanButton} />
+                          </ElementListWrapper>
+                        {/* <ElementListTransactions accountsInfo={accountsInfo} list={dragoTransactionList} 
                         renderCopyButton={this.renderCopyButton}
-                        renderEtherscanButton={this.renderEtherscanButton}/>
+                        renderEtherscanButton={this.renderEtherscanButton}/> */}
                       </Paper>
                     </Col>
                   </Row>

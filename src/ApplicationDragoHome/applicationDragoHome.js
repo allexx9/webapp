@@ -216,8 +216,11 @@ export default class ApplicationDragoHome extends Component {
               </Col>
             </Row>
           </Row>
-          <ElementBottomStatusBar blockNumber={this.state.prevBlockNumber}
-            networkName='Kovan' />
+          <ElementBottomStatusBar 
+          blockNumber={this.state.prevBlockNumber}
+          networkName='Kovan'
+          networkError={networkError}
+          networkStatus={networkStatus} />
         </span>
       );
     }

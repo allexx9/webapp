@@ -23,6 +23,7 @@ import RaisedButton from 'material-ui/RaisedButton'
 import React, { Component } from 'react'
 import Search from 'material-ui/svg-icons/action/search'
 import Snackbar from 'material-ui/Snackbar'
+import ElementListWrapper from '../../Elements/elementListWrapper'
 
 import { dragoFactoryEventsSignatures } from '../../utils/utils.js'
 import { formatCoins, formatEth, formatHash, toHex } from '../../format'
@@ -258,9 +259,11 @@ class PageFundDetailsDragoTrader extends Component {
                       </h3>   
                       <p>Your last 20 transactions on this Drago.</p>
                       <Paper style={paperStyle} zDepth={1} >
-                        <ElementListTransactions accountsInfo={accountsInfo} list={dragoTransactionList} 
+                      <ElementListWrapper accountsInfo={accountsInfo} list={dragoTransactionList} 
                         renderCopyButton={this.renderCopyButton}
-                        renderEtherscanButton={this.renderEtherscanButton}/>
+                        renderEtherscanButton={this.renderEtherscanButton}>
+                          <ElementListTransactions />
+                        </ElementListWrapper>
                       </Paper>
                     </Col>
                   </Row>
