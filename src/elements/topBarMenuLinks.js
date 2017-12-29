@@ -7,6 +7,8 @@ import ActionHome from 'material-ui/svg-icons/action/home'
 import ActionLightBulb from 'material-ui/svg-icons/action/lightbulb-outline'
 import ActionPolymer from 'material-ui/svg-icons/action/polymer'
 import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
+import Settings from 'material-ui/svg-icons/action/settings'
+import Help from 'material-ui/svg-icons/action/help'
 import Drawer from 'material-ui/Drawer'
 import DropDownMenu from 'material-ui/DropDownMenu'
 import FlatButton from 'material-ui/FlatButton'
@@ -142,10 +144,10 @@ class NavLinks extends Component {
                   iconStyle={menuStyles.profileIcon}
                   >
                       {/* <MenuItem value="2" primaryText="Accounts" /> */}
-                      <MenuItem value="config" primaryText="Config" 
+                      <MenuItem leftIcon={<Settings/>} value="config" primaryText="Config" 
                       containerElement={<Link to={DS+APP+DS+this.buildUrlPath(location)+DS+"config"} />}/>
                       {/* <MenuItem value="1" primaryText="Profile" /> */}
-                      <MenuItem value="help" primaryText="Help" />
+                      <MenuItem leftIcon={<Help/>} value="help" primaryText="Help" />
                   </IconMenu>
                   <IconButton tooltip="Network" onClick={handleToggleNotifications} iconStyle={menuStyles.profileIcon}>
                     <NotificationWifi />

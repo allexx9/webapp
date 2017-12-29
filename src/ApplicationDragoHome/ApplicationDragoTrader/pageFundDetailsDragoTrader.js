@@ -71,7 +71,7 @@ class PageFundDetailsDragoTrader extends Component {
         addresssOwner: null,
         addressGroup: null,
       },
-      dragoTransactionsLogs: [],
+      dragoTransactionsLogs: null,
       loading: true,
       snackBar: false,
       snackBarMsg: ''

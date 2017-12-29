@@ -64,7 +64,7 @@ class PageFundsDragoTrader extends Component {
   };
 
     state = {
-      dragoCreatedLogs: [],
+      dragoCreatedLogs: null,
     }
 
     scrollPosition = 0
@@ -141,7 +141,9 @@ class PageFundsDragoTrader extends Component {
             <Row className={styles.transactionsStyle}>
               <Col xs>
                 <Paper style={detailsBox} zDepth={1}>
-                  <FilterFunds fundsList={dragoSearchList} filterList={this.filterList}></FilterFunds> 
+                <ElementListWrapper fundsList={dragoSearchList} filterList={this.filterList}>
+                  <FilterFunds/>
+                </ElementListWrapper>
                 </Paper>
                 <p></p>
               </Col>
