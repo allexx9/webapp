@@ -151,6 +151,7 @@ export default class ApplicationDragoHome extends Component {
   render () {
     const { ethBalance, loading, blockNumber, accounts, allEvents, accountsInfo, networkError, networkStatus  } = this.state;
     const { isManager, location, handleToggleNotifications, notificationsOpen }  = this.props
+
     // console.log(loading)
     if (loading) {
       return null

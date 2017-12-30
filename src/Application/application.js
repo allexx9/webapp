@@ -310,6 +310,32 @@ export class ApplicationGabcoinPage extends Component {
 
 export class ApplicationDragoPage extends Component {
 
+
+  constructor(props) {
+    super(props);
+    const isManagerSelected = localStorage.getItem('isManager')
+    var isManager = null
+    // Checking account type (trader/manager) and restoring after browser refresh
+    if (typeof isManagerSelected !== 'undefined') {
+      switch (isManagerSelected) {
+        case 'false':
+        isManager = false
+        break;
+        case 'true':
+        isManager = true
+        break;
+      }
+    } else {
+      isManager = false
+    }
+    this.state = {
+      isManager: isManager,
+      isConnected: true,
+      notificationsOpen: false
+    }
+  }
+  
+  
   // We define the properties of the context variables passed down to the children
   static childContextTypes = {
     muiTheme: PropTypes.object,
@@ -317,11 +343,7 @@ export class ApplicationDragoPage extends Component {
     isConnected: PropTypes.func
   };
 
-  state = {
-    isManager: false,
-    isConnected: true,
-    notificationsOpen: false
-  }
+
 
   td = null
 
@@ -378,6 +400,7 @@ export class ApplicationDragoPage extends Component {
       false: false,
       true: true
     }
+    localStorage.setItem('isManager', accountType[value])
     this.setState({
       isManager: accountType[value],
     }); 
@@ -394,9 +417,10 @@ export class ApplicationDragoPage extends Component {
 
   render() {
   // console.log(location);
+
   const {notificationsOpen} = this.state
   const { location } = this.props
-  // console.log('is Manager = '+this.state.isManager)
+  console.log('is Manager = '+this.state.isManager)
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
         <Grid fluid className={styles.maincontainer}>
