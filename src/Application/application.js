@@ -314,7 +314,7 @@ export class ApplicationDragoPage extends Component {
   constructor(props) {
     super(props);
     const isManagerSelected = localStorage.getItem('isManager')
-    var isManager = null
+    var isManager = true
     // Checking account type (trader/manager) and restoring after browser refresh
     if (typeof isManagerSelected !== 'undefined') {
       switch (isManagerSelected) {
