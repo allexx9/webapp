@@ -120,7 +120,7 @@ case 'Transfer':
     const { api } = this.context;
     console.log(contract);
 
-    const sortEvents = (a, b) => b.blockNumber.cmp(a.blockNumber) || b.logIndex.cmp(a.logIndex);
+    const sortEvents = (a, b) => b.blockNumber.cmp(a.blockNumber) || b.logIndex.cmp(a.logIndex)
     const logToEvent = (log) => {
       const key = api.util.sha3(JSON.stringify(log));
       const { blockNumber, logIndex, transactionHash, transactionIndex, params, type } = log;

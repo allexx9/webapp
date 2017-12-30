@@ -11,6 +11,21 @@
   height: 100%;
 }
 
+.shadow {
+  box-shadow: -60px 0px 40px -90px #000000, 60px 0px 40px -90px #000000 !important;
+}
+
+@supports (-webkit-appearance:none) {
+  .shadow {  
+    box-shadow: -60px 0px 90px -90px #000000, 60px 0px 90px -90px #000000 !important;
+  }
+} 
+
+.cards {
+  padding-right: 10px;
+  padding-left: 10px;
+}
+
 .headline {
   font-size: 24;
   padding-top: 16;
@@ -28,7 +43,7 @@
 }
 
 .cardtitle {
-  background-color: rgb(0, 188, 212);
+  background-color: rgb(33, 150, 243);
   color: white !important;
 }
 
@@ -46,7 +61,7 @@
 }
 
 .exchangebutton button {
-  background-color: #00BCD4 !important;
+  background-color: rgb(33, 150, 243) !important;
   height: 56px !important;
   padding: 0 10px !important;
 }

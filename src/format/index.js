@@ -13,9 +13,9 @@ export function formatBlockNumber (blockNumber) {
     : `#${blockNumber.toFormat()}`;
 }
 
-export function formatCoins (amount, decimals = 1) {  //prev. decimals = 6
+export function formatCoins (amount, decimals = 1, api) {  //prev. decimals = 6
+  // console.log(amount.toNumber())
   const adjusted = amount.div(DIVISOR);
-
   if (decimals === -1) {
     if (adjusted.gte(10000)) {
       decimals = 0;
@@ -40,3 +40,16 @@ export function formatEth (eth, decimals = 2, api) {
 export function formatHash (hash) {
   return `${hash.substr(0, 10)}...${hash.substr(-8)}`;
 }
+
+export function toHex (str) {
+  if (str && str.toString) {
+    str = str.toString(16);
+  }
+
+  if (str && str.substr(0, 2) === '0x') {
+    return str.toLowerCase();
+  }
+
+  return `0x${(str || '').toLowerCase()}`;
+}
+

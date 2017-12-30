@@ -10,7 +10,7 @@ export default class Loading extends Component {
   render () {
     return (
       <div className={ styles.loading }>
-        <CircularProgress size={ 120 } thickness={ 7 } />
+        <CircularProgress size={ 60 } thickness={ 5 } />
         {/* <LinearProgress mode="indeterminate" /> */}
       </div>
     );
