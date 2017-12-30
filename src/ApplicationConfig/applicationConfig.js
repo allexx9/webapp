@@ -67,7 +67,9 @@ export class ApplicationConfig extends Component {
     minedEvents: [],
     pendingEvents: [],
     infura: false,
-    prevBlockNumber: 0
+    prevBlockNumber: 0,
+    networkStatus: 'Service is operating normally.',
+    networkError: 'networkOk'
   }
 
   scrollPosition = 0
@@ -257,6 +259,8 @@ export class ApplicationConfig extends Component {
       })
       .then((ethBalances) => {
         this.setState({
+          networkError: 'networkOk',
+          networkStatus: 'Service is operating normally.',
           accountsBalanceError: false,
           ethBalance: ethBalances.reduce((total, balance) => total.add(balance), new BigNumber(0)),
           accounts: [].concat(accounts.map((account, index) => {
@@ -271,6 +275,8 @@ export class ApplicationConfig extends Component {
         console.warn(`${sourceLogClass} -> ${error}`)
         // Setting the balances to 0 if receiving an error from the endpoint. It happens with Infura.
         this.setState({
+          networkError: 'networkWarning',
+          networkStatus: 'Service disruption. Cannot update accounts balances. Account balances could be out of date.',
           accountsBalanceError: true,
           ethBalance: new BigNumber(0),
           accounts: [].concat(accounts.map((account, index) => {

@@ -5,7 +5,6 @@ import { spacing } from 'material-ui/styles'
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card'
 import {CopyToClipboard} from 'react-copy-to-clipboard'
 import {List, ListItem} from 'material-ui/List'
-import {scroller} from 'react-scroll'; //Imports scroller mixin, can use as scroller.scrollTo()
 import {Tabs, Tab} from 'material-ui/Tabs'
 import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar'
 import AccountIcon from 'material-ui/svg-icons/action/account-circle'
@@ -132,22 +131,6 @@ class PageDashboardDragoTrader extends Component {
         snackBar: false,
         snackBarMsg: ''
       })
-    }
-
-    scrollToTop() {
-      scroller.scrollToTop();
-    }
-
-    scrollToBottom() {
-      scroller.scrollToBottom();
-    }
-
-    scrollTo() {
-      scroller.scrollTo(100);
-    }
-
-    scrollMore() {
-      scroller.scrollMore(100);
     }
 
     handleSetActive = (to) => {

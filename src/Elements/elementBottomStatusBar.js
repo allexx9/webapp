@@ -4,7 +4,6 @@ import { transparent} from 'material-ui/styles/colors';
 import NotificationWifi from 'material-ui/svg-icons/notification/wifi';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import ReactTooltip from 'react-tooltip'
 
 import styles from './elementBottomStatusBar.module.css';
 import classnames from 'classnames'
@@ -100,14 +99,7 @@ export default class ElementBottomStatusBar extends Component {
             {numberWithCommas(blockNumber)}&nbsp;&nbsp;<span className={styles.networkName}>{networkName}</span>&nbsp;&nbsp;{this.renderNetworkStatus()}
           </div>
         </Col>
-        <ReactTooltip id='networkStatus' effect='solid' 
-        place='top'
-        className={styles.toolTipCustomSyle}>
-          <span>{networkStatus}</span>
-        </ReactTooltip>
-        {/* <ReactTooltip id='networkWarning'>
-          <span>{networkStatus}</span>
-        </ReactTooltip> */}
+        <span>{networkStatus}</span>
       </Row>
     );
   }
