@@ -2,7 +2,6 @@ import Immutable from 'immutable'
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom'
-import TextField from 'material-ui/TextField';
 
 import Loading from '../Loading'
 

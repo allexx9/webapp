@@ -35,6 +35,7 @@ import Search from 'material-ui/svg-icons/action/search'
 import Snackbar from 'material-ui/Snackbar'
 import Sticky from 'react-stickynode'
 import ElementListWrapper from '../../Elements/elementListWrapper'
+import ElementAccountBox from '../../Elements/elementAccountBox'
 
 import { dragoFactoryEventsSignatures } from '../../utils/utils.js'
 import { formatCoins, formatEth, formatHash, toHex } from '../../format'
@@ -159,12 +160,6 @@ class PageDashboardDragoManager extends Component {
       );
     }
 
-    subTitle = (account) => {
-      return (
-        account.address
-      )     
-    }
-
     render() {
       const { location, accounts, accountsInfo, allEvents } = this.props
       const { dragoTransactionsLogs, loading, dragoList } = this.state 
@@ -183,36 +178,12 @@ class PageDashboardDragoManager extends Component {
       }
 
       const listAccounts = accounts.map((account) => {
-        const { api } = this.context;
         return (
-            <Col xs={6} key={account.name}>
-              <Card>
-                <Row between="xs">
-                  <Col xs >
-                    <CardHeader
-                      title={account.name}
-                      subtitle={this.subTitle(account)}
-                      subtitleStyle={{fontSize: 12}}
-                      avatar={<IdentityIcon address={ account.address } />}
-                    />
-                    <CardText>
-                      ETH { account.ethBalance }
-                    </CardText>
-                  </Col>
-                    <Col xs >
-                      <Chip className={styles.accountChip}>
-                      <Avatar size={32}>W</Avatar>
-                        {account.source}
-                      </Chip>
-                    </Col>
-                </Row>
-              </Card>
-            </Col>
+          <ElementAccountBox account={account} />
           )
         }
       )
-
-
+      
       return (
         <Row>
           <Col xs={12}>

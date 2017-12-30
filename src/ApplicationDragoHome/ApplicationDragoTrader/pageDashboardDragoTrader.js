@@ -35,6 +35,7 @@ import Search from 'material-ui/svg-icons/action/search'
 import Snackbar from 'material-ui/Snackbar'
 import Sticky from 'react-stickynode'
 import ElementListWrapper from '../../Elements/elementListWrapper'
+import ElementAccountBox from '../../Elements/elementAccountBox'
 
 
 import { dragoFactoryEventsSignatures } from '../../utils/utils.js'
@@ -85,8 +86,7 @@ class PageDashboardDragoTrader extends Component {
     }
 
     componentWillMount() {
-      const { api, contract } = this.context
-      const {accounts } = this.props
+      const { accounts } = this.props
       this.getTransactions (null, accounts)
     }
 
@@ -160,12 +160,6 @@ class PageDashboardDragoTrader extends Component {
       );
     }
 
-    subTitle = (account) => {
-      return (
-        account.address
-      )     
-    }
-
     render() {
       const { location, accounts, accountsInfo, allEvents } = this.props
       const { dragoTransactionsLogs, loading, dragoBalances } = this.state 
@@ -184,38 +178,12 @@ class PageDashboardDragoTrader extends Component {
       }
 
       const listAccounts = accounts.map((account) => {
-        const { api } = this.context;
         return (
-          <Col xs={6} key={account.name}>
-            <Card>
-              <Row between="xs">
-                <Col xs >
-                  <CardHeader
-                    title={account.name}
-                    subtitle={this.subTitle(account)}
-                    subtitleStyle={{ fontSize: 12 }}
-                    avatar={<IdentityIcon address={account.address} />}
-                  />
-                  <CardText>
-                    <Row middle="xs" between="xs">
-                      <Col xs >
-                        <Chip className={styles.accountChip}>
-                          <Avatar size={32}>W</Avatar>
-                          {account.source}
-                        </Chip>
-                      </Col>
-                      <Col xs between="xs" className={styles.accountAmount}>
-                        ETH {account.ethBalance}
-                      </Col>
-                    </Row>
-                  </CardText>
-                </Col>
-              </Row>
-            </Card>
-          </Col>
+          <ElementAccountBox account={account} />
           )
         }
-      );
+      )
+      
       return (
         
       <Row>
