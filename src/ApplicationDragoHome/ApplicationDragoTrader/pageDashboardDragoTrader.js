@@ -179,7 +179,7 @@ class PageDashboardDragoTrader extends Component {
 
       const listAccounts = accounts.map((account) => {
         return (
-          <ElementAccountBox account={account} />
+          <ElementAccountBox account={account} key={account.name}/>
           )
         }
       )

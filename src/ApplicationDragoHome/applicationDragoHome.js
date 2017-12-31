@@ -1,19 +1,26 @@
 // Copyright 2016-2017 Gabriele Rigo
 
+import BigNumber from 'bignumber.js';
 import React, { Component } from 'react';
-import * as abis from '../contracts';
 import ReactDOM from 'react-dom'
 
-
+import * as abis from '../contracts';
 import Accounts from '../Accounts';
-import ApplicationDragoTrader from './ApplicationDragoTrader'
 import ApplicationDragoManager from './ApplicationDragoManager'
+import ApplicationDragoTrader from './ApplicationDragoTrader'
 import Loading from '../Loading';
 import Status from '../Status';
 
 import styles from './applicationDragoHome.module.css';
-import BigNumber from 'bignumber.js';
 
+import {
+  DEFAULT_NETWORK_ID,
+  MSG_NO_KOVAN,
+  MSG_NETWORK_STATUS_OK,
+  MSG_NETWORK_STATUS_ERROR,
+  NETWORK_OK,
+  NETWORK_WARNING
+} from '../utils/const'
 import { Grid, Row, Col } from 'react-flexbox-grid';
 import LeftSideDrawer from '../Elements/leftSideDrawer';
 import PropTypes from 'prop-types';
@@ -78,8 +85,10 @@ export default class ApplicationDragoHome extends Component {
     pendingEvents: [],
     infura: false,
     prevBlockNumber: 0,
-    networkStatus: 'Service is operating normally.',
-    networkError: 'networkOk'
+    networkStatus: MSG_NETWORK_STATUS_OK,
+    networkError: NETWORK_OK,
+    networkCorrect: false,
+    warnMsg: null
   }
 
   scrollPosition = 0
@@ -149,7 +158,7 @@ export default class ApplicationDragoHome extends Component {
   }
 
   render () {
-    const { ethBalance, loading, blockNumber, accounts, allEvents, accountsInfo, networkError, networkStatus  } = this.state;
+    const { ethBalance, loading, blockNumber, accounts, allEvents, accountsInfo, networkError, networkStatus, networkCorrect, warnMsg } = this.state;
     const { isManager, location, handleToggleNotifications, notificationsOpen }  = this.props
 
     // console.log(loading)
@@ -161,20 +170,20 @@ export default class ApplicationDragoHome extends Component {
       return null
     }
 
-    // console.log(accounts.length)
-    if (accounts.length === 0) {
+    if ((accounts.length === 0 || !networkCorrect)) {
       return (
         <span>
-          <CheckAuthPage />
-          <ElementBottomStatusBar blockNumber={this.state.prevBlockNumber}
-            networkName='Kovan' />
+          <CheckAuthPage warnMsg={warnMsg}/>
+          <ElementBottomStatusBar
+            blockNumber={this.state.prevBlockNumber}
+            networkName='Kovan'
+            networkError={networkError}
+            networkStatus={networkStatus} />
         </span>
     )
-
     }
 
     if (isManager) {
-
       var notificationStyle = {
         NotificationItem: { // Override the notification item
           DefaultStyle: { // Applied to every notification, regardless of the notification level
@@ -281,7 +290,6 @@ export default class ApplicationDragoHome extends Component {
   }
 
   notificationAlert = (primaryText, secondaryText, eventType = 'transfer') => {
-
     return (
       <ElementNotification 
         primaryText={primaryText}
@@ -353,8 +361,8 @@ export default class ApplicationDragoHome extends Component {
       })
       .then((ethBalances) => {
         this.setState({
-          networkError: 'networkOk',
-          networkStatus: 'Service is operating normally.',
+          networkError: NETWORK_OK,
+          networkStatus: MSG_NETWORK_STATUS_OK,
           accountsBalanceError: false,
           ethBalance: ethBalances.reduce((total, balance) => total.add(balance), new BigNumber(0)),
           accounts: [].concat(accounts.map((account, index) => {
@@ -369,8 +377,8 @@ export default class ApplicationDragoHome extends Component {
         console.warn(`${sourceLogClass} -> ${error}`)
         // Setting the balances to 0 if receiving an error from the endpoint. It happens with Infura.
         this.setState({
-          networkError: 'networkWarning',
-          networkStatus: 'Service disruption. Cannot update accounts balances. Account balances could be out of date.',
+          networkError: NETWORK_WARNING,
+          networkStatus: MSG_NETWORK_STATUS_ERROR,
           accountsBalanceError: true,
           ethBalance: new BigNumber(0),
           accounts: [].concat(accounts.map((account, index) => {
@@ -415,12 +423,30 @@ export default class ApplicationDragoHome extends Component {
   }
 
   getAccountsMetamask () {
+
     const web3 = window.web3
     if (typeof web3 === 'undefined') {
+      console.log('web3 undefined')
       return
     }
-    // const balance = web3.fromWei(web3.eth.getBalance(web3.eth.accounts[0]))
-    return web3.eth.getAccounts()
+    return web3.eth.net.getId()
+    .then((networkId) => {
+      console.log(networkId)
+      console.log(DEFAULT_NETWORK_ID)
+      if (networkId != DEFAULT_NETWORK_ID) {
+        console.log('not kovan')
+        this.setState({
+          networkCorrect: false,
+          warnMsg: MSG_NO_KOVAN
+        })
+      } else {
+        this.setState({
+          networkCorrect: true
+        }) 
+      }
+    })
+    .then (() =>{
+      return web3.eth.getAccounts()
       .then(accounts => {
         const balance = web3.eth.getBalance(accounts[0])
         .then(balance => {
@@ -437,6 +463,7 @@ export default class ApplicationDragoHome extends Component {
       .catch(() =>{
         return
       })
+    })
   }
 
   attachInterfaceInfura = () => {

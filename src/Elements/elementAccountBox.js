@@ -13,13 +13,13 @@ import styles from './elementAccountBox.module.css'
 class ElementAccountBox extends Component {
 
   static propTypes = {
-    accounts: PropTypes.object.isRequired
+    account: PropTypes.object.isRequired
   };
 
   render() {
     const {account} = this.props;
     return (    
-      <Col xs={6} key={account.name}>
+      <Col xs={6}>
       <Card>
         <Row between="xs">
           <Col xs >

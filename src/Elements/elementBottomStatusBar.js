@@ -23,7 +23,6 @@ export default class ElementBottomStatusBar extends Component {
     const { networkStatus, networkError } = this.props
     var networkIconColor = Colors.green600
     var toolTipType = 'info'
-    console.log(this.props.networkError)
     switch (this.props.networkError) {
       case ('networkOk'):
         networkIconColor = Colors.green600
@@ -49,26 +48,17 @@ export default class ElementBottomStatusBar extends Component {
       backgroundColor: '#fff',
     }
     return (
-      <a
-        // data-tip
-        // data-for='networkStatus'
-        // // data-offset="{'left': 50}"
-        // data-type={toolTipType} 
-        className={classnames(styles.tooltip)}
-      >
+      <a className={classnames(styles.tooltip)}>
         <NotificationWifi
           className={classnames(styles.networkIcon)} color={networkIconColor}
-
         />
-        <div className={styles.tooltiptext}  >{networkStatus}</div>
+        <div className={styles.tooltiptext}>{networkStatus}</div>
       </a>
     )
   }
 
   render() {
     const { blockNumber, networkName, networkStatus, networkError } = this.props
-    console.log(networkStatus)
-    console.log(networkError)
     var toolTipType = 'info'
     const numberWithCommas = (x) => {
       return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -91,11 +81,8 @@ export default class ElementBottomStatusBar extends Component {
         <Col
           xs={3}
           className={styles.networkStatusCounter}
-
         >
-          <div className={styles.networkDataContainer}
-
-          >
+          <div className={styles.networkDataContainer}>
             {numberWithCommas(blockNumber)}&nbsp;&nbsp;<span className={styles.networkName}>{networkName}</span>&nbsp;&nbsp;{this.renderNetworkStatus()}
           </div>
         </Col>

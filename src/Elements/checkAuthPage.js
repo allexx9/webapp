@@ -28,12 +28,28 @@ class CheckAuthPage extends Component {
       isConnected: PropTypes.bool,
     };
     
+    renderWarnMsg = () =>{
+      const { warnMsg } = this.props
+      if (warnMsg === null) return
+      return (
+        <Row>
+          <Col xs={12}>
+            <div className={styles.warnMsgBox}>
+              <p>{warnMsg}</p>
+            </div>
+
+          </Col>
+        </Row>
+      )
+    }
+
     render() {
       // console.log(this.props)
       return (
         <Row>
           <Col xs={12}>
             <Paper className={styles.paperContainer} zDepth={1}>
+              {this.renderWarnMsg()}
               <Row>
                 <Col xs={12}>
                   

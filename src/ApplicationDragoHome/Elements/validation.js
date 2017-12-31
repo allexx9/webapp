@@ -13,6 +13,7 @@ export const ERRORS = {
   invalidSymbolLeng: 'Symbol has to be 3 chars long',
   invalidSymbolReg: 'Only alphanumeric symbols allowed',
   tradeIdError: 'Please enter a positive number > 0',
+  invalidRPCEndpoint: 'Please enter a valid URL',
   exchangeNameError: 'Please select an exchange',
   cfdError: 'Please select an CDF',
 };
