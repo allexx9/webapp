@@ -23,5 +23,5 @@ export const NETWORK_WARNING = "networkWarning"
 
 // Default messages
 export const MSG_NO_KOVAN = "We have detected that MetaMask is not connected to Kovan network. Please select Kovan network in your MetaMask."
-export const MSG_NETWORK_STATUS_OK = "We have detected that MetaMask is not connected to Kovan network. Please select Kovan network in your MetaMask."
-export const MSG_NETWORK_STATUS_ERROR = "We have detected that MetaMask is not connected to Kovan network. Please select Kovan network in your MetaMask."
+export const MSG_NETWORK_STATUS_OK = "Service is operating normally."
+export const MSG_NETWORK_STATUS_ERROR = "Service disruption. Cannot update accounts balances. Account balances could be out of date."

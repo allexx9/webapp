@@ -29,6 +29,7 @@ import Loading from '../Loading';
 import PageNetworkConfig from './pageNetworkConfig'
 import Status from '../Status';
 import utils from '../utils/utils'
+import { ALLOWED_ENDPOINTS, DEFAULT_ENDPOINT } from '../utils/const';
 
 import styles from './applicationConfig.module.css';
 
@@ -80,18 +81,27 @@ export class ApplicationConfig extends Component {
   scrollPosition = 0
 
   componentWillMount () {
-    const endpoint = localStorage.getItem('endpoint')
-    switch (endpoint) {
-      case "infura":
-        this.attachInterfaceInfura()
-        .then(() =>{
-        })
-      break;
-      case "rigoblock":
-        this.attachInterfaceRigoBlock()
-        .then(() =>{
-        })
-      break; 
+    // Allowed endpoints are defined in const.js
+    var selectedEndpoint = localStorage.getItem('endpoint')
+    var allowedEndpoints = new Map(ALLOWED_ENDPOINTS)
+    if (allowedEndpoints.has(selectedEndpoint)) {
+      switch (selectedEndpoint) {
+        case "infura":
+          this.attachInterfaceInfura()
+          .then(() =>{
+          })
+        break;
+        case "rigoblock":
+          this.attachInterfaceRigoBlock()
+          .then(() =>{
+          })
+        break; 
+      }
+    } else {
+      localStorage.setItem('endpoint', DEFAULT_ENDPOINT)
+      this.attachInterfaceInfura()
+      .then(() =>{
+      })
     }
   } 
 
@@ -321,15 +331,11 @@ export class ApplicationConfig extends Component {
 
     const web3 = window.web3
     if (typeof web3 === 'undefined') {
-      console.log('web3 undefined')
       return
     }
     return web3.eth.net.getId()
     .then((networkId) => {
-      console.log(networkId)
-      console.log(DEFAULT_NETWORK_ID)
       if (networkId != DEFAULT_NETWORK_ID) {
-        console.log('not kovan')
         this.setState({
           networkCorrect: false,
           warnMsg: MSG_NO_KOVAN

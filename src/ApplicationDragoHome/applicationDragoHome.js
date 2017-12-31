@@ -34,6 +34,7 @@ import ElementNotification from '../Elements/elementNotification'
 import ElementNotificationsDrawer from '../Elements/elementNotificationsDrawer'
 import CheckAuthPage from '../Elements/checkAuthPage'
 import ElementBottomStatusBar from '../Elements/elementBottomStatusBar'
+import { ALLOWED_ENDPOINTS, DEFAULT_ENDPOINT } from '../utils/const';
 
 
 const DIVISOR = 10 ** 6;  //tokens are divisible by one million
@@ -120,18 +121,27 @@ export default class ApplicationDragoHome extends Component {
   }
 
   componentWillMount () {
-    const endpoint = localStorage.getItem('endpoint')
-    switch (endpoint) {
-      case "infura":
-        this.attachInterfaceInfura()
-        .then(() =>{
-        })
-      break;
-      case "rigoblock":
-        this.attachInterfaceRigoBlock()
-        .then(() =>{
-        })
-      break; 
+    // Allowed endpoints are defined in const.js
+    var selectedEndpoint = localStorage.getItem('endpoint')
+    var allowedEndpoints = new Map(ALLOWED_ENDPOINTS)
+    if (allowedEndpoints.has(selectedEndpoint)) {
+      switch (selectedEndpoint) {
+        case "infura":
+          this.attachInterfaceInfura()
+          .then(() =>{
+          })
+        break;
+        case "rigoblock":
+          this.attachInterfaceRigoBlock()
+          .then(() =>{
+          })
+        break; 
+      }
+    } else {
+      localStorage.setItem('endpoint', DEFAULT_ENDPOINT)
+      this.attachInterfaceInfura()
+      .then(() =>{
+      })
     }
   } 
 
@@ -426,15 +436,11 @@ export default class ApplicationDragoHome extends Component {
 
     const web3 = window.web3
     if (typeof web3 === 'undefined') {
-      console.log('web3 undefined')
       return
     }
     return web3.eth.net.getId()
     .then((networkId) => {
-      console.log(networkId)
-      console.log(DEFAULT_NETWORK_ID)
       if (networkId != DEFAULT_NETWORK_ID) {
-        console.log('not kovan')
         this.setState({
           networkCorrect: false,
           warnMsg: MSG_NO_KOVAN
