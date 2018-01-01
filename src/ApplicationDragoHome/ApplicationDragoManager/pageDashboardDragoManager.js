@@ -179,7 +179,7 @@ class PageDashboardDragoManager extends Component {
 
       const listAccounts = accounts.map((account) => {
         return (
-          <ElementAccountBox account={account} key={account.name}/>
+          <ElementAccountBox account={account} key={account.name} snackBar={this.snackBar}/>
           )
         }
       )

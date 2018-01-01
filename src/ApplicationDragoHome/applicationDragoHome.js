@@ -121,6 +121,9 @@ export default class ApplicationDragoHome extends Component {
   }
 
   componentWillMount () {
+  } 
+
+  componentDidMount() {
     // Allowed endpoints are defined in const.js
     var selectedEndpoint = localStorage.getItem('endpoint')
     var allowedEndpoints = new Map(ALLOWED_ENDPOINTS)
@@ -143,9 +146,6 @@ export default class ApplicationDragoHome extends Component {
       .then(() =>{
       })
     }
-  } 
-
-  componentDidMount() {
     this._notificationSystem = this.refs.notificationSystem
   }
 

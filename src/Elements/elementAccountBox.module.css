@@ -1,7 +1,48 @@
-.accountChip {
-  /* margin: 5px !important; */
-}
+
 
 .accountAmount {
   text-align: right;
+  font-size: 16px;
+}
+
+.copyAddress {
+  height: 16px !important;
+  width: 16px !important;
+}
+
+.actionButtons {
+  text-align: right;
+}
+
+
+.paperContainer {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  display: 'inline-block';
+}
+
+.accountTitleContainer {
+  padding: 10px;
+}
+
+.accountBodyContainer {
+  padding: 10px;
+}
+
+.title {
+  text-overflow: ellipsis;
+
+  /* Required for text-overflow to do anything */
+  white-space: nowrap;
+  overflow: hidden;
+  font-size: 20px;
+}
+
+.subTitle {
+  text-overflow: ellipsis;
+
+  /* Required for text-overflow to do anything */
+  white-space: nowrap;
+  overflow: hidden;
+  font-size: 12px;
 }

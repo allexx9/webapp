@@ -101,13 +101,13 @@ export default class ElementBottomStatusBar extends Component {
     }
     var today = new Date(),
       y = today.getFullYear(),
+      M = ("0" + (today.getMonth() + 1)).slice(-2),
       d = ("0" + today.getDate()).slice(-2),
-      m = ("0" + (today.getMonth() + 1)).slice(-2),
       h = checkTime(today.getHours()),
       m = checkTime(today.getMinutes()),
       s = checkTime(today.getSeconds());
 
-    const currentTime = y + "-" + m + "-" + d + " " + h + ":" + m + ":" + s;
+    const currentTime = y + "-" + M + "-" + d + " " + h + ":" + m + ":" + s;
     this.setState({
       currentTime: currentTime
     })

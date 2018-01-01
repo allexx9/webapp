@@ -28,6 +28,7 @@ import classNames from 'classnames';
 import * as Colors from 'material-ui/styles/colors';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import NotConnected from '../Elements/notConnected'
+import { DEFAULT_NETWORK_NAME } from '../utils/const'
 
 
 // Router
@@ -338,12 +339,23 @@ export class ApplicationDragoPage extends Component {
   }
   
   
-  // We define the properties of the context variables passed down to the children
+  // Defining the properties of the context variables passed down to the children
   static childContextTypes = {
     muiTheme: PropTypes.object,
     api: PropTypes.object,
-    isConnected: PropTypes.func
+    isConnected: PropTypes.func,
+    ethereumNetworkName: PropTypes.string,
   };
+
+  // Parring down the context variables passed down to the children
+  getChildContext() {
+    return {
+      muiTheme,
+      api,
+      isConnected: this.isConnected,
+      ethereumNetworkName: DEFAULT_NETWORK_NAME
+    };
+  }
 
 
 
@@ -383,15 +395,6 @@ export class ApplicationDragoPage extends Component {
       console.warn(error)
     })
     
-  }
-
-  // We pass down the context variables passed down to the children
-  getChildContext () {
-    return {
-      muiTheme,
-      api,
-      isConnected: this.isConnected
-    };
   }
 
   // Callback function to handle account type selection in the Top Bar
