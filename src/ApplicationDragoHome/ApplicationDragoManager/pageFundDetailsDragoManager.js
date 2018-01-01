@@ -25,9 +25,6 @@ import React, { Component } from 'react'
 import Search from 'material-ui/svg-icons/action/search'
 import Snackbar from 'material-ui/Snackbar'
 import Subheader from 'material-ui/Subheader'
-import ElementListWrapper from '../../Elements/elementListWrapper'
-
-
 
 import { dragoFactoryEventsSignatures } from '../../utils/utils.js'
 import { formatCoins, formatEth, formatHash, toHex } from '../../format'
@@ -35,6 +32,7 @@ import * as abis from '../../contracts';
 import DragoApi from '../../DragoApi/src'
 import ElementFundActionsList from '../Elements/elementFundActionsList'
 import ElementListTransactions from '../Elements/elementListTransactions'
+import ElementListWrapper from '../../Elements/elementListWrapper'
 import ElementPriceBox from '../Elements/elementPricesBox'
 import IdentityIcon from '../../IdentityIcon'
 import InfoTable from '../Elements/elementInfoTable'
@@ -51,6 +49,7 @@ import {
 } from 'material-ui/Table';
 
 import styles from './pageFundDetailsDragoManager.module.css';
+import ElementFundNotFound from '../../Elements/elementFundNotFound'
 
 
 class PageFundDetailsDragoManager extends Component {
@@ -221,6 +220,11 @@ class PageFundDetailsDragoManager extends Component {
       if (loading) {
         return (
           <Loading />
+        );
+      }
+      if (dragoDetails.address === '0x0000000000000000000000000000000000000000') {
+        return (
+          <ElementFundNotFound />
         );
       }
       return (

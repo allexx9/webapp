@@ -249,11 +249,8 @@ class ElementListTransactions extends PureComponent {
   }
 
   renderTime(timestamp) {
-    const day = ("0" + timestamp.getDate()).slice(-2)
-    const month = ("0" + (timestamp.getMonth() + 1)).slice(-2)
-    const date = timestamp.getFullYear()+'-'+month+'-'+day+' '+timestamp.getHours()+':'+timestamp.getMinutes()+':'+timestamp.getSeconds()
     return (
-      <span>{date}</span>
+      <span>{utils.dateFromTimeStamp(timestamp)}</span>
     )
   }
 

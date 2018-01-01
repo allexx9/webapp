@@ -2,11 +2,14 @@ import  * as Colors from 'material-ui/styles/colors'
 import { Row, Col } from 'react-flexbox-grid';
 import { transparent} from 'material-ui/styles/colors';
 import NotificationWifi from 'material-ui/svg-icons/notification/wifi';
+import AccessTime from 'material-ui/svg-icons/device/access-time';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 import styles from './elementBottomStatusBar.module.css';
 import classnames from 'classnames'
+
+var t = null;
 
 export default class ElementBottomStatusBar extends Component {
 
@@ -18,6 +21,27 @@ export default class ElementBottomStatusBar extends Component {
     networkStatus: PropTypes.string.isRequired,
   };
 
+  static contextTypes = {
+    api: PropTypes.object.isRequired,
+  };
+
+  state = {
+    currentTime: null,
+    lastBlockTime: 0
+  }
+
+  componentWillMount () {
+    this.blockNumber()
+    this.startTime()
+  }
+
+  componentWillUnmount () {
+    clearTimeout(t)
+  }
+
+  componentWillReceiveProps () {
+    this.blockNumber()
+  }
   
   renderNetworkStatus = () => {
     const { networkStatus, networkError } = this.props
@@ -57,6 +81,59 @@ export default class ElementBottomStatusBar extends Component {
     )
   }
 
+  startTime = () => {
+    var x = this
+    function checkTime(i) {
+      return (i < 10) ? "0" + i : i;
+    }
+    var today = new Date(),
+      y = today.getFullYear(),
+      d = ("0" + today.getDate()).slice(-2),
+      m = ("0" + (today.getMonth() + 1)).slice(-2),
+      h = checkTime(today.getHours()),
+      m = checkTime(today.getMinutes()),
+      s = checkTime(today.getSeconds());
+
+    const currentTime = y + "-" + m + "-" + d + " " + h + ":" + m + ":" + s;
+    this.setState({
+      currentTime: currentTime
+    })
+    t = setTimeout(function () {
+      x.startTime()
+    }, 500);
+  }
+
+  blockNumber = () => {
+    const { api } = this.context
+    const { blockNumber } = this.props
+
+    function addZero(i) {
+      return (i < 10) ? "0" + i : i;
+    }
+
+    api.eth
+    .getBlockByNumber(blockNumber)
+    .then((block) => {
+      var t = block.timestamp
+      var blockTime = addZero(t.getHours())+':'+addZero(t.getMinutes())+':'+addZero(t.getSeconds())
+      console.log(blockTime)
+      this.setState({
+        lastBlockTime: blockTime
+      })
+    })
+  }
+
+  renderCurrentTime = () => {
+    return (
+      <span>
+        <AccessTime
+          className={classnames(styles.accessTimeIcon)} />&nbsp;
+        {this.state.currentTime}
+      </span>
+    )
+  }
+ 
+
   render() {
     const { blockNumber, networkName, networkStatus, networkError } = this.props
     var toolTipType = 'info'
@@ -75,15 +152,14 @@ export default class ElementBottomStatusBar extends Component {
     } 
     return (
       <Row className={styles.networkStatus} between="xs">
-        <Col xs={9}>
+        <Col xs={4}>
           ©2017 RigoInvestment. All rights reserved.
         </Col>
-        <Col
-          xs={3}
-          className={styles.networkStatusCounter}
-        >
+        <Col xs={8} className={styles.networkStatusCounter}>
           <div className={styles.networkDataContainer}>
-            {numberWithCommas(blockNumber)}&nbsp;&nbsp;<span className={styles.networkName}>{networkName}</span>&nbsp;&nbsp;{this.renderNetworkStatus()}
+            {this.renderCurrentTime()}&nbsp;&nbsp;&nbsp;&nbsp;
+            Blockchain: {this.state.lastBlockTime}&nbsp;/&nbsp; 
+         #{numberWithCommas(blockNumber)}&nbsp;&nbsp;<span className={styles.networkName}>{networkName}</span>&nbsp;&nbsp;{this.renderNetworkStatus()}
           </div>
         </Col>
         <span>{networkStatus}</span>

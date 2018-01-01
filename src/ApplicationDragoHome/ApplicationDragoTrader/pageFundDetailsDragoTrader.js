@@ -47,6 +47,7 @@ import ElementListTransactions from '../Elements/elementListTransactions'
 import styles from './pageFundDetailsDragoTrader.module.css';
 import ElementPriceBox from '../Elements/elementPricesBox'
 import utils from '../../utils/utils'
+import ElementFundNotFound from '../../Elements/elementFundNotFound'
 
 class PageFundDetailsDragoTrader extends Component {
 
@@ -218,6 +219,11 @@ class PageFundDetailsDragoTrader extends Component {
       if (loading) {
         return (
           <Loading />
+        );
+      }
+      if (dragoDetails.address === '0x0000000000000000000000000000000000000000') {
+        return (
+          <ElementFundNotFound />
         );
       }
       return (

@@ -64,6 +64,14 @@ export {dragoApi}
 
 class utilities {
 
+    dateFromTimeStamp = (timestamp) => {
+      const day = ("0" + timestamp.getDate()).slice(-2)
+      const month = ("0" + (timestamp.getMonth() + 1)).slice(-2)
+      function addZero(i) {
+        return (i < 10) ? "0" + i : i;
+      }
+      return timestamp.getFullYear()+'-'+month+'-'+day+' '+addZero(timestamp.getHours())+':'+addZero(timestamp.getMinutes())+':'+addZero(timestamp.getSeconds())
+    }
 
     getDragoSupply = (dragoAddress, api, callBack, options) => {
       const instance = api.newContract(abis.drago, dragoAddress).instance

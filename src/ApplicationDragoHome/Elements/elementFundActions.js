@@ -398,53 +398,76 @@ export default class ElementFundActions extends React.Component {
     console.log(this.state.amountSummary.toString())
     const accountAddress = this.state.account.address
     const amount = api.util.toWei(this.state.amountSummary).toString()
-    if(this.state.account.source === 'MetaMask') {
-      const web3 = window.web3
-      const dragoApi = new DragoApi(web3)
-      dragoApi.contract.drago.init(dragoDetails.address)
-      dragoApi.contract.drago.buyDrago(accountAddress, amount)
-      .then((receipt) =>{ 
-        console.log(receipt)
-      })
-      .catch((error) => {
-        console.error('error', error);
-        this.setState({
-          sending: false
-        })
-      })
-      this.props.snackBar('Buy order waiting for authorization for ' + this.state.amountSummary.toString() + ' ETH')
+    var dragoApi = null;
+
+    var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
+    dragoApi = new DragoApi(provider)
+    dragoApi.contract.drago.init(dragoDetails.address)
+    dragoApi.contract.drago.buyDrago(accountAddress, amount)
+    .then((receipt) =>{ 
+      console.log(receipt)
+    })
+    .catch((error) => {
+      this.props.snackBar('Your wallet returned an error. Please check your wallet and if necessary try again.')
+      console.error('error', error);
       this.setState({
-        sending: false,
-        complete: true,
-        open: false
-      }, this.handleClose)
-    } else {
-      this.setState({
-        sending: true
+        sending: false
       })
-      const dragoApi = new DragoApi(api)
-      dragoApi.contract.drago.init(dragoDetails.address)
-      dragoApi.contract.drago.buyDrago(accountAddress, amount)
-      .then(() => {
-        this.props.snackBar('Buy order waiting for authorization for ' + this.state.amountSummary.toString() + ' ETH')
-        this.setState({
-          sending: false,
-          complete: true,
-          open: false
-        },this.handleClose)
-      })
-      .catch((error) => {
-        console.error('error', error);
-        this.setState({
-          sending: false
-        })
-      })
-    }
+    })
+    this.props.snackBar('Buy order waiting for authorization for ' + this.state.amountSummary.toString() + ' ETH')
+    this.setState({
+      sending: false,
+      complete: true,
+      open: false
+    }, this.handleClose)
+    // if(this.state.account.source === 'MetaMask') {
+    //   const web3 = window.web3
+    //   const dragoApi = new DragoApi(web3)
+    //   dragoApi.contract.drago.init(dragoDetails.address)
+    //   dragoApi.contract.drago.buyDrago(accountAddress, amount)
+    //   .then((receipt) =>{ 
+    //     console.log(receipt)
+    //   })
+    //   .catch((error) => {
+    //     this.props.snackBar('Your wallet returned an error. Pleae try again.')
+    //     console.error('error', error);
+    //     this.setState({
+    //       sending: false
+    //     })
+    //   })
+    //   this.props.snackBar('Buy order waiting for authorization for ' + this.state.amountSummary.toString() + ' ETH')
+    //   this.setState({
+    //     sending: false,
+    //     complete: true,
+    //     open: false
+    //   }, this.handleClose)
+    // } else {
+    //   this.setState({
+    //     sending: true
+    //   })
+    //   const dragoApi = new DragoApi(api)
+    //   dragoApi.contract.drago.init(dragoDetails.address)
+    //   dragoApi.contract.drago.buyDrago(accountAddress, amount)
+    //   .then(() => {
+    //     this.props.snackBar('Buy order waiting for authorization for ' + this.state.amountSummary.toString() + ' ETH')
+    //     this.setState({
+    //       sending: false,
+    //       complete: true,
+    //       open: false
+    //     },this.handleClose)
+    //   })
+    //   .catch((error) => {
+    //     console.error('error', error);
+    //     this.setState({
+    //       sending: false
+    //     })
+    //   })
+    // }
   }
 
   onSendSell = () => {
     const { api } = this.context;
-    const {dragoDetails} = this.props
+    const { dragoDetails } = this.props
     const DIVISOR = 10 ** 6;  //dragos are divisible by 1 million
     // const amount = new BigNumber(this.state.amountSummary).mul(DIVISOR);    
     // const values = amount.toFixed(0); 
@@ -453,48 +476,70 @@ export default class ElementFundActions extends React.Component {
     // }
     const accountAddress = this.state.account.address
     const amount = new BigNumber(this.state.amountSummary).mul(DIVISOR).toFixed(0)
-    if(this.state.account.source === 'MetaMask') {
-      const web3 = window.web3
-      const dragoApi = new DragoApi(web3)
-      dragoApi.contract.drago.init(dragoDetails.address)
-      dragoApi.contract.drago.sellDrago(accountAddress, amount)
-      .then((receipt) =>{ 
+    var dragoApi = null;
+    var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
+    dragoApi = new DragoApi(provider)
+    dragoApi.contract.drago.init(dragoDetails.address)
+    dragoApi.contract.drago.sellDrago(accountAddress, amount)
+      .then((receipt) => {
         console.log(receipt)
       })
       .catch((error) => {
+        this.props.snackBar('Your wallet returned an error. Please check your wallet and if necessary try again.')
         console.error('error', error);
         this.setState({
           sending: false
         })
       })
-      this.props.snackBar('Sell order waiting for authorization for ' + this.state.amountSummary + ' ' + dragoDetails.symbol.toUpperCase())
-      this.setState({
-        sending: false,
-        complete: true,
-        open: false
-      }, this.handleClose)
-    } else {
+    this.props.snackBar('Sell order waiting for authorization for ' + this.state.amountSummary + ' ' + dragoDetails.symbol.toUpperCase())
     this.setState({
-      sending: true
-    })
-      const dragoApi = new DragoApi(api)
-      dragoApi.contract.drago.init(dragoDetails.address)
-      dragoApi.contract.drago.sellDrago(accountAddress, amount)
-      .then(() => {
-        this.props.snackBar('Sell order waiting for authorization for ' + this.state.amountSummary + ' ' + dragoDetails.symbol.toUpperCase())
-        this.setState({
-          sending: false,
-          complete: true,
-          open: false
-        }, this.handleClose)
-      })
-      .catch((error) => {
-        console.error('error', error);
-        this.setState({
-          sending: false
-        })
-      })
-    }
+      sending: false,
+      complete: true,
+      open: false
+    }, this.handleClose)
+
+    // if (this.state.account.source === 'MetaMask') {
+    //   const web3 = window.web3
+    //   const dragoApi = new DragoApi(web3)
+    //   dragoApi.contract.drago.init(dragoDetails.address)
+    //   dragoApi.contract.drago.sellDrago(accountAddress, amount)
+    //     .then((receipt) => {
+    //       console.log(receipt)
+    //     })
+    //     .catch((error) => {
+    //       console.error('error', error);
+    //       this.setState({
+    //         sending: false
+    //       })
+    //     })
+    //   this.props.snackBar('Sell order waiting for authorization for ' + this.state.amountSummary + ' ' + dragoDetails.symbol.toUpperCase())
+    //   this.setState({
+    //     sending: false,
+    //     complete: true,
+    //     open: false
+    //   }, this.handleClose)
+    // } else {
+    //   this.setState({
+    //     sending: true
+    //   })
+    //   const dragoApi = new DragoApi(api)
+    //   dragoApi.contract.drago.init(dragoDetails.address)
+    //   dragoApi.contract.drago.sellDrago(accountAddress, amount)
+    //     .then(() => {
+    //       this.props.snackBar('Sell order waiting for authorization for ' + this.state.amountSummary + ' ' + dragoDetails.symbol.toUpperCase())
+    //       this.setState({
+    //         sending: false,
+    //         complete: true,
+    //         open: false
+    //       }, this.handleClose)
+    //     })
+    //     .catch((error) => {
+    //       console.error('error', error);
+    //       this.setState({
+    //         sending: false
+    //       })
+    //     })
+    // }
   }
 
   onSend = () => {
