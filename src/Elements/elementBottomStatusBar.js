@@ -5,6 +5,7 @@ import NotificationWifi from 'material-ui/svg-icons/notification/wifi';
 import AccessTime from 'material-ui/svg-icons/device/access-time';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import utils from '../utils/utils'
 
 import styles from './elementBottomStatusBar.module.css';
 import classnames from 'classnames'
@@ -26,12 +27,12 @@ export default class ElementBottomStatusBar extends Component {
   };
 
   state = {
-    currentTime: null,
+    currentTime: "0000-00-00 00:00:00",
     lastBlockTime: "00:00:00"
   }
 
-  componentWillMount () {
-    this.blockNumber()
+  componentDidMount () {
+    // this.blockNumber()
     this.startTime()
   }
 
@@ -39,8 +40,20 @@ export default class ElementBottomStatusBar extends Component {
     // clearTimeout(t)
   }
 
-  componentWillReceiveProps () {
-    this.blockNumber()
+
+  componentWillReceiveProps (nextProps) {
+    // console.log(this.props.blockNumber)
+    // console.log(nextProps.blockNumber)
+     if(this.props.blockNumber == 0 && nextProps.blockNumber !=0) {
+      // this.blockNumber(nextProps.blockNumber)
+     }
+    // (!utils.shallowEqual(this.props.blockNumber, nextProps.blockNumber)) ? this.blockNumber(): null
+  }
+
+  shouldComponentUpdate(nextProps, nextState){
+    const propsUpdate = (!utils.shallowEqual(this.props, nextProps))
+    const stateUpdate = (!utils.shallowEqual(this.state, nextState))
+    return propsUpdate || stateUpdate
   }
   
   renderNetworkStatus = () => {
@@ -100,28 +113,36 @@ export default class ElementBottomStatusBar extends Component {
     })
     t = setTimeout(function () {
       x.startTime()
-    }, 500);
+    }, 1000);
   }
 
-  blockNumber = () => {
-    const { api } = this.context
-    const { blockNumber } = this.props
+  // blockNumber = (blockNumber) => {
+  //   const { api } = this.context
+  //   var currentBlock = null
 
-    function addZero(i) {
-      return (i < 10) ? "0" + i : i;
-    }
+  //   function addZero(i) {
+  //     return (i < 10) ? "0" + i : i;
+  //   }
 
-    api.eth
-    .getBlockByNumber(blockNumber)
-    .then((block) => {
-      var t = block.timestamp
-      var blockTime = addZero(t.getHours())+':'+addZero(t.getMinutes())+':'+addZero(t.getSeconds())
-      console.log(blockTime)
-      this.setState({
-        lastBlockTime: blockTime
-      })
-    })
-  }
+  //   if (typeof blockNumber !== 'undefined') {
+  //     currentBlock = blockNumber 
+  //   } else {
+  //     currentBlock = this.props.blockNumber
+  //   } 
+
+  //   if (currentBlock != 0) {
+  //     api.eth
+  //     .getBlockByNumber(currentBlock)
+  //     .then((block) => {
+  //       var t = block.timestamp
+  //       var blockTime = addZero(t.getHours())+':'+addZero(t.getMinutes())+':'+addZero(t.getSeconds())
+  //       console.log(blockTime)
+  //       this.setState({
+  //         lastBlockTime: blockTime
+  //       })
+  //     })
+  //   }
+  // }
 
   renderCurrentTime = () => {
     return (
@@ -158,7 +179,8 @@ export default class ElementBottomStatusBar extends Component {
         <Col xs={8} className={styles.networkStatusCounter}>
           <div className={styles.networkDataContainer}>
             {this.renderCurrentTime()}&nbsp;&nbsp;&nbsp;&nbsp;
-            Blockchain: {this.state.lastBlockTime}&nbsp;/&nbsp; 
+            {/* Blockchain: {this.state.lastBlockTime}&nbsp;/&nbsp;  */}
+            Blockchain:
          #{numberWithCommas(blockNumber)}&nbsp;&nbsp;<span className={styles.networkName}>{networkName}</span>&nbsp;&nbsp;{this.renderNetworkStatus()}
           </div>
         </Col>

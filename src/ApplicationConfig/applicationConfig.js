@@ -80,6 +80,12 @@ export class ApplicationConfig extends Component {
 
   scrollPosition = 0
 
+  shouldComponentUpdate(nextProps, nextState){
+    const propsUpdate = (!utils.shallowEqual(this.props, nextProps))
+    const stateUpdate = (!utils.shallowEqual(this.state, nextState))
+    return stateUpdate || propsUpdate 
+  }
+
   componentWillMount () {
     // Allowed endpoints are defined in const.js
     var selectedEndpoint = localStorage.getItem('endpoint')
