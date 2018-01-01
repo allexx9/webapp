@@ -27,7 +27,7 @@ export default class ElementBottomStatusBar extends Component {
 
   state = {
     currentTime: null,
-    lastBlockTime: 0
+    lastBlockTime: "00:00:00"
   }
 
   componentWillMount () {
@@ -36,7 +36,7 @@ export default class ElementBottomStatusBar extends Component {
   }
 
   componentWillUnmount () {
-    clearTimeout(t)
+    // clearTimeout(t)
   }
 
   componentWillReceiveProps () {
