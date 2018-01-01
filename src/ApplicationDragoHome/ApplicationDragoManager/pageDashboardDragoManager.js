@@ -179,7 +179,9 @@ class PageDashboardDragoManager extends Component {
 
       const listAccounts = accounts.map((account) => {
         return (
-          <ElementAccountBox account={account} key={account.name} snackBar={this.snackBar}/>
+          <Col xs={6} key={account.name}>
+            <ElementAccountBox account={account} key={account.name} snackBar={this.snackBar} />
+          </Col>
           )
         }
       )
@@ -225,20 +227,20 @@ class PageDashboardDragoManager extends Component {
                 </Row>
               </Sticky>
               <Row className={styles.transactionsStyle}>
-                <Col xs>
+                <Col xs={12}>
                 <span ref={(section) => { this.Accounts = section; }}></span>
                     <AppBar
                       title='My Accounts'
                       showMenuIconButton={false}
                       className={styles.appBar}
                     />
-                    <Row between="xs">
+                    <Row>
                       {listAccounts}
                     </Row>
                 </Col>
               </Row>
               <Row className={styles.transactionsStyle}>
-                <Col  xs >
+                <Col xs={12}>
                   <span ref={(section) => { this.Dragos = section; }}></span>
                     <AppBar
                       title='My Dragos'
@@ -259,7 +261,7 @@ class PageDashboardDragoManager extends Component {
                   </Col>
               </Row>
               <Row className={styles.transactionsStyle}>
-                <Col xs>
+                <Col xs={12}>
                   <span ref={(section) => { this.Transactions = section; }}></span>
                     <AppBar
                       title='My Transactions'

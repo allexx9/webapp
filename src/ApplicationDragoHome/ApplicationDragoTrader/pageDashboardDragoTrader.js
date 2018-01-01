@@ -228,20 +228,20 @@ class PageDashboardDragoTrader extends Component {
               </Row>
             </Sticky>
             <Row className={styles.transactionsStyle}>
-              <Col xs>
+              <Col xs={12}>
                 <span ref={(section) => { this.Accounts = section; }}></span>
                 <AppBar
                     title='My Accounts'
-                    showMenuIconButton={false}
                     className={styles.appBar}
+                    showMenuIconButton={false}
                   />
-                  <Row between="xs">
+                  <Row>
                     {listAccounts}
                   </Row>
               </Col>
             </Row>
             <Row className={styles.transactionsStyle}>
-              <Col  xs >
+              <Col xs={12} >
                   <span ref={(section) => { this.Dragos = section; }}></span>
                   <AppBar className={styles.appBar}
                       title='My Dragos'
@@ -260,7 +260,7 @@ class PageDashboardDragoTrader extends Component {
                 </Col>
             </Row>
             <Row className={styles.transactionsStyle}>
-              <Col xs>
+              <Col xs={12}>
                   <span ref={(section) => { this.Transactions = section; }}></span>
                   <AppBar
                   title='My Transactions'

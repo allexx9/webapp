@@ -15,6 +15,16 @@ import IdentityIcon from '../IdentityIcon';
 
 import styles from './elementAccountBox.module.css'
 
+const style = {
+  chip: {
+    margin: 4,
+  },
+  wrapper: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+};
+
 class ElementAccountBox extends Component {
 
   static contextTypes = {
@@ -98,14 +108,16 @@ class ElementAccountBox extends Component {
                 </Row>
               </Col>
             </Row>
-            <Row middle="xs" between="xs" className={styles.accountBodyContainer}>
+            <Row className={styles.accountBodyContainer}>
               <Col xs={2} >
-                <Chip className={styles.accountChip}>
-                  <Avatar size={32}>W</Avatar>
-                  {account.source}
-                </Chip>
+                <div style={style.wrapper}>
+                  <Chip className={styles.accountChip}>
+                    <Avatar size={32}>W</Avatar>
+                    {account.source}
+                  </Chip>
+                </div>
               </Col>
-              <Col xs={12} md={10} between="xs" className={styles.accountAmount}>
+              <Col xs={12} md={10} className={styles.accountAmount}>
                 ETH {account.ethBalance}
               </Col>
             </Row>
