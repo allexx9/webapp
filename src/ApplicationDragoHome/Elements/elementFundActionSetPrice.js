@@ -1,4 +1,4 @@
-// Copyright 2016-2017 Gabriele Rigo
+// Copyright 2016-2017 Rigo Investment Sarl.
 
 import  * as Colors from 'material-ui/styles/colors';
 import { Dialog, FlatButton, TextField } from 'material-ui';
@@ -17,6 +17,7 @@ import AccountSelector from '../Elements/elementAccountSelector';
 import DragoApi from '../../DragoApi/src'
 import ElementDialogAddressTitle from '../../Elements/elementDialogAddressTitle'
 import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle'
+import ElementFundActionAuthorization from '../Elements/elementFundActionAuthorization'
 import IdentityIcon from '../../IdentityIcon';
 import utils from '../../utils/utils.js'
 
@@ -44,6 +45,7 @@ export default class ElementFundActionSetPrice extends Component {
 
   state = {
     account: {},
+    openAuth: false,
     accountError: ERRORS.invalidAccount,
     // amountErrorBuy: ERRORS.invalidAmount,
     // amountErrorSell: ERRORS.invalidAmount,
@@ -67,37 +69,10 @@ export default class ElementFundActionSetPrice extends Component {
     console.log(api)
   }
 
-  // componentWillReceiveProps(nextProps) {
-  //   // Updating the lists on each new block if the accounts balances have changed
-  //   // Doing this this to improve performances by avoiding useless re-rendering
-  //   const { api } = this.context
-  //   const {accounts } = this.props
-  //   console.log(nextProps)
-  //   const sourceLogClass = this.constructor.name
-  //   // if (!this.props.ethBalance.eq(nextProps.ethBalance)) {
-  //   //   this.getTransactions (null, accounts)
-  //   //   console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
-  //   // } else {
-  //   //   null
-  //   // }
-  // }
-
-  // shouldComponentUpdate(nextProps, nextState){
-  //   const  sourceLogClass = this.constructor.name
-  //   var stateUpdate = true
-  //   var propsUpdate = true
-  //   console.log(nextState)
-  //   // stateUpdate = !utils.shallowEqual(this.state, nextState)
-  //   // propsUpdate = !this.props.ethBalance.eq(nextProps.ethBalance)
-  //   // if (stateUpdate || propsUpdate) {
-  //   //   console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
-  //   // }
-  //   return true
-  // }
-
   render () {
     
-    const { complete } = this.state;
+    const { complete, openAuth, authMsg, authAccount } = this.state;
+    const {dragoDetails} = this.props
 
     if (complete) {
       return null;
@@ -107,6 +82,19 @@ export default class ElementFundActionSetPrice extends Component {
       padding: 0,
       lineHeight: '20px',
       fontSize: 16
+    }
+
+    if (openAuth) {
+      return (
+        <div>
+          <ElementFundActionAuthorization
+            dragoDetails={dragoDetails}
+            authMsg={authMsg}
+            account={authAccount}
+            onClose={this.onClose}
+          />
+        </div>
+      )
     }
 
     return (
@@ -286,10 +274,10 @@ export default class ElementFundActionSetPrice extends Component {
   }
 
   onChangeAddress = (account) => {
-	const { api } = this.context;
+    const { api } = this.context;
     this.setState({
       account,
-      accountError: validateAccount(account,api)
+      accountError: validateAccount(account, api)
     });
   }
 
@@ -402,42 +390,12 @@ export default class ElementFundActionSetPrice extends Component {
         sending: false
       })
     })
-    this.onClose()
-    this.props.snackBar('Instruction awaiting for authorization')
-
-    // if(this.state.account.source === 'MetaMask') {
-    //   const web3 = window.web3
-    //   dragoApi = new DragoApi(web3)
-    //   dragoApi.contract.drago.init(dragoDetails.address)
-    //   dragoApi.contract.drago.setPrices(this.state.account.address, buyPrice, sellPrice)
-    //   .then ((result) =>{
-    //     console.log(result)
-    //     this.setState({
-    //       sending: false
-    //     });
-    //   })
-    //   .catch((error) => {
-    //     console.error('error', error)
-    //     this.setState({
-    //       sending: false
-    //     })
-    //   })
-    //   this.onClose()
-    //   this.props.snackBar('Instruction awaiting for authorization')
-    // } else {
-    //   dragoApi = new DragoApi(api)
-    //   dragoApi.contract.drago.init(dragoDetails.address)
-    //   dragoApi.contract.drago.setPrices(this.state.account.address, buyPrice, sellPrice)
-    //   .then((result) => {
-    //     this.onClose()
-    //     this.props.snackBar('Instruction awaiting for authorization')
-    //   })
-    //   .catch((error) => {
-    //     console.error('error', error);
-    //     this.setState({
-    //       sending: false
-    //     })
-    //   })
-    // }
+    this.setState({
+      openAuth: true,
+      authMsg: "BUY price set to " + buyPrice + " ETH. SELL price set to " + sellPrice + " ETH",
+      authAccount: {...this.state.account}
+    })
+    // this.onClose()
+    // this.props.snackBar('Instruction awaiting for authorization')
   }
 }

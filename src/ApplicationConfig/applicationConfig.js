@@ -1,4 +1,4 @@
-// Copyright 2016-2017 Gabriele Rigo
+// Copyright 2016-2017 Rigo Investment Sarl.
 
 import { Grid, Row, Col } from 'react-flexbox-grid';
 import { Link, Route, withRouter, HashRouter, Switch, Redirect } from 'react-router-dom'

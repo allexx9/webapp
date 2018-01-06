@@ -1,5 +1,6 @@
-// Copyright 2016-2017 Gabriele Rigo
+// Copyright 2016-2017 Rigo Investment Sarl.
 
+import  * as Colors from 'material-ui/styles/colors';
 import { Dialog, FlatButton, TextField } from 'material-ui';
 import { Grid, Row, Col } from 'react-flexbox-grid';
 import BigNumber from 'bignumber.js';
@@ -7,16 +8,14 @@ import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import IdentityIcon from '../../IdentityIcon';
-import  * as Colors from 'material-ui/styles/colors';
 
 import AccountSelector from '../Elements/elementAccountSelector';
-import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle'
 import ElementDialogAddressTitle from '../../Elements/elementDialogAddressTitle'
+import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle'
+import IdentityIcon from '../../IdentityIcon';
 import InfoTable from '../Elements/elementInfoTable'
 
 import styles from './elementFundActionAuthorization.module.css';
-
 
 export default class ElementFundActionAuthorization extends Component {
 
@@ -26,6 +25,7 @@ export default class ElementFundActionAuthorization extends Component {
 
   static propTypes = {
     account: PropTypes.object.isRequired,
+    onClose: PropTypes.func
   }
 
   state = {
@@ -40,9 +40,16 @@ export default class ElementFundActionAuthorization extends Component {
 
 
   handleClose = () => {
-    this.setState({
-      open: false,
-    });
+    // Executing onClose function passed by parent if exists, otherwise setting state.
+    if (typeof this.props.onClose !== 'undefined') {
+      console.log('onClose props')
+      this.props.onClose()
+    } else {
+      this.setState({
+        open: false,
+      })
+    }
+
   }
 
   renderHeader = () => {

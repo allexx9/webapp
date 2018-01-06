@@ -1,4 +1,4 @@
-// Copyright 2016-2017 Gabriele Rigo
+// Copyright 2016-2017 Rigo Investment Sarl.
 
 import { Dialog, FlatButton, TextField } from 'material-ui';
 import { Grid, Row, Col } from 'react-flexbox-grid';

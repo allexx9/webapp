@@ -1,4 +1,4 @@
-// Copyright 2016-2017 Gabriele Rigo
+// Copyright 2016-2017 Rigo Investment Sarl.
 
 import BigNumber from 'bignumber.js';
 import React, { Component } from 'react';
@@ -125,10 +125,10 @@ export default class ApplicationDragoHome extends Component {
 
   componentWillMount () {
     const {api} = this.context
-    api.parity.pendingTransactions()
-    .then((result) =>{
-      console.log(result)
-    })
+    // api.parity.pendingTransactions()
+    // .then((result) =>{
+    //   console.log(result)
+    // })
 
   } 
 

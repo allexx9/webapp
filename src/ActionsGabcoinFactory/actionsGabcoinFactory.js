@@ -1,4 +1,4 @@
-// Copyright 2016-2017 Gabriele Rigo, RigoBlock, Rigo Investment Sagl
+// Copyright 2016-2017 Rigo Investment Sarl., RigoBlock, Rigo Investment Sagl
 
 import styles from './actions.module.css';
 

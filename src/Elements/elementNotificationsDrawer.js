@@ -68,7 +68,7 @@ export default class ElementNotificationsDrawer extends Component {
         var runTick = () =>{ timerId = setTimeout(function tick() {
           console.log('tick')
           attachInterfaceInfura()
-          timerId = setTimeout(tick, 1000); // (*)
+          timerId = setTimeout(tick, 3000); // (*)
         }, 3000);}
         runTick()
         break;
@@ -159,7 +159,7 @@ export default class ElementNotificationsDrawer extends Component {
   render () {
     const { notificationsOpen } = this.props
     const { allEvents } = this.state
-    console.log(allEvents)
+    // console.log(allEvents)
     return (
       <span>
         <Drawer width={300} openSecondary={true} 
@@ -315,86 +315,102 @@ export default class ElementNotificationsDrawer extends Component {
     });
   }
 
-  setupFiltersInfura (contract) {
+  setupFiltersInfura(contract) {
     const { api } = this.context;
     const dragoApi = new DragoApi(api)
-    const {accounts} = this.props
-    const topics = {topics: [ null, null, null, null]}
+    const { accounts } = this.props
+    const topics = { topics: [null, null, null, null] }
     var hexAccounts = null
     if (accounts !== null) {
       hexAccounts = accounts.map((account) => {
-        const hexAccount = '0x' + account.address.substr(2).padStart(64,'0')
+        const hexAccount = '0x' + account.address.substr(2).padStart(64, '0')
         return hexAccount
       })
     }
-
+    hexAccounts = [null, ...hexAccounts]
+    hexAccounts = [""]
+    console.log(hexAccounts)
     const options = {
       fromBlock: 0,
       toBlock: 'pending',
       // limit: 5
     };
-    
+
     dragoApi.contract.eventful.init()
-    .then (() => {
-      // Filter for create events
-      const eventsFilterCreate = {
-        topics: [ 
-          [dragoApi.contract.eventful.hexSignature.DragoCreated], 
-          null, 
-          null,
-          hexAccounts
-        ]
-      }
-      // Filter for buy events
-      const eventsFilterBuy = {
-        topics: [ 
-          [dragoApi.contract.eventful.hexSignature.BuyDrago], 
-          null, 
-          hexAccounts,
-          null
-        ]
-      }
-      // Filter for sell events
-      const eventsFilterSell = {
-        topics: [ 
-          [dragoApi.contract.eventful.hexSignature.SellDrago], 
-          null, 
-          null,
-          hexAccounts
-        ]
-      }
-      const createDragoEvents = 
-      contract.getAllLogs(options, eventsFilterCreate)
-      .then((dragoTransactionsLog) => {
-        return dragoTransactionsLog
-      }
-      )
-      const buyDragoEvents = 
-        contract.getAllLogs(options, eventsFilterBuy)
-        .then((dragoTransactionsLog) => {
-          return dragoTransactionsLog
+      .then(() => {
+        // Filter for create events
+        // const eventsFilterCreate = {
+        //   topics: [ 
+        //     [dragoApi.contract.eventful.hexSignature.DragoCreated], 
+        //     null, 
+        //     null,
+        //     hexAccounts
+        //   ]
+        // }
+        const eventsFilterCreate = {
+          topics: [
+            [dragoApi.contract.eventful.hexSignature.DragoCreated,
+            dragoApi.contract.eventful.hexSignature.BuyDrago,
+            dragoApi.contract.eventful.hexSignature.SellDrago
+            ],
+            null,
+            hexAccounts,
+            hexAccounts
+          ]
         }
-        )
-      const sellDragoEvents = 
-        contract.getAllLogs(options, eventsFilterSell)
-        .then((dragoTransactionsLog) => {
-          return dragoTransactionsLog
-        }
-        )
-        return Promise.all([buyDragoEvents, sellDragoEvents, createDragoEvents])
-        .then ((results) =>{
-          // Creating an array of promises that will be executed to add timestamp and symbol to each entry
-          // Doing so because for each entry we need to make an async call to the client
-          // For additional refernce: https://stackoverflow.com/questions/39452083/using-promise-function-inside-javascript-array-map
-          console.log(results)
-          var dragoTransactionsLog = [...results[0], ...results[1], ...results[2]]
-          return dragoTransactionsLog
-        }
-      )
-      .then ((dragoTransactionsLog) => {
-        this.processLogs(dragoTransactionsLog)
+        // // Filter for buy events
+        // const eventsFilterBuy = {
+        //   topics: [ 
+        //     [dragoApi.contract.eventful.hexSignature.BuyDrago], 
+        //     null, 
+        //     hexAccounts,
+        //     null
+        //   ]
+        // }
+        // // Filter for sell events
+        // const eventsFilterSell = {
+        //   topics: [ 
+        //     [dragoApi.contract.eventful.hexSignature.SellDrago], 
+        //     null, 
+        //     null,
+        //     hexAccounts
+        //   ]
+        // }
+        const createDragoEvents =
+          contract.getAllLogs(options, eventsFilterCreate)
+            .then((dragoTransactionsLog) => {
+              return dragoTransactionsLog
+            }
+            )
+        // const buyDragoEvents =
+        //   contract.getAllLogs(options, eventsFilterBuy)
+        //     .then((dragoTransactionsLog) => {
+        //       return dragoTransactionsLog
+        //     }
+        //     )
+        // const sellDragoEvents =
+        //   contract.getAllLogs(options, eventsFilterSell)
+        //     .then((dragoTransactionsLog) => {
+        //       return dragoTransactionsLog
+        //     }
+        //     )
+        return Promise.all([createDragoEvents])
+          .then((results) => {
+            // Creating an array of promises that will be executed to add timestamp and symbol to each entry
+            // Doing so because for each entry we need to make an async call to the client
+            // For additional refernce: https://stackoverflow.com/questions/39452083/using-promise-function-inside-javascript-array-map
+            console.log(results)
+            // var dragoTransactionsLog = [...results[0], ...results[1], ...results[2]]
+            var dragoTransactionsLog = [...results]
+            return dragoTransactionsLog
+          }
+          )
+          .then((dragoTransactionsLog) => {
+            if (dragoTransactionsLog[0].length != 0) {
+              this.processLogs(dragoTransactionsLog)
+            }
+          })
       })
-    })
   }
 
   detachInterface = () => {

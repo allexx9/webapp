@@ -1,4 +1,4 @@
-// Copyright 2016-2017 Gabriele Rigo
+// Copyright 2016-2017 Rigo Investment Sarl.
 
 import AccountSelector from '../../AccountSelector';
 import AccountSelectorText from '../../AccountSelectorText';

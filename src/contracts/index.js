@@ -1,4 +1,4 @@
-// Copyright 2016-2017 Gabriele Rigo
+// Copyright 2016-2017 Rigo Investment Sarl.
 
 import gabcoin from './gabcoin.json';
 import gabcoinfactory from './gabcoinfactory.json';
