@@ -13,8 +13,8 @@ import  * as Colors from 'material-ui/styles/colors';
 import { ERRORS, validateAccount, validatePositiveNumber, cfdError, exchangeNameError } from './validation';
 import * as abis from '../../contracts';
 import AccountSelector from '../Elements/elementAccountSelector';
-import ElementDialogHeadTitle from '../Elements/elementDialogHeadTitle'
-import ElementDialogAddressTitle from '../Elements/elementDialogAddressTitle'
+import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle'
+import ElementDialogAddressTitle from '../../Elements/elementDialogAddressTitle'
 
 import styles from './elementFundActionPlaceOrder.module.css';
 import DragoApi from '../../DragoApi/src'
@@ -100,7 +100,7 @@ export default class ElementFundActionPlaceOrder extends Component {
     return (
       <div>
           <ElementDialogHeadTitle primaryText='Place an order' />
-          <ElementDialogAddressTitle dragoDetails={dragoDetails} />
+          <ElementDialogAddressTitle tokenDetails={dragoDetails} />
       </div>
 
     )

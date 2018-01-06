@@ -113,7 +113,7 @@ class ElementAccountBox extends Component {
                 <div style={style.wrapper}>
                   <Chip className={styles.accountChip}>
                     <Avatar size={32}>W</Avatar>
-                    {account.source}
+                    {account.source.charAt(0).toUpperCase() + account.source.slice(1)}
                   </Chip>
                 </div>
               </Col>

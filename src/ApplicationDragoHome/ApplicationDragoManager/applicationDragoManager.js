@@ -26,6 +26,7 @@ class applicationDragoManager extends Component {
       match: PropTypes.object.isRequired,
     };
 
+    
 
     render() {
       const { ethBalance, location, blockNumber, accounts, match, allEvents, accountsInfo } = this.props;

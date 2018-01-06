@@ -38,12 +38,14 @@ import { ALLOWED_ENDPOINTS, DEFAULT_ENDPOINT } from '../utils/const';
 
 
 const DIVISOR = 10 ** 6;  //tokens are divisible by one million
+var sourceLogClass = null
 
 export default class ApplicationDragoHome extends Component {
 
   constructor() {
     super();
     this._notificationSystem = null;
+    sourceLogClass = this.constructor.name
   }
 
   // Checking the type of the context variable that we receive by the parent
@@ -93,6 +95,7 @@ export default class ApplicationDragoHome extends Component {
   }
 
   scrollPosition = 0
+  activeElement = null
 
   shouldComponentUpdate(nextProps, nextState){
     // WE NEED TO LOOK INTO THIS FUNCTION. 
@@ -105,7 +108,7 @@ export default class ApplicationDragoHome extends Component {
 
     // Checking if the total accounts balance has changed.
     // If positive a render is trigged so that the childrens are aware that something has changed.
-    const  sourceLogClass = this.constructor.name
+    
     const propsUpdate = (!utils.shallowEqual(this.props, nextProps))
     const stateUpdate = (!utils.shallowEqual(this.state, this.state.loading))
 
@@ -121,6 +124,12 @@ export default class ApplicationDragoHome extends Component {
   }
 
   componentWillMount () {
+    const {api} = this.context
+    api.parity.pendingTransactions()
+    .then((result) =>{
+      console.log(result)
+    })
+
   } 
 
   componentDidMount() {
@@ -155,6 +164,8 @@ export default class ApplicationDragoHome extends Component {
   }
 
   componentWillUpdate() {
+    // Storing the active document, so we can preserve focus in forms.
+    this.activeElement = document.activeElement
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -165,6 +176,12 @@ export default class ApplicationDragoHome extends Component {
     if (element != null) {
       window.scrollTo(0, this.scrollPosition)
     }
+    // Setting focus on the element active before component re-render
+    const activeElement = document.getElementById(this.activeElement.id);
+    if (activeElement != null) {
+      activeElement.focus()
+    }
+    
   }
 
   render () {
@@ -310,28 +327,26 @@ export default class ApplicationDragoHome extends Component {
   }
 
   onNewBlockNumber = (_error, blockNumber) => {
-    console.log('Running onNewBlockNumber')
     if (_error) {
       console.error('onNewBlockNumber', _error)
       return
     }
     const { api } = this.context;
     const prevBlockNumber = "".concat(this.state.prevBlockNumber)
-    console.log('Last blocK: ' + prevBlockNumber)
-    console.log('New block: ' + blockNumber.toFixed())
+    console.log(`${sourceLogClass} -> Last blocK: ` + prevBlockNumber)
+    console.log(`${sourceLogClass} -> New block: ` + blockNumber.toFixed())
     this.setState({
       prevBlockNumber: blockNumber.toFixed()
     })
     // Checking that the current blockNumber is higher than previous one.
     if (prevBlockNumber > blockNumber.toFixed()) {
-      console.log('Detected prevBlockNumber > currentBlockNumber. Skipping accounts update.')
+      console.log(`${sourceLogClass} -> Detected prevBlockNumber > currentBlockNumber. Skipping accounts update.`)
       this.setState({
         prevBlockNumber: blockNumber.toFixed()
       })
       return null
     }
     const accounts = [].concat(this.state.accounts);
-    const sourceLogClass = this.constructor.name
     const ethQueries = accounts.map((account) => {
       console.log(`${sourceLogClass} API call getBalance -> applicationDragoHome: Getting balance of account ${account.name}`)
       return api.eth.getBalance(account.address, new BigNumber(blockNumber))

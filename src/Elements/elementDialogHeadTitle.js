@@ -21,7 +21,6 @@ export default class ElementDialogHeadTitle extends Component {
             <Col xs>
               {this.props.primaryText}
             </Col>
-            {/* Deposit to the exchange */}
           </Row>
         </Col>
       </Row>

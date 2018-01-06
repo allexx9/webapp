@@ -202,7 +202,7 @@ class PageFundDetailsDragoTrader extends Component {
 
       const columnsStyle = [styles.detailsTableCell, styles.detailsTableCell2, styles.detailsTableCell3]
       const tableButtons = [this.renderCopyButton(dragoDetails.address), this.renderEtherscanButton('address', dragoDetails.address)]
-      const tableTest = [['Symbol', dragoDetails.symbol, ''], 
+      const tableInfo = [['Symbol', dragoDetails.symbol, ''], 
         ['Name', dragoDetails.name, ''], 
         ['Address', dragoDetails.address, tableButtons],
         ['Owner', dragoDetails.addresssOwner, tableButtons]]
@@ -250,7 +250,7 @@ class PageFundDetailsDragoTrader extends Component {
                           showMenuIconButton={false}
                         />
                         <div className={styles.detailsTabContent}>
-                        <InfoTable  rows={tableTest} columnsStyle={columnsStyle}/>
+                        <InfoTable  rows={tableInfo} columnsStyle={columnsStyle}/>
                         </div>
                       </Paper>
                     </Col>

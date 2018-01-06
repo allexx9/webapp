@@ -9,6 +9,7 @@ import PropTypes from 'prop-types';
 import RaisedButton from 'material-ui/RaisedButton';
 import React from 'react';
 import TextField from 'material-ui/TextField';
+import Paper from 'material-ui/Paper'
 
 import {
   Table,
@@ -26,6 +27,7 @@ import AccountSelector from './elementAccountSelector'
 import ElementFundActionsHeader from './elementFundActionsHeader'
 import IdentityIcon from '../../IdentityIcon';
 import DragoApi from '../../DragoApi/src'
+import ElementFundActionAuthorization from '../Elements/elementFundActionAuthorization'
 
 import styles from './elementFundActions.module.css';
 
@@ -45,7 +47,37 @@ export default class ElementFundActions extends React.Component {
   
   state = {
     open: false,
+    openAuth: false,
+    authMsg: '',
     action: 'buy',
+    actionSummary: 'BUYING',
+    account: {},
+    accountError: ERRORS.invalidAccount,
+    accountCorrect: false,
+    amount: 0,
+    newDrgBalance: 0,
+    drgBalance: 0,
+    drgOrder: 0,
+    amountError: ERRORS.invalidAmount,
+    amountFieldDisabled: true,
+    unitsSummary: 0,
+    amountSummary: 0,
+    actionStyleBuySell: { 
+      color: Colors.green300
+    },
+    canSubmit: false,
+    sending: false,
+    complete: false,
+    switchButton: {
+      label: 'Units',
+      denomination: 'ETH',
+      hint: 'Amount'
+    }
+  }
+
+  resetState = {
+    action: 'buy',
+    openAuth: false,
     actionSummary: 'BUYING',
     account: {},
     accountError: ERRORS.invalidAccount,
@@ -79,99 +111,51 @@ export default class ElementFundActions extends React.Component {
     color: Colors.red300,
   }
 
-  // componentWillMount () {
-  //   this.setPrice()
-  // }
-
-  // setPrice = () => {
-  //   const { api } = this.context
-  //   const {dragoDetails} = this.props
-  //   var sellPrice = new BigNumber(500000000000000000)
-  //   var buyPrice = new BigNumber(700000000000000000)
-  //   const values = [sellPrice, buyPrice]
-  //   const options = {
-  //     from: '0x00a79Fa87cFb12A05205CaEa3870C1A9C322ae5C',
-  //   }
-  //   const dragoToken = api.newContract(abis.drago, dragoDetails.address).instance;
-  //   dragoToken.setPrices
-  //   .estimateGas(options, values)
-  //   .then((gasEstimate) => {
-  //     options.gas =  gasEstimate.mul(1.2).toFixed(0)
-  //     console.log(`setPrice drago: gas estimated as ${gasEstimate.toFixed(0)} setting to ${options.gas}`)
-      
-  //     dragoToken.setPrices.postTransaction(options, values)
-  //     .then((result) =>{
-  //       console.log(result)
-  //     })
-  //     .catch((error) => {
-  //       console.log(`setPrice drago ERROR ${error}`)
-  //     })      
-      
-  //   })
-  //   .catch((error) => {
-  //     console.log(`estimateGas drago ERROR ${error}`)
-  //   })
-  // }
-
-
   handleOpen = () => {
     this.setState({
       open: true,
-      action: 'buy',
-      actionSummary: 'BUYING',
-      account: {},
-      accountError: ERRORS.invalidAccount,
-      accountCorrect: false,
-      amount: 0,
-      newDrgBalance: 0,
-      drgBalance: 0,
-      drgOrder: 0,
-      amountError: ERRORS.invalidAmount,
-      amountFieldDisabled: true,
-      unitsSummary: 0,
-      amountSummary: 0,
-      actionStyleBuySell: { 
-        color: Colors.green300
-      },
-      canSubmit: false,
-      sending: false,
-      complete: false,
-      switchButton: {
-        label: 'Units',
-        denomination: 'ETH',
-        hint: 'Amount'
-      }    
-    });
+      ...this.resetState  
+    })
   }
 
-  handleClose = () => {
-    this.setState({
-      open: false,
-      action: 'buy',
-      actionSummary: 'BUYING',
-      account: {},
-      accountError: ERRORS.invalidAccount,
-      accountCorrect: false,
-      amount: 0,
-      newDrgBalance: 0,
-      drgBalance: 0,
-      drgOrder: 0,
-      amountError: ERRORS.invalidAmount,
-      amountFieldDisabled: true,
-      unitsSummary: 0,
-      amountSummary: 0,
-      actionStyleBuySell: { 
-        color: Colors.green300
-      },
-      canSubmit: false,
-      sending: false,
-      complete: false,
-      switchButton: {
-        label: 'Units',
-        denomination: 'ETH',
-        hint: 'Amount'
-      }
-    });
+  handleCancel = () => {
+    this.setState(
+      { open: false }
+    )
+  }
+
+  handleSubmit = () => {
+    // const {api} = this.context
+    // var timerId = null;
+    // // var runTick = () =>{ timerId = setTimeout(function tick() {
+    // //   console.log('checking pending')
+    // //   api.parity.pendingTransactions()
+    // //   .then((result) =>{
+    // //     console.log(result)
+    // //   })
+    // //   timerId = setTimeout(tick, 1000); // (*)
+    // // }, 3000);}
+    // // runTick()
+    // const {account } = this.state
+    // var web3 = window.web3
+    // var runTick = () => {
+    //   timerId = setTimeout(function tick() {
+    //     console.log('checking pending')
+    //     web3.eth.getPastLogs({
+    //       fromBlock: '1',
+    //       toBlock: "pending",
+    //       address: account.address,
+    //       topics: [null, null, null, null]
+    //   })
+    //   .then(console.log);
+    //     timerId = setTimeout(tick, 1000); // (*)
+    //   }, 3000);
+    // }
+    // runTick()
+
+    this.setState(
+      { openAuth: true }
+    );
   }
   
 
@@ -272,26 +256,6 @@ export default class ElementFundActions extends React.Component {
       } else {
         orderAmount = isNaN(amount) ? new BigNumber(0) : new BigNumber(amount)
       }
-      // switch(action) {
-      //   case "buy":
-      //     // Checking if the amount is expressed in ETH 
-      //     if (this.state.switchButton.label == 'Units') {
-      //       console.log('ETH')
-      //       let amountDRG = orderAmount.times(buyRatio)
-      //       let amountETH = new BigNumber(amount)
-      //       return {amountETH: amountETH, amountDRG: amountDRG} 
-      //     }
-      //     // Checking if the amount is expressed in DRG
-      //     if (this.state.switchButton.label == 'Amount') {
-      //       console.log('DRG')
-      //       let amountDRG = orderAmount
-      //       let amountETH = new BigNumber(amount).times(buyRatio)
-      //       return {amountETH: amountETH, amountDRG: amountDRG} 
-      //     }
-      //     break
-      //   case "sell":
-      //     break
-      // } 
       // Checking if the amount is expressed in ETH 
       if (this.state.switchButton.label == 'Units') { // Buy in ETH amount
         let amountDRG = orderAmount.times(ratio)
@@ -398,8 +362,8 @@ export default class ElementFundActions extends React.Component {
     console.log(this.state.amountSummary.toString())
     const accountAddress = this.state.account.address
     const amount = api.util.toWei(this.state.amountSummary).toString()
+    const authMsg = 'You bought ' + this.state.unitsSummary + ' units of ' + dragoDetails.symbol.toUpperCase() + ' for ' + this.state.amountSummary + ' ETH'
     var dragoApi = null;
-
     var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
     dragoApi = new DragoApi(provider)
     dragoApi.contract.drago.init(dragoDetails.address)
@@ -414,55 +378,13 @@ export default class ElementFundActions extends React.Component {
         sending: false
       })
     })
-    this.props.snackBar('Buy order waiting for authorization for ' + this.state.amountSummary.toString() + ' ETH')
+    // this.props.snackBar('Buy order waiting for authorization for ' + this.state.amountSummary.toString() + ' ETH')
     this.setState({
+      authMsg: authMsg,
+      authAccount: {...this.state.account},
       sending: false,
       complete: true,
-      open: false
-    }, this.handleClose)
-    // if(this.state.account.source === 'MetaMask') {
-    //   const web3 = window.web3
-    //   const dragoApi = new DragoApi(web3)
-    //   dragoApi.contract.drago.init(dragoDetails.address)
-    //   dragoApi.contract.drago.buyDrago(accountAddress, amount)
-    //   .then((receipt) =>{ 
-    //     console.log(receipt)
-    //   })
-    //   .catch((error) => {
-    //     this.props.snackBar('Your wallet returned an error. Pleae try again.')
-    //     console.error('error', error);
-    //     this.setState({
-    //       sending: false
-    //     })
-    //   })
-    //   this.props.snackBar('Buy order waiting for authorization for ' + this.state.amountSummary.toString() + ' ETH')
-    //   this.setState({
-    //     sending: false,
-    //     complete: true,
-    //     open: false
-    //   }, this.handleClose)
-    // } else {
-    //   this.setState({
-    //     sending: true
-    //   })
-    //   const dragoApi = new DragoApi(api)
-    //   dragoApi.contract.drago.init(dragoDetails.address)
-    //   dragoApi.contract.drago.buyDrago(accountAddress, amount)
-    //   .then(() => {
-    //     this.props.snackBar('Buy order waiting for authorization for ' + this.state.amountSummary.toString() + ' ETH')
-    //     this.setState({
-    //       sending: false,
-    //       complete: true,
-    //       open: false
-    //     },this.handleClose)
-    //   })
-    //   .catch((error) => {
-    //     console.error('error', error);
-    //     this.setState({
-    //       sending: false
-    //     })
-    //   })
-    // }
+    }, this.handleSubmit)
   }
 
   onSendSell = () => {
@@ -475,7 +397,8 @@ export default class ElementFundActions extends React.Component {
     //   from: this.state.account.address
     // }
     const accountAddress = this.state.account.address
-    const amount = new BigNumber(this.state.amountSummary).mul(DIVISOR).toFixed(0)
+    const amount = new BigNumber(this.state.unitsSummary).mul(DIVISOR).toFixed(0)
+    const authMsg = 'You sold ' + this.state.unitsSummary + ' units of ' + dragoDetails.symbol.toUpperCase() + ' for ' + this.state.amountSummary + ' ETH'
     var dragoApi = null;
     var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
     dragoApi = new DragoApi(provider)
@@ -491,55 +414,13 @@ export default class ElementFundActions extends React.Component {
           sending: false
         })
       })
-    this.props.snackBar('Sell order waiting for authorization for ' + this.state.amountSummary + ' ' + dragoDetails.symbol.toUpperCase())
+    // this.props.snackBar('Sell order waiting for authorization for ' + this.state.amountSummary + ' ' + dragoDetails.symbol.toUpperCase())
     this.setState({
+      authMsg: authMsg,
+      authAccount: {...this.state.account},
       sending: false,
       complete: true,
-      open: false
-    }, this.handleClose)
-
-    // if (this.state.account.source === 'MetaMask') {
-    //   const web3 = window.web3
-    //   const dragoApi = new DragoApi(web3)
-    //   dragoApi.contract.drago.init(dragoDetails.address)
-    //   dragoApi.contract.drago.sellDrago(accountAddress, amount)
-    //     .then((receipt) => {
-    //       console.log(receipt)
-    //     })
-    //     .catch((error) => {
-    //       console.error('error', error);
-    //       this.setState({
-    //         sending: false
-    //       })
-    //     })
-    //   this.props.snackBar('Sell order waiting for authorization for ' + this.state.amountSummary + ' ' + dragoDetails.symbol.toUpperCase())
-    //   this.setState({
-    //     sending: false,
-    //     complete: true,
-    //     open: false
-    //   }, this.handleClose)
-    // } else {
-    //   this.setState({
-    //     sending: true
-    //   })
-    //   const dragoApi = new DragoApi(api)
-    //   dragoApi.contract.drago.init(dragoDetails.address)
-    //   dragoApi.contract.drago.sellDrago(accountAddress, amount)
-    //     .then(() => {
-    //       this.props.snackBar('Sell order waiting for authorization for ' + this.state.amountSummary + ' ' + dragoDetails.symbol.toUpperCase())
-    //       this.setState({
-    //         sending: false,
-    //         complete: true,
-    //         open: false
-    //       }, this.handleClose)
-    //     })
-    //     .catch((error) => {
-    //       console.error('error', error);
-    //       this.setState({
-    //         sending: false
-    //       })
-    //     })
-    // }
+    }, this.handleSubmit)
   }
 
   onSend = () => {
@@ -566,6 +447,9 @@ export default class ElementFundActions extends React.Component {
   }
 
   buyFields = () => {
+    const floatingLabelTextAmount = this.state.switchButton.denomination == 'ETH'
+      ? 'Amount in ' + this.state.switchButton.denomination
+      : 'Units of ' + this.state.switchButton.denomination 
     return (
       <Col xs={6}>
         <Row middle="xs" >
@@ -580,14 +464,14 @@ export default class ElementFundActions extends React.Component {
           </Col>
           <Col xs={6}>
             <TextField
+                id='actionBuyAmount'
                 autoComplete='off'
                 floatingLabelFixed
-                floatingLabelText={'Amount in ' + this.state.switchButton.denomination}
+                floatingLabelText={floatingLabelTextAmount}
                 fullWidth
                 hintText={this.state.switchButton.hint}
                 errorText={ this.state.amountError }
                 name='amount'
-                id='amount'
                 disabled={this.state.amountFieldDisabled}
                 value={ this.state.amount }
                 onChange={ this.onChangeAmount } />
@@ -607,11 +491,15 @@ export default class ElementFundActions extends React.Component {
   }
 
   sellFields = () => {
+    const floatingLabelTextAmount = this.state.switchButton.denomination == 'ETH'
+    ? 'Amount in ' + this.state.switchButton.denomination
+    : 'Units of ' + this.state.switchButton.denomination 
     return (
       <Col xs={6}>
         <Row middle="xs" >
           <Col xs={12}>
             <AccountSelector
+            id='actionAccount'
             accounts={ this.props.accounts }
             account={ this.state.account }
             errorText={ this.state.accountError }
@@ -621,14 +509,14 @@ export default class ElementFundActions extends React.Component {
           </Col>
           <Col xs={6}>
             <TextField
+                id='actionSellAmount'
                 autoComplete='off'
                 floatingLabelFixed
-                floatingLabelText={'Amount in ' + this.state.switchButton.denomination}
+                floatingLabelText={floatingLabelTextAmount}
                 fullWidth
                 hintText={this.state.switchButton.hint}
                 errorText={ this.state.amountError }
                 name='amount'
-                id='amount'
                 disabled={this.state.amountFieldDisabled}
                 value={ this.state.amount }
                 onChange={ this.onChangeAmount } />
@@ -677,15 +565,15 @@ export default class ElementFundActions extends React.Component {
 
   render() {
     const { dragoDetails, accounts } = this.props
-    const { actionStyle } = this.state
+    const { actionStyle, openAuth, authMsg, authAccount } = this.state
     const { accountError, amountError, sending } = this.state;
     const hasError = !!(this.state.accountError || this.state.amountError );
     const actions = [
       <FlatButton
         label="Cancel"
         primary={true}
-        onClick={this.handleClose}
-        onTouchTap={this.handleClose}
+        onClick={this.handleCancel}
+        onTouchTap={this.handleCancel}
       />,
       <FlatButton
         label="Submit"
@@ -694,6 +582,21 @@ export default class ElementFundActions extends React.Component {
         onClick={this.onSend}
       />,
     ];
+
+    if (openAuth) {
+      console.log(this.state)
+      return (
+        <div>
+          <RaisedButton label="Actions" primary={true} onClick={this.handleOpen}
+            labelStyle={{ fontWeight: 700 }} />
+          <ElementFundActionAuthorization
+            dragoDetails={dragoDetails}
+            authMsg={authMsg}
+            account={authAccount}
+          />
+        </div>
+      )
+    }
     return (
       <div>
         <RaisedButton label="Actions" primary={true} onClick={this.handleOpen} 
@@ -708,7 +611,7 @@ export default class ElementFundActions extends React.Component {
             modal={false}
             open={this.state.open}
             contentStyle={customContentStyle}
-            onRequestClose={this.handleClose}
+            onRequestClose={this.handleCancel}
           >
           <Row>
             <Col xs={12}>
@@ -720,6 +623,7 @@ export default class ElementFundActions extends React.Component {
               </Row>
             </Col>
           </Row>
+          <Paper className={styles.paperContainer} zDepth={1}>
           <Row>
               <Col xs={6}>
                 <p>Holding</p>
@@ -735,6 +639,7 @@ export default class ElementFundActions extends React.Component {
             {this.state.action =='buy' ? this.buyFields() : this.sellFields()}
 
           </Row>
+          </Paper>
           <Row>
             <Col xs={12} className={styles.grossAmountWarning}>
               * Gross of fees

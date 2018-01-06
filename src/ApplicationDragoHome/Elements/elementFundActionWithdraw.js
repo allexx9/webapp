@@ -13,8 +13,8 @@ import  * as Colors from 'material-ui/styles/colors';
 import { ERRORS, validateAccount, validatePositiveNumber } from './validation';
 import * as abis from '../../contracts';
 import AccountSelector from '../Elements/elementAccountSelector';
-import ElementDialogHeadTitle from '../Elements/elementDialogHeadTitle'
-import ElementDialogAddressTitle from '../Elements/elementDialogAddressTitle'
+import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle'
+import ElementDialogAddressTitle from '../../Elements/elementDialogAddressTitle'
 
 import styles from './elementFundActionWithdraw.module.css';
 import DragoApi from '../../DragoApi/src'
@@ -89,7 +89,7 @@ export default class ElementFundActionWithdraw extends Component {
     return (
       <div>
           <ElementDialogHeadTitle primaryText='Withdraw from the exchange' />
-          <ElementDialogAddressTitle dragoDetails={dragoDetails} />
+          <ElementDialogAddressTitle tokenDetails={dragoDetails} />
       </div>
 
     )

@@ -425,7 +425,7 @@ export class ApplicationDragoPage extends Component {
 
   const {notificationsOpen} = this.state
   const { location } = this.props
-  console.log('is Manager = '+this.state.isManager)
+  // console.log('is Manager = '+this.state.isManager)
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
         <Grid fluid className={styles.maincontainer}>

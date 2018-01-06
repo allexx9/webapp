@@ -87,7 +87,7 @@ class utilities {
       var ethvalue = 0
       var drgvalue = 0
       var dragoSymbolRegistry = new Map()
-      console.log(options)
+      // console.log(options)
       const logToEvent = (log) => {
         const key = api.util.sha3(JSON.stringify(log))
         const { blockNumber, logIndex, transactionHash, transactionIndex, params, type } = log   
@@ -211,7 +211,7 @@ class utilities {
             // Creating an array of promises that will be executed to add timestamp and symbol to each entry
             // Doing so because for each entry we need to make an async call to the client
             // For additional refernce: https://stackoverflow.com/questions/39452083/using-promise-function-inside-javascript-array-map
-            console.log(results)
+            // console.log(results)
             var dragoTransactionsLog = options.trader ? [...results[0], ...results[1]] : [...results[0]]
             // dragoTransactionsLog.filter(function(val) { return val !== null; })
             var dragoBalances = [] 
@@ -350,8 +350,8 @@ class utilities {
                     balances.push(balance)
                   }
                   var results = [balances, logs, supply]
-                  console.log(results)
-                  console.log(`${sourceLogClass} -> Transactions list loaded`)
+                  // console.log(results)
+                  // console.log(`${sourceLogClass} -> Transactions list loaded`)
                   return results
                 })
               })

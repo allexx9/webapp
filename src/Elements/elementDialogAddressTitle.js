@@ -5,25 +5,25 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import  * as Colors from 'material-ui/styles/colors';
 import styles from './elementDialogAddressTitle.module.css';
-import IdentityIcon from '../../IdentityIcon';
+import IdentityIcon from '../IdentityIcon';
 
 
 export default class ElementDialogAddressTitle extends Component {
 
   static propTypes = {
-    dragoDetails: PropTypes.object.isRequired,
+    tokenDetails: PropTypes.object.isRequired,
   }
 
   render = () => {
-    const {dragoDetails} = this.props
+    const {tokenDetails} = this.props
     return (
       <Row className={styles.modalTitle}>
         <Col xs={12} md={1} className={styles.dragoTitle}>
-          <h2><IdentityIcon address={ dragoDetails.address } /></h2>
+          <h2><IdentityIcon address={ tokenDetails.address } /></h2>
         </Col>
         <Col xs={12} md={11} className={styles.dragoTitle}>
-        <p>{dragoDetails.symbol} | {dragoDetails.name} </p>
-        <small>{dragoDetails.address}</small>
+        <p>{tokenDetails.symbol} | {tokenDetails.name} </p>
+        <small>{tokenDetails.address}</small>
         </Col>
       </Row>
     )

@@ -101,6 +101,7 @@ class PageFundDetailsDragoManager extends Component {
       const dragoID = this.props.match.params.dragoid
       const {accounts } = this.props
       const sourceLogClass = this.constructor.name
+      // console.log(nextProps)
       if (!this.props.ethBalance.eq(nextProps.ethBalance)) {
         this.getDragoDetails(dragoID)
         console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);

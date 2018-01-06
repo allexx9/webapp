@@ -26,7 +26,7 @@ import AccountSelector from './elementAccountSelector'
 import IdentityIcon from '../../IdentityIcon'
 import utils, {dragoApi} from '../../utils/utils'
 import DragoApi from '../../DragoApi/src'
-import ElementDialogHeadTitle from '../Elements/elementDialogHeadTitle'
+import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle'
 
 import styles from './elementFundCreateAction.module.css';
 

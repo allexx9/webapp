@@ -49,12 +49,6 @@ import utils, {dragoApi} from '../../utils/utils'
 
 import styles from './pageDashboardDragoManager.module.css'
 
-// let ScrollLink       = Scroll.Link;
-// let Element    = Scroll.Element;
-// let Events     = Scroll.Events;
-// let scroll     = Scroll.animateScroll;
-// let scrollSpy  = Scroll.scrollSpy;
-
 class PageDashboardDragoManager extends Component {
 
   // Checking the type of the context variable that we receive by the parent
@@ -81,14 +75,13 @@ class PageDashboardDragoManager extends Component {
       snackBarMsg: ''
     }
 
-
     componentDidMount() {
+      const {accounts } = this.props
+      this.getTransactions (null, accounts)
     }
 
     componentWillMount() {
-      const { api, contract } = this.context
-      const {accounts } = this.props
-      this.getTransactions (null, accounts)
+
     }
 
     componentWillReceiveProps(nextProps) {
@@ -144,7 +137,7 @@ class PageDashboardDragoManager extends Component {
       
       return (
         <CopyToClipboard text={text}
-            onCopy={() => this.snackBar('Copied to clilpboard')}>
+            onCopy={() => this.snackBar('Copied to clipboard')}>
             <Link to={'#'} ><CopyContent className={styles.copyAddress}/></Link>
         </CopyToClipboard>
       );
@@ -191,35 +184,34 @@ class PageDashboardDragoManager extends Component {
           <Col xs={12}>
             <Paper className={styles.paperContainer} zDepth={1}>
               <Toolbar className={styles.detailsToolbar}>
-                  <ToolbarGroup className={styles.detailsToolbarGroup}>
-                    <Row className={styles.detailsToolbarGroup}>
-                      <Col xs={12} md={1} className={styles.dragoTitle}>
-                        <h2><Avatar size={50} icon={<ActionHome />} /></h2>
-                      </Col>
-                      <Col xs={12} md={11} className={styles.dragoTitle}>
-                      <p>Dashboard Wizard</p>
-                      <small></small>
-                      </Col>
-                    </Row>
-                  </ToolbarGroup> 
-                  <ToolbarGroup>
+                <ToolbarGroup className={styles.detailsToolbarGroup}>
+                  <Row className={styles.detailsToolbarGroup}>
+                    <Col xs={12} md={1} className={styles.dragoTitle}>
+                      <h2><Avatar size={50} icon={<ActionHome />} /></h2>
+                    </Col>
+                    <Col xs={12} md={11} className={styles.dragoTitle}>
+                      <p>Wizard</p>
+                    </Col>
+                  </Row>
+                </ToolbarGroup>
+                <ToolbarGroup>
                   <p>&nbsp;</p>
-                  </ToolbarGroup>
+                </ToolbarGroup>
               </Toolbar>
               <Sticky enabled={true} innerZ={1}>
                 <Row className={styles.tabsRow}>
                   <Col xs={12}>
                     <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle}>
                       <Tab label="Accounts" className={styles.detailsTab}
-                      onActive={() => scrollToComponent(this.Accounts, { offset: -80, align: 'top', duration: 500})}
+                        onActive={() => scrollToComponent(this.Accounts, { offset: -80, align: 'top', duration: 500 })}
                         icon={<ActionList color={Colors.blue500} />}>
                       </Tab>
-                      <Tab label="Drago" className={styles.detailsTab} 
-                        onActive={() => scrollToComponent(this.Dragos, { offset: -80, align: 'top', duration: 500})}
+                      <Tab label="Drago" className={styles.detailsTab}
+                        onActive={() => scrollToComponent(this.Dragos, { offset: -80, align: 'top', duration: 500 })}
                         icon={<ActionAssessment color={Colors.blue500} />}>
                       </Tab>
                       <Tab label="Transactions" className={styles.detailsTab}
-                      onActive={() => scrollToComponent(this.Transactions, { offset: -80, align: 'top', duration: 500})}
+                        onActive={() => scrollToComponent(this.Transactions, { offset: -80, align: 'top', duration: 500 })}
                         icon={<ActionShowChart color={Colors.blue500} />}>
                       </Tab>
                     </Tabs>
@@ -228,58 +220,58 @@ class PageDashboardDragoManager extends Component {
               </Sticky>
               <Row className={styles.transactionsStyle}>
                 <Col xs={12}>
-                <span ref={(section) => { this.Accounts = section; }}></span>
-                    <AppBar
-                      title='My Accounts'
-                      showMenuIconButton={false}
-                      className={styles.appBar}
-                    />
-                    <Row>
-                      {listAccounts}
-                    </Row>
+                  <span ref={(section) => { this.Accounts = section; }}></span>
+                  <AppBar
+                    title='My Accounts'
+                    showMenuIconButton={false}
+                    className={styles.appBar}
+                  />
+                  <Row>
+                    {listAccounts}
+                  </Row>
                 </Col>
               </Row>
               <Row className={styles.transactionsStyle}>
                 <Col xs={12}>
                   <span ref={(section) => { this.Dragos = section; }}></span>
-                    <AppBar
-                      title='My Dragos'
-                      showMenuIconButton={false}
-                      iconElementRight={<ElementFundCreateAction accounts={accounts} snackBar={this.snackBar}
-                      iconStyleRight={{marginTop: 'auto', marginBottom: 'auto'}}/>}
-                    />
-                    <Paper zDepth={1}>
-                      <Row>
-                        <Col className={styles.transactionsStyle} xs={12}>
+                  <AppBar className={styles.appBar}
+                    title='My Dragos'
+                    showMenuIconButton={false}
+                    iconElementRight={<ElementFundCreateAction accounts={accounts} snackBar={this.snackBar}
+                      iconStyleRight={{ marginTop: 'auto', marginBottom: 'auto' }} />}
+                  />
+                  <Paper zDepth={1}>
+                    <Row>
+                      <Col className={styles.transactionsStyle} xs={12}>
                         <ElementListWrapper list={dragoList}>
                           <ElementListSupply />
                         </ElementListWrapper>
-                        </Col>
-                      </Row>
-                    </Paper>
+                      </Col>
+                    </Row>
+                  </Paper>
 
-                  </Col>
+                </Col>
               </Row>
               <Row className={styles.transactionsStyle}>
                 <Col xs={12}>
                   <span ref={(section) => { this.Transactions = section; }}></span>
-                    <AppBar
-                      title='My Transactions'
-                      showMenuIconButton={false}
-                    />
-                    <Paper zDepth={1}>
-                      <Row style={{outline: 'none'}}>
-                        <Col className={styles.transactionsStyle} xs={12}>
-                        <ElementListWrapper 
+                  <AppBar className={styles.appBar}
+                    title='My Transactions'
+                    showMenuIconButton={false}
+                  />
+                  <Paper zDepth={1}>
+                    <Row style={{ outline: 'none' }}>
+                      <Col className={styles.transactionsStyle} xs={12}>
+                        <ElementListWrapper
                           list={dragoTransactionsLogs}
                           renderCopyButton={this.renderCopyButton}
-                              renderEtherscanButton={this.renderEtherscanButton}
-                          >
+                          renderEtherscanButton={this.renderEtherscanButton}
+                        >
                           <ElementListTransactions />
                         </ElementListWrapper>
-                        </Col>
-                      </Row>
-                    </Paper>
+                      </Col>
+                    </Row>
+                  </Paper>
                 </Col>
               </Row>
             </Paper>

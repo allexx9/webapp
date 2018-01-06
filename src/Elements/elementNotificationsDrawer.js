@@ -53,26 +53,30 @@ export default class ElementNotificationsDrawer extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.notificationsOpen) {
-      this.detachInterface()
+      // this.detachInterface()
     }
   }
   
-  componentDidMount () {
+  componentDidMount() {
     const endpoint = localStorage.getItem('endpoint')
     const attachInterfaceInfura = this.attachInterfaceInfura
+    console.log(endpoint)
     switch (endpoint) {
       case "infura":
-      attachInterfaceInfura()
-        timerId = setTimeout(function tick() {
+        attachInterfaceInfura()
+        console.log('tick')
+        var runTick = () =>{ timerId = setTimeout(function tick() {
+          console.log('tick')
           attachInterfaceInfura()
-          timerId = setTimeout(tick, 3000); // (*)
-        }, 3000);
-      break;
+          timerId = setTimeout(tick, 1000); // (*)
+        }, 3000);}
+        runTick()
+        break;
       case "rigoblock":
         this.attachInterfaceRigoBlock()
-        .then(() =>{
-        })
-      break; 
+          .then(() => {
+          })
+        break;
     }
   }
 
@@ -155,6 +159,7 @@ export default class ElementNotificationsDrawer extends Component {
   render () {
     const { notificationsOpen } = this.props
     const { allEvents } = this.state
+    console.log(allEvents)
     return (
       <span>
         <Drawer width={300} openSecondary={true} 
@@ -245,13 +250,18 @@ export default class ElementNotificationsDrawer extends Component {
         key
       };
     };
-    const logs = _logs.slice(0, 5).map(logToEvent);
-
+    // _logs.splice(0, _logs.length - 5)
+    // console.log(_logs.splice(-2))
+    console.log(_logs.sort(sortEvents))
+    console.log(_logs)
+    var sortedLogs = _logs.sort(sortEvents).reverse()
+    const logs = sortedLogs.map(logToEvent)
+    // const logs = _logs.map(logToEvent);
     minedEvents = logs
       .filter((log) => log.state === 'mined')
       .reverse()
       // .concat(this.state.minedEvents)
-      .sort(sortEvents);
+      // .sort(sortEvents);
     pendingEvents = logs
       .filter((log) => log.state === 'pending')
       .reverse()
@@ -263,7 +273,7 @@ export default class ElementNotificationsDrawer extends Component {
           return isMined || isPending;
         });
       }))
-      .sort(sortEvents);
+      // .sort(sortEvents);
     
     allEvents = pendingEvents.concat(minedEvents);
 
@@ -292,7 +302,7 @@ export default class ElementNotificationsDrawer extends Component {
       if (!_logs.length) {
         return;
       }
-
+      console.log(_logs)
       this.processLogs(_logs)
     }).then((subscriptionID) => {
       const { subscriptionIDContractDrago } = this.state
@@ -321,7 +331,7 @@ export default class ElementNotificationsDrawer extends Component {
     const options = {
       fromBlock: 0,
       toBlock: 'pending',
-      limit: 5
+      // limit: 5
     };
     
     dragoApi.contract.eventful.init()
@@ -354,19 +364,19 @@ export default class ElementNotificationsDrawer extends Component {
         ]
       }
       const createDragoEvents = 
-      contract.getAllLogs(eventsFilterCreate)
+      contract.getAllLogs(options, eventsFilterCreate)
       .then((dragoTransactionsLog) => {
         return dragoTransactionsLog
       }
       )
       const buyDragoEvents = 
-        contract.getAllLogs(eventsFilterBuy)
+        contract.getAllLogs(options, eventsFilterBuy)
         .then((dragoTransactionsLog) => {
           return dragoTransactionsLog
         }
         )
       const sellDragoEvents = 
-        contract.getAllLogs(eventsFilterSell)
+        contract.getAllLogs(options, eventsFilterSell)
         .then((dragoTransactionsLog) => {
           return dragoTransactionsLog
         }
@@ -376,6 +386,7 @@ export default class ElementNotificationsDrawer extends Component {
           // Creating an array of promises that will be executed to add timestamp and symbol to each entry
           // Doing so because for each entry we need to make an async call to the client
           // For additional refernce: https://stackoverflow.com/questions/39452083/using-promise-function-inside-javascript-array-map
+          console.log(results)
           var dragoTransactionsLog = [...results[0], ...results[1], ...results[2]]
           return dragoTransactionsLog
         }
