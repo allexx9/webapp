@@ -37,46 +37,135 @@ const customContentStyle = {
 
 export default class ElementFundActions extends React.Component {
 
+  constructor(props) {
+    super(props)
+    console.log(this.props.actionSelected.action)
+    if (this.props.actionSelected.action == 'buy') {
+      this.state = {
+        open: props.actionSelected.open,
+        action: 'buy',
+        amount: 0,
+        actionSummary: 'BUYING',
+        actionStyleBuySell: this.actionBuyStyle,
+        switchButton: {
+          label: 'Units',
+          denomination: 'ETH',
+          hint: 'Amount'
+        },
+        canSubmit: false,
+        sending: false,
+        complete: false,
+        account: {},
+        accountError: ERRORS.invalidAccount,
+        accountCorrect: false,
+        amount: 0,
+        newDrgBalance: 0,
+        drgBalance: 0,
+        drgOrder: 0,
+        amountError: ERRORS.invalidAmount,
+        amountFieldDisabled: true,
+        unitsSummary: 0,
+        amountSummary: 0,
+      }
+    } else {
+      this.state = {
+        open: props.actionSelected.open,
+        action: 'sell',
+        amount: 0,
+        actionSummary: 'SELLING',
+        actionStyleBuySell: this.actionSellStyle,
+        switchButton: {
+          label: 'Amount',
+          denomination: this.props.dragoDetails.symbol,
+          hint: 'Amount'
+        },
+        canSubmit: false,
+        sending: false,
+        complete: false,
+        account: {},
+        accountError: ERRORS.invalidAccount,
+        accountCorrect: false,
+        amount: 0,
+        newDrgBalance: 0,
+        drgBalance: 0,
+        drgOrder: 0,
+        amountError: ERRORS.invalidAmount,
+        amountFieldDisabled: true,
+        unitsSummary: 0,
+        amountSummary: 0,
+      }
+            this.state = {
+        open: props.actionSelected.open,
+        action: 'sell',
+        amount: 0,
+        actionSummary: 'SELLING',
+        actionStyleBuySell: this.actionSellStyle,
+        switchButton: {
+          label: 'Amount',
+          denomination: this.props.dragoDetails.symbol,
+          hint: 'Amount'
+        },
+        canSubmit: false,
+        sending: false,
+        complete: false,
+        account: {},
+        accountError: ERRORS.invalidAccount,
+        accountCorrect: false,
+        amount: 0,
+        newDrgBalance: 0,
+        drgBalance: 0,
+        drgOrder: 0,
+        amountError: ERRORS.invalidAmount,
+        amountFieldDisabled: true,
+        unitsSummary: 0,
+        amountSummary: 0,
+      }
+    }
+  }
+
   static contextTypes = {
-    api: PropTypes.object.isRequired
+    api: PropTypes.object.isRequired,
+    addTransactionToQueue: PropTypes.func
   };
 
   static propTypes = {
     dragoDetails: PropTypes.object.isRequired, 
+    actionSelected: PropTypes.object,
+    accounts: PropTypes.array.isRequired,
+    onTransactionSent: PropTypes.func.isRequired
   };
   
-  state = {
-    open: false,
-    openAuth: false,
-    authMsg: '',
-    action: 'buy',
-    actionSummary: 'BUYING',
-    account: {},
-    accountError: ERRORS.invalidAccount,
-    accountCorrect: false,
-    amount: 0,
-    newDrgBalance: 0,
-    drgBalance: 0,
-    drgOrder: 0,
-    amountError: ERRORS.invalidAmount,
-    amountFieldDisabled: true,
-    unitsSummary: 0,
-    amountSummary: 0,
-    actionStyleBuySell: { 
-      color: Colors.green300
-    },
-    canSubmit: false,
-    sending: false,
-    complete: false,
-    switchButton: {
-      label: 'Units',
-      denomination: 'ETH',
-      hint: 'Amount'
-    }
-  }
+  // state = {
+  //   open: 'buy',
+  //   openAuth: false,
+  //   authMsg: '',
+  //   action: 'buy',
+  //   actionSummary: 'BUYING',
+  //   account: {},
+  //   accountError: ERRORS.invalidAccount,
+  //   accountCorrect: false,
+  //   amount: 0,
+  //   newDrgBalance: 0,
+  //   drgBalance: 0,
+  //   drgOrder: 0,
+  //   amountError: ERRORS.invalidAmount,
+  //   amountFieldDisabled: true,
+  //   unitsSummary: 0,
+  //   amountSummary: 0,
+  //   actionStyleBuySell: { 
+  //     color: Colors.green300
+  //   },
+  //   canSubmit: false,
+  //   sending: false,
+  //   complete: false,
+  //   switchButton: {
+  //     label: 'Units',
+  //     denomination: 'ETH',
+  //     hint: 'Amount'
+  //   }
+  // }
 
   resetState = {
-    action: 'buy',
     openAuth: false,
     actionSummary: 'BUYING',
     account: {},
@@ -111,6 +200,23 @@ export default class ElementFundActions extends React.Component {
     color: Colors.red300,
   }
 
+  componentWillMount() {
+
+  }
+
+  componentWillReceiveProps (nextProps) {
+    console.log(nextProps)
+    if (this.props.actionSelected.action != nextProps.actionSelected.action) {
+      nextProps.actionSelected.action == 'buy' 
+      ? this.handleBuyAction()
+      : this.handleSellAction()
+    }
+
+    this.setState ({
+      open: nextProps.actionSelected.open, 
+    })
+  }
+
   handleOpen = () => {
     this.setState({
       open: true,
@@ -118,41 +224,23 @@ export default class ElementFundActions extends React.Component {
     })
   }
 
-  handleCancel = () => {
+  handleCloseAuth = () => {
     this.setState(
-      { open: false }
+      {
+        openAuth: false,
+      }
+      , this.handleCancel
     )
   }
 
-  handleSubmit = () => {
-    // const {api} = this.context
-    // var timerId = null;
-    // // var runTick = () =>{ timerId = setTimeout(function tick() {
-    // //   console.log('checking pending')
-    // //   api.parity.pendingTransactions()
-    // //   .then((result) =>{
-    // //     console.log(result)
-    // //   })
-    // //   timerId = setTimeout(tick, 1000); // (*)
-    // // }, 3000);}
-    // // runTick()
-    // const {account } = this.state
-    // var web3 = window.web3
-    // var runTick = () => {
-    //   timerId = setTimeout(function tick() {
-    //     console.log('checking pending')
-    //     web3.eth.getPastLogs({
-    //       fromBlock: '1',
-    //       toBlock: "pending",
-    //       address: account.address,
-    //       topics: [null, null, null, null]
-    //   })
-    //   .then(console.log);
-    //     timerId = setTimeout(tick, 1000); // (*)
-    //   }, 3000);
-    // }
-    // runTick()
+  handleCancel = () => {
+    this.setState(
+      { open: false,
+        ...this.resetState  }
+    ), this.props.onTransactionSent()
+  }
 
+  handleSubmit = () => {
     this.setState(
       { openAuth: true }
     );
@@ -162,6 +250,7 @@ export default class ElementFundActions extends React.Component {
   handleSellAction = () => {
     const {dragoDetails} = this.props
     return this.setState({
+      open: true,
       action: 'sell',
       amount: 0,
       actionSummary: 'SELLING',
@@ -191,6 +280,7 @@ export default class ElementFundActions extends React.Component {
   handleBuyAction = () => {
     const {dragoDetails} = this.props
     return this.setState({
+      open: true,
       action: 'buy',
       amount: 0,
       actionSummary: 'BUYING',
@@ -358,30 +448,61 @@ export default class ElementFundActions extends React.Component {
 
   onSendBuy = () => {
     const { api } = this.context;
-    const {dragoDetails} = this.props
-    console.log(this.state.amountSummary.toString())
+    const { dragoDetails } = this.props
     const accountAddress = this.state.account.address
     const amount = api.util.toWei(this.state.amountSummary).toString()
     const authMsg = 'You bought ' + this.state.unitsSummary + ' units of ' + dragoDetails.symbol.toUpperCase() + ' for ' + this.state.amountSummary + ' ETH'
-    var dragoApi = null;
+    const transactionId = api.util.sha3(new Date() + accountAddress)
+    var dragoApi, provider = null;
+    // Initializing transaction variables
+    var transactionDetails = {
+      status: this.state.account.source === 'MetaMask' ? 'pending' : 'authorization',
+      hash: '',
+      parityId: null,
+      timestamp: new Date(),
+      account: this.state.account,
+      error: false,
+      action: 'BuyDrago',
+      symbol: dragoDetails.symbol.toUpperCase(),
+      amount: this.state.amountSummary
+    }
+    // Setting variables depending on account source
     var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
+    this.context.addTransactionToQueue(transactionId, transactionDetails)
+    const {account} = this.state
+
+    // Sending the transaction
     dragoApi = new DragoApi(provider)
     dragoApi.contract.drago.init(dragoDetails.address)
     dragoApi.contract.drago.buyDrago(accountAddress, amount)
-    .then((receipt) =>{ 
-      console.log(receipt)
-    })
-    .catch((error) => {
-      this.props.snackBar('Your wallet returned an error. Please check your wallet and if necessary try again.')
-      console.error('error', error);
-      this.setState({
-        sending: false
+      .then((receipt) => {
+        console.log(receipt)
+        // Adding transaciont to the queue
+        // Parity returns an internal transaction ID straighaway. The transaction then needs to be authorized inside the wallet.
+        // MetaMask returns a receipt of the transaction once it has been mined by the network. It can take a long time.
+        if (account.source === 'MetaMask') {
+          transactionDetails.status = 'executed'
+          transactionDetails.receipt = receipt
+          transactionDetails.hash = receipt.transactionHash
+          transactionDetails.timestamp = new Date ()
+          this.context.addTransactionToQueue(transactionId, transactionDetails)
+        } else {
+          transactionDetails.parityId = receipt
+          this.context.addTransactionToQueue(transactionId, transactionDetails)
+        }
       })
-    })
-    // this.props.snackBar('Buy order waiting for authorization for ' + this.state.amountSummary.toString() + ' ETH')
+      .catch((error) => {
+        this.props.snackBar('Your wallet returned an error.')
+        transactionDetails.status = 'error'
+        transactionDetails.error = error
+        this.context.addTransactionToQueue(transactionId, transactionDetails)
+        this.setState({
+          sending: false
+        })
+      })
     this.setState({
       authMsg: authMsg,
-      authAccount: {...this.state.account},
+      authAccount: { ...this.state.account },
       sending: false,
       complete: true,
     }, this.handleSubmit)
@@ -391,25 +512,53 @@ export default class ElementFundActions extends React.Component {
     const { api } = this.context;
     const { dragoDetails } = this.props
     const DIVISOR = 10 ** 6;  //dragos are divisible by 1 million
-    // const amount = new BigNumber(this.state.amountSummary).mul(DIVISOR);    
-    // const values = amount.toFixed(0); 
-    // const options = {
-    //   from: this.state.account.address
-    // }
     const accountAddress = this.state.account.address
     const amount = new BigNumber(this.state.unitsSummary).mul(DIVISOR).toFixed(0)
     const authMsg = 'You sold ' + this.state.unitsSummary + ' units of ' + dragoDetails.symbol.toUpperCase() + ' for ' + this.state.amountSummary + ' ETH'
-    var dragoApi = null;
+    const transactionId = api.util.sha3(new Date() + accountAddress)
+    var dragoApi, provider = null;
+    // Initializing transaction variables
+    var transactionDetails = {
+      status: this.state.account.source === 'MetaMask' ? 'pending' : 'authorization',
+      hash: '',
+      parityId: null,
+      timestamp: new Date(),
+      account: this.state.account,
+      error: false,
+      action: 'SellDrago',
+      symbol: dragoDetails.symbol.toUpperCase(),
+      amount: this.state.amountSummary
+    }
+    // Setting variables depending on account source
     var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
+    this.context.addTransactionToQueue(transactionId, transactionDetails)    
+    const {account} = this.state
+    
+    
     dragoApi = new DragoApi(provider)
     dragoApi.contract.drago.init(dragoDetails.address)
     dragoApi.contract.drago.sellDrago(accountAddress, amount)
       .then((receipt) => {
         console.log(receipt)
+        // Adding transaciont to the queue
+        // Parity returns an internal transaction ID straighaway. The transaction then needs to be authorized inside the wallet.
+        // MetaMask returns a receipt of the transaction once it has been mined by the network. It can take a long time.
+        if (account.source === 'MetaMask') {
+          transactionDetails.status = 'executed'
+          transactionDetails.receipt = receipt
+          transactionDetails.hash = receipt.transactionHash
+          transactionDetails.timestamp = new Date ()
+          this.context.addTransactionToQueue(transactionId, transactionDetails)
+        } else {
+          transactionDetails.parityId = receipt
+          this.context.addTransactionToQueue(transactionId, transactionDetails)
+        }
       })
       .catch((error) => {
-        this.props.snackBar('Your wallet returned an error. Please check your wallet and if necessary try again.')
-        console.error('error', error);
+        this.props.snackBar('Your wallet returned an error.')
+        transactionDetails.status = 'error'
+        transactionDetails.error = error
+        this.context.addTransactionToQueue(transactionId, transactionDetails)
         this.setState({
           sending: false
         })
@@ -587,20 +736,21 @@ export default class ElementFundActions extends React.Component {
       console.log(this.state)
       return (
         <div>
-          <RaisedButton label="Actions" primary={true} onClick={this.handleOpen}
-            labelStyle={{ fontWeight: 700 }} />
+          {/* <RaisedButton label="Trade" primary={true} onClick={this.handleOpen}
+            labelStyle={{ fontWeight: 700 }} /> */}
           <ElementFundActionAuthorization
             dragoDetails={dragoDetails}
             authMsg={authMsg}
             account={authAccount}
+            onClose={this.handleCloseAuth}
           />
         </div>
       )
     }
     return (
       <div>
-        <RaisedButton label="Actions" primary={true} onClick={this.handleOpen} 
-          labelStyle={{fontWeight: 700}}/>
+        {/* <RaisedButton label="Trade" primary={true} onClick={this.handleOpen} 
+          labelStyle={{fontWeight: 700, fontSize: '20px'}}/> */}
           <Dialog
             title={<ElementFundActionsHeader dragoDetails={dragoDetails} 
               action={this.state.action} 

@@ -227,7 +227,7 @@ class utilities {
                 .then(() =>{
                   return dragoApi.contract.dragoregistry.fromAddress(k)
                   .then((dragoDetails) => {
-                    dragoSymbolRegistry.set(k, {symbol: dragoDetails[2], dragoID: dragoDetails[3].toFixed(), name: dragoDetails[1]})
+                    dragoSymbolRegistry.set(k, {symbol: dragoDetails[2].trim(), dragoID: dragoDetails[3].toFixed(), name: dragoDetails[1].trim()})
                     }
                   )
                 }
@@ -251,11 +251,11 @@ class utilities {
                   dragoApi.contract.drago.totalSupply()
                     .then((dragoSupply) => {
                       const symbol = dragoSymbolRegistry.get(k).symbol
-                      const name = dragoSymbolRegistry.get(k).name
+                      const name = dragoSymbolRegistry.get(k).name.trim()
                       const dragoID = dragoSymbolRegistry.get(k).dragoID
                       supply.push({
                         supply: formatCoins(new BigNumber(dragoSupply), 4, api),
-                        name: name,
+                        name,
                         symbol: symbol,
                         dragoID: dragoID
                       })
@@ -295,7 +295,7 @@ class utilities {
                   }
                   dragoBalances[dragoID] = {
                     balance: balance,
-                    name,
+                    name: name,
                     symbol,
                     dragoID,
                   }
@@ -343,7 +343,7 @@ class utilities {
                   for(var v in dragoBalances) {
                     var balance = {
                       symbol: dragoBalances[v].symbol,
-                      name: dragoBalances[v].name,
+                      name: dragoBalances[v].name, 
                       dragoID: dragoBalances[v].dragoID,
                       balance: formatCoins(dragoBalances[v].balance,4,api)
                     }

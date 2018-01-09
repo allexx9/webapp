@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 class FilterFunds extends Component {
 
   static propTypes = {
-    fundsList: PropTypes.object.isRequired,
+    fundsList: PropTypes.object,
     filterList: PropTypes.func.isRequired,
   };
 

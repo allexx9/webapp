@@ -1,5 +1,11 @@
 /* pageFundDetailsTrader */
 
+.tradeButton {
+  text-align: center;
+  padding: 20px;
+  background-color: #EEEEEE;
+}
+
 .paperContainer {
   margin-top: 10px;
   display: 'inline-block';

@@ -23,7 +23,10 @@ export default class ElementDialogAddressTitle extends Component {
         </Col>
         <Col xs={12} md={11} className={styles.dragoTitle}>
         <p>{tokenDetails.symbol} | {tokenDetails.name} </p>
-        <small>{tokenDetails.address}</small>
+        {typeof tokenDetails.address !== 'undefined'
+        ? <small>{tokenDetails.address}</small>
+        : null
+        }
         </Col>
       </Row>
     )

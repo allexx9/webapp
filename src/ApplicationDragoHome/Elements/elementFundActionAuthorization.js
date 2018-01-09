@@ -14,6 +14,7 @@ import ElementDialogAddressTitle from '../../Elements/elementDialogAddressTitle'
 import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle'
 import IdentityIcon from '../../IdentityIcon';
 import InfoTable from '../Elements/elementInfoTable'
+import NotificationWifi from 'material-ui/svg-icons/notification/wifi';
 
 import styles from './elementFundActionAuthorization.module.css';
 
@@ -56,6 +57,7 @@ export default class ElementFundActionAuthorization extends Component {
   }
 
   renderHeader = () => {
+    console.log(dragoDetails)
     const { dragoDetails } = this.props
     return (
       <div>
@@ -90,14 +92,21 @@ export default class ElementFundActionAuthorization extends Component {
 
         <Row className={styles.container}>
           <Col xs={12}>
-          { authMsg }
-        </Col>          
-        <Col xs={12}>
-          Please check your { account.source.charAt(0).toUpperCase() + account.source.slice(1) } wallet and authorize this transaction.
+            <span style={{ borderBottom: "1px dotted" }}>
+              {authMsg}
+            </span>
+          </Col>
+          <Col xs={12}>
+            Please check your {account.source.charAt(0).toUpperCase() + account.source.slice(1)} wallet and authorize this transaction.
+        </Col>
+          <Col xs={12}>
+            Click on the {<NotificationWifi color={Colors.blue500} />} icon in the top bar to track the progress of your transaction.
+        </Col>
+          <Col xs={12}>
+            Transactions can take up to 45 seconds to be mined into a new block.
         </Col>
         </Row>
       </Dialog>
-
     )
   }
 

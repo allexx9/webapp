@@ -235,7 +235,7 @@ class PageDashboardDragoTrader extends Component {
                 <Col xs={12} >
                   <span ref={(section) => { this.Dragos = section; }}></span>
                   <AppBar className={styles.appBar}
-                    title='My Dragos'
+                    title='My Funds'
                     showMenuIconButton={false}
                   />
                   <Paper zDepth={1}>

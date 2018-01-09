@@ -63,7 +63,7 @@ class LeftSideDrawer extends Component {
           <MenuItem checked={true} primaryText="Dashboard" leftIcon={<ActionAssessment />} 
             containerElement={<Link to={DS+APP+DS+this.buildUrlPath(location)+DS+"drago"+DS+"dashboard"} />}
             value='dashboard'/>
-          <MenuItem primaryText="Dragos" leftIcon={<ActionShowChart />} 
+          <MenuItem primaryText="Funds" leftIcon={<ActionShowChart />} 
             containerElement={<Link to={DS+APP+DS+this.buildUrlPath(location)+DS+"drago"+DS+"pools"} />}
             value='pools' />
         </Menu>

@@ -55,13 +55,14 @@ export default class ApplicationDragoHome extends Component {
   };
 
   static childContextTypes = {
-    contract: PropTypes.object
+    // contract: PropTypes.object
+    addTransactionToQueue: PropTypes.func
   };
   
   getChildContext () {   
-    const {contract} = this.state 
     return {
-      contract,
+      // contract,
+      addTransactionToQueue: this.addTransactionToQueue
     };
   }
 
@@ -91,7 +92,8 @@ export default class ApplicationDragoHome extends Component {
     networkStatus: MSG_NETWORK_STATUS_OK,
     networkError: NETWORK_OK,
     networkCorrect: false,
-    warnMsg: null
+    warnMsg: null,
+    recentTransactions: new Map(),
   }
 
   scrollPosition = 0
@@ -184,11 +186,87 @@ export default class ApplicationDragoHome extends Component {
     
   }
 
+  updateTransactionsQueue = () => {
+    const { api } = this.context
+    const { recentTransactions } = this.state
+    var checkTransaction = true
+    var shouldTransactionListUpdate = false
+    var newRecentTransactions = new Map(recentTransactions)
+    newRecentTransactions.forEach((value, key, map) => {
+      if (value.status === 'executed' || value.status === 'error') {
+        return
+      }
+      // console.log(`Value 1:`)
+      // console.log(value.parityId)
+      if (value.parityId) {
+        // console.log(`Checking if blockhash undefined`)
+        if (typeof value.receipt !== 'undefined') {
+          // console.log(value.receipt.blockNumber)
+          value.receipt.blockNumber.eq(0) ? checkTransaction = true : checkTransaction = false
+        }
+        if (!checkTransaction) {
+          return null
+        }
+        // console.log(`Checking request on Parity wallet`)
+        api.parity.checkRequest(value.parityId, [])
+          .then(hash => {
+            // console.log(hash)
+            if (hash) {
+              value.hash = hash
+              api.eth.getTransactionByHash(hash)
+                .then(receipt => {
+                  value.receipt = receipt
+                  if (receipt.blockHash) {
+                    console.log('executed')
+                    value.status = 'executed'
+                    value.timestamp = new Date()
+                    shouldTransactionListUpdate = true
+                  } else {
+                    console.log('pending')
+                    value.status = 'pending'
+                    value.timestamp = new Date()
+                    shouldTransactionListUpdate = true
+                  }
+                  // console.log(`Receipt:`)
+                  // console.log(receipt)
+                  // console.log(`Value 2:`)
+                  // console.log(value)
+                  // console.log(`Recent transactions:`)
+                  // console.log(recentTransactions)
+                })
+            }
+          })
+          .catch(error =>{
+            // console.log(error)
+            value.status = 'error'
+            value.error = error
+            value.timestamp = new Date()
+            shouldTransactionListUpdate = true
+          })
+      }
+    })
+    shouldTransactionListUpdate
+    ? this.setState({
+      recentTransactions: newRecentTransactions
+    })
+    : null
+  }
+
+  addTransactionToQueue = (transactionId, transactionDetails) => {
+    // Adding the transaction to the sessione queue
+    const { recentTransactions } = this.state
+    var newRecentTransactions = new Map(recentTransactions)
+    newRecentTransactions.set(transactionId, transactionDetails)
+    // Saving to state and updating the transactions in the queue
+    this.setState({
+      recentTransactions: newRecentTransactions
+    }, this.updateTransactionsQueue)
+  }
+
   render () {
     const { ethBalance, loading, blockNumber, accounts, allEvents, accountsInfo, networkError, networkStatus, networkCorrect, warnMsg } = this.state;
     const { isManager, location, handleToggleNotifications, notificationsOpen }  = this.props
 
-    // console.log(loading)
     if (loading) {
       return null
     }
@@ -236,16 +314,18 @@ export default class ApplicationDragoHome extends Component {
                 ethBalance={ethBalance}
                 allEvents={allEvents}
                 accountsInfo={accountsInfo}
+                isManager={isManager}
               />
             </Col>
             <Row>
-              <Col xs>
+              <Col xs={12}>
                 {notificationsOpen ? (
                   <ElementNotificationsDrawer
                     handleToggleNotifications={handleToggleNotifications}
                     notificationsOpen={notificationsOpen}
                     accounts={accounts}
-                    events={allEvents}
+                    recentTransactions={this.state.recentTransactions}
+                    updateTransactionsQueue={this.updateTransactionsQueue}
                   />
                 ) : (
                     null
@@ -289,17 +369,19 @@ export default class ApplicationDragoHome extends Component {
                 ethBalance={ethBalance}
                 allEvents={allEvents}
                 accountsInfo={accountsInfo}
+                isManager={isManager}
               />
             </Col>
           </Row>
             <Row>
-            <Col xs>
+            <Col xs={12}>
               {notificationsOpen ? (
                 <ElementNotificationsDrawer 
                 handleToggleNotifications={handleToggleNotifications} 
                 notificationsOpen={notificationsOpen}
                 accounts={accounts}
-                events={allEvents}
+                recentTransactions={this.state.recentTransactions}
+                updateTransactionsQueue={this.updateTransactionsQueue}
                 />
               ) : (
                 null
@@ -322,6 +404,8 @@ export default class ApplicationDragoHome extends Component {
         primaryText={primaryText}
         secondaryText={secondaryText}
         eventType={eventType}
+        eventStatus='executed'
+        txHash=''
         />
     )
   }
@@ -362,20 +446,23 @@ export default class ApplicationDragoHome extends Component {
           if ((account.ethBalance !== newBalance) && prevBlockNumber != 0) {
             console.log(`${account.name} balance changed.`)
             var eventType = 'balanceChange'
-            var secondaryText = ''
+            var secondaryText = []
             var balDifference = account.ethBalance - newBalance
             console.log(balDifference)
             if (balDifference > 0) {
               console.log(`You transferred ${balDifference.toFixed(4)} ETH!`)
-              secondaryText = `You transferred ${balDifference.toFixed(4)} ETH!`
+              secondaryText[0] = `You transferred ${balDifference.toFixed(4)} ETH!`
+              secondaryText[1] = utils.dateFromTimeStamp(new Date())
             } else {
               console.log(`You received ${Math.abs(balDifference).toFixed(4)} ETH!`)
-              secondaryText = `You received ${Math.abs(balDifference).toFixed(4)} ETH!`
+              secondaryText[0] = `You received ${Math.abs(balDifference).toFixed(4)} ETH!`
+              secondaryText[1] = utils.dateFromTimeStamp(new Date())
             }
             if (this._notificationSystem && this.state.accountsBalanceError === false) {
               this._notificationSystem.addNotification({
                   level: 'info',
                   position: 'br',
+                  autoDismiss: 10,
                   children: this.notificationAlert(account.name, secondaryText)
               });
             }

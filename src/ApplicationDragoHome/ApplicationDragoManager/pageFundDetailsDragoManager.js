@@ -64,6 +64,7 @@ class PageFundDetailsDragoManager extends Component {
       ethBalance: PropTypes.object.isRequired,
       accounts: PropTypes.array.isRequired,
       accountsInfo: PropTypes.object.isRequired, 
+      isManager: PropTypes.bool.isRequired
     };
 
     state = {
@@ -181,7 +182,7 @@ class PageFundDetailsDragoManager extends Component {
 
     
     render() {
-      const { location, accounts, accountsInfo, allEvents } = this.props
+      const { location, accounts, accountsInfo, allEvents, isManager } = this.props
       const { dragoDetails, dragoTransactionsLogs, loading } = this.state
       const paperContainer = {
         marginTop: 10,
@@ -257,7 +258,12 @@ class PageFundDetailsDragoManager extends Component {
                       </Paper>
                     </Col>
                     <Col xs={6}>
-                      <ElementPriceBox dragoDetails={dragoDetails} />
+                      <Paper zDepth={1}>
+                        <ElementPriceBox 
+                        accounts={accounts} 
+                        isManager={isManager}
+                        dragoDetails={dragoDetails} />
+                      </Paper>
                     </Col>
                   </Row>
                   <Row>
@@ -465,6 +471,12 @@ class PageFundDetailsDragoManager extends Component {
           .getBlockByNumber(log.blockNumber.c[0])
           .then((block) => {
             log.timestamp = block.timestamp
+            return log
+          })
+          .catch((error) => {
+            // Sometimes Infura returns null for api.eth.getBlockByNumber, therefore we are assigning a fake timestamp to avoid
+            // other issues in the app.
+            log.timestamp = new Date()
             return log
           })
         })

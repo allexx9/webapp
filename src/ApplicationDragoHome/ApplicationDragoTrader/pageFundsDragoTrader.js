@@ -129,7 +129,7 @@ class PageFundsDragoTrader extends Component {
                       <h2><Avatar size={50} icon={<ActionShowChart />} /></h2>
                     </Col>
                     <Col xs={12} md={11} className={styles.dragoTitle}>
-                    <p>Dragos</p>
+                    <p>Funds</p>
                     <small></small>
                     </Col>
                   </Row>

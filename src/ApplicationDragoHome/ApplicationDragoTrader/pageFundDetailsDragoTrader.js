@@ -61,6 +61,7 @@ class PageFundDetailsDragoTrader extends Component {
       ethBalance: PropTypes.object.isRequired,
       accounts: PropTypes.array.isRequired,
       accountsInfo: PropTypes.object.isRequired, 
+      isManager: PropTypes.bool.isRequired
     };
 
     state = {
@@ -75,7 +76,11 @@ class PageFundDetailsDragoTrader extends Component {
       dragoTransactionsLogs: null,
       loading: true,
       snackBar: false,
-      snackBarMsg: ''
+      snackBarMsg: '',
+      openBuySellDialog: {
+        open: false,
+        action: 'buy'
+      }
     }
 
 
@@ -178,8 +183,26 @@ class PageFundDetailsDragoTrader extends Component {
       })
     }
 
+    handleBuySellButtons = (action) =>{
+      console.log(action)
+      this.setState({
+        openBuySellDialog: {
+          open: !this.state.openBuySellDialog.open,
+          action: action
+        }
+      })
+    }
+
+    onTransactionSent = () =>{
+      this.setState({
+        openBuySellDialog: {
+          open: false,
+        }
+      })
+    }
+
     render() {
-      const { location, accounts, accountsInfo, allEvents } = this.props
+      const { location, accounts, accountsInfo, allEvents, isManager } = this.props
       const { dragoDetails, dragoTransactionsLogs, loading } = this.state
       const paperContainer = {
         marginTop: 10,
@@ -205,7 +228,7 @@ class PageFundDetailsDragoTrader extends Component {
       const tableInfo = [['Symbol', dragoDetails.symbol, ''], 
         ['Name', dragoDetails.name, ''], 
         ['Address', dragoDetails.address, tableButtons],
-        ['Owner', dragoDetails.addresssOwner, tableButtons]]
+        ['Manager', dragoDetails.addresssOwner, tableButtons]]
       const paperStyle = {
         marginTop: "10px"
       };
@@ -214,6 +237,8 @@ class PageFundDetailsDragoTrader extends Component {
 
       var dragoTransactionList = this.state.dragoTransactionsLogs
       // console.log(dragoTransactionList)
+
+      console.log(isManager)
 
       // Waiting until getDragoDetails returns the drago details
       if (loading) {
@@ -235,7 +260,7 @@ class PageFundDetailsDragoTrader extends Component {
                 {this.renderAddress(dragoDetails)}
               </ToolbarGroup>
               <ToolbarGroup>
-                <ElementFundActions dragoDetails={dragoDetails} accounts={accounts} snackBar={this.snackBar}/>
+                {/* <ElementFundActions dragoDetails={dragoDetails} accounts={accounts} snackBar={this.snackBar}/> */}
               </ToolbarGroup>
             </Toolbar>
             <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle} className={styles.test}>
@@ -255,7 +280,32 @@ class PageFundDetailsDragoTrader extends Component {
                       </Paper>
                     </Col>
                     <Col xs={6}>
-                      <ElementPriceBox dragoDetails={dragoDetails} />
+                      <Paper zDepth={1}>
+                        <ElementPriceBox 
+                        dragoDetails={dragoDetails} 
+                        accounts={accounts} 
+                        handleBuySellButtons={this.handleBuySellButtons} 
+                        isManager={isManager}
+                        />
+                        <ElementFundActions 
+                          dragoDetails={dragoDetails} 
+                          accounts={accounts} 
+                          snackBar={this.snackBar} 
+                          actionSelected={this.state.openBuySellDialog}
+                          onTransactionSent={this.onTransactionSent}
+                          />
+                        {/* {this.state.openBuySellDialog.open
+                          ? <ElementFundActions 
+                          dragoDetails={dragoDetails} 
+                          accounts={accounts} 
+                          snackBar={this.snackBar} 
+                          actionSelected={this.state.openBuySellDialog}/>
+                          : null
+                        } */}
+                        {/* <div className={styles.tradeButton}>
+                          <ElementFundActions dragoDetails={dragoDetails} accounts={accounts} snackBar={this.snackBar} />
+                        </div> */}
+                      </Paper>
                     </Col>
                   </Row>
                   <Row>
@@ -266,13 +316,14 @@ class PageFundDetailsDragoTrader extends Component {
                           showMenuIconButton={false}
                         />
                         <div className={styles.detailsTabContent}>
-                          <p>Your last 20 transactions on this Drago.</p>
+                          <p>Your last 20 transactions on this fund.</p>
                         </div>
 
 
                         <ElementListWrapper accountsInfo={accountsInfo} list={dragoTransactionList}
                           renderCopyButton={this.renderCopyButton}
                           renderEtherscanButton={this.renderEtherscanButton}>
+
                           <ElementListTransactions />
                         </ElementListWrapper>
                       </Paper>
@@ -286,7 +337,7 @@ class PageFundDetailsDragoTrader extends Component {
                   <Row>
                     <Col xs={12} className={styles.detailsTabContent}>
                       <p>
-                        Stats
+                        Coming soon
                       </p>   
                     </Col>
                   </Row>
@@ -341,7 +392,7 @@ class PageFundDetailsDragoTrader extends Component {
               this.setState({
                 dragoDetails: {
                   address: dragoDetails[0][0],
-                  name: dragoDetails[0][1],
+                  name: dragoDetails[0][1].charAt(0).toUpperCase() + dragoDetails[0][1].slice(1),
                   symbol: dragoDetails[0][2],
                   dragoID: dragoDetails[0][3].c[0],
                   addresssOwner: dragoDetails[0][4],
@@ -460,6 +511,12 @@ class PageFundDetailsDragoTrader extends Component {
           .getBlockByNumber(log.blockNumber.c[0])
           .then((block) => {
             log.timestamp = block.timestamp
+            return log
+          })
+          .catch((error) => {
+            // Sometimes Infura returns null for api.eth.getBlockByNumber, therefore we are assigning a fake timestamp to avoid
+            // other issues in the app.
+            log.timestamp = new Date()
             return log
           })
         })

@@ -1,3 +1,4 @@
+import  * as Colors from 'material-ui/styles/colors';
 import {List, ListItem} from 'material-ui/List';
 import Avatar from 'material-ui/Avatar';
 import Drawer from 'material-ui/Drawer'
@@ -14,11 +15,13 @@ import AppBar from 'material-ui/AppBar';
 import classNames from 'classnames'
 import { REGISTRY_KOVAN } from '../utils/const'
 import DragoApi from '../DragoApi/src'
+import LinearProgress from 'material-ui/LinearProgress';
+import utils from '../utils/utils'
 
 
 import * as abis from '../contracts';
 
-import styles from './elementNotification.module.css';
+import styles from './elementNotificationsDrawer.module.css';
 
 var menuStyles = {
   profileIcon: {
@@ -28,18 +31,58 @@ var menuStyles = {
 
 var timerId = null;
 
+const transactionStyle = {
+  executed: {
+    backgroundColor: Colors.green50,
+    border: '1px solid',
+    borderRadius: '2px',
+    borderColor: Colors.green100,
+    margin: '2px'
+  },
+  authorization: {
+    backgroundColor: Colors.amber50,
+    border: '1px solid',
+    borderRadius: '2px',
+    borderColor: Colors.amber100,
+    margin: '2px',
+    progressBar: {
+      color: Colors.amber400,
+      backgroundColor: Colors.amber100,
+    },
+  }, 
+  pending: {
+    backgroundColor: Colors.lightBlue50,
+    border: '1px solid',
+    borderRadius: '2px',
+    borderColor: Colors.lightBlue100,
+    margin: '2px',
+    progressBar: {
+      color: Colors.lightBlue400,
+      backgroundColor: Colors.lightBlue100,
+    },
+  }, 
+  error: {
+    backgroundColor: Colors.red50,
+    border: '1px solid',
+    borderRadius: '2px',
+    borderColor: Colors.red100,
+    margin: '2px'
+  }, 
+}
+
 export default class ElementNotificationsDrawer extends Component {
 
   static propTypes = {
-    events: PropTypes.array.isRequired,
+    recentTransactions: PropTypes.object.isRequired,
     handleToggleNotifications: PropTypes.func.isRequired,
     notificationsOpen: PropTypes.bool.isRequired,
     accounts: PropTypes.array.isRequired,
+    updateTransactionsQueue: PropTypes.func.isRequired
   };
 
   static contextTypes = {
     api: PropTypes.object.isRequired,
-    isConnected: PropTypes.func.isRequired
+    isConnected: PropTypes.func.isRequired, 
   };
 
   state = {
@@ -52,36 +95,26 @@ export default class ElementNotificationsDrawer extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    console.log(nextProps.recentTransactions)
     if (nextProps.notificationsOpen) {
       // this.detachInterface()
     }
   }
   
   componentDidMount() {
-    const endpoint = localStorage.getItem('endpoint')
-    const attachInterfaceInfura = this.attachInterfaceInfura
-    console.log(endpoint)
-    switch (endpoint) {
-      case "infura":
-        attachInterfaceInfura()
+    const that = this
+    var runTick = () => {
+      timerId = setTimeout(function tick() {
         console.log('tick')
-        var runTick = () =>{ timerId = setTimeout(function tick() {
-          console.log('tick')
-          attachInterfaceInfura()
-          timerId = setTimeout(tick, 3000); // (*)
-        }, 3000);}
-        runTick()
-        break;
-      case "rigoblock":
-        this.attachInterfaceRigoBlock()
-          .then(() => {
-          })
-        break;
+        that.props.updateTransactionsQueue()
+        timerId = setTimeout(tick, 2000); // (*)
+      }, 2000);
     }
+    runTick()
   }
 
   componentWillUnmount () {
-    this.detachInterface()
+    // this.detachInterface()
   }
 
   handleToggleNotifications = () =>{
@@ -112,69 +145,156 @@ export default class ElementNotificationsDrawer extends Component {
     )
   }
 
-  renderNotification = (events) =>{
-    const {api} = this.context
+  renderNotifications = (events) => {
+    const { api } = this.context
     const eventType = 'transaction'
-    var primaryText = null
-    var secondaryText = null
-    var drgvalue = null
-    var symbol = null
-    if (events.length !== 0) {
-      // return this.renderPlaceHolder()
-      return events.map( (event, index) => {
-        switch(event.type) {
-          case "BuyDrago":
-            drgvalue = formatEth(event.params.amount,null,api)
-            symbol = event.symbol
-            primaryText = "Buy " + drgvalue
-            secondaryText = event.state.charAt(0).toUpperCase() + event.state.slice(1)
-            break;
-          case "SellDrago":
-            drgvalue = formatCoins(event.params.amount,null,api)
-            symbol = event.symbol
-            primaryText = "Sell " + drgvalue
-            secondaryText = event.state.charAt(0).toUpperCase() + event.state.slice(1)
-            break;
-            case "DragoCreated":
-            symbol = event.params.symbol
-            primaryText = "Deploy " + symbol
-            secondaryText = event.state.charAt(0).toUpperCase() + event.state.slice(1)
-            break;
-        } 
-        return (
-          <ElementNotification key={index}
-            primaryText={primaryText}
-            secondaryText={secondaryText}
-            eventType={eventType}
-            > 
-            </ElementNotification>)
-      })
-    } else {
-      return this.renderPlaceHolder()
-    }
-
-
+    var eventStatus = 'executed'
+    var primaryText, drgvalue, symbol  = null
+    var secondaryText = []
+    var timeStamp = ''
+    var txHash = ''
+    const { recentTransactions } = this.props
+    return Array.from(recentTransactions).reverse().map( (transaction, index) => {
+      console.log(transaction)
+      secondaryText = []
+      var value = transaction.pop()
+      var key = transaction.pop()
+      timeStamp = value.receipt ? utils.dateFromTimeStamp(value.timestamp) : utils.dateFromTimeStamp(value.timestamp)
+      txHash = value.hash.length !== 0 ? txHash = value.hash : ''
+      console.log('txHash: ' + txHash)
+      console.log(value)
+      switch (value.action) {
+        case "BuyDrago":
+          drgvalue = value.amount
+          symbol = value.symbol
+          primaryText = "Buy " + drgvalue + ' ' + symbol
+          secondaryText[0] = 'Status: ' + value.status.charAt(0).toUpperCase() + value.status.slice(1)
+          secondaryText[1] = timeStamp
+          eventStatus = value.status
+          break;
+        case "SellDrago":
+          drgvalue = value.amount
+          symbol = value.symbol
+          primaryText = "Sell " + drgvalue + ' ' + symbol
+          secondaryText[0] = 'Status: ' + value.status.charAt(0).toUpperCase() + value.status.slice(1)
+          secondaryText[1] = timeStamp
+          eventStatus = value.status
+          break;
+        case "DragoCreated":
+          symbol = value.symbol
+          primaryText = "Deploy " + symbol
+          secondaryText[0] = 'Status: ' + value.status.charAt(0).toUpperCase() + value.status.slice(1)
+          secondaryText[1] = timeStamp
+          eventStatus = value.status
+          break;
+      }
+      return (
+        <ElementNotification key={key}
+          primaryText={primaryText}
+          secondaryText={secondaryText}
+          eventType={eventType}
+          eventStatus={eventStatus}
+          txHash={txHash}
+        >
+        </ElementNotification>
+      )
+    })
   }
 
   render () {
     const { notificationsOpen } = this.props
     const { allEvents } = this.state
+    console.log('render')
     // console.log(allEvents)
     return (
       <span>
-        <Drawer width={300} openSecondary={true} 
+        <Drawer width={300} openSecondary={true}
           open={notificationsOpen} zDepth={1} docked={false}
           classNameName={styles.notifications}
           onRequestChange={this.handleToggleNotifications}
-          >
+        >
           <AppBar
             title={<span>Network</span>}
             showMenuIconButton={false}
           />
-            <Row>
-              <Col xs>
-              {this.renderNotification(allEvents)}
-              </Col>
+          <Row>
+            <Col xs={12}>
+              {/* <List>
+                <div style={transactionStyle.authorization}>
+                  <ListItem
+                    disabled={true}
+                    primaryText='BUY test 0.1 ETH'
+                    secondaryText={
+                      <p>
+                        Status: Waiting<br />
+                        Time: 2018-01-07 13:28:35
+                    </p>
+                    }
+                    secondaryTextLines={2}
+                    leftAvatar={<Avatar src="img/ETH.svg" />}
+                  >
+                  </ListItem>
+                  <div className={styles.progressBar}>
+                    <LinearProgress color={transactionStyle.authorization.progressBar.color} style={transactionStyle.authorization.progressBar} mode="indeterminate" />
+                  </div>
+                </div>
+                <ListItem
+                  disabled={true}
+                  primaryText='BUY test 0.1 ETH'
+                  secondaryText={
+                    <p>
+                      Status: Waiting<br />
+                      Time: 2018-01-07 13:28:35
+                    </p>
+                  }
+                  secondaryTextLines={2}
+                  leftAvatar={<Avatar src="img/ETH.svg" />}
+                  style={transactionStyle.pending}
+                >
+                </ListItem>
+                <ListItem
+                  disabled={true}
+                  primaryText='BUY test 0.1 ETH'
+                  secondaryText={
+                    <p>
+                      Status: Waiting<br />
+                      Time: 2018-01-07 13:28:35
+                    </p>
+                  }
+                  secondaryTextLines={2}
+                  leftAvatar={<Avatar src="img/ETH.svg" />}
+                  style={transactionStyle.executed}
+                >
+                </ListItem>
+                <ListItem
+                  disabled={true}
+                  primaryText='BUY test 0.1 ETH'
+                  secondaryText={
+                    <p>
+                      Status: Waiting<br />
+                      Time: 2018-01-07 13:28:35
+                    </p>
+                  }
+                  secondaryTextLines={2}
+                  leftAvatar={<Avatar src="img/ETH.svg" />}
+                  style={transactionStyle.error}
+                >
+                </ListItem>
+              </List> */}
+              <List>
+                {this.renderNotifications()}
+              </List>
+              {/* <List>
+                <ElementNotification key='123'
+                  primaryText='BUY test 0.1 ETH'
+                  secondaryText={['gino', 'pino']}
+                  eventType='transaction'
+                  eventStatus='authorization'
+                  txHash=''
+                >
+                </ElementNotification>
+              </List> */}
+            </Col>
           </Row>
         </Drawer>
       </span>
@@ -418,6 +538,7 @@ export default class ElementNotificationsDrawer extends Component {
     const { api } = this.context;
     const { subscriptionIDContractDrago } = this.state;
     var sourceLogclassName = this.constructor.name
+    console.log('Clear timer ID')
     clearInterval(timerId)
     console.log(subscriptionIDContractDrago)
     const subscriptionIDs = [].concat(subscriptionIDContractDrago)

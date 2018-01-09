@@ -120,44 +120,6 @@ class PageNetworkConfig extends Component {
 
       return (
         <div className={styles.boxContainer}>
-          {/* <Row>
-            <Col xs={12}>
-              <ElementBoxHeadTitle primaryText="Network" />
-            </Col>
-            <Col xs={12}>
-              <Paper className={styles.paperContainer} zDepth={1}>
-                <p>RigoBlock protocol is currently deployed on <b>Kovan</b> network only.</p>
-                <p>&nbsp;</p>
-                <div style={stylesToggle.block}>
-                  <Toggle
-                    label="Kovan"
-                    style={stylesToggle.toggle}
-                    onToggle={this.onToggle}
-                    data-network="infura"
-                    toggled={network.kovan}
-                  />
-
-                  <Toggle
-                    label="Ropsten"
-                    style={stylesToggle.toggle}
-                    toggled={network.ropsten}
-                    disabled={true}
-                  />
-                </div>
-                <Row>
-                  <Col xs={12}>
-                    <p>You need to refresh you browser to save and make this setting active. Please proceed:</p>
-                  </Col>
-                  <Col xs={12}>
-                    <RaisedButton label="Refresh"
-                      primary={true}
-                      disabled={this.state.save}
-                      onClick={this.handleRefresh} />
-                  </Col>
-                </Row>
-              </Paper>
-            </Col>
-          </Row> */}
           <Row>
             <Col xs={12}>
               <ElementBoxHeadTitle primaryText="Endpoint" />

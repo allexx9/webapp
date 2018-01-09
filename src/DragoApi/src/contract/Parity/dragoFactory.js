@@ -73,9 +73,9 @@ class DragoFactoryParity {
       options.gas = gasEstimate.mul(1.2).toFixed(0);
       return instance.createDrago.postTransaction(options, values)
     })
-    .catch((error) => {
-      console.error('error', error)
-    })
+    // .catch((error) => {
+    //   console.error('error', error)
+    // })
   }
 }
 
