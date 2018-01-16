@@ -77,6 +77,7 @@ class PageNetworkConfig extends Component {
     onToggle = (event) =>{
       // console.log(event.target.getAttribute('data-endpoint'))
       const selectedEndpoint = event.target.getAttribute('data-endpoint')
+      console.log(ALLOWED_ENDPOINTS)
       var allowedEndpoints = new Map(ALLOWED_ENDPOINTS)
       localStorage.setItem('endpoint', selectedEndpoint)
       allowedEndpoints.set(selectedEndpoint, true)

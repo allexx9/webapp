@@ -10,7 +10,8 @@ class ElementListWrapper extends Component {
   static propTypes = {
     list: PropTypes.array,
     location: PropTypes.object,
-    match: PropTypes.object
+    match: PropTypes.object,
+    poolType: PropTypes.string
   };
 
   render() {

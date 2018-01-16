@@ -23,7 +23,7 @@ var drawerStyle = {
    },
 };
 
-class LeftSideDrawer extends Component {
+class LeftSideDrawerVaults extends Component {
 
   constructor(props) {
     super(props);
@@ -61,10 +61,10 @@ class LeftSideDrawer extends Component {
           value={this.setSelectedLink(location)}        
           >
           <MenuItem checked={true} primaryText="Dashboard" leftIcon={<ActionAssessment />} 
-            containerElement={<Link to={DS+APP+DS+this.buildUrlPath(location)+DS+"drago"+DS+"dashboard"} />}
+            containerElement={<Link to={DS+APP+DS+this.buildUrlPath(location)+DS+"vaultv2"+DS+"dashboard"} />}
             value='dashboard'/>
-          <MenuItem primaryText="Funds" leftIcon={<ActionShowChart />} 
-            containerElement={<Link to={DS+APP+DS+this.buildUrlPath(location)+DS+"drago"+DS+"pools"} />}
+          <MenuItem primaryText="Vaults" leftIcon={<ActionShowChart />} 
+            containerElement={<Link to={DS+APP+DS+this.buildUrlPath(location)+DS+"vaultv2"+DS+"pools"} />}
             value='pools' />
         </Menu>
       </Hidden>
@@ -83,7 +83,7 @@ class LeftSideDrawer extends Component {
           value={this.setSelectedLink(location)}        
           >
           <MenuItem checked={true} primaryText="Dashboard" leftIcon={<ActionAssessment />} 
-            containerElement={<Link to={DS+APP+DS+this.buildUrlPath(location)+DS+"drago"+DS+"dashboard"} />}
+            containerElement={<Link to={DS+APP+DS+this.buildUrlPath(location)+DS+"vaultv2"+DS+"dashboard"} />}
             value='dashboard'/>
         </Menu>
       </Hidden>
@@ -99,4 +99,4 @@ class LeftSideDrawer extends Component {
   }
 }
 
-export default withRouter(LeftSideDrawer)
+export default withRouter(LeftSideDrawerVaults)

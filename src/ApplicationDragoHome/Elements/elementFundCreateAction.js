@@ -22,12 +22,12 @@ import {
 import { ERRORS, validateAccount, validatePositiveNumber, validateNewName, validateNewSymbol } from './validation';
 import { formatCoins, formatEth, formatHash, toHex } from '../../format';
 import * as abis from '../../contracts';
-import AccountSelector from './elementAccountSelector'
+import AccountSelector from '../../Elements/elementAccountSelector'
 import IdentityIcon from '../../IdentityIcon'
 import utils, {dragoApi} from '../../utils/utils'
 import DragoApi from '../../DragoApi/src'
 import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle'
-import ElementFundActionAuthorization from '../Elements/elementFundActionAuthorization'
+import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization'
 
 
 import styles from './elementFundCreateAction.module.css';

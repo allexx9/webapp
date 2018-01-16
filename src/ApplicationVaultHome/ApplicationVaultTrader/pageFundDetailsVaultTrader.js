@@ -28,7 +28,7 @@ import ElementListWrapper from '../../Elements/elementListWrapper'
 import { dragoFactoryEventsSignatures } from '../../utils/utils.js'
 import { formatCoins, formatEth, formatHash, toHex } from '../../format'
 import * as abis from '../../contracts';
-import ElementFundActions from '../Elements/elementFundActions'
+// import ElementFundActions from '../Elements/elementFundActions'
 import IdentityIcon from '../../IdentityIcon'
 import InfoTable from '../../Elements/elementInfoTable'
 import Loading from '../../Loading'
@@ -44,12 +44,13 @@ import {
   TableRowColumn,
 } from 'material-ui/Table';
 import ElementListTransactions from '../Elements/elementListTransactions'
-import styles from './pageFundDetailsDragoTrader.module.css';
-import ElementPriceBox from '../Elements/elementPricesBox'
+import styles from './pageFundDetailsVaultTrader.module.css';
+import ElementFeesBox from '../Elements/elementFeesBox'
 import utils from '../../utils/utils'
 import ElementFundNotFound from '../../Elements/elementFundNotFound'
+import ElementVaultActions from '../Elements/elementVaultActions'
 
-class PageFundDetailsDragoTrader extends Component {
+class PageFundDetailsVaultTrader extends Component {
 
   // Checking the type of the context variable that we receive by the parent
   static contextTypes = {
@@ -65,7 +66,7 @@ class PageFundDetailsDragoTrader extends Component {
     };
 
     state = {
-      dragoDetails: {
+      vaultDetails: {
         address: null,
         name: null,
         symbol: null,
@@ -128,19 +129,19 @@ class PageFundDetailsDragoTrader extends Component {
     componentDidUpdate(nextProps) {
     }
 
-    renderAddress (dragoDetails) {
-      if (!dragoDetails.address ) {
+    renderAddress (vaultDetails) {
+      if (!vaultDetails.address ) {
         return <p>empty</p>;
       }
   
       return (
         <Row className={styles.detailsToolbarGroup}>
           <Col xs={12} md={1} className={styles.dragoTitle}>
-            <h2 ><IdentityIcon address={ dragoDetails.address } /></h2>
+            <h2 ><IdentityIcon address={ vaultDetails.address } /></h2>
           </Col>
           <Col xs={12} md={11} className={styles.dragoTitle}>
-          <p>{dragoDetails.symbol} | {dragoDetails.name} </p>
-          <small>{dragoDetails.address}</small>
+          <p>{vaultDetails.symbol} | {vaultDetails.name} </p>
+          <small>{vaultDetails.address}</small>
           </Col>
         </Row>
       );
@@ -203,7 +204,7 @@ class PageFundDetailsDragoTrader extends Component {
 
     render() {
       const { location, accounts, accountsInfo, allEvents, isManager } = this.props
-      const { dragoDetails, dragoTransactionsLogs, loading } = this.state
+      const { vaultDetails, dragoTransactionsLogs, loading } = this.state
       const paperContainer = {
         marginTop: 10,
         display: 'inline-block',
@@ -224,11 +225,11 @@ class PageFundDetailsDragoTrader extends Component {
       }
 
       const columnsStyle = [styles.detailsTableCell, styles.detailsTableCell2, styles.detailsTableCell3]
-      const tableButtons = [this.renderCopyButton(dragoDetails.address), this.renderEtherscanButton('address', dragoDetails.address)]
-      const tableInfo = [['Symbol', dragoDetails.symbol, ''], 
-        ['Name', dragoDetails.name, ''], 
-        ['Address', dragoDetails.address, tableButtons],
-        ['Manager', dragoDetails.addresssOwner, tableButtons]]
+      const tableButtons = [this.renderCopyButton(vaultDetails.address), this.renderEtherscanButton('address', vaultDetails.address)]
+      const tableInfo = [['Symbol', vaultDetails.symbol, ''], 
+        ['Name', vaultDetails.name, ''], 
+        ['Address', vaultDetails.address, tableButtons],
+        ['Manager', vaultDetails.addresssOwner, tableButtons]]
       const paperStyle = {
         marginTop: "10px"
       };
@@ -246,7 +247,7 @@ class PageFundDetailsDragoTrader extends Component {
           <Loading />
         );
       }
-      if (dragoDetails.address === '0x0000000000000000000000000000000000000000') {
+      if (vaultDetails.address === '0x0000000000000000000000000000000000000000') {
         return (
           <ElementFundNotFound />
         );
@@ -257,10 +258,10 @@ class PageFundDetailsDragoTrader extends Component {
           <Paper className={styles.paperContainer} zDepth={1}>
             <Toolbar className={styles.detailsToolbar}>
               <ToolbarGroup className={styles.detailsToolbarGroup}>
-                {this.renderAddress(dragoDetails)}
+                {this.renderAddress(vaultDetails)}
               </ToolbarGroup>
               <ToolbarGroup>
-                {/* <ElementFundActions dragoDetails={dragoDetails} accounts={accounts} snackBar={this.snackBar}/> */}
+                {/* <ElementFundActions vaultDetails={vaultDetails} accounts={accounts} snackBar={this.snackBar}/> */}
               </ToolbarGroup>
             </Toolbar>
             <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle} className={styles.test}>
@@ -281,29 +282,36 @@ class PageFundDetailsDragoTrader extends Component {
                     </Col>
                     <Col xs={6}>
                       <Paper zDepth={1}>
-                        <ElementPriceBox 
-                        dragoDetails={dragoDetails} 
+                        <ElementFeesBox 
+                        vaultDetails={vaultDetails} 
                         accounts={accounts} 
                         handleBuySellButtons={this.handleBuySellButtons} 
                         isManager={isManager}
                         />
-                        <ElementFundActions 
-                          dragoDetails={dragoDetails} 
+                        <ElementVaultActions 
+                          vaultDetails={vaultDetails} 
                           accounts={accounts} 
                           snackBar={this.snackBar} 
                           actionSelected={this.state.openBuySellDialog}
                           onTransactionSent={this.onTransactionSent}
                           />
+                        {/* <ElementFundActions 
+                          vaultDetails={vaultDetails} 
+                          accounts={accounts} 
+                          snackBar={this.snackBar} 
+                          actionSelected={this.state.openBuySellDialog}
+                          onTransactionSent={this.onTransactionSent}
+                          /> */}
                         {/* {this.state.openBuySellDialog.open
                           ? <ElementFundActions 
-                          dragoDetails={dragoDetails} 
+                          vaultDetails={vaultDetails} 
                           accounts={accounts} 
                           snackBar={this.snackBar} 
                           actionSelected={this.state.openBuySellDialog}/>
                           : null
                         } */}
                         {/* <div className={styles.tradeButton}>
-                          <ElementFundActions dragoDetails={dragoDetails} accounts={accounts} snackBar={this.snackBar} />
+                          <ElementFundActions vaultDetails={vaultDetails} accounts={accounts} snackBar={this.snackBar} />
                         </div> */}
                       </Paper>
                     </Col>
@@ -378,51 +386,51 @@ class PageFundDetailsDragoTrader extends Component {
           //
           dragoApi.contract.dragoregistry
           .drago(dragoID)
-          .then((dragoDetails) => {
-            const dragoAddress = dragoDetails[0][0]
+          .then((vaultDetails) => {
+            const vaultAddress = vaultDetails[0][0]
             //
-            // Initializing drago contract
+            // Initializing vault contract
             //
-            dragoApi.contract.drago.init(dragoAddress)
+            dragoApi.contract.vault.init(vaultAddress)
             //
-            // Calling getData method
+            // Calling getPrice method
             //
-            dragoApi.contract.drago.getData()
+            dragoApi.contract.vault.getTransactionFee()
             .then((data) =>{
+              console.log(api.util.fromWei(data.toNumber(4)).toFormat(4))
               this.setState({
-                dragoDetails: {
-                  address: dragoDetails[0][0],
-                  name: dragoDetails[0][1].charAt(0).toUpperCase() + dragoDetails[0][1].slice(1),
-                  symbol: dragoDetails[0][2],
-                  dragoID: dragoDetails[0][3].c[0],
-                  addresssOwner: dragoDetails[0][4],
-                  addressGroup: dragoDetails[0][5],
-                  sellPrice: api.util.fromWei(data[2].toNumber(4)).toFormat(4),
-                  buyPrice: api.util.fromWei(data[3].toNumber(4)).toFormat(4),
+                vaultDetails: {
+                  address: vaultDetails[0][0],
+                  name: vaultDetails[0][1].charAt(0).toUpperCase() + vaultDetails[0][1].slice(1),
+                  symbol: vaultDetails[0][2],
+                  dragoID: vaultDetails[0][3].c[0],
+                  addresssOwner: vaultDetails[0][4],
+                  addressGroup: vaultDetails[0][5],
+                  price: api.util.fromWei(data.toNumber(4)).toFormat(4),
                 },
                 loading: false
               })
             })
-            dragoApi.contract.eventful.init()
+            dragoApi.contract.vaulteventful.init()
               .then(() => {
-                this.getTransactions (dragoDetails[0][0], dragoApi.contract.eventful, accounts)
+                this.getTransactions (vaultDetails[0][0], dragoApi.contract.vaulteventful, accounts)
               }
               )
-            // this.getTransactions (dragoDetails[0][0], contract, accounts)
+            // this.getTransactions (vaultDetails[0][0], contract, accounts)
           })
         })
 
       }  
 
     // Getting last transactions
-    getTransactions = (dragoAddress, contract, accounts) => {
+    getTransactions = (vaultAddress, contract, accounts) => {
       const { api } = this.context
       var sourceLogClass = this.constructor.name
       const logToEvent = (log) => {
         const key = api.util.sha3(JSON.stringify(log))
         const { blockNumber, logIndex, transactionHash, transactionIndex, params, type } = log   
-        var ethvalue = (log.event === 'BuyDrago') ? formatEth(params.amount.value,null,api) : formatEth(params.revenue.value,null,api);
-        var drgvalue = (log.event === 'SellDrago') ? formatCoins(params.amount.value,null,api) : formatCoins(params.revenue.value,null,api);
+        var ethvalue = (log.event === 'BuyGabcoin') ? formatEth(params.amount.value,null,api) : formatEth(params.revenue.value,null,api);
+        var drgvalue = (log.event === 'SellGabcoin') ? formatCoins(params.amount.value,null,api) : formatCoins(params.revenue.value,null,api);
         // let ethvalue = null
         // let drgvalue = null     
         // if ((log.event === 'BuyDrago')) {
@@ -458,7 +466,7 @@ class PageFundDetailsDragoTrader extends Component {
       //
       //  https://github.com/RigoBlock/Books/blob/master/Solidity_01_Events.MD
 
-      const hexDragoAddress = '0x' + dragoAddress.substr(2).padStart(64,'0')
+      const hexVaultAddress = '0x' + vaultAddress.substr(2).padStart(64,'0')
       const hexAccounts = accounts.map((account) => {
         const hexAccount = '0x' + account.address.substr(2).padStart(64,'0')
         return hexAccount
@@ -469,44 +477,44 @@ class PageFundDetailsDragoTrader extends Component {
       }
       const eventsFilterBuy = {
         topics: [ 
-          [contract.hexSignature.BuyDrago], 
-          [hexDragoAddress], 
+          [contract.hexSignature.BuyGabcoin], 
+          [hexVaultAddress], 
           hexAccounts,
           null
         ]
       }
       const eventsFilterSell = {
         topics: [ 
-          [contract.hexSignature.SellDrago], 
-          [hexDragoAddress], 
+          [contract.hexSignature.SellGabcoin], 
+          [hexVaultAddress], 
           null,
           hexAccounts
         ]
       }
-      const buyDragoEvents = contract
+      const buyVaultEvents = contract
         .getAllLogs(eventsFilterBuy)
-        .then((dragoTransactionsLog) => {
-          const buyLogs = dragoTransactionsLog.map(logToEvent)
+        .then((vaultTransactionsLog) => {
+          const buyLogs = vaultTransactionsLog.map(logToEvent)
           return buyLogs
         }
         )
-      const sellDragoEvents = contract
+      const sellVaultEvents = contract
         .getAllLogs(eventsFilterSell)
-        .then((dragoTransactionsLog) => {
-          const sellLogs = dragoTransactionsLog.map(logToEvent)
+        .then((vaultTransactionsLog) => {
+          const sellLogs = vaultTransactionsLog.map(logToEvent)
           return sellLogs
         }
         )
-      Promise.all([buyDragoEvents, sellDragoEvents])
+      Promise.all([buyVaultEvents, sellVaultEvents])
       .then((logs) => {
         const allLogs = [...logs[0], ...logs[1]]
         return allLogs
       })
-      .then ((dragoTransactionsLog) =>{
+      .then ((vaultTransactionsLog) =>{
         // Creating an array of promises that will be executed to add timestamp to each entry
         // Doing so because for each entry we need to make an async call to the client
         // For additional refernce: https://stackoverflow.com/questions/39452083/using-promise-function-inside-javascript-array-map
-        var promises = dragoTransactionsLog.map((log) => {
+        var promises = vaultTransactionsLog.map((log) => {
           return api.eth
           .getBlockByNumber(log.blockNumber.c[0])
           .then((block) => {
@@ -537,4 +545,4 @@ class PageFundDetailsDragoTrader extends Component {
     
   }
 
-  export default withRouter(PageFundDetailsDragoTrader)
+  export default withRouter(PageFundDetailsVaultTrader)

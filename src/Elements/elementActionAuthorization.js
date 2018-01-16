@@ -10,15 +10,15 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 import AccountSelector from '../Elements/elementAccountSelector';
-import ElementDialogAddressTitle from '../../Elements/elementDialogAddressTitle'
-import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle'
-import IdentityIcon from '../../IdentityIcon';
-import InfoTable from '../Elements/elementInfoTable'
+import ElementDialogAddressTitle from './elementDialogAddressTitle'
+import ElementDialogHeadTitle from './elementDialogHeadTitle'
+import IdentityIcon from '../IdentityIcon';
+import InfoTable from './elementInfoTable'
 import NotificationWifi from 'material-ui/svg-icons/notification/wifi';
 
-import styles from './elementFundActionAuthorization.module.css';
+import styles from './elementActionAuthorization.module.css';
 
-export default class ElementFundActionAuthorization extends Component {
+export default class ElementActionAuthorization extends Component {
 
   static contextTypes = {
     api: PropTypes.object.isRequired,

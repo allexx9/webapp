@@ -22,7 +22,7 @@ import {
 import { ERRORS, validateAccount, validatePositiveNumber } from './validation';
 import { formatCoins, formatEth, formatHash, toHex } from '../../../format';
 import * as abis from '../../../contracts';
-import AccountSelector from './elementAccountSelector'
+import AccountSelector from '../Elements/elementAccountSelector'
 import ElementFundActionsHeader from './elementFundActionsHeader'
 import IdentityIcon from '../../../IdentityIcon';
 

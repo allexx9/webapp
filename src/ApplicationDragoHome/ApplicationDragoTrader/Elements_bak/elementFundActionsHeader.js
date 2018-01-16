@@ -1,24 +1,23 @@
-import  * as Colors from 'material-ui/styles/colors';
 import { Grid, Row, Col } from 'react-flexbox-grid';
 import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import PropTypes from 'prop-types';
 import RaisedButton from 'material-ui/RaisedButton';
+import PropTypes from 'prop-types';
 import React from 'react';
 
-import AccountSelector from '../../Elements/elementAccountSelector'
-import IdentityIcon from '../../IdentityIcon';
+import AccountSelector from '../Elements/elementAccountSelector'
+import IdentityIcon from '../../../IdentityIcon';
 
 import styles from './elementFundActionsHeader.module.css';
 
 export default class ElementFundActionsHeader extends React.Component {
 
-  static propTypes = {
+  static PropTypes = {
     dragoDetails: PropTypes.object.isRequired, 
-    action: PropTypes.string.isRequired, 
-    // handlebuyAction: PropTypes.func.isRequired,
-    // handleSellAction: PropTypes.func.isRequired,
+    action: PropTypes.object.isRequired, 
+    handlebuyAction: PropTypes.func.isRequired,
+    handleSellAction: PropTypes.func.isRequired,
   };
 
   headerButtonsStyle = {
@@ -31,9 +30,9 @@ export default class ElementFundActionsHeader extends React.Component {
       fontWeight: 700,
       fontSize: 20
     },
-    bgSelected:  Colors.blue300,
+    bgSelected:  "#64B5F6",
     bGNotSelected: "#2196f3",
-    hoverSelected: Colors.blue300,
+    hoverSelected: "#64B5F6",
     hoverNotSelected: "#2196F3",
   }
 
@@ -74,14 +73,14 @@ export default class ElementFundActionsHeader extends React.Component {
             <Col xsOffset={4} xs={2}><FlatButton label="Sell" style={this.buttonsStyle} 
               backgroundColor={this.setButtonStyle(action).sellButtonStyleBg}
               labelStyle={this.setButtonStyle(action).sellButtonStyle}
-              hoverColor={Colors.blue300}
+              hoverColor="#64B5F6"
               fullWidth={true}  
               onClick={handleSellAction}/>
             </Col>
             <Col xs={2}><FlatButton label="Buy" style={this.buttonsStyle} 
               backgroundColor={this.setButtonStyle(action).buyButtonStyleBg}
               labelStyle={this.setButtonStyle(action).buyButtonStyle}
-              hoverColor={Colors.blue300}
+              hoverColor="#64B5F6"
               fullWidth={true}  
               onClick={handleBuyAction}/>
             </Col>

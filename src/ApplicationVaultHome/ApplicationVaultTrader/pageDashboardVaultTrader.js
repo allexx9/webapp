@@ -48,9 +48,9 @@ import IdentityIcon from '../../IdentityIcon';
 import Loading from '../../Loading'
 import utils from '../../utils/utils'
 
-import styles from './pageDashboardDragoTrader.module.css'
+import styles from './pageDashboardVaultTrader.module.css'
 
-class PageDashboardDragoTrader extends Component {
+class PageDashboardVaultTrader extends Component {
 
   // Checking the type of the context variable that we receive by the parent
   static contextTypes = {
@@ -65,8 +65,8 @@ class PageDashboardDragoTrader extends Component {
     };
 
     state = {
-      dragoTransactionsLogs: null,
-      dragoBalances: null,
+      vaultTransactionsLogs: null,
+      vaultBalances: null,
       loading: true,
       topBarClassName: null,
       topBarInitialPosition: null,
@@ -155,7 +155,7 @@ class PageDashboardDragoTrader extends Component {
 
     render() {
       const { location, accounts, accountsInfo, allEvents } = this.props
-      const { dragoTransactionsLogs, loading, dragoBalances } = this.state 
+      const { vaultTransactionsLogs, loading, vaultBalances } = this.state 
       console.log(this.props.ethBalance)
       const tabButtons = {
         inkBarStyle: {
@@ -204,15 +204,15 @@ class PageDashboardDragoTrader extends Component {
                     <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle}>
                       <Tab label="Accounts" className={styles.detailsTab}
                         onActive={() => scrollToComponent(this.Accounts, { offset: -80, align: 'top', duration: 500 })}
-                        icon={<ActionList color={Colors.blue500} />}>
+                        icon={<ActionList color={Colors.blueGrey500} />}>
                       </Tab>
                       <Tab label="Holding" className={styles.detailsTab}
-                        onActive={() => scrollToComponent(this.Dragos, { offset: -80, align: 'top', duration: 500 })}
-                        icon={<ActionAssessment color={Colors.blue500} />}>
+                        onActive={() => scrollToComponent(this.Vaults, { offset: -80, align: 'top', duration: 500 })}
+                        icon={<ActionAssessment color={Colors.blueGrey500} />}>
                       </Tab>
                       <Tab label="Transactions" className={styles.detailsTab}
                         onActive={() => scrollToComponent(this.Transactions, { offset: -80, align: 'top', duration: 500 })}
-                        icon={<ActionShowChart color={Colors.blue500} />}>
+                        icon={<ActionShowChart color={Colors.blueGrey500} />}>
                       </Tab>
                     </Tabs>
                   </Col>
@@ -233,15 +233,15 @@ class PageDashboardDragoTrader extends Component {
               </Row>
               <Row className={styles.transactionsStyle}>
                 <Col xs={12} >
-                  <span ref={(section) => { this.Dragos = section; }}></span>
+                  <span ref={(section) => { this.Vaults = section; }}></span>
                   <AppBar className={styles.appBar}
-                    title='Funds'
+                    title='Vaults'
                     showMenuIconButton={false}
                   />
                   <Paper zDepth={1}>
                     <Row>
                       <Col className={styles.transactionsStyle} xs={12}>
-                        <ElementListWrapper list={dragoBalances}>
+                        <ElementListWrapper list={vaultBalances}>
                           <ElementListBalances />
                         </ElementListWrapper>
                       </Col>
@@ -259,7 +259,7 @@ class PageDashboardDragoTrader extends Component {
                   <Paper zDepth={1}>
                     <Row style={{ outline: 'none' }}>
                       <Col className={styles.transactionsStyle} xs={12}>
-                        <ElementListWrapper list={dragoTransactionsLogs}
+                        <ElementListWrapper list={vaultTransactionsLogs}
                           renderCopyButton={this.renderCopyButton}
                           renderEtherscanButton={this.renderEtherscanButton}
                         >
@@ -288,15 +288,15 @@ class PageDashboardDragoTrader extends Component {
       const { api } = this.context
       const options = {balance: true, supply: false, limit: 10, trader: true}
       var sourceLogClass = this.constructor.name
-      utils.getTransactionsDragoOpt(api, dragoAddress, accounts, options)
+      utils.getTransactionsVaultOpt(api, dragoAddress, accounts, options)
       .then(results =>{
         console.log(`${sourceLogClass} -> Transactions list loaded`)
         // const buySellLogs = results[1].filter(event =>{
         //   return event.type !== 'DragoCreated'
         // })
         this.setState({
-          dragoBalances: results[0],
-          dragoTransactionsLogs: results[1],
+          vaultBalances: results[0],
+          vaultTransactionsLogs: results[1],
         }, this.setState({
           loading: false,
         }))
@@ -304,4 +304,4 @@ class PageDashboardDragoTrader extends Component {
     }
   }
 
-  export default withRouter(PageDashboardDragoTrader)
+  export default withRouter(PageDashboardVaultTrader)

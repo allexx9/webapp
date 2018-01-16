@@ -1,4 +1,5 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
+
 import React, { Component } from 'react';
 
 import { api } from '../parity';
@@ -12,6 +13,7 @@ import ApplicationGabcoinEventful from '../ApplicationGabcoinEventful';
 // import ApplicationExchangeEventful from '../ApplicationExchangeEventful';
 import ApplicationDragoHome from '../ApplicationDragoHome';
 // import ApplicationDragoFactory from '../ApplicationDragoFactory';
+import ApplicationVaultHome from '../ApplicationVaultHome';
 import ApplicationHome from '../ApplicationHome';
 import ApplicationConfig from '../ApplicationConfig';
 
@@ -40,6 +42,18 @@ const muiTheme = getMuiTheme({
   palette: {
     "primary1Color": "#2196f3",
 
+  },
+  appBar: {
+    height: 50,
+  },
+});
+
+const muiThemeVault = getMuiTheme({
+  palette: {
+    "primary1Color": "#607D8B",
+  },
+  appBar: {
+    height: 50,
   }
 });
 
@@ -341,7 +355,7 @@ export class ApplicationDragoPage extends Component {
   
   // Defining the properties of the context variables passed down to the children
   static childContextTypes = {
-    muiTheme: PropTypes.object,
+    // muiTheme: PropTypes.object,
     api: PropTypes.object,
     isConnected: PropTypes.func,
     ethereumNetworkName: PropTypes.string,
@@ -350,7 +364,7 @@ export class ApplicationDragoPage extends Component {
   // Parring down the context variables passed down to the children
   getChildContext() {
     return {
-      muiTheme,
+      // muiTheme,
       api,
       isConnected: this.isConnected,
       ethereumNetworkName: DEFAULT_NETWORK_NAME
@@ -372,7 +386,6 @@ export class ApplicationDragoPage extends Component {
   // This function is passed down with context and used as a call back function to show a warning page
   // if the connection with the node drops
   isConnected = (status) => {
-    // console.log('isConnected')
     this.setState({
       isConnected: status
     })
@@ -381,7 +394,6 @@ export class ApplicationDragoPage extends Component {
   checkConnectionToNode = () =>{
     api.net.listening()
     .then((listening) =>{
-      // console.log(listening)
       this.td = setTimeout(this.checkConnectionToNode,15000)
       this.setState({
         isConnected: true
@@ -431,7 +443,6 @@ export class ApplicationDragoPage extends Component {
         <Grid fluid className={styles.maincontainer}>
           <Row>
             <Col xs={12}>
-              {/* <ApplicationTabsMenu /> */}
               <ApplicationTopBar 
                 handleTopBarSelectAccountType={ this.handleTopBarSelectAccountType } 
                 isManager={this.state.isManager} 
@@ -454,6 +465,161 @@ export class ApplicationDragoPage extends Component {
             )}
             </Col>
           </Row>
+          {/* <Row>
+            <Col xs={12} className={classNames(styles.bottombar)}>
+              <ApplicationBottomBar />
+            </Col>
+          </Row> */}
+        </Grid>
+      </MuiThemeProvider>
+    )
+  }
+}
+
+export class ApplicationVaultPage extends Component {
+
+
+  constructor(props) {
+    super(props);
+    const isManagerSelected = localStorage.getItem('isManager')
+    var isManager = false
+    // Checking account type (trader/manager) and restoring after browser refresh
+    if (typeof isManagerSelected !== 'undefined') {
+      switch (isManagerSelected) {
+        case 'false':
+        isManager = false
+        break;
+        case 'true':
+        isManager = true
+        break;
+        default:
+        isManager = false
+      }
+    } else {
+      isManager = false
+    }
+    this.state = {
+      isManager: isManager,
+      isConnected: true,
+      notificationsOpen: false
+    }
+  }
+  
+  
+  // Defining the properties of the context variables passed down to the children
+  static childContextTypes = {
+    api: PropTypes.object,
+    isConnected: PropTypes.func,
+    ethereumNetworkName: PropTypes.string,
+  };
+
+  // Parring down the context variables passed down to the children
+  getChildContext() {
+    return {
+      api,
+      isConnected: this.isConnected,
+      ethereumNetworkName: DEFAULT_NETWORK_NAME
+    };
+  }
+
+
+
+  td = null
+
+  componentWillMount() {
+    this.checkConnectionToNode()
+  }
+
+  componentWillUnmount () {
+    clearTimeout(this.td)
+  }
+
+  // This function is passed down with context and used as a call back function to show a warning page
+  // if the connection with the node drops
+  isConnected = (status) => {
+    // console.log('isConnected')
+    this.setState({
+      isConnected: status
+    })
+  }
+
+  // Starting the timeout to check if the node is up
+  checkConnectionToNode = () =>{
+    api.net.listening()
+    .then((listening) =>{
+      this.td = setTimeout(this.checkConnectionToNode,15000)
+      this.setState({
+        isConnected: true
+      })
+    })
+    .catch((error) => {
+      this.td = setTimeout(this.checkConnectionToNode,15000)
+      this.setState({
+        isConnected: false
+      })
+      console.warn(error)
+    })
+    
+  }
+
+  // Callback function to handle account type selection in the Top Bar
+  // value = 1 = Trader
+  // value = 2 = Manager
+  handleTopBarSelectAccountType = (event, index, value) => { 
+    const accountType = {
+      false: false,
+      true: true
+    }
+    localStorage.setItem('isManager', accountType[value])
+    this.setState({
+      isManager: accountType[value],
+    }); 
+  };
+
+  static propTypes = {
+    location: PropTypes.object.isRequired,
+  };
+
+  handleToggleNotifications = () => {
+    console.log('open')
+    this.setState({notificationsOpen: !this.state.notificationsOpen})
+  }
+
+  render() {
+  // console.log(location);
+
+  const {notificationsOpen} = this.state
+  const { location } = this.props
+  // console.log('is Manager = '+this.state.isManager)
+    return (
+      <MuiThemeProvider muiTheme={muiTheme}>
+        <Grid fluid className={styles.maincontainer}>
+          <Row>
+            <Col xs={12}>
+              <ApplicationTopBar 
+                handleTopBarSelectAccountType={ this.handleTopBarSelectAccountType } 
+                isManager={this.state.isManager} 
+                handleToggleNotifications={this.handleToggleNotifications} 
+                />
+            </Col>
+          </Row>
+          <MuiThemeProvider muiTheme={muiThemeVault}>
+          <Row className={classNames(styles.content)}>
+            <Col xs={12}>
+            {this.state.isConnected ? (
+              <ApplicationVaultHome 
+                isManager={this.state.isManager} 
+                location={location}
+                notificationsOpen={notificationsOpen}
+                handleToggleNotifications={this.handleToggleNotifications}
+                notificationsOpen={notificationsOpen}
+                />
+            ) : (
+              <NotConnected isConnected={this.state.isConnected}/>
+            )}
+            </Col>
+          </Row>
+          </MuiThemeProvider>
           {/* <Row>
             <Col xs={12} className={classNames(styles.bottombar)}>
               <ApplicationBottomBar />

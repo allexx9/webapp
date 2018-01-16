@@ -24,18 +24,18 @@ import { ERRORS, validateAccount, validatePositiveNumber } from './validation';
 import { formatCoins, formatEth, formatHash, toHex } from '../../format';
 import * as abis from '../../contracts';
 import AccountSelector from '../../Elements/elementAccountSelector'
-import ElementFundActionsHeader from './elementFundActionsHeader'
+import ElementVaultActionsHeader from './elementVaultActionsHeader'
 import IdentityIcon from '../../IdentityIcon';
 import DragoApi from '../../DragoApi/src'
 import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization'
 
-import styles from './elementFundActions.module.css';
+import styles from './elementVaultActions.module.css';
 
 const customContentStyle = {
   minHeight: '500px',
 };
 
-export default class ElementFundActions extends React.Component {
+export default class ElementVaultActions extends React.Component {
 
   constructor(props) {
     super(props)
@@ -76,7 +76,7 @@ export default class ElementFundActions extends React.Component {
         actionStyleBuySell: this.actionSellStyle,
         switchButton: {
           label: 'Amount',
-          denomination: this.props.dragoDetails.symbol,
+          denomination: this.props.vaultDetails.symbol,
           hint: 'Amount'
         },
         canSubmit: false,
@@ -102,7 +102,7 @@ export default class ElementFundActions extends React.Component {
         actionStyleBuySell: this.actionSellStyle,
         switchButton: {
           label: 'Amount',
-          denomination: this.props.dragoDetails.symbol,
+          denomination: this.props.vaultDetails.symbol,
           hint: 'Amount'
         },
         canSubmit: false,
@@ -129,42 +129,12 @@ export default class ElementFundActions extends React.Component {
   };
 
   static propTypes = {
-    dragoDetails: PropTypes.object.isRequired, 
+    vaultDetails: PropTypes.object.isRequired, 
     actionSelected: PropTypes.object,
     accounts: PropTypes.array.isRequired,
     onTransactionSent: PropTypes.func.isRequired
   };
   
-  // state = {
-  //   open: 'buy',
-  //   openAuth: false,
-  //   authMsg: '',
-  //   action: 'buy',
-  //   actionSummary: 'BUYING',
-  //   account: {},
-  //   accountError: ERRORS.invalidAccount,
-  //   accountCorrect: false,
-  //   amount: 0,
-  //   newDrgBalance: 0,
-  //   drgBalance: 0,
-  //   drgOrder: 0,
-  //   amountError: ERRORS.invalidAmount,
-  //   amountFieldDisabled: true,
-  //   unitsSummary: 0,
-  //   amountSummary: 0,
-  //   actionStyleBuySell: { 
-  //     color: Colors.green300
-  //   },
-  //   canSubmit: false,
-  //   sending: false,
-  //   complete: false,
-  //   switchButton: {
-  //     label: 'Units',
-  //     denomination: 'ETH',
-  //     hint: 'Amount'
-  //   }
-  // }
-
   resetState = {
     openAuth: false,
     actionSummary: 'BUYING',
@@ -248,7 +218,7 @@ export default class ElementFundActions extends React.Component {
   
 
   handleSellAction = () => {
-    const {dragoDetails} = this.props
+    const {vaultDetails} = this.props
     return this.setState({
       open: true,
       action: 'sell',
@@ -257,7 +227,7 @@ export default class ElementFundActions extends React.Component {
       actionStyleBuySell: this.actionSellStyle,
       switchButton: {
         label: 'Amount',
-        denomination: dragoDetails.symbol,
+        denomination: vaultDetails.symbol,
         hint: 'Amount'
       },
       canSubmit: false,
@@ -278,7 +248,7 @@ export default class ElementFundActions extends React.Component {
   }
 
   handleBuyAction = () => {
-    const {dragoDetails} = this.props
+    const {vaultDetails} = this.props
     return this.setState({
       open: true,
       action: 'buy',
@@ -309,7 +279,7 @@ export default class ElementFundActions extends React.Component {
 
   onChangeAccounts = (account) => {
     const { api } = this.context
-    const {dragoDetails} = this.props
+    const {vaultDetails} = this.props
     const accountError = validateAccount(account,api)
     this.setState({
       account,
@@ -318,7 +288,7 @@ export default class ElementFundActions extends React.Component {
 
     // Getting the account balance if account passed validation
     if (!accountError) {
-      const instance = api.newContract(abis.drago, dragoDetails.address).instance;
+      const instance = api.newContract(abis.drago, vaultDetails.address).instance;
       instance.balanceOf.call({}, [account.address])
       .then((amount) =>{
         const drgBalance = formatCoins(amount,4,api)
@@ -332,9 +302,9 @@ export default class ElementFundActions extends React.Component {
 
   calculateBalance = (error = false) => {
     const { action, drgBalance, amount } = this.state
-    const { dragoDetails } = this.props
-    const buyPrice = new BigNumber(dragoDetails.buyPrice)
-    const sellPrice = new BigNumber(dragoDetails.sellPrice)
+    const { vaultDetails } = this.props
+    const buyPrice = new BigNumber(vaultDetails.buyPrice)
+    const sellPrice = new BigNumber(vaultDetails.sellPrice)
     const buyRatio = this.state.switchButton.label == 'Units' ? new BigNumber(1).div(buyPrice) : new BigNumber(1).times(buyPrice)
     const sellRatio = this.state.switchButton.label == 'Units' ? new BigNumber(1).div(sellPrice) : new BigNumber(1).times(sellPrice)
     const drgCurrent = new BigNumber(drgBalance)
@@ -394,9 +364,9 @@ export default class ElementFundActions extends React.Component {
 
   validateOrder = () => {
     const { account, accountError, amount, amountError, drgBalance, action } = this.state
-    const { dragoDetails } = this.props
-    const buyPrice = new BigNumber(dragoDetails.buyPrice)
-    const sellPrice = new BigNumber(dragoDetails.sellPrice)
+    const { vaultDetails } = this.props
+    const buyPrice = new BigNumber(vaultDetails.buyPrice)
+    const sellPrice = new BigNumber(vaultDetails.sellPrice)
     const buyRatio = new BigNumber(1).div(buyPrice)
     const sellRatio = new BigNumber(1).div(sellPrice)
     const ratio = action == 'buy' ? buyRatio : sellRatio
@@ -448,10 +418,10 @@ export default class ElementFundActions extends React.Component {
 
   onSendBuy = () => {
     const { api } = this.context;
-    const { dragoDetails } = this.props
+    const { vaultDetails } = this.props
     const accountAddress = this.state.account.address
     const amount = api.util.toWei(this.state.amountSummary).toString()
-    const authMsg = 'You bought ' + this.state.unitsSummary + ' units of ' + dragoDetails.symbol.toUpperCase() + ' for ' + this.state.amountSummary + ' ETH'
+    const authMsg = 'You bought ' + this.state.unitsSummary + ' units of ' + vaultDetails.symbol.toUpperCase() + ' for ' + this.state.amountSummary + ' ETH'
     const transactionId = api.util.sha3(new Date() + accountAddress)
     var dragoApi, provider = null;
     // Initializing transaction variables
@@ -463,7 +433,7 @@ export default class ElementFundActions extends React.Component {
       account: this.state.account,
       error: false,
       action: 'BuyDrago',
-      symbol: dragoDetails.symbol.toUpperCase(),
+      symbol: vaultDetails.symbol.toUpperCase(),
       amount: this.state.amountSummary
     }
     // Setting variables depending on account source
@@ -473,7 +443,7 @@ export default class ElementFundActions extends React.Component {
 
     // Sending the transaction
     dragoApi = new DragoApi(provider)
-    dragoApi.contract.drago.init(dragoDetails.address)
+    dragoApi.contract.drago.init(vaultDetails.address)
     dragoApi.contract.drago.buyDrago(accountAddress, amount)
       .then((receipt) => {
         console.log(receipt)
@@ -510,11 +480,11 @@ export default class ElementFundActions extends React.Component {
 
   onSendSell = () => {
     const { api } = this.context;
-    const { dragoDetails } = this.props
+    const { vaultDetails } = this.props
     const DIVISOR = 10 ** 6;  //dragos are divisible by 1 million
     const accountAddress = this.state.account.address
     const amount = new BigNumber(this.state.unitsSummary).mul(DIVISOR).toFixed(0)
-    const authMsg = 'You sold ' + this.state.unitsSummary + ' units of ' + dragoDetails.symbol.toUpperCase() + ' for ' + this.state.amountSummary + ' ETH'
+    const authMsg = 'You sold ' + this.state.unitsSummary + ' units of ' + vaultDetails.symbol.toUpperCase() + ' for ' + this.state.amountSummary + ' ETH'
     const transactionId = api.util.sha3(new Date() + accountAddress)
     var dragoApi, provider = null;
     // Initializing transaction variables
@@ -526,7 +496,7 @@ export default class ElementFundActions extends React.Component {
       account: this.state.account,
       error: false,
       action: 'SellDrago',
-      symbol: dragoDetails.symbol.toUpperCase(),
+      symbol: vaultDetails.symbol.toUpperCase(),
       amount: this.state.amountSummary
     }
     // Setting variables depending on account source
@@ -536,7 +506,7 @@ export default class ElementFundActions extends React.Component {
     
     
     dragoApi = new DragoApi(provider)
-    dragoApi.contract.drago.init(dragoDetails.address)
+    dragoApi.contract.drago.init(vaultDetails.address)
     dragoApi.contract.drago.sellDrago(accountAddress, amount)
       .then((receipt) => {
         console.log(receipt)
@@ -563,7 +533,7 @@ export default class ElementFundActions extends React.Component {
           sending: false
         })
       })
-    // this.props.snackBar('Sell order waiting for authorization for ' + this.state.amountSummary + ' ' + dragoDetails.symbol.toUpperCase())
+    // this.props.snackBar('Sell order waiting for authorization for ' + this.state.amountSummary + ' ' + vaultDetails.symbol.toUpperCase())
     this.setState({
       authMsg: authMsg,
       authAccount: {...this.state.account},
@@ -584,12 +554,12 @@ export default class ElementFundActions extends React.Component {
   }
 
   unitsSwitch = () => {
-    const {dragoDetails} = this.props
+    const {vaultDetails} = this.props
     this.setState({
       switchButton: { 
         label: this.state.switchButton.label == 'Units' ? 'Amount' : 'Units',
         hint: this.state.switchButton.hint == 'Units' ? 'Amount' : 'Units',
-        denomination: this.state.switchButton.denomination == 'ETH' ? dragoDetails.symbol : 'ETH',      
+        denomination: this.state.switchButton.denomination == 'ETH' ? vaultDetails.symbol : 'ETH',      
       },
       amountError: ' ',
     })
@@ -686,24 +656,21 @@ export default class ElementFundActions extends React.Component {
 
   holding = () => {
     const { amount, action, newDrgBalance, drgBalance, drgOrder } = this.state
-    const { dragoDetails } = this.props
+    const { vaultDetails } = this.props
     return (
         <Table selectable={false} className={styles.detailsTable}>
           <TableBody displayRowCheckbox={false}>
             <TableRow hoverable={false} >
               <TableRowColumn className={styles.detailsTableCell}>Current</TableRowColumn>
-              {/* <TableRowColumn className={styles.detailsTableCell}></TableRowColumn> */}
-              <TableRowColumn className={styles.detailsTableCell2}>{drgBalance} {dragoDetails.symbol}</TableRowColumn>
+              <TableRowColumn className={styles.detailsTableCell2}>{drgBalance} {vaultDetails.symbol}</TableRowColumn>
             </TableRow>
             <TableRow hoverable={false} >
               <TableRowColumn className={styles.detailsTableCell}>Order</TableRowColumn>
-              {/* <TableRowColumn className={styles.detailsTableCell}></TableRowColumn> */}
-              <TableRowColumn className={styles.detailsTableCell2}>{drgOrder} {dragoDetails.symbol}</TableRowColumn>
+              <TableRowColumn className={styles.detailsTableCell2}>{drgOrder} {vaultDetails.symbol}</TableRowColumn>
             </TableRow>
             <TableRow hoverable={false} >
               <TableRowColumn className={styles.detailsTableCell}>Expected*</TableRowColumn>
-              {/* <TableRowColumn className={styles.detailsTableCell}></TableRowColumn> */}
-              <TableRowColumn className={styles.detailsTableCell2}>{newDrgBalance} {dragoDetails.symbol}</TableRowColumn>
+              <TableRowColumn className={styles.detailsTableCell2}>{newDrgBalance} {vaultDetails.symbol}</TableRowColumn>
             </TableRow>
           </TableBody>
         </Table>
@@ -713,7 +680,7 @@ export default class ElementFundActions extends React.Component {
 
 
   render() {
-    const { dragoDetails, accounts } = this.props
+    const { vaultDetails, accounts } = this.props
     const { actionStyle, openAuth, authMsg, authAccount } = this.state
     const { accountError, amountError, sending } = this.state;
     const hasError = !!(this.state.accountError || this.state.amountError );
@@ -739,7 +706,7 @@ export default class ElementFundActions extends React.Component {
           {/* <RaisedButton label="Trade" primary={true} onClick={this.handleOpen}
             labelStyle={{ fontWeight: 700 }} /> */}
           <ElementFundActionAuthorization
-            dragoDetails={dragoDetails}
+            vaultDetails={vaultDetails}
             authMsg={authMsg}
             account={authAccount}
             onClose={this.handleCloseAuth}
@@ -752,7 +719,7 @@ export default class ElementFundActions extends React.Component {
         {/* <RaisedButton label="Trade" primary={true} onClick={this.handleOpen} 
           labelStyle={{fontWeight: 700, fontSize: '20px'}}/> */}
           <Dialog
-            title={<ElementFundActionsHeader dragoDetails={dragoDetails} 
+            title={<ElementVaultActionsHeader vaultDetails={vaultDetails} 
               action={this.state.action} 
               handleSellAction={this.handleSellAction}
               handleBuyAction={this.handleBuyAction}
@@ -768,7 +735,7 @@ export default class ElementFundActions extends React.Component {
               <Row center="xs">
                 <Col xs={6}>
                   <h2><span style={this.state.actionStyleBuySell}>{this.state.action.toUpperCase()}</span>&nbsp; 
-                  {dragoDetails.symbol} {this.state.action =='buy' ? dragoDetails.buyPrice : dragoDetails.sellPrice}</h2>
+                  {vaultDetails.symbol} {this.state.action =='buy' ? vaultDetails.buyPrice : vaultDetails.sellPrice}</h2>
                 </Col>
               </Row>
             </Col>
@@ -799,7 +766,7 @@ export default class ElementFundActions extends React.Component {
             <Col xs={12}>
               <Row center="xs">
                 <Col xs={6}>
-                  <h2><span style={this.state.actionStyleBuySell}>{this.state.actionSummary}</span> <span className={styles.summary}>{this.state.unitsSummary}</span> {dragoDetails.symbol}<br /> 
+                  <h2><span style={this.state.actionStyleBuySell}>{this.state.actionSummary}</span> <span className={styles.summary}>{this.state.unitsSummary}</span> {vaultDetails.symbol}<br /> 
                   FOR <span className={styles.summary}>{this.state.amountSummary}</span> ETH </h2>
                 </Col>
               </Row>

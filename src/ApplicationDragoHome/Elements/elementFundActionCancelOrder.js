@@ -12,7 +12,7 @@ import  * as Colors from 'material-ui/styles/colors';
 
 import { ERRORS, validateAccount, validatePositiveNumber, tradeIdError, cfdError, exchangeNameError } from './validation';
 import * as abis from '../../contracts';
-import AccountSelector from '../Elements/elementAccountSelector';
+import AccountSelector from '../../Elements/elementAccountSelector';
 import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle'
 import ElementDialogAddressTitle from '../../Elements/elementDialogAddressTitle'
 

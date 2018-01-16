@@ -16,7 +16,7 @@ import AccountSelector from '../../Elements/elementAccountSelector';
 import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle'
 import ElementDialogAddressTitle from '../../Elements/elementDialogAddressTitle'
 
-import styles from './elementFundActionWithdraw.module.css';
+import styles from './elementVaultActionDeposit.module.css';
 import DragoApi from '../../DragoApi/src'
 
 const NAME_ID = ' ';
@@ -26,7 +26,7 @@ const APPROVED_EXCHANGES = ['exchange2', 'exchangenot']; //we have to created a 
 
 //TODO: add address exchange
 
-export default class ElementFundActionWithdraw extends Component {
+export default class ElementVaultActionDeposit extends Component {
 
   static contextTypes = {
     api: PropTypes.object.isRequired,
@@ -34,20 +34,17 @@ export default class ElementFundActionWithdraw extends Component {
 
   static propTypes = {
     accounts: PropTypes.array.isRequired,
-    dragoDetails: PropTypes.object.isRequired,
-    openActionForm: PropTypes.func.isRequired,
+    vaultDetails: PropTypes.object.isRequired,
+    open: PropTypes.bool.isRequired,
     snackBar: PropTypes.func
   }
 
   state = {
+    open: this.props.open,
     account: {},
     accountError: ERRORS.invalidAccount,
     amount: 0,
     amountError: ERRORS.invalidAmount,
-    approvedExchange: APPROVED_EXCHANGES,
-    exchangeName: {},
-    exchangeNameError: null, //ERRORS.invalidAccount,
-    exchangeAddress: ' ',
     value: 'default',
     sending: false,
     complete: false
@@ -71,13 +68,13 @@ export default class ElementFundActionWithdraw extends Component {
       lineHeight: '20px',
       fontSize: 16
     }
-
+    console.log(this.props)
     return (
       <Dialog
         title={this.renderHeader()}
         titleStyle={titleStyle}
         modal 
-        open={true}
+        open={this.props.open}
         actions={ this.renderActions() }>
         { this.renderFields() }
       </Dialog>
@@ -85,19 +82,20 @@ export default class ElementFundActionWithdraw extends Component {
   }
 
   renderHeader = () => {
-    const { dragoDetails } = this.props
+    const { vaultDetails } = this.props
     return (
       <div>
-          <ElementDialogHeadTitle primaryText='Withdraw from the exchange' />
-          <ElementDialogAddressTitle tokenDetails={dragoDetails} />
+          <ElementDialogHeadTitle primaryText='Deposit to vault' />
+          <ElementDialogAddressTitle tokenDetails={vaultDetails} />
       </div>
 
     )
   }
 
   onClose =(event) =>{
-    // Calling callback function passed by parent in order to show/hide this dialog
-    this.props.openActionForm(event,'withdraw')
+    this.setState({
+      open: false
+    });
   }
 
   renderActions () {
@@ -112,16 +110,17 @@ export default class ElementFundActionWithdraw extends Component {
       );
     }
 
-    const { accountError, amountError, exchangeNameError, sending } = this.state;
-    const hasError = !!(amountError || accountError || exchangeNameError);
+    const { accountError, amountError, sending } = this.state;
+    const hasError = !!(amountError || accountError);
 
     return ([
       <FlatButton
         label='Cancel'
+        name='deposit'
         primary
         onTouchTap={ this.onClose} />,
       <FlatButton
-        label='Withdraw'
+        label='Deposit'
         primary
         disabled={ hasError || sending }
         onTouchTap={ this.onSend } />
@@ -130,7 +129,6 @@ export default class ElementFundActionWithdraw extends Component {
 
   renderFields () {
     const value = this.state;
-    const toAddressLabel ='Address of receiver account';
     const amountLabel = 'The amount you want to deposit';
 
     return (
@@ -142,18 +140,10 @@ export default class ElementFundActionWithdraw extends Component {
           floatingLabelText='From account'
           hintText='The account the transaction will be made from'
           onSelect={ this.onChangeAddress } />
-        <DropDownMenu
-          value={this.state.value}
-          onChange={this.onChangeExchange}
-          >
-          <MenuItem value={'default'} primaryText='Select the exchange from the list' />
-          {/* <MenuItem value={'exchange2'} primaryText='CFD Exchange' /> */}
-          <MenuItem value={'cfdexchange'} primaryText='CFD Exchange' />
-        </DropDownMenu>
         <TextField
           autoComplete='off'
           floatingLabelFixed
-          floatingLabelText='Amount you want to withdraw'
+          floatingLabelText='Amount you want to deposit'
           fullWidth
           hintText={ amountLabel }
           errorText={ this.state.amountError }
@@ -173,38 +163,11 @@ export default class ElementFundActionWithdraw extends Component {
     }, this.validateTotal);
   }
 
-  onChangeExchange = (event, index, value) => {
-    this.setState({
-      value,
-      exchangeName: value,
-      exchangeNameError: null
-    }, this.onFindExchange);
-  }
-
   onChangeAmount = (event, amount) => {
     this.setState({
       amount,
       amountError: validatePositiveNumber(amount)
     }, this.validateTotal);
-  }
-
-  onFindExchange = () => {
-    const { dragoDetails } = this.props
-    const { api } = this.context;
-    var dragoApi = new DragoApi(api)
-    console.log(dragoApi)
-    dragoApi.contract.exchange.init()
-    .then(() =>{
-      return dragoApi.contract.exchange.balanceOf(ADDRESS_0, dragoDetails.address.toString())
-    })
-    .then ((balanceExchange) =>{
-      console.log(balanceExchange)
-      this.setState({
-        loading: false,
-        balanceExchange,
-        exchangeAddress: dragoApi.contract.exchange._contract._address
-      });
-    })
   }
 
   validateTotal = () => {
@@ -223,7 +186,7 @@ export default class ElementFundActionWithdraw extends Component {
 
   onSend = () => {
     const { api } = this.context;
-    const { dragoDetails } = this.props
+    const { vaultDetails } = this.props
     // const { instance } = this.context;
     const exchangeAddress = this.state.exchangeAddress; //cfd exchange; //this.state.exchange;
     const values = [exchangeAddress.toString(), ADDRESS_0, api.util.toWei(this.state.amount).toString()]; //this.state.account.address
@@ -235,12 +198,11 @@ export default class ElementFundActionWithdraw extends Component {
     this.setState({
       sending: true
     });
-
     if(this.state.account.source === 'MetaMask') {
       const web3 = window.web3
       dragoApi = new DragoApi(web3)
-      dragoApi.contract.drago.init(dragoDetails.address)
-      dragoApi.contract.drago.withdrawFromExchange(this.state.account.address, exchangeAddress.toString(), 
+      dragoApi.contract.drago.init(vaultDetails.address)
+      dragoApi.contract.drago.depositToExchange(this.state.account.address, exchangeAddress.toString(), 
                                                 ADDRESS_0, api.util.toWei(this.state.amount).toString())
       .then ((result) =>{
         console.log(result)
@@ -255,15 +217,15 @@ export default class ElementFundActionWithdraw extends Component {
         })
       })
       this.onClose()
-      this.props.snackBar('Withdraw awaiting for authorization')
+      this.props.snackBar('Deposit awaiting for authorization')
     } else {
       dragoApi = new DragoApi(api)
-      dragoApi.contract.drago.init(dragoDetails.address)
-      dragoApi.contract.drago.withdrawFromExchange(this.state.account.address, exchangeAddress.toString(), 
+      dragoApi.contract.drago.init(vaultDetails.address)
+      dragoApi.contract.drago.depositToExchange(this.state.account.address, exchangeAddress.toString(), 
                                                 ADDRESS_0, api.util.toWei(this.state.amount).toString())
       .then((result) => {
         this.onClose()
-        this.props.snackBar('Withdraw awaiting for authorization')
+        this.props.snackBar('Deposit awaiting for authorization')
       })
       .catch((error) => {
         console.error('error', error);

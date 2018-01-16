@@ -4,12 +4,12 @@ import BigNumber from 'bignumber.js';
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom'
 import Accounts from '../Accounts';
-import ApplicationDragoManager from './ApplicationDragoManager'
-import ApplicationDragoTrader from './ApplicationDragoTrader'
+// import ApplicationVaultManager from './ApplicationVaultManager'
+import ApplicationVaultTrader from './ApplicationVaultTrader'
 import Loading from '../Loading';
 import Status from '../Status';
 
-import styles from './applicationDragoHome.module.css';
+import styles from './applicationVaultHome.module.css';
 
 import {
   DEFAULT_NETWORK_ID,
@@ -27,7 +27,7 @@ import {
   DEFAULT_ENDPOINT
 } from '../utils/const'
 import { Grid, Row, Col } from 'react-flexbox-grid';
-import LeftSideDrawerFunds from '../Elements/leftSideDrawerFunds';
+import LeftSideDrawerVault from '../Elements/leftSideDrawerVaults';
 import PropTypes from 'prop-types';
 import utils from '../utils/utils'
 import NotificationSystem from 'react-notification-system'
@@ -44,7 +44,7 @@ import ElementBottomStatusBar from '../Elements/elementBottomStatusBar'
 const DIVISOR = 10 ** 6;  //tokens are divisible by one million
 var sourceLogClass = null
 
-export default class ApplicationDragoHome extends Component {
+export default class ApplicationVaultHome extends Component {
 
   constructor() {
     super();
@@ -121,18 +121,14 @@ export default class ApplicationDragoHome extends Component {
     // Allowed endpoints are defined in const.js
     var selectedEndpoint = localStorage.getItem('endpoint')
     var allowedEndpoints = new Map(ALLOWED_ENDPOINTS)
-    console.log(INFURA)
-    console.log(RIGOBLOCK)
     if (allowedEndpoints.has(selectedEndpoint)) {
       switch (selectedEndpoint) {
         case INFURA:
-        console.log(INFURA)
           this.attachInterfaceInfura()
           .then(() =>{
           })
         break;
         case RIGOBLOCK:
-          console.log(RIGOBLOCK)
           this.attachInterfaceRigoBlock()
           .then(() =>{
           })
@@ -202,7 +198,7 @@ export default class ApplicationDragoHome extends Component {
     const { isManager, location, handleToggleNotifications, notificationsOpen }  = this.props
 
     if (loading) {
-      return <Loading></Loading>
+      return null
     }
 
     if (ethBalance === null) {
@@ -222,59 +218,61 @@ export default class ApplicationDragoHome extends Component {
     )
     }
 
-    if (isManager) {
-      var notificationStyle = {
-        NotificationItem: { // Override the notification item
-          DefaultStyle: { // Applied to every notification, regardless of the notification level
-            margin: '0px 0px 0px 0px'
-          },
+    // return <p>Test Vault</p>
+
+    // if (isManager) {
+    //   var notificationStyle = {
+    //     NotificationItem: { // Override the notification item
+    //       DefaultStyle: { // Applied to every notification, regardless of the notification level
+    //         margin: '0px 0px 0px 0px'
+    //       },
       
-          info: { // Applied only to the success notification item
-            backgroundColor: 'white'
-          }
-        }
-      }
-      return (
-        <span>
-          <Row className={styles.maincontainer}>
-            <Col xs={2}>
-              <LeftSideDrawerFunds location={location} isManager={isManager}/>
-            </Col>
-            <Col xs={10}>
-              <NotificationSystem ref={n => this._notificationSystem = n} style={notificationStyle} />
-              <ApplicationDragoManager
-                blockNumber={blockNumber}
-                accounts={accounts}
-                ethBalance={ethBalance}
-                allEvents={allEvents}
-                accountsInfo={accountsInfo}
-                isManager={isManager}
-              />
-            </Col>
-            <Row>
-              <Col xs={12}>
-                {notificationsOpen ? (
-                  <ElementNotificationsDrawer
-                    handleToggleNotifications={handleToggleNotifications}
-                    notificationsOpen={notificationsOpen}
-                    accounts={accounts}
-                    recentTransactions={this.state.recentTransactions}
-                    updateTransactionsQueue={this.updateTransactionsQueue}
-                  />
-                ) : (
-                    null
-                  )}
-              </Col>
-            </Row>
-          </Row>
-          <ElementBottomStatusBar 
-          blockNumber={this.state.prevBlockNumber}
-          networkName={DEFAULT_NETWORK_NAME}
-          networkError={networkError}
-          networkStatus={networkStatus} />
-        </span>
-      );
-    }
+    //       info: { // Applied only to the success notification item
+    //         backgroundColor: 'white'
+    //       }
+    //     }
+    //   }
+    //   return (
+    //     <span>
+    //       <Row className={styles.maincontainer}>
+    //         <Col xs={2}>
+    //           <LeftSideDrawer location={location} isManager={isManager}/>
+    //         </Col>
+    //         <Col xs={10}>
+    //           <NotificationSystem ref={n => this._notificationSystem = n} style={notificationStyle} />
+    //           <ApplicationVaultManager
+    //             blockNumber={blockNumber}
+    //             accounts={accounts}
+    //             ethBalance={ethBalance}
+    //             allEvents={allEvents}
+    //             accountsInfo={accountsInfo}
+    //             isManager={isManager}
+    //           />
+    //         </Col>
+    //         <Row>
+    //           <Col xs={12}>
+    //             {notificationsOpen ? (
+    //               <ElementNotificationsDrawer
+    //                 handleToggleNotifications={handleToggleNotifications}
+    //                 notificationsOpen={notificationsOpen}
+    //                 accounts={accounts}
+    //                 recentTransactions={this.state.recentTransactions}
+    //                 updateTransactionsQueue={this.updateTransactionsQueue}
+    //               />
+    //             ) : (
+    //                 null
+    //               )}
+    //           </Col>
+    //         </Row>
+    //       </Row>
+    //       <ElementBottomStatusBar 
+    //       blockNumber={this.state.prevBlockNumber}
+    //       networkName={DEFAULT_NETWORK_NAME}
+    //       networkError={networkError}
+    //       networkStatus={networkStatus} />
+    //     </span>
+    //   );
+    // }
 
     if (!isManager) {
 
@@ -293,11 +291,11 @@ export default class ApplicationDragoHome extends Component {
         <span>
           <Row className={styles.maincontainer}>
             <Col xs={2}>
-            <LeftSideDrawerFunds location={location} isManager={isManager}/>
+            <LeftSideDrawerVault location={location} isManager={isManager}/>
             </Col>
             <Col xs={10}>
               <NotificationSystem ref={n => this._notificationSystem = n} style={notificationStyle}/>
-              <ApplicationDragoTrader 
+              <ApplicationVaultTrader 
                 blockNumber={blockNumber}
                 accounts={accounts}
                 ethBalance={ethBalance}
@@ -585,7 +583,6 @@ export default class ApplicationDragoHome extends Component {
     })
     .catch((error) => {
       console.warn('attachInterface', error)
-      // this.attachInterfaceInfura()
     });
   }
 

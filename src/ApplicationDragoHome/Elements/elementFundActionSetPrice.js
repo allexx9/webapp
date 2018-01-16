@@ -13,11 +13,11 @@ import React, { Component } from 'react';
 
 import { ERRORS, validateAccount, validatePositiveNumber } from './validation';
 import * as abis from '../../contracts';
-import AccountSelector from '../Elements/elementAccountSelector';
+import AccountSelector from '../../Elements/elementAccountSelector';
 import DragoApi from '../../DragoApi/src'
 import ElementDialogAddressTitle from '../../Elements/elementDialogAddressTitle'
 import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle'
-import ElementFundActionAuthorization from '../Elements/elementFundActionAuthorization'
+import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization'
 import IdentityIcon from '../../IdentityIcon';
 import utils from '../../utils/utils.js'
 

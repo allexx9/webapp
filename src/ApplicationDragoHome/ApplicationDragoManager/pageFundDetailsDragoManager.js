@@ -35,7 +35,7 @@ import ElementListTransactions from '../Elements/elementListTransactions'
 import ElementListWrapper from '../../Elements/elementListWrapper'
 import ElementPriceBox from '../Elements/elementPricesBox'
 import IdentityIcon from '../../IdentityIcon'
-import InfoTable from '../Elements/elementInfoTable'
+import InfoTable from '../../Elements/elementInfoTable'
 import Loading from '../../Loading'
 import utils from '../../utils/utils'
 
