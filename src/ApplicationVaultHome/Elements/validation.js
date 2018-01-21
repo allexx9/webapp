@@ -7,6 +7,8 @@ export const ERRORS = {
   invalidRecipient: 'Please select an account to send to',
   invalidAddress: 'The address is not in the correct format',
   invalidAmount: 'Please enter a positive number > 0',
+  invalidAmountFeeTooLow: 'Fee must be equal or greater than 0.01%',
+  invalidAmountFractionBasisPoint: 'Fee cannot be a fraction of basis point.',
   invalidTotal: 'The amount is greater than the availale balance',
   invalidName: 'Please enter a valid name',
   invalidSymbol: 'Please enter a valid symbol',

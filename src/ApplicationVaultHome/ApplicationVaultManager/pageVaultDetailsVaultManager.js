@@ -30,14 +30,15 @@ import { dragoFactoryEventsSignatures } from '../../utils/utils.js'
 import { formatCoins, formatEth, formatHash, toHex } from '../../format'
 import * as abis from '../../contracts';
 import DragoApi from '../../DragoApi/src'
-import ElementFundActionsList from '../Elements/elementFundActionsList'
+import ElementVaultActionsList from '../Elements/elementVaultActionsList'
 import ElementListTransactions from '../Elements/elementListTransactions'
 import ElementListWrapper from '../../Elements/elementListWrapper'
-import ElementPriceBox from '../Elements/elementPricesBox'
+import ElementFeesBox from '../Elements/elementFeesBox'
 import IdentityIcon from '../../IdentityIcon'
 import InfoTable from '../../Elements/elementInfoTable'
 import Loading from '../../Loading'
 import utils from '../../utils/utils'
+
 
 import {
   Table,
@@ -48,11 +49,11 @@ import {
   TableRowColumn,
 } from 'material-ui/Table';
 
-import styles from './pageFundDetailsDragoManager.module.css';
+import styles from './pageVaultDetailsVaultManager.module.css';
 import ElementFundNotFound from '../../Elements/elementFundNotFound'
 
 
-class PageFundDetailsDragoManager extends Component {
+class PageVaultDetailsVaultManager extends Component {
 
   // Checking the type of the context variable that we receive by the parent
   static contextTypes = {
@@ -68,7 +69,7 @@ class PageFundDetailsDragoManager extends Component {
     };
 
     state = {
-      dragoDetails: {
+      vaultDetails: {
         address: null,
         name: null,
         symbol: null,
@@ -76,7 +77,7 @@ class PageFundDetailsDragoManager extends Component {
         addresssOwner: null,
         addressGroup: null,
       },
-      dragoTransactionsLogs: null,
+      vaultTransactionsLogs: null,
       loading: true,
       snackBar: false,
       snackBarMsg: '',
@@ -92,7 +93,7 @@ class PageFundDetailsDragoManager extends Component {
       // Getting dragoid from the url parameters passed by router and then
       // the list of last transactions
       const dragoID = this.props.match.params.dragoid
-      this.getDragoDetails(dragoID)
+      this.getVaultDetails(dragoID)
     }
 
     componentWillReceiveProps(nextProps) {
@@ -104,7 +105,7 @@ class PageFundDetailsDragoManager extends Component {
       const sourceLogClass = this.constructor.name
       // console.log(nextProps)
       if (!this.props.ethBalance.eq(nextProps.ethBalance)) {
-        this.getDragoDetails(dragoID)
+        this.getVaultDetails(dragoID)
         console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
       } else {
         null
@@ -124,19 +125,19 @@ class PageFundDetailsDragoManager extends Component {
     }
 
 
-    renderAddress (dragoDetails) {
-      if (!dragoDetails.address ) {
+    renderAddress (vaultDetails) {
+      if (!vaultDetails.address ) {
         return <p>empty</p>;
       }
   
       return (
         <Row className={styles.detailsToolbarGroup}>
           <Col xs={12} md={1} className={styles.dragoTitle}>
-            <h2 ><IdentityIcon address={ dragoDetails.address } /></h2>
+            <h2 ><IdentityIcon address={ vaultDetails.address } /></h2>
           </Col>
           <Col xs={12} md={11} className={styles.dragoTitle}>
-          <p>{dragoDetails.symbol} | {dragoDetails.name} </p>
-          <small>{dragoDetails.address}</small>
+          <p>{vaultDetails.symbol} | {vaultDetails.name} </p>
+          <small>{vaultDetails.address}</small>
           </Col>
         </Row>
       );
@@ -183,7 +184,7 @@ class PageFundDetailsDragoManager extends Component {
     
     render() {
       const { location, accounts, accountsInfo, allEvents, isManager } = this.props
-      const { dragoDetails, dragoTransactionsLogs, loading } = this.state
+      const { vaultDetails, vaultTransactionsLogs, loading } = this.state
       const paperContainer = {
         marginTop: 10,
         display: 'inline-block',
@@ -204,28 +205,29 @@ class PageFundDetailsDragoManager extends Component {
       }
 
       const columnsStyle = [styles.detailsTableCell, styles.detailsTableCell2, styles.detailsTableCell3]
-      const tableButtonsDragoAddress = [this.renderCopyButton(dragoDetails.address), this.renderEtherscanButton('address', dragoDetails.address)]
-      const tableButtonsDragoOwner = [this.renderCopyButton(dragoDetails.addresssOwner), this.renderEtherscanButton('address', dragoDetails.addresssOwner)]
-      const tableInfo = [['Symbol', dragoDetails.symbol, ''], 
-        ['Name', dragoDetails.name, ''], 
-        ['Address', dragoDetails.address, tableButtonsDragoAddress],
-        ['Manager', dragoDetails.addresssOwner, tableButtonsDragoOwner]]   
-      const paperStyle = {
+      const tableButtonsVaultAddress = [this.renderCopyButton(vaultDetails.address), this.renderEtherscanButton('address', vaultDetails.address)]
+      const tableButtonsVaultOwner = [this.renderCopyButton(vaultDetails.addresssOwner), this.renderEtherscanButton('address', vaultDetails.addresssOwner)]
+      const tableInfo = [['Symbol', vaultDetails.symbol, ''], 
+        ['Name', vaultDetails.name, ''], 
+        ['Address', vaultDetails.address, tableButtonsVaultAddress],
+        ['Owner', vaultDetails.addresssOwner, tableButtonsVaultOwner]]
+      
+        const paperStyle = {
 
       };
       
       const web3 = window.web3
 
-      var dragoTransactionList = this.state.dragoTransactionsLogs
-      // console.log(dragoTransactionList)
+      var vaultTransactionList = this.state.vaultTransactionsLogs
+      // console.log(vaultTransactionList)
 
-      // Waiting until getDragoDetails returns the drago details
+      // Waiting until getVaultDetails returns the drago details
       if (loading) {
         return (
           <Loading />
         );
       }
-      if (dragoDetails.address === '0x0000000000000000000000000000000000000000') {
+      if (vaultDetails.address === '0x0000000000000000000000000000000000000000') {
         return (
           <ElementFundNotFound />
         );
@@ -236,10 +238,10 @@ class PageFundDetailsDragoManager extends Component {
           <Paper className={styles.paperContainer} zDepth={1}>
             <Toolbar className={styles.detailsToolbar}>
               <ToolbarGroup className={styles.detailsToolbarGroup}>
-                {this.renderAddress(dragoDetails)}
+                {this.renderAddress(vaultDetails)}
               </ToolbarGroup>
               <ToolbarGroup>
-                <ElementFundActionsList accounts={accounts} dragoDetails={dragoDetails} snackBar={this.snackBar}/>
+                <ElementVaultActionsList accounts={accounts} vaultDetails={vaultDetails} snackBar={this.snackBar}/>
               </ToolbarGroup>
             </Toolbar>
             <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle} className={styles.test}>
@@ -261,10 +263,10 @@ class PageFundDetailsDragoManager extends Component {
                     </Col>
                     <Col xs={6}>
                       <Paper zDepth={1}>
-                        <ElementPriceBox 
+                        <ElementFeesBox 
                         accounts={accounts} 
                         isManager={isManager}
-                        dragoDetails={dragoDetails} />
+                        vaultDetails={vaultDetails} />
                       </Paper>
                     </Col>
                   </Row>
@@ -280,13 +282,13 @@ class PageFundDetailsDragoManager extends Component {
                       <div className={styles.detailsTabContent}>
                           <p>Your last 20 transactions on this Drago.</p>
                         </div>
-                          
-                          <ElementListWrapper accountsInfo={accountsInfo} list={dragoTransactionList}
+                        {console.log(vaultTransactionList)}
+                          <ElementListWrapper accountsInfo={accountsInfo} list={vaultTransactionList}
                               renderCopyButton={this.renderCopyButton}
                               renderEtherscanButton={this.renderEtherscanButton}>
                             <ElementListTransactions  />
                           </ElementListWrapper>
-                        {/* <ElementListTransactions accountsInfo={accountsInfo} list={dragoTransactionList} 
+                        {/* <ElementListTransactions accountsInfo={accountsInfo} list={vaultTransactionList} 
                         renderCopyButton={this.renderCopyButton}
                         renderEtherscanButton={this.renderEtherscanButton}/> */}
                       </Paper>
@@ -320,10 +322,10 @@ class PageFundDetailsDragoManager extends Component {
       )
     }
 
-    // Getting the drago details from dragoID
-    getDragoDetails = (dragoID) => {
-      const { api, contract } = this.context
-      const {accounts } = this.props
+    // Getting the vault details from dragoID
+    getVaultDetails = (dragoID) => {
+      const { api } = this.context
+      const { accounts } = this.props
       var sourceLogClass = this.constructor.name
       //
       // Initializing Drago API
@@ -335,169 +337,172 @@ class PageFundDetailsDragoManager extends Component {
       //
       dragoApi.contract.dragoregistry
         .init()
-        .then((address) =>{
+        .then((address) => {
           //
           // Looking for drago from dragoID
           //
           dragoApi.contract.dragoregistry
-          .drago(dragoID)
-          .then((dragoDetails) => {
-            const dragoAddress = dragoDetails[0][0]
-            //
-            // Initializing drago contract
-            //
-            dragoApi.contract.drago.init(dragoAddress)
-            //
-            // Calling getData method
-            //
-            dragoApi.contract.drago.getData()
-            .then((data) =>{
-              this.setState({
-                dragoDetails: {
-                  address: dragoDetails[0][0],
-                  name: dragoDetails[0][1],
-                  symbol: dragoDetails[0][2],
-                  dragoID: dragoDetails[0][3].c[0],
-                  addresssOwner: dragoDetails[0][4],
-                  addressGroup: dragoDetails[0][5],
-                  sellPrice: api.util.fromWei(data[2].toNumber(4)).toFormat(4),
-                  buyPrice: api.util.fromWei(data[3].toNumber(4)).toFormat(4),
-                },
-                loading: false
-              })
+            .drago(dragoID)
+            .then((vaultDetails) => {
+              const vaultAddress = vaultDetails[0][0]
+              //
+              // Initializing vault contract
+              //
+              dragoApi.contract.vault.init(vaultAddress)
+              //
+              // Calling getPrice method
+              //
+              dragoApi.contract.vault.getTransactionFee()
+                .then((data) => {
+                  this.setState({
+                    vaultDetails: {
+                      address: vaultDetails[0][0],
+                      name: vaultDetails[0][1].charAt(0).toUpperCase() + vaultDetails[0][1].slice(1),
+                      symbol: vaultDetails[0][2],
+                      dragoID: vaultDetails[0][3].c[0],
+                      addresssOwner: vaultDetails[0][4],
+                      addressGroup: vaultDetails[0][5],
+                      sellPrice: 1,
+                      buyPrice: 1,
+                      price: ((data.div(100).toFixed(2)))
+                    },
+                    loading: false
+                  })
+                })
+              dragoApi.contract.vaulteventful.init()
+                .then(() => {
+                  this.getTransactions(vaultDetails[0][0], dragoApi.contract.vaulteventful, accounts)
+                }
+                )
+              // this.getTransactions (vaultDetails[0][0], contract, accounts)
             })
-            dragoApi.contract.eventful.init()
-            .then(() => {
-              this.getTransactions (dragoDetails[0][0], dragoApi.contract.eventful, accounts)
-            }
-            )
-            // this.getTransactions (dragoDetails[0][0], contract, accounts)
-          })
         })
+  
+    }   
 
-      }  
+  // Getting last transactions
+  getTransactions = (vaultAddress, contract, accounts) => {
+    const { api } = this.context
+    var sourceLogClass = this.constructor.name
+    const logToEvent = (log) => {
+      const key = api.util.sha3(JSON.stringify(log))
+      console.log(log)
+      const { blockNumber, logIndex, transactionHash, transactionIndex, params, type } = log
+      var ethvalue = (log.event === 'BuyGabcoin') ? formatEth(params.amount.value, null, api) : formatEth(params.revenue.value, null, api);
+      var drgvalue = (log.event === 'SellGabcoin') ? formatCoins(params.amount.value, null, api) : formatCoins(params.revenue.value, null, api);
+      console.log(drgvalue)
+      // let ethvalue = null
+      // let drgvalue = null     
+      // if ((log.event === 'BuyDrago')) {
+      //   ethvalue = formatEth(params.amount.value,null,api)
+      //   drgvalue = formatCoins(params.revenue.value,null,api)     
+      // }
+      // if ((log.event === 'SellDrago')) {
+      //   ethvalue = formatEth(params.revenue.value,null,api)
+      //   drgvalue = formatCoins(params.amount.value,null,api)     
+      // }
+      return {
+        type: log.event,
+        state: type,
+        blockNumber,
+        logIndex,
+        transactionHash,
+        transactionIndex,
+        params,
+        key,
+        ethvalue,
+        drgvalue
+      }
+    }
 
-    // Getting last transactions
-    getTransactions = (dragoAddress, contract, accounts) => {
-      const { api } = this.context
-      var sourceLogClass = this.constructor.name
-      const logToEvent = (log) => {
-        const key = api.util.sha3(JSON.stringify(log))
-        const { blockNumber, logIndex, transactionHash, transactionIndex, params, type } = log   
-        var ethvalue = (log.event === 'BuyDrago') ? formatEth(params.amount.value,null,api) : formatEth(params.revenue.value,null,api);
-        var drgvalue = (log.event === 'SellDrago') ? formatCoins(params.amount.value,null,api) : formatCoins(params.revenue.value,null,api);
-        // let ethvalue = null
-        // let drgvalue = null     
-        // if ((log.event === 'BuyDrago')) {
-        //   ethvalue = formatEth(params.amount.value,null,api)
-        //   drgvalue = formatCoins(params.revenue.value,null,api)     
-        // }
-        // if ((log.event === 'SellDrago')) {
-        //   ethvalue = formatEth(params.revenue.value,null,api)
-        //   drgvalue = formatCoins(params.amount.value,null,api)     
-        // }
-        return {
-          type: log.event,
-          state: type,
-          blockNumber,
-          logIndex,
-          transactionHash,
-          transactionIndex,
-          params,
-          key,
-          ethvalue,
-          drgvalue
-        }
-      }
-      
-      // Getting all buyDrago and selDrago events since block 0.
-      // dragoFactoryEventsSignatures accesses the contract ABI, gets all the events and for each creates a hex signature
-      // to be passed to getAllLogs. Events are indexed and filtered by topics
-      // more at: http://solidity.readthedocs.io/en/develop/contracts.html?highlight=event#events
+    // Getting all buyDrago and selDrago events since block 0.
+    // dragoFactoryEventsSignatures accesses the contract ABI, gets all the events and for each creates a hex signature
+    // to be passed to getAllLogs. Events are indexed and filtered by topics
+    // more at: http://solidity.readthedocs.io/en/develop/contracts.html?highlight=event#events
 
-      // The second param of the topics array is the drago address
-      // The third param of the topics array is the from address
-      // The third param of the topics array is the to address
-      //
-      //  https://github.com/RigoBlock/Books/blob/master/Solidity_01_Events.MD
+    // The second param of the topics array is the drago address
+    // The third param of the topics array is the from address
+    // The third param of the topics array is the to address
+    //
+    //  https://github.com/RigoBlock/Books/blob/master/Solidity_01_Events.MD
 
-      const hexDragoAddress = '0x' + dragoAddress.substr(2).padStart(64,'0')
-      const hexAccounts = accounts.map((account) => {
-        const hexAccount = '0x' + account.address.substr(2).padStart(64,'0')
-        return hexAccount
-      })
-      const options = {
-        fromBlock: 0,
-        toBlock: 'pending',
+    const hexVaultAddress = vaultAddress
+    const hexAccounts = accounts.map((account) => {
+      const hexAccount = account.address
+      return hexAccount
+    })
+    const options = {
+      fromBlock: 0,
+      toBlock: 'pending',
+    }
+    const eventsFilterBuy = {
+      topics: [
+        [contract.hexSignature.BuyGabcoin],
+        hexVaultAddress,
+        hexAccounts,
+        null
+      ]
+    }
+    const eventsFilterSell = {
+      topics: [
+        [contract.hexSignature.SellGabcoin],
+        hexVaultAddress,
+        null,
+        hexAccounts
+      ]
+    }
+    const buyVaultEvents = contract
+      .getAllLogs(eventsFilterBuy)
+      .then((vaultTransactionsLog) => {
+        const buyLogs = vaultTransactionsLog.map(logToEvent)
+        return buyLogs
       }
-      const eventsFilterBuy = {
-        topics: [ 
-          [contract.hexSignature.BuyDrago], 
-          [hexDragoAddress], 
-          hexAccounts,
-          null
-        ]
+      )
+    const sellVaultEvents = contract
+      .getAllLogs(eventsFilterSell)
+      .then((vaultTransactionsLog) => {
+        const sellLogs = vaultTransactionsLog.map(logToEvent)
+        return sellLogs
       }
-      const eventsFilterSell = {
-        topics: [ 
-          [contract.hexSignature.SellDrago], 
-          [hexDragoAddress], 
-          null,
-          hexAccounts
-        ]
-      }
-      const buyDragoEvents = contract
-        .getAllLogs(eventsFilterBuy)
-        .then((dragoTransactionsLog) => {
-          const buyLogs = dragoTransactionsLog.map(logToEvent)
-          return buyLogs
-        }
-        )
-      const sellDragoEvents = contract
-        .getAllLogs(eventsFilterSell)
-        .then((dragoTransactionsLog) => {
-          const sellLogs = dragoTransactionsLog.map(logToEvent)
-          return sellLogs
-        }
-        )
-      Promise.all([buyDragoEvents, sellDragoEvents])
+      )
+    Promise.all([buyVaultEvents, sellVaultEvents])
       .then((logs) => {
         const allLogs = [...logs[0], ...logs[1]]
         return allLogs
       })
-      .then ((dragoTransactionsLog) =>{
+      .then((vaultTransactionsLog) => {
         // Creating an array of promises that will be executed to add timestamp to each entry
         // Doing so because for each entry we need to make an async call to the client
         // For additional refernce: https://stackoverflow.com/questions/39452083/using-promise-function-inside-javascript-array-map
-        var promises = dragoTransactionsLog.map((log) => {
+        var promises = vaultTransactionsLog.map((log) => {
           return api.eth
-          .getBlockByNumber(log.blockNumber.c[0])
-          .then((block) => {
-            log.timestamp = block.timestamp
-            return log
-          })
-          .catch((error) => {
-            // Sometimes Infura returns null for api.eth.getBlockByNumber, therefore we are assigning a fake timestamp to avoid
-            // other issues in the app.
-            log.timestamp = new Date()
-            return log
-          })
-        })
-        Promise.all(promises).then((results) => {
-            this.setState({
-              dragoTransactionsLogs: results,
-              loading: false,
+            .getBlockByNumber(log.blockNumber.c[0])
+            .then((block) => {
+              log.timestamp = block.timestamp
+              return log
             })
+            .catch((error) => {
+              // Sometimes Infura returns null for api.eth.getBlockByNumber, therefore we are assigning a fake timestamp to avoid
+              // other issues in the app.
+              log.timestamp = new Date()
+              return log
+            })
+        })
+        Promise.all(promises)
+        .then((results) => {
+          this.setState({
+            vaultTransactionsLogs: results,
+          })
         })
         .then(() => {
           console.log(`${sourceLogClass} -> Transactions list loaded`);
           this.setState({
             loading: false,
           })
-      })
-      })
-    }
+        })
+    })
+  }
     
   }
 
-  export default withRouter(PageFundDetailsDragoManager)
+  export default withRouter(PageVaultDetailsVaultManager)

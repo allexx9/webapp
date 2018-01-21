@@ -31,7 +31,7 @@ import SearchVaults from '../Elements/elementSearchVaults'
 import utils from '../../utils/utils'
 import ElementListWrapper from '../../Elements/elementListWrapper'
 
-import styles from './pageFundsVaultTrader.module.css'
+import styles from './pageVaultsVaultTrader.module.css'
 
 // Getting events signatures
 const dragoFactoryEventsSignatures = (contract) => {
@@ -71,7 +71,7 @@ class PageFundsVaultTrader extends Component {
     scrollPosition = 0
 
     componentWillMount () {
-      this.getVaults();
+      this.getVaults()
     }
 
     componentWillReceiveProps(nextProps) {
@@ -81,7 +81,7 @@ class PageFundsVaultTrader extends Component {
       const {accounts } = this.props
       const sourceLogClass = this.constructor.name
       if (!this.props.ethBalance.eq(nextProps.ethBalance)) {
-        this.getTransactions (null, accounts)
+        this.getVaults()
         console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
       } else {
         null

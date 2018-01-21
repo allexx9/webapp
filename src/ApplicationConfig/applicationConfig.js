@@ -129,18 +129,18 @@ export class ApplicationConfig extends Component {
     if (loading) {
       return <Loading></Loading>
     }
-    if ((accounts.length === 0 || !networkCorrect)) {
-      return (
-        <span>
-          <CheckAuthPage warnMsg={warnMsg}/>
-          <ElementBottomStatusBar
-            blockNumber={this.state.prevBlockNumber}
-            networkName='Kovan'
-            networkError={networkError}
-            networkStatus={networkStatus} />
-        </span>
-    )
-    }
+    // if ((accounts.length === 0 || !networkCorrect)) {
+    //   return (
+    //     <span>
+    //       <CheckAuthPage warnMsg={warnMsg}/>
+    //       <ElementBottomStatusBar
+    //         blockNumber={this.state.prevBlockNumber}
+    //         networkName='Kovan'
+    //         networkError={networkError}
+    //         networkStatus={networkStatus} />
+    //     </span>
+    // )
+    // }
 
     var notificationStyle = {
       NotificationItem: { // Override the notification item

@@ -172,8 +172,10 @@ class ElementListBalances extends PureComponent {
 
   actionButton(cellData, rowData) {
     const { match} = this.props;
+    console.log(match)
     const url =  rowData.dragoID + "/" + utils.dragoISIN(cellData, rowData.dragoID)
-    return <FlatButton label="View" primary={true} containerElement={<Link to={utils.rootPath(match.path)+DS+"drago/pools/"+url} />} />
+    var poolType = match.path.includes('drago') ? 'drago' : 'vaultv2'
+    return <FlatButton label="View" primary={true} containerElement={<Link to={utils.rootPath(match.path)+DS+poolType+"/pools/"+url} />} />
   }
 
   renderEthValue(ethValue) {

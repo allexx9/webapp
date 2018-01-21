@@ -717,6 +717,7 @@ export default class ElementFundActions extends React.Component {
     const { actionStyle, openAuth, authMsg, authAccount } = this.state
     const { accountError, amountError, sending } = this.state;
     const hasError = !!(this.state.accountError || this.state.amountError );
+
     const actions = [
       <FlatButton
         label="Cancel"

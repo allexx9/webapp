@@ -21,11 +21,11 @@ export default class ElementFeesBox extends Component {
   };
 
   buttonBuyClick = () =>{
-    this.props.handleBuySellButtons('buy')
+    this.props.handleBuySellButtons('deposit')
   }
   
   buttonSellClick = () =>{
-    this.props.handleBuySellButtons('sell')
+    this.props.handleBuySellButtons('withdraw')
   }
   
   render () {
@@ -59,11 +59,17 @@ export default class ElementFeesBox extends Component {
     const priceBoxHeaderTitleStyle = {
       padding: 0,
       textAlign: 'center',
-      fontSize: 25,
+      fontSize: 20,
       fontWeight: 500,
     }
 
     const {vaultDetails, accounts, isManager} = this.props
+
+    const buttonStyle = {
+      border: "1px solid",
+      borderColor: Colors.blueGrey200,
+      width: "140px"
+    }
 
     console.log(isManager)
     if(!isManager) {
@@ -72,7 +78,7 @@ export default class ElementFeesBox extends Component {
           <Row>
             <Col xs={12} className={styles.boxHeader}>
               <AppBar
-                title="Fees"
+                title="FEES"
                 showMenuIconButton={false}
                 style={priceBoxHeader.marketPrice}
                 titleStyle={priceBoxHeaderTitleStyle}
@@ -89,13 +95,16 @@ export default class ElementFeesBox extends Component {
               <div className={styles.actionButton}><FlatButton primary={true} label="Withdraw"
                 labelStyle={{ fontWeight: 700, fontSize: '18px' }}
                 onClick={this.buttonSellClick}
+                style={buttonStyle}
               /></div>
 
             </Col>
             <Col xs={6}>
               <div className={styles.actionButton}><FlatButton primary={true} label="Deposit"
                 labelStyle={{ fontWeight: 700, fontSize: '18px' }}
+                // onClick={this.buttonBuyClick}
                 onClick={this.buttonBuyClick}
+                style={buttonStyle}
               /></div>
               {/* <ElementVaultActionDeposit accounts={accounts} 
                 vaultDetails={vaultDetails} 
@@ -107,42 +116,45 @@ export default class ElementFeesBox extends Component {
       );
     }
 
-    // if(isManager) {
-    //   return (
-    //     <div>
-    //       <Row>
-    //         <Col xs={12} className={styles.boxHeader}>
-    //           <AppBar
-    //             title="Market"
-    //             showMenuIconButton={false}
-    //             style={priceBoxHeader.marketPrice}
-    //             titleStyle={priceBoxHeaderTitleStyle}
-    //           />
-    //         </Col>
-    //       </Row>
-    //       <Row middle="xs">
-    //         <Col xs={4}>
-    //           <div className={styles.buyHeader}>
-    //             Ask
-    //           </div>
-    //         </Col>
-    //         <Col xs={7}>
-    //           <div className={styles.price}>{vaultDetails.buyPrice} ETH</div>
-    //         </Col>
-    //       </Row>
-    //       <Row middle="xs">
-    //         <Col xs={4}>
-    //           <div className={styles.sellHeader}>
-    //             Bid
-    //           </div>
-    //         </Col>
-    //         <Col xs={7}>
-    //           <div className={styles.price}>{vaultDetails.sellPrice} ETH</div>
-    //         </Col>
-    //       </Row>
-    //     </div>
-    //   );
-    // }
+    if(isManager) {
+      return (
+        <div>
+          <Row>
+            <Col xs={12} className={styles.boxHeader}>
+              <AppBar
+                title="FEES"
+                showMenuIconButton={false}
+                style={priceBoxHeader.marketPrice}
+                titleStyle={priceBoxHeaderTitleStyle}
+              />
+            </Col>
+          </Row>
+          <Row middle="xs">
+            <Col xs={12}>
+              <div className={styles.price}>{vaultDetails.price} %</div>
+            </Col>
+          </Row>
+          {/* <Row middle="xs">
+            <Col xs={6}>
+              <div className={styles.actionButton}><FlatButton primary={true} label="Withdraw"
+                labelStyle={{ fontWeight: 700, fontSize: '18px' }}
+                onClick={this.buttonSellClick}
+                style={buttonStyle}
+              /></div>
+
+            </Col>
+            <Col xs={6}>
+              <div className={styles.actionButton}><FlatButton primary={true} label="Deposit"
+                labelStyle={{ fontWeight: 700, fontSize: '18px' }}
+                // onClick={this.buttonBuyClick}
+                onClick={this.buttonBuyClick}
+                style={buttonStyle}
+              /></div>
+            </Col>
+          </Row> */}
+        </div>
+      );
+    }
 
 
   }

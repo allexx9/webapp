@@ -44,7 +44,8 @@ const muiTheme = getMuiTheme({
 
   },
   appBar: {
-    height: 50,
+    height: 45,
+    fontSize: "20px !important"
   },
 });
 
@@ -53,7 +54,8 @@ const muiThemeVault = getMuiTheme({
     "primary1Color": "#607D8B",
   },
   appBar: {
-    height: 50,
+    height: 45,
+    fontSize: "20px !important"
   }
 });
 
@@ -80,7 +82,7 @@ const TemplateLayout = ({children}) =>
         </Row>
         <Row>
           <Col xs={12} className={classNames(styles.bottombar)}>
-            <ApplicationBottomBar />
+            {/* <ApplicationBottomBar /> */}
           </Col>
         </Row>
       </Grid>
@@ -245,7 +247,7 @@ export class ApplicationHomePage extends Component {
   }
 
   state = {
-    isConnected: false,
+    isConnected: true,
     isManager: true
   }
 
@@ -412,7 +414,7 @@ export class ApplicationDragoPage extends Component {
   // Callback function to handle account type selection in the Top Bar
   // value = 1 = Trader
   // value = 2 = Manager
-  handleTopBarSelectAccountType = (event, index, value) => { 
+  handleTopBarSelectAccountType = (event, value) => { 
     const accountType = {
       false: false,
       true: true
@@ -522,8 +524,6 @@ export class ApplicationVaultPage extends Component {
     };
   }
 
-
-
   td = null
 
   componentWillMount() {
@@ -565,11 +565,13 @@ export class ApplicationVaultPage extends Component {
   // Callback function to handle account type selection in the Top Bar
   // value = 1 = Trader
   // value = 2 = Manager
-  handleTopBarSelectAccountType = (event, index, value) => { 
+  handleTopBarSelectAccountType = (event, value) => { 
     const accountType = {
       false: false,
       true: true
     }
+    console.log(value)
+    console.log('handleTopBarSelectAccountType')
     localStorage.setItem('isManager', accountType[value])
     this.setState({
       isManager: accountType[value],

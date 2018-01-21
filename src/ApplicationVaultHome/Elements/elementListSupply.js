@@ -1,30 +1,28 @@
 import { Grid, Row, Col } from 'react-flexbox-grid';
 import { Link, Route, withRouter, HashRouter } from 'react-router-dom'
-import { List, Column, Table, AutoSizer, SortDirection, SortIndicator, WindowScroller } from 'react-virtualized';
+import { List, Column, Table, AutoSizer, SortDirection, SortIndicator } from 'react-virtualized';
 import FlatButton from 'material-ui/FlatButton';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import React, {PureComponent} from 'react';
-import BigNumber from 'bignumber.js';
+
+import 'react-virtualized/styles.css'
 
 import { generateRandomList } from './utils';
+import {APP, DS} from '../../utils/const.js'
 import {LabeledInput, InputRow} from './labeledInput';
 import utils from '../../utils/utils'
 
 import styles from './elementListTransactions.module.css';
-import 'react-virtualized/styles.css'
-import  * as Colors from 'material-ui/styles/colors'
 
 // const list = Immutable.List(generateRandomList());
 
-class ElementListTransactions extends PureComponent {
+class ElementListSupply extends PureComponent {
 
   static propTypes = {
     list: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
-    renderCopyButton: PropTypes.func.isRequired,
-    renderEtherscanButton: PropTypes.func.isRequired
   };
 
   constructor(props, context) {
@@ -32,14 +30,16 @@ class ElementListTransactions extends PureComponent {
     const { accountsInfo, list } = this.props
     const sortBy = 'symbol';
     const sortDirection = SortDirection.ASC;
-    const sortedList = this._sortList({sortBy, sortDirection});
+    const sortedList = list.sortBy(item => item.symbol)
+                      .update(
+                        list => (sortDirection === SortDirection.ASC ? list : list.reverse()),
+                      );
     const rowCount = list.size
 
     this.state = {
       disableHeader: false,
       headerHeight: 30,
       height: 500,
-      width: 600,
       hideIndexRow: false,
       overscanRowCount: 10,
       rowHeight: 40,
@@ -61,12 +61,12 @@ class ElementListTransactions extends PureComponent {
   }
 
   componentWillReceiveProps (nextProps, nextState) {
-    const { list } = nextProps
+    const { accountsInfo, list } = nextProps
     const sortBy = 'symbol';
     const sortDirection = SortDirection.ASC;
-    const sortedList = list.sortBy(item => item.timestamp)
+    const sortedList = list.sortBy(item => item.symbol)
                       .update(
-                        list => (sortDirection === SortDirection.DESC ? list : list.reverse()),
+                        list => (sortDirection === SortDirection.ASC ? list : list.reverse()),
                       );
     const rowCount = list.size
     this.setState({
@@ -74,7 +74,7 @@ class ElementListTransactions extends PureComponent {
       rowCount: rowCount,
     })
     const sourceLogClass = this.constructor.name
-    // console.log(`${sourceLogClass} -> componentWillReceiveProps`);
+    console.log(`${sourceLogClass} -> componentWillReceiveProps`);
   }
 
   render() {
@@ -100,11 +100,10 @@ class ElementListTransactions extends PureComponent {
 
       <Row>
         <Col xs={12}>
-        <div style={{ flex: '1 1 auto' }}>
+          <div style={{ flex: '1 1 auto' }}>
             <AutoSizer disableHeight>
               {({ width }) => (
                 <Table
-                  id={"transactions-table"}
                   ref="Table"
                   disableHeader={disableHeader}
                   headerClassName={styles.headerColumn}
@@ -120,93 +119,53 @@ class ElementListTransactions extends PureComponent {
                   sort={this._sort}
                   sortBy={sortBy}
                   sortDirection={sortDirection}
-                  width={width}
-                  >
-                  {/* <Column
-                    width={100}
-                    disableSort
-                    label="Blocknumber"
-                    cellDataGetter={({rowData}) => rowData.blockNumber.c[0]}
-                    dataKey="blocknumber"
-                    className={styles.exampleColumn}
-                    cellRenderer={({cellData}) => cellData}
-                  />  */}
+                  width={width}>
                   <Column
-                    width={200}
-                    disableSort
-                    label="DATE"
-                    cellDataGetter={({rowData}) => rowData.timestamp}
-                    dataKey="date"
-                    className={styles.exampleColumn}
-                    cellRenderer={({cellData}) => this.renderTime(cellData)}
-                    flexShrink={1}
-                  />
-                  <Column
-                    width={100}
-                    disableSort
-                    label="TRADE"
-                    cellDataGetter={({rowData}) => rowData.type}
-                    dataKey="action"
-                    className={styles.exampleColumn}
-                    cellRenderer={({cellData}) => this.renderAction(cellData)}
-                    flexShrink={1}
-                  />
-                  {/* <Column
-                    width={100}
+                    width={150}
                     disableSort
                     label="Symbol"
-                    cellDataGetter={({rowData}) => rowData}
+                    cellDataGetter={({rowData}) => rowData.symbol}
                     dataKey="symbol"
-                    cellRenderer={({cellData}) => this.renderSymbol(cellData)}
+                    cellRenderer={({cellData}) => cellData.symbol}
                     className={styles.exampleColumn}
+                    cellRenderer={({cellData}) => cellData}
                     flexShrink={1}
-                  /> */}
-                  {/* formatEth(price) }<small> ETH</small> */}
+                  />
                   <Column
-                    width={100}
+                    width={width}
                     disableSort
-                    label="UNITS"
-                    cellDataGetter={({rowData}) => rowData.drgvalue}
+                    label="Name"
+                    cellDataGetter={({rowData}) => rowData.name}
+                    dataKey="name"
+                    cellRenderer={({cellData}) => cellData.name}
+                    className={styles.exampleColumn}
+                    cellRenderer={({cellData}) => cellData}
+                    flexShrink={1}
+                  />
+                  <Column
+                    width={250}
+                    disableSort
+                    label="Supply"
+                    cellDataGetter={({rowData}) => rowData.supply}
                     dataKey="drg"
                     className={styles.exampleColumn}
-                    cellRenderer={({rowData}) => this.renderDrgValue(rowData)}
+                    cellRenderer={({rowData}) => this.renderDrgValue(rowData.supply)}
                     flexShrink={1}
                   />
                   <Column
-                    width={100}
-                    disableSort
-                    label="VALUE"
-                    cellDataGetter={({rowData}) => rowData.ethvalue}
-                    dataKey="eth"
-                    className={styles.exampleColumn}
-                    cellRenderer={({rowData}) => this.renderEthValue(rowData.ethvalue)}
-                    flexShrink={1}
-                  />
-                  <Column
-                    width={210}
-                    disableSort
-                    label="TX"
-                    cellDataGetter={({rowData}) => rowData.transactionHash}
-                    dataKey="tx"
-                    className={styles.exampleColumn}
-                    cellRenderer={({rowData}) => this.renderTx(rowData.transactionHash)}
-                    flexGrow={1}
-                  />
-                  {/* <Column
                     width={210}
                     disableSort
                     label="Actions"
-                    cellDataGetter={({rowData}) => rowData.transactionHash}
+                    cellDataGetter={({rowData}) => rowData.symbol}
                     dataKey="actions"
                     className={styles.exampleColumn}
-                    cellRenderer={({cellData}) => cellData}
                     cellRenderer={({cellData, rowData}) => this.actionButton(cellData, rowData)}
                     flexShrink={1}
-                  /> */}
+                  />
                 </Table>
-               )} 
-              </AutoSizer>
-              </div>
+              )}
+            </AutoSizer>
+          </div>
         </Col>
       </Row>
     );
@@ -214,60 +173,18 @@ class ElementListTransactions extends PureComponent {
 
   actionButton(cellData, rowData) {
     const { match} = this.props;
-    const url =  rowData.params.dragoID.value.c + "/" + utils.dragoISIN(cellData, rowData.params.dragoID.value.c)
-    return <FlatButton label="View" primary={true} containerElement={<Link to={match.path+"/"+url} />} />
-  }
-
-  renderSymbol(input) {
-    return (
-      <div>{input.symbol}</div>
-    )
+    const url =  rowData.dragoID + "/" + utils.dragoISIN(cellData, rowData.dragoID)
+    return <FlatButton label="View" primary={true} containerElement={<Link to={utils.rootPath(match.path)+DS+"vaultv2/pools/"+url} />} />
   }
 
   renderEthValue(ethValue) {
     return (
-      <div>{new BigNumber(ethValue).toFixed(4)} <small>ETH</small></div>
+      <div>{ethValue} <small>ETH</small></div>
     )
   }
-
-  renderTx(transactionHash) {
+  renderDrgValue(drgvalue) {
     return (
-      <span>{this.props.renderCopyButton(transactionHash)} {this.props.renderEtherscanButton('tx', transactionHash)}</span>
-    )
-  }
-
-  renderAction(action) {
-    switch (action) {
-      case "BuyDrago":
-        return <span style={{ color: Colors.green300, fontWeight: 600 }}>BUY</span>
-        break
-      case "SellDrago":
-        return <span style={{ color: Colors.red300, fontWeight: 600 }}>SELL</span>
-        break
-      case "BuyGabcoin":
-        return <span style={{ color: Colors.green300, fontWeight: 600 }}>DEPOSIT</span>
-        break
-      case "SellGabcoin":
-        return <span style={{ color: Colors.red300, fontWeight: 600 }}>WITHDRAW</span>
-        break
-      case "DragoCreated":
-        return <span style={{ color: Colors.blue300, fontWeight: 600 }}>CREATED</span>
-        break
-      case "GabcoinCreated":
-        return <span style={{ color: Colors.blue300, fontWeight: 600 }}>CREATED</span>
-        break
-    }
-  }
-
-  renderTime(timestamp) {
-    return (
-      <span>{utils.dateFromTimeStamp(timestamp)}</span>
-    )
-  }
-
-  renderDrgValue(rowData) {
-    return (
-      <div>{new BigNumber(rowData.drgvalue).toFixed(4)} <small>{rowData.symbol}</small></div>
+      <div>{drgvalue} <small>DRG</small></div>
     )
   }
 
@@ -337,11 +254,13 @@ class ElementListTransactions extends PureComponent {
   }
 
   _sortList({sortBy, sortDirection}) {
-    const {list} = this.props;
+    const {list} = this.props
     return list
-      .sortBy(item => item.timestamp)
+      .sortBy(item => {
+        item.symbol
+      })
       .update(
-        list => (sortDirection === SortDirection.DESC ? list : list.reverse()),
+        list => (sortDirection === SortDirection.ASC ? list : list.reverse()),
       );
   }
 
@@ -352,4 +271,4 @@ class ElementListTransactions extends PureComponent {
   }
 }
 
-export default withRouter(ElementListTransactions)
+export default withRouter(ElementListSupply)

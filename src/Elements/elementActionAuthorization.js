@@ -57,12 +57,15 @@ export default class ElementActionAuthorization extends Component {
   }
 
   renderHeader = () => {
-    console.log(dragoDetails)
-    const { dragoDetails } = this.props
+    const { tokenDetails } = this.props
     return (
       <div>
           <ElementDialogHeadTitle primaryText='Authorize action' />
-          <ElementDialogAddressTitle tokenDetails={dragoDetails} />
+          {typeof tokenDetails !=='undefined'
+          ?
+          <ElementDialogAddressTitle tokenDetails={tokenDetails} />
+          : null
+          }
       </div>
 
     )

@@ -14,6 +14,7 @@ import dragoregistry from './dragoregistry.json';
 import exchangeeventful from './exchangeeventful.json';
 import gabcoineventful from './gabcoineventful.json';
 import nav from './nav.json';
+import rigotoken from './rigoToken.json';
 
 
 export {
@@ -30,5 +31,6 @@ export {
   dragoregistry,
   exchangeeventful,
   gabcoineventful,
-  nav
+  nav,
+  rigotoken
 };

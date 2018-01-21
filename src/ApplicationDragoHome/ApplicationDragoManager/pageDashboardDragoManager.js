@@ -222,9 +222,10 @@ class PageDashboardDragoManager extends Component {
                 <Col xs={12}>
                   <span ref={(section) => { this.Accounts = section; }}></span>
                   <AppBar
-                    title='My Accounts'
+                    title='ACCOUNTS'
                     showMenuIconButton={false}
                     className={styles.appBar}
+                    titleStyle={{ fontSize: 20 }}
                   />
                   <Row>
                     {listAccounts}
@@ -235,10 +236,11 @@ class PageDashboardDragoManager extends Component {
                 <Col xs={12}>
                   <span ref={(section) => { this.Dragos = section; }}></span>
                   <AppBar className={styles.appBar}
-                    title='My Dragos'
+                    title='FUNDS'
                     showMenuIconButton={false}
-                    iconElementRight={<ElementFundCreateAction accounts={accounts} snackBar={this.snackBar}
-                      iconStyleRight={{ marginTop: 'auto', marginBottom: 'auto' }} />}
+                    iconElementRight={<ElementFundCreateAction accounts={accounts} snackBar={this.snackBar} />}
+                      iconStyleRight={{ marginTop: 'auto', marginBottom: 'auto' }}
+                      titleStyle={{ fontSize: 20 }}
                   />
                   <Paper zDepth={1}>
                     <Row>
@@ -256,8 +258,9 @@ class PageDashboardDragoManager extends Component {
                 <Col xs={12}>
                   <span ref={(section) => { this.Transactions = section; }}></span>
                   <AppBar className={styles.appBar}
-                    title='My Transactions'
+                    title='TRANSACTIONS'
                     showMenuIconButton={false}
+                    titleStyle={{ fontSize: 20 }}
                   />
                   <Paper zDepth={1}>
                     <Row style={{ outline: 'none' }}>

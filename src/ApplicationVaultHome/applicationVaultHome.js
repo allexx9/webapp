@@ -1,10 +1,11 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
+import { rigotoken } from '../contracts'
 import BigNumber from 'bignumber.js';
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom'
 import Accounts from '../Accounts';
-// import ApplicationVaultManager from './ApplicationVaultManager'
+import ApplicationVaultManager from './ApplicationVaultManager'
 import ApplicationVaultTrader from './ApplicationVaultTrader'
 import Loading from '../Loading';
 import Status from '../Status';
@@ -80,6 +81,7 @@ export default class ApplicationVaultHome extends Component {
     accountsInfo: {},
     accountsBalanceError: false,
     // blockNumber: new BigNumber(-1),
+    rigoTokenBalance: null,
     ethBalance: null,
     loading: true,
     subscriptionIDDrago: null,
@@ -208,7 +210,7 @@ export default class ApplicationVaultHome extends Component {
     if ((accounts.length === 0 || !networkCorrect)) {
       return (
         <span>
-          <CheckAuthPage warnMsg={warnMsg}/>
+          <CheckAuthPage warnMsg={warnMsg} location={location}/>
           <ElementBottomStatusBar
             blockNumber={this.state.prevBlockNumber}
             networkName={DEFAULT_NETWORK_NAME}
@@ -220,59 +222,59 @@ export default class ApplicationVaultHome extends Component {
 
     // return <p>Test Vault</p>
 
-    // if (isManager) {
-    //   var notificationStyle = {
-    //     NotificationItem: { // Override the notification item
-    //       DefaultStyle: { // Applied to every notification, regardless of the notification level
-    //         margin: '0px 0px 0px 0px'
-    //       },
+    if (isManager) {
+      var notificationStyle = {
+        NotificationItem: { // Override the notification item
+          DefaultStyle: { // Applied to every notification, regardless of the notification level
+            margin: '0px 0px 0px 0px'
+          },
       
-    //       info: { // Applied only to the success notification item
-    //         backgroundColor: 'white'
-    //       }
-    //     }
-    //   }
-    //   return (
-    //     <span>
-    //       <Row className={styles.maincontainer}>
-    //         <Col xs={2}>
-    //           <LeftSideDrawer location={location} isManager={isManager}/>
-    //         </Col>
-    //         <Col xs={10}>
-    //           <NotificationSystem ref={n => this._notificationSystem = n} style={notificationStyle} />
-    //           <ApplicationVaultManager
-    //             blockNumber={blockNumber}
-    //             accounts={accounts}
-    //             ethBalance={ethBalance}
-    //             allEvents={allEvents}
-    //             accountsInfo={accountsInfo}
-    //             isManager={isManager}
-    //           />
-    //         </Col>
-    //         <Row>
-    //           <Col xs={12}>
-    //             {notificationsOpen ? (
-    //               <ElementNotificationsDrawer
-    //                 handleToggleNotifications={handleToggleNotifications}
-    //                 notificationsOpen={notificationsOpen}
-    //                 accounts={accounts}
-    //                 recentTransactions={this.state.recentTransactions}
-    //                 updateTransactionsQueue={this.updateTransactionsQueue}
-    //               />
-    //             ) : (
-    //                 null
-    //               )}
-    //           </Col>
-    //         </Row>
-    //       </Row>
-    //       <ElementBottomStatusBar 
-    //       blockNumber={this.state.prevBlockNumber}
-    //       networkName={DEFAULT_NETWORK_NAME}
-    //       networkError={networkError}
-    //       networkStatus={networkStatus} />
-    //     </span>
-    //   );
-    // }
+          info: { // Applied only to the success notification item
+            backgroundColor: 'white'
+          }
+        }
+      }
+      return (
+        <span>
+          <Row className={styles.maincontainer}>
+            <Col xs={2}>
+              <LeftSideDrawerVault location={location} isManager={isManager}/>
+            </Col>
+            <Col xs={10}>
+              <NotificationSystem ref={n => this._notificationSystem = n} style={notificationStyle} />
+              <ApplicationVaultManager
+                blockNumber={blockNumber}
+                accounts={accounts}
+                ethBalance={ethBalance}
+                allEvents={allEvents}
+                accountsInfo={accountsInfo}
+                isManager={isManager}
+              />
+            </Col>
+            <Row>
+              <Col xs={12}>
+                {notificationsOpen ? (
+                  <ElementNotificationsDrawer
+                    handleToggleNotifications={handleToggleNotifications}
+                    notificationsOpen={notificationsOpen}
+                    accounts={accounts}
+                    recentTransactions={this.state.recentTransactions}
+                    updateTransactionsQueue={this.updateTransactionsQueue}
+                  />
+                ) : (
+                    null
+                  )}
+              </Col>
+            </Row>
+          </Row>
+          <ElementBottomStatusBar 
+          blockNumber={this.state.prevBlockNumber}
+          networkName={DEFAULT_NETWORK_NAME}
+          networkError={networkError}
+          networkStatus={networkStatus} />
+        </span>
+      );
+    }
 
     if (!isManager) {
 
@@ -363,23 +365,41 @@ export default class ApplicationVaultHome extends Component {
       return null
     }
     const accounts = [].concat(this.state.accounts);
+
+    // Checking RigoToken balance
+    const rigoTokenContract = api.newContract(rigotoken, "0x7f026C6E42C808bA02A551BDdD753F9927dA06b1")
+
+    const tokensQueries = accounts.map((account) => {
+      console.log(`${sourceLogClass} API call getBalance RigoToken-> applicationDragoHome: Getting balance of account ${account.name}`)
+      return rigoTokenContract.instance.balanceOf.call({}, [account.address])
+    })
+
+    // Checking ethereum balance
     const ethQueries = accounts.map((account) => {
       console.log(`${sourceLogClass} API call getBalance -> applicationDragoHome: Getting balance of account ${account.name}`)
       return api.eth.getBalance(account.address, new BigNumber(blockNumber))
     })
+    const promisesBalances = [...ethQueries, ...tokensQueries]
+
     Promise
-      .all(ethQueries)
-      .then((ethBalances) => {
+      .all(promisesBalances)
+      .then((results) => {
+        // Splitting the the result array between ethBalances and rigoTokenBalances
+        const halfLength = Math.ceil(results.length / 2)
+        const ethBalances = results.splice(0,halfLength)
+        const rigoTokenBalances = results
+        console.log(ethBalances)
+        console.log(rigoTokenBalances)
         const prevAccounts = [].concat(this.state.accounts)
         prevAccounts.map((account,index) =>{
-          const newBalance = api.util.fromWei(ethBalances[index]).toFormat(3)
+          const newEthBalance = api.util.fromWei(ethBalances[index]).toFormat(3)
           // console.log('Last balance: ' + account.ethBalance)
-          // console.log('New balance: ' + newBalance)
-          if ((account.ethBalance !== newBalance) && prevBlockNumber != 0) {
+          // console.log('New balance: ' + newEthBalance)
+          if ((account.ethBalance !== newEthBalance) && prevBlockNumber != 0) {
             console.log(`${account.name} balance changed.`)
             var eventType = 'balanceChange'
             var secondaryText = []
-            var balDifference = account.ethBalance - newBalance
+            var balDifference = account.ethBalance - newEthBalance
             console.log(balDifference)
             if (balDifference > 0) {
               console.log(`You transferred ${balDifference.toFixed(4)} ETH!`)
@@ -401,17 +421,23 @@ export default class ApplicationVaultHome extends Component {
           }
 
         })
-        return ethBalances
+        return [ethBalances,rigoTokenBalances]
       })
-      .then((ethBalances) => {
+      .then((balances) => {
+        const ethBalances = balances[0]
+        const rigoTokenBalances = balances[1]
         this.setState({
           networkError: NETWORK_OK,
           networkStatus: MSG_NETWORK_STATUS_OK,
           accountsBalanceError: false,
+          rigoTokenBalance: rigoTokenBalances.reduce((total, balance) => total.add(balance), new BigNumber(0)),
           ethBalance: ethBalances.reduce((total, balance) => total.add(balance), new BigNumber(0)),
           accounts: [].concat(accounts.map((account, index) => {
             const ethBalance = ethBalances[index];
             account.ethBalance = api.util.fromWei(ethBalance).toFormat(3);
+            const rigoTokenBalance = rigoTokenBalances[index];
+            account.rigoTokenBalance = api.util.fromWei(rigoTokenBalance).toFormat(3);
+            console.log(account)
             return account;
           })
         )

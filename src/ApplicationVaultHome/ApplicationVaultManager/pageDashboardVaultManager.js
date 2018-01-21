@@ -27,7 +27,7 @@ import Immutable from 'immutable'
 import MenuItem from 'material-ui/MenuItem'
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert'
 import Paper from 'material-ui/Paper'
-import PropTypes from 'prop-types';
+import PropTypes from 'prop-types'
 import React, { Component, PureComponent } from 'react'
 import ReactDOM from 'react-dom'
 import scrollToComponent from 'react-scroll-to-component'
@@ -37,20 +37,19 @@ import Sticky from 'react-stickynode'
 import ElementListWrapper from '../../Elements/elementListWrapper'
 import ElementAccountBox from '../../Elements/elementAccountBox'
 
-
 import { dragoFactoryEventsSignatures } from '../../utils/utils.js'
 import { formatCoins, formatEth, formatHash, toHex } from '../../format'
-import * as abis from '../../contracts';
-import DragoApi from '../../DragoApi/src'
-import ElementListBalances from '../Elements/elementListBalances'
+import * as abis from '../../contracts'
+import ElementVaultCreateAction from '../Elements/elementVaultCreateAction'
+import ElementListSupply from '../Elements/elementListSupply'
 import ElementListTransactions from '../Elements/elementListTransactions'
-import IdentityIcon from '../../IdentityIcon';
+import IdentityIcon from '../../IdentityIcon'
 import Loading from '../../Loading'
-import utils from '../../utils/utils'
+import utils, {dragoApi} from '../../utils/utils'
 
-import styles from './pageDashboardDragoTrader.module.css'
+import styles from './pageDashboardVaultManager.module.css'
 
-class PageDashboardDragoTrader extends Component {
+class PageDashboardVaultManager extends Component {
 
   // Checking the type of the context variable that we receive by the parent
   static contextTypes = {
@@ -61,12 +60,13 @@ class PageDashboardDragoTrader extends Component {
       location: PropTypes.object.isRequired,
       ethBalance: PropTypes.object.isRequired,
       accounts: PropTypes.array.isRequired,
+      allEvents: PropTypes.array.isRequired,
       accountsInfo: PropTypes.object.isRequired, 
     };
 
     state = {
       dragoTransactionsLogs: null,
-      dragoBalances: null,
+      vaultList: null,
       loading: true,
       topBarClassName: null,
       topBarInitialPosition: null,
@@ -76,11 +76,12 @@ class PageDashboardDragoTrader extends Component {
     }
 
     componentDidMount() {
+      const {accounts } = this.props
+      this.getTransactions (null, accounts)
     }
 
     componentWillMount() {
-      const { accounts } = this.props
-      this.getTransactions (null, accounts)
+
     }
 
     componentWillReceiveProps(nextProps) {
@@ -127,7 +128,6 @@ class PageDashboardDragoTrader extends Component {
     }
 
     handleSetActive = (to) => {
-      console.log(to);
     }
 
     renderCopyButton = (text) =>{
@@ -155,30 +155,30 @@ class PageDashboardDragoTrader extends Component {
 
     render() {
       const { location, accounts, accountsInfo, allEvents } = this.props
-      const { dragoTransactionsLogs, loading, dragoBalances } = this.state 
-      // console.log(this.props.ethBalance)
+      const { dragoTransactionsLogs, loading, vaultList } = this.state 
       const tabButtons = {
         inkBarStyle: {
           margin: 'auto',
           width: 100,
           backgroundColor: 'white'
           },
-          tabItemContainerStyle: {
-            margin: 'auto',
-            width: 300,
-            backgroundColor: '#FFFFFF',
-          }
+        tabItemContainerStyle: {
+          margin: 'auto',
+          width: 300,
+          backgroundColor: '#FFFFFF',
+          zIndex: 1000
+        }
       }
 
       const listAccounts = accounts.map((account) => {
         return (
           <Col xs={6} key={account.name}>
-            <ElementAccountBox account={account} key={account.name} snackBar={this.snackBar}/>
+            <ElementAccountBox account={account} key={account.name} snackBar={this.snackBar} />
           </Col>
           )
         }
       )
-      
+
       return (
         <Row>
           <Col xs={12}>
@@ -190,7 +190,7 @@ class PageDashboardDragoTrader extends Component {
                       <h2><Avatar size={50} icon={<ActionHome />} /></h2>
                     </Col>
                     <Col xs={12} md={11} className={styles.dragoTitle}>
-                      <p>Holder</p>
+                      <p>Wizard</p>
                     </Col>
                   </Row>
                 </ToolbarGroup>
@@ -206,7 +206,7 @@ class PageDashboardDragoTrader extends Component {
                         onActive={() => scrollToComponent(this.Accounts, { offset: -80, align: 'top', duration: 500 })}
                         icon={<ActionList color={Colors.blue500} />}>
                       </Tab>
-                      <Tab label="Holding" className={styles.detailsTab}
+                      <Tab label="Drago" className={styles.detailsTab}
                         onActive={() => scrollToComponent(this.Dragos, { offset: -80, align: 'top', duration: 500 })}
                         icon={<ActionAssessment color={Colors.blue500} />}>
                       </Tab>
@@ -223,8 +223,8 @@ class PageDashboardDragoTrader extends Component {
                   <span ref={(section) => { this.Accounts = section; }}></span>
                   <AppBar
                     title='ACCOUNTS'
-                    className={styles.appBar}
                     showMenuIconButton={false}
+                    className={styles.appBar}
                     titleStyle={{ fontSize: 20 }}
                   />
                   <Row>
@@ -233,22 +233,25 @@ class PageDashboardDragoTrader extends Component {
                 </Col>
               </Row>
               <Row className={styles.transactionsStyle}>
-                <Col xs={12} >
+                <Col xs={12}>
                   <span ref={(section) => { this.Dragos = section; }}></span>
                   <AppBar className={styles.appBar}
-                    title='PORTFOLIO'
+                    title='FUNDS'
                     showMenuIconButton={false}
-                    titleStyle={{ fontSize: 20 }}
+                    iconElementRight={<ElementVaultCreateAction accounts={accounts} snackBar={this.snackBar} />}
+                       iconStyleRight={{ marginTop: 'auto', marginBottom: 'auto' }}
+                      titleStyle={{ fontSize: 20 }}
                   />
                   <Paper zDepth={1}>
                     <Row>
                       <Col className={styles.transactionsStyle} xs={12}>
-                        <ElementListWrapper list={dragoBalances}>
-                          <ElementListBalances />
+                        <ElementListWrapper list={vaultList}>
+                          <ElementListSupply />
                         </ElementListWrapper>
                       </Col>
                     </Row>
                   </Paper>
+
                 </Col>
               </Row>
               <Row className={styles.transactionsStyle}>
@@ -262,7 +265,8 @@ class PageDashboardDragoTrader extends Component {
                   <Paper zDepth={1}>
                     <Row style={{ outline: 'none' }}>
                       <Col className={styles.transactionsStyle} xs={12}>
-                        <ElementListWrapper list={dragoTransactionsLogs}
+                        <ElementListWrapper
+                          list={dragoTransactionsLogs}
                           renderCopyButton={this.renderCopyButton}
                           renderEtherscanButton={this.renderEtherscanButton}
                         >
@@ -289,17 +293,16 @@ class PageDashboardDragoTrader extends Component {
     // Getting last transactions
     getTransactions = (dragoAddress, accounts) =>{
       const { api } = this.context
-      const options = {balance: true, supply: false, limit: 10, trader: true}
-      var sourceLogClass = this.constructor.name
+      // const options = {balance: false, supply: true}
+      const options = {balance: false, supply: true, limit: 10, trader: false}
       utils.getTransactionsDragoOpt(api, dragoAddress, accounts, options)
       .then(results =>{
-        console.log(`${sourceLogClass} -> Transactions list loaded`)
-        // const buySellLogs = results[1].filter(event =>{
-        //   return event.type !== 'DragoCreated'
-        // })
+        const createdLogs = results[1].filter(event =>{
+          return event.type !== 'BuyDrago' && event.type !== 'SellDrago'
+        })
         this.setState({
-          dragoBalances: results[0],
-          dragoTransactionsLogs: results[1],
+          vaultList: results[2],
+          dragoTransactionsLogs: createdLogs,
         }, this.setState({
           loading: false,
         }))
@@ -307,4 +310,4 @@ class PageDashboardDragoTrader extends Component {
     }
   }
 
-  export default withRouter(PageDashboardDragoTrader)
+  export default withRouter(PageDashboardVaultManager)

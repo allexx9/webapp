@@ -80,7 +80,7 @@ class PageFundsDragoTrader extends Component {
       const {accounts } = this.props
       const sourceLogClass = this.constructor.name
       if (!this.props.ethBalance.eq(nextProps.ethBalance)) {
-        this.getTransactions (null, accounts)
+        this.getDragos()
         console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
       } else {
         null

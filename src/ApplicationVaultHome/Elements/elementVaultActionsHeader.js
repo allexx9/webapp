@@ -12,10 +12,10 @@ import IdentityIcon from '../../IdentityIcon';
 
 import styles from './elementVaultActionsHeader.module.css';
 
-export default class ElementFundActionsHeader extends React.Component {
+export default class ElementVaultActionsHeader extends React.Component {
 
   static propTypes = {
-    dragoDetails: PropTypes.object.isRequired, 
+    vaultDetails: PropTypes.object.isRequired, 
     action: PropTypes.string.isRequired, 
     // handlebuyAction: PropTypes.func.isRequired,
     // handleSellAction: PropTypes.func.isRequired,
@@ -25,16 +25,16 @@ export default class ElementFundActionsHeader extends React.Component {
     selected: {
       fontWeight: 700,
       fontSize: 20,
-      color: '#E3F2FD'
+      color: Colors.blueGrey50
     },
     notSelected: {
       fontWeight: 700,
       fontSize: 20
     },
-    bgSelected:  Colors.blue300,
-    bGNotSelected: "#2196f3",
-    hoverSelected: Colors.blue300,
-    hoverNotSelected: "#2196F3",
+    bgSelected:  Colors.blueGrey300,
+    bGNotSelected: Colors.blueGrey500,
+    hoverSelected: Colors.blueGrey300,
+    hoverNotSelected: Colors.blueGrey500,
   }
 
   buttonsStyle = {
@@ -44,7 +44,7 @@ export default class ElementFundActionsHeader extends React.Component {
   }
 
   setButtonStyle = (action) =>{
-    if (action == 'buy') {
+    if (action == 'deposit') {
       return ({
         sellButtonStyleHover: this.headerButtonsStyle.hoverNotSelected,
         buyButtonStyleHover: this.headerButtonsStyle.hoverSelected,
@@ -66,33 +66,33 @@ export default class ElementFundActionsHeader extends React.Component {
   }
 
   render() {
-    const { dragoDetails, action, handleBuyAction, handleSellAction } = this.props
+    const { vaultDetails, action, handleBuyAction, handleSellAction } = this.props
     return (
       <Row className={styles.modalHeader}>
         <Col xs={12}>
           <Row className={styles.modalHeaderActions}>
-            <Col xsOffset={4} xs={2}><FlatButton label="Sell" style={this.buttonsStyle} 
+            <Col xsOffset={3} xs={3}><FlatButton label="Withdraw" style={this.buttonsStyle} 
               backgroundColor={this.setButtonStyle(action).sellButtonStyleBg}
               labelStyle={this.setButtonStyle(action).sellButtonStyle}
-              hoverColor={Colors.blue300}
+              hoverColor={Colors.blueGrey300}
               fullWidth={true}  
               onClick={handleSellAction}/>
             </Col>
-            <Col xs={2}><FlatButton label="Buy" style={this.buttonsStyle} 
+            <Col xs={3}><FlatButton label="Deposit" style={this.buttonsStyle} 
               backgroundColor={this.setButtonStyle(action).buyButtonStyleBg}
               labelStyle={this.setButtonStyle(action).buyButtonStyle}
-              hoverColor={Colors.blue300}
+              hoverColor={Colors.blueGrey300}
               fullWidth={true}  
               onClick={handleBuyAction}/>
             </Col>
           </Row>
           <Row className={styles.modalTitle}>
             <Col xs={12} md={1} className={styles.dragoTitle}>
-              <h2><IdentityIcon address={ dragoDetails.address } /></h2>
+              <h2><IdentityIcon address={ vaultDetails.address } /></h2>
             </Col>
             <Col xs={12} md={11} className={styles.dragoTitle}>
-            <p>{dragoDetails.symbol} | {dragoDetails.name} </p>
-            <small>{dragoDetails.address}</small>
+            <p>{vaultDetails.symbol} | {vaultDetails.name} </p>
+            <small>{vaultDetails.address}</small>
             </Col>
           </Row>
         </Col>

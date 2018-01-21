@@ -109,16 +109,36 @@ class ElementAccountBox extends Component {
               </Col>
             </Row>
             <Row className={styles.accountBodyContainer}>
-              <Col xs={2} >
-                <div style={style.wrapper}>
-                  <Chip className={styles.accountChip}>
-                    <Avatar size={32}>W</Avatar>
-                    {account.source.charAt(0).toUpperCase() + account.source.slice(1)}
-                  </Chip>
-                </div>
+              <Col xs={12} md={10}>
+                <Row end="xs">
+                  <Col xs={12}>
+                    <div className={styles.tokensAmmount}>
+                      <div className={styles.accountChipTokenETH}>
+                        <Chip style={{border: "1px solid", borderColor: "#E0E0E0", padding: "1px"}}
+                        backgroundColor="#FFFFFF">
+                          <Avatar src="img/ethereum-black-64x64.png" style={{border: "1px solid"}} backgroundColor="#E0E0E0"/>
+                          {account.ethBalance} <span className={styles.tokensSymbolText}>ETH</span>
+                        </Chip>
+                      </div >
+                      <div className={styles.accountChipTokenGGG}>
+                      <Chip style={{border: "1px solid", borderColor: "#E0E0E0", padding: "1px"}}
+                      backgroundColor="#FFFFFF">                          
+                      <Avatar src="img/GGG.png" style={{border: "1px solid" }} backgroundColor="#E0E0E0"/>
+                          {account.rigoTokenBalance} <span className={styles.tokensSymbolText}>GGG</span>
+                        </Chip>
+                      </div>
+                    </div>
+                  </Col>
+                </Row>
+                
               </Col>
-              <Col xs={12} md={10} className={styles.accountAmount}>
-                ETH {account.ethBalance}
+              <Col xs={2} >
+                  {account.source == 'MetaMask'
+                  ?
+                  <Avatar src="img/metamask.png" size={32} backgroundColor="#FFFFFF" alt="MetaMask"/>
+                  :
+                  <Avatar src="img/parity.png" size={32} backgroundColor="#FFFFFF"/>
+                  }
               </Col>
             </Row>
           </Col>

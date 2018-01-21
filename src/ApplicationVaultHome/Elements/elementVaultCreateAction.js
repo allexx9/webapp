@@ -31,13 +31,13 @@ import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle'
 import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization'
 
 
-import styles from './elementFundCreateAction.module.css';
+import styles from './elementVaultCreateAction.module.css';
 
 const customContentStyle = {
   minHeight: '500px',
 };
 
-export default class ElementFundCreateAction extends React.Component {
+export default class ElementVaultCreateAction extends React.Component {
 
   static contextTypes = {
     api: PropTypes.object.isRequired,
@@ -45,7 +45,7 @@ export default class ElementFundCreateAction extends React.Component {
   };
 
   static propTypes = {
-    // dragoDetails: PropTypes.object.isRequired, 
+    // vaultDetails: PropTypes.object.isRequired, 
     accounts: PropTypes.array.isRequired
   };
   
@@ -54,14 +54,14 @@ export default class ElementFundCreateAction extends React.Component {
     account: {},
     accountError: ERRORS.invalidAccount,
     amountError: ERRORS.invalidAmount,
-    dragoName: '',
-    dragoNameError: ERRORS.invalidName,
-    dragoSymbol: '',
-    dragoSymbolError: ERRORS.invalidSymbol,
+    vaultName: '',
+    vaultNameError: ERRORS.invalidName,
+    vaultSymbol: '',
+    vaultSymbolError: ERRORS.invalidSymbol,
     canSubmit: false,
     sending: false,
     complete: false,
-    dragoDetails: ''
+    vaultDetails: ''
   }
 
 
@@ -73,10 +73,10 @@ export default class ElementFundCreateAction extends React.Component {
       authMsg: '',
       account: {},
       accountError: ERRORS.invalidAccount,
-      dragoName: '',
-      dragoNameError: ERRORS.invalidName,
-      dragoSymbol: '',
-      dragoSymbolError: ERRORS.invalidSymbol,
+      vaultName: '',
+      vaultNameError: ERRORS.invalidName,
+      vaultSymbol: '',
+      vaultSymbolError: ERRORS.invalidSymbol,
       canSubmit: false,
       sending: false,
       complete: false,
@@ -90,10 +90,10 @@ export default class ElementFundCreateAction extends React.Component {
       authMsg: '',
       account: {},
       accountError: ERRORS.invalidAccount,
-      dragoName: '',
-      dragoNameError: ERRORS.invalidName,
-      dragoSymbol: '',
-      dragoSymbolError: ERRORS.invalidSymbol,
+      vaultName: '',
+      vaultNameError: ERRORS.invalidName,
+      vaultSymbol: '',
+      vaultSymbolError: ERRORS.invalidSymbol,
       canSubmit: false,
       sending: false,
       complete: false,
@@ -114,34 +114,34 @@ export default class ElementFundCreateAction extends React.Component {
       });
     }
 
-    onChangeName = (event, dragoName) => {
+    onChangeName = (event, vaultName) => {
       this.setState({
-        dragoName : dragoName.toLowerCase(),
-        dragoNameError: validateNewName(dragoName)
+        vaultName : vaultName.toLowerCase(),
+        vaultNameError: validateNewName(vaultName)
       });
     }
   
-    onChangeSymbol = (event, dragoSymbol) => {
+    onChangeSymbol = (event, vaultSymbol) => {
       this.setState({
-        dragoSymbol: dragoSymbol.toUpperCase(),
-        dragoSymbolError: validateNewSymbol(dragoSymbol)
+        vaultSymbol: vaultSymbol.toUpperCase(),
+        vaultSymbolError: validateNewSymbol(vaultSymbol)
       });
     }
 
     onSend = () => {
       const { api } = this.context
-      const dragoName = this.state.dragoName.toString();
-      const dragoSymbol = this.state.dragoSymbol.toString();
-      const dragoDetails = {
-        name: dragoName,
-        symbol: dragoSymbol
+      const vaultName = this.state.vaultName.toString();
+      const vaultSymbol = this.state.vaultSymbol.toString();
+      const vaultDetails = {
+        name: vaultName,
+        symbol: vaultSymbol
       }
-      const values = [dragoName, dragoSymbol, this.state.account.address]
+      const values = [vaultName, vaultSymbol, this.state.account.address]
       var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
       var dragoApi, provider = null;
       // Initializing transaction variables
-      const authMsg = 'You deployed the fund ' + dragoSymbol + ' | ' + dragoName 
-      const transactionId = api.util.sha3(new Date() + dragoSymbol)
+      const authMsg = 'You deployed the vault ' + vaultSymbol + ' | ' + vaultName 
+      const transactionId = api.util.sha3(new Date() + vaultSymbol)
       var transactionDetails = {
         status: this.state.account.source === 'MetaMask' ? 'pending' : 'authorization',
         hash: '',
@@ -149,8 +149,8 @@ export default class ElementFundCreateAction extends React.Component {
         timestamp: new Date(),
         account: this.state.account,
         error: false,
-        action: 'DragoCreated',
-        symbol: dragoSymbol,
+        action: 'CreateVault',
+        symbol: vaultSymbol,
         amount: ''
       }
 
@@ -164,9 +164,9 @@ export default class ElementFundCreateAction extends React.Component {
         sending: true
       })
       dragoApi = new DragoApi(provider)
-      dragoApi.contract.dragofactory.init()
+      dragoApi.contract.vaultfactory.init()
       .then(()=>{
-        dragoApi.contract.dragofactory.createDrago(dragoName, dragoSymbol, this.state.account.address)
+        dragoApi.contract.vaultfactory.createVault(vaultName, vaultSymbol, this.state.account.address)
         .then ((receipt) =>{
           console.log(receipt)
           // this.props.snackBar('Deploy awaiting for authorization')
@@ -228,16 +228,16 @@ export default class ElementFundCreateAction extends React.Component {
         authMsg: authMsg,
         authAccount: { ...this.state.account },
         sending: false,
-        dragoDetails: dragoDetails
+        vaultDetails: vaultDetails
         // complete: true,
       }, this.handleSubmit)
     }
 
     renderHeader = () => {
-      const { dragoDetails } = this.props
+      const { vaultDetails } = this.props
       return (
         <div>
-            <ElementDialogHeadTitle primaryText='Deploy new Drago' />
+            <ElementDialogHeadTitle primaryText='Deploy new Vault' />
         </div>
   
       )
@@ -255,8 +255,8 @@ export default class ElementFundCreateAction extends React.Component {
         );
       }
   
-      const { accountError, dragoNameError, dragoSymbolError, sending } = this.state;
-      const hasError = !!( accountError || dragoNameError || dragoSymbolError);
+      const { accountError, vaultNameError, vaultSymbolError, sending } = this.state;
+      const hasError = !!( accountError || vaultNameError || vaultSymbolError);
   
       return ([
         <FlatButton
@@ -273,7 +273,7 @@ export default class ElementFundCreateAction extends React.Component {
 
     render() {
       const { accounts  } = this.props
-      const { accountError, amountError, sending, openAuth, authMsg, authAccount, dragoDetails } = this.state;
+      const { accountError, amountError, sending, openAuth, authMsg, authAccount, vaultDetails } = this.state;
       const hasError = !!(this.state.accountError || this.state.amountError );
       const labelStyle = {
         color: '#FFFFFF',
@@ -284,19 +284,20 @@ export default class ElementFundCreateAction extends React.Component {
         lineHeight: '20px',
         fontSize: 16
       }
-      const nameLabel = 'The name of your brand new drago';
-      const symbolLabel = 'The symbol of your brand new drago';
+      const nameLabel = 'The name of your brand new vault';
+      const symbolLabel = 'The symbol of your brand new vault';
 
       if (openAuth) {
         return (
           <div>
           <FlatButton label="Deploy" primary={true} onClick={this.handleOpen} 
             labelStyle={labelStyle}
-            backgroundColor={Colors.blue500}
-            hoverColor={Colors.blue300}
+            backgroundColor={Colors.blueGrey500}
+            hoverColor={Colors.blueGrey300}
+            
             />
             <ElementFundActionAuthorization
-              dragoDetails={dragoDetails}
+              vaultDetails={vaultDetails}
               authMsg={authMsg}
               account={authAccount}
             />
@@ -308,8 +309,9 @@ export default class ElementFundCreateAction extends React.Component {
         <div>
           <FlatButton label="Deploy" primary={true} onClick={this.handleOpen} 
             labelStyle={labelStyle}
-            backgroundColor={Colors.blue500}
-            hoverColor={Colors.blue300}
+            backgroundColor={Colors.blueGrey500}
+            hoverColor={Colors.blueGrey300}
+            icon={<Add color='#FFFFFF'/>}
             />
             <Dialog
               title={this.renderHeader()}
@@ -338,11 +340,11 @@ export default class ElementFundCreateAction extends React.Component {
                   floatingLabelFixed
                   floatingLabelText={ nameLabel }
                   fullWidth
-                  hintText='Drago name'
+                  hintText='Vault name'
                   name='name'
                   id='name'
-                  errorText={ this.state.dragoNameError }
-                  value={ this.state.dragoName } 
+                  errorText={ this.state.vaultNameError }
+                  value={ this.state.vaultName } 
                   onChange={ this.onChangeName } />
                 </Col>
             </Row>
@@ -353,11 +355,11 @@ export default class ElementFundCreateAction extends React.Component {
                   floatingLabelFixed
                   floatingLabelText={ symbolLabel }
                   fullWidth
-                  hintText='Drago symbol (3 letters)'
-                  errorText={ this.state.dragoSymbolError }
+                  hintText='Vault symbol (3 letters)'
+                  errorText={ this.state.vaultSymbolError }
                   name='symbol'
                   id='symbol'
-                  value={ this.state.dragoSymbol }
+                  value={ this.state.vaultSymbol }
                   onChange={ this.onChangeSymbol } />
                 </Col>
             </Row>

@@ -222,9 +222,10 @@ class PageDashboardVaultTrader extends Component {
                 <Col xs={12}>
                   <span ref={(section) => { this.Accounts = section; }}></span>
                   <AppBar
-                    title='Accounts'
+                    title='ACCOUNTS'
                     className={styles.appBar}
                     showMenuIconButton={false}
+                    titleStyle={{ fontSize: 20 }}
                   />
                   <Row>
                     {listAccounts}
@@ -235,8 +236,9 @@ class PageDashboardVaultTrader extends Component {
                 <Col xs={12} >
                   <span ref={(section) => { this.Vaults = section; }}></span>
                   <AppBar className={styles.appBar}
-                    title='Vaults'
+                    title='VAULTS'
                     showMenuIconButton={false}
+                    titleStyle={{ fontSize: 20 }}
                   />
                   <Paper zDepth={1}>
                     <Row>
@@ -253,8 +255,9 @@ class PageDashboardVaultTrader extends Component {
                 <Col xs={12}>
                   <span ref={(section) => { this.Transactions = section; }}></span>
                   <AppBar className={styles.appBar}
-                    title='Transactions'
+                    title='TANSACTIONS'
                     showMenuIconButton={false}
+                    titleStyle={{ fontSize: 20 }}
                   />
                   <Paper zDepth={1}>
                     <Row style={{ outline: 'none' }}>

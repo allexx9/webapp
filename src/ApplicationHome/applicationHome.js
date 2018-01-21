@@ -83,10 +83,10 @@ export default class ApplicationHome extends Component {
         <div className={ styles.shadow }>
           <Row>
             <Col xs={12}>
-            <h1 className={styles.headline}>RigoBlock: Decentralized Pools of Digital Tokens </h1>
-            <h2>Ever dreamed of running your own hedge fund?</h2>
-            <p>&nbsp;</p>
-            <p>&nbsp;</p>
+              <h1 className={styles.headline}>RigoBlock: Decentralized Pools of Digital Tokens </h1>
+              <h2>Ever dreamed of running your own investment fund?</h2>
+              <p>&nbsp;</p>
+              <p>&nbsp;</p>
             </Col>
           </Row>
           <Row className={ styles.cards }>

@@ -24,6 +24,7 @@ import React, { Component } from 'react'
 import Search from 'material-ui/svg-icons/action/search'
 import Snackbar from 'material-ui/Snackbar'
 import ElementListWrapper from '../../Elements/elementListWrapper'
+import BigNumber from 'bignumber.js';
 
 import { dragoFactoryEventsSignatures } from '../../utils/utils.js'
 import { formatCoins, formatEth, formatHash, toHex } from '../../format'
@@ -80,7 +81,9 @@ class PageFundDetailsDragoTrader extends Component {
       openBuySellDialog: {
         open: false,
         action: 'buy'
-      }
+      },
+      balanceETH: new BigNumber(0).toFormat(4),
+      balanceDRG: new BigNumber(0).toFormat(4),
     }
 
 
@@ -224,11 +227,13 @@ class PageFundDetailsDragoTrader extends Component {
       }
 
       const columnsStyle = [styles.detailsTableCell, styles.detailsTableCell2, styles.detailsTableCell3]
-      const tableButtons = [this.renderCopyButton(dragoDetails.address), this.renderEtherscanButton('address', dragoDetails.address)]
+ 
+      const tableButtonsDragoAddress = [this.renderCopyButton(dragoDetails.address), this.renderEtherscanButton('address', dragoDetails.address)]
+      const tableButtonsDragoOwner = [this.renderCopyButton(dragoDetails.addresssOwner), this.renderEtherscanButton('address', dragoDetails.addresssOwner)]
       const tableInfo = [['Symbol', dragoDetails.symbol, ''], 
         ['Name', dragoDetails.name, ''], 
-        ['Address', dragoDetails.address, tableButtons],
-        ['Manager', dragoDetails.addresssOwner, tableButtons]]
+        ['Address', dragoDetails.address, tableButtonsDragoAddress],
+        ['Manager', dragoDetails.addresssOwner, tableButtonsDragoOwner]]        
       const paperStyle = {
         marginTop: "10px"
       };
@@ -252,49 +257,51 @@ class PageFundDetailsDragoTrader extends Component {
         );
       }
       return (
-      <Row>
-        <Col xs={12}>
-          <Paper className={styles.paperContainer} zDepth={1}>
-            <Toolbar className={styles.detailsToolbar}>
-              <ToolbarGroup className={styles.detailsToolbarGroup}>
-                {this.renderAddress(dragoDetails)}
-              </ToolbarGroup>
-              <ToolbarGroup>
-                {/* <ElementFundActions dragoDetails={dragoDetails} accounts={accounts} snackBar={this.snackBar}/> */}
-              </ToolbarGroup>
-            </Toolbar>
-            <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle} className={styles.test}>
-              <Tab label="Info" className={styles.detailsTab}
-                icon={<ActionList color={Colors.blue500} />}>
-                <Grid fluid>
-                  <Row>
-                    <Col xs={6}>
-                      <Paper zDepth={1}>
-                        <AppBar
-                          title="Details"
-                          showMenuIconButton={false}
-                        />
-                        <div className={styles.detailsTabContent}>
-                        <InfoTable  rows={tableInfo} columnsStyle={columnsStyle}/>
-                        </div>
-                      </Paper>
-                    </Col>
-                    <Col xs={6}>
-                      <Paper zDepth={1}>
-                        <ElementPriceBox 
-                        dragoDetails={dragoDetails} 
-                        accounts={accounts} 
-                        handleBuySellButtons={this.handleBuySellButtons} 
-                        isManager={isManager}
-                        />
-                        <ElementFundActions 
-                          dragoDetails={dragoDetails} 
-                          accounts={accounts} 
-                          snackBar={this.snackBar} 
-                          actionSelected={this.state.openBuySellDialog}
-                          onTransactionSent={this.onTransactionSent}
+        <Row>
+          <Col xs={12}>
+            <Paper className={styles.paperContainer} zDepth={1}>
+              <Toolbar className={styles.detailsToolbar}>
+                <ToolbarGroup className={styles.detailsToolbarGroup}>
+                  {this.renderAddress(dragoDetails)}
+                </ToolbarGroup>
+                <ToolbarGroup>
+                  {/* <ElementFundActions dragoDetails={dragoDetails} accounts={accounts} snackBar={this.snackBar}/> */}
+                </ToolbarGroup>
+              </Toolbar>
+              <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle} className={styles.test}>
+                <Tab label="Info" className={styles.detailsTab}
+                  icon={<ActionList color={Colors.blue500} />}>
+                  <Grid fluid>
+                    <Row>
+                      <Col xs={6}>
+                        <div>
+                          <AppBar
+                            title={"MY HOLDING IN " + dragoDetails.symbol}
+                            showMenuIconButton={false}
+                            titleStyle={{ fontSize: 20 }}
                           />
-                        {/* {this.state.openBuySellDialog.open
+                          <div className={styles.holdings}>
+                            <div>{this.state.balanceDRG} <small>UNITS</small><br /></div>
+                            {/* <h2>{this.state.balanceETH} <small>ETH</small></h2> */}
+                          </div>
+                        </div>
+                      </Col>
+                      <Col xs={6}>
+                        {/* <Paper zDepth={1}> */}
+                          <ElementPriceBox
+                            dragoDetails={dragoDetails}
+                            accounts={accounts}
+                            handleBuySellButtons={this.handleBuySellButtons}
+                            isManager={isManager}
+                          />
+                          <ElementFundActions
+                            dragoDetails={dragoDetails}
+                            accounts={accounts}
+                            snackBar={this.snackBar}
+                            actionSelected={this.state.openBuySellDialog}
+                            onTransactionSent={this.onTransactionSent}
+                          />
+                          {/* {this.state.openBuySellDialog.open
                           ? <ElementFundActions 
                           dragoDetails={dragoDetails} 
                           accounts={accounts} 
@@ -302,58 +309,74 @@ class PageFundDetailsDragoTrader extends Component {
                           actionSelected={this.state.openBuySellDialog}/>
                           : null
                         } */}
-                        {/* <div className={styles.tradeButton}>
+                          {/* <div className={styles.tradeButton}>
                           <ElementFundActions dragoDetails={dragoDetails} accounts={accounts} snackBar={this.snackBar} />
                         </div> */}
-                      </Paper>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col xs={12} className={styles.detailsTabContent}>
-                      <Paper style={paperStyle} zDepth={1} >
-                        <AppBar
-                          title="Last transactions"
-                          showMenuIconButton={false}
-                        />
-                        <div className={styles.detailsTabContent}>
-                          <p>Your last 20 transactions on this fund.</p>
-                        </div>
+                        {/* </Paper> */}
+                      </Col>
+                    </Row>
+                    <br />
+                    <Row>
+                      <Col xs={12}>
+                        <Paper zDepth={1}>
+                          <AppBar
+                            title="DETAILS"
+                            showMenuIconButton={false}
+                            titleStyle={{ fontSize: 20 }}
+                          />
+                          <div className={styles.detailsTabContent}>
+                            <InfoTable rows={tableInfo} columnsStyle={columnsStyle} />
+                          </div>
+                        </Paper>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col xs={12} className={styles.detailsTabContent}>
+                        <Paper style={paperStyle} zDepth={1} >
+                          <AppBar
+                            title="TRANSACTIONS"
+                            showMenuIconButton={false}
+                            titleStyle={{ fontSize: 20 }}
+                          />
+                          <div className={styles.detailsTabContent}>
+                            <p>Your last 20 transactions on this fund.</p>
+                          </div>
 
 
-                        <ElementListWrapper accountsInfo={accountsInfo} list={dragoTransactionList}
-                          renderCopyButton={this.renderCopyButton}
-                          renderEtherscanButton={this.renderEtherscanButton}>
+                          <ElementListWrapper accountsInfo={accountsInfo} list={dragoTransactionList}
+                            renderCopyButton={this.renderCopyButton}
+                            renderEtherscanButton={this.renderEtherscanButton}>
 
-                          <ElementListTransactions />
-                        </ElementListWrapper>
-                      </Paper>
-                    </Col>
-                  </Row>
-                </Grid>
-              </Tab>
-              <Tab label="Stats" className={styles.detailsTab}
-                icon={<ActionAssessment color={Colors.blue500} />}>
-                <Grid fluid>
-                  <Row>
-                    <Col xs={12} className={styles.detailsTabContent}>
-                      <p>
-                        Coming soon
-                      </p>   
-                    </Col>
-                  </Row>
-                </Grid>
-              </Tab>
-            </Tabs>
-          </Paper>
-        </Col>
-        <Snackbar
-          open={this.state.snackBar}
-          message={this.state.snackBarMsg}
-          action="close"
-          onActionTouchTap={this.handlesnackBarRequestClose}
-          onRequestClose={this.handlesnackBarRequestClose}
-        />
-      </Row>
+                            <ElementListTransactions />
+                          </ElementListWrapper>
+                        </Paper>
+                      </Col>
+                    </Row>
+                  </Grid>
+                </Tab>
+                <Tab label="Stats" className={styles.detailsTab}
+                  icon={<ActionAssessment color={Colors.blue500} />}>
+                  <Grid fluid>
+                    <Row>
+                      <Col xs={12} className={styles.detailsTabContent}>
+                        <p>
+                          Coming soon
+                      </p>
+                      </Col>
+                    </Row>
+                  </Grid>
+                </Tab>
+              </Tabs>
+            </Paper>
+          </Col>
+          <Snackbar
+            open={this.state.snackBar}
+            message={this.state.snackBarMsg}
+            action="close"
+            onActionTouchTap={this.handlesnackBarRequestClose}
+            onRequestClose={this.handlesnackBarRequestClose}
+          />
+        </Row>
       )
     }
 
@@ -362,6 +385,7 @@ class PageFundDetailsDragoTrader extends Component {
       const { api } = this.context
       const {accounts } = this.props
       var sourceLogClass = this.constructor.name
+      var balanceDRG = new BigNumber(0)
       //
       // Initializing Drago API
       // Passing Parity API
@@ -380,15 +404,41 @@ class PageFundDetailsDragoTrader extends Component {
           .drago(dragoID)
           .then((dragoDetails) => {
             const dragoAddress = dragoDetails[0][0]
+
             //
             // Initializing drago contract
             //
             dragoApi.contract.drago.init(dragoAddress)
+
             //
             // Calling getData method
             //
             dragoApi.contract.drago.getData()
             .then((data) =>{
+              //
+              // Gettin balance for each account
+              //
+
+              console.log(accounts)
+              accounts.map(account => {
+                dragoApi.contract.drago.balanceOf(account.address)
+                .then (balance =>{
+                  balanceDRG = balanceDRG.add(balance)
+                  console.log(balance)
+                  console.log(api.util.fromWei(balance).toFormat(4))
+                })
+                .then(()=>{
+                  console.log(api.util.fromWei(balanceDRG.toNumber(4)).toFormat(4))
+                  console.log(balanceDRG)
+                  var balanceETH = balanceDRG.times(formatCoins(balanceDRG,4,api))
+                  console.log(balanceETH)
+                  this.setState({
+                    balanceETH: formatEth(balanceETH,4,api),
+                    balanceDRG: formatCoins(balanceDRG,4,api)
+                  })
+                })
+              })
+
               this.setState({
                 dragoDetails: {
                   address: dragoDetails[0][0],
