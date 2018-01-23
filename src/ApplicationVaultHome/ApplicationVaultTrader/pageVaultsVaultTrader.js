@@ -27,7 +27,6 @@ import DragoApi from '../../DragoApi/src'
 import ElementListVaults from '../Elements/elementListVaults'
 import FilterVaults from '../Elements/elementFilterVaults'
 import Loading from '../../Loading';
-import SearchVaults from '../Elements/elementSearchVaults'
 import utils from '../../utils/utils'
 import ElementListWrapper from '../../Elements/elementListWrapper'
 

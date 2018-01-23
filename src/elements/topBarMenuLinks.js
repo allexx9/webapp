@@ -27,6 +27,10 @@ import Popover from 'material-ui/Popover';
 import Menu from 'material-ui/Menu';
 import ArrowDropDown from 'material-ui/svg-icons/navigation/arrow-drop-down'
 
+import {List, ListItem} from 'material-ui/List';
+import Avatar from 'material-ui/Avatar';
+import {grey400, darkBlack, lightBlack} from 'material-ui/styles/colors';
+
 import {APP, DS} from '../utils/const.js'
 // import ElementNotificationsDrawer from '.Elements/elementNotificationsDrawer'
 
@@ -188,9 +192,26 @@ class NavLinks extends Component {
             >
               <Menu value={isManager} 
               onChange={handleTopBarSelectAccountType}
-              desktop={true}>
-                <MenuItem value={false} primaryText="Holder"/>
-                <MenuItem value={true} primaryText="Wizard"/>
+              desktop={true}
+              className={styles.menuAccountType}
+              >
+                <MenuItem
+                value={false} 
+                primaryText={
+                  <div>
+                  <div className={styles.menuItemPrimaryText}>HOLDER</div>
+                  <div><small>Invest in funds</small></div>
+                  </div>
+                }
+                />
+                <MenuItem value={true} 
+                primaryText={
+                  <div>
+                  <div className={styles.menuItemPrimaryText}>WIZARD</div>
+                  <div><small>Manage your funds</small></div>
+                  </div>
+                }
+                />
               </Menu>
             </Popover>
             {/* <DropDownMenu value={isManager} onChange={handleTopBarSelectAccountType}
@@ -207,10 +228,8 @@ class NavLinks extends Component {
               anchorOrigin={ {vertical: 'bottom', horizontal: 'left',}}
               desktop={true}
             >
-              {/* <MenuItem value="2" primaryText="Accounts" /> */}
               <MenuItem leftIcon={<Settings />} value="config" primaryText="Config"
                 containerElement={<Link to={DS + APP + DS + this.buildUrlPath(location) + DS + "config"} />} />
-              {/* <MenuItem value="1" primaryText="Profile" /> */}
               <MenuItem leftIcon={<Help />} value="help" primaryText="Help" />
             </IconMenu>
             <IconButton tooltip="Network" onClick={handleToggleNotifications} iconStyle={menuStyles.profileIcon}>

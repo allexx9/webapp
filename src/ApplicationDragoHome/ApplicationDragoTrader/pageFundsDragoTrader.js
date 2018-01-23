@@ -27,7 +27,6 @@ import DragoApi from '../../DragoApi/src'
 import ElementListFunds from '../Elements/elementListFunds'
 import FilterFunds from '../Elements/elementFilterFunds'
 import Loading from '../../Loading';
-import SearchFunds from '../Elements/elementSearchFunds'
 import utils from '../../utils/utils'
 import ElementListWrapper from '../../Elements/elementListWrapper'
 

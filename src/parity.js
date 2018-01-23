@@ -1,6 +1,6 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
-//const { api } = window.parity;
+// const { api } = window.parity;
 
 // API reference: https://gitlab.parity.io/parity/parity/blob/d2394d3ac30b589f92676eec401c50d6b388f911/js/npm/parity/README.md
 // Converted rpc calls to use provider
@@ -25,17 +25,21 @@ const rigoBlockEnd = EP_RIGOBLOCK_KV
 const endpoint = localStorage.getItem('endpoint')
 
 console.log(endpoint)
-
-
+console.log(api)
+console.log(window)
 
 if (typeof window.parity !== 'undefined') {
   // Change to 'http://localhost:8545' and 'ws://localhost:8546' before building
   // For RPC over Https
   // HttpsUrl = 'https://srv03.endpoint.network:8545';
-  HttpsUrl = 'http://localhost:8545';
+  HttpsUrl = 'http://127.0.0.1:8545';
   // For RPC over Websocket
   // WsSecureUrl = 'wss://srv03.endpoint.network:8546';
-  WsSecureUrl = 'ws://localhost:8546';
+  WsSecureUrl = 'ws://127.0.0.1:8546';
+  localStorage.setItem('endpoint', 'local')
+  console.log('Found Parity!')
+
+
 } else {
   // For RPC over Https
   // HttpsUrl = rigoBlockEnd;

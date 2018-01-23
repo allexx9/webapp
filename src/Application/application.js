@@ -7,8 +7,8 @@ import { api } from '../parity';
 // React.PropTypes is deprecated since React 15.5.0, use the npm module prop-types instead
 import PropTypes from 'prop-types';
 
-import ApplicationGabcoin from '../ApplicationGabcoin';
-import ApplicationGabcoinEventful from '../ApplicationGabcoinEventful';
+// import ApplicationGabcoin from '../ApplicationGabcoin';
+// import ApplicationGabcoinEventful from '../ApplicationGabcoinEventful';
 // import ApplicationExchange from '../ApplicationExchange';
 // import ApplicationExchangeEventful from '../ApplicationExchangeEventful';
 import ApplicationDragoHome from '../ApplicationDragoHome';
@@ -296,34 +296,34 @@ export class ApplicationHomePage extends Component {
   }
 }
 
-export class ApplicationGabcoinPage extends Component {
+// export class ApplicationGabcoinPage extends Component {
 
-    // We define the properties of the context variables passed down to the children
-    static childContextTypes = {
-      muiTheme: PropTypes.object,
-      api: PropTypes.object
-    };
+//     // We define the properties of the context variables passed down to the children
+//     static childContextTypes = {
+//       muiTheme: PropTypes.object,
+//       api: PropTypes.object
+//     };
   
-    // We pass down the context variables passed down to the children
-    getChildContext () {
-      return {
-        muiTheme,
-        api
-      };
-    }
+//     // We pass down the context variables passed down to the children
+//     getChildContext () {
+//       return {
+//         muiTheme,
+//         api
+//       };
+//     }
 
-  render() {
-  // we access the props passed to the component
-  const { location } = this.props
-    return (
-          <TemplateLayout>
-          <ApplicationGabcoin />
-          <ApplicationGabcoinEventful />
-              {/* <p>Locaton is {location.pathname}</p> */}
-          </TemplateLayout>
-    )
-  }
-}
+//   render() {
+//   // we access the props passed to the component
+//   const { location } = this.props
+//     return (
+//           <TemplateLayout>
+//           <ApplicationGabcoin />
+//           <ApplicationGabcoinEventful />
+//               {/* <p>Locaton is {location.pathname}</p> */}
+//           </TemplateLayout>
+//     )
+//   }
+// }
 
 export class ApplicationDragoPage extends Component {
 

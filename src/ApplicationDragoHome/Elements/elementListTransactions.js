@@ -13,6 +13,7 @@ import utils from '../../utils/utils'
 import styles from './elementListTransactions.module.css';
 import 'react-virtualized/styles.css'
 import  * as Colors from 'material-ui/styles/colors'
+import BigNumber from 'bignumber.js';
 
 // const list = Immutable.List(generateRandomList());
 
@@ -225,7 +226,7 @@ class ElementListTransactions extends PureComponent {
 
   renderEthValue(ethValue) {
     return (
-      <div>{ethValue} <small>ETH</small></div>
+      <div>{new BigNumber(ethValue).toFixed(4)} <small>ETH</small></div>
     )
   }
 
@@ -257,7 +258,7 @@ class ElementListTransactions extends PureComponent {
 
   renderDrgValue(rowData) {
     return (
-      <div>{rowData.drgvalue} <small>{rowData.symbol}</small></div>
+      <div>{new BigNumber(rowData.drgvalue).toFixed(4)} <small>{rowData.symbol}</small></div>
     )
   }
 

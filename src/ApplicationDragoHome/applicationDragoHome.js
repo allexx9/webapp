@@ -123,8 +123,6 @@ export default class ApplicationDragoHome extends Component {
     // Allowed endpoints are defined in const.js
     var selectedEndpoint = localStorage.getItem('endpoint')
     var allowedEndpoints = new Map(ALLOWED_ENDPOINTS)
-    console.log(INFURA)
-    console.log(RIGOBLOCK)
     if (allowedEndpoints.has(selectedEndpoint)) {
       switch (selectedEndpoint) {
         case INFURA:

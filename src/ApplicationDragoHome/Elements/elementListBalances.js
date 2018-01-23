@@ -148,7 +148,7 @@ class ElementListBalances extends PureComponent {
                     cellDataGetter={({rowData}) => rowData.balance}
                     dataKey="drg"
                     className={styles.exampleColumn}
-                    cellRenderer={({rowData}) => this.renderDrgValue(rowData.balance)}
+                    cellRenderer={({rowData}) => this.renderDrgValue(rowData)}
                     flexShrink={1}
                   />
                   <Column
@@ -181,9 +181,11 @@ class ElementListBalances extends PureComponent {
       <div>{ethValue} <small>ETH</small></div>
     )
   }
-  renderDrgValue(drgvalue) {
+  
+  renderDrgValue(rowData) {
+    console.log(rowData)
     return (
-      <div>{drgvalue}</div>
+      <div>{rowData.balance} <small>{rowData.symbol}</small></div>
     )
   }
 
