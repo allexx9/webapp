@@ -50,7 +50,7 @@
     "web3-net": "^1.0.0-beta.28"
   },
   "scripts": {
-    "start": "HOST=127.0.0.1 PORT=3001 react-scripts start",
+    "start": "react-scripts start",
     "build-parity": "PUBLIC_URL=./ react-scripts build",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",

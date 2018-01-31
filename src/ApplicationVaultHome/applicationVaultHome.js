@@ -135,6 +135,11 @@ export default class ApplicationVaultHome extends Component {
           .then(() =>{
           })
         break; 
+        case LOCAL:
+          this.attachInterfaceRigoBlock()
+          .then(() =>{
+          })
+        break; 
       }
     } else {
       localStorage.setItem('endpoint', DEFAULT_ENDPOINT)

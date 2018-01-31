@@ -137,6 +137,12 @@ export default class ApplicationDragoHome extends Component {
           .then(() =>{
           })
         break; 
+        case LOCAL:
+          console.log(LOCAL)
+          this.attachInterfaceRigoBlock()
+          .then(() =>{
+          })
+        break; 
       }
     } else {
       localStorage.setItem('endpoint', DEFAULT_ENDPOINT)

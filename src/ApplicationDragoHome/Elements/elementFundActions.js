@@ -495,6 +495,7 @@ export default class ElementFundActions extends React.Component {
         this.props.snackBar('Your wallet returned an error.')
         transactionDetails.status = 'error'
         transactionDetails.error = error
+        console.log(error)
         this.context.addTransactionToQueue(transactionId, transactionDetails)
         this.setState({
           sending: false
@@ -558,6 +559,7 @@ export default class ElementFundActions extends React.Component {
         this.props.snackBar('Your wallet returned an error.')
         transactionDetails.status = 'error'
         transactionDetails.error = error
+        console.log(error)
         this.context.addTransactionToQueue(transactionId, transactionDetails)
         this.setState({
           sending: false

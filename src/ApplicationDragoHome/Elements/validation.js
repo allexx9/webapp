@@ -12,7 +12,7 @@ export const ERRORS = {
   invalidSymbol: 'Please enter a valid symbol',
   invalidSymbolLeng: 'Symbol has to be 3 chars long',
   invalidSymbolReg: 'Only alphanumeric symbols allowed',
-  invalidPrices: 'The BUY price must be greater than the SELL price',
+  invalidPrices: 'The BUY price must be greater or equal to the SELL price',
   tradeIdError: 'Please enter a positive number > 0',
   invalidRPCEndpoint: 'Please enter a valid URL',
   exchangeNameError: 'Please select an exchange',

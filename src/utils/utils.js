@@ -153,7 +153,7 @@ class utilities {
           drgvalue = (log.event === 'SellGabcoin') ? formatCoins(params.amount.value,null,api) : formatCoins(params.revenue.value,null,api);
         }
         console.log(log)
-        if (log.event === 'BuyGabcoin' || log.event === 'createGabcoin') {
+        if (log.event === 'BuyGabcoin' || log.event === 'GabcoinCreated') {
           !dragoSymbolRegistry.has(params.gabcoin.value) ? dragoSymbolRegistry.set(params.gabcoin.value, {symbol: null, dragoID: null, name: null}) : null
         }
         // console.log(dragoSymbolRegistry)

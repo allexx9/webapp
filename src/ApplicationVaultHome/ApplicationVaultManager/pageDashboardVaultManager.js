@@ -60,12 +60,11 @@ class PageDashboardVaultManager extends Component {
       location: PropTypes.object.isRequired,
       ethBalance: PropTypes.object.isRequired,
       accounts: PropTypes.array.isRequired,
-      allEvents: PropTypes.array.isRequired,
       accountsInfo: PropTypes.object.isRequired, 
     };
 
     state = {
-      dragoTransactionsLogs: null,
+      vaultTransactionsLogs: null,
       vaultList: null,
       loading: true,
       topBarClassName: null,
@@ -154,8 +153,8 @@ class PageDashboardVaultManager extends Component {
     }
 
     render() {
-      const { location, accounts, accountsInfo, allEvents } = this.props
-      const { dragoTransactionsLogs, loading, vaultList } = this.state 
+      const { location, accounts, accountsInfo } = this.props
+      const { vaultTransactionsLogs, loading, vaultList } = this.state 
       const tabButtons = {
         inkBarStyle: {
           margin: 'auto',
@@ -266,7 +265,7 @@ class PageDashboardVaultManager extends Component {
                     <Row style={{ outline: 'none' }}>
                       <Col className={styles.transactionsStyle} xs={12}>
                         <ElementListWrapper
-                          list={dragoTransactionsLogs}
+                          list={vaultTransactionsLogs}
                           renderCopyButton={this.renderCopyButton}
                           renderEtherscanButton={this.renderEtherscanButton}
                         >
@@ -295,19 +294,23 @@ class PageDashboardVaultManager extends Component {
       const { api } = this.context
       // const options = {balance: false, supply: true}
       const options = {balance: false, supply: true, limit: 10, trader: false}
-      utils.getTransactionsDragoOpt(api, dragoAddress, accounts, options)
+      var sourceLogClass = this.constructor.name
+      utils.getTransactionsVaultOpt(api, dragoAddress, accounts, options)
       .then(results =>{
-        const createdLogs = results[1].filter(event =>{
-          return event.type !== 'BuyDrago' && event.type !== 'SellDrago'
-        })
+        console.log(`${sourceLogClass} -> Transactions list loaded`)
+        // const createdLogs = results[1].filter(event =>{
+        //   return event.type !== 'BuyDrago' && event.type !== 'SellDrago'
+        // })
         this.setState({
           vaultList: results[2],
-          dragoTransactionsLogs: createdLogs,
+          vaultTransactionsLogs: results[1],
         }, this.setState({
           loading: false,
         }))
       })
     }
+
+    
   }
 
   export default withRouter(PageDashboardVaultManager)

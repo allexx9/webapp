@@ -138,7 +138,7 @@ class NavLinks extends Component {
       const links = [
         {label: 'home', to: 'home', icon: <ActionHome color="white"/>},
         // {label: 'vault', to: 'vault', icon: <ActionAccountBalance color="white"/>},
-        {label: 'vault v2', to: 'vaultv2', icon: <ActionAccountBalance color="white"/>},
+        {label: 'vault', to: 'vaultv2', icon: <ActionAccountBalance color="white"/>},
         {label: 'drago', to: 'drago', icon: <ActionShowChart color="white"/>},
         // {label: 'exchange', to: 'exchange', icon: <ActionPolymer color="white"/>}
          ]

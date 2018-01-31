@@ -90,7 +90,7 @@ export default class ApplicationHome extends Component {
             </Col>
           </Row>
           <Row className={ styles.cards }>
-            <Col xs={4}>
+            <Col xs={6}>
               <Card className={ styles.column }>
                 <CardTitle title="RigoBlock Vault" className={ styles.cardtitle } titleColor="white"/>
                 <CardText>
@@ -104,7 +104,7 @@ export default class ApplicationHome extends Component {
                 </CardActions>
               </Card>
             </Col>
-            <Col xs={4}>
+            <Col xs={6}>
               <Card className={ styles.column }>
                 <CardTitle title="RigoBlock Drago" className={ styles.cardtitle } titleColor="white" />
                 <CardText>
@@ -118,7 +118,7 @@ export default class ApplicationHome extends Component {
                 </CardActions>
               </Card>
             </Col>
-            <Col xs={4} >
+            {/* <Col xs={4} >
               <Card className={ styles.column }>
                 <CardTitle title="RigoBlock Exchange" className={ styles.cardtitle } titleColor="white" />
                 <CardText>
@@ -130,7 +130,7 @@ export default class ApplicationHome extends Component {
                   </Link>
                 </CardActions>
               </Card>
-            </Col>
+            </Col> */}
           </Row>
           <Row>
             <Col xs={12}>
