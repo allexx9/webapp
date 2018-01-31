@@ -173,10 +173,13 @@ export default class ApplicationDragoHome extends Component {
       window.scrollTo(0, this.scrollPosition)
     }
     // Setting focus on the element active before component re-render
-    const activeElement = document.getElementById(this.activeElement.id);
-    if (activeElement != null) {
-      activeElement.focus()
+    if (this.activeElement.id !== "") {
+      const activeElement = document.getElementById(this.activeElement.id);
+      if (activeElement != null) {
+        activeElement.focus()
+      }
     }
+
     
   }
 

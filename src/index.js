@@ -64,6 +64,6 @@ ReactDOM.render(
 registerServiceWorker()
 
 // Hot Module Reload
-if (module.hot) {
-    module.hot.accept();
-}
+// if (module.hot) {
+//     module.hot.accept();
+// }

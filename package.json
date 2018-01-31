@@ -2,7 +2,7 @@
   "name": "rigoblock-david",
   "version": "0.1.0",
   "private": true,
-  "homepage": "./",
+  "homepage": "https://beta.rigoblock.com/",
   "dependencies": {
     "@parity/api": "^2.0.14",
     "bignumber.js": "^5.0.0",
@@ -52,6 +52,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build-parity": "PUBLIC_URL=./ react-scripts build",
+    "build-beta": "GENERATE_SOURCEMAP=false react-scripts build",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",

@@ -44,6 +44,11 @@ class DragoWeb3 {
       from: accountAddress,
       value: amount
     }
+    console.log(accountAddress)
+    console.log(amount)
+    // options.gas = 110053
+    // return instance.methods.buyDrago()
+    // .send(options)
     return instance.methods.buyDrago().estimateGas(options)
     .then((gasEstimate) => {
       console.log(gasEstimate)
