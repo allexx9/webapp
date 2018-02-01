@@ -84,8 +84,6 @@ Please run the following commands.
 
 Copy the files inside the `build` directory to the document root folder of your webserver.
 
-Test.
-
 ## Visual Studio Code
 
 If you code with Visual Studio Code and have the add-on [ftp-sync](https://github.com/lukasz-wronski/vscode-ftp-sync) installed please put the following config in your `ftp-sync.json` inside the `.vscode` folder:
