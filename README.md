@@ -74,8 +74,12 @@ Alternatively you can ran `yarn watch` and the app bill be built into the build 
 
 Please run the following commands. 
 
-    git clone https://github.com/RigoBlock/webapp webapp
+    git clone https://github.com/RigoBlock/webapp app
+    cd app
+    sudo npm install -g yarn
+    npm install
     cd webapp/scripts
+    chmod +x deploy-cloudflare.sh
     ./deploy-cloudflare.sh
 
 Copy the files inside the `build` directory to the document root folder of your webserver.
