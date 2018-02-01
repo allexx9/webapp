@@ -2,7 +2,7 @@
   "name": "rigoblock-david",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://beta.rigoblock.com/",
+  "homepage": "./",
   "dependencies": {
     "@parity/api": "^2.0.14",
     "bignumber.js": "^5.0.0",
@@ -57,7 +57,6 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "watch": "node scripts/watch.js",
-    "build-ui": "node scripts/build-ui.js",
     "analyze": "source-map-explorer build/static/js/main.*"
   },
   "devDependencies": {

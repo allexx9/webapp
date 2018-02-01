@@ -70,6 +70,16 @@ You can now start the node development server with `yarn start`. The app will be
 
 Alternatively you can ran `yarn watch` and the app bill be built into the build directory and therefore made available in Parity UI under the application tabs.
 
+## Building for beta.rigoblock.com
+
+Please run the following commands. 
+
+    git clone https://github.com/RigoBlock/webapp webapp
+    cd webapp/scripts
+    ./deploy-cloudflare.sh
+
+Copy the files inside the `build` directory to the document root folder of your webserver.
+
 ## Visual Studio Code
 
 If you code with Visual Studio Code and have the add-on [ftp-sync](https://github.com/lukasz-wronski/vscode-ftp-sync) installed please put the following config in your `ftp-sync.json` inside the `.vscode` folder:
