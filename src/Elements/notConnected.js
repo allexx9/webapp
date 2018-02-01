@@ -24,7 +24,7 @@ class NotConnected extends Component {
     componentDidMount () {
       this.counter()
     }
-
+   
     componentWillUnmount () {
       clearTimeout(td)
     }
