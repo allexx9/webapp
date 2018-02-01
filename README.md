@@ -78,13 +78,11 @@ Please run the following commands.
     cd app
     sudo npm install -g yarn
     npm install
-    cd webapp/scripts
+    cd scripts
     chmod +x deploy-cloudflare.sh
     ./deploy-cloudflare.sh
 
 Copy the files inside the `build` directory to the document root folder of your webserver.
-
-Test.
 
 ## Visual Studio Code
 
