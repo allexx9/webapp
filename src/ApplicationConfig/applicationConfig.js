@@ -17,7 +17,8 @@ import {
   MSG_NETWORK_STATUS_OK,
   MSG_NETWORK_STATUS_ERROR,
   NETWORK_OK,
-  NETWORK_WARNING
+  NETWORK_WARNING,
+  PROD
 } from '../utils/const'
 import * as abis from '../contracts';
 import CheckAuthPage from '../Elements/checkAuthPage'
@@ -303,24 +304,11 @@ export class ApplicationConfig extends Component {
 
   getAccountsParity () {
     const { api } = this.context;
+    if (PROD) {
+      return null
+    }
     return api.parity
       .accountsInfo()
-      .catch((error) => {
-        console.warn('getAccounts', error);
-        return api.parity
-          .accounts()
-          .then((accountsInfo) => {
-            return Object
-              .keys(accountsInfo)
-              .filter((address) => accountsInfo[address].uuid)
-              .reduce((ret, address) => {
-                ret[address] = {
-                  name: accountsInfo[address].name
-                };
-                return ret;
-              }, {});
-          });
-      })
       .then((accountsInfo) => {
         console.log('Parity getAccounts', accountsInfo)
         Object.keys(accountsInfo).forEach(function(k) {
@@ -330,7 +318,25 @@ export class ApplicationConfig extends Component {
           }
         })
         return accountsInfo
-      });
+      })
+      .catch((error) => {
+        console.warn('getAccounts', error);
+        // return api.parity
+        //   .accounts()
+        //   .then((accountsInfo) => {
+        //     return Object
+        //       .keys(accountsInfo)
+        //       .filter((address) => accountsInfo[address].uuid)
+        //       .reduce((ret, address) => {
+        //         ret[address] = {
+        //           name: accountsInfo[address].name
+        //         };
+        //         return ret;
+        //       }, {});
+        //   }
+        // );
+      })
+
   }
 
   getAccountsMetamask () {

@@ -78,7 +78,7 @@ Please run the following commands.
     cd app
     sudo npm install -g yarn
     npm install
-    cd webapp/scripts
+    cd scripts
     chmod +x deploy-cloudflare.sh
     ./deploy-cloudflare.sh
 

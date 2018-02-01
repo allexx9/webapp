@@ -25,7 +25,8 @@ import {
   LOCAL,
   CUSTOM,
   ALLOWED_ENDPOINTS, 
-  DEFAULT_ENDPOINT
+  DEFAULT_ENDPOINT,
+  PROD
 } from '../utils/const'
 import { Grid, Row, Col } from 'react-flexbox-grid';
 import LeftSideDrawerVault from '../Elements/leftSideDrawerVaults';
@@ -469,24 +470,11 @@ export default class ApplicationVaultHome extends Component {
 
   getAccountsParity () {
     const { api } = this.context;
+    if (PROD) {
+      return null
+    }
     return api.parity
       .accountsInfo()
-      .catch((error) => {
-        console.warn('getAccounts', error);
-        return api.parity
-          .accounts()
-          .then((accountsInfo) => {
-            return Object
-              .keys(accountsInfo)
-              .filter((address) => accountsInfo[address].uuid)
-              .reduce((ret, address) => {
-                ret[address] = {
-                  name: accountsInfo[address].name
-                };
-                return ret;
-              }, {});
-          });
-      })
       .then((accountsInfo) => {
         console.log('Parity getAccounts', accountsInfo)
         Object.keys(accountsInfo).forEach(function(k) {
@@ -496,7 +484,25 @@ export default class ApplicationVaultHome extends Component {
           }
         })
         return accountsInfo
-      });
+      })
+      .catch((error) => {
+        console.warn('getAccounts', error);
+        // return api.parity
+        //   .accounts()
+        //   .then((accountsInfo) => {
+        //     return Object
+        //       .keys(accountsInfo)
+        //       .filter((address) => accountsInfo[address].uuid)
+        //       .reduce((ret, address) => {
+        //         ret[address] = {
+        //           name: accountsInfo[address].name
+        //         };
+        //         return ret;
+        //       }, {});
+        //   }
+        // );
+      })
+
   }
 
   getAccountsMetamask () {

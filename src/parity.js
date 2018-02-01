@@ -14,14 +14,14 @@
 
 import Api from '@parity/api'
 import Web3 from 'web3'
-import {EP_INFURA_KV, EP_RIGOBLOCK_KV} from './utils/const.js'
+import {EP_INFURA_KV, EP_RIGOBLOCK_KV_DEV, EP_RIGOBLOCK_KV_PROD, PROD} from './utils/const.js'
 
 var HttpsUrl = '';
 var WsSecureUrl = '';
 const OverHttps = true;
 const timeout = 1000; // to set the delay between each ping to the Http server. Default = 1000 (1 sec)
 const infuraKovan = EP_INFURA_KV
-const rigoBlockEnd = EP_RIGOBLOCK_KV
+const rigoBlockEnd = EP_RIGOBLOCK_KV_DEV
 const endpoint = localStorage.getItem('endpoint')
 
 console.log(endpoint)
@@ -51,7 +51,7 @@ if (typeof window.parity !== 'undefined') {
         HttpsUrl = EP_INFURA_KV
       break;
       case "rigoblock":
-        HttpsUrl = EP_RIGOBLOCK_KV
+        (PROD) ? HttpsUrl = EP_RIGOBLOCK_KV_PROD : HttpsUrl = EP_RIGOBLOCK_KV_DEV
       break;
       
     }

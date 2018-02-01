@@ -1,11 +1,13 @@
 export const APP = "app";
 export const DS = "/";
 export const DRG_ISIN = "DR";
+export const PROD = false;
 // Address of the Parity registry of smart contracts
 export const REGISTRY_KOVAN = '0xfAb104398BBefbd47752E7702D9fE23047E1Bca3';
 // Blockchain endpoint
 export const EP_INFURA_KV = "https://kovan.infura.io/metamask"
-export const EP_RIGOBLOCK_KV = "https://srv03.endpoint.network:8545"
+export const EP_RIGOBLOCK_KV_DEV = "https://srv03.endpoint.network:8545"
+export const EP_RIGOBLOCK_KV_PROD = "https://kovan.endpoint.network:8545"
 // Allowed endpoints in config section
 export const INFURA = 'infura'
 export const RIGOBLOCK = 'rigoblock'
