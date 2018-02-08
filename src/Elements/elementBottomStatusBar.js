@@ -37,7 +37,7 @@ export default class ElementBottomStatusBar extends Component {
   }
 
   componentWillUnmount () {
-    // clearTimeout(t)
+    clearTimeout(t)
   }
 
 

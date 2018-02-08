@@ -30,7 +30,7 @@ export default class ElementVaultActionsList extends Component {
   state = {
     openMenuActions: false,
     showActionMenuItem:{
-      setFees: true,
+      setFees: false,
     }
   }
 

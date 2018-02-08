@@ -245,7 +245,7 @@ class ElementListTransactions extends PureComponent {
         return <span style={{color: Colors.red300, fontWeight: 600}}>SELL</span>
         break
       case "DragoCreated":
-        return <span>Created</span>
+        return <span style={{color: Colors.blue300, fontWeight: 600}}>CREATED</span>
         break
     } 
   }

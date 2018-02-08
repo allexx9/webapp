@@ -11,6 +11,17 @@
       manifest.json provides metadata used when your web app is added to the
       homescreen on Android. See https://developers.google.com/web/fundamentals/engage-and-retain/web-app-manifest/
     -->
+    <!-- <script>
+      function dynamicallyLoadScript() {
+        var script = document.createElement("script"); // Make a script DOM node
+        script.src = '/parity-utils/parity.js'; // Set it's src to the provided URL
+        document.head.appendChild(script); // Add it to the end of the head section of the page (could change 'head' to 'body' to add it to the end of the body section instead)
+      }
+      if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
+        console.log('Running locally.')
+        dynamicallyLoadScript()
+      }
+    </script> -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
     <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
     <!--
@@ -29,7 +40,8 @@
     <noscript>
       You need to enable JavaScript to run this app.
     </noscript>
-    <!-- <script src="/parity-utils/parity.js"></script> -->
+    <!-- <script src="http://127.0.0.1:8180/parity-utils/parity.js"></script> -->
+    <script src="/parity-utils/parity.js"></script>
     <div id="root"></div>
     <!--
       This HTML file is a template.

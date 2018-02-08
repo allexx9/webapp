@@ -1,6 +1,7 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
 import { rigotoken } from '../contracts'
+import Web3 from 'web3'
 import BigNumber from 'bignumber.js';
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom'
@@ -26,7 +27,10 @@ import {
   CUSTOM,
   ALLOWED_ENDPOINTS, 
   DEFAULT_ENDPOINT,
-  PROD
+  PROD,
+  EP_RIGOBLOCK_KV_DEV_WS,
+  EP_RIGOBLOCK_KV_PROD_WS,
+  EP_INFURA_KV_WS
 } from '../utils/const'
 import { Grid, Row, Col } from 'react-flexbox-grid';
 import LeftSideDrawerVault from '../Elements/leftSideDrawerVaults';
@@ -85,8 +89,7 @@ export default class ApplicationVaultHome extends Component {
     rigoTokenBalance: null,
     ethBalance: null,
     loading: true,
-    subscriptionIDDrago: null,
-    subscriptionIDContractDrago: null,
+    subscriptionData: null,
     contract: null,
     instance: null,
     allEvents: [],
@@ -105,9 +108,15 @@ export default class ApplicationVaultHome extends Component {
   activeElement = null
 
   shouldComponentUpdate(nextProps, nextState){    
+    var stateUpdate = true
+    var propsUpdate = true
     // shouldComponentUpdate returns false if no need to update children, true if needed.
-    const propsUpdate = (!utils.shallowEqual(this.props, nextProps))
-    const stateUpdate = (!utils.shallowEqual(this.state, this.state.loading))
+    propsUpdate = (!utils.shallowEqual(this.props, nextProps))
+    
+    // console.log(this.state)
+    // console.log(nextState)
+    stateUpdate = (!utils.shallowEqual(this.state.loading, nextState.loading))
+    stateUpdate = (!utils.shallowEqual(this.state, nextState))
     // Saving the scroll position. Neede in componentDidUpdate in order to avoid the the page scroll to be
     // set top
     const element = ReactDOM.findDOMNode(this);
@@ -127,26 +136,21 @@ export default class ApplicationVaultHome extends Component {
     if (allowedEndpoints.has(selectedEndpoint)) {
       switch (selectedEndpoint) {
         case INFURA:
+        console.log(INFURA)
           this.attachInterfaceInfura()
-          .then(() =>{
-          })
         break;
         case RIGOBLOCK:
+          console.log(RIGOBLOCK)
           this.attachInterfaceRigoBlock()
-          .then(() =>{
-          })
         break; 
         case LOCAL:
+          console.log(LOCAL)
           this.attachInterfaceRigoBlock()
-          .then(() =>{
-          })
         break; 
       }
     } else {
       localStorage.setItem('endpoint', DEFAULT_ENDPOINT)
       this.attachInterfaceInfura()
-      .then(() =>{
-      })
     }
     this._notificationSystem = this.refs.notificationSystem
   }
@@ -208,10 +212,11 @@ export default class ApplicationVaultHome extends Component {
     const { isManager, location, handleToggleNotifications, notificationsOpen }  = this.props
 
     if (loading) {
-      return null
+      return <Loading></Loading>
     }
 
     if (ethBalance === null) {
+      console.log('ethBalance = null')
       return null
     }
 
@@ -359,20 +364,29 @@ export default class ApplicationVaultHome extends Component {
     }
     const { api } = this.context;
     const prevBlockNumber = "".concat(this.state.prevBlockNumber)
+    var newBlockNumber = 0
+    // Checking if blockNumber is passed by Parity Api or Web3
+    if (typeof blockNumber.number !== 'undefined') {
+      newBlockNumber = new BigNumber(blockNumber.number)
+    } else {
+      newBlockNumber = blockNumber
+    }
+
     console.log(`${sourceLogClass} -> Last blocK: ` + prevBlockNumber)
-    console.log(`${sourceLogClass} -> New block: ` + blockNumber.toFixed())
+    console.log(`${sourceLogClass} -> New block: ` + newBlockNumber.toFixed())
     this.setState({
-      prevBlockNumber: blockNumber.toFixed()
+      prevBlockNumber: newBlockNumber.toFixed()
     })
-    // Checking that the current blockNumber is higher than previous one.
-    if (prevBlockNumber > blockNumber.toFixed()) {
+    // Checking that the current newBlockNumber is higher than previous one.
+    if (prevBlockNumber > newBlockNumber.toFixed()) {
       console.log(`${sourceLogClass} -> Detected prevBlockNumber > currentBlockNumber. Skipping accounts update.`)
       this.setState({
-        prevBlockNumber: blockNumber.toFixed()
+        prevBlockNumber: newBlockNumber.toFixed()
       })
       return null
     }
     const accounts = [].concat(this.state.accounts);
+
 
     // Checking RigoToken balance
     const rigoTokenContract = api.newContract(rigotoken, "0x7f026C6E42C808bA02A551BDdD753F9927dA06b1")
@@ -385,19 +399,20 @@ export default class ApplicationVaultHome extends Component {
     // Checking ethereum balance
     const ethQueries = accounts.map((account) => {
       console.log(`${sourceLogClass} API call getBalance -> applicationDragoHome: Getting balance of account ${account.name}`)
-      return api.eth.getBalance(account.address, new BigNumber(blockNumber))
+      return api.eth.getBalance(account.address, newBlockNumber)
     })
     const promisesBalances = [...ethQueries, ...tokensQueries]
 
     Promise
       .all(promisesBalances)
       .then((results) => {
+        console.log(results)
         // Splitting the the result array between ethBalances and rigoTokenBalances
         const halfLength = Math.ceil(results.length / 2)
         const ethBalances = results.splice(0,halfLength)
         const rigoTokenBalances = results
-        console.log(ethBalances)
-        console.log(rigoTokenBalances)
+        // console.log(ethBalances)
+        // console.log(rigoTokenBalances)
         const prevAccounts = [].concat(this.state.accounts)
         prevAccounts.map((account,index) =>{
           const newEthBalance = api.util.fromWei(ethBalances[index]).toFormat(3)
@@ -408,7 +423,6 @@ export default class ApplicationVaultHome extends Component {
             var eventType = 'balanceChange'
             var secondaryText = []
             var balDifference = account.ethBalance - newEthBalance
-            console.log(balDifference)
             if (balDifference > 0) {
               console.log(`You transferred ${balDifference.toFixed(4)} ETH!`)
               secondaryText[0] = `You transferred ${balDifference.toFixed(4)} ETH!`
@@ -445,7 +459,6 @@ export default class ApplicationVaultHome extends Component {
             account.ethBalance = api.util.fromWei(ethBalance).toFormat(3);
             const rigoTokenBalance = rigoTokenBalances[index];
             account.rigoTokenBalance = api.util.fromWei(rigoTokenBalance).toFormat(3);
-            console.log(account)
             return account;
           })
         )
@@ -459,8 +472,10 @@ export default class ApplicationVaultHome extends Component {
           networkStatus: MSG_NETWORK_STATUS_ERROR,
           accountsBalanceError: true,
           ethBalance: new BigNumber(0),
+          rigoTokenBalance: new BigNumber(0),
           accounts: [].concat(accounts.map((account, index) => {
             account.ethBalance = api.util.fromWei(new BigNumber(0)).toFormat(3);
+            account.rigoTokenBalance = api.util.fromWei(new BigNumber(0)).toFormat(3);
             return account;
           })
         )
@@ -470,46 +485,47 @@ export default class ApplicationVaultHome extends Component {
 
   getAccountsParity () {
     const { api } = this.context;
-    if (PROD) {
-      return null
-    }
+    const selectedEndpoint = localStorage.getItem('endpoint')
+    console.log(api)
     return api.parity
-      .accountsInfo()
-      .then((accountsInfo) => {
-        console.log('Parity getAccounts', accountsInfo)
-        Object.keys(accountsInfo).forEach(function(k) {
-          accountsInfo[k] = {
-            name: accountsInfo[k].name,
-            source: "parity"
-          }
-        })
-        return accountsInfo
+    .accountsInfo()
+    .then((accountsInfo) => {
+      console.log('Parity getAccounts', accountsInfo)
+      Object.keys(accountsInfo).forEach(function(k) {
+        accountsInfo[k] = {
+          name: accountsInfo[k].name,
+          source: "parity",
+          ethBalance: api.util.fromWei(new BigNumber(0)).toFormat(3),
+          rigoTokenBalance: api.util.fromWei(new BigNumber(0)).toFormat(3)
+        }
       })
-      .catch((error) => {
-        console.warn('getAccounts', error);
-        // return api.parity
-        //   .accounts()
-        //   .then((accountsInfo) => {
-        //     return Object
-        //       .keys(accountsInfo)
-        //       .filter((address) => accountsInfo[address].uuid)
-        //       .reduce((ret, address) => {
-        //         ret[address] = {
-        //           name: accountsInfo[address].name
-        //         };
-        //         return ret;
-        //       }, {});
-        //   }
-        // );
-      })
-
+      return accountsInfo
+    })
+    .catch((error) => {
+      console.warn('getAccounts', error);
+      // return api.parity
+      //   .accounts()
+      //   .then((accountsInfo) => {
+      //     return Object
+      //       .keys(accountsInfo)
+      //       .filter((address) => accountsInfo[address].uuid)
+      //       .reduce((ret, address) => {
+      //         ret[address] = {
+      //           name: accountsInfo[address].name
+      //         };
+      //         return ret;
+      //       }, {});
+      //   }
+      // );
+      return {}
+    })
   }
 
   getAccountsMetamask () {
-
     const web3 = window.web3
+    const { api } = this.context;
     if (typeof web3 === 'undefined') {
-      return
+      return;
     }
     return web3.eth.net.getId()
     .then((networkId) => {
@@ -529,18 +545,21 @@ export default class ApplicationVaultHome extends Component {
       .then(accounts => {
         const balance = web3.eth.getBalance(accounts[0])
         .then(balance => {
-          return balance
+          return balance;
         })
         const accountsMetaMask = {
           [accounts[0]]: {
             name: "MetaMask",
-            source: "MetaMask"
+            source: "MetaMask",
+            ethBalance: api.util.fromWei(new BigNumber(0)).toFormat(3),
+            rigoTokenBalance: api.util.fromWei(new BigNumber(0)).toFormat(3)
           }
         }
-        return accountsMetaMask
+        return accountsMetaMask;
       })
-      .catch(() =>{
-        return
+      .catch((error) =>{
+        console.warn(error)
+        return {}
       })
     })
   }
@@ -548,6 +567,7 @@ export default class ApplicationVaultHome extends Component {
   attachInterfaceInfura = () => {
     const { api } = this.context;
     var sourceLogClass = this.constructor.name
+    var WsSecureUrl = ''
     console.log('Interface Infura')
     return Promise
     .all([
@@ -555,10 +575,10 @@ export default class ApplicationVaultHome extends Component {
     ])
     .then(([accountsMetaMask]) => {
       const allAccounts = {...accountsMetaMask}
-      console.log('accounts loaded')
+      console.log('Metamask accounts loaded')
       this.setState({
         accountsInfo: accountsMetaMask,
-        loading: false,
+        // loading: false,
         accounts: Object
           .keys(allAccounts)
           .map((address) => {
@@ -567,18 +587,25 @@ export default class ApplicationVaultHome extends Component {
               address,
               name: info.name,
               source: info.source,
-              ethBalance: "0"
+              ethBalance: api.util.fromWei(new BigNumber(0)).toFormat(3),
+              rigoTokenBalance: api.util.fromWei(new BigNumber(0)).toFormat(3)
             };
           })
         });
+        // Subscribing to newBlockNumber event
         api.subscribe('eth_blockNumber', this.onNewBlockNumber)
-        .then((subscriptionID) => {
-          console.log(`${sourceLogClass}: Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);
-          this.setState({subscriptionIDDrago: subscriptionID});
-        })
-        .catch((error) => {
-          console.warn('error subscription', error)
-        });
+          .then((subscriptionID) => {
+            console.log(`${sourceLogClass}: Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);
+            this.setState({ subscriptionData: subscriptionID });
+          })
+          .catch((error) => {
+            console.warn('error subscription', error)
+          });
+      })
+      .then(()=>{
+        this.setState({
+          loading: false,
+          });    
       })
       .catch((error) => {
         console.warn('attachInterface', error)
@@ -588,51 +615,118 @@ export default class ApplicationVaultHome extends Component {
   attachInterfaceRigoBlock = () => {
     const { api } = this.context;
     var sourceLogClass = this.constructor.name
+    var WsSecureUrl = ''
     console.log('Interface RigoBlock')
-    return Promise
-    .all([
-      this.getAccountsParity(),
-      this.getAccountsMetamask()
-    ])
-    .then(([accountsInfo, accountsMetaMask]) => {
-      const allAccounts = {...accountsInfo, ...accountsMetaMask}
-      this.setState({
-        accountsInfo,
-        loading: false,
-        accounts: Object
-          .keys(allAccounts)
-          .map((address) => {
-            const info = allAccounts[address] || {};
-            return {
-              address,
-              name: info.name,
-              source: info.source,
-              ethBalance: "0"
-            };
+    // Checking if the parity node is running in --public-mode
+    api.parity.nodeKind()
+      .then(result => {
+        console.log(result.availability)
+        if (result.availability === 'public') {
+          // if --public-mode then getting only MetaMask accounts
+          return [this.getAccountsMetamask()]
+        }
+        else {
+          // if NOT --public-mode then getting bot Parity and MetaMask accounts
+          return [this.getAccountsParity(), this.getAccountsMetamask()]
+        }
+      })
+      .then((getAccounts) => {
+        Promise
+          .all(getAccounts)
+          .then(([accountsInfo, accountsMetaMask]) => {
+            const allAccounts = { ...accountsInfo, ...accountsMetaMask }
+            console.log('Parity accounts loaded')
+            console.log(allAccounts)
+            this.setState({
+              accountsInfo,
+              // loading: false,
+              ethBalance: new BigNumber(0),
+              accounts: Object
+                .keys(allAccounts)
+                .map((address) => {
+                  const info = allAccounts[address] || {};
+                  return {
+                    address,
+                    name: info.name,
+                    source: info.source,
+                    ethBalance: api.util.fromWei(new BigNumber(0)).toFormat(3),
+                    rigoTokenBalance: api.util.fromWei(new BigNumber(0)).toFormat(3)
+                  };
+                })
+            })
+            // Subscribing to newBlockNumber event
+            if (typeof window.parity !== 'undefined') {
+              api.subscribe('eth_blockNumber', this.onNewBlockNumber)
+              .then((subscriptionID) => {
+                console.log(`${sourceLogClass}: Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);
+                this.setState({ subscriptionData: subscriptionID });
+              })
+              .catch((error) => {
+                console.warn('error subscription', error)
+              });
+            } else {
+              if (PROD) {
+                WsSecureUrl = EP_RIGOBLOCK_KV_PROD_WS
+              } else {
+                WsSecureUrl = EP_RIGOBLOCK_KV_DEV_WS
+              }
+              const web3 = new Web3(WsSecureUrl)
+              Promise
+              .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
+              .then(result =>{
+                var subscription = result[0]
+                console.log(subscription)
+                console.log(`${sourceLogClass}: Subscribed to eth_blockNumber -> Subscription ID: ${subscription.id}`);
+                this.setState({ subscriptionData: subscription })
+              })
+            }
           })
-      });
-      api.subscribe('eth_blockNumber', this.onNewBlockNumber)
-      .then((subscriptionID) => {
-        console.log(`${sourceLogClass}: Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);
-        this.setState({subscriptionIDDrago: subscriptionID});
+          .then(() => {
+            this.setState({
+              loading: false,
+            });
+          })
+          .catch((error) => {
+            console.warn('attachInterfaceRigoBlock', error)
+          });
       })
       .catch((error) => {
-        console.warn('error subscription', error)
+        console.warn('attachInterfaceRigoBlock', error)
       });
-    })
-    .catch((error) => {
-      console.warn('attachInterface', error)
-    });
   }
 
-
   detachInterface = () => {
-    const { subscriptionIDDrago, contract, subscriptionIDContractDrago } = this.state;
+    const { subscriptionData } = this.state;
     const { api } = this.context;
+    const endpoint = localStorage.getItem('endpoint')
+    var WsSecureUrl = ''
     var sourceLogClass = this.constructor.name
-    console.log(`applicationDragoHome: Unsubscribed to eth_blockNumber -> Subscription ID: ${subscriptionIDDrago}`);
-    api.unsubscribe(subscriptionIDDrago).catch((error) => {
-      console.warn('Unsubscribe error', error);
-    });
+    // api.subscribe returns a number
+    // web3.eth.subscribe returns an object
+    // Checking which case and unsubscribing accordingly
+    switch (typeof subscriptionData ) {
+      case "number":
+        api.unsubscribe(subscriptionData)
+          .then((result) => {
+            console.log(result)
+            console.log(`${sourceLogClass}: Successfully unsubscribed from eth_blockNumber -> Subscription ID: ${subscriptionData}`);
+          })
+          .catch((error) => {
+            console.warn(`${sourceLogClass}: Unsubscribe error ${error}`)
+          });
+        break;
+        case "object":
+        if (subscriptionData === null) {
+          subscriptionData.unsubscribe(function (error, success) {
+            if (success) {
+              console.log(`${sourceLogClass}: Successfully unsubscribed from eth_blockNumber`);
+            }
+            if (error) {
+              console.warn(`${sourceLogClass}: Unsubscribe error ${error}`)
+            }
+          });
+        }
+        break;
+    }
   } 
 }

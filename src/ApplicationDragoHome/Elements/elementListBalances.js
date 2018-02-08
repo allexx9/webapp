@@ -183,7 +183,6 @@ class ElementListBalances extends PureComponent {
   }
   
   renderDrgValue(rowData) {
-    console.log(rowData)
     return (
       <div>{rowData.balance} <small>{rowData.symbol}</small></div>
     )

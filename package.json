@@ -52,6 +52,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build-parity": "PUBLIC_URL=./ react-scripts build",
+    "build-parity-win": "react-scripts build",
     "build-beta": "GENERATE_SOURCEMAP=false PUBLIC_URL=./ react-scripts build",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",

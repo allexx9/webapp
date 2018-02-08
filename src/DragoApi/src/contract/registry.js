@@ -27,13 +27,16 @@ class Registry {
     }
     // Checking if using Parity API and/or connected to Infura
     if (typeof api._parity !== 'undefined') {
-      if (api.provider._url.includes("infura")) {
-        console.log('Infura/MetaMask detected.')
-        const registry = api.newContract(abis.registry, REGISTRY_KOVAN).instance;
-        return Promise.all([
-          registry.getAddress.call({}, [api.util.sha3(contractName), 'A'])
-        ])
+      if (typeof api.provider !== 'undefined') {
+        if (api.provider._url.includes("infura")) {
+          console.log('Infura/MetaMask detected.')
+          const registry = api.newContract(abis.registry, REGISTRY_KOVAN).instance;
+          return Promise.all([
+            registry.getAddress.call({}, [api.util.sha3(contractName), 'A'])
+          ])
+        }
       }
+
       console.log('RigoBlock node detected.')
       return api.parity
       .registryAddress()
@@ -71,16 +74,28 @@ class Registry {
       throw new Error('contractName needs to be provided to Registry')
     }
     const api = this._api
+    var isMetaMask = false
     const contract = this._getContractAddressFromRegister(contractName)
     .then((address) => {
       // console.log(address)
       if (address[0] == "0x0000000000000000000000000000000000000000") {
         throw new Error('The contract address was not found in the Register.')
       }
-      if (api._provider.isMetaMask) {
+      if (!api) {
+        throw new Error('API instance needs to be provided to Contract');
+      }
+      if (typeof api._provider === 'undefined') {
+        isMetaMask = false
+      } else {
+        isMetaMask = api._provider.isMetaMask
+      }
+      if (isMetaMask) {
         return new api.eth.Contract(abi, address)
       }
       return api.newContract(abi, address)
+    })
+    .catch(error => {
+      console.warn(error)
     })
     return contract
   }

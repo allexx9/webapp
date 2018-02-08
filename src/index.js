@@ -30,7 +30,10 @@ var appHashPath = true;
 var pathArray = window.location.hash.split( '/' );
 // console.log(pathArray[2]);
 if (typeof window.parity !== 'undefined') {
-    appHashPath = pathArray[2];
+
+    // Need to check if this works inside the Parity UI
+    // appHashPath = pathArray[2];
+    appHashPath = 'web';
     } else {
     appHashPath = 'web';
     }

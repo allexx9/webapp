@@ -60,7 +60,6 @@ var enabledUserType = {
   }
 }
 
-
 class NavLinks extends Component {
 
     constructor(props) {
@@ -82,6 +81,8 @@ class NavLinks extends Component {
       subscriptionIDDrago: null
     }
 
+     
+
     componentDidMount () {
         this.activeSectionPath()
     }
@@ -95,10 +96,11 @@ class NavLinks extends Component {
     renderTopLinks = (links) => {
       const activeLink = this.activeSectionPath()
       var backgroundColorActive = Colors.blue500
+      const { location } = this.props
       return links.map((link) => {
         link.to === activeLink ? backgroundColorActive = Colors.blue300 : backgroundColorActive = Colors.blue500
         return (
-          <FlatButton key={link.label} label={link.label.toUpperCase()} containerElement={<Link to={'/'+link.to} />} disableTouchRipple={true} 
+          <FlatButton key={link.label} label={link.label.toUpperCase()} containerElement={<Link to={DS + APP + DS + this.buildUrlPath(location) + DS + link.to} />} disableTouchRipple={true} 
           hoverColor="#2196f3" className={styles.topbarbuttons}
           icon={link.icon}
           labelStyle={{fontWeight: 700}}

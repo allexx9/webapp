@@ -52,6 +52,10 @@ import styles from './pageDashboardDragoTrader.module.css'
 
 class PageDashboardDragoTrader extends Component {
 
+  constructor() {
+    super();
+  }
+
   // Checking the type of the context variable that we receive by the parent
   static contextTypes = {
     api: PropTypes.object.isRequired,
@@ -68,9 +72,6 @@ class PageDashboardDragoTrader extends Component {
       dragoTransactionsLogs: null,
       dragoBalances: null,
       loading: true,
-      topBarClassName: null,
-      topBarInitialPosition: null,
-      topBarLinksPosition: null,
       snackBar: false,
       snackBarMsg: ''
     }
@@ -89,11 +90,12 @@ class PageDashboardDragoTrader extends Component {
       const { api, contract } = this.context
       const {accounts } = this.props
       const sourceLogClass = this.constructor.name
-      if (!this.props.ethBalance.eq(nextProps.ethBalance)) {
+      console.log(`${sourceLogClass} -> componentWillReceiveProps-> nextProps received.`);
+      // Updating the transaction list if there have been a change in total accounts balance and the previous balance is
+      // different from 0 (balances are set to 0 on app loading)
+      if (!this.props.ethBalance.eq(nextProps.ethBalance) && !this.props.ethBalance.eq(0)) {
         this.getTransactions (null, accounts)
         console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
-      } else {
-        null
       }
     }
 
@@ -101,9 +103,12 @@ class PageDashboardDragoTrader extends Component {
       const  sourceLogClass = this.constructor.name
       var stateUpdate = true
       var propsUpdate = true
+      propsUpdate = !utils.shallowEqual(this.props, nextProps)
       stateUpdate = !utils.shallowEqual(this.state, nextState)
       propsUpdate = !this.props.ethBalance.eq(nextProps.ethBalance)
       if (stateUpdate || propsUpdate) {
+        console.log('State updated ', stateUpdate)
+        console.log('Props updated ', propsUpdate)
         console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
       }
       return stateUpdate || propsUpdate
@@ -178,7 +183,6 @@ class PageDashboardDragoTrader extends Component {
           )
         }
       )
-      
       return (
         <Row>
           <Col xs={12}>
@@ -262,6 +266,7 @@ class PageDashboardDragoTrader extends Component {
                   <Paper zDepth={1}>
                     <Row style={{ outline: 'none' }}>
                       <Col className={styles.transactionsStyle} xs={12}>
+                      <p>Your last 20 transactions</p>
                         <ElementListWrapper list={dragoTransactionsLogs}
                           renderCopyButton={this.renderCopyButton}
                           renderEtherscanButton={this.renderEtherscanButton}
@@ -291,18 +296,22 @@ class PageDashboardDragoTrader extends Component {
       const { api } = this.context
       const options = {balance: true, supply: false, limit: 10, trader: true}
       var sourceLogClass = this.constructor.name
-      utils.getTransactionsDragoOpt(api, dragoAddress, accounts, options)
+      utils.getTransactionsDragoOptV2(api, dragoAddress, accounts, options)
       .then(results =>{
         console.log(`${sourceLogClass} -> Transactions list loaded`)
         // const buySellLogs = results[1].filter(event =>{
         //   return event.type !== 'DragoCreated'
         // })
+        console.log(results)
         this.setState({
           dragoBalances: results[0],
           dragoTransactionsLogs: results[1],
         }, this.setState({
           loading: false,
         }))
+      })
+      .catch(error =>{
+        console.warn(`${sourceLogClass} -> Transactions list load error: ${error}`)
       })
     }
   }
