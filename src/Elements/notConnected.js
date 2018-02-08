@@ -4,9 +4,11 @@ import  * as Colors from 'material-ui/styles/colors'
 import { Row, Col } from 'react-flexbox-grid';
 import BigNumber from 'bignumber.js';
 import Dialog from 'material-ui/Dialog';
+import { Link, Route, withRouter } from 'react-router-dom'
 
 import styles from './notConnected.module.css'
 import PropTypes from 'prop-types';
+import {APP, DS} from '../utils/const.js'
 
 var td = null
 
@@ -28,6 +30,14 @@ class NotConnected extends Component {
     componentWillUnmount () {
       clearTimeout(td)
     }
+
+    
+    buildUrlPath = () => {
+      var path = window.location.hash.split( '/' );
+      // path.splice(-1,1);
+      // var url = path.join('/');
+      return path[2]
+      }
 
     counter = () => {
       var x = this
@@ -56,8 +66,8 @@ class NotConnected extends Component {
           <Col xs={12}>
           <Row>
           <Col xs={12}>
-            <div class={styles.titleRBHeaderContainer}>
-            <div class={styles.titleRBHeader}>
+            <div className={styles.titleRBHeaderContainer}>
+            <div className={styles.titleRBHeader}>
               <img src="img/RigoLogoTop.png" alt="logo" />
               <div className={styles.titlePrimaryText}>
                 RIGOBLOCK
@@ -93,8 +103,8 @@ class NotConnected extends Component {
         >
         <Row >
           <Col xs={12}>
-            <div class={styles.titleRBHeaderContainer}>
-            <div class={styles.titleRBHeader}>
+            <div className={styles.titleRBHeaderContainer}>
+            <div className={styles.titleRBHeader}>
               <img src="img/RigoLogoTop.png" alt="logo" />
               <div className={styles.titlePrimaryText}>
                 RIGOBLOCK
@@ -112,7 +122,7 @@ class NotConnected extends Component {
               <h3 className={styles.warningText}>Connection error.</h3>
               <p>Unable to connect to the network.</p>
               <p>Trying to establish a new connection in {this.state.counter} seconds... </p>
-              <p>Please contact our support.</p>
+              <p>Please contact our support or {<Link to={DS + APP + DS + this.buildUrlPath() + DS + "config"}>select</Link>} a different network.</p>
             </Col>
           </Row>
           </Col>

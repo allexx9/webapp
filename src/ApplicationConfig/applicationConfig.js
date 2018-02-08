@@ -1,5 +1,7 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
+import { rigotoken } from '../contracts'
+import Web3 from 'web3'
 import { Grid, Row, Col } from 'react-flexbox-grid';
 import { Link, Route, withRouter, HashRouter, Switch, Redirect } from 'react-router-dom'
 import {List, ListItem} from 'material-ui/List';
@@ -18,7 +20,15 @@ import {
   MSG_NETWORK_STATUS_ERROR,
   NETWORK_OK,
   NETWORK_WARNING,
-  PROD
+  INFURA,
+  RIGOBLOCK,
+  LOCAL,
+  CUSTOM,
+  ALLOWED_ENDPOINTS, 
+  DEFAULT_ENDPOINT,
+  PROD,
+  EP_RIGOBLOCK_KV_DEV_WS,
+  EP_RIGOBLOCK_KV_PROD_WS
 } from '../utils/const'
 import * as abis from '../contracts';
 import CheckAuthPage from '../Elements/checkAuthPage'
@@ -30,17 +40,18 @@ import Loading from '../Loading';
 import PageNetworkConfig from './pageNetworkConfig'
 import Status from '../Status';
 import utils from '../utils/utils'
-import { ALLOWED_ENDPOINTS, DEFAULT_ENDPOINT } from '../utils/const';
 
 import styles from './applicationConfig.module.css';
 
 const DIVISOR = 10 ** 6;  //tokens are divisible by one million
+var sourceLogClass = null
 
 export class ApplicationConfig extends Component {
 
   constructor() {
     super();
     this._notificationSystem = null;
+    sourceLogClass = this.constructor.name
   }
 
   // Checking the type of the context variable that we receive by the parent
@@ -65,7 +76,6 @@ export class ApplicationConfig extends Component {
     ethBalance: new BigNumber(0),
     loading: true,
     subscriptionIDDrago: null,
-    subscriptionIDContractDrago: null,
     contract: null,
     instance: null,
     allEvents: [],
@@ -88,31 +98,31 @@ export class ApplicationConfig extends Component {
   }
 
   componentWillMount () {
+  } 
+
+  componentDidMount() {
     // Allowed endpoints are defined in const.js
     var selectedEndpoint = localStorage.getItem('endpoint')
     var allowedEndpoints = new Map(ALLOWED_ENDPOINTS)
     if (allowedEndpoints.has(selectedEndpoint)) {
       switch (selectedEndpoint) {
-        case "infura":
+        case INFURA:
+        console.log(INFURA)
           this.attachInterfaceInfura()
-          .then(() =>{
-          })
         break;
-        case "rigoblock":
+        case RIGOBLOCK:
+          console.log(RIGOBLOCK)
           this.attachInterfaceRigoBlock()
-          .then(() =>{
-          })
+        break; 
+        case LOCAL:
+          console.log(LOCAL)
+          this.attachInterfaceRigoBlock()
         break; 
       }
     } else {
       localStorage.setItem('endpoint', DEFAULT_ENDPOINT)
       this.attachInterfaceInfura()
-      .then(() =>{
-      })
     }
-  } 
-
-  componentDidMount() {
     this._notificationSystem = this.refs.notificationSystem
   }
 
@@ -127,9 +137,9 @@ export class ApplicationConfig extends Component {
   render () {
     const { ethBalance, loading, blockNumber, accounts, allEvents, accountsInfo, networkError, networkStatus, networkCorrect, warnMsg } = this.state;
     const {isManager, location, handleToggleNotifications, notificationsOpen, match }  = this.props
-    if (loading) {
-      return <Loading></Loading>
-    }
+    // if (loading) {
+    //   return <Loading></Loading>
+    // }
     // if ((accounts.length === 0 || !networkCorrect)) {
     //   return (
     //     <span>
@@ -212,138 +222,85 @@ export class ApplicationConfig extends Component {
   }
 
   onNewBlockNumber = (_error, blockNumber) => {
-    console.log('Running onNewBlockNumber')
     if (_error) {
       console.error('onNewBlockNumber', _error)
+      this.setState({
+        networkError: NETWORK_WARNING,
+        networkStatus: MSG_NETWORK_STATUS_ERROR,
+      })
       return
     }
     const { api } = this.context;
     const prevBlockNumber = "".concat(this.state.prevBlockNumber)
-    console.log('Last blocK: ' + prevBlockNumber)
-    console.log('New block: ' + blockNumber.toFixed())
+    var newBlockNumber = 0
+    // Checking if blockNumber is passed by Parity Api or Web3
+    if (typeof blockNumber.number !== 'undefined') {
+      newBlockNumber = new BigNumber(blockNumber.number)
+    } else {
+      newBlockNumber = blockNumber
+    }
+
+    console.log(`${sourceLogClass} -> Last blocK: ` + prevBlockNumber)
+    console.log(`${sourceLogClass} -> New block: ` + newBlockNumber.toFixed())
     this.setState({
-      prevBlockNumber: blockNumber.toFixed()
+      prevBlockNumber: newBlockNumber.toFixed()
     })
-    // Checking that the current blockNumber is higher than previous one.
-    if (prevBlockNumber > blockNumber.toFixed()) {
-      console.log('Detected prevBlockNumber > currentBlockNumber. Skipping accounts update.')
+    // Checking that the current newBlockNumber is higher than previous one.
+    if (prevBlockNumber > newBlockNumber.toFixed()) {
+      console.log(`${sourceLogClass} -> Detected prevBlockNumber > currentBlockNumber. Skipping accounts update.`)
       this.setState({
-        prevBlockNumber: blockNumber.toFixed()
+        prevBlockNumber: newBlockNumber.toFixed(),
+        networkError: NETWORK_WARNING,
+        networkStatus: MSG_NETWORK_STATUS_ERROR,
       })
       return null
     }
-    const accounts = [].concat(this.state.accounts);
-    const sourceLogClass = this.constructor.name
-    const ethQueries = accounts.map((account) => {
-      console.log(`${sourceLogClass} API call getBalance -> applicationDragoHome: Getting balance of account ${account.name}`)
-      return api.eth.getBalance(account.address, new BigNumber(blockNumber))
+    this.setState({
+      networkStatus: MSG_NETWORK_STATUS_OK,
+      networkError: NETWORK_OK,
     })
-    Promise
-      .all(ethQueries)
-      .then((ethBalances) => {
-        const prevAccounts = [].concat(this.state.accounts)
-        prevAccounts.map((account,index) =>{
-          const newBalance = api.util.fromWei(ethBalances[index]).toFormat(3)
-          // console.log('Last balance: ' + account.ethBalance)
-          // console.log('New balance: ' + newBalance)
-          if ((account.ethBalance !== newBalance) && prevBlockNumber != 0) {
-            console.log(`${account.name} balance changed.`)
-            var eventType = 'balanceChange'
-            var secondaryText = ''
-            var balDifference = account.ethBalance - newBalance
-            console.log(balDifference)
-            if (balDifference > 0) {
-              console.log(`You transferred ${balDifference.toFixed(4)} ETH!`)
-              secondaryText = `You transferred ${balDifference.toFixed(4)} ETH!`
-            } else {
-              console.log(`You received ${Math.abs(balDifference).toFixed(4)} ETH!`)
-              secondaryText = `You received ${Math.abs(balDifference).toFixed(4)} ETH!`
-            }
-            if (this._notificationSystem && this.state.accountsBalanceError === false) {
-              this._notificationSystem.addNotification({
-                  level: 'info',
-                  position: 'br',
-                  children: this.notificationAlert(account.name, secondaryText)
-              });
-            }
-          }
-
-        })
-        return ethBalances
-      })
-      .then((ethBalances) => {
-        this.setState({
-          networkError: NETWORK_OK,
-          networkStatus: MSG_NETWORK_STATUS_OK,
-          accountsBalanceError: false,
-          ethBalance: ethBalances.reduce((total, balance) => total.add(balance), new BigNumber(0)),
-          accounts: [].concat(accounts.map((account, index) => {
-            const ethBalance = ethBalances[index];
-            account.ethBalance = api.util.fromWei(ethBalance).toFormat(3);
-            return account;
-          })
-        )
-        })
-      })
-      .catch((error) => {
-        console.warn(`${sourceLogClass} -> ${error}`)
-        // Setting the balances to 0 if receiving an error from the endpoint. It happens with Infura.
-        this.setState({
-          networkError: NETWORK_WARNING,
-          networkStatus: MSG_NETWORK_STATUS_ERROR,
-          accountsBalanceError: true,
-          ethBalance: new BigNumber(0),
-          accounts: [].concat(accounts.map((account, index) => {
-            account.ethBalance = api.util.fromWei(new BigNumber(0)).toFormat(3);
-            return account;
-          })
-        )
-        })
-      });
   }
 
   getAccountsParity () {
     const { api } = this.context;
-    if (PROD) {
-      return null
-    }
+    const selectedEndpoint = localStorage.getItem('endpoint')
+    console.log(api)
     return api.parity
-      .accountsInfo()
-      .then((accountsInfo) => {
-        console.log('Parity getAccounts', accountsInfo)
-        Object.keys(accountsInfo).forEach(function(k) {
-          accountsInfo[k] = {
-            name: accountsInfo[k].name,
-            source: "parity"
-          }
-        })
-        return accountsInfo
+    .accountsInfo()
+    .then((accountsInfo) => {
+      console.log('Parity getAccounts', accountsInfo)
+      Object.keys(accountsInfo).forEach(function(k) {
+        accountsInfo[k] = {
+          name: accountsInfo[k].name,
+          source: "parity"
+        }
       })
-      .catch((error) => {
-        console.warn('getAccounts', error);
-        // return api.parity
-        //   .accounts()
-        //   .then((accountsInfo) => {
-        //     return Object
-        //       .keys(accountsInfo)
-        //       .filter((address) => accountsInfo[address].uuid)
-        //       .reduce((ret, address) => {
-        //         ret[address] = {
-        //           name: accountsInfo[address].name
-        //         };
-        //         return ret;
-        //       }, {});
-        //   }
-        // );
-      })
-
+      return accountsInfo
+    })
+    .catch((error) => {
+      console.warn('getAccounts', error);
+      // return api.parity
+      //   .accounts()
+      //   .then((accountsInfo) => {
+      //     return Object
+      //       .keys(accountsInfo)
+      //       .filter((address) => accountsInfo[address].uuid)
+      //       .reduce((ret, address) => {
+      //         ret[address] = {
+      //           name: accountsInfo[address].name
+      //         };
+      //         return ret;
+      //       }, {});
+      //   }
+      // );
+      return {}
+    })
   }
 
   getAccountsMetamask () {
-
     const web3 = window.web3
     if (typeof web3 === 'undefined') {
-      return
+      return;
     }
     return web3.eth.net.getId()
     .then((networkId) => {
@@ -363,7 +320,7 @@ export class ApplicationConfig extends Component {
       .then(accounts => {
         const balance = web3.eth.getBalance(accounts[0])
         .then(balance => {
-          return balance
+          return balance;
         })
         const accountsMetaMask = {
           [accounts[0]]: {
@@ -371,10 +328,11 @@ export class ApplicationConfig extends Component {
             source: "MetaMask"
           }
         }
-        return accountsMetaMask
+        return accountsMetaMask;
       })
-      .catch(() =>{
-        return
+      .catch((error) =>{
+        console.warn(error)
+        return {}
       })
     })
   }
@@ -382,6 +340,7 @@ export class ApplicationConfig extends Component {
   attachInterfaceInfura = () => {
     const { api } = this.context;
     var sourceLogClass = this.constructor.name
+    var WsSecureUrl = ''
     console.log('Interface Infura')
     return Promise
     .all([
@@ -389,10 +348,10 @@ export class ApplicationConfig extends Component {
     ])
     .then(([accountsMetaMask]) => {
       const allAccounts = {...accountsMetaMask}
-      console.log('Accounts loaded')
+      console.log('Metamask accounts loaded')
       this.setState({
         accountsInfo: accountsMetaMask,
-        loading: false,
+        // loading: false,
         accounts: Object
           .keys(allAccounts)
           .map((address) => {
@@ -405,16 +364,26 @@ export class ApplicationConfig extends Component {
             };
           })
         });
+        // Subscribing to newBlockNumber event
         api.subscribe('eth_blockNumber', this.onNewBlockNumber)
-        .then((subscriptionID) => {
-          console.log(`${sourceLogClass}: Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);
-          this.setState({subscriptionIDDrago: subscriptionID});
-        })
-        .catch((error) => {
-          console.warn('error subscription', error)
-        });
+          .then((subscriptionID) => {
+            console.log(`${sourceLogClass}: Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);
+            this.setState({ subscriptionData: subscriptionID });
+          })
+          .catch((error) => {
+            console.warn('error subscription', error)
+          });
+      })
+      .then(()=>{
+        this.setState({
+          loading: false,
+          });    
       })
       .catch((error) => {
+        this.setState({
+          networkError: NETWORK_WARNING,
+          networkStatus: MSG_NETWORK_STATUS_ERROR,
+        })
         console.warn('attachInterface', error)
       });
   }
@@ -422,54 +391,120 @@ export class ApplicationConfig extends Component {
   attachInterfaceRigoBlock = () => {
     const { api } = this.context;
     var sourceLogClass = this.constructor.name
+    var WsSecureUrl = ''
     console.log('Interface RigoBlock')
-    return Promise
-    .all([
-      this.getAccountsParity(),
-      this.getAccountsMetamask()
-    ])
-    .then(([accountsInfo, accountsMetaMask]) => {
-      const allAccounts = {...accountsInfo, ...accountsMetaMask}
+    if (!api.isConnected) {
       this.setState({
-        accountsInfo,
-        loading: false,
-        accounts: Object
-          .keys(allAccounts)
-          .map((address) => {
-            const info = allAccounts[address] || {};
-            return {
-              address,
-              name: info.name,
-              source: info.source,
-              ethBalance: "0"
-            };
+        networkError: NETWORK_WARNING,
+        networkStatus: MSG_NETWORK_STATUS_ERROR,
+      })
+      return
+    }
+    // Checking if the parity node is running in --public-mode
+    api.parity.nodeKind()
+      .then(result => {
+        console.log(result.availability)
+        if (result.availability === 'public') {
+          // if --public-mode then getting only MetaMask accounts
+          return [this.getAccountsMetamask()]
+        }
+        else {
+          // if NOT --public-mode then getting bot Parity and MetaMask accounts
+          return [this.getAccountsParity(), this.getAccountsMetamask()]
+        }
+      })
+      .then((getAccounts) => {
+        Promise
+          .all(getAccounts)
+          .then(([accountsInfo, accountsMetaMask]) => {
+            const allAccounts = { ...accountsInfo, ...accountsMetaMask }
+            console.log('Parity accounts loaded')
+            console.log(allAccounts)
+            this.setState({
+              accountsInfo,
+              // loading: false,
+              ethBalance: new BigNumber(0),
+              accounts: Object
+                .keys(allAccounts)
+                .map((address) => {
+                  const info = allAccounts[address] || {};
+                  return {
+                    address,
+                    name: info.name,
+                    source: info.source,
+                    ethBalance: "0"
+                  };
+                })
+            })
+            // Subscribing to newBlockNumber event
+            if (PROD) {
+              WsSecureUrl = EP_RIGOBLOCK_KV_PROD_WS
+            } else {
+              WsSecureUrl = EP_RIGOBLOCK_KV_DEV_WS
+            }
+            const web3 = new Web3(WsSecureUrl)
+            Promise
+            .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
+            .then(result =>{
+              var subscription = result[0]
+              console.log(`${sourceLogClass}: Subscribed to eth_blockNumber`);
+              this.setState({ subscriptionData: subscription })
+            })
           })
-      });
-      api.subscribe('eth_blockNumber', this.onNewBlockNumber)
-      .then((subscriptionID) => {
-        console.log(`${sourceLogClass}: Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);
-        this.setState({subscriptionIDDrago: subscriptionID});
+          .then(() => {
+            this.setState({
+              loading: false,
+            });
+          })
+          .catch((error) => {
+            this.setState({
+              networkError: NETWORK_WARNING,
+              networkStatus: MSG_NETWORK_STATUS_ERROR,
+            })
+            console.warn('attachInterfaceRigoBlock', error)
+          });
       })
       .catch((error) => {
-        console.warn('error subscription', error)
+        this.setState({
+          networkError: NETWORK_WARNING,
+          networkStatus: MSG_NETWORK_STATUS_ERROR,
+        })
+        console.warn('attachInterfaceRigoBlock', error)
       });
-    })
-    .catch((error) => {
-      console.warn('attachInterface', error)
-      // this.attachInterfaceInfura()
-    });
   }
 
-
   detachInterface = () => {
-    const { subscriptionIDDrago, contract, subscriptionIDContractDrago } = this.state;
+    const { subscriptionData } = this.state;
     const { api } = this.context;
+    const endpoint = localStorage.getItem('endpoint')
+    var WsSecureUrl = ''
     var sourceLogClass = this.constructor.name
-    console.log(`${sourceLogClass}: Unsubscribed to eth_blockNumber -> Subscription ID: ${subscriptionIDDrago}`);
-    api.unsubscribe(subscriptionIDDrago).catch((error) => {
-      console.warn('Unsubscribe error', error);
-    });
+    switch (endpoint) {
+      case "infura":
+        api.unsubscribe(subscriptionData)
+          .then((result) => {
+            console.log(result)
+            console.log(`${sourceLogClass}: Successfully unsubscribed from eth_blockNumber -> Subscription ID: ${subscriptionData}`);
+          })
+          .catch((error) => {
+            console.warn(`${sourceLogClass}: Unsubscribe error ${error}`)
+          });
+        break;
+      default:
+       if(subscriptionData) {
+        subscriptionData.unsubscribe(function (error, success) {
+          if (success) {
+            console.log(`${sourceLogClass}: Successfully unsubscribed from eth_blockNumber`);
+          }
+          if (error) {
+            console.warn(`${sourceLogClass}: Unsubscribe error ${error}`)
+          }
+        });
+       }
+
+    }
   } 
+
 }
 
 export default withRouter(ApplicationConfig)

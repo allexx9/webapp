@@ -9,7 +9,7 @@ class FilterFunds extends Component {
 
   static propTypes = {
     fundsList: PropTypes.object,
-    filterList: PropTypes.func.isRequired,
+    filterList: PropTypes.func,
   };
 
   filterFunds = (event, newValue) => {

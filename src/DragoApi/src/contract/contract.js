@@ -19,11 +19,17 @@ import VaultFactoryWeb3 from './Web3/vaultFactory';
 
 class Contract {
   constructor (api) {
+    var isMetaMask = false
     if (!api) {
       throw new Error('API instance needs to be provided to Contract');
     }
-
-    if (api._provider.isMetaMask) {
+    console.log(api)
+    if (typeof api._provider === 'undefined') {
+      isMetaMask = false
+    } else {
+      isMetaMask = api._provider.isMetaMask
+    }
+    if (isMetaMask) {
       this._drago = new DragoWeb3(api);
       this._dragofactory = new DragoFactoryWeb3(api);
       this._vault = new VaultWeb3(api);

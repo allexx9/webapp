@@ -134,12 +134,11 @@ class ElementListSupply extends PureComponent {
                   <Column
                     width={width}
                     disableSort
-                    label="Name"
+                    label="NAME"
                     cellDataGetter={({rowData}) => rowData.name}
                     dataKey="name"
-                    cellRenderer={({cellData}) => cellData.name}
                     className={styles.exampleColumn}
-                    cellRenderer={({cellData}) => cellData}
+                    cellRenderer={({rowData}) => this.renderName(rowData.name)}
                     flexShrink={1}
                   />
                   <Column
@@ -149,7 +148,7 @@ class ElementListSupply extends PureComponent {
                     cellDataGetter={({rowData}) => rowData.supply}
                     dataKey="drg"
                     className={styles.exampleColumn}
-                    cellRenderer={({rowData}) => this.renderDrgValue(rowData.supply)}
+                    cellRenderer={({rowData}) => this.renderDrgValue(rowData)}
                     flexShrink={1}
                   />
                   <Column
@@ -182,12 +181,19 @@ class ElementListSupply extends PureComponent {
       <div>{ethValue} <small>ETH</small></div>
     )
   }
-  renderDrgValue(drgvalue) {
+
+  renderDrgValue(rowData) {
     return (
-      <div>{drgvalue} <small>DRG</small></div>
+      <div>{rowData.supply} <small>{rowData.symbol}</small></div>
     )
   }
 
+  renderName(drgname) {
+    const name = drgname.trim()
+    return (
+      <div>{name.charAt(0).toUpperCase() + name.slice(1)}</div>
+    )
+  }
 
   _getDatum(list, index) {
     return list.get(index % list.size);

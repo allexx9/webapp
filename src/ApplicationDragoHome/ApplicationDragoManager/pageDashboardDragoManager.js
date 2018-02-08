@@ -90,11 +90,12 @@ class PageDashboardDragoManager extends Component {
       const { api, contract } = this.context
       const {accounts } = this.props
       const sourceLogClass = this.constructor.name
-      if (!this.props.ethBalance.eq(nextProps.ethBalance)) {
+      console.log(`${sourceLogClass} -> componentWillReceiveProps-> nextProps received.`);
+      // Updating the transaction list if there have been a change in total accounts balance and the previous balance is
+      // different from 0 (balances are set to 0 on app loading)
+      if (!this.props.ethBalance.eq(nextProps.ethBalance) && !this.props.ethBalance.eq(0)) {
         this.getTransactions (null, accounts)
         console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
-      } else {
-        null
       }
     }
 
@@ -102,13 +103,17 @@ class PageDashboardDragoManager extends Component {
       const  sourceLogClass = this.constructor.name
       var stateUpdate = true
       var propsUpdate = true
+      propsUpdate = !utils.shallowEqual(this.props, nextProps)
       stateUpdate = !utils.shallowEqual(this.state, nextState)
       propsUpdate = !this.props.ethBalance.eq(nextProps.ethBalance)
       if (stateUpdate || propsUpdate) {
+        console.log('State updated ', stateUpdate)
+        console.log('Props updated ', propsUpdate)
         console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
       }
       return stateUpdate || propsUpdate
     }
+
 
     componentDidUpdate(nextProps) {
     }
@@ -206,7 +211,7 @@ class PageDashboardDragoManager extends Component {
                         onActive={() => scrollToComponent(this.Accounts, { offset: -80, align: 'top', duration: 500 })}
                         icon={<ActionList color={Colors.blue500} />}>
                       </Tab>
-                      <Tab label="Drago" className={styles.detailsTab}
+                      <Tab label="Funds" className={styles.detailsTab}
                         onActive={() => scrollToComponent(this.Dragos, { offset: -80, align: 'top', duration: 500 })}
                         icon={<ActionAssessment color={Colors.blue500} />}>
                       </Tab>
@@ -265,6 +270,7 @@ class PageDashboardDragoManager extends Component {
                   <Paper zDepth={1}>
                     <Row style={{ outline: 'none' }}>
                       <Col className={styles.transactionsStyle} xs={12}>
+                      <p>Your last 20 transactions</p>
                         <ElementListWrapper
                           list={dragoTransactionsLogs}
                           renderCopyButton={this.renderCopyButton}
@@ -295,7 +301,7 @@ class PageDashboardDragoManager extends Component {
       const { api } = this.context
       // const options = {balance: false, supply: true}
       const options = {balance: false, supply: true, limit: 10, trader: false}
-      utils.getTransactionsDragoOpt(api, dragoAddress, accounts, options)
+      utils.getTransactionsDragoOptV2(api, dragoAddress, accounts, options)
       .then(results =>{
         const createdLogs = results[1].filter(event =>{
           return event.type !== 'BuyDrago' && event.type !== 'SellDrago'

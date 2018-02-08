@@ -112,7 +112,7 @@ class PageFundsDragoTrader extends Component {
       var { location, accountsInfo, allEvents, match } = this.props
       const { dragoCreatedLogs, dragoFilteredList } = this.state;
       const dragoSearchList = Immutable.List(dragoCreatedLogs)
-      const dragoList = Immutable.List(dragoFilteredList)
+      const dragoList = dragoFilteredList
       const detailsBox = {
         padding: 20,
       }

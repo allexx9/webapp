@@ -59,6 +59,8 @@ const muiThemeVault = getMuiTheme({
   }
 });
 
+const isConncetedTimeout = 4000
+
 // function logMsg(message) {
 //   console.log(message);
 // }
@@ -96,22 +98,6 @@ export class Whoops404 extends Component {
   //   super(props)
   // }
 
-  render() {
-  // we access the props passed to the component
-  const { location } = this.props
-  console.log(location);
-    return (
-          <TemplateLayout>
-          <div className="">
-              <h1>Page not found. Resource not found at '{location.pathname}'</h1>
-          </div>
-          </TemplateLayout>
-    )
-  }
-}
-
-export class ApplicationConfigPage extends Component {
-
   // We define the properties of the context variables passed down to the children
   static childContextTypes = {
     muiTheme: PropTypes.object,
@@ -120,15 +106,17 @@ export class ApplicationConfigPage extends Component {
   };
 
   state = {
-    isManager: false,
     isConnected: true,
+    isSyncing: false,
+    isManager: true,
+    syncStatus: null,
     notificationsOpen: false
   }
 
   td = null
 
   componentWillMount() {
-    this.checkConnectionToNode()
+    setTimeout(this.checkConnectionToNode,2000)
   }
 
   componentWillUnmount () {
@@ -145,22 +133,29 @@ export class ApplicationConfigPage extends Component {
   }
 
   checkConnectionToNode = () =>{
-    api.net.listening()
-    .then((listening) =>{
-      // console.log(listening)
-      this.td = setTimeout(this.checkConnectionToNode,15000)
+    console.log(api.isConnected)
+    if (api.isConnected) {
       this.setState({
         isConnected: true
       })
-    })
-    .catch((error) => {
-      this.td = setTimeout(this.checkConnectionToNode,15000)
+      api.eth.syncing()
+      .then(result => {
+        if(result !== false) {
+          this.setState({
+            isSyncing: true,
+            syncStatus: result
+          })
+        }
+        // console.log(api.net.peerCount())
+        // console.log('synching ', result)
+      })
+      this.td = setTimeout(this.checkConnectionToNode,isConncetedTimeout)
+    } else {
       this.setState({
         isConnected: false
-      })
-      console.warn(error)
-    })
-    
+      })  
+      this.td = setTimeout(this.checkConnectionToNode,isConncetedTimeout)
+    }    
   }
 
   // We pass down the context variables passed down to the children
@@ -195,25 +190,156 @@ export class ApplicationConfigPage extends Component {
   }
 
   render() {
-  const {notificationsOpen} = this.state
-  const { location, match } = this.props
-  console.log('is Manager = '+this.state.isManager)
+    const { notificationsOpen } = this.state
+    const { location, match } = this.props
+    console.log('is Manager = ' + this.state.isManager)
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
         <Grid fluid className={styles.maincontainer}>
           <Row>
             <Col xs={12}>
               {/* <ApplicationTabsMenu /> */}
-              <ApplicationTopBar 
-                handleTopBarSelectAccountType={ this.handleTopBarSelectAccountType } 
-                isManager={this.state.isManager} 
-                handleToggleNotifications={this.handleToggleNotifications} 
-                />
+              <ApplicationTopBar
+                handleTopBarSelectAccountType={this.handleTopBarSelectAccountType}
+                isManager={this.state.isManager}
+                handleToggleNotifications={this.handleToggleNotifications}
+              />
             </Col>
           </Row>
           <Row className={classNames(styles.content)}>
             <Col xs={12}>
-            {this.state.isConnected ? (
+              <div className="">
+                <h1>Page not found. Resource not found at '{location.pathname}'</h1>
+              </div>
+            </Col>
+          </Row>
+        </Grid>
+      </MuiThemeProvider>
+    )
+  }
+}
+
+export class ApplicationConfigPage extends Component {
+
+  // We define the properties of the context variables passed down to the children
+  static childContextTypes = {
+    muiTheme: PropTypes.object,
+    api: PropTypes.object,
+    isConnected: PropTypes.func
+  };
+
+  state = {
+    isConnected: true,
+    isSyncing: false,
+    isManager: true,
+    syncStatus: null,
+    notificationsOpen: false
+  }
+
+  td = null
+
+  componentWillMount() {
+    setTimeout(this.checkConnectionToNode,2000)
+  }
+
+  componentWillUnmount () {
+    clearTimeout(this.td)
+  }
+
+  // This function is passed down with context and used as a call back function to show a warning page
+  // if the connection with the node drops
+  isConnected = (status) => {
+    // console.log('isConnected')
+    this.setState({
+      isConnected: status
+    })
+  }
+
+  checkConnectionToNode = () =>{
+    console.log(api.isConnected)
+    if (api.isConnected) {
+      this.setState({
+        isConnected: true
+      })
+      api.eth.syncing()
+      .then(result => {
+        if(result !== false) {
+          this.setState({
+            isSyncing: true,
+            syncStatus: result
+          })
+        }
+        // console.log(api.net.peerCount())
+        // console.log('synching ', result)
+      })
+      this.td = setTimeout(this.checkConnectionToNode,isConncetedTimeout)
+    } else {
+      this.setState({
+        isConnected: false
+      })  
+      this.td = setTimeout(this.checkConnectionToNode,isConncetedTimeout)
+    }    
+  }
+
+  // We pass down the context variables passed down to the children
+  getChildContext () {
+    return {
+      muiTheme,
+      api,
+      isConnected: this.isConnected
+    };
+  }
+
+  // Callback function to handle account type selection in the Top Bar
+  // value = 1 = Trader
+  // value = 2 = Manager
+  handleTopBarSelectAccountType = (event, index, value) => { 
+    const accountType = {
+      false: false,
+      true: true
+    }
+    this.setState({
+      isManager: accountType[value],
+    }); 
+  };
+
+  static propTypes = {
+    location: PropTypes.object.isRequired,
+  };
+
+  handleToggleNotifications = () => {
+    console.log('open')
+    this.setState({notificationsOpen: !this.state.notificationsOpen})
+  }
+
+  render() {
+    const { notificationsOpen } = this.state
+    const { location, match } = this.props
+    console.log('is Manager = ' + this.state.isManager)
+    return (
+      <MuiThemeProvider muiTheme={muiTheme}>
+        <Grid fluid className={styles.maincontainer}>
+          <Row>
+            <Col xs={12}>
+              {/* <ApplicationTabsMenu /> */}
+              <ApplicationTopBar
+                handleTopBarSelectAccountType={this.handleTopBarSelectAccountType}
+                isManager={this.state.isManager}
+                handleToggleNotifications={this.handleToggleNotifications}
+              />
+            </Col>
+          </Row>
+          <Row className={classNames(styles.content)}>
+            <Col xs={12}>
+              <ApplicationConfig
+                match={match}
+                isManager={this.state.isManager}
+                location={location}
+                notificationsOpen={notificationsOpen}
+                handleToggleNotifications={this.handleToggleNotifications}
+                notificationsOpen={notificationsOpen}
+              />
+              {/* {this.state.isConnected ? (
               <ApplicationConfig 
                 match={match}
                 isManager={this.state.isManager} 
@@ -224,7 +350,7 @@ export class ApplicationConfigPage extends Component {
                 />
             ) : (
               <NotConnected isConnected={this.state.isConnected}/>
-            )}
+            )} */}
             </Col>
           </Row>
           {/* <Row>
@@ -285,11 +411,20 @@ export class ApplicationHomePage extends Component {
   }
 
   componentWillMount() {
-    this.checkConnectionToNode()
+    // Starting connection checking. this is not necessary runnin inside Parity UI
+    // because the checki is done by Parity and a messagge will be displayed by the client
+    var endpoint = localStorage.getItem('endpoint')
+    console.log(endpoint)
+    if (endpoint !== 'local') {
+      this.td =  setTimeout(this.checkConnectionToNode,2000)
+    }
   }
 
   componentWillUnmount () {
-    clearTimeout(this.td)
+    var endpoint = localStorage.getItem('endpoint')
+    if (endpoint !== 'local') {
+      clearTimeout(this.td)
+    }
   }
 
   // This function is passed down with context and used as a call back function to show a warning page
@@ -301,14 +436,10 @@ export class ApplicationHomePage extends Component {
   }
 
   checkConnectionToNode = () =>{
-    api.net.listening()
-    .then((listening) =>{
-      this.td = setTimeout(this.checkConnectionToNode,15000)
+    if (api.isConnected) {
       this.setState({
         isConnected: true
       })
-    })
-    .then(() =>{
       api.eth.syncing()
       .then(result => {
         if(result !== false) {
@@ -317,24 +448,23 @@ export class ApplicationHomePage extends Component {
             syncStatus: result
           })
         }
-        console.log(result)
+        // console.log(api.net.peerCount())
+        // console.log('synching ', result)
       })
-    })
-    .catch((error) => {
-      this.td = setTimeout(this.checkConnectionToNode,15000)
+      this.td = setTimeout(this.checkConnectionToNode,isConncetedTimeout)
+    } else {
       this.setState({
         isConnected: false
-      })
-      console.warn(error)
-    })
-    
+      })  
+      this.td = setTimeout(this.checkConnectionToNode,isConncetedTimeout)
+    }    
   }
 
   render() {
   // we access the props passed to the component
   // console.log(location);
     // console.log('is Manager = '+this.state.isManager)
-    console.log(this.state.isConnected && !this.state.isSyncing)
+    // console.log(this.state.isConnected && !this.state.isSyncing)
     return (
       <Grid fluid className={styles.maincontainer}>
       <Row>
@@ -367,35 +497,6 @@ export class ApplicationHomePage extends Component {
   }
 }
 
-// export class ApplicationGabcoinPage extends Component {
-
-//     // We define the properties of the context variables passed down to the children
-//     static childContextTypes = {
-//       muiTheme: PropTypes.object,
-//       api: PropTypes.object
-//     };
-  
-//     // We pass down the context variables passed down to the children
-//     getChildContext () {
-//       return {
-//         muiTheme,
-//         api
-//       };
-//     }
-
-//   render() {
-//   // we access the props passed to the component
-//   const { location } = this.props
-//     return (
-//           <TemplateLayout>
-//           <ApplicationGabcoin />
-//           <ApplicationGabcoinEventful />
-//               {/* <p>Locaton is {location.pathname}</p> */}
-//           </TemplateLayout>
-//     )
-//   }
-// }
-
 export class ApplicationDragoPage extends Component {
 
 
@@ -421,6 +522,8 @@ export class ApplicationDragoPage extends Component {
     this.state = {
       isManager: isManager,
       isConnected: true,
+      isSyncing: false,
+      syncStatus: null,
       notificationsOpen: false
     }
   }
@@ -444,16 +547,22 @@ export class ApplicationDragoPage extends Component {
     };
   }
 
-
-
   td = null
 
   componentWillMount() {
-    this.checkConnectionToNode()
+    // Starting connection checking. this is not necessary runnin inside Parity UI
+    // because the checki is done by Parity and a messagge will be displayed by the client
+    var endpoint = localStorage.getItem('endpoint')
+    if (endpoint !== 'local') {
+      this.td = setTimeout(this.checkConnectionToNode,2000)
+    }
   }
 
   componentWillUnmount () {
-    clearTimeout(this.td)
+    var endpoint = localStorage.getItem('endpoint')
+    if (endpoint !== 'local') {
+      clearTimeout(this.td)
+    }
   }
 
   // This function is passed down with context and used as a call back function to show a warning page
@@ -465,21 +574,30 @@ export class ApplicationDragoPage extends Component {
   }
 
   checkConnectionToNode = () =>{
-    api.net.listening()
-    .then((listening) =>{
-      this.td = setTimeout(this.checkConnectionToNode,15000)
+    console.log('Connected: ',api.isConnected)
+    if (api.isConnected) {
       this.setState({
         isConnected: true
       })
-    })
-    .catch((error) => {
-      this.td = setTimeout(this.checkConnectionToNode,15000)
+      api.eth.syncing()
+      .then(result => {
+        console.log('Syncing: ',result)
+        if(result !== false) {
+          this.setState({
+            isSyncing: true,
+            syncStatus: result
+          })
+        }
+        // console.log(api.net.peerCount())
+        // console.log('synching ', result)
+      })
+      this.td = setTimeout(this.checkConnectionToNode,isConncetedTimeout)
+    } else {
       this.setState({
         isConnected: false
-      })
-      console.warn(error)
-    })
-    
+      })  
+      this.td = setTimeout(this.checkConnectionToNode,isConncetedTimeout)
+    }    
   }
 
   // Callback function to handle account type selection in the Top Bar
@@ -525,17 +643,18 @@ export class ApplicationDragoPage extends Component {
           </Row>
           <Row className={classNames(styles.content)}>
             <Col xs={12}>
-            {this.state.isConnected ? (
-              <ApplicationDragoHome 
-                isManager={this.state.isManager} 
-                location={location}
-                notificationsOpen={notificationsOpen}
-                handleToggleNotifications={this.handleToggleNotifications}
-                notificationsOpen={notificationsOpen}
+              {this.state.isConnected && !this.state.isSyncing ? (
+                // {false ? (
+                <ApplicationDragoHome
+                  isManager={this.state.isManager}
+                  location={location}
+                  notificationsOpen={notificationsOpen}
+                  handleToggleNotifications={this.handleToggleNotifications}
+                  notificationsOpen={notificationsOpen}
                 />
-            ) : (
-              <NotConnected isConnected={this.state.isConnected}/>
-            )}
+              ) : (
+                  <NotConnected isSyncing={this.state.isSyncing} syncStatus={this.state.syncStatus} />
+                )}
             </Col>
           </Row>
           {/* <Row>
@@ -574,6 +693,8 @@ export class ApplicationVaultPage extends Component {
     this.state = {
       isManager: isManager,
       isConnected: true,
+      isSyncing: false,
+      syncStatus: null,
       notificationsOpen: false
     }
   }
@@ -598,11 +719,19 @@ export class ApplicationVaultPage extends Component {
   td = null
 
   componentWillMount() {
-    this.checkConnectionToNode()
+    // Starting connection checking. this is not necessary runnin inside Parity UI
+    // because the checki is done by Parity and a messagge will be displayed by the client
+    var endpoint = localStorage.getItem('endpoint')
+    if (endpoint !== 'local') {
+      this.td = setTimeout(this.checkConnectionToNode,2000)
+    }
   }
 
   componentWillUnmount () {
-    clearTimeout(this.td)
+    var endpoint = localStorage.getItem('endpoint')
+    if (endpoint !== 'local') {
+      clearTimeout(this.td)
+    }
   }
 
   // This function is passed down with context and used as a call back function to show a warning page
@@ -616,22 +745,32 @@ export class ApplicationVaultPage extends Component {
 
   // Starting the timeout to check if the node is up
   checkConnectionToNode = () =>{
-    api.net.listening()
-    .then((listening) =>{
-      this.td = setTimeout(this.checkConnectionToNode,15000)
+    console.log('Connected: ',api.isConnected)
+    if (api.isConnected) {
       this.setState({
         isConnected: true
       })
-    })
-    .catch((error) => {
-      this.td = setTimeout(this.checkConnectionToNode,15000)
+      api.eth.syncing()
+      .then(result => {
+        console.log('Syncing: ',result)
+        if(result !== false) {
+          this.setState({
+            isSyncing: true,
+            syncStatus: result
+          })
+        }
+        // console.log(api.net.peerCount())
+        // console.log('synching ', result)
+      })
+      this.td = setTimeout(this.checkConnectionToNode,isConncetedTimeout)
+    } else {
       this.setState({
         isConnected: false
-      })
-      console.warn(error)
-    })
-    
+      })  
+      this.td = setTimeout(this.checkConnectionToNode,isConncetedTimeout)
+    }    
   }
+
 
   // Callback function to handle account type selection in the Top Bar
   // value = 1 = Trader

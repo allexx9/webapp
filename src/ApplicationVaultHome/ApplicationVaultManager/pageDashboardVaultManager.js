@@ -89,11 +89,12 @@ class PageDashboardVaultManager extends Component {
       const { api, contract } = this.context
       const {accounts } = this.props
       const sourceLogClass = this.constructor.name
-      if (!this.props.ethBalance.eq(nextProps.ethBalance)) {
+      console.log(`${sourceLogClass} -> componentWillReceiveProps-> nextProps received.`);
+      // Updating the transaction list if there have been a change in total accounts balance and the previous balance is
+      // different from 0 (balances are set to 0 on app loading)
+      if (!this.props.ethBalance.eq(nextProps.ethBalance) && !this.props.ethBalance.eq(0)) {
         this.getTransactions (null, accounts)
         console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
-      } else {
-        null
       }
     }
 
@@ -101,9 +102,12 @@ class PageDashboardVaultManager extends Component {
       const  sourceLogClass = this.constructor.name
       var stateUpdate = true
       var propsUpdate = true
+      propsUpdate = !utils.shallowEqual(this.props, nextProps)
       stateUpdate = !utils.shallowEqual(this.state, nextState)
       propsUpdate = !this.props.ethBalance.eq(nextProps.ethBalance)
       if (stateUpdate || propsUpdate) {
+        console.log('State updated ', stateUpdate)
+        console.log('Props updated ', propsUpdate)
         console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
       }
       return stateUpdate || propsUpdate
@@ -203,15 +207,15 @@ class PageDashboardVaultManager extends Component {
                     <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle}>
                       <Tab label="Accounts" className={styles.detailsTab}
                         onActive={() => scrollToComponent(this.Accounts, { offset: -80, align: 'top', duration: 500 })}
-                        icon={<ActionList color={Colors.blue500} />}>
+                        icon={<ActionList color={Colors.blueGrey500} />}>
                       </Tab>
-                      <Tab label="Drago" className={styles.detailsTab}
+                      <Tab label="Vaults" className={styles.detailsTab}
                         onActive={() => scrollToComponent(this.Dragos, { offset: -80, align: 'top', duration: 500 })}
-                        icon={<ActionAssessment color={Colors.blue500} />}>
+                        icon={<ActionAssessment color={Colors.blueGrey500} />}>
                       </Tab>
                       <Tab label="Transactions" className={styles.detailsTab}
                         onActive={() => scrollToComponent(this.Transactions, { offset: -80, align: 'top', duration: 500 })}
-                        icon={<ActionShowChart color={Colors.blue500} />}>
+                        icon={<ActionShowChart color={Colors.blueGrey500} />}>
                       </Tab>
                     </Tabs>
                   </Col>
@@ -235,7 +239,7 @@ class PageDashboardVaultManager extends Component {
                 <Col xs={12}>
                   <span ref={(section) => { this.Dragos = section; }}></span>
                   <AppBar className={styles.appBar}
-                    title='FUNDS'
+                    title='VAULTS'
                     showMenuIconButton={false}
                     iconElementRight={<ElementVaultCreateAction accounts={accounts} snackBar={this.snackBar} />}
                        iconStyleRight={{ marginTop: 'auto', marginBottom: 'auto' }}

@@ -17,7 +17,7 @@ import ElementBoxHeadTitle from '../Elements/elementBoxHeadTitle'
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton'
 import TextField from 'material-ui/TextField'
-import { ALLOWED_ENDPOINTS, DEFAULT_ENDPOINT } from '../utils/const';
+import { ALLOWED_ENDPOINTS, DEFAULT_ENDPOINT, LOCAL } from '../utils/const';
 
 
 
@@ -94,6 +94,8 @@ class PageNetworkConfig extends Component {
 
     render() {
       const { allowedEndpoints, selectedEndpoint } = this.state 
+      const endPoint = localStorage.getItem('endpoint')
+      var remoteEndPointDisabled = endPoint === LOCAL ? true : false
 
       const stylesToggle = {
         block: {
@@ -138,6 +140,7 @@ class PageNetworkConfig extends Component {
                     onToggle={this.onToggle}
                     data-endpoint="infura"
                     toggled={allowedEndpoints.get('infura')}
+                    disabled={remoteEndPointDisabled}
                   />
                   <Toggle
                     label="RigoBlock"
@@ -145,6 +148,7 @@ class PageNetworkConfig extends Component {
                     onToggle={this.onToggle}
                     data-endpoint="rigoblock"
                     toggled={allowedEndpoints.get('rigoblock')}
+                    disabled={remoteEndPointDisabled}
                   />
                   <Toggle
                     label="Local"
