@@ -10,12 +10,15 @@ import {
     Redirect
 } from 'react-router-dom'
 
+
 import registerServiceWorker from './registerServiceWorker';
 import App from './App';
 import './index.module.css';
 
+
+
 ReactDOM.render(
-    <App />,
+    <App/>,
     document.getElementById('root'))
 
 registerServiceWorker()

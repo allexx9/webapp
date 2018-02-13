@@ -1,7 +1,8 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
 import { Grid, Row, Col } from 'react-flexbox-grid';
-import { Link, Route, withRouter, HashRouter, Switch, Redirect } from 'react-router-dom'
+import { Link, Route, withRouter, HashRouter, Switch, Redirect, Router } from 'react-router-dom'
+import createHashHistory from 'history/createHashHistory';
 import BigNumber from 'bignumber.js';
 import NotificationSystem from 'react-notification-system'
 import Paper from 'material-ui/Paper';
@@ -33,6 +34,11 @@ import ElementNotification from './Elements/elementNotification'
 import ElementNotificationsDrawer from './Elements/elementNotificationsDrawer'
 import utils from './utils/utils'
 
+import { Provider } from 'react-redux';
+import { createStore, applyMiddleware } from 'redux';
+import promiseMiddleware from 'redux-promise-middleware';
+import thunkMiddleware from 'redux-thunk';
+
 import {
   ApplicationHomePage, 
   ApplicationVaultPage, 
@@ -55,6 +61,33 @@ if (typeof window.parity !== 'undefined') {
   appHashPath = 'web';
 }
 
+const initialState = {
+  count: 0
+};
+
+const reducer = (state = {}, action) => {
+  switch (action.type) {
+    case 'GET_LOGS_PENDING':
+      return {
+        isPending: true
+      };
+
+    case 'GET_LOGS_FULFILLED':
+      return {
+        body: action.payload.body
+      };
+
+    default:
+      return state;
+  };
+}
+
+const store = createStore(reducer, {}, applyMiddleware(
+  thunkMiddleware,
+  promiseMiddleware()
+));
+
+const history = createHashHistory();
 
 // Setting the routes. 
 // Component Whoops404 is loaded if a page does not exist.
@@ -146,23 +179,25 @@ export class App extends Component {
       }
     }
     return (
-      <HashRouter>
-        <Switch>
-          <Route exact path={"/app/" + appHashPath + "/home"} component={ApplicationHomePage} />
-          <Route path={"/app/" + appHashPath + "/vaultv2"} component={ApplicationVaultPage} />
-          {/* <Route exact path={ "/app/" + appHashPath + "/drago/dashboard" } component={ApplicationDragoPage} /> */}
-          {/* <Route exact path={ "/app/" + appHashPath + "/drago/funds" } component={ApplicationDragoPage} /> */}
-          <Route path={"/app/" + appHashPath + "/drago"} component={ApplicationDragoPage} />
-          <Route path={"/app/" + appHashPath + "/config"} component={ApplicationConfigPage} />
-          {/* <Route path={ "/app/" + appHashPath + "/exchange" } component={ApplicationExchangePage} /> */}
-          {/* <Redirect from="/exchange" to={ "/app/" + appHashPath + "/exchange" } />  */}
-          <Redirect from="/vault/" to={"/app/" + appHashPath + "/vault"} />
-          <Redirect from="/vaultv2/" to={"/app/" + appHashPath + "/vaultv2"} />
-          <Redirect from="/drago" to={"/app/" + appHashPath + "/drago"} />
-          <Redirect from="/" to={"/app/" + appHashPath + "/home"} />
-          <Route component={Whoops404} />
-        </Switch>
-      </HashRouter>
+      <Provider store={store}>
+        <Router history={history}>
+          <Switch>
+            <Route exact path={"/app/" + appHashPath + "/home"} component={ApplicationHomePage} />
+            <Route path={"/app/" + appHashPath + "/vaultv2"} component={ApplicationVaultPage} />
+            {/* <Route exact path={ "/app/" + appHashPath + "/drago/dashboard" } component={ApplicationDragoPage} /> */}
+            {/* <Route exact path={ "/app/" + appHashPath + "/drago/funds" } component={ApplicationDragoPage} /> */}
+            <Route path={"/app/" + appHashPath + "/drago"} component={ApplicationDragoPage} />
+            <Route path={"/app/" + appHashPath + "/config"} component={ApplicationConfigPage} />
+            {/* <Route path={ "/app/" + appHashPath + "/exchange" } component={ApplicationExchangePage} /> */}
+            {/* <Redirect from="/exchange" to={ "/app/" + appHashPath + "/exchange" } />  */}
+            <Redirect from="/vault/" to={"/app/" + appHashPath + "/vault"} />
+            <Redirect from="/vaultv2/" to={"/app/" + appHashPath + "/vaultv2"} />
+            <Redirect from="/drago" to={"/app/" + appHashPath + "/drago"} />
+            <Redirect from="/" to={"/app/" + appHashPath + "/home"} />
+            <Route component={Whoops404} />
+          </Switch>
+        </Router>
+      </Provider>
     )
   }
 

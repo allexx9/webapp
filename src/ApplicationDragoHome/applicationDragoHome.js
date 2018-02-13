@@ -45,6 +45,7 @@ import ElementNotification from '../Elements/elementNotification'
 import ElementNotificationsDrawer from '../Elements/elementNotificationsDrawer'
 import CheckAuthPage from '../Elements/checkAuthPage'
 import ElementBottomStatusBar from '../Elements/elementBottomStatusBar'
+import { Interfaces } from '../utils/interfaces'
 
 
 const DIVISOR = 10 ** 6;  //tokens are divisible by one million
@@ -130,28 +131,7 @@ export default class ApplicationDragoHome extends Component {
   } 
 
   componentDidMount() {
-    // Allowed endpoints are defined in const.js
-    var selectedEndpoint = localStorage.getItem('endpoint')
-    var allowedEndpoints = new Map(ALLOWED_ENDPOINTS)
-    if (allowedEndpoints.has(selectedEndpoint)) {
-      switch (selectedEndpoint) {
-        case INFURA:
-        console.log(INFURA)
-          this.attachInterfaceInfura()
-        break;
-        case RIGOBLOCK:
-          console.log(RIGOBLOCK)
-          this.attachInterfaceRigoBlock()
-        break; 
-        case LOCAL:
-          console.log(LOCAL)
-          this.attachInterfaceRigoBlock()
-        break; 
-      }
-    } else {
-      localStorage.setItem('endpoint', DEFAULT_ENDPOINT)
-      this.attachInterfaceInfura()
-    }
+    this.attachInterface()
     this._notificationSystem = this.refs.notificationSystem
   }
 
@@ -346,16 +326,120 @@ export default class ApplicationDragoHome extends Component {
     }
   }
 
-  notificationAlert = (primaryText, secondaryText, eventType = 'transfer') => {
-    return (
-      <ElementNotification 
-        primaryText={primaryText}
-        secondaryText={secondaryText}
-        eventType={eventType}
-        eventStatus='executed'
-        txHash=''
-        />
-    )
+  // notificationAlert = (primaryText, secondaryText, eventType = 'transfer') => {
+  //   return (
+  //     <ElementNotification 
+  //       primaryText={primaryText}
+  //       secondaryText={secondaryText}
+  //       eventType={eventType}
+  //       eventStatus='executed'
+  //       txHash=''
+  //       />
+  //   )
+  // }
+
+  attachInterface = () => {
+    // Allowed endpoints are defined in const.js
+    const {api} = this.context
+    var sourceLogClass = this.constructor.name
+    var WsSecureUrl = ''
+    var selectedEndpoint = localStorage.getItem('endpoint')
+    var allowedEndpoints = new Map(ALLOWED_ENDPOINTS)
+    if (allowedEndpoints.has(selectedEndpoint)) {
+      switch (selectedEndpoint) {
+        case INFURA:
+          console.log(INFURA)
+          // this.attachInterfaceInfura()
+          Interfaces.attachInterfaceInfuraV2(api)
+            .then(() => {
+              this.setState({...this.state, ...Interfaces.success})
+              // Subscribing to newBlockNumber event
+              api.subscribe('eth_blockNumber', this.onNewBlockNumber)
+                .then((subscriptionID) => {
+                  console.log(`${sourceLogClass}: Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);
+                  this.setState({ subscriptionData: subscriptionID });
+                })
+                .catch((error) => {
+                  console.warn('error subscription', error)
+                });
+            })
+            .catch(()=>{
+              this.setState({...this.state, ...Interfaces.error})
+            })
+          break;
+        case RIGOBLOCK:
+          console.log(RIGOBLOCK)
+          // this.attachInterfaceRigoBlock()
+          Interfaces.attachInterfaceRigoBlockV2(api)
+            .then(() => {
+              this.setState({...this.state, ...Interfaces.success})
+              // Setting connection to node
+              if (PROD) {
+                WsSecureUrl = EP_RIGOBLOCK_KV_PROD_WS
+              } else {
+                WsSecureUrl = EP_RIGOBLOCK_KV_DEV_WS
+              }
+              // Subscribing to newBlockNumber event
+              const web3 = new Web3(WsSecureUrl)
+              Promise
+                .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
+                .then(result => {
+                  var subscription = result[0]
+                  console.log(`${sourceLogClass}: Subscribed to eth_blockNumber`);
+                  this.setState({ subscriptionData: subscription })
+                })
+            })
+            .catch(()=>{
+              this.setState(...this.state, ...Interfaces.error)
+            })
+          break; 
+        case LOCAL:
+          console.log(LOCAL)
+          this.attachInterfaceRigoBlock()
+          Interfaces.attachInterfaceRigoBlockV2(api)
+            .then(() => {
+              this.setState({...this.state, ...Interfaces.success})
+              // Setting connection to node
+              if (PROD) {
+                WsSecureUrl = EP_RIGOBLOCK_KV_PROD_WS
+              } else {
+                WsSecureUrl = EP_RIGOBLOCK_KV_DEV_WS
+              }
+              // Subscribing to newBlockNumber event
+              const web3 = new Web3(WsSecureUrl)
+              Promise
+                .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
+                .then(result => {
+                  var subscription = result[0]
+                  console.log(`${sourceLogClass}: Subscribed to eth_blockNumber`);
+                  this.setState({ subscriptionData: subscription })
+                })
+            })
+            .catch(()=>{
+              this.setState({...this.state, ...Interfaces.error})
+            })
+        break; 
+      }
+    } else {
+      localStorage.setItem('endpoint', DEFAULT_ENDPOINT)
+      // this.attachInterfaceInfura()
+      Interfaces.attachInterfaceInfuraV2(api)
+        .then(() => {
+          this.setState({...this.state, ...Interfaces.success})
+          // Subscribing to newBlockNumber event
+          api.subscribe('eth_blockNumber', this.onNewBlockNumber)
+            .then((subscriptionID) => {
+              console.log(`${sourceLogClass}: Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);
+              this.setState({ subscriptionData: subscriptionID });
+            })
+            .catch((error) => {
+              console.warn('error subscription', error)
+            });
+        })
+        .catch(()=>{
+          this.setState({...this.state, ...Interfaces.error})
+        })
+    }
   }
 
   onNewBlockNumber = (_error, blockNumber) => {
@@ -407,7 +491,6 @@ export default class ApplicationDragoHome extends Component {
     Promise
       .all(promisesBalances)
       .then((results) => {
-        console.log(results)
         // Splitting the the result array between ethBalances and rigoTokenBalances
         const halfLength = Math.ceil(results.length / 2)
         const ethBalances = results.splice(0,halfLength)
@@ -484,250 +567,248 @@ export default class ApplicationDragoHome extends Component {
       });
   }
 
-  getAccountsParity () {
-    const { api } = this.context;
-    const selectedEndpoint = localStorage.getItem('endpoint')
-    console.log(api)
-    return api.parity
-    .accountsInfo()
-    .then((accountsInfo) => {
-      console.log('Parity getAccounts', accountsInfo)
-      Object.keys(accountsInfo).forEach(function(k) {
-        accountsInfo[k] = {
-          name: accountsInfo[k].name,
-          source: "parity",
-          ethBalance: api.util.fromWei(new BigNumber(0)).toFormat(3),
-          rigoTokenBalance: api.util.fromWei(new BigNumber(0)).toFormat(3)
-        }
-      })
-      return accountsInfo
-    })
-    .catch((error) => {
-      console.warn('getAccounts', error);
-      // return api.parity
-      //   .accounts()
-      //   .then((accountsInfo) => {
-      //     return Object
-      //       .keys(accountsInfo)
-      //       .filter((address) => accountsInfo[address].uuid)
-      //       .reduce((ret, address) => {
-      //         ret[address] = {
-      //           name: accountsInfo[address].name
-      //         };
-      //         return ret;
-      //       }, {});
-      //   }
-      // );
-      return {}
-    })
-  }
+  // getAccountsParity () {
+  //   const { api } = this.context;
+  //   const selectedEndpoint = localStorage.getItem('endpoint')
+  //   console.log(api)
+  //   return api.parity
+  //   .accountsInfo()
+  //   .then((accountsInfo) => {
+  //     console.log('Parity getAccounts', accountsInfo)
+  //     Object.keys(accountsInfo).forEach(function(k) {
+  //       accountsInfo[k] = {
+  //         name: accountsInfo[k].name,
+  //         source: "parity",
+  //         ethBalance: api.util.fromWei(new BigNumber(0)).toFormat(3),
+  //         rigoTokenBalance: api.util.fromWei(new BigNumber(0)).toFormat(3)
+  //       }
+  //     })
+  //     return accountsInfo
+  //   })
+  //   .catch((error) => {
+  //     console.warn('getAccounts', error);
+  //     // return api.parity
+  //     //   .accounts()
+  //     //   .then((accountsInfo) => {
+  //     //     return Object
+  //     //       .keys(accountsInfo)
+  //     //       .filter((address) => accountsInfo[address].uuid)
+  //     //       .reduce((ret, address) => {
+  //     //         ret[address] = {
+  //     //           name: accountsInfo[address].name
+  //     //         };
+  //     //         return ret;
+  //     //       }, {});
+  //     //   }
+  //     // );
+  //     return {}
+  //   })
+  // }
 
-  getAccountsMetamask () {
-    const web3 = window.web3
-    const { api } = this.context;
-    if (typeof web3 === 'undefined') {
-      return;
-    }
-    return web3.eth.net.getId()
-    .then((networkId) => {
-      if (networkId != DEFAULT_NETWORK_ID) {
-        this.setState({
-          networkCorrect: false,
-          warnMsg: MSG_NO_KOVAN
-        })
-      } else {
-        this.setState({
-          networkCorrect: true
-        }) 
-      }
-    })
-    .then (() =>{
-      return web3.eth.getAccounts()
-      .then(accounts => {
-        const balance = web3.eth.getBalance(accounts[0])
-        .then(balance => {
-          return balance;
-        })
-        const accountsMetaMask = {
-          [accounts[0]]: {
-            name: "MetaMask",
-            source: "MetaMask",
-            ethBalance: api.util.fromWei(new BigNumber(0)).toFormat(3),
-            rigoTokenBalance: api.util.fromWei(new BigNumber(0)).toFormat(3)
-          }
-        }
-        return accountsMetaMask;
-      })
-      .catch((error) =>{
-        console.warn(error)
-        return {}
-      })
-    })
-  }
+  // getAccountsMetamask () {
+  //   const web3 = window.web3
+  //   const { api } = this.context;
+  //   if (typeof web3 === 'undefined') {
+  //     return;
+  //   }
+  //   return web3.eth.net.getId()
+  //   .then((networkId) => {
+  //     if (networkId != DEFAULT_NETWORK_ID) {
+  //       this.setState({
+  //         networkCorrect: false,
+  //         warnMsg: MSG_NO_KOVAN
+  //       })
+  //     } else {
+  //       this.setState({
+  //         networkCorrect: true
+  //       }) 
+  //     }
+  //   })
+  //   .then (() =>{
+  //     return web3.eth.getAccounts()
+  //     .then(accounts => {
+  //       const balance = web3.eth.getBalance(accounts[0])
+  //       .then(balance => {
+  //         return balance;
+  //       })
+  //       const accountsMetaMask = {
+  //         [accounts[0]]: {
+  //           name: "MetaMask",
+  //           source: "MetaMask",
+  //           ethBalance: api.util.fromWei(new BigNumber(0)).toFormat(3),
+  //           rigoTokenBalance: api.util.fromWei(new BigNumber(0)).toFormat(3)
+  //         }
+  //       }
+  //       return accountsMetaMask;
+  //     })
+  //     .catch((error) =>{
+  //       console.warn(error)
+  //       return {}
+  //     })
+  //   })
+  // }
 
-  attachInterfaceInfura = () => {
-    const { api } = this.context;
-    var sourceLogClass = this.constructor.name
-    var WsSecureUrl = ''
-    console.log('Interface Infura')
-    return Promise
-    .all([
-      this.getAccountsMetamask()
-    ])
-    .then(([accountsMetaMask]) => {
-      const allAccounts = {...accountsMetaMask}
-      console.log('Metamask accounts loaded')
-      this.setState({
-        accountsInfo: accountsMetaMask,
-        // loading: false,
-        accounts: Object
-          .keys(allAccounts)
-          .map((address) => {
-            const info = allAccounts[address] || {};
-            return {
-              address,
-              name: info.name,
-              source: info.source,
-              ethBalance: api.util.fromWei(new BigNumber(0)).toFormat(3),
-              rigoTokenBalance: api.util.fromWei(new BigNumber(0)).toFormat(3)
-            };
-          })
-        });
-        // Subscribing to newBlockNumber event
-        api.subscribe('eth_blockNumber', this.onNewBlockNumber)
-          .then((subscriptionID) => {
-            console.log(`${sourceLogClass}: Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);
-            this.setState({ subscriptionData: subscriptionID });
-          })
-          .catch((error) => {
-            console.warn('error subscription', error)
-          });
-      })
-      .then(()=>{
-        this.setState({
-          loading: false,
-          });    
-      })
-      .catch((error) => {
-        console.warn('attachInterface', error)
-      });
-  }
+  // attachInterfaceInfura = () => {
+  //   const { api } = this.context;
+  //   var sourceLogClass = this.constructor.name
+  //   var WsSecureUrl = ''
+  //   console.log('Interface Infura')
+  //   return Promise
+  //   .all([
+  //     this.getAccountsMetamask()
+  //   ])
+  //   .then(([accountsMetaMask]) => {
+  //     const allAccounts = {...accountsMetaMask}
+  //     console.log('Metamask accounts loaded')
+  //     this.setState({
+  //       accountsInfo: accountsMetaMask,
+  //       // loading: false,
+  //       accounts: Object
+  //         .keys(allAccounts)
+  //         .map((address) => {
+  //           const info = allAccounts[address] || {};
+  //           return {
+  //             address,
+  //             name: info.name,
+  //             source: info.source,
+  //             ethBalance: api.util.fromWei(new BigNumber(0)).toFormat(3),
+  //             rigoTokenBalance: api.util.fromWei(new BigNumber(0)).toFormat(3)
+  //           };
+  //         })
+  //       });
+  //       // Subscribing to newBlockNumber event
+  //       api.subscribe('eth_blockNumber', this.onNewBlockNumber)
+  //         .then((subscriptionID) => {
+  //           console.log(`${sourceLogClass}: Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);
+  //           this.setState({ subscriptionData: subscriptionID });
+  //         })
+  //         .catch((error) => {
+  //           console.warn('error subscription', error)
+  //         });
+  //     })
+  //     .then(()=>{
+  //       this.setState({
+  //         loading: false,
+  //         });    
+  //     })
+  //     .catch((error) => {
+  //       console.warn('attachInterface', error)
+  //     });
+  // }
 
-  attachInterfaceRigoBlock = () => {
-    const { api } = this.context;
-    var sourceLogClass = this.constructor.name
-    var WsSecureUrl = ''
-    console.log('Interface RigoBlock')
-    // Checking if the parity node is running in --public-mode
-    api.parity.nodeKind()
-      .then(result => {
-        console.log(result.availability)
-        if (result.availability === 'public') {
-          // if --public-mode then getting only MetaMask accounts
-          return [this.getAccountsMetamask()]
-        }
-        else {
-          // if NOT --public-mode then getting bot Parity and MetaMask accounts
-          return [this.getAccountsParity(), this.getAccountsMetamask()]
-        }
-      })
-      .then((getAccounts) => {
-        Promise
-          .all(getAccounts)
-          .then(([accountsInfo, accountsMetaMask]) => {
-            const allAccounts = { ...accountsInfo, ...accountsMetaMask }
-            console.log('Parity accounts loaded')
-            console.log(allAccounts)
-            this.setState({
-              accountsInfo,
-              // loading: false,
-              ethBalance: new BigNumber(0),
-              accounts: Object
-                .keys(allAccounts)
-                .map((address) => {
-                  const info = allAccounts[address] || {};
-                  return {
-                    address,
-                    name: info.name,
-                    source: info.source,
-                    ethBalance: api.util.fromWei(new BigNumber(0)).toFormat(3),
-                    rigoTokenBalance: api.util.fromWei(new BigNumber(0)).toFormat(3)
-                  };
-                })
-            })
-            // Subscribing to newBlockNumber event
-            if (typeof window.parity !== 'undefined') {
-              api.subscribe('eth_blockNumber', this.onNewBlockNumber)
-              .then((subscriptionID) => {
-                console.log(`${sourceLogClass}: Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);
-                this.setState({ subscriptionData: subscriptionID });
-              })
-              .catch((error) => {
-                console.warn('error subscription', error)
-              });
-            } else {
-              if (PROD) {
-                WsSecureUrl = EP_RIGOBLOCK_KV_PROD_WS
-              } else {
-                WsSecureUrl = EP_RIGOBLOCK_KV_DEV_WS
-              }
-              const web3 = new Web3(WsSecureUrl)
-              Promise
-              .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
-              .then(result =>{
-                var subscription = result[0]
-                console.log(subscription)
-                console.log(`${sourceLogClass}: Subscribed to eth_blockNumber -> Subscription ID: ${subscription.id}`);
-                this.setState({ subscriptionData: subscription })
-              })
-            }
-          })
-          .then(() => {
-            this.setState({
-              loading: false,
-            });
-          })
-          .catch((error) => {
-            console.warn('attachInterfaceRigoBlock', error)
-          });
-      })
-      .catch((error) => {
-        console.warn('attachInterfaceRigoBlock', error)
-      });
-  }
+  // attachInterfaceRigoBlock = () => {
+  //   const { api } = this.context;
+  //   var sourceLogClass = this.constructor.name
+  //   var WsSecureUrl = ''
+  //   console.log('Interface RigoBlock')
+  //   // Checking if the parity node is running in --public-mode
+  //   api.parity.nodeKind()
+  //     .then(result => {
+  //       console.log(result.availability)
+  //       if (result.availability === 'public') {
+  //         // if --public-mode then getting only MetaMask accounts
+  //         return [this.getAccountsMetamask()]
+  //       }
+  //       else {
+  //         // if NOT --public-mode then getting bot Parity and MetaMask accounts
+  //         return [this.getAccountsParity(), this.getAccountsMetamask()]
+  //       }
+  //     })
+  //     .then((getAccounts) => {
+  //       Promise
+  //         .all(getAccounts)
+  //         .then(([accountsInfo, accountsMetaMask]) => {
+  //           const allAccounts = { ...accountsInfo, ...accountsMetaMask }
+  //           console.log('Parity accounts loaded')
+  //           console.log(allAccounts)
+  //           this.setState({
+  //             accountsInfo,
+  //             // loading: false,
+  //             ethBalance: new BigNumber(0),
+  //             accounts: Object
+  //               .keys(allAccounts)
+  //               .map((address) => {
+  //                 const info = allAccounts[address] || {};
+  //                 return {
+  //                   address,
+  //                   name: info.name,
+  //                   source: info.source,
+  //                   ethBalance: api.util.fromWei(new BigNumber(0)).toFormat(3),
+  //                   rigoTokenBalance: api.util.fromWei(new BigNumber(0)).toFormat(3)
+  //                 };
+  //               })
+  //           })
+  //           // Subscribing to newBlockNumber event
+  //           if (typeof window.parity !== 'undefined') {
+  //             api.subscribe('eth_blockNumber', this.onNewBlockNumber)
+  //             .then((subscriptionID) => {
+  //               console.log(`${sourceLogClass}: Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);
+  //               this.setState({ subscriptionData: subscriptionID });
+  //             })
+  //             .catch((error) => {
+  //               console.warn('error subscription', error)
+  //             });
+  //           } else {
+  //             if (PROD) {
+  //               WsSecureUrl = EP_RIGOBLOCK_KV_PROD_WS
+  //             } else {
+  //               WsSecureUrl = EP_RIGOBLOCK_KV_DEV_WS
+  //             }
+  //             const web3 = new Web3(WsSecureUrl)
+  //             Promise
+  //             .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
+  //             .then(result =>{
+  //               var subscription = result[0]
+  //               console.log(subscription)
+  //               console.log(`${sourceLogClass}: Subscribed to eth_blockNumber -> Subscription ID: ${subscription.id}`);
+  //               this.setState({ subscriptionData: subscription })
+  //             })
+  //           }
+  //         })
+  //         .then(() => {
+  //           this.setState({
+  //             loading: false,
+  //           });
+  //         })
+  //         .catch((error) => {
+  //           console.warn('attachInterfaceRigoBlock', error)
+  //         });
+  //     })
+  //     .catch((error) => {
+  //       console.warn('attachInterfaceRigoBlock', error)
+  //     });
+  // }
 
   detachInterface = () => {
     const { subscriptionData } = this.state;
     const { api } = this.context;
-    const endpoint = localStorage.getItem('endpoint')
-    var WsSecureUrl = ''
-    var sourceLogClass = this.constructor.name
-    // api.subscribe returns a number
-    // web3.eth.subscribe returns an object
-    // Checking which case and unsubscribing accordingly
-    switch (typeof subscriptionData ) {
-      case "number":
-        api.unsubscribe(subscriptionData)
-          .then((result) => {
-            console.log(result)
-            console.log(`${sourceLogClass}: Successfully unsubscribed from eth_blockNumber -> Subscription ID: ${subscriptionData}`);
-          })
-          .catch((error) => {
-            console.warn(`${sourceLogClass}: Unsubscribe error ${error}`)
-          });
-        break;
-        case "object":
-        if (subscriptionData === null) {
-          subscriptionData.unsubscribe(function (error, success) {
-            if (success) {
-              console.log(`${sourceLogClass}: Successfully unsubscribed from eth_blockNumber`);
-            }
-            if (error) {
-              console.warn(`${sourceLogClass}: Unsubscribe error ${error}`)
-            }
-          });
-        }
-        break;
-    }
+    Interfaces.detachInterface(api,subscriptionData)
+    // const endpoint = localStorage.getItem('endpoint')
+    // var WsSecureUrl = ''
+    // var sourceLogClass = this.constructor.name
+    // switch (endpoint) {
+    //   case "infura":
+    //     api.unsubscribe(subscriptionData)
+    //       .then((result) => {
+    //         console.log(result)
+    //         console.log(`${sourceLogClass}: Successfully unsubscribed from eth_blockNumber -> Subscription ID: ${subscriptionData}`);
+    //       })
+    //       .catch((error) => {
+    //         console.warn(`${sourceLogClass}: Unsubscribe error ${error}`)
+    //       });
+    //     break;
+    //   default:
+    //    if(subscriptionData) {
+    //     subscriptionData.unsubscribe(function (error, success) {
+    //       if (success) {
+    //         console.log(`${sourceLogClass}: Successfully unsubscribed from eth_blockNumber`);
+    //       }
+    //       if (error) {
+    //         console.warn(`${sourceLogClass}: Unsubscribe error ${error}`)
+    //       }
+    //     });
+    //    }
+
+    // }
   } 
 }
