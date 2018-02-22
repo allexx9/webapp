@@ -1,13 +1,9 @@
-import { Grid, Row, Col } from 'react-flexbox-grid';
-import { Link, Route, withRouter, HashRouter } from 'react-router-dom'
-import { List, Column, Table, AutoSizer, SortDirection, SortIndicator } from 'react-virtualized';
+import { Row, Col } from 'react-flexbox-grid';
+import { Link, withRouter } from 'react-router-dom'
+import { Column, Table, AutoSizer, SortDirection, SortIndicator } from 'react-virtualized';
 import FlatButton from 'material-ui/FlatButton';
-import moment from 'moment';
 import PropTypes from 'prop-types';
 import React, {PureComponent} from 'react';
-
-import { generateRandomList } from './utils';
-import {LabeledInput, InputRow} from './labeledInput';
 import utils from '../../utils/utils'
 
 import styles from './elementListVaults.module.css';

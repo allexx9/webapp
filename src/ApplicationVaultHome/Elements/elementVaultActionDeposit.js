@@ -1,28 +1,18 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
 import { Dialog, FlatButton, TextField } from 'material-ui';
-import { Grid, Row, Col } from 'react-flexbox-grid';
 import BigNumber from 'bignumber.js';
-import DropDownMenu from 'material-ui/DropDownMenu';
-import MenuItem from 'material-ui/MenuItem';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import IdentityIcon from '../../IdentityIcon';
-import  * as Colors from 'material-ui/styles/colors';
-
 import { ERRORS, validateAccount, validatePositiveNumber } from './validation';
-import * as abis from '../../contracts';
 import AccountSelector from '../../Elements/elementAccountSelector';
 import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle'
 import ElementDialogAddressTitle from '../../Elements/elementDialogAddressTitle'
-
-import styles from './elementVaultActionDeposit.module.css';
 import DragoApi from '../../DragoApi/src'
 
 const NAME_ID = ' ';
 const ADDRESS_0 = '0x0000000000000000000000000000000000000000'; //ADDRESS_0 is for ETH deposits
 
-const APPROVED_EXCHANGES = ['exchange2', 'exchangenot']; //we have to created a component to inject array into
 
 //TODO: add address exchange
 
@@ -92,7 +82,7 @@ export default class ElementVaultActionDeposit extends Component {
     )
   }
 
-  onClose =(event) =>{
+  onClose =() =>{
     this.setState({
       open: false
     });
@@ -115,11 +105,13 @@ export default class ElementVaultActionDeposit extends Component {
 
     return ([
       <FlatButton
+        key="CancelButton"
         label='Cancel'
         name='deposit'
         primary
         onTouchTap={ this.onClose} />,
       <FlatButton
+        key="DepositButton"
         label='Deposit'
         primary
         disabled={ hasError || sending }
@@ -128,7 +120,6 @@ export default class ElementVaultActionDeposit extends Component {
   }
 
   renderFields () {
-    const value = this.state;
     const amountLabel = 'The amount you want to deposit';
 
     return (
@@ -190,9 +181,9 @@ export default class ElementVaultActionDeposit extends Component {
     // const { instance } = this.context;
     const exchangeAddress = this.state.exchangeAddress; //cfd exchange; //this.state.exchange;
     const values = [exchangeAddress.toString(), ADDRESS_0, api.util.toWei(this.state.amount).toString()]; //this.state.account.address
-    const options = {
-      from: this.state.account.address
-    };
+    // const options = {
+    //   from: this.state.account.address
+    // };
     var dragoApi = null;
 
     this.setState({
@@ -223,7 +214,7 @@ export default class ElementVaultActionDeposit extends Component {
       dragoApi.contract.drago.init(vaultDetails.address)
       dragoApi.contract.drago.depositToExchange(this.state.account.address, exchangeAddress.toString(), 
                                                 ADDRESS_0, api.util.toWei(this.state.amount).toString())
-      .then((result) => {
+      .then((r) => {
         this.onClose()
         this.props.snackBar('Deposit awaiting for authorization')
       })

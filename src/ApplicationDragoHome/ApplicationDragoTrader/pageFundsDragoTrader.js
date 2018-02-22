@@ -1,47 +1,19 @@
-import  * as Colors from 'material-ui/styles/colors'
-import { Grid, Row, Col } from 'react-flexbox-grid';
-import { Link, Route, withRouter } from 'react-router-dom'
-import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
-import AccountIcon from 'material-ui/svg-icons/action/account-circle';
-import ActionAssessment from 'material-ui/svg-icons/action/assessment'
-import ActionHome from 'material-ui/svg-icons/action/home';
-import ActionLightBulb from 'material-ui/svg-icons/action/lightbulb-outline';
-import ActionPolymer from 'material-ui/svg-icons/action/polymer'
+import { Row, Col } from 'react-flexbox-grid';
+import { withRouter } from 'react-router-dom'
+import {Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
 import Avatar from 'material-ui/Avatar';
-import DropDownMenu from 'material-ui/DropDownMenu'
-import FlatButton from 'material-ui/FlatButton'
-import FontIcon from 'material-ui/FontIcon'
-import IconButton from 'material-ui/IconButton'
-import IconMenu from 'material-ui/IconMenu'
 import Immutable from 'immutable'
-import MenuItem from 'material-ui/MenuItem'
-import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom'
-
-import { toHex } from '../../format';
 import DragoApi from '../../DragoApi/src'
 import ElementListFunds from '../Elements/elementListFunds'
 import FilterFunds from '../Elements/elementFilterFunds'
-import Loading from '../../Loading';
 import utils from '../../utils/utils'
 import ElementListWrapper from '../../Elements/elementListWrapper'
 
 import styles from './pageFundsDragoTrader.module.css'
-
-// Getting events signatures
-const dragoFactoryEventsSignatures = (contract) => {
-  const events = contract._events.reduce((events, event) => {
-    events[event._name] = {
-      hexSignature: toHex(event._signature)
-    }
-    return events
-  }, {})
-  return events
-}
 
 
 class PageFundsDragoTrader extends Component {
@@ -58,8 +30,7 @@ class PageFundsDragoTrader extends Component {
   static propTypes = {
     location: PropTypes.object.isRequired,
     ethBalance: PropTypes.object.isRequired,
-    accounts: PropTypes.array.isRequired,
-    accountsInfo: PropTypes.object.isRequired, 
+    accounts: PropTypes.array.isRequired
   };
 
     state = {
@@ -75,8 +46,6 @@ class PageFundsDragoTrader extends Component {
     componentWillReceiveProps(nextProps) {
       // Updating the lists on each new block if the accounts balances have changed
       // Doing this this to improve performances by avoiding useless re-rendering
-      const { api, contract } = this.context
-      const {accounts } = this.props
       const sourceLogClass = this.constructor.name
       if (!this.props.ethBalance.eq(nextProps.ethBalance)) {
         this.getDragos()
@@ -98,18 +67,17 @@ class PageFundsDragoTrader extends Component {
       return stateUpdate || propsUpdate
     }
 
-    componentDidUpdate(nextProps) {
+    componentDidUpdate() {
     }
 
     filterList (filteredList) {
-      const { dragoCreatedLogs } = this.state;
       this.setState({
         dragoFilteredList: filteredList
       })
     }
 
     render() {
-      var { location, accountsInfo, allEvents, match } = this.props
+      var { location} = this.props
       const { dragoCreatedLogs, dragoFilteredList } = this.state;
       const dragoSearchList = Immutable.List(dragoCreatedLogs)
       const dragoList = dragoFilteredList
@@ -149,7 +117,7 @@ class PageFundsDragoTrader extends Component {
             </Row>
             <Row className={styles.transactionsStyle}>
               <Col xs>
-                <ElementListWrapper list={dragoList} location={location} match={match}>
+                <ElementListWrapper list={dragoList} location={location}>
                   <ElementListFunds/>
                 </ElementListWrapper>
               </Col>

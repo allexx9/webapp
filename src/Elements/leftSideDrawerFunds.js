@@ -1,20 +1,14 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Link, Route, withRouter, NavLink } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import {APP, DS} from '../utils/const.js'
-
 import styles from './elements.module.css';
-
 import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';
 import Menu from 'material-ui/Menu';
-
-import Divider from 'material-ui/Divider';
-import ArrowDropRight from 'material-ui/svg-icons/navigation-arrow-drop-right';
-import ActionHome from 'material-ui/svg-icons/action/home';
 import ActionAssessment from 'material-ui/svg-icons/action/assessment';
 import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
-import { Visible, Hidden } from 'react-grid-system'
+import { Hidden } from 'react-grid-system'
 
 var drawerStyle = {
   activeLink: {

@@ -1,51 +1,27 @@
 import  * as Colors from 'material-ui/styles/colors'
-import { Grid, Row, Col } from 'react-flexbox-grid'
-import { Link, Route, withRouter } from 'react-router-dom'
-import { spacing } from 'material-ui/styles'
-import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card'
+import { Row, Col } from 'react-flexbox-grid'
+import { Link, withRouter } from 'react-router-dom'
 import {CopyToClipboard} from 'react-copy-to-clipboard'
-import {List, ListItem} from 'material-ui/List'
 import {Tabs, Tab} from 'material-ui/Tabs'
-import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar'
-import AccountIcon from 'material-ui/svg-icons/action/account-circle'
+import {Toolbar, ToolbarGroup } from 'material-ui/Toolbar'
 import ActionAssessment from 'material-ui/svg-icons/action/assessment'
 import ActionHome from 'material-ui/svg-icons/action/home'
 import ActionList from 'material-ui/svg-icons/action/list'
 import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
 import AppBar from 'material-ui/AppBar'
 import Avatar from 'material-ui/Avatar'
-import BigNumber from 'bignumber.js'
-import Chip from 'material-ui/Chip'
 import CopyContent from 'material-ui/svg-icons/content/content-copy'
-import DropDownMenu from 'material-ui/DropDownMenu'
-import FileFolder from 'material-ui/svg-icons/file/folder'
-import FlatButton from 'material-ui/FlatButton'
-import FontIcon from 'material-ui/FontIcon'
-import IconButton from 'material-ui/IconButton'
-import IconMenu from 'material-ui/IconMenu'
-import Immutable from 'immutable'
-import MenuItem from 'material-ui/MenuItem'
-import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert'
 import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types';
-import React, { Component, PureComponent } from 'react'
-import ReactDOM from 'react-dom'
+import React, { Component } from 'react'
 import scrollToComponent from 'react-scroll-to-component'
 import Search from 'material-ui/svg-icons/action/search'
 import Snackbar from 'material-ui/Snackbar'
 import Sticky from 'react-stickynode'
 import ElementListWrapper from '../../Elements/elementListWrapper'
 import ElementAccountBox from '../../Elements/elementAccountBox'
-
-
-import { dragoFactoryEventsSignatures } from '../../utils/utils.js'
-import { formatCoins, formatEth, formatHash, toHex } from '../../format'
-import * as abis from '../../contracts';
-import DragoApi from '../../DragoApi/src'
 import ElementListBalances from '../Elements/elementListBalances'
 import ElementListTransactions from '../Elements/elementListTransactions'
-import IdentityIcon from '../../IdentityIcon';
-import Loading from '../../Loading'
 import utils from '../../utils/utils'
 
 import styles from './pageDashboardVaultTrader.module.css'
@@ -61,7 +37,6 @@ class PageDashboardVaultTrader extends Component {
       location: PropTypes.object.isRequired,
       ethBalance: PropTypes.object.isRequired,
       accounts: PropTypes.array.isRequired,
-      accountsInfo: PropTypes.object.isRequired, 
     };
 
     state = {
@@ -86,7 +61,6 @@ class PageDashboardVaultTrader extends Component {
     componentWillReceiveProps(nextProps) {
       // Updating the lists on each new block if the accounts balances have changed
       // Doing this this to improve performances by avoiding useless re-rendering
-      const { api, contract } = this.context
       const {accounts } = this.props
       const sourceLogClass = this.constructor.name
       console.log(`${sourceLogClass} -> componentWillReceiveProps-> nextProps received.`);
@@ -113,7 +87,7 @@ class PageDashboardVaultTrader extends Component {
       return stateUpdate || propsUpdate
     }
 
-    componentDidUpdate(nextProps) {
+    componentDidUpdate() {
     }
 
     snackBar = (msg) =>{
@@ -128,10 +102,6 @@ class PageDashboardVaultTrader extends Component {
         snackBar: false,
         snackBarMsg: ''
       })
-    }
-
-    handleSetActive = (to) => {
-      console.log(to);
     }
 
     renderCopyButton = (text) =>{
@@ -158,8 +128,8 @@ class PageDashboardVaultTrader extends Component {
     }
 
     render() {
-      const { location, accounts, accountsInfo, allEvents } = this.props
-      const { vaultTransactionsLogs, loading, vaultBalances } = this.state 
+      const { accounts } = this.props
+      const { vaultTransactionsLogs, vaultBalances } = this.state 
       console.log(this.props.ethBalance)
       const tabButtons = {
         inkBarStyle: {
@@ -295,7 +265,7 @@ class PageDashboardVaultTrader extends Component {
       const { api } = this.context
       const options = {balance: true, supply: false, limit: 10, trader: true}
       var sourceLogClass = this.constructor.name
-      utils.getTransactionsVaultOpt(api, dragoAddress, accounts, options)
+      utils.getTransactionsVaultOptV2(api, dragoAddress, accounts, options)
       .then(results =>{
         console.log(`${sourceLogClass} -> Transactions list loaded`)
         // const buySellLogs = results[1].filter(event =>{

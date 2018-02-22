@@ -1,29 +1,14 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
 import { rigotoken } from '../contracts'
-import Web3 from 'web3';
 import BigNumber from 'bignumber.js';
 import {
   DEFAULT_NETWORK_ID,
   MSG_NO_KOVAN,
-  MSG_NETWORK_STATUS_OK,
   MSG_NETWORK_STATUS_ERROR,
-  NETWORK_OK,
   NETWORK_WARNING,
-  INFURA,
-  RIGOBLOCK,
-  LOCAL,
-  CUSTOM,
-  ALLOWED_ENDPOINTS,
-  DEFAULT_ENDPOINT,
-  PROD,
-  EP_RIGOBLOCK_KV_DEV_WS,
-  EP_RIGOBLOCK_KV_PROD_WS
+  GRG_ADDRESS_KV
 } from './const'
-import * as abis from '../contracts';
-import utils from './utils'
-
-var sourceLogClass = null
 
 class interfaces {
 
@@ -44,7 +29,7 @@ class interfaces {
   isConnected = (api) => {
     // Checking if app is connected to node
     if (!api.isConnected) {
-      console.log(api.isConnected)
+      // console.log(api.isConnected)
       this._error = {
         networkError: NETWORK_WARNING,
         networkStatus: MSG_NETWORK_STATUS_ERROR,
@@ -54,21 +39,41 @@ class interfaces {
     return true
   }
 
-  getAccountsParity () {
-    const { api } = this.context;
-    const selectedEndpoint = localStorage.getItem('endpoint')
-    console.log(api)
+  getAccountsParity (api) {
+    console.log('getAccountsParity')
+    // const selectedEndpoint = localStorage.getItem('endpoint')
+    var accounts = {}
+    var arrayPromises = []
     return api.parity
     .accountsInfo()
     .then((accountsInfo) => {
-      console.log('Parity getAccounts', accountsInfo)
-      Object.keys(accountsInfo).forEach(function(k) {
-        accountsInfo[k] = {
-          name: accountsInfo[k].name,
-          source: "parity"
-        }
+      const rigoTokenContract = api.newContract(rigotoken, GRG_ADDRESS_KV)
+      Object.keys(accountsInfo).forEach(function (k) {
+        arrayPromises.push(api.eth.getBalance(k)
+          .then((balance) => {
+            accounts[k] = {
+              ethBalance: api.util.fromWei(balance).toFormat(3),
+              name: accountsInfo[k].name,
+              source: "parity"
+            }
+            return accounts
+          })
+        )
+        arrayPromises.push(rigoTokenContract.instance.balanceOf.call({}, [k])
+        .then((rigoTokenBalance) => {
+          accounts[k].rigoTokenBalance = api.util.fromWei(rigoTokenBalance).toFormat(3)
+          return accounts
+        })
+      )
       })
-      return accountsInfo
+    })
+    .then(() =>{
+      return Promise
+      .all(arrayPromises)
+      .then(() => {
+        console.log('Parity getAccounts', accounts)
+        return accounts
+      })
     })
     .catch((error) => {
       console.warn('getAccounts', error);
@@ -90,49 +95,56 @@ class interfaces {
     })
   }
 
-  getAccountsMetamask () {
+  getAccountsMetamask (api) {
+    console.log('getAccountsMetamask')
     const web3 = window.web3
+    var accountsMetaMask = {}
+    var ethBalance = new BigNumber(0)
     if (typeof web3 === 'undefined') {
       return;
     }
+    // Checking if MetaMask is connected to the right network (eg. Kovan)
     return web3.eth.net.getId()
     .then((networkId) => {
+      var currentState = this._success
       if (networkId != DEFAULT_NETWORK_ID) {
-        var currentState = this._success
         const stateUpdate = {
           networkCorrect: false,
           warnMsg: MSG_NO_KOVAN
         }
         this._success = {...currentState, ...stateUpdate}
-        // this.setState({
-        //   networkCorrect: false,
-        //   warnMsg: MSG_NO_KOVAN
-        // })
       } else {
-        var currentState = this._success
         const stateUpdate = {
           networkCorrect: true
         }
         this._success = {...currentState, ...stateUpdate}
-        // this.setState({
-        //   networkCorrect: true
-        // }) 
       }
     })
+    // Getting ETH and GRG balances
     .then (() =>{
       return web3.eth.getAccounts()
       .then(accounts => {
-        const balance = web3.eth.getBalance(accounts[0])
+        return web3.eth.getBalance(accounts[0])
         .then(balance => {
-          return balance;
+          ethBalance = balance
         })
-        const accountsMetaMask = {
-          [accounts[0]]: {
-            name: "MetaMask",
-            source: "MetaMask"
+        .then(()=>{
+          const rigoTokenContract = api.newContract(rigotoken, GRG_ADDRESS_KV)
+          return rigoTokenContract.instance.balanceOf.call({}, [accounts[0]])
+          .then((rigoTokenBalance) =>{
+            accountsMetaMask = {
+              [accounts[0]]: {
+                ethBalance: api.util.fromWei(ethBalance).toFormat(3),
+                rigoTokenBalance: api.util.fromWei(rigoTokenBalance).toFormat(3),
+                name: "MetaMask",
+                source: "MetaMask"
+              }
+            }
+            console.log(accountsMetaMask[accounts[0]])
+            return accountsMetaMask;
           }
-        }
-        return accountsMetaMask;
+        )
+        })
       })
       .catch((error) =>{
         console.warn(error)
@@ -142,19 +154,17 @@ class interfaces {
   }
 
   attachInterfaceInfuraV2 = (api) => {
-    var sourceLogClass = this.constructor.name
-    var WsSecureUrl = ''
     console.log('Interface Infura')
     return Promise
     .all([
-      this.getAccountsMetamask()
+      this.getAccountsMetamask(api)
     ])
     .then(([accountsMetaMask]) => {
       const allAccounts = {...accountsMetaMask}
       console.log('Metamask accounts loaded')
       var currentState = this._success
       const stateUpdate = {
-        accountsInfo: accountsMetaMask,
+        // accountsInfo: accountsMetaMask,
         loading: false,
         accounts: Object
           .keys(allAccounts)
@@ -164,20 +174,12 @@ class interfaces {
               address,
               name: info.name,
               source: info.source,
-              ethBalance: "0"
+              ethBalance: info.ethBalance,
+              rigoTokenBalance: info.rigoTokenBalance
             };
           })
         }
       this._success = {...currentState, ...stateUpdate}
-        // Subscribing to newBlockNumber event
-        // api.subscribe('eth_blockNumber', this.onNewBlockNumber)
-        //   .then((subscriptionID) => {
-        //     console.log(`${sourceLogClass}: Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);
-        //     this.setState({ subscriptionData: subscriptionID });
-        //   })
-        //   .catch((error) => {
-        //     console.warn('error subscription', error)
-        //   });
       })
       .catch((error) => {
         var currentState = this._error
@@ -191,31 +193,17 @@ class interfaces {
   }
 
   attachInterfaceRigoBlockV2 = (api) => {
-    var sourceLogClass = this.constructor.name
-    var WsSecureUrl = ''
     console.log('Interface RigoBlock')
-    console.log(api)
-    // if (!api.isConnected) {
-    //   this._error = {
-    //     networkError: NETWORK_WARNING,
-    //     networkStatus: MSG_NETWORK_STATUS_ERROR,
-    //   }
-    //   // this.setState({
-    //   //   networkError: NETWORK_WARNING,
-    //   //   networkStatus: MSG_NETWORK_STATUS_ERROR,
-    //   // })
-    //   return
-    // }
     // Checking if the parity node is running in --public-mode
     return api.parity.nodeKind()
       .then(result => {
         if (result.availability === 'public') {
           // if Parity in --public-mode then getting only MetaMask accounts
-          return [this.getAccountsMetamask()]
+          return [this.getAccountsMetamask(api)]
         }
         else {
           // if Parity NOT in --public-mode then getting bot Parity and MetaMask accounts
-          return [this.getAccountsParity(), this.getAccountsMetamask()]
+          return [this.getAccountsParity(api), this.getAccountsMetamask(api)]
         }
       })
       .then((getAccounts) => {
@@ -224,10 +212,7 @@ class interfaces {
           .then(([accountsInfo, accountsMetaMask]) => {
             const allAccounts = { ...accountsInfo, ...accountsMetaMask }
             console.log('Parity accounts loaded')
-            console.log(allAccounts)
-            var currentState = this._success
             const stateUpdate = {
-              accountsInfo,
               loading: false,
               ethBalance: new BigNumber(0),
               accounts: Object
@@ -238,27 +223,14 @@ class interfaces {
                     address,
                     name: info.name,
                     source: info.source,
-                    ethBalance: "0"
+                    ethBalance: info.ethBalance,
+                    rigoTokenBalance: info.rigoTokenBalance
                   };
                 })
             }
-            this._success = {...currentState, ...stateUpdate}
-            return this._success
-            // Setting connection to node
-            // if (PROD) {
-            //   WsSecureUrl = EP_RIGOBLOCK_KV_PROD_WS
-            // } else {
-            //   WsSecureUrl = EP_RIGOBLOCK_KV_DEV_WS
-            // }
-            // Subscribing to newBlockNumber event
-            // const web3 = new Web3(WsSecureUrl)
-            // Promise
-            // .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
-            // .then(result =>{
-            //   var subscription = result[0]
-            //   console.log(`${sourceLogClass}: Subscribed to eth_blockNumber`);
-            //   this.setState({ subscriptionData: subscription })
-            // })
+            const result = {...this._success, ...stateUpdate}
+            this._success = result
+            return result
           })
           .catch((error) => {
             var currentState = this._error
@@ -267,7 +239,9 @@ class interfaces {
               networkStatus: MSG_NETWORK_STATUS_ERROR,
             }
             this._error = {...currentState, ...stateUpdate}
-            console.warn('attachInterfaceRigoBlock', error)
+            console.log('attachInterfaceRigoBlock', error)
+            return this._error
+            
           });
       })
       .catch((error) => {
@@ -277,13 +251,13 @@ class interfaces {
           networkStatus: MSG_NETWORK_STATUS_ERROR,
         }
         this._error = {...currentState, ...stateUpdate}
-        console.warn('attachInterfaceRigoBlock', error)
+        console.log('attachInterfaceRigoBlock', error)
+        return this._error
       });
   }
 
   detachInterface = (api, subscriptionData) => {
     const endpoint = localStorage.getItem('endpoint')
-    var WsSecureUrl = ''
     var sourceLogClass = this.constructor.name
     switch (endpoint) {
       case "infura":

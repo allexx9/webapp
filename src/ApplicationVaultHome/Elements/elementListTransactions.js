@@ -1,14 +1,10 @@
-import { Grid, Row, Col } from 'react-flexbox-grid';
-import { Link, Route, withRouter, HashRouter } from 'react-router-dom'
-import { List, Column, Table, AutoSizer, SortDirection, SortIndicator, WindowScroller } from 'react-virtualized';
+import { Row, Col } from 'react-flexbox-grid';
+import { Link, withRouter } from 'react-router-dom'
+import { Column, Table, AutoSizer, SortDirection, SortIndicator } from 'react-virtualized';
 import FlatButton from 'material-ui/FlatButton';
-import moment from 'moment';
 import PropTypes from 'prop-types';
 import React, {PureComponent} from 'react';
 import BigNumber from 'bignumber.js';
-
-import { generateRandomList } from './utils';
-import {LabeledInput, InputRow} from './labeledInput';
 import utils from '../../utils/utils'
 
 import styles from './elementListTransactions.module.css';
@@ -29,7 +25,7 @@ class ElementListTransactions extends PureComponent {
 
   constructor(props, context) {
     super(props, context);
-    const { accountsInfo, list } = this.props
+    const { list } = this.props
     const sortBy = 'symbol';
     const sortDirection = SortDirection.ASC;
     const sortedList = this._sortList({sortBy, sortDirection});
@@ -60,7 +56,7 @@ class ElementListTransactions extends PureComponent {
     this._sort = this._sort.bind(this);
   }
 
-  componentWillReceiveProps (nextProps, nextState) {
+  componentWillReceiveProps (nextProps) {
     const { list } = nextProps
     const sortBy = 'symbol';
     const sortDirection = SortDirection.ASC;
@@ -240,22 +236,22 @@ class ElementListTransactions extends PureComponent {
     switch (action) {
       case "BuyDrago":
         return <span style={{ color: Colors.green300, fontWeight: 600 }}>BUY</span>
-        break
+
       case "SellDrago":
         return <span style={{ color: Colors.red300, fontWeight: 600 }}>SELL</span>
-        break
+
       case "BuyGabcoin":
         return <span style={{ color: Colors.green300, fontWeight: 600 }}>DEPOSIT</span>
-        break
+
       case "SellGabcoin":
         return <span style={{ color: Colors.red300, fontWeight: 600 }}>WITHDRAW</span>
-        break
+
       case "DragoCreated":
         return <span style={{ color: Colors.blue300, fontWeight: 600 }}>CREATED</span>
-        break
+
       case "GabcoinCreated":
         return <span style={{ color: Colors.blue300, fontWeight: 600 }}>CREATED</span>
-        break
+
     }
   }
 

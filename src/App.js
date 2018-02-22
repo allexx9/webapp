@@ -1,21 +1,29 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
-import { Grid, Row, Col } from 'react-flexbox-grid';
-import { Link, Route, withRouter, HashRouter, Switch, Redirect, Router } from 'react-router-dom'
+import { api } from './parity';
+import { Switch, Redirect, Router, Route } from 'react-router-dom'
 import createHashHistory from 'history/createHashHistory';
 import BigNumber from 'bignumber.js';
 import NotificationSystem from 'react-notification-system'
-import Paper from 'material-ui/Paper';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom'
 import Web3 from 'web3'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import { rigotoken } from './contracts'
 
 import {
-  DEFAULT_NETWORK_ID,
-  MSG_NO_KOVAN,
+  ApplicationHomePage,
+  // ApplicationVaultPage,
+  // ApplicationConfigPage,
+  // ApplicationExchangePage, 
+  Whoops404
+} from './Application';
+import ApplicationConfigPage from './Application/applicationConfig';
+import ApplicationDragoPage from './Application/applicationDrago';
+import ApplicationVaultPage from './Application/applicationVault';
+import {
+  DEFAULT_NETWORK_NAME,
   MSG_NETWORK_STATUS_OK,
   MSG_NETWORK_STATUS_ERROR,
   NETWORK_OK,
@@ -23,32 +31,27 @@ import {
   INFURA,
   RIGOBLOCK,
   LOCAL,
-  CUSTOM,
   ALLOWED_ENDPOINTS, 
   DEFAULT_ENDPOINT,
   PROD,
   EP_RIGOBLOCK_KV_DEV_WS,
-  EP_RIGOBLOCK_KV_PROD_WS
+  EP_RIGOBLOCK_KV_PROD_WS,
+  GRG_ADDRESS_KV
 } from './utils/const'
-import ElementNotification from './Elements/elementNotification'
-import ElementNotificationsDrawer from './Elements/elementNotificationsDrawer'
-import utils from './utils/utils'
-
-import { Provider } from 'react-redux';
-import { createStore, applyMiddleware } from 'redux';
-import promiseMiddleware from 'redux-promise-middleware';
-import thunkMiddleware from 'redux-thunk';
-
 import {
-  ApplicationHomePage, 
-  ApplicationVaultPage, 
-  ApplicationDragoPage, 
-  ApplicationGabcoinPage,
-  ApplicationConfigPage,
-  // ApplicationExchangePage, 
-  Whoops404} from './Application';
+  ATTACH_INTERFACE,
+  UPDATE_INTERFACE,
+} from './utils/const'
+import utils from './utils/utils'
+import { Interfaces } from './utils/interfaces'
+import { connect } from 'react-redux';
+import ElementNotification from './Elements/elementNotification'
+// import Actions from './actions/actions'
 
 var appHashPath = true;
+var sourceLogClass = null
+const isConnectedTimeout = 4000
+var subscriptionData = {}
 
 // Detectiong if the app is running inside Parity client
 var pathArray = window.location.hash.split('/');
@@ -61,125 +64,165 @@ if (typeof window.parity !== 'undefined') {
   appHashPath = 'web';
 }
 
-const initialState = {
-  count: 0
-};
-
-const reducer = (state = {}, action) => {
-  switch (action.type) {
-    case 'GET_LOGS_PENDING':
-      return {
-        isPending: true
-      };
-
-    case 'GET_LOGS_FULFILLED':
-      return {
-        body: action.payload.body
-      };
-
-    default:
-      return state;
-  };
-}
-
-const store = createStore(reducer, {}, applyMiddleware(
-  thunkMiddleware,
-  promiseMiddleware()
-));
-
 const history = createHashHistory();
 
 // Setting the routes. 
 // Component Whoops404 is loaded if a page does not exist.
 
-const DIVISOR = 10 ** 6;  //tokens are divisible by one million
-var sourceLogClass = null
+function mapStateToProps(state) {
+  return state
+}
 
 export class App extends Component {
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this._notificationSystem = null;
     sourceLogClass = this.constructor.name
-  }
-
-  // Checking the type of the context variable that we receive by the parent
-
-  state = {
-    accounts: [],
-    accountsInfo: {},
-    accountsBalanceError: false,
-    // blockNumber: new BigNumber(-1),
-    ethBalance: new BigNumber(0),
-    loading: true,
-    subscriptionIDDrago: null,
-    infura: false,
-    prevBlockNumber: 0,
-    networkStatus: MSG_NETWORK_STATUS_OK,
-    networkError: NETWORK_OK,
-    networkCorrect: false,
-    warnMsg: null
+    this.state = {
+      isConnected: true,
+      isSyncing: false,
+      syncStatus: {},
+    }
   }
 
   scrollPosition = 0
+  td = null
+  
 
-  shouldComponentUpdate(nextProps, nextState){
-    // const propsUpdate = (!utils.shallowEqual(this.props, nextProps))
-    // const stateUpdate = (!utils.shallowEqual(this.state, nextState))
-    // return stateUpdate || propsUpdate 
+  // Defining the properties of the context variables passed down to children
+  static childContextTypes = {
+    // muiTheme: PropTypes.object,
+    api: PropTypes.object,
+    isConnected: PropTypes.bool,
+    isSyncing: PropTypes.bool,
+    syncStatus: PropTypes.object,
+    ethereumNetworkName: PropTypes.string,
+  };
+
+  static propTypes = {
+    endpoint: PropTypes.object.isRequired,
+    dispatch: PropTypes.func.isRequired,
+  };
+
+  // Passing down the context variables passed down to children
+  getChildContext() {
+    return {
+      // muiTheme,
+      api,
+      isConnected: this.state.isConnected,
+      isSyncing: this.state.isSyncing,
+      syncStatus: this.state.syncStatus,
+      ethereumNetworkName: DEFAULT_NETWORK_NAME
+    };
   }
 
-  componentWillMount () {
-  } 
+  attachInterfaceAction = () => {
+    return {
+      type: ATTACH_INTERFACE,
+      payload: new Promise(resolve => {
+        this.attachInterface().then(result => {
+          console.log(result)
+          resolve(result);
+        })
+      })
+    }
+  };
+
+  updateInterfaceAction = (endpoint) => {
+    return {
+      type: UPDATE_INTERFACE,
+      payload: endpoint
+    }
+  };
+
+  shouldComponentUpdate(nextProps, nextState) {
+    const propsUpdate = (!utils.shallowEqual(this.props, nextProps))
+    const stateUpdate = (!utils.shallowEqual(this.state, nextState))
+    console.log('propsUpdate ', propsUpdate)
+    console.log('stateUpdate ', stateUpdate)
+    return stateUpdate || propsUpdate 
+  }
 
   componentDidMount() {
-    // // Allowed endpoints are defined in const.js
-    // var selectedEndpoint = localStorage.getItem('endpoint')
-    // var allowedEndpoints = new Map(ALLOWED_ENDPOINTS)
-    // if (allowedEndpoints.has(selectedEndpoint)) {
-    //   switch (selectedEndpoint) {
-    //     case INFURA:
-    //     console.log(INFURA)
-    //       this.attachInterfaceInfura()
-    //     break;
-    //     case RIGOBLOCK:
-    //       console.log(RIGOBLOCK)
-    //       this.attachInterfaceRigoBlock()
-    //     break; 
-    //     case LOCAL:
-    //       console.log(LOCAL)
-    //       this.attachInterfaceRigoBlock()
-    //     break; 
-    //   }
-    // } else {
-    //   localStorage.setItem('endpoint', DEFAULT_ENDPOINT)
-    //   this.attachInterfaceInfura()
-    // }
-    // this._notificationSystem = this.refs.notificationSystem
+    this._notificationSystem = this.refs.notificationSystem
+    this.props.dispatch(this.attachInterfaceAction())
+  }
+
+  componentWillMount() {
+    // Starting connection checking. this is not necessary runnin inside Parity UI
+    // because the checki is done by Parity and a messagge will be displayed by the client
+    var endpoint = localStorage.getItem('endpoint')
+    if (endpoint !== 'local') {
+      this.td = setTimeout(this.checkConnectionToNode,2000)
+    }
   }
 
   componentWillUnmount() {
+    var endpoint = localStorage.getItem('endpoint')
+    if (endpoint !== 'local') {
+      clearTimeout(this.td)
+    }
     // Unsubscribing to the event when the the user moves away from this page
-    // this.detachInterface();
+    this.detachInterface();
   }
 
   componentWillUpdate() {
   }
 
-  render () {
+  // This function is passed down with context and used as a call back function to show a warning page
+  // if the connection with the node drops
+  isConnected = (status) => {
+    this.setState({
+      isConnected: status
+    })
+  }
+
+  checkConnectionToNode = () =>{
+    console.log('Connected: ',api.isConnected)
+    if (api.isConnected) {
+      if (!this.state.isConnected) {
+        this.props.dispatch(this.attachInterfaceAction())
+      }
+      this.setState({
+        isConnected: true
+      })
+      api.eth.syncing()
+      .then(result => {
+        console.log('Syncing: ',result)
+        if(result !== false) {
+          this.setState({
+            isSyncing: true,
+            syncStatus: result
+          })
+        }
+        // console.log(api.net.peerCount())
+        // console.log('synching ', result)
+      })
+      this.td = setTimeout(this.checkConnectionToNode,isConnectedTimeout)
+    } else {
+      this.setState({
+        isConnected: false
+      })  
+      this.td = setTimeout(this.checkConnectionToNode,isConnectedTimeout)
+    }    
+  }
+
+  render() {
     var notificationStyle = {
       NotificationItem: { // Override the notification item
         DefaultStyle: { // Applied to every notification, regardless of the notification level
           margin: '0px 0px 0px 0px'
         },
-    
+
         info: { // Applied only to the success notification item
           backgroundColor: 'white'
         }
       }
     }
     return (
-      <Provider store={store}>
+      <div>
+        <NotificationSystem ref={n => this._notificationSystem = n} style={notificationStyle}/>
         <Router history={history}>
           <Switch>
             <Route exact path={"/app/" + appHashPath + "/home"} component={ApplicationHomePage} />
@@ -197,303 +240,259 @@ export class App extends Component {
             <Route component={Whoops404} />
           </Switch>
         </Router>
-      </Provider>
+      </div>
     )
   }
 
-  // notificationAlert = (primaryText, secondaryText, eventType = 'transfer') => {
-  //   return (
-  //     <ElementNotification 
-  //       primaryText={primaryText}
-  //       secondaryText={secondaryText}
-  //       eventType={eventType}
-  //       />
-  //   )
-  // }
+  notificationAlert = (primaryText, secondaryText, eventType = 'transfer') => {
+    return (
+      <MuiThemeProvider>
+        <ElementNotification
+          primaryText={primaryText}
+          secondaryText={secondaryText}
+          eventType={eventType}
+          eventStatus='executed'
+          txHash=''
+        />
+      </MuiThemeProvider>
+    )
+  }
 
-  // onNewBlockNumber = (_error, blockNumber) => {
-  //   if (_error) {
-  //     console.error('onNewBlockNumber', _error)
-  //     this.setState({
-  //       networkError: NETWORK_WARNING,
-  //       networkStatus: MSG_NETWORK_STATUS_ERROR,
-  //     })
-  //     return
-  //   }
-  //   const { api } = this.context;
-  //   const prevBlockNumber = "".concat(this.state.prevBlockNumber)
-  //   var newBlockNumber = 0
-  //   // Checking if blockNumber is passed by Parity Api or Web3
-  //   if (typeof blockNumber.number !== 'undefined') {
-  //     newBlockNumber = new BigNumber(blockNumber.number)
-  //   } else {
-  //     newBlockNumber = blockNumber
-  //   }
+  attachInterface = () => {
+    // Allowed endpoints are defined in const.js
+    var sourceLogClass = this.constructor.name
+    var WsSecureUrl = ''
+    var selectedEndpoint = localStorage.getItem('endpoint')
+    var allowedEndpoints = new Map(ALLOWED_ENDPOINTS)
+    if (allowedEndpoints.has(selectedEndpoint)) {
+      switch (selectedEndpoint) {
+        case INFURA:
+          console.log(INFURA)
+          return Interfaces.attachInterfaceInfuraV2(api)
+            .then((result) => {
+              // this.setState({...this.state, ...Interfaces.success})
+              // Subscribing to newBlockNumber event
+              api.subscribe('eth_blockNumber', this.onNewBlockNumber)
+                .then((subscriptionID) => {
+                  console.log(`${sourceLogClass}: Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);
+                  subscriptionData = subscriptionID
+                })
+                .catch((error) => {
+                  console.warn('error subscription', error)
+                });
+                return result
+            })
+            .catch(()=>{
+              // this.setState({...this.state, ...Interfaces.error})
+            })
+        case RIGOBLOCK:
+          console.log(RIGOBLOCK)
+          // this.attachInterfaceRigoBlock()
+          return Interfaces.attachInterfaceRigoBlockV2(api)
+            .then((result) => {
+              // Setting connection to node
+              if (PROD) {
+                WsSecureUrl = EP_RIGOBLOCK_KV_PROD_WS
+              } else {
+                WsSecureUrl = EP_RIGOBLOCK_KV_DEV_WS
+              }
+              // Subscribing to newBlockNumber event
+              const web3 = new Web3(WsSecureUrl)
+              // Promise
+              //   .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
+              //   .then(result => {
+              //     var subscription = result[0]
+              //     console.log(`${sourceLogClass}: Subscribed to eth_blockNumber`);
+              //     subscriptionData = subscription
+              //   })
+                return result
+            })
+            .catch(()=>{
+              this.setState(...this.state, ...Interfaces.error)
+            })
+        case LOCAL:
+          console.log(LOCAL)
+          // this.attachInterfaceRigoBlock()
+          return Interfaces.attachInterfaceRigoBlockV2(api)
+            .then(() => {
+              // Setting connection to node
+              if (PROD) {
+                WsSecureUrl = EP_RIGOBLOCK_KV_PROD_WS
+              } else {
+                WsSecureUrl = EP_RIGOBLOCK_KV_DEV_WS
+              }
+              // Subscribing to newBlockNumber event
+              const web3 = new Web3(WsSecureUrl)
+              Promise
+                .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
+                .then(result => {
+                  var subscription = result[0]
+                  console.log(`${sourceLogClass}: Subscribed to eth_blockNumber`);
+                  subscriptionData = subscription
+                })
+            })
+            .catch(()=>{
+              // this.setState({...this.state, ...Interfaces.error})
+            })
+      }
+    } else {
+      localStorage.setItem('endpoint', DEFAULT_ENDPOINT)
+      return Interfaces.attachInterfaceInfuraV2(api)
+        .then(() => {
+          // Subscribing to newBlockNumber event
+          api.subscribe('eth_blockNumber', this.onNewBlockNumber)
+            .then((subscriptionID) => {
+              console.log(`${sourceLogClass}: Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);
+              subscriptionData = subscriptionID
+            })
+            .catch((error) => {
+              console.warn('error subscription', error)
+            });
+        })
+        .catch(()=>{
+          // this.setState({...this.state, ...Interfaces.error})
+        })
+    }
+  }
 
-  //   console.log(`${sourceLogClass} -> Last blocK: ` + prevBlockNumber)
-  //   console.log(`${sourceLogClass} -> New block: ` + newBlockNumber.toFixed())
-  //   this.setState({
-  //     prevBlockNumber: newBlockNumber.toFixed()
-  //   })
-  //   // Checking that the current newBlockNumber is higher than previous one.
-  //   if (prevBlockNumber > newBlockNumber.toFixed()) {
-  //     console.log(`${sourceLogClass} -> Detected prevBlockNumber > currentBlockNumber. Skipping accounts update.`)
-  //     this.setState({
-  //       prevBlockNumber: newBlockNumber.toFixed(),
-  //       networkError: NETWORK_WARNING,
-  //       networkStatus: MSG_NETWORK_STATUS_ERROR,
-  //     })
-  //     return null
-  //   }
-  //   this.setState({
-  //     networkStatus: MSG_NETWORK_STATUS_OK,
-  //     networkError: NETWORK_OK,
-  //   })
-  // }
+  onNewBlockNumber = (_error, blockNumber ) => {
+    if (_error) {
+      console.error('onNewBlockNumber', _error)
+      return
+    }
+    // const { api } = this.context;
+    const { endpoint } = this.props;
+    const prevBlockNumber = endpoint.prevBlockNumber
+    var newBlockNumber = new BigNumber(0)
+    // Checking if blockNumber is passed by Parity Api or Web3
+    if (typeof blockNumber.number !== 'undefined') {
+      newBlockNumber = new BigNumber(blockNumber.number)
+    } else {
+      newBlockNumber = blockNumber
+    }
+    console.log(`${sourceLogClass} -> Last block: ` + prevBlockNumber)
+    console.log(`${sourceLogClass} -> New block: ` + newBlockNumber.toFixed())
+    this.setState({
+      prevBlockNumber: newBlockNumber.toFixed()
+    })
+    // Checking that the current newBlockNumber is higher than previous one.
+    if (prevBlockNumber > newBlockNumber.toFixed()) {
+      console.log(`${sourceLogClass} -> Detected prevBlockNumber > currentBlockNumber. Skipping accounts update.`)
+      const endpoint = {
+        prevBlockNumber: newBlockNumber.toFixed()
+      }
+      this.updateInterfaceAction(endpoint)
+      return null
+    }
+    const accounts = [].concat(endpoint.accounts);
 
-  // getAccountsParity () {
-  //   const { api } = this.context;
-  //   const selectedEndpoint = localStorage.getItem('endpoint')
-  //   console.log(api)
-  //   return api.parity
-  //   .accountsInfo()
-  //   .then((accountsInfo) => {
-  //     console.log('Parity getAccounts', accountsInfo)
-  //     Object.keys(accountsInfo).forEach(function(k) {
-  //       accountsInfo[k] = {
-  //         name: accountsInfo[k].name,
-  //         source: "parity"
-  //       }
-  //     })
-  //     return accountsInfo
-  //   })
-  //   .catch((error) => {
-  //     console.warn('getAccounts', error);
-  //     // return api.parity
-  //     //   .accounts()
-  //     //   .then((accountsInfo) => {
-  //     //     return Object
-  //     //       .keys(accountsInfo)
-  //     //       .filter((address) => accountsInfo[address].uuid)
-  //     //       .reduce((ret, address) => {
-  //     //         ret[address] = {
-  //     //           name: accountsInfo[address].name
-  //     //         };
-  //     //         return ret;
-  //     //       }, {});
-  //     //   }
-  //     // );
-  //     return {}
-  //   })
-  // }
 
-  // getAccountsMetamask () {
-  //   const web3 = window.web3
-  //   if (typeof web3 === 'undefined') {
-  //     return;
-  //   }
-  //   return web3.eth.net.getId()
-  //   .then((networkId) => {
-  //     if (networkId != DEFAULT_NETWORK_ID) {
-  //       this.setState({
-  //         networkCorrect: false,
-  //         warnMsg: MSG_NO_KOVAN
-  //       })
-  //     } else {
-  //       this.setState({
-  //         networkCorrect: true
-  //       }) 
-  //     }
-  //   })
-  //   .then (() =>{
-  //     return web3.eth.getAccounts()
-  //     .then(accounts => {
-  //       const balance = web3.eth.getBalance(accounts[0])
-  //       .then(balance => {
-  //         return balance;
-  //       })
-  //       const accountsMetaMask = {
-  //         [accounts[0]]: {
-  //           name: "MetaMask",
-  //           source: "MetaMask"
-  //         }
-  //       }
-  //       return accountsMetaMask;
-  //     })
-  //     .catch((error) =>{
-  //       console.warn(error)
-  //       return {}
-  //     })
-  //   })
-  // }
+    // Checking RigoToken balance
+    const rigoTokenContract = api.newContract(rigotoken, GRG_ADDRESS_KV)
 
-  // attachInterfaceInfura = () => {
-  //   const { api } = this.context;
-  //   var sourceLogClass = this.constructor.name
-  //   var WsSecureUrl = ''
-  //   console.log('Interface Infura')
-  //   return Promise
-  //   .all([
-  //     this.getAccountsMetamask()
-  //   ])
-  //   .then(([accountsMetaMask]) => {
-  //     const allAccounts = {...accountsMetaMask}
-  //     console.log('Metamask accounts loaded')
-  //     this.setState({
-  //       accountsInfo: accountsMetaMask,
-  //       // loading: false,
-  //       accounts: Object
-  //         .keys(allAccounts)
-  //         .map((address) => {
-  //           const info = allAccounts[address] || {};
-  //           return {
-  //             address,
-  //             name: info.name,
-  //             source: info.source,
-  //             ethBalance: "0"
-  //           };
-  //         })
-  //       });
-  //       // Subscribing to newBlockNumber event
-  //       api.subscribe('eth_blockNumber', this.onNewBlockNumber)
-  //         .then((subscriptionID) => {
-  //           console.log(`${sourceLogClass}: Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);
-  //           this.setState({ subscriptionData: subscriptionID });
-  //         })
-  //         .catch((error) => {
-  //           console.warn('error subscription', error)
-  //         });
-  //     })
-  //     .then(()=>{
-  //       this.setState({
-  //         loading: false,
-  //         });    
-  //     })
-  //     .catch((error) => {
-  //       this.setState({
-  //         networkError: NETWORK_WARNING,
-  //         networkStatus: MSG_NETWORK_STATUS_ERROR,
-  //       })
-  //       console.warn('attachInterface', error)
-  //     });
-  // }
+    const tokensQueries = accounts.map((account) => {
+      console.log(`${sourceLogClass} API call getBalance RigoToken-> applicationDragoHome: Getting balance of account ${account.name}`)
+      return rigoTokenContract.instance.balanceOf.call({}, [account.address])
+    })
 
-  // attachInterfaceRigoBlock = () => {
-  //   const { api } = this.context;
-  //   var sourceLogClass = this.constructor.name
-  //   var WsSecureUrl = ''
-  //   console.log('Interface RigoBlock')
-  //   if (!api.isConnected) {
-  //     this.setState({
-  //       networkError: NETWORK_WARNING,
-  //       networkStatus: MSG_NETWORK_STATUS_ERROR,
-  //     })
-  //     return
-  //   }
-  //   // Checking if the parity node is running in --public-mode
-  //   api.parity.nodeKind()
-  //     .then(result => {
-  //       console.log(result.availability)
-  //       if (result.availability === 'public') {
-  //         // if --public-mode then getting only MetaMask accounts
-  //         return [this.getAccountsMetamask()]
-  //       }
-  //       else {
-  //         // if NOT --public-mode then getting bot Parity and MetaMask accounts
-  //         return [this.getAccountsParity(), this.getAccountsMetamask()]
-  //       }
-  //     })
-  //     .then((getAccounts) => {
-  //       Promise
-  //         .all(getAccounts)
-  //         .then(([accountsInfo, accountsMetaMask]) => {
-  //           const allAccounts = { ...accountsInfo, ...accountsMetaMask }
-  //           console.log('Parity accounts loaded')
-  //           console.log(allAccounts)
-  //           this.setState({
-  //             accountsInfo,
-  //             // loading: false,
-  //             ethBalance: new BigNumber(0),
-  //             accounts: Object
-  //               .keys(allAccounts)
-  //               .map((address) => {
-  //                 const info = allAccounts[address] || {};
-  //                 return {
-  //                   address,
-  //                   name: info.name,
-  //                   source: info.source,
-  //                   ethBalance: "0"
-  //                 };
-  //               })
-  //           })
-  //           // Subscribing to newBlockNumber event
-  //           if (PROD) {
-  //             WsSecureUrl = EP_RIGOBLOCK_KV_PROD_WS
-  //           } else {
-  //             WsSecureUrl = EP_RIGOBLOCK_KV_DEV_WS
-  //           }
-  //           const web3 = new Web3(WsSecureUrl)
-  //           Promise
-  //           .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
-  //           .then(result =>{
-  //             var subscription = result[0]
-  //             console.log(`${sourceLogClass}: Subscribed to eth_blockNumber`);
-  //             this.setState({ subscriptionData: subscription })
-  //           })
-  //         })
-  //         .then(() => {
-  //           this.setState({
-  //             loading: false,
-  //           });
-  //         })
-  //         .catch((error) => {
-  //           this.setState({
-  //             networkError: NETWORK_WARNING,
-  //             networkStatus: MSG_NETWORK_STATUS_ERROR,
-  //           })
-  //           console.warn('attachInterfaceRigoBlock', error)
-  //         });
-  //     })
-  //     .catch((error) => {
-  //       this.setState({
-  //         networkError: NETWORK_WARNING,
-  //         networkStatus: MSG_NETWORK_STATUS_ERROR,
-  //       })
-  //       console.warn('attachInterfaceRigoBlock', error)
-  //     });
-  // }
+    // Checking ethereum balance
+    const ethQueries = accounts.map((account) => {
+      console.log(`${sourceLogClass} API call getBalance -> applicationDragoHome: Getting balance of account ${account.name}`)
+      return api.eth.getBalance(account.address, newBlockNumber)
+    })
+    const promisesBalances = [...ethQueries, ...tokensQueries]
 
-  // detachInterface = () => {
-  //   const { subscriptionData } = this.state;
-  //   const { api } = this.context;
-  //   const endpoint = localStorage.getItem('endpoint')
-  //   var WsSecureUrl = ''
-  //   var sourceLogClass = this.constructor.name
-  //   switch (endpoint) {
-  //     case "infura":
-  //       api.unsubscribe(subscriptionData)
-  //         .then((result) => {
-  //           console.log(result)
-  //           console.log(`${sourceLogClass}: Successfully unsubscribed from eth_blockNumber -> Subscription ID: ${subscriptionData}`);
-  //         })
-  //         .catch((error) => {
-  //           console.warn(`${sourceLogClass}: Unsubscribe error ${error}`)
-  //         });
-  //       break;
-  //     default:
-  //      if(subscriptionData) {
-  //       subscriptionData.unsubscribe(function (error, success) {
-  //         if (success) {
-  //           console.log(`${sourceLogClass}: Successfully unsubscribed from eth_blockNumber`);
-  //         }
-  //         if (error) {
-  //           console.warn(`${sourceLogClass}: Unsubscribe error ${error}`)
-  //         }
-  //       });
-  //      }
+    Promise
+      .all(promisesBalances)
+      .then((results) => {
+        // Splitting the the result array between ethBalances and rigoTokenBalances
+        const halfLength = Math.ceil(results.length / 2)
+        const ethBalances = results.splice(0,halfLength)
+        const rigoTokenBalances = results
+        // console.log(ethBalances)
+        // console.log(rigoTokenBalances)
+        const prevAccounts = [].concat(endpoint.accounts)
+        prevAccounts.map((account,index) =>{
+          const newEthBalance = api.util.fromWei(ethBalances[index]).toFormat(3)
+          // console.log('Last balance: ' + account.ethBalance)
+          // console.log('New balance: ' + newEthBalance)
+          if ((account.ethBalance !== newEthBalance) && prevBlockNumber != 0) {
+            console.log(`${account.name} balance changed.`)
+            var secondaryText = []
+            var balDifference = account.ethBalance - newEthBalance
+            if (balDifference > 0) {
+              console.log(`You transferred ${balDifference.toFixed(4)} ETH!`)
+              secondaryText[0] = `You transferred ${balDifference.toFixed(4)} ETH!`
+              secondaryText[1] = utils.dateFromTimeStamp(new Date())
+            } else {
+              console.log(`You received ${Math.abs(balDifference).toFixed(4)} ETH!`)
+              secondaryText[0] = `You received ${Math.abs(balDifference).toFixed(4)} ETH!`
+              secondaryText[1] = utils.dateFromTimeStamp(new Date())
+            }
+            if (this._notificationSystem && endpoint.accountsBalanceError === false) {
+              this._notificationSystem.addNotification({
+                  level: 'info',
+                  position: 'br',
+                  autoDismiss: 10,
+                  children: this.notificationAlert(account.name, secondaryText)
+              });
+            }
+          }
+          return
+        })
+        return [ethBalances,rigoTokenBalances]
+      })
+      .then((balances) => {
+        const ethBalances = balances[0]
+        const rigoTokenBalances = balances[1]
+        const endpoint = {
+          prevBlockNumber: newBlockNumber.toFixed(),
+          loading: false,
+          networkError: NETWORK_OK,
+          networkStatus: MSG_NETWORK_STATUS_OK,
+          accountsBalanceError: false,
+          rigoTokenBalance: rigoTokenBalances.reduce((total, balance) => total.add(balance), new BigNumber(0)),
+          ethBalance: ethBalances.reduce((total, balance) => total.add(balance), new BigNumber(0)),
+          accounts: [].concat(accounts.map((account, index) => {
+            const ethBalance = ethBalances[index];
+            account.ethBalance = api.util.fromWei(ethBalance).toFormat(3);
+            const rigoTokenBalance = rigoTokenBalances[index];
+            account.rigoTokenBalance = api.util.fromWei(rigoTokenBalance).toFormat(3);
+            console.log(account)
+            return account;
+          })
+        )
+        }
+        this.props.dispatch(this.updateInterfaceAction(endpoint))
+        
+      })
+      .catch((error) => {
+        console.warn(`${sourceLogClass} -> ${error}`)
+        // Setting the balances to 0 if receiving an error from the endpoint. It happens with Infura.
+        const endpoint = {
+          prevBlockNumber: newBlockNumber.toFixed(),
+          loading: false,
+          networkError: NETWORK_WARNING,
+          networkStatus: MSG_NETWORK_STATUS_ERROR,
+          accountsBalanceError: true,
+          ethBalance: new BigNumber(0),
+          rigoTokenBalance: new BigNumber(0),
+          accounts: [].concat(accounts.map((account, index) => {
+            account.ethBalance = api.util.fromWei(new BigNumber(0)).toFormat(3);
+            account.rigoTokenBalance = api.util.fromWei(new BigNumber(0)).toFormat(3);
+            return account;
+          })
+        )
+        }
+        this.props.dispatch(this.updateInterfaceAction(endpoint))
+      });
+  }
 
-  //   }
-  // } 
+  detachInterface = () => {
+    // const { subscriptionData } = this.state;
+    // const { api } = this.context;
+    Interfaces.detachInterface(api,subscriptionData)
+  } 
 }
 
-export default App
+export default connect(mapStateToProps)(App)

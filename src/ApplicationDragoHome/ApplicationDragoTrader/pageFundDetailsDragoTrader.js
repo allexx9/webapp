@@ -1,49 +1,26 @@
 import  * as Colors from 'material-ui/styles/colors'
 import { Grid, Row, Col } from 'react-flexbox-grid'
-import { Link, Route, withRouter } from 'react-router-dom'
-import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card'
+import { Link, withRouter } from 'react-router-dom'
 import {CopyToClipboard} from 'react-copy-to-clipboard'
-import {List, ListItem} from 'material-ui/List'
 import {Tabs, Tab} from 'material-ui/Tabs'
-import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar'
+import {Toolbar, ToolbarGroup } from 'material-ui/Toolbar'
 import ActionAssessment from 'material-ui/svg-icons/action/assessment'
 import ActionList from 'material-ui/svg-icons/action/list'
-import Avatar from 'material-ui/Avatar'
-import Chip from 'material-ui/Chip'
 import CopyContent from 'material-ui/svg-icons/content/content-copy'
-import DropDownMenu from 'material-ui/DropDownMenu'
-import FlatButton from 'material-ui/FlatButton'
-import IconButton from 'material-ui/IconButton'
-import IconMenu from 'material-ui/IconMenu'
-import Immutable from 'immutable'
-import NavigationExpandMoreIcon from 'material-ui/svg-icons/navigation/expand-more'
 import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types'
-import RaisedButton from 'material-ui/RaisedButton'
 import React, { Component } from 'react'
 import Search from 'material-ui/svg-icons/action/search'
 import Snackbar from 'material-ui/Snackbar'
 import ElementListWrapper from '../../Elements/elementListWrapper'
 import BigNumber from 'bignumber.js';
-
-import { dragoFactoryEventsSignatures } from '../../utils/utils.js'
-import { formatCoins, formatEth, formatHash, toHex } from '../../format'
-import * as abis from '../../contracts';
+import { formatCoins, formatEth, } from '../../format'
 import ElementFundActions from '../Elements/elementFundActions'
 import IdentityIcon from '../../IdentityIcon'
 import InfoTable from '../../Elements/elementInfoTable'
 import Loading from '../../Loading'
 import DragoApi from '../../DragoApi/src'
 import AppBar from 'material-ui/AppBar';
-
-import {
-  Table,
-  TableBody,
-  TableHeader,
-  TableHeaderColumn,
-  TableRow,
-  TableRowColumn,
-} from 'material-ui/Table';
 import ElementListTransactions from '../Elements/elementListTransactions'
 import styles from './pageFundDetailsDragoTrader.module.css';
 import ElementPriceBox from '../Elements/elementPricesBox'
@@ -61,8 +38,8 @@ class PageFundDetailsDragoTrader extends Component {
       location: PropTypes.object.isRequired,
       ethBalance: PropTypes.object.isRequired,
       accounts: PropTypes.array.isRequired,
-      accountsInfo: PropTypes.object.isRequired, 
-      isManager: PropTypes.bool.isRequired
+      isManager: PropTypes.bool.isRequired,
+      match: PropTypes.object.isRequired,
     };
 
     state = {
@@ -104,9 +81,7 @@ class PageFundDetailsDragoTrader extends Component {
     componentWillReceiveProps(nextProps) {
       // Updating the lists on each new block if the accounts balances have changed
       // Doing this this to improve performances by avoiding useless re-rendering
-      const { api } = this.context
       const dragoID = this.props.match.params.dragoid
-      const {accounts } = this.props
       const sourceLogClass = this.constructor.name
       if (!this.props.ethBalance.eq(nextProps.ethBalance)) {
         this.getDragoDetails(dragoID)
@@ -128,7 +103,7 @@ class PageFundDetailsDragoTrader extends Component {
       return stateUpdate || propsUpdate
     }
 
-    componentDidUpdate(nextProps) {
+    componentDidUpdate() {
     }
 
     renderAddress (dragoDetails) {
@@ -205,12 +180,8 @@ class PageFundDetailsDragoTrader extends Component {
     }
 
     render() {
-      const { location, accounts, accountsInfo, allEvents, isManager } = this.props
-      const { dragoDetails, dragoTransactionsLogs, loading } = this.state
-      const paperContainer = {
-        marginTop: 10,
-        display: 'inline-block',
-      };
+      const { accounts, isManager } = this.props
+      const { dragoDetails, loading } = this.state
       const tabButtons = {
         inkBarStyle: {
           margin: 'auto',
@@ -222,12 +193,7 @@ class PageFundDetailsDragoTrader extends Component {
           width: 200,
         }
       }
-      const detailsBox = {
-        padding: 20,
-      }
-
       const columnsStyle = [styles.detailsTableCell, styles.detailsTableCell2, styles.detailsTableCell3]
- 
       const tableButtonsDragoAddress = [this.renderCopyButton(dragoDetails.address), this.renderEtherscanButton('address', dragoDetails.address)]
       const tableButtonsDragoOwner = [this.renderCopyButton(dragoDetails.addresssOwner), this.renderEtherscanButton('address', dragoDetails.addresssOwner)]
       const tableInfo = [['Symbol', dragoDetails.symbol, ''], 
@@ -238,13 +204,8 @@ class PageFundDetailsDragoTrader extends Component {
         marginTop: "10px"
       };
       
-      const web3 = window.web3
-
       var dragoTransactionList = this.state.dragoTransactionsLogs
       // console.log(dragoTransactionList)
-
-      console.log(isManager)
-
       // Waiting until getDragoDetails returns the drago details
       if (loading) {
         return (
@@ -264,9 +225,6 @@ class PageFundDetailsDragoTrader extends Component {
                 <ToolbarGroup className={styles.detailsToolbarGroup}>
                   {this.renderAddress(dragoDetails)}
                 </ToolbarGroup>
-                <ToolbarGroup>
-                  {/* <ElementFundActions dragoDetails={dragoDetails} accounts={accounts} snackBar={this.snackBar}/> */}
-                </ToolbarGroup>
               </Toolbar>
               <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle} className={styles.test}>
                 <Tab label="Info" className={styles.detailsTab}
@@ -282,12 +240,10 @@ class PageFundDetailsDragoTrader extends Component {
                           />
                           <div className={styles.holdings}>
                             <div>{this.state.balanceDRG} <small>UNITS</small><br /></div>
-                            {/* <h2>{this.state.balanceETH} <small>ETH</small></h2> */}
                           </div>
                         </div>
                       </Col>
                       <Col xs={6}>
-                        {/* <Paper zDepth={1}> */}
                           <ElementPriceBox
                             dragoDetails={dragoDetails}
                             accounts={accounts}
@@ -301,18 +257,6 @@ class PageFundDetailsDragoTrader extends Component {
                             actionSelected={this.state.openBuySellDialog}
                             onTransactionSent={this.onTransactionSent}
                           />
-                          {/* {this.state.openBuySellDialog.open
-                          ? <ElementFundActions 
-                          dragoDetails={dragoDetails} 
-                          accounts={accounts} 
-                          snackBar={this.snackBar} 
-                          actionSelected={this.state.openBuySellDialog}/>
-                          : null
-                        } */}
-                          {/* <div className={styles.tradeButton}>
-                          <ElementFundActions dragoDetails={dragoDetails} accounts={accounts} snackBar={this.snackBar} />
-                        </div> */}
-                        {/* </Paper> */}
                       </Col>
                     </Row>
                     <br />
@@ -341,9 +285,7 @@ class PageFundDetailsDragoTrader extends Component {
                           <div className={styles.detailsTabContent}>
                             <p>Your last 20 transactions on this fund.</p>
                           </div>
-
-
-                          <ElementListWrapper accountsInfo={accountsInfo} list={dragoTransactionList}
+                          <ElementListWrapper list={dragoTransactionList}
                             renderCopyButton={this.renderCopyButton}
                             renderEtherscanButton={this.renderEtherscanButton}>
 
@@ -384,7 +326,6 @@ class PageFundDetailsDragoTrader extends Component {
     getDragoDetails = (dragoID) => {
       const { api } = this.context
       const {accounts } = this.props
-      var sourceLogClass = this.constructor.name
       var balanceDRG = new BigNumber(0)
       //
       // Initializing Drago API
@@ -396,7 +337,7 @@ class PageFundDetailsDragoTrader extends Component {
       //
       dragoApi.contract.dragoregistry
         .init()
-        .then((address) =>{
+        .then(() =>{
           //
           // Looking for drago from dragoID
           //
@@ -419,19 +360,19 @@ class PageFundDetailsDragoTrader extends Component {
               // Gettin balance for each account
               //
 
-              console.log(accounts)
+              // console.log(accounts)
               accounts.map(account => {
                 dragoApi.contract.drago.balanceOf(account.address)
                 .then (balance =>{
                   balanceDRG = balanceDRG.add(balance)
-                  console.log(balance)
-                  console.log(api.util.fromWei(balance).toFormat(4))
+                  // console.log(balance)
+                  // console.log(api.util.fromWei(balance).toFormat(4))
                 })
                 .then(()=>{
-                  console.log(api.util.fromWei(balanceDRG.toNumber(4)).toFormat(4))
-                  console.log(balanceDRG)
+                  // console.log(api.util.fromWei(balanceDRG.toNumber(4)).toFormat(4))
+                  // console.log(balanceDRG)
                   var balanceETH = balanceDRG.times(formatCoins(balanceDRG,4,api))
-                  console.log(balanceETH)
+                  // console.log(balanceETH)
                   this.setState({
                     balanceETH: formatEth(balanceETH,4,api),
                     balanceDRG: formatCoins(balanceDRG,4,api)
@@ -458,7 +399,6 @@ class PageFundDetailsDragoTrader extends Component {
                 this.getTransactions (dragoDetails[0][0], dragoApi.contract.eventful, accounts)
               }
               )
-            // this.getTransactions (dragoDetails[0][0], contract, accounts)
           })
         })
 
@@ -513,10 +453,10 @@ class PageFundDetailsDragoTrader extends Component {
         const hexAccount = '0x' + account.address.substr(2).padStart(64,'0')
         return hexAccount
       })
-      const options = {
-        fromBlock: 0,
-        toBlock: 'pending',
-      }
+      // const options = {
+      //   fromBlock: 0,
+      //   toBlock: 'pending',
+      // }
       const eventsFilterBuy = {
         topics: [ 
           [contract.hexSignature.BuyDrago], 
@@ -566,6 +506,7 @@ class PageFundDetailsDragoTrader extends Component {
           .catch((error) => {
             // Sometimes Infura returns null for api.eth.getBlockByNumber, therefore we are assigning a fake timestamp to avoid
             // other issues in the app.
+            console.warn(error)
             log.timestamp = new Date()
             return log
           })

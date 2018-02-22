@@ -1,13 +1,9 @@
-import  * as Colors from 'material-ui/styles/colors'
-import { Grid, Row, Col } from 'react-flexbox-grid';
+import * as Colors from 'material-ui/styles/colors'
+import { Row, Col } from 'react-flexbox-grid';
 import AppBar from 'material-ui/AppBar';
 import FlatButton from 'material-ui/FlatButton'
-import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import ElementVaultActionDeposit from '../Elements/elementVaultActionDeposit'
-
-// import ElementFundActions from '../Elements/elementFundActions'
 
 import styles from './elementFeesBox.module.css';
 
@@ -20,28 +16,15 @@ export default class ElementFeesBox extends Component {
     isManager: PropTypes.bool
   };
 
-  buttonBuyClick = () =>{
+  buttonBuyClick = () => {
     this.props.handleBuySellButtons('deposit')
   }
-  
-  buttonSellClick = () =>{
+
+  buttonSellClick = () => {
     this.props.handleBuySellButtons('withdraw')
   }
-  
-  render () {
-    const buyText = {
-      color: Colors.green300,
-    }
 
-    const sellText = {
-      color: Colors.red300,
-    }
-
-    const priceBox = {
-      padding: 0,
-      textAlign: 'center',
-      fontSize: 25,
-    }
+  render() {
 
     const priceBoxHeader = {
       buy: {
@@ -63,7 +46,7 @@ export default class ElementFeesBox extends Component {
       fontWeight: 500,
     }
 
-    const {vaultDetails, accounts, isManager} = this.props
+    const { vaultDetails, isManager } = this.props
 
     const buttonStyle = {
       border: "1px solid",
@@ -72,7 +55,7 @@ export default class ElementFeesBox extends Component {
     }
 
     console.log(isManager)
-    if(!isManager) {
+    if (!isManager) {
       return (
         <div>
           <Row>
@@ -116,7 +99,7 @@ export default class ElementFeesBox extends Component {
       );
     }
 
-    if(isManager) {
+    if (isManager) {
       return (
         <div>
           <Row>
@@ -155,7 +138,5 @@ export default class ElementFeesBox extends Component {
         </div>
       );
     }
-
-
   }
 }

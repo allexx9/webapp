@@ -1,33 +1,18 @@
 import  * as Colors from 'material-ui/styles/colors'
 import { Grid, Row, Col } from 'react-flexbox-grid'
-import { Link, Route, withRouter } from 'react-router-dom'
-import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card'
+import { Link, withRouter } from 'react-router-dom'
 import {CopyToClipboard} from 'react-copy-to-clipboard'
-import {List, ListItem} from 'material-ui/List'
 import {Tabs, Tab} from 'material-ui/Tabs'
-import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar'
+import {Toolbar, ToolbarGroup } from 'material-ui/Toolbar'
 import ActionAssessment from 'material-ui/svg-icons/action/assessment'
 import ActionList from 'material-ui/svg-icons/action/list'
-import Avatar from 'material-ui/Avatar'
-import BigNumber from 'bignumber.js';
-import Chip from 'material-ui/Chip'
 import CopyContent from 'material-ui/svg-icons/content/content-copy'
-import DropDownMenu from 'material-ui/DropDownMenu'
-import FlatButton from 'material-ui/FlatButton'
-import IconButton from 'material-ui/IconButton'
-import IconMenu from 'material-ui/IconMenu'
-import Immutable from 'immutable'
-import NavigationExpandMoreIcon from 'material-ui/svg-icons/navigation/expand-more'
 import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types'
-import RaisedButton from 'material-ui/RaisedButton'
 import React, { Component } from 'react'
 import Search from 'material-ui/svg-icons/action/search'
 import Snackbar from 'material-ui/Snackbar'
-
-import { dragoFactoryEventsSignatures } from '../../utils/utils.js'
-import { formatCoins, formatEth, formatHash, toHex } from '../../format'
-import * as abis from '../../contracts';
+import { formatCoins, formatEth } from '../../format'
 import ElementListWrapper from '../../Elements/elementListWrapper'
 
 // import ElementFundActions from '../Elements/elementFundActions'
@@ -36,15 +21,6 @@ import InfoTable from '../../Elements/elementInfoTable'
 import Loading from '../../Loading'
 import DragoApi from '../../DragoApi/src'
 import AppBar from 'material-ui/AppBar';
-
-import {
-  Table,
-  TableBody,
-  TableHeader,
-  TableHeaderColumn,
-  TableRow,
-  TableRowColumn,
-} from 'material-ui/Table';
 import ElementListTransactions from '../Elements/elementListTransactions'
 import ElementFeesBox from '../Elements/elementFeesBox'
 import utils from '../../utils/utils'
@@ -64,7 +40,7 @@ class PageFundDetailsVaultTrader extends Component {
       location: PropTypes.object.isRequired,
       ethBalance: PropTypes.object.isRequired,
       accounts: PropTypes.array.isRequired,
-      accountsInfo: PropTypes.object.isRequired, 
+      match: PropTypes.object.isRequired, 
       isManager: PropTypes.bool.isRequired
     };
 
@@ -87,8 +63,6 @@ class PageFundDetailsVaultTrader extends Component {
       }
     }
 
-
-
     subTitle = (account) => {
       return (
         account.address
@@ -105,9 +79,7 @@ class PageFundDetailsVaultTrader extends Component {
     componentWillReceiveProps(nextProps) {
       // Updating the lists on each new block if the accounts balances have changed
       // Doing this this to improve performances by avoiding useless re-rendering
-      const { api } = this.context
       const dragoID = this.props.match.params.dragoid
-      const {accounts } = this.props
       const sourceLogClass = this.constructor.name
       if (!this.props.ethBalance.eq(nextProps.ethBalance)) {
         this.getVaultDetails(dragoID)
@@ -129,7 +101,7 @@ class PageFundDetailsVaultTrader extends Component {
       return stateUpdate || propsUpdate
     }
 
-    componentDidUpdate(nextProps) {
+    componentDidUpdate() {
     }
 
     renderAddress (vaultDetails) {
@@ -206,12 +178,8 @@ class PageFundDetailsVaultTrader extends Component {
     }
 
     render() {
-      const { location, accounts, accountsInfo, allEvents, isManager } = this.props
-      const { vaultDetails, vaultTransactionsLogs, loading } = this.state
-      const paperContainer = {
-        marginTop: 10,
-        display: 'inline-block',
-      };
+      const { accounts, isManager } = this.props
+      const { vaultDetails, loading } = this.state
       const tabButtons = {
         inkBarStyle: {
           margin: 'auto',
@@ -223,10 +191,6 @@ class PageFundDetailsVaultTrader extends Component {
           width: 200,
         }
       }
-      const detailsBox = {
-        padding: 20,
-      }
-
       const columnsStyle = [styles.detailsTableCell, styles.detailsTableCell2, styles.detailsTableCell3]
       const tableButtonsVaultAddress = [this.renderCopyButton(vaultDetails.address), this.renderEtherscanButton('address', vaultDetails.address)]
       const tableButtonsVaultOwner = [this.renderCopyButton(vaultDetails.addresssOwner), this.renderEtherscanButton('address', vaultDetails.addresssOwner)]
@@ -237,9 +201,6 @@ class PageFundDetailsVaultTrader extends Component {
       const paperStyle = {
         marginTop: "10px"
       };
-      
-      const web3 = window.web3
-
       var dragoTransactionList = this.state.vaultTransactionsLogs
       // console.log(dragoTransactionList)
 
@@ -300,24 +261,6 @@ class PageFundDetailsVaultTrader extends Component {
                           actionSelected={this.state.openBuySellDialog}
                           onTransactionSent={this.onTransactionSent}
                           />
-                        {/* <ElementFundActions 
-                          vaultDetails={vaultDetails} 
-                          accounts={accounts} 
-                          snackBar={this.snackBar} 
-                          actionSelected={this.state.openBuySellDialog}
-                          onTransactionSent={this.onTransactionSent}
-                          /> */}
-                        {/* {this.state.openBuySellDialog.open
-                          ? <ElementFundActions 
-                          vaultDetails={vaultDetails} 
-                          accounts={accounts} 
-                          snackBar={this.snackBar} 
-                          actionSelected={this.state.openBuySellDialog}/>
-                          : null
-                        } */}
-                        {/* <div className={styles.tradeButton}>
-                          <ElementFundActions vaultDetails={vaultDetails} accounts={accounts} snackBar={this.snackBar} />
-                        </div> */}
                       </Paper>
                     </Col>
                   </Row>
@@ -332,9 +275,7 @@ class PageFundDetailsVaultTrader extends Component {
                         <div className={styles.detailsTabContent}>
                           <p>Your last 20 transactions on this fund.</p>
                         </div>
-
-
-                        <ElementListWrapper accountsInfo={accountsInfo} list={dragoTransactionList}
+                        <ElementListWrapper list={dragoTransactionList}
                           renderCopyButton={this.renderCopyButton}
                           renderEtherscanButton={this.renderEtherscanButton}>
 
@@ -375,7 +316,6 @@ class PageFundDetailsVaultTrader extends Component {
   getVaultDetails = (dragoID) => {
     const { api } = this.context
     const { accounts } = this.props
-    var sourceLogClass = this.constructor.name
     //
     // Initializing Drago API
     // Passing Parity API
@@ -386,7 +326,7 @@ class PageFundDetailsVaultTrader extends Component {
     //
     dragoApi.contract.dragoregistry
       .init()
-      .then((address) => {
+      .then(() => {
         //
         // Looking for drago from dragoID
         //
@@ -480,10 +420,10 @@ class PageFundDetailsVaultTrader extends Component {
     })
     console.log(hexAccounts)
     console.log(hexVaultAddress)
-    const options = {
-      fromBlock: 0,
-      toBlock: 'pending',
-    }
+    // const options = {
+    //   fromBlock: 0,
+    //   toBlock: 'pending',
+    // }
     console.log(contract.hexSignature)
     const eventsFilterBuy = {
       topics: [
@@ -535,6 +475,7 @@ class PageFundDetailsVaultTrader extends Component {
             .catch((error) => {
               // Sometimes Infura returns null for api.eth.getBlockByNumber, therefore we are assigning a fake timestamp to avoid
               // other issues in the app.
+              console.warn(error)
               log.timestamp = new Date()
               return log
             })

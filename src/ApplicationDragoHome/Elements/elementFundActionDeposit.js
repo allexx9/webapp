@@ -1,22 +1,16 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
 import { Dialog, FlatButton, TextField } from 'material-ui';
-import { Grid, Row, Col } from 'react-flexbox-grid';
 import BigNumber from 'bignumber.js';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import IdentityIcon from '../../IdentityIcon';
-import  * as Colors from 'material-ui/styles/colors';
-
 import { ERRORS, validateAccount, validatePositiveNumber } from './validation';
-import * as abis from '../../contracts';
 import AccountSelector from '../../Elements/elementAccountSelector';
 import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle'
 import ElementDialogAddressTitle from '../../Elements/elementDialogAddressTitle'
 
-import styles from './elementFundActionDeposit.module.css';
 import DragoApi from '../../DragoApi/src'
 
 const NAME_ID = ' ';

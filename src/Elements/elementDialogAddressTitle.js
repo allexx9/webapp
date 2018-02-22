@@ -1,9 +1,8 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
-import { Grid, Row, Col } from 'react-flexbox-grid';
+import { Row, Col } from 'react-flexbox-grid';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import  * as Colors from 'material-ui/styles/colors';
 import styles from './elementDialogAddressTitle.module.css';
 import IdentityIcon from '../IdentityIcon';
 

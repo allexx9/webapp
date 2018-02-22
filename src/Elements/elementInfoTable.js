@@ -1,14 +1,8 @@
 import React, { Component } from 'react';
-
-
-import styles from './elementInfoTable.module.css';
-
 import PropTypes from 'prop-types';
 import {
   Table,
   TableBody,
-  TableHeader,
-  TableHeaderColumn,
   TableRow,
   TableRowColumn,
 } from 'material-ui/Table';

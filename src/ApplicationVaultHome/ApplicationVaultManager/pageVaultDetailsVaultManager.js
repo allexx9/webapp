@@ -1,34 +1,19 @@
 import  * as Colors from 'material-ui/styles/colors'
 import { Grid, Row, Col } from 'react-flexbox-grid'
-import { Link, Route, withRouter } from 'react-router-dom'
-import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card'
+import { Link, withRouter } from 'react-router-dom'
 import {CopyToClipboard} from 'react-copy-to-clipboard'
-import {List, ListItem} from 'material-ui/List'
 import {Tabs, Tab} from 'material-ui/Tabs'
-import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar'
+import {Toolbar, ToolbarGroup } from 'material-ui/Toolbar'
 import ActionAssessment from 'material-ui/svg-icons/action/assessment'
 import ActionList from 'material-ui/svg-icons/action/list'
 import AppBar from 'material-ui/AppBar';
-import Avatar from 'material-ui/Avatar'
-import Chip from 'material-ui/Chip'
 import CopyContent from 'material-ui/svg-icons/content/content-copy'
-import DropDownMenu from 'material-ui/DropDownMenu'
-import FlatButton from 'material-ui/FlatButton'
-import IconButton from 'material-ui/IconButton'
-import IconMenu from 'material-ui/IconMenu'
-import Immutable from 'immutable'
-import NavigationExpandMoreIcon from 'material-ui/svg-icons/navigation/expand-more'
 import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types'
-import RaisedButton from 'material-ui/RaisedButton'
 import React, { Component } from 'react'
 import Search from 'material-ui/svg-icons/action/search'
 import Snackbar from 'material-ui/Snackbar'
-import Subheader from 'material-ui/Subheader'
-
-import { dragoFactoryEventsSignatures } from '../../utils/utils.js'
-import { formatCoins, formatEth, formatHash, toHex } from '../../format'
-import * as abis from '../../contracts';
+import { formatCoins, formatEth } from '../../format'
 import DragoApi from '../../DragoApi/src'
 import ElementVaultActionsList from '../Elements/elementVaultActionsList'
 import ElementListTransactions from '../Elements/elementListTransactions'
@@ -38,17 +23,6 @@ import IdentityIcon from '../../IdentityIcon'
 import InfoTable from '../../Elements/elementInfoTable'
 import Loading from '../../Loading'
 import utils from '../../utils/utils'
-
-
-import {
-  Table,
-  TableBody,
-  TableHeader,
-  TableHeaderColumn,
-  TableRow,
-  TableRowColumn,
-} from 'material-ui/Table';
-
 import styles from './pageVaultDetailsVaultManager.module.css';
 import ElementFundNotFound from '../../Elements/elementFundNotFound'
 
@@ -64,7 +38,7 @@ class PageVaultDetailsVaultManager extends Component {
       location: PropTypes.object.isRequired,
       ethBalance: PropTypes.object.isRequired,
       accounts: PropTypes.array.isRequired,
-      accountsInfo: PropTypes.object.isRequired, 
+      match: PropTypes.object.isRequired, 
       isManager: PropTypes.bool.isRequired
     };
 
@@ -99,9 +73,7 @@ class PageVaultDetailsVaultManager extends Component {
     componentWillReceiveProps(nextProps) {
       // Updating the lists on each new block if the accounts balances have changed
       // Doing this this to improve performances by avoiding useless re-rendering
-      const { api } = this.context
       const dragoID = this.props.match.params.dragoid
-      const {accounts } = this.props
       const sourceLogClass = this.constructor.name
       // console.log(nextProps)
       if (!this.props.ethBalance.eq(nextProps.ethBalance)) {
@@ -183,12 +155,8 @@ class PageVaultDetailsVaultManager extends Component {
 
     
     render() {
-      const { location, accounts, accountsInfo, allEvents, isManager } = this.props
-      const { vaultDetails, vaultTransactionsLogs, loading } = this.state
-      const paperContainer = {
-        marginTop: 10,
-        display: 'inline-block',
-      };
+      const { accounts, isManager } = this.props
+      const { vaultDetails, loading } = this.state
       const tabButtons = {
         inkBarStyle: {
           margin: 'auto',
@@ -199,9 +167,6 @@ class PageVaultDetailsVaultManager extends Component {
           margin: 'auto',
           width: 200,
         }
-      }
-      const detailsBox = {
-        padding: 20,
       }
 
       const columnsStyle = [styles.detailsTableCell, styles.detailsTableCell2, styles.detailsTableCell3]
@@ -215,9 +180,6 @@ class PageVaultDetailsVaultManager extends Component {
         const paperStyle = {
 
       };
-      
-      const web3 = window.web3
-
       var vaultTransactionList = this.state.vaultTransactionsLogs
       // console.log(vaultTransactionList)
 
@@ -283,7 +245,7 @@ class PageVaultDetailsVaultManager extends Component {
                           <p>Your last 20 transactions on this Drago.</p>
                         </div>
                         {console.log(vaultTransactionList)}
-                          <ElementListWrapper accountsInfo={accountsInfo} list={vaultTransactionList}
+                          <ElementListWrapper list={vaultTransactionList}
                               renderCopyButton={this.renderCopyButton}
                               renderEtherscanButton={this.renderEtherscanButton}>
                             <ElementListTransactions  />
@@ -326,7 +288,6 @@ class PageVaultDetailsVaultManager extends Component {
     getVaultDetails = (dragoID) => {
       const { api } = this.context
       const { accounts } = this.props
-      var sourceLogClass = this.constructor.name
       //
       // Initializing Drago API
       // Passing Parity API
@@ -337,7 +298,7 @@ class PageVaultDetailsVaultManager extends Component {
       //
       dragoApi.contract.dragoregistry
         .init()
-        .then((address) => {
+        .then(() => {
           //
           // Looking for drago from dragoID
           //
@@ -431,10 +392,10 @@ class PageVaultDetailsVaultManager extends Component {
       const hexAccount = account.address
       return hexAccount
     })
-    const options = {
-      fromBlock: 0,
-      toBlock: 'pending',
-    }
+    // const options = {
+    //   fromBlock: 0,
+    //   toBlock: 'pending',
+    // }
     const eventsFilterBuy = {
       topics: [
         [contract.hexSignature.BuyGabcoin],
@@ -484,6 +445,7 @@ class PageVaultDetailsVaultManager extends Component {
             .catch((error) => {
               // Sometimes Infura returns null for api.eth.getBlockByNumber, therefore we are assigning a fake timestamp to avoid
               // other issues in the app.
+              console.warn(error)
               log.timestamp = new Date()
               return log
             })

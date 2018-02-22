@@ -1,9 +1,4 @@
-import Immutable from 'immutable'
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom'
-
-import Loading from '../Loading'
 import styles from './elementFundNotFound.module.css'
 
 class ElementFundNotFound extends Component {

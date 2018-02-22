@@ -2,31 +2,21 @@
 
 import  * as Colors from 'material-ui/styles/colors';
 import { Dialog, FlatButton, TextField } from 'material-ui';
-import { Grid, Row, Col } from 'react-flexbox-grid';
+import { Row, Col } from 'react-flexbox-grid';
 import AppBar from 'material-ui/AppBar';
 import BigNumber from 'bignumber.js';
-import DropDownMenu from 'material-ui/DropDownMenu';
-import MenuItem from 'material-ui/MenuItem';
 import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-
 import { ERRORS, validateAccount, validatePositiveNumber } from './validation';
-import * as abis from '../../contracts';
 import AccountSelector from '../../Elements/elementAccountSelector';
 import DragoApi from '../../DragoApi/src'
 import ElementDialogAddressTitle from '../../Elements/elementDialogAddressTitle'
 import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle'
 import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization'
-import IdentityIcon from '../../IdentityIcon';
-import utils from '../../utils/utils.js'
 
 import styles from './elementVaultActionSetFees.module.css';
 
-const NAME_ID = ' ';
-const ADDRESS_0 = '0x0000000000000000000000000000000000000000'; //ADDRESS_0 is for ETH deposits
-
-const APPROVED_EXCHANGES = ['exchange2', 'exchangenot']; //we have to created a component to inject array into
 
 //TODO: add address exchange
 
@@ -156,23 +146,7 @@ export default class ElementVaultActionSetFees extends Component {
   }
 
   renderFields = () => {
-    const { vaultDetails } = this.props
-    const { price, sellPrice } = this.state
     const amountLabel = 'Please enter a value';
-    const buyText = {
-      color: Colors.green300,
-    }
-
-    const sellText = {
-      color: Colors.red300,
-    }
-
-    const priceBox = {
-      padding: 0,
-      textAlign: 'center',
-      fontSize: 25,
-    }
-
     const priceBoxHeader = {
       buy: {
         backgroundColor: Colors.green300

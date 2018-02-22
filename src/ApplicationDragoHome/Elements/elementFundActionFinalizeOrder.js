@@ -1,27 +1,20 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
 import { Dialog, FlatButton, TextField } from 'material-ui';
-import { Grid, Row, Col } from 'react-flexbox-grid';
 import BigNumber from 'bignumber.js';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import IdentityIcon from '../../IdentityIcon';
-import  * as Colors from 'material-ui/styles/colors';
-
-import { ERRORS, validateAccount, validatePositiveNumber, tradeIdError, cfdError, exchangeNameError } from './validation';
-import * as abis from '../../contracts';
+import { ERRORS, validateAccount, validatePositiveNumber } from './validation';
 import AccountSelector from '../../Elements/elementAccountSelector';
 import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle'
 import ElementDialogAddressTitle from '../../Elements/elementDialogAddressTitle'
-
-import styles from './elementFundActionFinalize.module.css';
 import DragoApi from '../../DragoApi/src'
 
 const NAME_ID = ' ';
 const ADDRESS_0 = '0x0000000000000000000000000000000000000000'; //ADDRESS_0 is for ETH deposits
-const DIVISOR = 10 ** 9;  //adjustment in billionths
+
 
 //TODO: add address exchange
 
@@ -118,14 +111,16 @@ export default class ElementFundActionFinalizeOrder extends Component {
       );
     }
 
-    const { accountError, amountError, fromAddressError, cfdError, tradeIdError, sending } = this.state;
+    const { accountError, cfdError, tradeIdError, sending } = this.state;
     const hasError = !!(accountError || cfdError || tradeIdError);
     return ([
       <FlatButton
+       key="CancelButton"
         label='Cancel'
         primary
         onTouchTap={ this.onClose} />,
       <FlatButton
+      key="SubmitButton"
         label='Submit'
         primary
         disabled={ hasError || sending }
@@ -134,13 +129,7 @@ export default class ElementFundActionFinalizeOrder extends Component {
   }
 
   renderFields () {
-    const fromAccountLabel ='Address of target drago';
-    const amountLabel = 'The amount you want to deposit';
     const tradeIdLabel = 'The ID of the order you want to cancel';
-    const cfdLabel = 'The CFD you want to trade';
-
-    const value = this.state;
-    const assetName = this.state;
 
     return (
       <div>
@@ -257,7 +246,7 @@ export default class ElementFundActionFinalizeOrder extends Component {
   }
 
   validateTotal = () => {
-    const { account, accountError, cfd, cfdError, tradeId, tradeIdError } = this.state;
+    const { account, accountError, cfdError, tradeId, tradeIdError } = this.state;
 
     if (accountError || cfdError || tradeIdError) {
       return;

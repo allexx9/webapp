@@ -1,22 +1,11 @@
-import  * as Colors from 'material-ui/styles/colors'
-import { Grid, Row, Col } from 'react-flexbox-grid'
-import BigNumber from 'bignumber.js'
+import { Row, Col } from 'react-flexbox-grid'
 import Paper from 'material-ui/Paper';
 import PropTypes from 'prop-types';
-import React, { Component, PureComponent } from 'react'
-import ReactDOM from 'react-dom'
-
-import IdentityIcon from '../IdentityIcon';
-import Loading from '../Loading'
-import utils from '../utils/utils'
-
-
+import React, { Component } from 'react'
 import styles from './pageNetworkConfig.module.css'
 import Toggle from 'material-ui/Toggle';
 import ElementBoxHeadTitle from '../Elements/elementBoxHeadTitle'
 import RaisedButton from 'material-ui/RaisedButton';
-import FlatButton from 'material-ui/FlatButton'
-import TextField from 'material-ui/TextField'
 import { ALLOWED_ENDPOINTS, DEFAULT_ENDPOINT, LOCAL } from '../utils/const';
 
 
@@ -48,10 +37,8 @@ class PageNetworkConfig extends Component {
 
   static propTypes = {
       location: PropTypes.object.isRequired,
-      ethBalance: PropTypes.object.isRequired,
-      accounts: PropTypes.array.isRequired,
-      // accountsInfo: PropTypes.object.isRequired, 
-      ethBalance: PropTypes.object.isRequired,
+      // ethBalance: PropTypes.object.isRequired,
+      // accounts: PropTypes.array.isRequired
     };
 
     componentDidMount() {
@@ -93,7 +80,7 @@ class PageNetworkConfig extends Component {
     }
 
     render() {
-      const { allowedEndpoints, selectedEndpoint } = this.state 
+      const { allowedEndpoints } = this.state 
       const endPoint = localStorage.getItem('endpoint')
       var remoteEndPointDisabled = endPoint === LOCAL ? true : false
 

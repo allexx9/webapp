@@ -1,43 +1,30 @@
 import  * as Colors from 'material-ui/styles/colors';
-import { Grid, Row, Col } from 'react-flexbox-grid';
-import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
-import ActionSwapHoriz from 'material-ui/svg-icons/action/swap-horiz';
+import { Row, Col } from 'react-flexbox-grid';
 import Add from 'material-ui/svg-icons/content/add';
-import BigNumber from 'bignumber.js';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import PropTypes from 'prop-types';
-import RaisedButton from 'material-ui/RaisedButton';
 import React from 'react';
 import TextField from 'material-ui/TextField';
-
-import {
-  Table,
-  TableBody,
-  TableHeader,
-  TableHeaderColumn,
-  TableRow,
-  TableRowColumn,
-} from 'material-ui/Table';
-
-import { ERRORS, validateAccount, validatePositiveNumber, validateNewName, validateNewSymbol } from './validation';
-import { formatCoins, formatEth, formatHash, toHex } from '../../format';
-import * as abis from '../../contracts';
+import { ERRORS, validateAccount, validateNewName, validateNewSymbol } from './validation';
 import AccountSelector from '../../Elements/elementAccountSelector'
-import IdentityIcon from '../../IdentityIcon'
-import utils, {dragoApi} from '../../utils/utils'
 import DragoApi from '../../DragoApi/src'
 import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle'
 import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization'
-
-
-import styles from './elementVaultCreateAction.module.css';
+import { connect } from 'react-redux';
 
 const customContentStyle = {
   minHeight: '500px',
 };
 
-export default class ElementVaultCreateAction extends React.Component {
+function mapStateToProps(state) {
+  return state
+//   return {
+//     count: state.count
+//   };
+}
+
+class ElementVaultCreateAction extends React.Component {
 
   static contextTypes = {
     api: PropTypes.object.isRequired,
@@ -46,7 +33,8 @@ export default class ElementVaultCreateAction extends React.Component {
 
   static propTypes = {
     // vaultDetails: PropTypes.object.isRequired, 
-    accounts: PropTypes.array.isRequired
+    accounts: PropTypes.array.isRequired,
+    dispatch: PropTypes.func.isRequired
   };
   
   state = {
@@ -64,6 +52,12 @@ export default class ElementVaultCreateAction extends React.Component {
     vaultDetails: ''
   }
 
+  addTransactionToQueueAction = (transactionId, transactionDetails) => {
+    return {
+      type: 'ADD_TRANSACTION',
+      transaction: { transactionId, transactionDetails }
+    }
+  };
 
   handleOpen = () => {
     console.log('open')
@@ -138,7 +132,7 @@ export default class ElementVaultCreateAction extends React.Component {
       }
       const values = [vaultName, vaultSymbol, this.state.account.address]
       var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
-      var dragoApi, provider = null;
+      var dragoApi = null;
       // Initializing transaction variables
       const authMsg = 'You deployed the vault ' + vaultSymbol + ' | ' + vaultName 
       const transactionId = api.util.sha3(new Date() + vaultSymbol)
@@ -155,8 +149,7 @@ export default class ElementVaultCreateAction extends React.Component {
       }
 
       // Setting variables depending on account source
-      var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
-      this.context.addTransactionToQueue(transactionId, transactionDetails)
+      this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
       const {account} = this.state
 
 
@@ -175,10 +168,10 @@ export default class ElementVaultCreateAction extends React.Component {
             transactionDetails.receipt = receipt
             transactionDetails.hash = receipt.transactionHash
             transactionDetails.timestamp = new Date ()
-            this.context.addTransactionToQueue(transactionId, transactionDetails)
+            this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
           } else {
             transactionDetails.parityId = receipt
-            this.context.addTransactionToQueue(transactionId, transactionDetails)
+            this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
           }
           this.setState({
             sending: false,
@@ -190,7 +183,7 @@ export default class ElementVaultCreateAction extends React.Component {
           this.props.snackBar('Your wallet returned an error.')
           transactionDetails.status = 'error'
           transactionDetails.error = error
-          this.context.addTransactionToQueue(transactionId, transactionDetails)
+          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
           this.setState({
             sending: false
           })
@@ -234,7 +227,6 @@ export default class ElementVaultCreateAction extends React.Component {
     }
 
     renderHeader = () => {
-      const { vaultDetails } = this.props
       return (
         <div>
             <ElementDialogHeadTitle primaryText='Deploy new Vault' />
@@ -260,10 +252,12 @@ export default class ElementVaultCreateAction extends React.Component {
   
       return ([
         <FlatButton
+          key='CancelButton'
           label='Cancel'
           primary
           onTouchTap={ this.handleClose } />,
         <FlatButton
+          key='SubmitButton'
           label='Deploy'
           primary
           disabled={ hasError || sending }
@@ -272,9 +266,7 @@ export default class ElementVaultCreateAction extends React.Component {
     }
 
     render() {
-      const { accounts  } = this.props
-      const { accountError, amountError, sending, openAuth, authMsg, authAccount, vaultDetails } = this.state;
-      const hasError = !!(this.state.accountError || this.state.amountError );
+      const { openAuth, authMsg, authAccount, vaultDetails } = this.state;
       const labelStyle = {
         color: '#FFFFFF',
         fontWeight: 700
@@ -368,3 +360,5 @@ export default class ElementVaultCreateAction extends React.Component {
       );
     }
 }
+
+export default connect(mapStateToProps)(ElementVaultCreateAction)

@@ -1,22 +1,13 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
-// import { api } from '../parity';
-
-
 import styles from './applicationHome.module.css';
 import bgimage from '../assets/images/blockchainLight.jpg';
-
 import React, { Component } from 'react';
-
-// React.PropTypes is deprecated since React 15.5.0, use the npm module prop-types instead
 import PropTypes from 'prop-types';
-import Slider from 'material-ui/Slider';
-import Drawer from 'material-ui/Drawer';
-import AppBar from 'material-ui/AppBar';
 import RaisedButton from 'material-ui/RaisedButton';
-import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
+import {Card, CardActions, CardTitle, CardText} from 'material-ui/Card';
 import Paper from 'material-ui/Paper';
-import { Grid, Row, Col } from 'react-flexbox-grid';
+import { Row, Col } from 'react-flexbox-grid';
 
 // import ApplicationDragoFactory from '../ApplicationDragoFactory';
 // import ApplicationGabcoinFactory from '../ApplicationGabcoinFactory';
@@ -118,19 +109,6 @@ export default class ApplicationHome extends Component {
                 </CardActions>
               </Card>
             </Col>
-            {/* <Col xs={4} >
-              <Card className={ styles.column }>
-                <CardTitle title="RigoBlock Exchange" className={ styles.cardtitle } titleColor="white" />
-                <CardText>
-                Trade derivatives contracts with leverage
-                </CardText>
-                <CardActions>
-                  <Link to="/exchange">
-                    <RaisedButton label="Trade" className={ styles.exchangebutton } labelColor="white"/>
-                  </Link>
-                </CardActions>
-              </Card>
-            </Col> */}
           </Row>
           <Row>
             <Col xs={12}>

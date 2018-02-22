@@ -1,40 +1,34 @@
 import  * as Colors from 'material-ui/styles/colors'
-import { Link, Route, withRouter } from 'react-router-dom'
-import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar'
+import { Link,withRouter } from 'react-router-dom'
+import {ToolbarGroup, ToolbarSeparator} from 'material-ui/Toolbar'
 import AccountIcon from 'material-ui/svg-icons/action/account-circle'
 import ActionAccountBalance from 'material-ui/svg-icons/action/account-balance'
 import ActionHome from 'material-ui/svg-icons/action/home'
-import ActionLightBulb from 'material-ui/svg-icons/action/lightbulb-outline'
-import ActionPolymer from 'material-ui/svg-icons/action/polymer'
 import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
 import Settings from 'material-ui/svg-icons/action/settings'
 import Help from 'material-ui/svg-icons/action/help'
-import Drawer from 'material-ui/Drawer'
-import DropDownMenu from 'material-ui/DropDownMenu'
 import FlatButton from 'material-ui/FlatButton'
-import FontIcon from 'material-ui/FontIcon'
-import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import IconButton from 'material-ui/IconButton'
 import IconMenu from 'material-ui/IconMenu'
-import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme'
 import MenuItem from 'material-ui/MenuItem'
-import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import NotificationWifi from 'material-ui/svg-icons/notification/wifi';
-import FaltButton from 'material-ui/FlatButton';
 import Popover from 'material-ui/Popover';
 import Menu from 'material-ui/Menu';
 import ArrowDropDown from 'material-ui/svg-icons/navigation/arrow-drop-down'
-
-import {List, ListItem} from 'material-ui/List';
-import Avatar from 'material-ui/Avatar';
-import {grey400, darkBlack, lightBlack} from 'material-ui/styles/colors';
-
 import {APP, DS} from '../utils/const.js'
+import { connect } from 'react-redux';
 // import ElementNotificationsDrawer from '.Elements/elementNotificationsDrawer'
-
+import {IS_MANAGER} from '../utils/const'
 import styles from './elements.module.css'
+import utils from '../utils/utils'
+
+
+function mapStateToProps(state) {
+  return state
+}
+
 
 var menuStyles = {
     dropDown: {
@@ -68,8 +62,8 @@ class NavLinks extends Component {
 
     static propTypes = {
         location: PropTypes.object.isRequired,
-        handleTopBarSelectAccountType: PropTypes.func.isRequired,
-        isManager: PropTypes.bool,
+        dispatch: PropTypes.func.isRequired,
+        user: PropTypes.object.isRequired,
         handleToggleNotifications: PropTypes.func.isRequired,
       };
 
@@ -81,7 +75,37 @@ class NavLinks extends Component {
       subscriptionIDDrago: null
     }
 
-     
+    shouldComponentUpdate(nextProps, nextState){
+      const  sourceLogClass = this.constructor.name
+      var stateUpdate = true
+      var propsUpdate = true
+      propsUpdate = !utils.shallowEqual(this.props, nextProps)
+      stateUpdate = !utils.shallowEqual(this.state, nextState)
+      if (stateUpdate || propsUpdate) {
+        console.log(`${sourceLogClass} -> shouldComponentUpdate: TRUE -> Proceedding with rendering.`);
+      }
+      return stateUpdate || propsUpdate
+    }
+
+    isManagerAction = (isManager) => {
+      return {
+        type: IS_MANAGER,
+        payload: isManager
+      }
+    };
+
+    // value = 1 = Trader
+    // value = 2 = Manager
+    handleTopBarSelectAccountType = (event, value) => {
+      console.log('manager selection', value)
+      const accountType = {
+        false: false,
+        true: true
+      }
+      console.log(value)
+      localStorage.setItem('isManager', accountType[value])
+      this.props.dispatch(this.isManagerAction(accountType[value]))
+    };
 
     componentDidMount () {
         this.activeSectionPath()
@@ -134,7 +158,7 @@ class NavLinks extends Component {
       };
 
     render() {
-      var { location, handleTopBarSelectAccountType, isManager, handleToggleNotifications } = this.props
+      var { location, user, handleToggleNotifications } = this.props
       let userTypeDisabled = false;
       var userTypeLabel = 'HOLDER'
       const links = [
@@ -144,12 +168,6 @@ class NavLinks extends Component {
         {label: 'drago', to: 'drago', icon: <ActionShowChart color="white"/>},
         // {label: 'exchange', to: 'exchange', icon: <ActionPolymer color="white"/>}
          ]
-
-      const compactStyle = {
-        padding: "0px !important"
-      }
-
-
       const buttonAccountType = {
         border: "1px solid",
         borderColor: '#FFFFFF',
@@ -158,15 +176,14 @@ class NavLinks extends Component {
 
 
       // Disabling user type if isManager not defined
-      if (typeof isManager === 'undefined') {
-        isManager = false;
+      if (typeof user.isManager === 'undefined') {
+        user.isManager = false;
         userTypeDisabled = true;
         menuStyles = {...menuStyles, ...disabledUserType};
       } else {
-        isManager ? userTypeLabel = 'WIZARD' : userTypeLabel = 'HOLDER'
+        user.isManager ? userTypeLabel = 'WIZARD' : userTypeLabel = 'HOLDER'
         menuStyles = {...menuStyles, ...enabledUserType};
       }
-
       return (
         <ToolbarGroup>
           <ToolbarGroup>
@@ -180,7 +197,7 @@ class NavLinks extends Component {
               label={userTypeLabel}
               labelStyle={{ color: '#FFFFFF' }}
               style={buttonAccountType}
-              icon={<ArrowDropDown color='#FFFFFF'/>}
+              icon={<ArrowDropDown color='#FFFFFF' />}
               hoverColor={Colors.blue300}
             />
             <Popover
@@ -189,45 +206,38 @@ class NavLinks extends Component {
               anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
               targetOrigin={{ horizontal: 'right', vertical: 'top' }}
               onRequestClose={this.handleRequestClose}
-              style={{marginTop: "5px"}}
+              style={{ marginTop: "5px" }}
 
             >
-              <Menu value={isManager} 
-              onChange={handleTopBarSelectAccountType}
-              desktop={true}
-              className={styles.menuAccountType}
+              <Menu value={user.isManager}
+                onChange={this.handleTopBarSelectAccountType}
+                desktop={true}
+                className={styles.menuAccountType}
               >
                 <MenuItem
-                value={false} 
-                primaryText={
-                  <div>
-                  <div className={styles.menuItemPrimaryText}>HOLDER</div>
-                  <div><small>Invest in funds</small></div>
-                  </div>
-                }
+                  value={false}
+                  primaryText={
+                    <div>
+                      <div className={styles.menuItemPrimaryText}>HOLDER</div>
+                      <div><small>Invest in funds</small></div>
+                    </div>
+                  }
                 />
-                <MenuItem value={true} 
-                primaryText={
-                  <div>
-                  <div className={styles.menuItemPrimaryText}>WIZARD</div>
-                  <div><small>Manage your funds</small></div>
-                  </div>
-                }
+                <MenuItem 
+                  value={true}
+                  primaryText={
+                    <div>
+                      <div className={styles.menuItemPrimaryText}>WIZARD</div>
+                      <div><small>Manage your funds</small></div>
+                    </div>
+                  }
                 />
               </Menu>
             </Popover>
-            {/* <DropDownMenu value={isManager} onChange={handleTopBarSelectAccountType}
-              labelStyle={menuStyles.dropDown} disabled={userTypeDisabled}
-              anchorOrigin={ {vertical: 'bottom', horizontal: 'left',}}
-              style={this.compactStyle}
-              >
-              <MenuItem value={false} primaryText="Holder" />
-              <MenuItem value={true} primaryText="Wizard" />
-            </DropDownMenu> */}
             <IconMenu
               iconButtonElement={<IconButton><AccountIcon /></IconButton>}
               iconStyle={menuStyles.profileIcon}
-              anchorOrigin={ {vertical: 'bottom', horizontal: 'left',}}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'left', }}
               desktop={true}
             >
               <MenuItem leftIcon={<Settings />} value="config" primaryText="Config"
@@ -237,13 +247,10 @@ class NavLinks extends Component {
             <IconButton tooltip="Network" onClick={handleToggleNotifications} iconStyle={menuStyles.profileIcon}>
               <NotificationWifi />
             </IconButton>
-            {/* <ElementNotificationsDrawer handleToggleNotifications={this.handleToggleNotifications} accounts={accounts}/> */}
           </ToolbarGroup>
         </ToolbarGroup>
       )
     }
   }
 
-
-
-  export default withRouter(NavLinks)
+  export default withRouter(connect(mapStateToProps)(NavLinks))

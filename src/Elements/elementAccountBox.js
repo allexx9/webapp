@@ -1,10 +1,8 @@
-import { Grid, Row, Col } from 'react-flexbox-grid'
-import {Card, CardHeader, CardText} from 'material-ui/Card'
+import { Row, Col } from 'react-flexbox-grid'
 import Avatar from 'material-ui/Avatar'
 import Chip from 'material-ui/Chip'
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom'
 import {CopyToClipboard} from 'react-copy-to-clipboard'
 import CopyContent from 'material-ui/svg-icons/content/content-copy'
 import { Link } from 'react-router-dom'
@@ -15,15 +13,6 @@ import IdentityIcon from '../IdentityIcon';
 
 import styles from './elementAccountBox.module.css'
 
-const style = {
-  chip: {
-    margin: 4,
-  },
-  wrapper: {
-    display: 'flex',
-    flexWrap: 'wrap',
-  },
-};
 
 class ElementAccountBox extends Component {
 

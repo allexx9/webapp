@@ -5,7 +5,6 @@ import Web3 from 'web3'
 import {
   EP_INFURA_KV, EP_RIGOBLOCK_KV_DEV, EP_RIGOBLOCK_KV_PROD,
   PROD, WS, EP_RIGOBLOCK_KV_PROD_WS, EP_RIGOBLOCK_KV_DEV_WS,
-  EP_INFURA_KV_WS
 } from './utils/const.js'
 
 var HttpsUrl = '';
@@ -113,7 +112,6 @@ const checkTransport = () => {
       //     console.warn('Connection error: ', err);
       //   }
       // }
-      break;
   }
 }
 

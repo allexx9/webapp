@@ -1,19 +1,12 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
 import  * as Colors from 'material-ui/styles/colors';
-import { Dialog, FlatButton, TextField } from 'material-ui';
-import { Grid, Row, Col } from 'react-flexbox-grid';
-import BigNumber from 'bignumber.js';
-import DropDownMenu from 'material-ui/DropDownMenu';
-import MenuItem from 'material-ui/MenuItem';
+import { Dialog, FlatButton } from 'material-ui';
+import { Row, Col } from 'react-flexbox-grid';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-
-import AccountSelector from '../Elements/elementAccountSelector';
 import ElementDialogAddressTitle from './elementDialogAddressTitle'
 import ElementDialogHeadTitle from './elementDialogHeadTitle'
-import IdentityIcon from '../IdentityIcon';
-import InfoTable from './elementInfoTable'
 import NotificationWifi from 'material-ui/svg-icons/notification/wifi';
 
 import styles from './elementActionAuthorization.module.css';
@@ -26,7 +19,9 @@ export default class ElementActionAuthorization extends Component {
 
   static propTypes = {
     account: PropTypes.object.isRequired,
-    onClose: PropTypes.func
+    onClose: PropTypes.func,
+    authMsg: PropTypes.string,
+    tokenDetails: PropTypes.object
   }
 
   state = {
@@ -80,6 +75,7 @@ export default class ElementActionAuthorization extends Component {
     }
     const actions = [
       <FlatButton
+        key="CloseButton"
         label="Close"
         primary={true}
         onClick={this.handleClose}

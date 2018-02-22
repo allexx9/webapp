@@ -1,10 +1,8 @@
-import AlertWarning from 'material-ui/svg-icons/alert/warning'
 import React, { Component } from 'react'
-import  * as Colors from 'material-ui/styles/colors'
 import { Row, Col } from 'react-flexbox-grid';
 import BigNumber from 'bignumber.js';
 import Dialog from 'material-ui/Dialog';
-import { Link, Route, withRouter } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import styles from './notConnected.module.css'
 import PropTypes from 'prop-types';
@@ -21,6 +19,7 @@ class NotConnected extends Component {
     static propTypes = {
       isConnected: PropTypes.bool,
       isSyncing: PropTypes.bool,
+      syncStatus: PropTypes.object,
     };
 
     componentDidMount () {

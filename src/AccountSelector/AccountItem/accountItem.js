@@ -1,12 +1,8 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
 import IdentityIcon from '../../IdentityIcon';
-
 import styles from './accountItem.module.css';
-
 import React, { Component } from 'react';
-
-// React.PropTypes is deprecated since React 15.5.0, use the npm module prop-types instead
 import PropTypes from 'prop-types';
 
 export default class AccountItem extends Component {

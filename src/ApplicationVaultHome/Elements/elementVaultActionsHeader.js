@@ -1,13 +1,8 @@
 import  * as Colors from 'material-ui/styles/colors';
-import { Grid, Row, Col } from 'react-flexbox-grid';
-import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
-import Dialog from 'material-ui/Dialog';
+import { Row, Col } from 'react-flexbox-grid';
 import FlatButton from 'material-ui/FlatButton';
 import PropTypes from 'prop-types';
-import RaisedButton from 'material-ui/RaisedButton';
 import React from 'react';
-
-import AccountSelector from '../../Elements/elementAccountSelector'
 import IdentityIcon from '../../IdentityIcon';
 
 import styles from './elementVaultActionsHeader.module.css';
