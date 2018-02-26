@@ -38,7 +38,7 @@ class applicationDragoTrader extends Component {
                 accountsInfo={accountsInfo} />
               } 
           />
-          <Route exact path={match.path+"/funds"}
+          <Route exact path={match.path+"/pools"}
             render={(props) => <PageFundsDragoTrader {...props}               
             blockNumber={blockNumber}
             accounts={accounts}

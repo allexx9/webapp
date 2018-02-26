@@ -64,7 +64,7 @@ class LeftSideDrawerFunds extends Component {
             containerElement={<Link to={DS+APP+DS+this.buildUrlPath(location)+DS+"drago"+DS+"dashboard"} />}
             value='dashboard'/>
           <MenuItem primaryText="Funds" leftIcon={<ActionShowChart />} 
-            containerElement={<Link to={DS+APP+DS+this.buildUrlPath(location)+DS+"drago"+DS+"funds"} />}
+            containerElement={<Link to={DS+APP+DS+this.buildUrlPath(location)+DS+"drago"+DS+"pools"} />}
             value='pools' />
         </Menu>
       </Hidden>
