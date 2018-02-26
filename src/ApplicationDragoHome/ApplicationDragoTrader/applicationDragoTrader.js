@@ -21,20 +21,20 @@ class applicationDragoTrader extends Component {
       const { ethBalance, accounts, match, isManager } = this.props;
       return (
         <Switch>
-          <Route path={match.path+"/dashboard"} 
+          <Route exact path={match.path+"/dashboard"} 
               render={(props) => <PageDashboardDragoTrader {...props}               
                 accounts={accounts}
                 ethBalance={ethBalance} />
               } 
           />
-          <Route exact path={match.path+"/funds"}
+          <Route exact path={match.path+"/pools"}
             render={(props) => <PageFundsDragoTrader {...props}               
             accounts={accounts}
             ethBalance={ethBalance} 
             />
           } 
           />
-          <Route path={match.path+"/pools/:dragoid/:dragocode"}
+          <Route exact path={match.path+"/pools/:dragoid/:dragocode"}
             render={(props) => <PageFundDetailsDragoTrader {...props}               
             accounts={accounts}
             ethBalance={ethBalance} 

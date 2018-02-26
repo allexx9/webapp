@@ -206,7 +206,6 @@ export class ApplicationHomePage extends Component {
       false: false,
       true: true
     }
-    localStorage.setItem('isManager', accountType[value])
     this.setState({
       isManager: accountType[value],
     }); 

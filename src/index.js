@@ -6,23 +6,40 @@ import ReactDOM from 'react-dom';
 import registerServiceWorker from './registerServiceWorker';
 import App from './App';
 import { Provider } from 'react-redux';
-import { createStore, applyMiddleware } from 'redux';
+import { createStore, applyMiddleware, compose } from 'redux';
 import promiseMiddleware from 'redux-promise-middleware';
 import thunkMiddleware from 'redux-thunk';
 import { Reducers } from './reducers/root'
-import './index.module.css';
+import persistState, {mergePersistedState} from 'redux-localstorage';
+import adapter from 'redux-localstorage/lib/adapters/localStorage';
+import filter from 'redux-localstorage-filter';
 import logger from 'redux-logger'
 
-const middlewares = [thunkMiddleware,
-    promiseMiddleware()];
+import './index.module.css';
+
+const middlewares = [
+    thunkMiddleware,
+    promiseMiddleware()
+];
 
 if (process.env.NODE_ENV === `development`) {
   middlewares.push(logger);
 }
 
-const store = createStore(Reducers.rootReducer, applyMiddleware(
-    ...middlewares
-));
+const reducer = compose(
+    mergePersistedState()
+  )(Reducers.rootReducer);
+
+const storage = compose(
+    filter('user.isManager')
+  )(adapter(window.localStorage));
+
+const enhancer = compose(
+    applyMiddleware(...middlewares),
+    persistState(storage, 'rigoblock')
+  );
+
+const store = createStore(reducer, enhancer);
 
 ReactDOM.render(
     <Provider store={store}><App /></Provider>,

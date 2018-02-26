@@ -30,37 +30,41 @@ function mapStateToProps(state) {
   return state
 }
 
-class ApplicationConfigePage extends Component {
+class ApplicationConfigPage extends Component {
 
-  constructor(props) {
-    super(props);
-    const isManagerSelected = localStorage.getItem('isManager')
-    var isManager = false
-    // Checking account type (trader/manager) and restoring after browser refresh
-    if (typeof isManagerSelected !== 'undefined') {
-      switch (isManagerSelected) {
-        case 'false':
-          isManager = false
-          break;
-        case 'true':
-          isManager = true
-          break;
-        default:
-          isManager = false
-      }
-    } else {
-      isManager = false
-    }
-    this.state = {
-      isManager: isManager,
-      notificationsOpen: false
-    }
-  }
+  // constructor(props) {
+  //   super(props);
+  //   const isManagerSelected = localStorage.getItem('isManager')
+  //   var isManager = false
+  //   // Checking account type (trader/manager) and restoring after browser refresh
+  //   if (typeof isManagerSelected !== 'undefined') {
+  //     switch (isManagerSelected) {
+  //       case 'false':
+  //         isManager = false
+  //         break;
+  //       case 'true':
+  //         isManager = true
+  //         break;
+  //       default:
+  //         isManager = false
+  //     }
+  //   } else {
+  //     isManager = false
+  //   }
+  //   this.state = {
+  //     isManager: isManager,
+  //     notificationsOpen: false
+  //   }
+  // }
 
   // Context
   static childContextTypes = {
     muiTheme: PropTypes.object,
   };
+
+  state = {
+    notificationsOpen: false
+  }
 
   getChildContext() {
     return {
@@ -90,7 +94,6 @@ class ApplicationConfigePage extends Component {
       false: false,
       true: true
     }
-    localStorage.setItem('isManager', accountType[value])
     this.setState({
       isManager: accountType[value],
     });
@@ -139,4 +142,4 @@ class ApplicationConfigePage extends Component {
   }
 }
 
-export default connect(mapStateToProps)(ApplicationConfigePage)
+export default connect(mapStateToProps)(ApplicationConfigPage)

@@ -33,12 +33,22 @@ class DragoWeb3 {
     this._instance.options.address = address
   }
 
-  balanceOf = (accountAddress) => {
+  // balanceOf = (accountAddress) => {
+  //   if (!accountAddress) {
+  //     throw new Error('accountAddress needs to be provided')
+  //   }
+  //   const instance = this._instance
+  //   return return instance.methods.balanceOf(accountAddress).send(options)
+  //   return instance.balanceOf.call({}, [accountAddress])
+  // }
+
+  balanceOf = (accountAddress) =>{
     if (!accountAddress) {
       throw new Error('accountAddress needs to be provided')
     }
     const instance = this._instance
-    return instance.balanceOf.call({}, [accountAddress])
+    console.log(instance)
+    return instance.methods.balanceOf(accountAddress).call({},)
   }
 
   getData = () => {
@@ -76,13 +86,13 @@ class DragoWeb3 {
       from: accountAddress,
     }
     console.log(amount)
-    return instance.methods.sellVault(amount).estimateGas(options)
+    return instance.methods.sellGabcoin(amount).estimateGas(options)
     .then((gasEstimate) => {
       console.log(gasEstimate)
       options.gas = gasEstimate
     })
     .then(()=>{
-      return instance.methods.sellVault(amount).send(options)
+      return instance.methods.sellGabcoin(amount).send(options)
     })
   }
 
@@ -117,7 +127,7 @@ class DragoWeb3 {
 
   totalSupply =() =>{
     const instance = this._instance
-    return instance.methods.totalSupply.call({})
+    return instance.methods.totalSupply().call({})
   }
 }
 

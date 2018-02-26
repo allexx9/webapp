@@ -102,8 +102,6 @@ class NavLinks extends Component {
         false: false,
         true: true
       }
-      console.log(value)
-      localStorage.setItem('isManager', accountType[value])
       this.props.dispatch(this.isManagerAction(accountType[value]))
     };
 

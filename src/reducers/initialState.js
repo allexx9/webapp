@@ -22,7 +22,7 @@ const initialState = {
     prevBlockNumber: "0"
   },
   user :{
-    isManager: utils.isManager()
+    isManager: false
   }
 };
 

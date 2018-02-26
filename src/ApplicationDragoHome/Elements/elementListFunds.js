@@ -188,6 +188,7 @@ class ElementListFunds extends PureComponent {
 
   actionButton (cellData, rowData) {
     const { match} = this.props;
+    console.log(match.path)
     const url =  rowData.params.dragoID.value.c + "/" + utils.dragoISIN(cellData, rowData.params.dragoID.value.c)
     return <FlatButton label="View" primary={true} containerElement={<Link to={match.path+"/"+url} />} />
   }

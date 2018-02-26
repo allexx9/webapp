@@ -7,7 +7,8 @@ import Toggle from 'material-ui/Toggle';
 import ElementBoxHeadTitle from '../Elements/elementBoxHeadTitle'
 import RaisedButton from 'material-ui/RaisedButton';
 import { ALLOWED_ENDPOINTS, DEFAULT_ENDPOINT, LOCAL } from '../utils/const';
-
+import DropDownMenu from 'material-ui/DropDownMenu';
+import MenuItem from 'material-ui/MenuItem';
 
 
 class PageNetworkConfig extends Component {
@@ -112,14 +113,38 @@ class PageNetworkConfig extends Component {
         <div className={styles.boxContainer}>
           <Row>
             <Col xs={12}>
+              <ElementBoxHeadTitle primaryText="Blockchain" />
+            </Col>
+            <Col xs={12}>
+              <Paper className={styles.paperContainer} zDepth={1}>
+                <p>Please select a blockchain.</p>
+                <p>RigoBlock protocol is currently deployed on <b>Kovan</b> and <b>Ropsten</b> networks only.</p>
+                  <DropDownMenu value={1} onChange={this.handleChange}>
+                    <MenuItem value={1} primaryText="Ethereum Kovan" />
+                    <MenuItem value={2} primaryText="Ethereum Ropsten" />
+                  </DropDownMenu>
+                <Row>
+                  <Col xs={12}>
+                    <p>You need to refresh you browser to save and make this setting active. Please proceed:</p>
+                  </Col>
+                  <Col xs={12}>
+                    <RaisedButton label="Refresh"
+                      primary={true}
+                      disabled={this.state.save}
+                      onClick={this.handleRefresh} />
+                  </Col>
+                </Row>
+              </Paper>
+            </Col>
+          </Row>
+          <Row>
+            <Col xs={12}>
               <ElementBoxHeadTitle primaryText="Endpoint" />
             </Col>
             <Col xs={12}>
               <Paper className={styles.paperContainer} zDepth={1}>
                 <p>Please select your preferred access point to the blockchain.</p>
                 <p>RigoBlock and Infura provide secure, reliable, and scalable access to Ethereum.</p>
-                <p>RigoBlock protocol is currently deployed on <b>Kovan</b> network only.</p>
-                <p>&nbsp;</p>
                 <div style={stylesToggle.block}>
                   <Toggle
                     label="Infura"

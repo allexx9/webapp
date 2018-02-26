@@ -1,10 +1,10 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
-import { rigotoken } from '../contracts'
+import { rigotoken } from '../DragoApi/src/contract/abi'
 import BigNumber from 'bignumber.js';
 import {
   DEFAULT_NETWORK_ID,
-  MSG_NO_KOVAN,
+  MSG_NO_SUPPORTED_NETWORK,
   MSG_NETWORK_STATUS_ERROR,
   NETWORK_WARNING,
   GRG_ADDRESS_KV
@@ -110,7 +110,7 @@ class interfaces {
       if (networkId != DEFAULT_NETWORK_ID) {
         const stateUpdate = {
           networkCorrect: false,
-          warnMsg: MSG_NO_KOVAN
+          warnMsg: MSG_NO_SUPPORTED_NETWORK
         }
         this._success = {...currentState, ...stateUpdate}
       } else {
@@ -161,7 +161,7 @@ class interfaces {
     ])
     .then(([accountsMetaMask]) => {
       const allAccounts = {...accountsMetaMask}
-      console.log('Metamask accounts loaded')
+      console.log('Metamask account loaded: ', accountsMetaMask)
       var currentState = this._success
       const stateUpdate = {
         // accountsInfo: accountsMetaMask,
@@ -211,7 +211,8 @@ class interfaces {
           .all(getAccounts)
           .then(([accountsInfo, accountsMetaMask]) => {
             const allAccounts = { ...accountsInfo, ...accountsMetaMask }
-            console.log('Parity accounts loaded')
+            console.log('Parity accounts loaded: ', accountsInfo)
+            console.log('MetaMask account loaded: ', accountsMetaMask)
             const stateUpdate = {
               loading: false,
               ethBalance: new BigNumber(0),

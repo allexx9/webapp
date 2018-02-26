@@ -10,7 +10,7 @@ import React, { Component } from 'react';
 import Web3 from 'web3'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
-import { rigotoken } from './contracts'
+import { rigotoken } from './DragoApi/src/contract/abi'
 
 import {
   ApplicationHomePage,
@@ -298,13 +298,13 @@ export class App extends Component {
               }
               // Subscribing to newBlockNumber event
               const web3 = new Web3(WsSecureUrl)
-              // Promise
-              //   .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
-              //   .then(result => {
-              //     var subscription = result[0]
-              //     console.log(`${sourceLogClass}: Subscribed to eth_blockNumber`);
-              //     subscriptionData = subscription
-              //   })
+              Promise
+                .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
+                .then(result => {
+                  var subscription = result[0]
+                  console.log(`${sourceLogClass}: Subscribed to eth_blockNumber`);
+                  subscriptionData = subscription
+                })
                 return result
             })
             .catch(()=>{

@@ -19,7 +19,6 @@ import {
 
 import { ERRORS, validateAccount, validatePositiveNumber } from './validation';
 import { formatCoins } from '../../format';
-import * as abis from '../../contracts';
 import AccountSelector from '../../Elements/elementAccountSelector'
 import ElementVaultActionsHeader from './elementVaultActionsHeader'
 import DragoApi from '../../DragoApi/src'
@@ -232,7 +231,6 @@ class ElementVaultActions extends React.Component {
   }
 
   handleBuyAction = () => {
-    const {vaultDetails} = this.props
     return this.setState({
       open: true,
       action: 'deposit',
@@ -264,6 +262,9 @@ class ElementVaultActions extends React.Component {
     const { api } = this.context
     const {vaultDetails} = this.props
     const accountError = validateAccount(account,api)
+    // Setting variables depending on account source
+    // var provider = account.source === 'MetaMask' ? window.web3 : api
+    var provider = api
     this.setState({
       account,
       accountError: accountError
@@ -271,15 +272,28 @@ class ElementVaultActions extends React.Component {
 
     // Getting the account balance if account passed validation
     if (!accountError) {
-      const instance = api.newContract(abis.drago, vaultDetails.address).instance;
-      instance.balanceOf.call({}, [account.address])
+      const dragoApi = new DragoApi(provider)
+      console.log(vaultDetails.address)
+      dragoApi.contract.vault.init(vaultDetails.address)
+      console.log(dragoApi.contract.vault.balanceOf(account.address))
+      dragoApi.contract.vault.balanceOf(account.address)
       .then((amount) =>{
-        const drgBalance = formatCoins(amount,4,api)
+        console.log(amount)
+        const drgBalance = formatCoins(new BigNumber(amount),4,api)
         this.setState({
           drgBalance,
           amountFieldDisabled: false
         });
       })
+      // const instance = api.newContract(abis.drago, vaultDetails.address).instance;
+      // instance.balanceOf.call({}, [account.address])
+      // .then((amount) =>{
+      //   const drgBalance = formatCoins(amount,4,api)
+      //   this.setState({
+      //     drgBalance,
+      //     amountFieldDisabled: false
+      //   });
+      // })
     }
   }
 
@@ -486,7 +500,7 @@ class ElementVaultActions extends React.Component {
     this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
     const {account} = this.state
     
-    
+    // Sending the transaction
     dragoApi = new DragoApi(provider)
     dragoApi.contract.vault.init(vaultDetails.address)
     dragoApi.contract.vault.sellVault(accountAddress, amount)

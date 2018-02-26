@@ -1,7 +1,6 @@
 import { DRG_ISIN } from './const';
 import { formatCoins, formatEth } from '../format';
 import { APP, DS } from './const.js'
-import * as abis from '../contracts';
 import BigNumber from 'bignumber.js'
 import DragoApi from '../DragoApi/src'
 

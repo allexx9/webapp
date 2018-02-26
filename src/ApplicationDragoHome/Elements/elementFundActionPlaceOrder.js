@@ -1,22 +1,15 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
 import { Dialog, FlatButton, TextField } from 'material-ui';
-import { Grid, Row, Col } from 'react-flexbox-grid';
 import BigNumber from 'bignumber.js';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import IdentityIcon from '../../IdentityIcon';
-import  * as Colors from 'material-ui/styles/colors';
-
-import { ERRORS, validateAccount, validatePositiveNumber, cfdError, exchangeNameError } from './validation';
-import * as abis from '../../contracts';
+import { ERRORS, validateAccount, validatePositiveNumber} from './validation';
 import AccountSelector from '../../Elements/elementAccountSelector';
 import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle'
 import ElementDialogAddressTitle from '../../Elements/elementDialogAddressTitle'
-
-import styles from './elementFundActionPlaceOrder.module.css';
 import DragoApi from '../../DragoApi/src'
 
 const NAME_ID = ' ';
@@ -128,10 +121,12 @@ export default class ElementFundActionPlaceOrder extends Component {
 
     return ([
       <FlatButton
+        key='CancelOrder'
         label='Cancel'
         primary
         onTouchTap={ this.onClose} />,
       <FlatButton
+        key='SubmitOrder'
         label='Submit'
         primary
         disabled={ hasError || sending }

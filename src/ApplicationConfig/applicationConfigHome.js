@@ -4,6 +4,7 @@ import { Route, withRouter, Switch, Redirect } from 'react-router-dom'
 import PageNetworkConfig from './pageNetworkConfig'
 import { Row, Col } from 'react-flexbox-grid';
 import LeftSideDrawerConfig from '../Elements/leftSideDrawerConfig';
+import styles from './applicationConfigHome.module.css'
 
 class ApplicationConfigHome extends Component {
 
@@ -14,27 +15,27 @@ class ApplicationConfigHome extends Component {
     };
 
 
-    render() {
-      const { match} = this.props;
-      return (
-        <Row>
-        <Col xs={2}>
-        <LeftSideDrawerConfig location={this.props.location}/>
+  render() {
+    const { match } = this.props;
+    return (
+      <Row className={styles.container}>
+        <Col xs={2} >
+          <LeftSideDrawerConfig location={this.props.location} />
         </Col>
         <Col xs={10}>
-        <Switch>
-          <Route path={match.path+"/network"} 
+          <Switch>
+            <Route path={match.path + "/network"}
               render={(props) => <PageNetworkConfig {...props} />
-              } 
-          />
-          <Redirect from={match.path} to={match.path+"/network"}  />
-        </Switch>
+              }
+            />
+            <Redirect from={match.path} to={match.path + "/network"} />
+          </Switch>
         </Col>
       </Row>
 
-      );
-    }
+    );
   }
+}
 
   export default withRouter(ApplicationConfigHome)
 

@@ -20,7 +20,6 @@ import {
 
 import { ERRORS, validateAccount, validatePositiveNumber } from './validation';
 import { formatCoins } from '../../format';
-import * as abis from '../../contracts';
 import AccountSelector from '../../Elements/elementAccountSelector'
 import ElementFundActionsHeader from './elementFundActionsHeader'
 import DragoApi from '../../DragoApi/src'
@@ -317,6 +316,9 @@ class ElementFundActions extends React.Component {
     const { api } = this.context
     const {dragoDetails} = this.props
     const accountError = validateAccount(account,api)
+    // Setting variables depending on account source
+    // var provider = account.source === 'MetaMask' ? window.web3 : api
+    var provider = api
     this.setState({
       account,
       accountError: accountError
@@ -324,8 +326,9 @@ class ElementFundActions extends React.Component {
 
     // Getting the account balance if account passed validation
     if (!accountError) {
-      const instance = api.newContract(abis.drago, dragoDetails.address).instance;
-      instance.balanceOf.call({}, [account.address])
+      const dragoApi = new DragoApi(provider)
+      dragoApi.contract.drago.init(dragoDetails.address)
+      dragoApi.contract.drago.balanceOf(account.address)
       .then((amount) =>{
         const drgBalance = formatCoins(amount,4,api)
         this.setState({
@@ -333,6 +336,15 @@ class ElementFundActions extends React.Component {
           amountFieldDisabled: false
         });
       })
+      // const instance = api.newContract(abis.drago, dragoDetails.address).instance;
+      // instance.balanceOf.call({}, [account.address])
+      // .then((amount) =>{
+      //   const drgBalance = formatCoins(amount,4,api)
+      //   this.setState({
+      //     drgBalance,
+      //     amountFieldDisabled: false
+      //   });
+      // })
     }
   }
 
@@ -457,7 +469,9 @@ class ElementFundActions extends React.Component {
     const amount = api.util.toWei(this.state.amountSummary).toString()
     const authMsg = 'You bought ' + this.state.unitsSummary + ' units of ' + dragoDetails.symbol.toUpperCase() + ' for ' + this.state.amountSummary + ' ETH'
     const transactionId = api.util.sha3(new Date() + accountAddress)
-    var dragoApi, provider = null;
+    // Setting variables depending on account source
+    var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
+    var dragoApi = null;
     // Initializing transaction variables
     var transactionDetails = {
       status: this.state.account.source === 'MetaMask' ? 'pending' : 'authorization',
@@ -470,8 +484,6 @@ class ElementFundActions extends React.Component {
       symbol: dragoDetails.symbol.toUpperCase(),
       amount: this.state.amountSummary
     }
-    // Setting variables depending on account source
-    provider = this.state.account.source === 'MetaMask' ? window.web3 : api
     this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
     //this.context.addTransactionToQueue(transactionId, transactionDetails)
     const {account} = this.state
@@ -522,7 +534,9 @@ class ElementFundActions extends React.Component {
     const amount = new BigNumber(this.state.unitsSummary).mul(DIVISOR).toFixed(0)
     const authMsg = 'You sold ' + this.state.unitsSummary + ' units of ' + dragoDetails.symbol.toUpperCase() + ' for ' + this.state.amountSummary + ' ETH'
     const transactionId = api.util.sha3(new Date() + accountAddress)
-    var dragoApi, provider = null;
+    // Setting variables depending on account source
+    var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
+    var dragoApi = null;
     // Initializing transaction variables
     var transactionDetails = {
       status: this.state.account.source === 'MetaMask' ? 'pending' : 'authorization',
@@ -535,8 +549,6 @@ class ElementFundActions extends React.Component {
       symbol: dragoDetails.symbol.toUpperCase(),
       amount: this.state.amountSummary
     }
-    // Setting variables depending on account source
-    provider = this.state.account.source === 'MetaMask' ? window.web3 : api
     this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
     const {account} = this.state
     
