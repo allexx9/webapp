@@ -58,13 +58,16 @@ class interfaces {
             }
             return accounts
           })
+          .then((accounts) =>{
+            arrayPromises.push(rigoTokenContract.instance.balanceOf.call({}, [k])
+            .then((rigoTokenBalance) => {
+              accounts[k].rigoTokenBalance = api.util.fromWei(rigoTokenBalance).toFormat(3)
+              return accounts
+            })
+          )
+          })
         )
-        arrayPromises.push(rigoTokenContract.instance.balanceOf.call({}, [k])
-        .then((rigoTokenBalance) => {
-          accounts[k].rigoTokenBalance = api.util.fromWei(rigoTokenBalance).toFormat(3)
-          return accounts
-        })
-      )
+
       })
     })
     .then(() =>{
@@ -140,7 +143,6 @@ class interfaces {
                 source: "MetaMask"
               }
             }
-            console.log(accountsMetaMask[accounts[0]])
             return accountsMetaMask;
           }
         )
@@ -162,7 +164,6 @@ class interfaces {
     .then(([accountsMetaMask]) => {
       const allAccounts = {...accountsMetaMask}
       console.log('Metamask account loaded: ', accountsMetaMask)
-      var currentState = this._success
       const stateUpdate = {
         // accountsInfo: accountsMetaMask,
         loading: false,
@@ -179,7 +180,9 @@ class interfaces {
             };
           })
         }
-      this._success = {...currentState, ...stateUpdate}
+        const result = {...this._success, ...stateUpdate}
+        this._success = result
+        return result
       })
       .catch((error) => {
         var currentState = this._error
@@ -198,11 +201,13 @@ class interfaces {
     return api.parity.nodeKind()
       .then(result => {
         if (result.availability === 'public') {
-          // if Parity in --public-mode then getting only MetaMask accounts
+          console.log(result.availability)
+          // if Parity in --public-node then getting only MetaMask accounts
           return [this.getAccountsMetamask(api)]
         }
         else {
-          // if Parity NOT in --public-mode then getting bot Parity and MetaMask accounts
+          // if Parity NOT in --public-node then getting bot Parity and MetaMask accounts
+          console.log(result.availability)
           return [this.getAccountsParity(api), this.getAccountsMetamask(api)]
         }
       })

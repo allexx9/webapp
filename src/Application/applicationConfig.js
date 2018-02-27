@@ -111,7 +111,6 @@ class ApplicationConfigPage extends Component {
   render() {
     const { notificationsOpen } = this.state
     const { location, match } = this.props
-    console.log('is Manager = ' + this.state.isManager)
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
         <Grid fluid className={styles.maincontainer}>
