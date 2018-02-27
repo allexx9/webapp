@@ -28,7 +28,6 @@ class DragoWeb3 {
     }
     const api = this._api
     const abi = this._abi
-    const contractAbi = this._abi
     this._instance = new api.eth.Contract(abi)
     this._instance.options.address = address
   }
@@ -108,9 +107,7 @@ class DragoWeb3 {
       from: accountAddress,
     }
     instance.options.from = accountAddress
-    const api = this._api
     const basisPoints = price * 100
-    const values = [basisPoints]
     return instance.methods.setTransactionFee(basisPoints)
     .estimateGas(options)
     .then((gasEstimate) => {

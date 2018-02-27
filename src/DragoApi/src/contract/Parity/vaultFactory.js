@@ -4,6 +4,7 @@
 import * as abis from '../abi';
 import Registry from '../registry';
 import { toHex } from '../../Utils';
+import { GABCOINFACTORY } from '../../Utils/const'
 
 class DragoFactoryParity {
   constructor (api) {
@@ -14,7 +15,7 @@ class DragoFactoryParity {
     this._abi = abis.vaultfactory
     this._registry = new Registry(api)
     this._constunctorName = this.constructor.name
-    this._contractName = 'gabcoinfactory'
+    this._contractName = GABCOINFACTORY
   }
 
   get instance () {

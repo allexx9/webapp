@@ -4,6 +4,7 @@
 import * as abis from '../abi';
 import Registry from '../registry';
 import { toHex } from '../../Utils';
+import { EXCHANGE } from '../../Utils/const'
 
 class exchangeParity {
   constructor (api) {
@@ -14,7 +15,7 @@ class exchangeParity {
     this._abi = abis.exchange
     this._registry = new Registry(api)
     this._constunctorName = this.constructor.name
-    this._contractName = 'exchange2'
+    this._contractName = EXCHANGE
   }
 
   get instance () {

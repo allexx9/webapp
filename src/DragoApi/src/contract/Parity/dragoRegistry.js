@@ -3,6 +3,7 @@
 
 import * as abis from '../abi';
 import Registry from '../registry';
+import { DRAGOREGISTRY } from '../../Utils/const'
 
 class DragoRegistryParity {
   constructor (api) {
@@ -13,7 +14,7 @@ class DragoRegistryParity {
     this._abi = abis.dragoregistry
     this._registry = new Registry(api)
     this._constunctorName = this.constructor.name
-    this._contractName = 'dragoregistry'
+    this._contractName = DRAGOREGISTRY
   }
 
   get instance () {

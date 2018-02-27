@@ -4,6 +4,7 @@
 import * as abis from '../abi';
 import Registry from '../registry';
 import { toHex } from '../../Utils';
+import { ENVENTFUL } from '../../Utils/const'
 
 class EventfulParity {
   constructor (api) {
@@ -14,7 +15,7 @@ class EventfulParity {
     this._abi = abis.eventful
     this._registry = new Registry(api)
     this._constunctorName = this.constructor.name
-    this._contractName = 'eventful'
+    this._contractName = ENVENTFUL
   }
 
   get instance () {

@@ -59,8 +59,6 @@ class VaultParity {
       from: accountAddress,
       value: amount
     }
-    console.log(amount)
-    console.log(api)
     return instance.buyGabcoin
     .estimateGas(options, [])
     .then((gasEstimate) => {

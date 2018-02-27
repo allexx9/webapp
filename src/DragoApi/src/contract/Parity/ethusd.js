@@ -3,6 +3,7 @@
 
 import * as abis from '../abi';
 import Registry from '../registry';
+import { ETHUSD } from '../../Utils/const'
 
 class EthusdParity {
   constructor (api) {
@@ -13,7 +14,7 @@ class EthusdParity {
     this._abi = abis.ethusd
     this._registry = new Registry(api)
     this._constunctorName = this.constructor.name
-    this._contractName = 'ethusd'
+    this._contractName = ETHUSD
   }
 
   get instance () {

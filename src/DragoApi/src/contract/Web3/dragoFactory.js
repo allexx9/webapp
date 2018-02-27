@@ -3,9 +3,8 @@
 
 import * as abis from '../abi';
 import Registry from '../registry';
-import { toHex } from '../../Utils';
-// import BigNumber from 'bignumber.js';
-// import BigNumber from '../../../node_modules/bignumber.js';
+import { DRAGOREGISTRY } from '../../Utils/const'
+
 
 class DragoFactoryWeb3 {
   constructor (api) {
@@ -16,7 +15,7 @@ class DragoFactoryWeb3 {
     this._abi = abis.dragofactory
     this._registry = new Registry(api)
     this._constunctorName = this.constructor.name
-    this._contractName = 'dragofactory'
+    this._contractName = DRAGOREGISTRY
   }
 
   get instance () {
@@ -39,7 +38,6 @@ class DragoFactoryWeb3 {
 
   init = () => {
     const contractAbi = this._abi
-    const api = this._api
     const contractName = this._contractName
     return this._registry.instance(contractAbi, contractName)
       .then (contract => {

@@ -4,6 +4,7 @@
 import * as abis from '../abi';
 import Registry from '../registry';
 import { toHex } from '../../Utils';
+import { GABCOINEVENTFUL } from '../../Utils/const'
 
 class VaultEventfulParity {
   constructor (api) {
@@ -14,7 +15,7 @@ class VaultEventfulParity {
     this._abi = abis.vaulteventful
     this._registry = new Registry(api)
     this._constunctorName = this.constructor.name
-    this._contractName = 'gabcoineventful'
+    this._contractName = GABCOINEVENTFUL
     // console.log(abis)
   }
 
