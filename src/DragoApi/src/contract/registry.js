@@ -3,7 +3,7 @@
 
 // kovan register address 0xfAb104398BBefbd47752E7702D9fE23047E1Bca3
 
-import * as abis from './abi';
+import * as abis from './abi/v1';
 import { REGISTRY_KOVAN, REGISTRY_HOMESTEAD } from '../Utils/const'
 
 

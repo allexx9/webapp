@@ -1,6 +1,6 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
-import { rigotoken } from '../DragoApi/src/contract/abi'
+import { rigotoken } from '../DragoApi/src/contract/abi/v1'
 import BigNumber from 'bignumber.js';
 import {
   DEFAULT_NETWORK_ID,

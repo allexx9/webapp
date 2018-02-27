@@ -10,7 +10,7 @@ import React, { Component } from 'react';
 import Web3 from 'web3'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
-import { rigotoken } from './DragoApi/src/contract/abi'
+import { rigotoken } from './DragoApi/src/contract/abi/v1'
 
 import {
   ApplicationHomePage,

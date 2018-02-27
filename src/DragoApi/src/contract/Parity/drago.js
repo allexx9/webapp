@@ -1,7 +1,7 @@
 // Copyright 2017 Rigo Investment Sarl.
 // This file is part of RigoBlock.
 
-import * as abis from '../abi';
+import * as abis from '../abi/v1';
 import Registry from '../registry';
 
 class DragoParity {
