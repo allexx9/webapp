@@ -68,13 +68,13 @@ class DragoWeb3 {
       from: accountAddress,
     }
     console.log(amount)
-    return instance.methods.sellVault(amount).estimateGas(options)
+    return instance.methods.sellGabcoin(amount).estimateGas(options)
     .then((gasEstimate) => {
       console.log(gasEstimate)
       options.gas = gasEstimate
     })
     .then(()=>{
-      return instance.methods.sellVault(amount).send(options)
+      return instance.methods.sellGabcoin(amount).send(options)
     })
   }
 
