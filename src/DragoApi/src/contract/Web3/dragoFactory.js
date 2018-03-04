@@ -1,7 +1,7 @@
 // Copyright 2017 Rigo Investment Sarl.
 // This file is part of RigoBlock.
 
-import * as abis from '../abi/v1';
+import * as abis from '../abi';
 import Registry from '../registry';
 import { DRAGOREGISTRY } from '../../Utils/const'
 
@@ -79,12 +79,6 @@ class DragoFactoryWeb3 {
         console.log(receipt)
         return receipt
       })
-      .catch((error) => {
-        console.log(error)
-        return error
-      })
-
-
     // return instance.createDrago
     // .estimateGas(options, values)
     // .then((gasEstimate) => {

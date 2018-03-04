@@ -7,7 +7,7 @@ import DragoFactoryWeb3 from './Web3/dragoFactory';
 import DragoParity from './Parity/drago';
 import DragoWeb3 from './Web3/drago';
 import EthusdParity from './Parity/ethusd';
-import EventfulParity from './Parity/eventful';
+import DragoEventfulParity from './Parity/dragoEventful';
 import ExchangeParity from './Parity/exchange';
 import RegistryParity from './registry';
 import VaultEventfulParity from './Parity/vaultEventful';
@@ -39,7 +39,7 @@ class Contract {
       this._dragofactory = new DragoFactoryParity(api);
       this._ethusd = new EthusdParity(api);
       this._exchange = new ExchangeParity(api);
-      this._eventful = new EventfulParity(api);
+      this._dragoeventful = new DragoEventfulParity(api);
       this._registry = new RegistryParity(api);
       this._vaulteventful = new VaultEventfulParity(api);
       this._vault = new VaultParity(api);
@@ -63,8 +63,8 @@ class Contract {
     return this._ethusd;
   }
 
-  get eventful () {
-    return this._eventful;
+  get dragoeventful () {
+    return this._dragoeventful;
   }
 
   get exchange () {

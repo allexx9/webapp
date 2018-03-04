@@ -1,10 +1,10 @@
 // Copyright 2017 Rigo Investment Sarl.
 // This file is part of RigoBlock.
 
-import * as abis from '../abi/v1';
+import * as abis from '../abi';
 import Registry from '../registry';
 import { toHex } from '../../Utils';
-import { GABCOINEVENTFUL } from '../../Utils/const'
+import { VAULTEVENTFUL } from '../../Utils/const'
 
 class VaultEventfulParity {
   constructor (api) {
@@ -15,7 +15,7 @@ class VaultEventfulParity {
     this._abi = abis.vaulteventful
     this._registry = new Registry(api)
     this._constunctorName = this.constructor.name
-    this._contractName = GABCOINEVENTFUL
+    this._contractName = VAULTEVENTFUL
     // console.log(abis)
   }
 

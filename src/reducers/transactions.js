@@ -1,7 +1,10 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
 import initialState from './initialState'
-import {ADD_TRANSACTION, UPDATE_TRANSACTIONS} from '../utils/const'
+import {
+  ADD_TRANSACTION,
+  UPDATE_TRANSACTIONS,
+} from '../utils/const'
 
 function transactionsReducer(state = initialState.transactions, action) {
   switch (action.type) {

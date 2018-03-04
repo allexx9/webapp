@@ -76,6 +76,21 @@ class PageNetworkConfig extends Component {
       })
     }
 
+    onChangeEndpoint = (event, key) =>{
+      // console.log(event.target.getAttribute('data-endpoint'))
+      console.log(key)
+      const selectedEndpoint = event.target.getAttribute('data-endpoint')
+      console.log(ALLOWED_ENDPOINTS)
+      var allowedEndpoints = new Map(ALLOWED_ENDPOINTS)
+      localStorage.setItem('endpoint', selectedEndpoint)
+      allowedEndpoints.set(selectedEndpoint, true)
+      this.setState ({
+        selectedEndpoint: selectedEndpoint,
+        allowedEndpoints: allowedEndpoints,
+        save: false,
+      })
+    }
+
     handleRefresh = () =>{
       window.location.reload(false)
     }
@@ -180,6 +195,11 @@ class PageNetworkConfig extends Component {
                     disabled={true}
                     errorText="Must be a valid URL"
                   /> */}
+                  <DropDownMenu value={1} onChange={this.onChangeEndpoint}>
+                    <MenuItem value={0} primaryText="Infura" />
+                    <MenuItem value={1} primaryText="RigoBlock" />
+                    <MenuItem value={2} primaryText="Local" />
+                  </DropDownMenu>
                 </div>
                 <Row>
                   <Col xs={12}>

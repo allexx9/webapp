@@ -14,6 +14,7 @@ import Search from 'material-ui/svg-icons/action/search'
 import Snackbar from 'material-ui/Snackbar'
 import { formatCoins, formatEth } from '../../format'
 import ElementListWrapper from '../../Elements/elementListWrapper'
+import BigNumber from 'bignumber.js';
 
 // import ElementFundActions from '../Elements/elementFundActions'
 import IdentityIcon from '../../IdentityIcon'
@@ -49,11 +50,11 @@ class PageFundDetailsVaultTrader extends Component {
         address: null,
         name: null,
         symbol: null,
-        dragoID: null,
+        vaultId: null,
         addresssOwner: null,
         addressGroup: null,
       },
-      vaultTransactionsLogs: null,
+      vaultTransactionsLogs: [],
       loading: true,
       snackBar: false,
       snackBarMsg: '',
@@ -72,17 +73,17 @@ class PageFundDetailsVaultTrader extends Component {
     componentWillMount () {
       // Getting dragoid from the url parameters passed by router and then
       // the list of last transactions
-      const dragoID = this.props.match.params.dragoid
-      this.getVaultDetails(dragoID)
+      const vaultId = this.props.match.params.dragoid
+      this.getVaultDetails(vaultId)
     }
 
     componentWillReceiveProps(nextProps) {
       // Updating the lists on each new block if the accounts balances have changed
       // Doing this this to improve performances by avoiding useless re-rendering
-      const dragoID = this.props.match.params.dragoid
+      const vaultId = this.props.match.params.dragoid
       const sourceLogClass = this.constructor.name
       if (!this.props.ethBalance.eq(nextProps.ethBalance)) {
-        this.getVaultDetails(dragoID)
+        this.getVaultDetails(vaultId)
         console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
       } else {
         null
@@ -277,7 +278,8 @@ class PageFundDetailsVaultTrader extends Component {
                         </div>
                         <ElementListWrapper list={dragoTransactionList}
                           renderCopyButton={this.renderCopyButton}
-                          renderEtherscanButton={this.renderEtherscanButton}>
+                          renderEtherscanButton={this.renderEtherscanButton}
+                          loading={loading}>
 
                           <ElementListTransactions />
                         </ElementListWrapper>
@@ -312,8 +314,8 @@ class PageFundDetailsVaultTrader extends Component {
       )
     }
 
-  // Getting the vault details from dragoID
-  getVaultDetails = (dragoID) => {
+  // Getting the vault details from vaultId
+  getVaultDetails = (vaultId) => {
     const { api } = this.context
     const { accounts } = this.props
     //
@@ -328,10 +330,10 @@ class PageFundDetailsVaultTrader extends Component {
       .init()
       .then(() => {
         //
-        // Looking for drago from dragoID
+        // Looking for drago from vaultId
         //
         dragoApi.contract.dragoregistry
-          .drago(dragoID)
+          .fromId(vaultId)
           .then((vaultDetails) => {
             const vaultAddress = vaultDetails[0][0]
             //
@@ -341,19 +343,20 @@ class PageFundDetailsVaultTrader extends Component {
             //
             // Calling getPrice method
             //
-            dragoApi.contract.vault.getTransactionFee()
+            dragoApi.contract.vault.getAdminData()
               .then((data) => {
+                const price = (new BigNumber(data[3]).div(100).toFixed(2))
                 this.setState({
                   vaultDetails: {
                     address: vaultDetails[0][0],
                     name: vaultDetails[0][1].charAt(0).toUpperCase() + vaultDetails[0][1].slice(1),
-                    symbol: vaultDetails[0][2],
-                    dragoID: vaultDetails[0][3].c[0],
+                    symbol: vaultDetails[0][2].toUpperCase(),
+                    vaultId: vaultDetails[0][3].c[0],
                     addresssOwner: vaultDetails[0][4],
                     addressGroup: vaultDetails[0][5],
                     sellPrice: 1,
                     buyPrice: 1,
-                    price: ((data.div(100).toFixed(2))),
+                    price: price,
                   },
                   loading: false
                 })
@@ -376,8 +379,8 @@ class PageFundDetailsVaultTrader extends Component {
     const logToEvent = (log) => {
       const key = api.util.sha3(JSON.stringify(log))
       const { blockNumber, logIndex, transactionHash, transactionIndex, params, type } = log
-      var ethvalue = (log.event === 'BuyGabcoin') ? formatEth(params.amount.value, null, api) : formatEth(params.revenue.value, null, api);
-      var drgvalue = (log.event === 'SellGabcoin') ? formatCoins(params.amount.value, null, api) : formatCoins(params.revenue.value, null, api);
+      var ethvalue = (log.event === 'SellVault') ? formatEth(params.amount.value, null, api) : formatEth(params.revenue.value, null, api);
+      var drgvalue = (log.event === 'SellVault') ? formatCoins(params.amount.value, null, api) : formatCoins(params.revenue.value, null, api);
       // let ethvalue = null
       // let drgvalue = null     
       // if ((log.event === 'BuyDrago')) {
@@ -418,16 +421,14 @@ class PageFundDetailsVaultTrader extends Component {
       const hexAccount = account.address
       return hexAccount
     })
-    console.log(hexAccounts)
-    console.log(hexVaultAddress)
     // const options = {
     //   fromBlock: 0,
     //   toBlock: 'pending',
     // }
-    console.log(contract.hexSignature)
+    console.log(contract)
     const eventsFilterBuy = {
       topics: [
-        [contract.hexSignature.BuyGabcoin],
+        [contract.hexSignature.BuyVault],
         hexVaultAddress,
         hexAccounts,
         null
@@ -435,10 +436,10 @@ class PageFundDetailsVaultTrader extends Component {
     }
     const eventsFilterSell = {
       topics: [
-        [contract.hexSignature.SellGabcoin],
+        [contract.hexSignature.SellVault],
         hexVaultAddress,
-        null,
-        hexAccounts
+        hexAccounts,
+        null
       ]
     }
     const buyVaultEvents = contract

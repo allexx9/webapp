@@ -24,8 +24,16 @@ import ElementVaultCreateAction from '../Elements/elementVaultCreateAction'
 import ElementListSupply from '../Elements/elementListSupply'
 import ElementListTransactions from '../Elements/elementListTransactions'
 import utils from '../../utils/utils'
+import {
+  UPDATE_TRANSACTIONS_VAULT_MANAGER,
+} from '../../utils/const'
+import { connect } from 'react-redux';
 
 import styles from './pageDashboardVaultManager.module.css'
+
+function mapStateToProps(state) {
+  return state
+}
 
 class PageDashboardVaultManager extends Component {
 
@@ -38,18 +46,21 @@ class PageDashboardVaultManager extends Component {
       location: PropTypes.object.isRequired,
       ethBalance: PropTypes.object.isRequired,
       accounts: PropTypes.array.isRequired,
+      dispatch: PropTypes.func.isRequired,
+      transactionsVault: PropTypes.object.isRequired,
     };
 
     state = {
-      vaultTransactionsLogs: null,
-      vaultList: null,
-      loading: true,
-      topBarClassName: null,
-      topBarInitialPosition: null,
-      topBarLinksPosition: null,
       snackBar: false,
       snackBarMsg: ''
     }
+
+    updateTransactionsVault = (results) => {
+      return {
+        type: UPDATE_TRANSACTIONS_VAULT_MANAGER,
+        payload: results
+      }
+    };
 
     componentDidMount() {
       const {accounts } = this.props
@@ -80,7 +91,6 @@ class PageDashboardVaultManager extends Component {
       var propsUpdate = true
       propsUpdate = !utils.shallowEqual(this.props, nextProps)
       stateUpdate = !utils.shallowEqual(this.state, nextState)
-      propsUpdate = !this.props.ethBalance.eq(nextProps.ethBalance)
       if (stateUpdate || propsUpdate) {
         console.log('State updated ', stateUpdate)
         console.log('Props updated ', propsUpdate)
@@ -131,7 +141,9 @@ class PageDashboardVaultManager extends Component {
 
     render() {
       const { accounts } = this.props
-      const { vaultTransactionsLogs, vaultList } = this.state 
+      const vaultTransactionsLogs = this.props.transactionsVault.manager.logs
+      const vaultList  = this.props.transactionsVault.manager.list
+
       const tabButtons = {
         inkBarStyle: {
           margin: 'auto',
@@ -275,19 +287,15 @@ class PageDashboardVaultManager extends Component {
       utils.getTransactionsVaultOptV2(api, dragoAddress, accounts, options)
       .then(results =>{
         console.log(`${sourceLogClass} -> Transactions list loaded`)
-        // const createdLogs = results[1].filter(event =>{
-        //   return event.type !== 'BuyDrago' && event.type !== 'SellDrago'
-        // })
-        this.setState({
-          vaultList: results[2],
-          vaultTransactionsLogs: results[1],
-        }, this.setState({
-          loading: false,
-        }))
+        const createdLogs = results[1].filter(event =>{
+          return event.type !== 'BuyVault' && event.type !== 'SellVault'
+        })
+        results[1] = createdLogs
+        this.props.dispatch(this.updateTransactionsVault(results))
       })
     }
 
     
   }
 
-  export default withRouter(PageDashboardVaultManager)
+  export default withRouter(connect(mapStateToProps)(PageDashboardVaultManager))

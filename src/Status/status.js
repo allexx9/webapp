@@ -39,7 +39,7 @@ export default class Status extends Component {
           </div>
         </div>
         <div className={ styles.item }>
-          <div className={ styles.heading }>GABcoin</div>
+          <div className={ styles.heading }>Vault</div>
           <div className={ styles.hero }>
             { formatCoins(totalSupply, -1) }
           </div>

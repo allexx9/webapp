@@ -3,7 +3,6 @@
 export {
     ApplicationHomePage, 
     ApplicationVaultPage, 
-    ApplicationGabcoinPage,
     ApplicationDragoPage, 
     ApplicationConfigPage, 
     // ApplicationExchangePage, 

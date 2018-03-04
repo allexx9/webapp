@@ -168,8 +168,8 @@ class ElementListSupply extends PureComponent {
 
   actionButton(cellData, rowData) {
     const { match} = this.props;
-    const url =  rowData.dragoID + "/" + utils.dragoISIN(cellData, rowData.dragoID)
-    return <FlatButton label="View" primary={true} containerElement={<Link to={utils.rootPath(match.path)+DS+"vaultv2/pools/"+url} />} />
+    const url =  rowData.vaultId + "/" + utils.dragoISIN(cellData, rowData.vaultId)
+    return <FlatButton label="View" primary={true} containerElement={<Link to={utils.rootPath(match.path)+DS+"vault/pools/"+url} />} />
   }
 
   renderEthValue(ethValue) {

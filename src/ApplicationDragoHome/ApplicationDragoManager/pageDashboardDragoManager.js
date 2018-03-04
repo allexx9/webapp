@@ -24,8 +24,16 @@ import ElementFundCreateAction from '../Elements/elementFundCreateAction'
 import ElementListSupply from '../Elements/elementListSupply'
 import ElementListTransactions from '../Elements/elementListTransactions'
 import utils from '../../utils/utils'
+import {
+  UPDATE_TRANSACTIONS_DRAGO_MANAGER,
+} from '../../utils/const'
+import { connect } from 'react-redux';
 
 import styles from './pageDashboardDragoManager.module.css'
+
+function mapStateToProps(state) {
+  return state
+}
 
 class PageDashboardDragoManager extends Component {
 
@@ -38,20 +46,22 @@ class PageDashboardDragoManager extends Component {
       location: PropTypes.object.isRequired,
       ethBalance: PropTypes.object.isRequired,
       accounts: PropTypes.array.isRequired,
-      // allEvents: PropTypes.array.isRequired,
-      // accountsInfo: PropTypes.object.isRequired, 
+      dispatch: PropTypes.func.isRequired,
+      transactionsDrago: PropTypes.object.isRequired,
     };
 
     state = {
-      dragoTransactionsLogs: null,
-      dragoList: null,
       loading: true,
-      topBarClassName: null,
-      topBarInitialPosition: null,
-      topBarLinksPosition: null,
       snackBar: false,
       snackBarMsg: ''
     }
+
+    updateTransactionsDrago = (results) => {
+      return {
+        type: UPDATE_TRANSACTIONS_DRAGO_MANAGER,
+        payload: results
+      }
+    };
 
     componentDidMount() {
       const {accounts } = this.props
@@ -82,7 +92,6 @@ class PageDashboardDragoManager extends Component {
       var propsUpdate = true
       propsUpdate = !utils.shallowEqual(this.props, nextProps)
       stateUpdate = !utils.shallowEqual(this.state, nextState)
-      propsUpdate = !this.props.ethBalance.eq(nextProps.ethBalance)
       if (stateUpdate || propsUpdate) {
         console.log('State updated ', stateUpdate)
         console.log('Props updated ', propsUpdate)
@@ -134,7 +143,9 @@ class PageDashboardDragoManager extends Component {
 
     render() {
       const { accounts } = this.props
-      const { dragoTransactionsLogs, dragoList } = this.state 
+      // const { dragoTransactionsLogs, dragoList } = this.state 
+      const dragoTransactionsLogs = this.props.transactionsDrago.manager.logs
+      const dragoList  = this.props.transactionsDrago.manager.list
       const tabButtons = {
         inkBarStyle: {
           margin: 'auto',
@@ -224,7 +235,7 @@ class PageDashboardDragoManager extends Component {
                   <Paper zDepth={1}>
                     <Row>
                       <Col className={styles.transactionsStyle} xs={12}>
-                        <ElementListWrapper list={dragoList}>
+                        <ElementListWrapper list={dragoList} loading={this.state.loading}>
                           <ElementListSupply />
                         </ElementListWrapper>
                       </Col>
@@ -249,6 +260,7 @@ class PageDashboardDragoManager extends Component {
                           list={dragoTransactionsLogs}
                           renderCopyButton={this.renderCopyButton}
                           renderEtherscanButton={this.renderEtherscanButton}
+                          loading={this.state.loading}
                         >
                           <ElementListTransactions />
                         </ElementListWrapper>
@@ -280,14 +292,13 @@ class PageDashboardDragoManager extends Component {
         const createdLogs = results[1].filter(event =>{
           return event.type !== 'BuyDrago' && event.type !== 'SellDrago'
         })
+        results[1] = createdLogs
+        this.props.dispatch(this.updateTransactionsDrago(results))
         this.setState({
-          dragoList: results[2],
-          dragoTransactionsLogs: createdLogs,
-        }, this.setState({
           loading: false,
-        }))
+        });
       })
     }
   }
 
-  export default withRouter(PageDashboardDragoManager)
+  export default withRouter(connect(mapStateToProps)(PageDashboardDragoManager))

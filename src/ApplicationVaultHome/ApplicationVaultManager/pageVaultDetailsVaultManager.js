@@ -47,7 +47,7 @@ class PageVaultDetailsVaultManager extends Component {
         address: null,
         name: null,
         symbol: null,
-        dragoID: null,
+        dragoId: null,
         addresssOwner: null,
         addressGroup: null,
       },
@@ -66,18 +66,18 @@ class PageVaultDetailsVaultManager extends Component {
     componentWillMount () {
       // Getting dragoid from the url parameters passed by router and then
       // the list of last transactions
-      const dragoID = this.props.match.params.dragoid
-      this.getVaultDetails(dragoID)
+      const dragoId = this.props.match.params.dragoid
+      this.getVaultDetails(dragoId)
     }
 
     componentWillReceiveProps(nextProps) {
       // Updating the lists on each new block if the accounts balances have changed
       // Doing this this to improve performances by avoiding useless re-rendering
-      const dragoID = this.props.match.params.dragoid
+      const dragoId = this.props.match.params.dragoid
       const sourceLogClass = this.constructor.name
       // console.log(nextProps)
       if (!this.props.ethBalance.eq(nextProps.ethBalance)) {
-        this.getVaultDetails(dragoID)
+        this.getVaultDetails(dragoId)
         console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
       } else {
         null
@@ -284,8 +284,8 @@ class PageVaultDetailsVaultManager extends Component {
       )
     }
 
-    // Getting the vault details from dragoID
-    getVaultDetails = (dragoID) => {
+    // Getting the vault details from dragoId
+    getVaultDetails = (dragoId) => {
       const { api } = this.context
       const { accounts } = this.props
       //
@@ -300,10 +300,10 @@ class PageVaultDetailsVaultManager extends Component {
         .init()
         .then(() => {
           //
-          // Looking for drago from dragoID
+          // Looking for drago from dragoId
           //
           dragoApi.contract.dragoregistry
-            .drago(dragoID)
+            .fromId(dragoId)
             .then((vaultDetails) => {
               const vaultAddress = vaultDetails[0][0]
               //
@@ -320,7 +320,7 @@ class PageVaultDetailsVaultManager extends Component {
                       address: vaultDetails[0][0],
                       name: vaultDetails[0][1].charAt(0).toUpperCase() + vaultDetails[0][1].slice(1),
                       symbol: vaultDetails[0][2],
-                      dragoID: vaultDetails[0][3].c[0],
+                      dragoId: vaultDetails[0][3].c[0],
                       addresssOwner: vaultDetails[0][4],
                       addressGroup: vaultDetails[0][5],
                       sellPrice: 1,
@@ -349,8 +349,8 @@ class PageVaultDetailsVaultManager extends Component {
       const key = api.util.sha3(JSON.stringify(log))
       console.log(log)
       const { blockNumber, logIndex, transactionHash, transactionIndex, params, type } = log
-      var ethvalue = (log.event === 'BuyGabcoin') ? formatEth(params.amount.value, null, api) : formatEth(params.revenue.value, null, api);
-      var drgvalue = (log.event === 'SellGabcoin') ? formatCoins(params.amount.value, null, api) : formatCoins(params.revenue.value, null, api);
+      var ethvalue = (log.event === 'SellVault') ? formatEth(params.amount.value, null, api) : formatEth(params.revenue.value, null, api);
+      var drgvalue = (log.event === 'SellVault') ? formatCoins(params.amount.value, null, api) : formatCoins(params.revenue.value, null, api);
       console.log(drgvalue)
       // let ethvalue = null
       // let drgvalue = null     
@@ -398,7 +398,7 @@ class PageVaultDetailsVaultManager extends Component {
     // }
     const eventsFilterBuy = {
       topics: [
-        [contract.hexSignature.BuyGabcoin],
+        [contract.hexSignature.SellVault],
         hexVaultAddress,
         hexAccounts,
         null
@@ -406,7 +406,7 @@ class PageVaultDetailsVaultManager extends Component {
     }
     const eventsFilterSell = {
       topics: [
-        [contract.hexSignature.SellGabcoin],
+        [contract.hexSignature.SellVault],
         hexVaultAddress,
         null,
         hexAccounts

@@ -1,7 +1,7 @@
 // Copyright 2017 Rigo Investment Sarl.
 // This file is part of RigoBlock.
 
-import * as abis from '../abi/v1';
+import * as abis from '../abi';
 import Registry from '../registry';
 
 class DragoParity {
@@ -53,13 +53,11 @@ class DragoParity {
     if (!amount) {
       throw new Error('amount needs to be provided')
     }
-    const api = this._api
     const instance = this._instance
     const options = {
       from: accountAddress,
       value: amount
     }
-    console.log(api)
     return instance.buyDrago
     .estimateGas(options, [])
     .then((gasEstimate) => {
@@ -183,6 +181,8 @@ class DragoParity {
     const options = {
       from: accountAddress
     }
+    console.log(options)
+    console.log(values)
     return instance.sellDrago
     .estimateGas(options, values)
     .then((gasEstimate) => {

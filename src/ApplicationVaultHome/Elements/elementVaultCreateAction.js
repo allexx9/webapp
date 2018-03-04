@@ -131,6 +131,7 @@ class ElementVaultCreateAction extends React.Component {
         symbol: vaultSymbol
       }
       const values = [vaultName, vaultSymbol, this.state.account.address]
+      // Setting variables depending on account source
       var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
       var dragoApi = null;
       // Initializing transaction variables
@@ -147,12 +148,8 @@ class ElementVaultCreateAction extends React.Component {
         symbol: vaultSymbol,
         amount: ''
       }
-
-      // Setting variables depending on account source
       this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
       const {account} = this.state
-
-
       this.setState({
         sending: true
       })
@@ -182,41 +179,15 @@ class ElementVaultCreateAction extends React.Component {
           console.log(error)
           this.props.snackBar('Your wallet returned an error.')
           transactionDetails.status = 'error'
+          transactionDetails.hash = ''
           transactionDetails.error = error
+          console.log(transactionDetails)
           this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
           this.setState({
             sending: false
           })
         })
       })
-      // .then ((receipt) =>{
-      //   console.log(receipt)
-      //   // this.props.snackBar('Deploy awaiting for authorization')
-      //   if (this.state.account.source === 'MetaMask') {
-      //     transactionDetails.status = 'executed'
-      //     transactionDetails.receipt = receipt
-      //     transactionDetails.hash = receipt.transactionHash
-      //     transactionDetails.timestamp = new Date ()
-      //     this.context.addTransactionToQueue(transactionId, transactionDetails)
-      //   } else {
-      //     transactionDetails.parityId = receipt
-      //     this.context.addTransactionToQueue(transactionId, transactionDetails)
-      //   }
-      //   this.setState({
-      //     sending: false,
-      //     complete: true
-      //   });
-      // })
-      // .catch((error) => {
-      //   console.log(error)
-      //   this.props.snackBar('Your wallet returned an error.')
-      //   transactionDetails.status = 'error'
-      //   transactionDetails.error = error
-      //   this.context.addTransactionToQueue(transactionId, transactionDetails)
-      //   this.setState({
-      //     sending: false
-      //   })
-      // })
       this.setState({
         authMsg: authMsg,
         authAccount: { ...this.state.account },

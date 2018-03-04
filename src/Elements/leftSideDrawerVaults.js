@@ -57,10 +57,10 @@ class LeftSideDrawerVaults extends Component {
           value={this.setSelectedLink(location)}        
           >
           <MenuItem checked={true} primaryText="Dashboard" leftIcon={<ActionAssessment />} 
-            containerElement={<Link to={DS+APP+DS+this.buildUrlPath(location)+DS+"vaultv2"+DS+"dashboard"} />}
+            containerElement={<Link to={DS+APP+DS+this.buildUrlPath(location)+DS+"vault"+DS+"dashboard"} />}
             value='dashboard'/>
           <MenuItem primaryText="Vaults" leftIcon={<ActionShowChart />} 
-            containerElement={<Link to={DS+APP+DS+this.buildUrlPath(location)+DS+"vaultv2"+DS+"pools"} />}
+            containerElement={<Link to={DS+APP+DS+this.buildUrlPath(location)+DS+"vault"+DS+"pools"} />}
             value='pools' />
         </Menu>
       </Hidden>
@@ -79,7 +79,7 @@ class LeftSideDrawerVaults extends Component {
           value={this.setSelectedLink(location)}        
           >
           <MenuItem checked={true} primaryText="Dashboard" leftIcon={<ActionAssessment />} 
-            containerElement={<Link to={DS+APP+DS+this.buildUrlPath(location)+DS+"vaultv2"+DS+"dashboard"} />}
+            containerElement={<Link to={DS+APP+DS+this.buildUrlPath(location)+DS+"vault"+DS+"dashboard"} />}
             value='dashboard'/>
         </Menu>
       </Hidden>

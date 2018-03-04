@@ -1,7 +1,7 @@
 // Copyright 2017 Rigo Investment Sarl.
 // This file is part of RigoBlock.
 
-import * as abis from '../abi/v1';
+import * as abis from '../abi';
 import Registry from '../registry';
 import { DRAGOREGISTRY } from '../../Utils/const'
 
@@ -34,6 +34,7 @@ class DragoRegistryParity {
   init = () => {
     const contractAbi = this._abi
     const contractName = this._contractName
+    console.log(contractName)
     return this._registry.instance(contractAbi, contractName)
       .then (contract => {
         this._instance = contract.instance
@@ -42,13 +43,14 @@ class DragoRegistryParity {
       })
   }
 
-  drago = (dragoID) => {
+  fromId = (dragoID) => {
     if (!dragoID) {
       throw new Error('DragoID needs to be provided to drago')
     }
     const instance = this._instance
+    console.log(instance)
     return Promise.all([
-      instance.drago.call({}, [dragoID])
+      instance.fromId.call({}, [dragoID])
     ])
   }
 

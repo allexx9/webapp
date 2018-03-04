@@ -11,13 +11,14 @@ class ElementListWrapper extends Component {
     match: PropTypes.object,
     poolType: PropTypes.string,
     children: PropTypes.object,
+    loading: PropTypes.bool
   };
 
   render() {
     // Exstracting the list form props
     // and checking if the list === null
     const {list, ...rest} = this.props;
-    if ((list === null)) {
+    if (Object.keys(list).length === 0 && this.props.loading) {
       return <Loading />
     }
     // Rendering the table is list is an array

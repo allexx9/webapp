@@ -10,7 +10,6 @@ import Paper from 'material-ui/Paper';
 import { Row, Col } from 'react-flexbox-grid';
 
 // import ApplicationDragoFactory from '../ApplicationDragoFactory';
-// import ApplicationGabcoinFactory from '../ApplicationGabcoinFactory';
 
 import Loading from '../Loading';
 
@@ -88,8 +87,7 @@ export default class ApplicationHome extends Component {
                 Pools of ether and proof-of-stake mining
                 </CardText>
                 <CardActions>
-                    {/* <ApplicationGabcoinFactory /> */}
-                    <Link to="/vaultv2">
+                    <Link to="/vault">
                     <RaisedButton label="New Vault" className={ styles.exchangebutton } labelColor="white"/>
                   </Link>
                 </CardActions>

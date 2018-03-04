@@ -3,7 +3,6 @@ import { withRouter } from 'react-router-dom'
 import {Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
 import Avatar from 'material-ui/Avatar';
-import Immutable from 'immutable'
 import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -34,12 +33,13 @@ class PageFundsDragoTrader extends Component {
   };
 
     state = {
-      dragoCreatedLogs: null,
+      dragoCreatedLogs: [],
+      dragoFilteredList: []
     }
 
     scrollPosition = 0
 
-    componentWillMount () {
+    componentDidMount () {
       this.getDragos();
     }
 
@@ -79,8 +79,11 @@ class PageFundsDragoTrader extends Component {
     render() {
       var { location} = this.props
       const { dragoCreatedLogs, dragoFilteredList } = this.state;
-      const dragoSearchList = Immutable.List(dragoCreatedLogs)
-      const dragoList = dragoFilteredList
+      // const dragoSearchList = Immutable.List(dragoCreatedLogs)
+      // const dragoList = dragoFilteredList
+      console.log(dragoCreatedLogs)
+      console.log(dragoFilteredList)
+      // console.log(dragoSearchList)
       const detailsBox = {
         padding: 20,
       }
@@ -108,7 +111,7 @@ class PageFundsDragoTrader extends Component {
             <Row className={styles.transactionsStyle}>
               <Col xs>
                 <Paper style={detailsBox} zDepth={1}>
-                <ElementListWrapper fundsList={dragoSearchList} filterList={this.filterList}>
+                <ElementListWrapper list={dragoCreatedLogs} filterList={this.filterList}>
                   <FilterFunds/>
                 </ElementListWrapper>
                 </Paper>
@@ -117,7 +120,7 @@ class PageFundsDragoTrader extends Component {
             </Row>
             <Row className={styles.transactionsStyle}>
               <Col xs>
-                <ElementListWrapper list={dragoList} location={location}>
+                <ElementListWrapper list={dragoFilteredList} location={location}>
                   <ElementListFunds/>
                 </ElementListWrapper>
               </Col>
@@ -134,6 +137,7 @@ class PageFundsDragoTrader extends Component {
       const logToEvent = (log) => {
         const key = api.util.sha3(JSON.stringify(log))
         const { blockNumber, logIndex, transactionHash, transactionIndex, params, type } = log        
+        console.log(log)
         return {
           type: log.event,
           state: type,
@@ -156,12 +160,13 @@ class PageFundsDragoTrader extends Component {
       // dragoFactoryEventsSignatures accesses the contract ABI, gets all the events and for each creates a hex signature
       // to be passed to getAllLogs. Events are indexed and filtered by topics
       // more at: http://solidity.readthedocs.io/en/develop/contracts.html?highlight=event#events
-      dragoApi.contract.eventful.init()
+      dragoApi.contract.dragoeventful.init()
       .then(() =>{
-        dragoApi.contract.eventful.getAllLogs({
-          topics: [ dragoApi.contract.eventful.hexSignature.DragoCreated ]
+        dragoApi.contract.dragoeventful.getAllLogs({
+          topics: [ dragoApi.contract.dragoeventful.hexSignature.DragoCreated ]
         })
         .then((dragoCreatedLogs) => {
+          console.log(dragoCreatedLogs)
           const logs = dragoCreatedLogs.map(logToEvent)
           this.setState({
             dragoCreatedLogs: logs,
@@ -170,19 +175,6 @@ class PageFundsDragoTrader extends Component {
         }
         )
       })
-
-      // contract
-      // .getAllLogs({
-      //   topics: [ dragoFactoryEventsSignatures(contract).DragoCreated.hexSignature ]
-      // })
-      // .then((dragoCreatedLogs) => {
-      //   const logs = dragoCreatedLogs.map(logToEvent)
-      //   this.setState({
-      //     dragoCreatedLogs: logs,
-      //     dragoFilteredList: logs
-      //   })
-      // }
-      // )
     }
   }
 

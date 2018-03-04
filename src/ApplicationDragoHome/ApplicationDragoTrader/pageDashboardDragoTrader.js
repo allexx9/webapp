@@ -23,14 +23,18 @@ import ElementAccountBox from '../../Elements/elementAccountBox'
 import ElementListBalances from '../Elements/elementListBalances'
 import ElementListTransactions from '../Elements/elementListTransactions'
 import utils from '../../utils/utils'
+import {
+  UPDATE_TRANSACTIONS_DRAGO_HOLDER,
+} from '../../utils/const'
+import { connect } from 'react-redux';
 
 import styles from './pageDashboardDragoTrader.module.css'
 
-class PageDashboardDragoTrader extends Component {
+function mapStateToProps(state) {
+  return state
+}
 
-  constructor() {
-    super();
-  }
+class PageDashboardDragoTrader extends Component {
 
   // Checking the type of the context variable that we receive by the parent
   static contextTypes = {
@@ -40,22 +44,27 @@ class PageDashboardDragoTrader extends Component {
   static propTypes = {
       location: PropTypes.object.isRequired,
       ethBalance: PropTypes.object.isRequired,
-      accounts: PropTypes.array.isRequired
+      accounts: PropTypes.array.isRequired,
+      dispatch: PropTypes.func.isRequired,
+      transactionsDrago: PropTypes.object.isRequired,
     };
 
     state = {
-      dragoTransactionsLogs: null,
-      dragoBalances: null,
       loading: true,
       snackBar: false,
       snackBarMsg: ''
     }
 
-    componentDidMount() {
-    }
+    updateTransactionsDrago = (results) => {
+      return {
+        type: UPDATE_TRANSACTIONS_DRAGO_HOLDER,
+        payload: results
+      }
+    };
 
-    componentWillMount() {
+    componentDidMount() {
       const { accounts } = this.props
+      console.log('componentDidMount')
       this.getTransactions (null, accounts)
     }
 
@@ -79,7 +88,6 @@ class PageDashboardDragoTrader extends Component {
       var propsUpdate = true
       propsUpdate = !utils.shallowEqual(this.props, nextProps)
       stateUpdate = !utils.shallowEqual(this.state, nextState)
-      propsUpdate = !this.props.ethBalance.eq(nextProps.ethBalance)
       if (stateUpdate || propsUpdate) {
         console.log('State updated ', stateUpdate)
         console.log('Props updated ', propsUpdate)
@@ -103,10 +111,6 @@ class PageDashboardDragoTrader extends Component {
         snackBar: false,
         snackBarMsg: ''
       })
-    }
-
-    handleSetActive = (to) => {
-      console.log(to);
     }
 
     renderCopyButton = (text) =>{
@@ -134,8 +138,8 @@ class PageDashboardDragoTrader extends Component {
 
     render() {
       const { accounts } = this.props
-      const { dragoTransactionsLogs, dragoBalances } = this.state 
-      // console.log(this.props.ethBalance)
+      const dragoTransactionsLogs = this.props.transactionsDrago.holder.logs
+      const dragoBalances = this.props.transactionsDrago.holder.balances
       const tabButtons = {
         inkBarStyle: {
           margin: 'auto',
@@ -221,7 +225,7 @@ class PageDashboardDragoTrader extends Component {
                   <Paper zDepth={1}>
                     <Row>
                       <Col className={styles.transactionsStyle} xs={12}>
-                        <ElementListWrapper list={dragoBalances}>
+                        <ElementListWrapper list={dragoBalances} loading={this.state.loading}>
                           <ElementListBalances />
                         </ElementListWrapper>
                       </Col>
@@ -244,6 +248,7 @@ class PageDashboardDragoTrader extends Component {
                         <ElementListWrapper list={dragoTransactionsLogs}
                           renderCopyButton={this.renderCopyButton}
                           renderEtherscanButton={this.renderEtherscanButton}
+                          loading={this.state.loading}
                         >
                           <ElementListTransactions />
                         </ElementListWrapper>
@@ -267,6 +272,7 @@ class PageDashboardDragoTrader extends Component {
 
     // Getting last transactions
     getTransactions = (dragoAddress, accounts) =>{
+      console.log('getTransactions')
       const { api } = this.context
       const options = {balance: true, supply: false, limit: 10, trader: true}
       var sourceLogClass = this.constructor.name
@@ -277,12 +283,10 @@ class PageDashboardDragoTrader extends Component {
         //   return event.type !== 'DragoCreated'
         // })
         console.log(results)
+        this.props.dispatch(this.updateTransactionsDrago(results))
         this.setState({
-          dragoBalances: results[0],
-          dragoTransactionsLogs: results[1],
-        }, this.setState({
           loading: false,
-        }))
+        });
       })
       .catch(error =>{
         console.warn(`${sourceLogClass} -> Transactions list load error: ${error}`)
@@ -290,4 +294,4 @@ class PageDashboardDragoTrader extends Component {
     }
   }
 
-  export default withRouter(PageDashboardDragoTrader)
+  export default withRouter(connect(mapStateToProps)(PageDashboardDragoTrader))

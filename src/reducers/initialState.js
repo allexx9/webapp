@@ -1,6 +1,5 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
-import utils from '../utils/utils'
 import {
   MSG_NETWORK_STATUS_OK,
   NETWORK_OK,
@@ -9,6 +8,26 @@ import {
 const initialState = {
   transactions: {
     queue: new Map(),
+  },
+  transactionsDrago: {
+    holder: {
+      balances: [],
+      logs: []
+    },
+    manager: {
+      list: [],
+      logs: []
+    }
+  },
+  transactionsVault: {
+    holder: {
+      balances: [],
+      logs: []
+    },
+    manager: {
+      list: [],
+      logs: []
+    }
   },
   endpoint: {
     accounts: [],

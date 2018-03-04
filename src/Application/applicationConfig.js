@@ -32,31 +32,6 @@ function mapStateToProps(state) {
 
 class ApplicationConfigPage extends Component {
 
-  // constructor(props) {
-  //   super(props);
-  //   const isManagerSelected = localStorage.getItem('isManager')
-  //   var isManager = false
-  //   // Checking account type (trader/manager) and restoring after browser refresh
-  //   if (typeof isManagerSelected !== 'undefined') {
-  //     switch (isManagerSelected) {
-  //       case 'false':
-  //         isManager = false
-  //         break;
-  //       case 'true':
-  //         isManager = true
-  //         break;
-  //       default:
-  //         isManager = false
-  //     }
-  //   } else {
-  //     isManager = false
-  //   }
-  //   this.state = {
-  //     isManager: isManager,
-  //     notificationsOpen: false
-  //   }
-  // }
-
   // Context
   static childContextTypes = {
     muiTheme: PropTypes.object,

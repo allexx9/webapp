@@ -1,7 +1,7 @@
 // Copyright 2017 Rigo Investment Sarl.
 // This file is part of RigoBlock.
 
-import * as abis from '../abi/v1';
+import * as abis from '../abi';
 import Registry from '../registry';
 
 class DragoWeb3 {
@@ -61,14 +61,14 @@ class DragoWeb3 {
       from: accountAddress,
       value: amount
     }
-    return instance.methods.buyGabcoin().estimateGas(options)
+    return instance.methods.buyVault().estimateGas(options)
     .then((gasEstimate) => {
       console.log(gasEstimate)
       options.gas = gasEstimate
     }
     )
     .then (() =>{
-      return instance.methods.buyGabcoin()
+      return instance.methods.buyVault()
       .send(options)
     })
   }
@@ -85,13 +85,13 @@ class DragoWeb3 {
       from: accountAddress,
     }
     console.log(amount)
-    return instance.methods.sellGabcoin(amount).estimateGas(options)
+    return instance.methods.sellVault(amount).estimateGas(options)
     .then((gasEstimate) => {
       console.log(gasEstimate)
       options.gas = gasEstimate
     })
     .then(()=>{
-      return instance.methods.sellGabcoin(amount).send(options)
+      return instance.methods.sellVault(amount).send(options)
     })
   }
 

@@ -52,6 +52,12 @@ class ElementFundCreateAction extends React.Component {
     dragoDetails: ''
   }
 
+  addTransactionToQueueAction = (transactionId, transactionDetails) => {
+    return {
+      type: 'ADD_TRANSACTION',
+      transaction: { transactionId, transactionDetails }
+    }
+  };
 
   handleOpen = () => {
     console.log('open')

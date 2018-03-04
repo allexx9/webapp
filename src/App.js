@@ -10,7 +10,7 @@ import React, { Component } from 'react';
 import Web3 from 'web3'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
-import { rigotoken } from './DragoApi/src/contract/abi/v1'
+import { rigotoken } from './DragoApi/src/contract/abi'
 
 import {
   ApplicationHomePage,
@@ -226,7 +226,7 @@ export class App extends Component {
         <Router history={history}>
           <Switch>
             <Route exact path={"/app/" + appHashPath + "/home"} component={ApplicationHomePage} />
-            <Route path={"/app/" + appHashPath + "/vaultv2"} component={ApplicationVaultPage} />
+            <Route path={"/app/" + appHashPath + "/vault"} component={ApplicationVaultPage} />
             {/* <Route exact path={ "/app/" + appHashPath + "/drago/dashboard" } component={ApplicationDragoPage} /> */}
             {/* <Route exact path={ "/app/" + appHashPath + "/drago/funds" } component={ApplicationDragoPage} /> */}
             <Route path={"/app/" + appHashPath + "/drago"} component={ApplicationDragoPage} />
@@ -234,7 +234,7 @@ export class App extends Component {
             {/* <Route path={ "/app/" + appHashPath + "/exchange" } component={ApplicationExchangePage} /> */}
             {/* <Redirect from="/exchange" to={ "/app/" + appHashPath + "/exchange" } />  */}
             <Redirect from="/vault/" to={"/app/" + appHashPath + "/vault"} />
-            <Redirect from="/vaultv2/" to={"/app/" + appHashPath + "/vaultv2"} />
+            <Redirect from="/vault/" to={"/app/" + appHashPath + "/vault"} />
             <Redirect from="/drago" to={"/app/" + appHashPath + "/drago"} />
             <Redirect from="/" to={"/app/" + appHashPath + "/home"} />
             <Route component={Whoops404} />
@@ -298,13 +298,13 @@ export class App extends Component {
               }
               // Subscribing to newBlockNumber event
               const web3 = new Web3(WsSecureUrl)
-              Promise
-                .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
-                .then(result => {
-                  var subscription = result[0]
-                  console.log(`${sourceLogClass}: Subscribed to eth_blockNumber`);
-                  subscriptionData = subscription
-                })
+              // Promise
+              //   .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
+              //   .then(result => {
+              //     var subscription = result[0]
+              //     console.log(`${sourceLogClass}: Subscribed to eth_blockNumber`);
+              //     subscriptionData = subscription
+              //   })
                 return result
             })
             .catch(()=>{

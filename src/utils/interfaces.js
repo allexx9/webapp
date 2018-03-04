@@ -1,6 +1,6 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
-import { rigotoken } from '../DragoApi/src/contract/abi/v1'
+import { rigotoken } from '../DragoApi/src/contract/abi'
 import BigNumber from 'bignumber.js';
 import {
   DEFAULT_NETWORK_ID,
@@ -39,63 +39,68 @@ class interfaces {
     return true
   }
 
-  getAccountsParity (api) {
+  getAccountsParity(api) {
     console.log('getAccountsParity')
-    // const selectedEndpoint = localStorage.getItem('endpoint')
     var accounts = {}
     var arrayPromises = []
     return api.parity
-    .accountsInfo()
-    .then((accountsInfo) => {
-      const rigoTokenContract = api.newContract(rigotoken, GRG_ADDRESS_KV)
-      Object.keys(accountsInfo).forEach(function (k) {
-        arrayPromises.push(api.eth.getBalance(k)
-          .then((balance) => {
-            accounts[k] = {
-              ethBalance: api.util.fromWei(balance).toFormat(3),
-              name: accountsInfo[k].name,
-              source: "parity"
-            }
-            return accounts
-          })
-          .then((accounts) =>{
-            arrayPromises.push(rigoTokenContract.instance.balanceOf.call({}, [k])
-            .then((rigoTokenBalance) => {
-              accounts[k].rigoTokenBalance = api.util.fromWei(rigoTokenBalance).toFormat(3)
+      .accountsInfo()
+      .then((accountsInfo) => {
+        const rigoTokenContract = api.newContract(rigotoken, GRG_ADDRESS_KV)
+        Object.keys(accountsInfo).forEach(function (k) {
+          // Getting accounts ETH balance
+          accounts[k] = {}
+          arrayPromises.push(api.eth.getBalance(k)
+            .then((balance) => {
+              accounts[k].ethBalance = api.util.fromWei(balance).toFormat(3)
+              accounts[k].name = accountsInfo[k].name
+              accounts[k].source = "parity"
               return accounts
             })
           )
-          })
-        )
-
+          // Getting accounts GRG balance
+          arrayPromises.push(rigoTokenContract.instance.balanceOf.call({}, [k])
+            .then((rigoTokenBalance) => {
+              accounts[k].rigoTokenBalance = api.util.fromWei(rigoTokenBalance).toFormat(3)
+              console.log(accounts[k].rigoTokenBalance)
+              return accounts
+            })
+          )
+          // Getting transactions count
+          arrayPromises.push(api.eth.getTransactionCount(k)
+            .then((result) => {
+              accounts[k].nonce = new BigNumber(result).toFixed()
+              return accounts
+            })
+          )
+        })
+        return Promise
+        .all(arrayPromises)
+        .then(() => {
+          console.log('Parity getAccounts', accounts)
+          // const accountsData = {...results}
+          // console.log(accountsData)
+          return accounts
+        })
       })
-    })
-    .then(() =>{
-      return Promise
-      .all(arrayPromises)
-      .then(() => {
-        console.log('Parity getAccounts', accounts)
-        return accounts
+      .catch((error) => {
+        console.warn('getAccounts', error);
+        // return api.parity
+        //   .accounts()
+        //   .then((accountsInfo) => {
+        //     return Object
+        //       .keys(accountsInfo)
+        //       .filter((address) => accountsInfo[address].uuid)
+        //       .reduce((ret, address) => {
+        //         ret[address] = {
+        //           name: accountsInfo[address].name
+        //         };
+        //         return ret;
+        //       }, {});
+        //   }
+        // );
+        return {}
       })
-    })
-    .catch((error) => {
-      console.warn('getAccounts', error);
-      // return api.parity
-      //   .accounts()
-      //   .then((accountsInfo) => {
-      //     return Object
-      //       .keys(accountsInfo)
-      //       .filter((address) => accountsInfo[address].uuid)
-      //       .reduce((ret, address) => {
-      //         ret[address] = {
-      //           name: accountsInfo[address].name
-      //         };
-      //         return ret;
-      //       }, {});
-      //   }
-      // );
-      return {}
-    })
   }
 
   getAccountsMetamask (api) {
@@ -127,6 +132,10 @@ class interfaces {
     .then (() =>{
       return web3.eth.getAccounts()
       .then(accounts => {
+        // Returning empty object if MetaMask is locked.
+        if (accounts.length === 0) {
+          return {}
+        }
         return web3.eth.getBalance(accounts[0])
         .then(balance => {
           ethBalance = balance
@@ -230,7 +239,8 @@ class interfaces {
                     name: info.name,
                     source: info.source,
                     ethBalance: info.ethBalance,
-                    rigoTokenBalance: info.rigoTokenBalance
+                    rigoTokenBalance: info.rigoTokenBalance,
+                    nonce: info.nonce
                   };
                 })
             }

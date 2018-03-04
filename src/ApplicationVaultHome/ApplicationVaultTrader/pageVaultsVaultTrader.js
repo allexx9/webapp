@@ -38,7 +38,7 @@ class PageFundsVaultTrader extends Component {
 
     scrollPosition = 0
 
-    componentWillMount () {
+    componentDidMount () {
       this.getVaults()
     }
 
@@ -80,8 +80,8 @@ class PageFundsVaultTrader extends Component {
       const { vaultCreatedLogs, vaultFilteredList } = this.state;
       // const vaultSearchList = Immutable.List(vaultCreatedLogs)
       // const vaultList = Immutable.List(vaultFilteredList)
-      const vaultSearchList = vaultCreatedLogs
-      const vaultList = vaultFilteredList
+      console.log(vaultCreatedLogs)
+      console.log(vaultFilteredList)
       const detailsBox = {
         padding: 20,
       }
@@ -109,7 +109,7 @@ class PageFundsVaultTrader extends Component {
             <Row className={styles.transactionsStyle}>
               <Col xs>
                 <Paper style={detailsBox} zDepth={1}>
-                <ElementListWrapper fundsList={vaultSearchList} filterList={this.filterList} poolType="vault">
+                <ElementListWrapper list={vaultCreatedLogs} filterList={this.filterList} poolType="vault">
                   <FilterVaults/>
                 </ElementListWrapper>
                 </Paper>
@@ -118,7 +118,7 @@ class PageFundsVaultTrader extends Component {
             </Row>
             <Row className={styles.transactionsStyle}>
               <Col xs>
-                <ElementListWrapper list={vaultList} location={location} poolType="vault">
+                <ElementListWrapper list={vaultFilteredList} location={location} poolType="vault">
                   <ElementListVaults/>
                 </ElementListWrapper>
               </Col>
@@ -135,8 +135,7 @@ class PageFundsVaultTrader extends Component {
       const logToEvent = (log) => {
         const key = api.util.sha3(JSON.stringify(log))
         const { blockNumber, logIndex, transactionHash, transactionIndex, params, type } = log       
-        params.dragoID = params.gabcoinID 
-
+        console.log(log)
         return {
           type: log.event,
           state: type,
@@ -162,7 +161,7 @@ class PageFundsVaultTrader extends Component {
       dragoApi.contract.vaulteventful.init()
       .then(() =>{
         dragoApi.contract.vaulteventful.getAllLogs({
-          topics: [ dragoApi.contract.vaulteventful.hexSignature.GabcoinCreated] 
+          topics: [ dragoApi.contract.vaulteventful.hexSignature.VaultCreated] 
         })
         .then((vaultCreatedLogs) => {
           const logs = vaultCreatedLogs.map(logToEvent)

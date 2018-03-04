@@ -1,7 +1,7 @@
 // Copyright 2017 Rigo Investment Sarl.
 // This file is part of RigoBlock.
 
-import * as abis from '../abi/v1';
+import * as abis from '../abi';
 import Registry from '../registry';
 import { toHex } from '../../Utils';
 import { DRAGOFACTORY } from '../../Utils/const'
@@ -73,10 +73,6 @@ class DragoFactoryParity {
       console.log(gasEstimate.toFormat())
       options.gas = gasEstimate.mul(1.2).toFixed(0);
       return instance.createDrago.postTransaction(options, values)
-      // .then((receipt) => {
-      //   console.log(receipt)
-      //   return receipt
-      // })
     })
   }
 }

@@ -210,7 +210,7 @@ class ElementListTransactions extends PureComponent {
 
   actionButton(cellData, rowData) {
     const { match} = this.props;
-    const url =  rowData.params.dragoID.value.c + "/" + utils.dragoISIN(cellData, rowData.params.dragoID.value.c)
+    const url =  rowData.params.dragoId.value.c + "/" + utils.dragoISIN(cellData, rowData.params.dragoId.value.c)
     return <FlatButton label="View" primary={true} containerElement={<Link to={match.path+"/"+url} />} />
   }
 
@@ -240,16 +240,16 @@ class ElementListTransactions extends PureComponent {
       case "SellDrago":
         return <span style={{ color: Colors.red300, fontWeight: 600 }}>SELL</span>
 
-      case "BuyGabcoin":
+      case "SellVault":
         return <span style={{ color: Colors.green300, fontWeight: 600 }}>DEPOSIT</span>
 
-      case "SellGabcoin":
+      case "BuytVault":
         return <span style={{ color: Colors.red300, fontWeight: 600 }}>WITHDRAW</span>
 
       case "DragoCreated":
         return <span style={{ color: Colors.blue300, fontWeight: 600 }}>CREATED</span>
 
-      case "GabcoinCreated":
+      case "VaultCreated":
         return <span style={{ color: Colors.blue300, fontWeight: 600 }}>CREATED</span>
 
     }

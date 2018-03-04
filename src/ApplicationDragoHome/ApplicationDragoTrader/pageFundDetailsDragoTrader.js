@@ -47,11 +47,11 @@ class PageFundDetailsDragoTrader extends Component {
         address: null,
         name: null,
         symbol: null,
-        dragoID: null,
+        dragoId: null,
         addresssOwner: null,
         addressGroup: null,
       },
-      dragoTransactionsLogs: null,
+      dragoTransactionsLogs: [],
       loading: true,
       snackBar: false,
       snackBarMsg: '',
@@ -74,17 +74,17 @@ class PageFundDetailsDragoTrader extends Component {
     componentWillMount () {
       // Getting dragoid from the url parameters passed by router and then
       // the list of last transactions
-      const dragoID = this.props.match.params.dragoid
-      this.getDragoDetails(dragoID)
+      const dragoId = this.props.match.params.dragoid
+      this.getDragoDetails(dragoId)
     }
 
     componentWillReceiveProps(nextProps) {
       // Updating the lists on each new block if the accounts balances have changed
       // Doing this this to improve performances by avoiding useless re-rendering
-      const dragoID = this.props.match.params.dragoid
+      const dragoId = this.props.match.params.dragoid
       const sourceLogClass = this.constructor.name
       if (!this.props.ethBalance.eq(nextProps.ethBalance)) {
-        this.getDragoDetails(dragoID)
+        this.getDragoDetails(dragoId)
         console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
       } else {
         null
@@ -287,7 +287,8 @@ class PageFundDetailsDragoTrader extends Component {
                           </div>
                           <ElementListWrapper list={dragoTransactionList}
                             renderCopyButton={this.renderCopyButton}
-                            renderEtherscanButton={this.renderEtherscanButton}>
+                            renderEtherscanButton={this.renderEtherscanButton}
+                            loading={loading}>
 
                             <ElementListTransactions />
                           </ElementListWrapper>
@@ -322,8 +323,8 @@ class PageFundDetailsDragoTrader extends Component {
       )
     }
 
-    // Getting the drago details from dragoID
-    getDragoDetails = (dragoID) => {
+    // Getting the drago details from dragoId
+    getDragoDetails = (dragoId) => {
       const { api } = this.context
       const {accounts } = this.props
       var balanceDRG = new BigNumber(0)
@@ -339,10 +340,10 @@ class PageFundDetailsDragoTrader extends Component {
         .init()
         .then(() =>{
           //
-          // Looking for drago from dragoID
+          // Looking for drago from dragoId
           //
           dragoApi.contract.dragoregistry
-          .drago(dragoID)
+          .fromId(dragoId)
           .then((dragoDetails) => {
             const dragoAddress = dragoDetails[0][0]
 
@@ -365,7 +366,7 @@ class PageFundDetailsDragoTrader extends Component {
                 dragoApi.contract.drago.balanceOf(account.address)
                 .then (balance =>{
                   balanceDRG = balanceDRG.add(balance)
-                  // console.log(balance)
+                  console.log(balance)
                   // console.log(api.util.fromWei(balance).toFormat(4))
                 })
                 .then(()=>{
@@ -385,7 +386,7 @@ class PageFundDetailsDragoTrader extends Component {
                   address: dragoDetails[0][0],
                   name: dragoDetails[0][1].charAt(0).toUpperCase() + dragoDetails[0][1].slice(1),
                   symbol: dragoDetails[0][2],
-                  dragoID: dragoDetails[0][3].c[0],
+                  dragoId: dragoDetails[0][3].c[0],
                   addresssOwner: dragoDetails[0][4],
                   addressGroup: dragoDetails[0][5],
                   sellPrice: api.util.fromWei(data[2].toNumber(4)).toFormat(4),
@@ -394,9 +395,9 @@ class PageFundDetailsDragoTrader extends Component {
                 loading: false
               })
             })
-            dragoApi.contract.eventful.init()
+            dragoApi.contract.dragoeventful.init()
               .then(() => {
-                this.getTransactions (dragoDetails[0][0], dragoApi.contract.eventful, accounts)
+                this.getTransactions (dragoDetails[0][0], dragoApi.contract.dragoeventful, accounts)
               }
               )
           })
@@ -469,8 +470,8 @@ class PageFundDetailsDragoTrader extends Component {
         topics: [ 
           [contract.hexSignature.SellDrago], 
           [hexDragoAddress], 
-          null,
-          hexAccounts
+          hexAccounts,
+          null
         ]
       }
       const buyDragoEvents = contract

@@ -1,21 +1,21 @@
 // Copyright 2017 Rigo Investment Sarl.
 // This file is part of RigoBlock.
 
-import * as abis from '../abi/v1';
+import * as abis from '../abi';
 import Registry from '../registry';
 import { toHex } from '../../Utils';
-import { ENVENTFUL } from '../../Utils/const'
+import { DRAGOEVENTFUL } from '../../Utils/const'
 
-class EventfulParity {
+class DragoEventfulParity {
   constructor (api) {
     if (!api) {
       throw new Error('API instance needs to be provided to Contract')
     }
     this._api = api
-    this._abi = abis.eventful
+    this._abi = abis.dragoeventful
     this._registry = new Registry(api)
     this._constunctorName = this.constructor.name
-    this._contractName = ENVENTFUL
+    this._contractName = DRAGOEVENTFUL
   }
 
   get instance () {
@@ -58,4 +58,4 @@ class EventfulParity {
   }
 }
 
-export default EventfulParity;
+export default DragoEventfulParity;

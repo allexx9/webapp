@@ -1,12 +1,12 @@
 // Copyright 2017 Rigo Investment Sarl.
 // This file is part of RigoBlock.
 
-import * as abis from '../abi/v1';
+import * as abis from '../abi';
 import Registry from '../registry';
 import { toHex } from '../../Utils';
-import { GABCOINFACTORY } from '../../Utils/const'
+import { VAULTFACTORY } from '../../Utils/const'
 
-class DragoFactoryParity {
+class VaultFactoryParity {
   constructor (api) {
     if (!api) {
       throw new Error('API instance needs to be provided to Contract')
@@ -15,7 +15,7 @@ class DragoFactoryParity {
     this._abi = abis.vaultfactory
     this._registry = new Registry(api)
     this._constunctorName = this.constructor.name
-    this._contractName = GABCOINFACTORY
+    this._contractName = VAULTFACTORY
   }
 
   get instance () {
@@ -52,12 +52,12 @@ class DragoFactoryParity {
       })
   }
 
-  createVault = (dragoName, dragoSymbol, accountAddress) => {
-    if (!dragoName) {
-      throw new Error('dragoName needs to be provided')
+  createVault = (vaultName, vaultSymbol, accountAddress) => {
+    if (!vaultName) {
+      throw new Error('vaultName needs to be provided')
     }
-    if (!dragoSymbol) {
-      throw new Error('dragoSymbol needs to be provided')
+    if (!vaultSymbol) {
+      throw new Error('vaultSymbol needs to be provided')
     }
     if (!accountAddress) {
       throw new Error('accountAddress needs to be provided')
@@ -66,19 +66,15 @@ class DragoFactoryParity {
     const options = {
       from: accountAddress
     };
-    const values = [dragoName, dragoSymbol, accountAddress]
-    return instance.createGabcoin
+    const values = [vaultName, vaultSymbol, accountAddress]
+    return instance.createVault
     .estimateGas(options, values)
     .then((gasEstimate) => {
       console.log(gasEstimate.toFormat())
       options.gas = gasEstimate.mul(1.2).toFixed(0);
-      return instance.createGabcoin.postTransaction(options, values)
-      // .then((receipt) => {
-      //   console.log(receipt)
-      //   return receipt
-      // })
+      return instance.createVault.postTransaction(options, values)
     })
   }
 }
 
-export default DragoFactoryParity;
+export default VaultFactoryParity;

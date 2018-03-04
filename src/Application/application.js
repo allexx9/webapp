@@ -6,8 +6,6 @@ import { api } from '../parity';
 
 import PropTypes from 'prop-types';
 
-// import ApplicationGabcoin from '../ApplicationGabcoin';
-// import ApplicationGabcoinEventful from '../ApplicationGabcoinEventful';
 // import ApplicationExchange from '../ApplicationExchange';
 // import ApplicationExchangeEventful from '../ApplicationExchangeEventful';
 // import ApplicationDragoHome from '../ApplicationDragoHome';

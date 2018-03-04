@@ -33,7 +33,7 @@ export default class Accounts extends Component {
   renderEmpty () {
     return (
       <div className={ styles.none }>
-        You currently do not have any GABcoin in any of your addresses, create some
+        You currently do not have any Vault in any of your addresses, create some
       </div>
     );
   }

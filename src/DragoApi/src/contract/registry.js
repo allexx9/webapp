@@ -3,8 +3,8 @@
 
 // kovan register address 0xfAb104398BBefbd47752E7702D9fE23047E1Bca3
 
-import * as abis from './abi/v1';
-import { REGISTRY_KOVAN, REGISTRY_HOMESTEAD } from '../Utils/const'
+import * as abis from './abi/';
+import { PARITY_REGISTRY_KOVAN, PARITY_REGISTRY_HOMESTEAD } from '../Utils/const'
 
 
 class Registry {
@@ -22,6 +22,7 @@ class Registry {
    */
   _getContractAddressFromRegister = (contractName) =>{
     const api = this._api
+    console.log(`${this.constructor.name} -> Looking for contract: ${contractName}`)
     if (!contractName) {
       throw new Error('contractName needs to be provided to Registry')
     }
@@ -29,19 +30,18 @@ class Registry {
     if (typeof api._parity !== 'undefined') {
       if (typeof api.provider !== 'undefined') {
         if (api.provider._url.includes("infura")) {
-          console.log('Infura/MetaMask detected.')
-          const registry = api.newContract(abis.registry, REGISTRY_KOVAN).instance;
+          console.log(`${this.constructor.name} -> Infura/MetaMask detected.`)
+          const registry = api.newContract(abis.parityregister, PARITY_REGISTRY_KOVAN).instance;
           return Promise.all([
             registry.getAddress.call({}, [api.util.sha3(contractName), 'A'])
           ])
         }
       }
-
-      console.log('RigoBlock node detected.')
+      console.log(`${this.constructor.name} -> RigoBlock node detected.`)
       return api.parity
       .registryAddress()
       .then((registryAddress) => {
-        const registry = api.newContract(abis.registry, registryAddress).instance;
+        const registry = api.newContract(abis.parityregister, registryAddress).instance;
         return Promise.all([
           registry.getAddress.call({}, [api.util.sha3(contractName), 'A'])
         ])
@@ -50,9 +50,9 @@ class Registry {
     }
     // Checking if using Web3
     if (typeof api.version !== 'undefined') {
-      const registryContract = new api.eth.Contract(abis.registry)
+      const registryContract = new api.eth.Contract(abis.parityregister)
       console.log('Web3 detected.')
-      registryContract.options.address = REGISTRY_KOVAN
+      registryContract.options.address = PARITY_REGISTRY_KOVAN
       return Promise.all([
         registryContract.methods.getAddress(api.utils.sha3(contractName), 'A').call()
       ])
@@ -77,7 +77,6 @@ class Registry {
     var isMetaMask = false
     const contract = this._getContractAddressFromRegister(contractName)
     .then((address) => {
-      // console.log(address)
       if (address[0] == "0x0000000000000000000000000000000000000000") {
         throw new Error('The contract address was not found in the Register.')
       }

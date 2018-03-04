@@ -6,17 +6,17 @@ import PropTypes from 'prop-types';
 class FilterVaults extends Component {
 
   static propTypes = {
-    fundsList: PropTypes.array,
+    list: PropTypes.object,
     filterList: PropTypes.func,
   };
 
   filterFunds = (event, newValue) => {
-    const { fundsList, filterList } = this.props
+    const { list, filterList } = this.props
     const inputValue = newValue.trim().toLowerCase();
     const inputLength = inputValue.length;
-    const funds = fundsList
+    const funds = list
     const filteredFunds = () => {
-      return inputLength === 0 ? fundsList : funds.filter(fund =>
+      return inputLength === 0 ? list : funds.filter(fund =>
       fund.params.name.value.toLowerCase().slice(0, inputLength) === inputValue)
     }
     filterList(filteredFunds())
