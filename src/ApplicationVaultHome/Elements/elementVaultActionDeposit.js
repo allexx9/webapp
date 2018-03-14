@@ -4,11 +4,11 @@ import { Dialog, FlatButton, TextField } from 'material-ui';
 import BigNumber from 'bignumber.js';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { ERRORS, validateAccount, validatePositiveNumber } from './validation';
+import { ERRORS, validateAccount, validatePositiveNumber } from '../../_utils/validation';
 import AccountSelector from '../../Elements/elementAccountSelector';
 import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle'
 import ElementDialogAddressTitle from '../../Elements/elementDialogAddressTitle'
-import DragoApi from '../../DragoApi/src'
+import DragoApi from '../../PoolsApi/src'
 
 const NAME_ID = ' ';
 const ADDRESS_0 = '0x0000000000000000000000000000000000000000'; //ADDRESS_0 is for ETH deposits

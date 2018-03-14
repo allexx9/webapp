@@ -8,7 +8,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import React from 'react';
 
 import AccountSelector from '../../Elements/elementAccountSelector'
-import IdentityIcon from '../../IdentityIcon';
+import IdentityIcon from '../../_atomic/atoms/identityIcon';
 
 import styles from './elementFundActionsHeader.module.css';
 

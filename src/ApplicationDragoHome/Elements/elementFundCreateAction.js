@@ -5,9 +5,9 @@ import FlatButton from 'material-ui/FlatButton';
 import PropTypes from 'prop-types';
 import React from 'react';
 import TextField from 'material-ui/TextField';
-import { ERRORS, validateAccount, validateNewName, validateNewSymbol } from './validation';
+import { ERRORS, validateAccount, validateNewName, validateNewSymbol } from '../../_utils/validation';
 import AccountSelector from '../../Elements/elementAccountSelector'
-import DragoApi from '../../DragoApi/src'
+import DragoApi from '../../PoolsApi/src'
 import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle'
 import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization'
 import { connect } from 'react-redux';

@@ -14,18 +14,23 @@ import Search from 'material-ui/svg-icons/action/search'
 import Snackbar from 'material-ui/Snackbar'
 import ElementListWrapper from '../../Elements/elementListWrapper'
 import BigNumber from 'bignumber.js';
-import { formatCoins, formatEth, } from '../../format'
+import { formatCoins, formatEth, } from '../../_utils/format'
 import ElementFundActions from '../Elements/elementFundActions'
-import IdentityIcon from '../../IdentityIcon'
+import IdentityIcon from '../../_atomic/atoms/identityIcon'
 import InfoTable from '../../Elements/elementInfoTable'
-import Loading from '../../Loading'
-import DragoApi from '../../DragoApi/src'
+import Loading from '../../_atomic/atoms/loading'
+import DragoApi from '../../PoolsApi/src'
 import AppBar from 'material-ui/AppBar';
 import ElementListTransactions from '../Elements/elementListTransactions'
 import styles from './pageFundDetailsDragoTrader.module.css';
 import ElementPriceBox from '../Elements/elementPricesBox'
-import utils from '../../utils/utils'
+import utils from '../../_utils/utils'
 import ElementFundNotFound from '../../Elements/elementFundNotFound'
+import { connect } from 'react-redux';
+
+function mapStateToProps(state) {
+  return state
+}
 
 class PageFundDetailsDragoTrader extends Component {
 
@@ -36,7 +41,7 @@ class PageFundDetailsDragoTrader extends Component {
 
   static propTypes = {
       location: PropTypes.object.isRequired,
-      ethBalance: PropTypes.object.isRequired,
+      endpoint: PropTypes.object.isRequired,
       accounts: PropTypes.array.isRequired,
       isManager: PropTypes.bool.isRequired,
       match: PropTypes.object.isRequired,
@@ -83,7 +88,9 @@ class PageFundDetailsDragoTrader extends Component {
       // Doing this this to improve performances by avoiding useless re-rendering
       const dragoId = this.props.match.params.dragoid
       const sourceLogClass = this.constructor.name
-      if (!this.props.ethBalance.eq(nextProps.ethBalance)) {
+      const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
+      const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
+      if (!currentBalance.eq(nextBalance)) {
         this.getDragoDetails(dragoId)
         console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
       } else {
@@ -95,8 +102,10 @@ class PageFundDetailsDragoTrader extends Component {
       const  sourceLogClass = this.constructor.name
       var stateUpdate = true
       var propsUpdate = true
+      const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
+      const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
       stateUpdate = !utils.shallowEqual(this.state, nextState)
-      propsUpdate = !this.props.ethBalance.eq(nextProps.ethBalance)
+      propsUpdate = !currentBalance.eq(nextBalance)
       if (stateUpdate || propsUpdate) {
         console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
       }
@@ -150,7 +159,7 @@ class PageFundDetailsDragoTrader extends Component {
       }
       
       return (
-      <a key={"addressether"+text} href={'https://kovan.etherscan.io/'+type+'/' + text} target='_blank'><Search className={styles.copyAddress}/></a>
+      <a key={"addressether"+text} href={this.props.endpoint.networkInfo.etherscan+type+'/' + text} target='_blank'><Search className={styles.copyAddress}/></a>
       );
     }
 
@@ -528,5 +537,4 @@ class PageFundDetailsDragoTrader extends Component {
     }
     
   }
-
-  export default withRouter(PageFundDetailsDragoTrader)
+  export default withRouter(connect(mapStateToProps)(PageFundDetailsDragoTrader))

@@ -23,10 +23,11 @@ import ElementAccountBox from '../../Elements/elementAccountBox'
 import ElementFundCreateAction from '../Elements/elementFundCreateAction'
 import ElementListSupply from '../Elements/elementListSupply'
 import ElementListTransactions from '../Elements/elementListTransactions'
-import utils from '../../utils/utils'
+import BigNumber from 'bignumber.js';
+import utils from '../../_utils/utils'
 import {
   UPDATE_TRANSACTIONS_DRAGO_MANAGER,
-} from '../../utils/const'
+} from '../../_utils/const'
 import { connect } from 'react-redux';
 
 import styles from './pageDashboardDragoManager.module.css'
@@ -44,7 +45,7 @@ class PageDashboardDragoManager extends Component {
 
   static propTypes = {
       location: PropTypes.object.isRequired,
-      ethBalance: PropTypes.object.isRequired,
+      endpoint: PropTypes.object.isRequired,
       accounts: PropTypes.array.isRequired,
       dispatch: PropTypes.func.isRequired,
       transactionsDrago: PropTypes.object.isRequired,
@@ -56,7 +57,7 @@ class PageDashboardDragoManager extends Component {
       snackBarMsg: ''
     }
 
-    updateTransactionsDrago = (results) => {
+    updateTransactionsDragoAction = (results) => {
       return {
         type: UPDATE_TRANSACTIONS_DRAGO_MANAGER,
         payload: results
@@ -80,7 +81,9 @@ class PageDashboardDragoManager extends Component {
       console.log(`${sourceLogClass} -> componentWillReceiveProps-> nextProps received.`);
       // Updating the transaction list if there have been a change in total accounts balance and the previous balance is
       // different from 0 (balances are set to 0 on app loading)
-      if (!this.props.ethBalance.eq(nextProps.ethBalance) && !this.props.ethBalance.eq(0)) {
+      const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
+      const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
+      if (!currentBalance.eq(nextBalance) && !currentBalance.eq(0)) {
         this.getTransactions (null, accounts)
         console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
       }
@@ -135,9 +138,8 @@ class PageDashboardDragoManager extends Component {
       if (!text ) {
         return null;
       }
-      
       return (
-      <a href={'https://kovan.etherscan.io/'+type+'/' + text} target='_blank'><Search className={styles.copyAddress}/></a>
+      <a href={this.props.endpoint.networkInfo.etherscan+type+'/' + text} target='_blank'><Search className={styles.copyAddress}/></a>
       );
     }
 
@@ -163,7 +165,11 @@ class PageDashboardDragoManager extends Component {
       const listAccounts = accounts.map((account) => {
         return (
           <Col xs={6} key={account.name}>
-            <ElementAccountBox account={account} key={account.name} snackBar={this.snackBar} />
+            <ElementAccountBox 
+              account={account} 
+              key={account.name} 
+              snackBar={this.snackBar} 
+              etherscanUrl={this.props.endpoint.networkInfo.etherscan}/>
           </Col>
           )
         }
@@ -293,7 +299,7 @@ class PageDashboardDragoManager extends Component {
           return event.type !== 'BuyDrago' && event.type !== 'SellDrago'
         })
         results[1] = createdLogs
-        this.props.dispatch(this.updateTransactionsDrago(results))
+        this.props.dispatch(this.updateTransactionsDragoAction(results))
         this.setState({
           loading: false,
         });

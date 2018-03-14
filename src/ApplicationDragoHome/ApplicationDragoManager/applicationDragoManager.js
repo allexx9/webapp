@@ -13,37 +13,24 @@ class applicationDragoManager extends Component {
 
     static propTypes = {
       location: PropTypes.object.isRequired,
-      ethBalance: PropTypes.object.isRequired,
       accounts: PropTypes.array.isRequired,
       match: PropTypes.object.isRequired,
       isManager: PropTypes.bool.isRequired
     };
 
     render() {
-      const { ethBalance, accounts, match, isManager } = this.props;
+      const { accounts, match, isManager } = this.props;
       return (
         <Switch>
           <Route path={match.path+"/dashboard"} 
               render={(props) => <PageDashboardDragoManager {...props}               
                 accounts={accounts}
-                ethBalance={ethBalance}
                 />
               } 
           />
-          {/* <Route exact path={match.path+"/pools"}
-            render={(props) => <PageFundsDragoTrader {...props}               
-            // blockNumber={blockNumber}
-            // accounts={accounts}
-            // ethBalance={ethBalance} 
-            // allEvents={allEvents}
-            // accountsInfo={accountsInfo}
-            />
-          } 
-          /> */}
           <Route path={match.path+"/pools/:dragoid/:dragocode"}
             render={(props) => <PageFundDetailsDragoManager {...props}               
             accounts={accounts}
-            ethBalance={ethBalance} 
             isManager={isManager}
             />
           } 

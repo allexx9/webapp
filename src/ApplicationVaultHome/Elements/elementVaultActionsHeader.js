@@ -3,7 +3,7 @@ import { Row, Col } from 'react-flexbox-grid';
 import FlatButton from 'material-ui/FlatButton';
 import PropTypes from 'prop-types';
 import React from 'react';
-import IdentityIcon from '../../IdentityIcon';
+import IdentityIcon from '../../_atomic/atoms/identityIcon';
 
 import styles from './elementVaultActionsHeader.module.css';
 

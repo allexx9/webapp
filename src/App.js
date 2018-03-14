@@ -1,6 +1,6 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
-import { api } from './parity';
+import Endpoint from './_utils/endpoint';
 import { Switch, Redirect, Router, Route } from 'react-router-dom'
 import createHashHistory from 'history/createHashHistory';
 import BigNumber from 'bignumber.js';
@@ -10,18 +10,13 @@ import React, { Component } from 'react';
 import Web3 from 'web3'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
-import { rigotoken } from './DragoApi/src/contract/abi'
+import { rigotoken } from './PoolsApi/src/contracts/abi'
 
-import {
-  ApplicationHomePage,
-  // ApplicationVaultPage,
-  // ApplicationConfigPage,
-  // ApplicationExchangePage, 
-  Whoops404
-} from './Application';
 import ApplicationConfigPage from './Application/applicationConfig';
 import ApplicationDragoPage from './Application/applicationDrago';
 import ApplicationVaultPage from './Application/applicationVault';
+import ApplicationHomePage from './Application/applicationHome';
+import Whoops404 from './Application/whoops404';
 import {
   DEFAULT_NETWORK_NAME,
   MSG_NETWORK_STATUS_OK,
@@ -31,21 +26,19 @@ import {
   INFURA,
   RIGOBLOCK,
   LOCAL,
-  ALLOWED_ENDPOINTS, 
-  DEFAULT_ENDPOINT,
   PROD,
   EP_RIGOBLOCK_KV_DEV_WS,
   EP_RIGOBLOCK_KV_PROD_WS,
-  GRG_ADDRESS_KV
-} from './utils/const'
+} from './_utils/const'
 import {
   ATTACH_INTERFACE,
   UPDATE_INTERFACE,
-} from './utils/const'
-import utils from './utils/utils'
-import { Interfaces } from './utils/interfaces'
+} from './_utils/const'
+import utils from './_utils/utils'
+import { Interfaces } from './_utils/interfaces'
 import { connect } from 'react-redux';
 import ElementNotification from './Elements/elementNotification'
+import PoolsApi from './PoolsApi/src'
 // import Actions from './actions/actions'
 
 var appHashPath = true;
@@ -79,6 +72,12 @@ export class App extends Component {
     super(props);
     this._notificationSystem = null;
     sourceLogClass = this.constructor.name
+    // Connecting to blockchain client
+    console.log(this.props)
+    var endpoint = new Endpoint(this.props.endpoint.endpointInfo, this.props.endpoint.networkInfo)
+    this._api = endpoint.connect()
+    console.log(endpoint)
+    console.log(this._api)
     this.state = {
       isConnected: true,
       isSyncing: false,
@@ -109,7 +108,7 @@ export class App extends Component {
   getChildContext() {
     return {
       // muiTheme,
-      api,
+      api: this._api,
       isConnected: this.state.isConnected,
       isSyncing: this.state.isSyncing,
       syncStatus: this.state.syncStatus,
@@ -122,7 +121,6 @@ export class App extends Component {
       type: ATTACH_INTERFACE,
       payload: new Promise(resolve => {
         this.attachInterface().then(result => {
-          console.log(result)
           resolve(result);
         })
       })
@@ -139,8 +137,7 @@ export class App extends Component {
   shouldComponentUpdate(nextProps, nextState) {
     const propsUpdate = (!utils.shallowEqual(this.props, nextProps))
     const stateUpdate = (!utils.shallowEqual(this.state, nextState))
-    console.log('propsUpdate ', propsUpdate)
-    console.log('stateUpdate ', stateUpdate)
+    console.log(`${sourceLogClass} -> propsUpdate: %c${propsUpdate}.%c stateUpdate: %c${stateUpdate}`, `color: ${propsUpdate ? 'green' : 'red'}; font-weight: bold;`,'',`color: ${stateUpdate ? 'green' : 'red'}; font-weight: bold;`)
     return stateUpdate || propsUpdate 
   }
 
@@ -152,15 +149,13 @@ export class App extends Component {
   componentWillMount() {
     // Starting connection checking. this is not necessary runnin inside Parity UI
     // because the checki is done by Parity and a messagge will be displayed by the client
-    var endpoint = localStorage.getItem('endpoint')
-    if (endpoint !== 'local') {
+    if (this.props.endpoint.endpointInfo.name !== 'local') {
       this.td = setTimeout(this.checkConnectionToNode,2000)
     }
   }
 
   componentWillUnmount() {
-    var endpoint = localStorage.getItem('endpoint')
-    if (endpoint !== 'local') {
+    if (this.props.endpoint.endpointInfo.name !== 'local') {
       clearTimeout(this.td)
     }
     // Unsubscribing to the event when the the user moves away from this page
@@ -179,15 +174,15 @@ export class App extends Component {
   }
 
   checkConnectionToNode = () =>{
-    console.log('Connected: ',api.isConnected)
-    if (api.isConnected) {
+    console.log('Connected: ', this._api.isConnected)
+    if (this._api.isConnected) {
       if (!this.state.isConnected) {
         this.props.dispatch(this.attachInterfaceAction())
       }
       this.setState({
         isConnected: true
       })
-      api.eth.syncing()
+      this._api.eth.syncing()
       .then(result => {
         console.log('Syncing: ',result)
         if(result !== false) {
@@ -227,12 +222,8 @@ export class App extends Component {
           <Switch>
             <Route exact path={"/app/" + appHashPath + "/home"} component={ApplicationHomePage} />
             <Route path={"/app/" + appHashPath + "/vault"} component={ApplicationVaultPage} />
-            {/* <Route exact path={ "/app/" + appHashPath + "/drago/dashboard" } component={ApplicationDragoPage} /> */}
-            {/* <Route exact path={ "/app/" + appHashPath + "/drago/funds" } component={ApplicationDragoPage} /> */}
             <Route path={"/app/" + appHashPath + "/drago"} component={ApplicationDragoPage} />
             <Route path={"/app/" + appHashPath + "/config"} component={ApplicationConfigPage} />
-            {/* <Route path={ "/app/" + appHashPath + "/exchange" } component={ApplicationExchangePage} /> */}
-            {/* <Redirect from="/exchange" to={ "/app/" + appHashPath + "/exchange" } />  */}
             <Redirect from="/vault/" to={"/app/" + appHashPath + "/vault"} />
             <Redirect from="/vault/" to={"/app/" + appHashPath + "/vault"} />
             <Redirect from="/drago" to={"/app/" + appHashPath + "/drago"} />
@@ -262,33 +253,33 @@ export class App extends Component {
     // Allowed endpoints are defined in const.js
     var sourceLogClass = this.constructor.name
     var WsSecureUrl = ''
-    var selectedEndpoint = localStorage.getItem('endpoint')
-    var allowedEndpoints = new Map(ALLOWED_ENDPOINTS)
-    if (allowedEndpoints.has(selectedEndpoint)) {
+    const selectedEndpoint = this.props.endpoint.endpointInfo.name
+    const networkId = this.props.endpoint.networkInfo.id
+    console.log(networkId)
+    var blockchain = new Interfaces(this._api, networkId)
       switch (selectedEndpoint) {
         case INFURA:
-          console.log(INFURA)
-          return Interfaces.attachInterfaceInfuraV2(api)
+          console.log(`${sourceLogClass} -> ${INFURA}`)
+          return blockchain.attachInterfaceInfuraV2(this._api, networkId)
             .then((result) => {
-              // this.setState({...this.state, ...Interfaces.success})
+              // this.setState({...this.state, ...blockchain.success})
               // Subscribing to newBlockNumber event
-              api.subscribe('eth_blockNumber', this.onNewBlockNumber)
-                .then((subscriptionID) => {
-                  console.log(`${sourceLogClass}: Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);
-                  subscriptionData = subscriptionID
-                })
-                .catch((error) => {
-                  console.warn('error subscription', error)
-                });
+              // this._api.subscribe('eth_blockNumber', this.onNewBlockNumber)
+              //   .then((subscriptionID) => {
+              //     console.log(`${sourceLogClass}: Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);
+              //     subscriptionData = subscriptionID
+              //   })
+              //   .catch((error) => {
+              //     console.warn('error subscription', error)
+              //   });
                 return result
             })
             .catch(()=>{
-              // this.setState({...this.state, ...Interfaces.error})
+              // this.setState({...this.state, ...blockchain.error})
             })
         case RIGOBLOCK:
-          console.log(RIGOBLOCK)
-          // this.attachInterfaceRigoBlock()
-          return Interfaces.attachInterfaceRigoBlockV2(api)
+          console.log(`${sourceLogClass} -> ${RIGOBLOCK}`)
+          return blockchain.attachInterfaceRigoBlockV2(this._api, networkId)
             .then((result) => {
               // Setting connection to node
               if (PROD) {
@@ -308,12 +299,11 @@ export class App extends Component {
                 return result
             })
             .catch(()=>{
-              this.setState(...this.state, ...Interfaces.error)
+              this.setState(...this.state, ...blockchain.error)
             })
         case LOCAL:
-          console.log(LOCAL)
-          // this.attachInterfaceRigoBlock()
-          return Interfaces.attachInterfaceRigoBlockV2(api)
+          console.log(`${sourceLogClass} -> ${LOCAL}`)
+          return blockchain.attachInterfaceRigoBlockV2(this._api, networkId)
             .then(() => {
               // Setting connection to node
               if (PROD) {
@@ -323,36 +313,19 @@ export class App extends Component {
               }
               // Subscribing to newBlockNumber event
               const web3 = new Web3(WsSecureUrl)
-              Promise
-                .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
-                .then(result => {
-                  var subscription = result[0]
-                  console.log(`${sourceLogClass}: Subscribed to eth_blockNumber`);
-                  subscriptionData = subscription
-                })
+              // Promise
+              //   .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
+              //   .then(result => {
+              //     var subscription = result[0]
+              //     console.log(`${sourceLogClass}: Subscribed to eth_blockNumber`);
+              //     subscriptionData = subscription
+              //   })
             })
             .catch(()=>{
-              // this.setState({...this.state, ...Interfaces.error})
+              // this.setState({...this.state, ...blockchain.error})
             })
       }
-    } else {
-      localStorage.setItem('endpoint', DEFAULT_ENDPOINT)
-      return Interfaces.attachInterfaceInfuraV2(api)
-        .then(() => {
-          // Subscribing to newBlockNumber event
-          api.subscribe('eth_blockNumber', this.onNewBlockNumber)
-            .then((subscriptionID) => {
-              console.log(`${sourceLogClass}: Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);
-              subscriptionData = subscriptionID
-            })
-            .catch((error) => {
-              console.warn('error subscription', error)
-            });
-        })
-        .catch(()=>{
-          // this.setState({...this.state, ...Interfaces.error})
-        })
-    }
+
   }
 
   onNewBlockNumber = (_error, blockNumber ) => {
@@ -388,17 +361,20 @@ export class App extends Component {
 
 
     // Checking RigoToken balance
-    const rigoTokenContract = api.newContract(rigotoken, GRG_ADDRESS_KV)
-
+    // const rigoTokenContract = this._api.newContract(rigotoken, GRG_ADDRESS_KV)
+    const poolsApi = new PoolsApi(this._api)
+    poolsApi.contract.rigotoken.init()
+    
     const tokensQueries = accounts.map((account) => {
-      console.log(`${sourceLogClass} API call getBalance RigoToken-> applicationDragoHome: Getting balance of account ${account.name}`)
-      return rigoTokenContract.instance.balanceOf.call({}, [account.address])
+      console.log(`${sourceLogClass} -> API call getBalance RigoToken-> applicationDragoHome: Getting balance of account ${account.name}`)
+      // return rigoTokenContract.instance.balanceOf.call({}, [account.address])
+      return poolsApi.contract.rigotoken.balanceOf(account.address)
     })
 
     // Checking ethereum balance
     const ethQueries = accounts.map((account) => {
-      console.log(`${sourceLogClass} API call getBalance -> applicationDragoHome: Getting balance of account ${account.name}`)
-      return api.eth.getBalance(account.address, newBlockNumber)
+      console.log(`${sourceLogClass} -> API call getBalance -> applicationDragoHome: Getting balance of account ${account.name}`)
+      return this._api.eth.getBalance(account.address, newBlockNumber)
     })
     const promisesBalances = [...ethQueries, ...tokensQueries]
 
@@ -409,24 +385,20 @@ export class App extends Component {
         const halfLength = Math.ceil(results.length / 2)
         const ethBalances = results.splice(0,halfLength)
         const rigoTokenBalances = results
-        // console.log(ethBalances)
-        // console.log(rigoTokenBalances)
         const prevAccounts = [].concat(endpoint.accounts)
         prevAccounts.map((account,index) =>{
-          const newEthBalance = api.util.fromWei(ethBalances[index]).toFormat(3)
-          // console.log('Last balance: ' + account.ethBalance)
-          // console.log('New balance: ' + newEthBalance)
+          const newEthBalance = this._api.util.fromWei(ethBalances[index]).toFormat(3)
           if ((account.ethBalance !== newEthBalance) && prevBlockNumber != 0) {
             console.log(`${account.name} balance changed.`)
             var secondaryText = []
             var balDifference = account.ethBalance - newEthBalance
             if (balDifference > 0) {
-              console.log(`You transferred ${balDifference.toFixed(4)} ETH!`)
-              secondaryText[0] = `You transferred ${balDifference.toFixed(4)} ETH!`
+              console.log(`${sourceLogClass} -> You transferred ${balDifference.toFixed(4)} ETH!`)
+              secondaryText[0] = `${sourceLogClass} -> You transferred ${balDifference.toFixed(4)} ETH!`
               secondaryText[1] = utils.dateFromTimeStamp(new Date())
             } else {
-              console.log(`You received ${Math.abs(balDifference).toFixed(4)} ETH!`)
-              secondaryText[0] = `You received ${Math.abs(balDifference).toFixed(4)} ETH!`
+              console.log(`${sourceLogClass} -> You received ${Math.abs(balDifference).toFixed(4)} ETH!`)
+              secondaryText[0] = `${sourceLogClass} -> You received ${Math.abs(balDifference).toFixed(4)} ETH!`
               secondaryText[1] = utils.dateFromTimeStamp(new Date())
             }
             if (this._notificationSystem && endpoint.accountsBalanceError === false) {
@@ -455,10 +427,9 @@ export class App extends Component {
           ethBalance: ethBalances.reduce((total, balance) => total.add(balance), new BigNumber(0)),
           accounts: [].concat(accounts.map((account, index) => {
             const ethBalance = ethBalances[index];
-            account.ethBalance = api.util.fromWei(ethBalance).toFormat(3);
+            account.ethBalance = this._api.util.fromWei(ethBalance).toFormat(3);
             const rigoTokenBalance = rigoTokenBalances[index];
-            account.rigoTokenBalance = api.util.fromWei(rigoTokenBalance).toFormat(3);
-            console.log(account)
+            account.rigoTokenBalance = this._api.util.fromWei(rigoTokenBalance).toFormat(3);
             return account;
           })
         )
@@ -477,9 +448,9 @@ export class App extends Component {
           accountsBalanceError: true,
           ethBalance: new BigNumber(0),
           rigoTokenBalance: new BigNumber(0),
-          accounts: [].concat(accounts.map((account, index) => {
-            account.ethBalance = api.util.fromWei(new BigNumber(0)).toFormat(3);
-            account.rigoTokenBalance = api.util.fromWei(new BigNumber(0)).toFormat(3);
+          accounts: [].concat(accounts.map((account) => {
+            account.ethBalance = this._api.util.fromWei(new BigNumber(0)).toFormat(3);
+            account.rigoTokenBalance = this._api.util.fromWei(new BigNumber(0)).toFormat(3);
             return account;
           })
         )
@@ -491,7 +462,7 @@ export class App extends Component {
   detachInterface = () => {
     // const { subscriptionData } = this.state;
     // const { api } = this.context;
-    Interfaces.detachInterface(api,subscriptionData)
+    Interfaces.detachInterface(this._api,subscriptionData)
   } 
 }
 

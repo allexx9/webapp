@@ -13,18 +13,19 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import Search from 'material-ui/svg-icons/action/search'
 import Snackbar from 'material-ui/Snackbar'
-import { formatCoins, formatEth } from '../../format'
-import DragoApi from '../../DragoApi/src'
+import { formatCoins, formatEth } from '../../_utils/format'
+import DragoApi from '../../PoolsApi/src'
 import ElementVaultActionsList from '../Elements/elementVaultActionsList'
 import ElementListTransactions from '../Elements/elementListTransactions'
 import ElementListWrapper from '../../Elements/elementListWrapper'
 import ElementFeesBox from '../Elements/elementFeesBox'
-import IdentityIcon from '../../IdentityIcon'
+import IdentityIcon from '../../_atomic/atoms/identityIcon'
 import InfoTable from '../../Elements/elementInfoTable'
-import Loading from '../../Loading'
-import utils from '../../utils/utils'
+import Loading from '../../_atomic/atoms/loading'
+import utils from '../../_utils/utils'
 import styles from './pageVaultDetailsVaultManager.module.css';
 import ElementFundNotFound from '../../Elements/elementFundNotFound'
+import BigNumber from 'bignumber.js';
 
 
 class PageVaultDetailsVaultManager extends Component {
@@ -36,7 +37,7 @@ class PageVaultDetailsVaultManager extends Component {
 
   static propTypes = {
       location: PropTypes.object.isRequired,
-      ethBalance: PropTypes.object.isRequired,
+      endpoint: PropTypes.object.isRequired,
       accounts: PropTypes.array.isRequired,
       match: PropTypes.object.isRequired, 
       isManager: PropTypes.bool.isRequired
@@ -76,7 +77,9 @@ class PageVaultDetailsVaultManager extends Component {
       const dragoId = this.props.match.params.dragoid
       const sourceLogClass = this.constructor.name
       // console.log(nextProps)
-      if (!this.props.ethBalance.eq(nextProps.ethBalance)) {
+      const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
+      const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
+      if (!currentBalance.eq(nextBalance)) {
         this.getVaultDetails(dragoId)
         console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
       } else {
@@ -88,8 +91,10 @@ class PageVaultDetailsVaultManager extends Component {
       const  sourceLogClass = this.constructor.name
       var stateUpdate = true
       var propsUpdate = true
+      const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
+      const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
       stateUpdate = !utils.shallowEqual(this.state, nextState)
-      propsUpdate = !this.props.ethBalance.eq(nextProps.ethBalance)
+      propsUpdate = !currentBalance.eq(nextBalance)
       if (stateUpdate || propsUpdate) {
         console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
       }
@@ -141,7 +146,7 @@ class PageVaultDetailsVaultManager extends Component {
       }
       
       return (
-      <a key={"addressether"+text} href={'https://kovan.etherscan.io/'+type+'/' + text} target='_blank'><Search className={styles.copyAddress}/></a>
+      <a key={"addressether"+text} href={this.props.endpoint.networkInfo.etherscan+type+'/' + text} target='_blank'><Search className={styles.copyAddress}/></a>
       );
     }
 

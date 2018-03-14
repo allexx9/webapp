@@ -3,16 +3,16 @@
 import React, { Component } from 'react';
 import ApplicationDragoManager from './ApplicationDragoManager'
 import ApplicationDragoTrader from './ApplicationDragoTrader'
-import Loading from '../Loading';
+import Loading from '../_atomic/atoms/loading';
 import styles from './applicationDragoHome.module.css';
 
 import {
   DEFAULT_NETWORK_NAME,
-} from '../utils/const'
+} from '../_utils/const'
 import { Row, Col } from 'react-flexbox-grid';
 import LeftSideDrawerFunds from '../Elements/leftSideDrawerFunds';
 import PropTypes from 'prop-types';
-import utils from '../utils/utils'
+import utils from '../_utils/utils'
 import ElementNotificationsDrawer from '../Elements/elementNotificationsDrawer'
 import CheckAuthPage from '../Elements/checkAuthPage'
 import ElementBottomStatusBar from '../Elements/elementBottomStatusBar'
@@ -112,12 +112,10 @@ class ApplicationDragoHome extends Component {
       return <Loading></Loading>
     }
 
-    if (endpoint.ethBalance === null) {
-      console.log('ethBalance = null')
-      return null
-    }
-
-    // console.log(accounts)
+    // if (endpoint.ethBalance === null) {
+    //   console.log('ethBalance = null')
+    //   return null
+    // }
 
     if ((endpoint.accounts.length === 0 || !endpoint.networkCorrect)) {
       return (
@@ -125,7 +123,7 @@ class ApplicationDragoHome extends Component {
           <CheckAuthPage warnMsg={endpoint.warnMsg} location={location}/>
           <ElementBottomStatusBar
             blockNumber={endpoint.prevBlockNumber}
-            networkName={DEFAULT_NETWORK_NAME}
+            networkName={endpoint.networkInfo.name}
             networkError={endpoint.networkError}
             networkStatus={endpoint.networkStatus} />
         </span>
@@ -163,7 +161,7 @@ class ApplicationDragoHome extends Component {
           </Row>
           <ElementBottomStatusBar 
           blockNumber={endpoint.prevBlockNumber}
-          networkName={DEFAULT_NETWORK_NAME}
+          networkName={endpoint.networkInfo.name}
           networkError={endpoint.networkError}
           networkStatus={endpoint.networkStatus} />
         </div>
@@ -201,7 +199,7 @@ class ApplicationDragoHome extends Component {
           </Row>
           <ElementBottomStatusBar 
           blockNumber={endpoint.prevBlockNumber}
-          networkName={DEFAULT_NETWORK_NAME}
+          networkName={endpoint.networkInfo.name}
           networkError={endpoint.networkError}
           networkStatus={endpoint.networkStatus} />
         </div>

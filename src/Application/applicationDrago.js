@@ -56,7 +56,6 @@ class ApplicationDragoPage extends Component {
     isConnected: PropTypes.bool.isRequired,
     isSyncing: PropTypes.bool.isRequired,
     syncStatus: PropTypes.object.isRequired,
-    ethereumNetworkName: PropTypes.string.isRequired,
   };
 
   componentWillMount() {

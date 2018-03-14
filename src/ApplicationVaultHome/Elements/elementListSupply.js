@@ -7,8 +7,8 @@ import React, {PureComponent} from 'react';
 
 import 'react-virtualized/styles.css'
 
-import {DS} from '../../utils/const.js'
-import utils from '../../utils/utils'
+import {DS} from '../../_utils/const.js'
+import utils from '../../_utils/utils'
 
 import styles from './elementListTransactions.module.css';
 

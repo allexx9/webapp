@@ -2,7 +2,7 @@
 
 import React, { Component } from 'react';
 
-import IdentityIcon from '../../IdentityIcon';
+import IdentityIcon from '../../_atomic/atoms/identityIcon';
 
 import styles from './elementAccountItem.module.css';
 

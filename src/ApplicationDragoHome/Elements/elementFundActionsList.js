@@ -7,7 +7,7 @@ import RaisedButton from 'material-ui/RaisedButton'
 import Subheader from 'material-ui/Subheader'
 import Popover, {PopoverAnimationVertical} from 'material-ui/Popover';
 
-import IdentityIcon from '../../IdentityIcon';
+import IdentityIcon from '../../_atomic/atoms/identityIcon';
 
 // import styles from './elementAccountItem.module.css';
 

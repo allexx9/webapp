@@ -4,7 +4,7 @@ import NotificationWifi from 'material-ui/svg-icons/notification/wifi';
 import AccessTime from 'material-ui/svg-icons/device/access-time';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import utils from '../utils/utils'
+import utils from '../_utils/utils'
 
 import styles from './elementBottomStatusBar.module.css';
 import classnames from 'classnames'
@@ -125,6 +125,7 @@ export default class ElementBottomStatusBar extends Component {
   render() {
     const { blockNumber, networkName, networkStatus, networkError } = this.props
     var toolTipType = 'info'
+    var networkClass = classnames(styles.networkName, styles[networkName])
     const numberWithCommas = (x) => {
       return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
@@ -147,7 +148,7 @@ export default class ElementBottomStatusBar extends Component {
           <div className={styles.networkDataContainer}>
             {this.renderCurrentTime()}&nbsp;&nbsp;&nbsp;&nbsp;
             Blockchain:
-         #{numberWithCommas(blockNumber)}&nbsp;&nbsp;<span className={styles.networkName}>{networkName}</span>&nbsp;&nbsp;{this.renderNetworkStatus()}
+         #{numberWithCommas(blockNumber)}&nbsp;&nbsp;<span className={networkClass}>{networkName}</span>&nbsp;&nbsp;{this.renderNetworkStatus()}
           </div>
         </Col>
         <span>{networkStatus}</span>

@@ -6,7 +6,7 @@ import BigNumber from 'bignumber.js';
 
 import PropTypes from 'prop-types';
 import React, {PureComponent} from 'react';
-import utils from '../../utils/utils'
+import utils from '../../_utils/utils'
 
 import styles from './elementListVaults.module.css';
 import 'react-virtualized/styles.css'

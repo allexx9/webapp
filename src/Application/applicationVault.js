@@ -65,8 +65,7 @@ class ApplicationDragoPage extends Component {
     api: PropTypes.object.isRequired,
     isConnected: PropTypes.bool.isRequired,
     isSyncing: PropTypes.bool.isRequired,
-    syncStatus: PropTypes.object.isRequired,
-    ethereumNetworkName: PropTypes.string.isRequired,
+    syncStatus: PropTypes.object.isRequired
   };
 
   static propTypes = {

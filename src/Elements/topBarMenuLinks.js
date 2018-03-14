@@ -17,12 +17,12 @@ import NotificationWifi from 'material-ui/svg-icons/notification/wifi';
 import Popover from 'material-ui/Popover';
 import Menu from 'material-ui/Menu';
 import ArrowDropDown from 'material-ui/svg-icons/navigation/arrow-drop-down'
-import {APP, DS} from '../utils/const.js'
+import {APP, DS} from '../_utils/const.js'
 import { connect } from 'react-redux';
 // import ElementNotificationsDrawer from '.Elements/elementNotificationsDrawer'
-import {IS_MANAGER} from '../utils/const'
+import {IS_MANAGER} from '../_utils/const'
 import styles from './elements.module.css'
-import utils from '../utils/utils'
+import utils from '../_utils/utils'
 
 
 function mapStateToProps(state) {

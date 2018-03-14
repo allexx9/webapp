@@ -3,7 +3,7 @@
 import React, { Component } from 'react';
 
 import PropTypes from 'prop-types';
-import ApplicationDragoHome from '../ApplicationDragoHome';
+import ApplicationHome from '../ApplicationHome';
 import ApplicationTopBar from './ApplicationTopBar';
 
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
@@ -74,8 +74,6 @@ class ApplicationHomePage extends Component {
   }
 
   render() {
-    const { notificationsOpen } = this.state
-    const { location } = this.props
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
         <Grid fluid className={styles.maincontainer}>
@@ -92,12 +90,7 @@ class ApplicationHomePage extends Component {
             <Col xs={12}>
               {this.context.isConnected && !this.context.isSyncing ? (
                 // {false ? (
-                <ApplicationDragoHome
-                  isManager={this.state.isManager}
-                  location={location}
-                  notificationsOpen={notificationsOpen}
-                  handleToggleNotifications={this.handleToggleNotifications}
-                />
+                  <ApplicationHome />
               ) : (
                   <NotConnected isSyncing={this.context.isSyncing} syncStatus={this.context.syncStatus} />
                 )}

@@ -1,4 +1,5 @@
 import  * as Colors from 'material-ui/styles/colors'
+import BigNumber from 'bignumber.js';
 import { Row, Col } from 'react-flexbox-grid'
 import { Link, withRouter } from 'react-router-dom'
 import {CopyToClipboard} from 'react-copy-to-clipboard'
@@ -22,10 +23,10 @@ import ElementListWrapper from '../../Elements/elementListWrapper'
 import ElementAccountBox from '../../Elements/elementAccountBox'
 import ElementListBalances from '../Elements/elementListBalances'
 import ElementListTransactions from '../Elements/elementListTransactions'
-import utils from '../../utils/utils'
+import utils from '../../_utils/utils'
 import {
   UPDATE_TRANSACTIONS_DRAGO_HOLDER,
-} from '../../utils/const'
+} from '../../_utils/const'
 import { connect } from 'react-redux';
 
 import styles from './pageDashboardDragoTrader.module.css'
@@ -43,7 +44,7 @@ class PageDashboardDragoTrader extends Component {
 
   static propTypes = {
       location: PropTypes.object.isRequired,
-      ethBalance: PropTypes.object.isRequired,
+      endpoint: PropTypes.object.isRequired,
       accounts: PropTypes.array.isRequired,
       dispatch: PropTypes.func.isRequired,
       transactionsDrago: PropTypes.object.isRequired,
@@ -76,7 +77,9 @@ class PageDashboardDragoTrader extends Component {
       console.log(`${sourceLogClass} -> componentWillReceiveProps-> nextProps received.`);
       // Updating the transaction list if there have been a change in total accounts balance and the previous balance is
       // different from 0 (balances are set to 0 on app loading)
-      if (!this.props.ethBalance.eq(nextProps.ethBalance) && !this.props.ethBalance.eq(0)) {
+      const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
+      const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
+      if (!currentBalance.eq(nextBalance) && !currentBalance.eq(0)) {
         this.getTransactions (null, accounts)
         console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
       }
@@ -132,7 +135,7 @@ class PageDashboardDragoTrader extends Component {
       }
       
       return (
-      <a href={'https://kovan.etherscan.io/'+type+'/' + text} target='_blank'><Search className={styles.copyAddress}/></a>
+      <a href={this.props.endpoint.networkInfo.etherscan+type+'/' + text} target='_blank'><Search className={styles.copyAddress}/></a>
       );
     }
 
@@ -156,7 +159,11 @@ class PageDashboardDragoTrader extends Component {
       const listAccounts = accounts.map((account) => {
         return (
           <Col xs={6} key={account.name}>
-            <ElementAccountBox account={account} key={account.name} snackBar={this.snackBar}/>
+            <ElementAccountBox 
+              account={account} 
+              key={account.name} 
+              snackBar={this.snackBar} 
+              etherscanUrl={this.props.endpoint.networkInfo.etherscan}/>
           </Col>
           )
         }

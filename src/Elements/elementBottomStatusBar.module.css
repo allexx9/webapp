@@ -22,8 +22,19 @@
   line-height: 1.2;
   padding: .25em .5em;
   text-transform: uppercase;
-  background: #9C27B0;
   color: #fff;
+}
+
+.kovan {
+  background: #9C27B0;
+}
+
+.ropsten {
+  background: #800;
+}
+
+.mainnet {
+  background: #080
 }
 
 .networkIcon {

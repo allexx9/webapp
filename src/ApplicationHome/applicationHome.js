@@ -1,7 +1,7 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
 import styles from './applicationHome.module.css';
-import bgimage from '../assets/images/blockchainLight.jpg';
+// import bgimage from '../assets/images/blockchainLight.jpg';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -11,7 +11,7 @@ import { Row, Col } from 'react-flexbox-grid';
 
 // import ApplicationDragoFactory from '../ApplicationDragoFactory';
 
-import Loading from '../Loading';
+import Loading from '../_atomic/atoms/loading';
 
 import {
   Link
@@ -21,7 +21,7 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin();
 
 const bgstyle = {
-  backgroundImage: `url(${bgimage})`
+  // backgroundImage: `url(${bgimage})`
 };
 
 export default class ApplicationHome extends Component {

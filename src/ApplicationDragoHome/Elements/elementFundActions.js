@@ -18,11 +18,11 @@ import {
   TableRowColumn,
 } from 'material-ui/Table';
 
-import { ERRORS, validateAccount, validatePositiveNumber } from './validation';
-import { formatCoins } from '../../format';
+import { ERRORS, validateAccount, validatePositiveNumber } from '../../_utils/validation';
+import { formatCoins } from '../../_utils/format';
 import AccountSelector from '../../Elements/elementAccountSelector'
 import ElementFundActionsHeader from './elementFundActionsHeader'
-import DragoApi from '../../DragoApi/src'
+import DragoApi from '../../PoolsApi/src'
 import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization'
 
 import styles from './elementFundActions.module.css';
@@ -33,9 +33,6 @@ const customContentStyle = {
 
 function mapStateToProps(state) {
   return state
-//   return {
-//     count: state.count
-//   };
 }
 
 class ElementFundActions extends React.Component {
@@ -135,35 +132,6 @@ class ElementFundActions extends React.Component {
     dispatch: PropTypes.func.isRequired
   };
   
-  // state = {
-  //   open: 'buy',
-  //   openAuth: false,
-  //   authMsg: '',
-  //   action: 'buy',
-  //   actionSummary: 'BUYING',
-  //   account: {},
-  //   accountError: ERRORS.invalidAccount,
-  //   accountCorrect: false,
-  //   amount: 0,
-  //   newDrgBalance: 0,
-  //   drgBalance: 0,
-  //   drgOrder: 0,
-  //   amountError: ERRORS.invalidAmount,
-  //   amountFieldDisabled: true,
-  //   unitsSummary: 0,
-  //   amountSummary: 0,
-  //   actionStyleBuySell: { 
-  //     color: Colors.green300
-  //   },
-  //   canSubmit: false,
-  //   sending: false,
-  //   complete: false,
-  //   switchButton: {
-  //     label: 'Units',
-  //     denomination: 'ETH',
-  //     hint: 'Amount'
-  //   }
-  // }
 
   resetState = {
     openAuth: false,
@@ -485,7 +453,6 @@ class ElementFundActions extends React.Component {
       amount: this.state.amountSummary
     }
     this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
-    //this.context.addTransactionToQueue(transactionId, transactionDetails)
     const {account} = this.state
 
     // Sending the transaction
@@ -582,7 +549,6 @@ class ElementFundActions extends React.Component {
           sending: false
         })
       })
-    // this.props.snackBar('Sell order waiting for authorization for ' + this.state.amountSummary + ' ' + dragoDetails.symbol.toUpperCase())
     this.setState({
       authMsg: authMsg,
       authAccount: {...this.state.account},

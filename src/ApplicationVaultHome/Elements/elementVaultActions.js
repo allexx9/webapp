@@ -17,11 +17,11 @@ import {
   TableRowColumn,
 } from 'material-ui/Table';
 
-import { ERRORS, validateAccount, validatePositiveNumber } from './validation';
-import { formatCoins } from '../../format';
+import { ERRORS, validateAccount, validatePositiveNumber } from '../../_utils/validation';
+import { formatCoins } from '../../_utils/format';
 import AccountSelector from '../../Elements/elementAccountSelector'
 import ElementVaultActionsHeader from './elementVaultActionsHeader'
-import DragoApi from '../../DragoApi/src'
+import DragoApi from '../../PoolsApi/src'
 import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization'
 
 import styles from './elementVaultActions.module.css';

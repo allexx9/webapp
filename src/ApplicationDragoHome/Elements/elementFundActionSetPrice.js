@@ -9,9 +9,9 @@ import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
-import { ERRORS, validateAccount, validatePositiveNumber } from './validation';
+import { ERRORS, validateAccount, validatePositiveNumber } from '../../_utils/validation';
 import AccountSelector from '../../Elements/elementAccountSelector';
-import DragoApi from '../../DragoApi/src'
+import DragoApi from '../../PoolsApi/src'
 import ElementDialogAddressTitle from '../../Elements/elementDialogAddressTitle'
 import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle'
 import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization'

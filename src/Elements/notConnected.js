@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 
 import styles from './notConnected.module.css'
 import PropTypes from 'prop-types';
-import {APP, DS} from '../utils/const.js'
+import {APP, DS} from '../_utils/const.js'
 
 var td = null
 

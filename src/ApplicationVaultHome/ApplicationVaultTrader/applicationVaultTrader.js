@@ -9,7 +9,6 @@ class ApplicationVaultTrader extends Component {
 
     static propTypes = {
       location: PropTypes.object.isRequired,
-      ethBalance: PropTypes.object.isRequired,
       accounts: PropTypes.array.isRequired,
       match: PropTypes.object.isRequired,
       isManager: PropTypes.bool.isRequired
@@ -17,26 +16,23 @@ class ApplicationVaultTrader extends Component {
 
 
     render() {
-      const { ethBalance, accounts, match, isManager } = this.props;
+      const { accounts, match, isManager } = this.props;
       return (
         <Switch>
           <Route path={match.path + "/dashboard"}
             render={(props) => <PageDashboardVaultTrader {...props}
-              accounts={accounts}
-              ethBalance={ethBalance} />
+              accounts={accounts} />
             }
           />
           <Route exact path={match.path+"/pools"}
             render={(props) => <PageVaultsVaultTrader {...props}               
             accounts={accounts}
-            ethBalance={ethBalance} 
             />
           } 
           />
           <Route path={match.path+"/pools/:dragoid/:dragocode"}
             render={(props) => <PageVaultDetailsVaultTrader {...props}               
             accounts={accounts}
-            ethBalance={ethBalance} 
             isManager={isManager}
             />
           } 

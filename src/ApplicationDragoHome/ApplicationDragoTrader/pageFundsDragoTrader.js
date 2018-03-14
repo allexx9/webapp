@@ -6,14 +6,19 @@ import Avatar from 'material-ui/Avatar';
 import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import DragoApi from '../../DragoApi/src'
+import DragoApi from '../../PoolsApi/src'
 import ElementListFunds from '../Elements/elementListFunds'
 import FilterFunds from '../Elements/elementFilterFunds'
-import utils from '../../utils/utils'
+import utils from '../../_utils/utils'
 import ElementListWrapper from '../../Elements/elementListWrapper'
+import BigNumber from 'bignumber.js';
+import { connect } from 'react-redux';
 
 import styles from './pageFundsDragoTrader.module.css'
 
+function mapStateToProps(state) {
+  return state
+}
 
 class PageFundsDragoTrader extends Component {
 
@@ -28,7 +33,7 @@ class PageFundsDragoTrader extends Component {
   
   static propTypes = {
     location: PropTypes.object.isRequired,
-    ethBalance: PropTypes.object.isRequired,
+    endpoint: PropTypes.object.isRequired,
     accounts: PropTypes.array.isRequired
   };
 
@@ -47,7 +52,9 @@ class PageFundsDragoTrader extends Component {
       // Updating the lists on each new block if the accounts balances have changed
       // Doing this this to improve performances by avoiding useless re-rendering
       const sourceLogClass = this.constructor.name
-      if (!this.props.ethBalance.eq(nextProps.ethBalance)) {
+      const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
+      const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
+      if (!currentBalance.eq(nextBalance)) {
         this.getDragos()
         console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
       } else {
@@ -59,8 +66,10 @@ class PageFundsDragoTrader extends Component {
       const  sourceLogClass = this.constructor.name
       var stateUpdate = true
       var propsUpdate = true
+      const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
+      const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
       stateUpdate = !utils.shallowEqual(this.state, nextState)
-      propsUpdate = !this.props.ethBalance.eq(nextProps.ethBalance)
+      propsUpdate = !currentBalance.eq(nextBalance)
       if (stateUpdate || propsUpdate) {
         console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
       }
@@ -178,6 +187,5 @@ class PageFundsDragoTrader extends Component {
     }
   }
 
-  export default withRouter(PageFundsDragoTrader)
-
+  export default withRouter(connect(mapStateToProps)(PageFundsDragoTrader))
  

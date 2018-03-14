@@ -3,30 +3,67 @@ import Paper from 'material-ui/Paper';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 import styles from './pageNetworkConfig.module.css'
-import Toggle from 'material-ui/Toggle';
 import ElementBoxHeadTitle from '../Elements/elementBoxHeadTitle'
 import RaisedButton from 'material-ui/RaisedButton';
-import { ALLOWED_ENDPOINTS, DEFAULT_ENDPOINT, LOCAL } from '../utils/const';
+import { 
+  LOCAL,
+  UPDATE_INTERFACE,
+  KOVAN,
+  ROPSTEN,
+  MAINNET,
+  INFURA,
+  RIGOBLOCK,
+  ENDPOINTS,
+  NETWORKS
+ } from '../_utils/const';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
+import { connect } from 'react-redux';
 
+function mapStateToProps(state) {
+  return state
+}
 
 class PageNetworkConfig extends Component {
 
   constructor(props) {
     super(props);
-    // Allowed endpoints are defined in const.js
-    var selectedEndpoint = localStorage.getItem('endpoint')
-    var allowedEndpoints = new Map(ALLOWED_ENDPOINTS)
-    if (allowedEndpoints.has(selectedEndpoint)) {
-      allowedEndpoints.set(selectedEndpoint, true) 
-    } else {
-      allowedEndpoints.set(DEFAULT_ENDPOINT, true)
-      selectedEndpoint = DEFAULT_ENDPOINT
+    var selectedEndpoint = INFURA
+    var selectedNetwork = KOVAN
+    var disabledRemote = false
+    var disabledLocal = true
+    switch (this.props.endpoint.endpointInfo.name) {
+      case INFURA:
+        selectedEndpoint = 0
+        break
+      case RIGOBLOCK:
+        selectedEndpoint = 1
+        break
+      case LOCAL:
+        selectedEndpoint = 2
+        break
+    }
+    switch (this.props.endpoint.networkInfo.name) {
+      case KOVAN:
+        selectedNetwork = 0
+        break
+      case ROPSTEN:
+        selectedNetwork = 1
+        break
+      case MAINNET:
+        selectedNetwork = 2
+        break
+    }
+    // Checking if app is running inside Parity UI. If positive, disable remote endpoint selection
+    if (typeof window.parity !== 'undefined') {
+      disabledRemote = !disabledRemote
+      disabledLocal = !disabledLocal
     }
     this.state = {
+      disabledRemote,
+      disabledLocal,
       selectedEndpoint: selectedEndpoint,
-      allowedEndpoints: allowedEndpoints,
+      selectedNetwork: selectedNetwork,
       save: true,
     }
   }
@@ -38,57 +75,57 @@ class PageNetworkConfig extends Component {
 
   static propTypes = {
       location: PropTypes.object.isRequired,
-      // ethBalance: PropTypes.object.isRequired,
-      // accounts: PropTypes.array.isRequired
+      dispatch: PropTypes.func.isRequired,
+      endpoint: PropTypes.object.isRequired,
     };
 
-    componentDidMount() {
-    }
+    updateInterfaceAction = (endpoint) => {
+      return {
+        type: UPDATE_INTERFACE,
+        payload: endpoint
+      }
+    };
 
-    componentWillUnmount() {
-    }
-
-    snackBar = (msg) =>{
+    onChangeEndpoint = (event, key) => {
+      var endpoint = {}
+      switch (key) {
+        case 0:
+          endpoint.endpointInfo = ENDPOINTS.infura
+          break
+        case 1:
+          endpoint.endpointInfo = ENDPOINTS.rigoblock
+          break
+        case 2:
+          endpoint.endpointInfo = ENDPOINTS.local
+          break
+      }
+      console.log(endpoint.endpointInfo)
       this.setState({
-        snackBar: true,
-        snackBarMsg: msg
+        selectedEndpoint: key,
+        save: false
       })
+      this.props.dispatch(this.updateInterfaceAction(endpoint))
     }
 
-    handlesnackBarRequestClose = () => {
+    onChangeNetwork = (event, key) => {
+      var endpoint = {}
+      switch (key) {
+        case 0:
+          endpoint.networkInfo = NETWORKS.kovan
+          break
+        case 1:
+          endpoint.networkInfo = NETWORKS.ropsten
+          break
+        case 2:
+          endpoint.networkInfo = NETWORKS.mainnet
+          break
+      }
+      console.log(endpoint.networkInfo)
       this.setState({
-        snackBar: false,
-        snackBarMsg: ''
+        selectedNetwork: key,
+        save: false
       })
-    }
-
-    onToggle = (event) =>{
-      // console.log(event.target.getAttribute('data-endpoint'))
-      const selectedEndpoint = event.target.getAttribute('data-endpoint')
-      console.log(ALLOWED_ENDPOINTS)
-      var allowedEndpoints = new Map(ALLOWED_ENDPOINTS)
-      localStorage.setItem('endpoint', selectedEndpoint)
-      allowedEndpoints.set(selectedEndpoint, true)
-      this.setState ({
-        selectedEndpoint: selectedEndpoint,
-        allowedEndpoints: allowedEndpoints,
-        save: false,
-      })
-    }
-
-    onChangeEndpoint = (event, key) =>{
-      // console.log(event.target.getAttribute('data-endpoint'))
-      console.log(key)
-      const selectedEndpoint = event.target.getAttribute('data-endpoint')
-      console.log(ALLOWED_ENDPOINTS)
-      var allowedEndpoints = new Map(ALLOWED_ENDPOINTS)
-      localStorage.setItem('endpoint', selectedEndpoint)
-      allowedEndpoints.set(selectedEndpoint, true)
-      this.setState ({
-        selectedEndpoint: selectedEndpoint,
-        allowedEndpoints: allowedEndpoints,
-        save: false,
-      })
+      this.props.dispatch(this.updateInterfaceAction(endpoint))
     }
 
     handleRefresh = () =>{
@@ -96,33 +133,9 @@ class PageNetworkConfig extends Component {
     }
 
     render() {
-      const { allowedEndpoints } = this.state 
-      const endPoint = localStorage.getItem('endpoint')
-      var remoteEndPointDisabled = endPoint === LOCAL ? true : false
-
-      const stylesToggle = {
-        block: {
-          maxWidth: 250,
-        },
-        toggle: {
-          marginBottom: 16,
-        },
-        thumbOff: {
-          backgroundColor: '#ffcccc',
-        },
-        trackOff: {
-          backgroundColor: '#ff9d9d',
-        },
-        thumbSwitched: {
-          backgroundColor: 'red',
-        },
-        trackSwitched: {
-          backgroundColor: '#ff9d9d',
-        },
-        labelStyle: {
-          color: 'red',
-        },
-      };
+      const { disabledRemote, disabledLocal } = this.state 
+      // const endPoint = localStorage.getItem('endpoint')
+      // var remoteEndPointDisabled = endPoint === LOCAL ? true : false
 
       return (
         <div className={styles.boxContainer}>
@@ -134,9 +147,10 @@ class PageNetworkConfig extends Component {
               <Paper className={styles.paperContainer} zDepth={1}>
                 <p>Please select a blockchain.</p>
                 <p>RigoBlock protocol is currently deployed on <b>Kovan</b> and <b>Ropsten</b> networks only.</p>
-                  <DropDownMenu value={1} onChange={this.handleChange}>
-                    <MenuItem value={1} primaryText="Ethereum Kovan" />
-                    <MenuItem value={2} primaryText="Ethereum Ropsten" />
+                  <DropDownMenu value={this.state.selectedNetwork} onChange={this.onChangeNetwork}>
+                    <MenuItem value={0} primaryText="Ethereum Kovan" />
+                    <MenuItem value={1} primaryText="Ethereum Ropsten" />
+                    <MenuItem value={2} disabled={true} primaryText="Ethereum Mainnet" />
                   </DropDownMenu>
                 <Row>
                   <Col xs={12}>
@@ -160,45 +174,11 @@ class PageNetworkConfig extends Component {
               <Paper className={styles.paperContainer} zDepth={1}>
                 <p>Please select your preferred access point to the blockchain.</p>
                 <p>RigoBlock and Infura provide secure, reliable, and scalable access to Ethereum.</p>
-                <div style={stylesToggle.block}>
-                  <Toggle
-                    label="Infura"
-                    style={stylesToggle.toggle}
-                    onToggle={this.onToggle}
-                    data-endpoint="infura"
-                    toggled={allowedEndpoints.get('infura')}
-                    disabled={remoteEndPointDisabled}
-                  />
-                  <Toggle
-                    label="RigoBlock"
-                    style={stylesToggle.toggle}
-                    onToggle={this.onToggle}
-                    data-endpoint="rigoblock"
-                    toggled={allowedEndpoints.get('rigoblock')}
-                    disabled={remoteEndPointDisabled}
-                  />
-                  <Toggle
-                    label="Local"
-                    style={stylesToggle.toggle}
-                    toggled={allowedEndpoints.get('local')}
-                    disabled={true}
-                  />
-                  {/* <Toggle
-                    label="Custom"
-                    style={stylesToggle.toggle}
-                    toggled={allowedEndpoints.get('custom')}
-                  />
-                  <TextField
-                    hintText="https://"
-                    floatingLabelText="Custom RPC endpoint"
-                    floatingLabelFixed={true}
-                    disabled={true}
-                    errorText="Must be a valid URL"
-                  /> */}
-                  <DropDownMenu value={1} onChange={this.onChangeEndpoint}>
-                    <MenuItem value={0} primaryText="Infura" />
-                    <MenuItem value={1} primaryText="RigoBlock" />
-                    <MenuItem value={2} primaryText="Local" />
+                <div>
+                  <DropDownMenu value={this.state.selectedEndpoint} onChange={this.onChangeEndpoint}>
+                    <MenuItem value={0} disabled={disabledRemote} primaryText="Infura" />
+                    <MenuItem value={1} disabled={disabledRemote} primaryText="RigoBlock" />
+                    <MenuItem value={2} disabled={disabledLocal} primaryText="Local" />
                   </DropDownMenu>
                 </div>
                 <Row>
@@ -220,4 +200,4 @@ class PageNetworkConfig extends Component {
     }
   }
 
-  export default PageNetworkConfig
+  export default connect(mapStateToProps)(PageNetworkConfig)

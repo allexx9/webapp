@@ -6,7 +6,7 @@ import ElementNotification from './elementNotification'
 import { Row, Col } from 'react-flexbox-grid'
 import AppBar from 'material-ui/AppBar';
 import classNames from 'classnames'
-import utils from '../utils/utils'
+import utils from '../_utils/utils'
 import { connect } from 'react-redux';
 import styles from './elementNotificationsDrawer.module.css';
 

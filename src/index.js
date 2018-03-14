@@ -9,7 +9,7 @@ import { Provider } from 'react-redux';
 import { createStore, applyMiddleware, compose } from 'redux';
 import promiseMiddleware from 'redux-promise-middleware';
 import thunkMiddleware from 'redux-thunk';
-import { Reducers } from './reducers/root'
+import { Reducers } from './_redux/reducers/root'
 import persistState, {mergePersistedState} from 'redux-localstorage';
 import adapter from 'redux-localstorage/lib/adapters/localStorage';
 import filter from 'redux-localstorage-filter';
@@ -31,7 +31,7 @@ const reducer = compose(
   )(Reducers.rootReducer);
 
 const storage = compose(
-    filter('user.isManager')
+    filter(['user.isManager', 'endpoint'])
   )(adapter(window.localStorage));
 
 const enhancer = compose(

@@ -73,7 +73,7 @@ export default class ElementNotification extends Component {
     txHash: PropTypes.string.isRequired
   };
 
-  kovanLink = () => {
+  etherscanLink = () => {
     const { ethereumNetworkName } = this.context
     const {txHash} = this.props
     return (
@@ -92,7 +92,7 @@ export default class ElementNotification extends Component {
           targetOrigin={{ horizontal: 'right', vertical: 'top' }}
         >
           <MenuItem leftIcon={<Search/>} primaryText="Etherscan" 
-                      containerElement={this.kovanLink()}
+                      containerElement={this.etherscanLink()}
                       disabled={etherScanDisabled}
                       />
           {/* <MenuItem primaryText="Receipt" /> */}

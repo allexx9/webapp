@@ -1,7 +1,7 @@
 import Immutable from 'immutable'
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import Loading from '../Loading'
+import Loading from '../_atomic/atoms/loading'
 
 class ElementListWrapper extends Component {
 

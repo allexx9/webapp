@@ -59,16 +59,12 @@ function isPositive (numberStr) {
   return new BigNumber(numberStr.replace(/,/g, '')).gt(0);
 }
 
-//something not working in the "from account" field of deployDrago, returns blank fields
-
-
 export function renderAccounts (accounts, options = {}) {
   return accounts
     .filter((account) => {
       if (options.anyAccount) {
         return true;
       }
-      // console.log(account)
       return isPositive(account[options.gabBalance ? 'gabBalance' : 'ethBalance']);
     })
     .map((account) => {

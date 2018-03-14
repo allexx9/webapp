@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
-import {APP, DS} from '../utils/const.js'
+import {APP, DS} from '../_utils/const.js'
 import styles from './elements.module.css';
 import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';

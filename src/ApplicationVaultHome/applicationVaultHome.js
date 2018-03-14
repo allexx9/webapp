@@ -3,15 +3,15 @@
 import React, { Component } from 'react';
 import ApplicationVaultManager from './ApplicationVaultManager'
 import ApplicationVaultTrader from './ApplicationVaultTrader'
-import Loading from '../Loading';
+import Loading from '../_atomic/atoms/loading';
 import {
   DEFAULT_NETWORK_NAME,
-} from '../utils/const'
+} from '../_utils/const'
 import { Row, Col } from 'react-flexbox-grid';
 import { connect } from 'react-redux';
 import LeftSideDrawerVaults from '../Elements/leftSideDrawerVaults';
 import PropTypes from 'prop-types';
-import utils from '../utils/utils'
+import utils from '../_utils/utils'
 import ElementNotificationsDrawer from '../Elements/elementNotificationsDrawer'
 import CheckAuthPage from '../Elements/checkAuthPage'
 import ElementBottomStatusBar from '../Elements/elementBottomStatusBar'
@@ -115,12 +115,10 @@ class ApplicationVaultHome extends Component {
       return <Loading></Loading>
     }
 
-    if (endpoint.ethBalance === null) {
-      console.log('ethBalance = null')
-      return null
-    }
-
-    // console.log(accounts)
+    // if (endpoint.ethBalance === null) {
+    //   console.log('ethBalance = null')
+    //   return null
+    // }
 
     if ((endpoint.accounts.length === 0 || !endpoint.networkCorrect)) {
       return (
@@ -128,7 +126,7 @@ class ApplicationVaultHome extends Component {
           <CheckAuthPage warnMsg={endpoint.warnMsg} location={location}/>
           <ElementBottomStatusBar
             blockNumber={endpoint.prevBlockNumber}
-            networkName={DEFAULT_NETWORK_NAME}
+            networkName={endpoint.networkInfo.name}
             networkError={endpoint.networkError}
             networkStatus={endpoint.networkStatus} />
         </span>
@@ -166,7 +164,7 @@ class ApplicationVaultHome extends Component {
           </Row>
           <ElementBottomStatusBar 
           blockNumber={endpoint.prevBlockNumber}
-          networkName={DEFAULT_NETWORK_NAME}
+          networkName={endpoint.networkInfo.name}
           networkError={endpoint.networkError}
           networkStatus={endpoint.networkStatus} />
         </div>
@@ -204,7 +202,7 @@ class ApplicationVaultHome extends Component {
           </Row>
           <ElementBottomStatusBar 
           blockNumber={endpoint.prevBlockNumber}
-          networkName={DEFAULT_NETWORK_NAME}
+          networkName={endpoint.networkInfo.name}
           networkError={endpoint.networkError}
           networkStatus={endpoint.networkStatus} />
         </div>

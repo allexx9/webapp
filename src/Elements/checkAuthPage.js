@@ -6,7 +6,7 @@ import ListItem from 'material-ui/List/ListItem'
 import Paper from 'material-ui/Paper';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react'
-import {APP, DS} from '../utils/const.js'
+import {APP, DS} from '../_utils/const.js'
 import styles from './checkAuthPage.module.css'
 import { withRouter } from 'react-router-dom'
 

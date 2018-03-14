@@ -4,7 +4,7 @@ import { Row, Col } from 'react-flexbox-grid';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import styles from './elementDialogAddressTitle.module.css';
-import IdentityIcon from '../IdentityIcon';
+import IdentityIcon from '../_atomic/atoms/identityIcon';
 
 
 export default class ElementDialogAddressTitle extends Component {
@@ -21,7 +21,12 @@ export default class ElementDialogAddressTitle extends Component {
           <h2><IdentityIcon address={ tokenDetails.address } /></h2>
         </Col>
         <Col xs={12} md={11} className={styles.dragoTitle}>
-        <p>{tokenDetails.symbol} | {tokenDetails.name} </p>
+        <p>
+        {typeof tokenDetails.symbol !== 'undefined'
+        ? tokenDetails.symbol+' | ' 
+        : null
+        }
+        {tokenDetails.name} </p>
         {typeof tokenDetails.address !== 'undefined'
         ? <small>{tokenDetails.address}</small>
         : null
