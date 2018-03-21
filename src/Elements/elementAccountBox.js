@@ -1,6 +1,8 @@
 import { Row, Col } from 'react-flexbox-grid'
+// import  * as Colors from 'material-ui/styles/colors'
 import Avatar from 'material-ui/Avatar'
-import FlatButton from 'material-ui/FlatButton'
+// import FlatButton from 'material-ui/FlatButton'
+import RaisedButton from 'material-ui/RaisedButton'
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { CopyToClipboard } from 'react-copy-to-clipboard'
@@ -18,12 +20,16 @@ import styles from './elementAccountBox.module.css'
 
 
 class ElementAccountBox extends Component {
-
+  
   static propTypes = {
     account: PropTypes.object.isRequired,
     etherscanUrl: PropTypes.string.isRequired,
     snackBar: PropTypes.func
   };
+
+  state = {
+    transferOpen: false,
+  }
 
   renderCopyButton = (accountAddress) => {
     if (!accountAddress) {
@@ -72,6 +78,12 @@ class ElementAccountBox extends Component {
     )
   }
 
+  onTransferOpen =() =>{
+    this.setState({
+      transferOpen: !this.state.transferOpen
+    });
+  }
+
   render() {
     const { account } = this.props;
     return (
@@ -99,12 +111,12 @@ class ElementAccountBox extends Component {
               <Col xs={12} md={10}>
                 <Row end="xs">
                   <Col xs={12}>
-                      <div className={styles.accountChipTokenETH}>
-                        <ChipTokenETH account={account}/>
-                      </div>
-                      <div className={styles.accountChipTokenGGG}>
-                        <ChipTokenGGG account={account}/>
-                      </div>
+                    <div className={styles.accountChipTokenETH}>
+                      <ChipTokenETH account={account} />
+                    </div>
+                    <div className={styles.accountChipTokenGGG}>
+                      <ChipTokenGGG account={account} />
+                    </div>
                   </Col>
                 </Row>
 
@@ -120,10 +132,17 @@ class ElementAccountBox extends Component {
             </Row>
             <Row className={styles.accountBodyContainer}>
               <Col xs={12}>
-                <FlatButton label="TRANSFER" primary={true} labelStyle={{fontWeight: 600}}/>
-                {/* <ElementAccountActionTransfer 
-                open={true}
-                account={account}/> */}
+                <RaisedButton
+                  label="TRANSFER"
+                  // labelColor={Colors.blue500}
+                  labelStyle={{ fontWeight: 600 }}
+                  onTouchTap={this.onTransferOpen}
+                />
+                <ElementAccountActionTransfer
+                  open={this.state.transferOpen}
+                  onTransferOpen={this.onTransferOpen}
+                  account={account}
+                  snackBar={this.props.snackBar} />
               </Col>
             </Row>
           </Col>

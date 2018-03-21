@@ -37,13 +37,21 @@ export function validatePositiveNumber (value) {
   return null;
 }
 
-export function validateAccount (account, api) {
+export function validateAccount(account, api) {
   if (!account || !account.address) {
     return ERRORS.invalidAccount;
   }
 
   if (!api.util.isAddressValid(account.address)) {
     return ERRORS.invalidAddress;
+  }
+  return null
+}
+
+export function validateAddress(address, api) {
+
+  if (!api.util.isAddressValid(address)) {
+    return ERRORS.toAddressError;
   }
   return null
 }

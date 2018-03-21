@@ -38,14 +38,12 @@ export default class ElementActionAuthorization extends Component {
   handleClose = () => {
     // Executing onClose function passed by parent if exists, otherwise setting state.
     if (typeof this.props.onClose !== 'undefined') {
-      console.log('onClose props')
       this.props.onClose()
     } else {
       this.setState({
         open: false,
       })
     }
-
   }
 
   renderHeader = () => {

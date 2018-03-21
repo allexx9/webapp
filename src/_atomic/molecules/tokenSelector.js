@@ -17,10 +17,10 @@ export default class TokenSelector extends Component {
 
   onSelect = (event, key) => {
     console.log(key)
-    var tokens = [
-      [0, 'EHT'],
-      [1, 'GRG']
-    ];
+    var tokens = {
+      0: 'ETH',
+      1: 'GRG'
+    };
     this.setState({
       value: key
     });

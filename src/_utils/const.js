@@ -10,6 +10,9 @@ export const REGISTRY_KOVAN = '0xfAb104398BBefbd47752E7702D9fE23047E1Bca3';
 // Address of RigoToken GRG
 // export const GRG_ADDRESS_KV = "0x56B28058d303bc0475a34D439aa586307adAc1f5";
 
+export const GRG = "GRG"
+export const ETH = "ETH"
+
 // Blockchain endpoint
 export const EP_INFURA_KV = "https://kovan.infura.io/metamask"
 export const EP_INFURA_RP = "https://ropsten.infura.io/metamask"

@@ -8,6 +8,8 @@ import DragoParity from './Parity/drago';
 import DragoRegistryParity from './Parity/dragoRegistry';
 import DragoWeb3 from './Web3/drago';
 import EthusdParity from './Parity/ethusd';
+import EtherParity from './Parity/ether';
+import EtherWeb3 from './Web3/ether';
 import ExchangeParity from './Parity/exchange';
 import RegistryParity from './registry';
 import RigoTokenParity from './Parity/rigoToken';
@@ -33,6 +35,7 @@ class Contract {
     if (isMetaMask) {
       this._drago = new DragoWeb3(api);
       this._dragofactory = new DragoFactoryWeb3(api);
+      this._ether = new EtherWeb3(api);
       this._vault = new VaultWeb3(api);
       this._vaultfactory = new VaultFactoryWeb3(api);
       this._rigotoken = new RigoTokenWeb3(api);
@@ -42,6 +45,7 @@ class Contract {
       this._dragofactory = new DragoFactoryParity(api);
       this._dragoregistry = new DragoRegistryParity(api);
       this._ethusd = new EthusdParity(api);
+      this._ether = new EtherParity(api);
       this._exchange = new ExchangeParity(api);
       this._registry = new RegistryParity(api);
       this._rigotoken = new RigoTokenParity(api);
@@ -69,6 +73,10 @@ class Contract {
 
   get dragoeventful () {
     return this._dragoeventful;
+  }
+
+  get ether () {
+    return this._ether;
   }
 
   get exchange () {

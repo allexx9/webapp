@@ -3,10 +3,9 @@
 
 import * as abis from '../../contracts/abi';
 import Registry from '../registry';
-import { toHex } from '../../utils';
 import {RIGOTOKEN_ADDRESSES} from '../../utils/const'
 
-class RigoToken {
+class RigoTokenParity {
   constructor (api) {
     if (!api) {
       throw new Error('API instance needs to be provided to Contract')
@@ -24,22 +23,6 @@ class RigoToken {
     return this._instance;
   }
 
-  // init = () => {
-  //   const contractAbi = this._abi
-  //   const contractName = this._contractName
-  //   return this._registry.instance(contractAbi, contractName)
-  //     .then (contract => {
-  //       this._instance = contract.instance
-  //       this._contract = contract
-  //       const hexSignature = this._contract._events.reduce((events, event) => {
-  //         events[event._name] = toHex(event._signature)
-  //         return events
-  //       }, {})
-  //       this._hexSignature = hexSignature
-  //       return this._instance
-  //     })
-  // }
-
   init = () => {
     const api = this._api
     const abi = this._abi
@@ -56,7 +39,10 @@ class RigoToken {
     return instance.balanceOf.call({}, [accountAddress])
   }
 
-  transfer = (toAddress, amount) => {
+  transfer = (fromAddress, toAddress, amount) => {
+    if (!fromAddress) {
+      throw new Error('fromAddress needs to be provided')
+    }
     if (!toAddress) {
       throw new Error('toAddress needs to be provided')
     }
@@ -66,17 +52,17 @@ class RigoToken {
     const instance = this._instance
     const values = [toAddress, amount]
     const options = {
-      // value: amount
+      from: fromAddress
     }
     return instance.transfer
     .estimateGas(options, values)
     .then((gasEstimate) => {
       options.gas =  gasEstimate.mul(1.2).toFixed(0);
-      console.log(`Buy Vault: gas estimated as ${gasEstimate.toFixed(0)} setting to ${options.gas}`)
+      console.log(`Transfer GRG: gas estimated as ${gasEstimate.toFixed(0)} setting to ${options.gas}`)
       return instance.transfer.postTransaction(options, values)
     })
   }
 
 }
 
-export default RigoToken;
+export default RigoTokenParity;

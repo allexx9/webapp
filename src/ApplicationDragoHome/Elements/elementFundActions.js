@@ -304,15 +304,6 @@ class ElementFundActions extends React.Component {
           amountFieldDisabled: false
         });
       })
-      // const instance = api.newContract(abis.drago, dragoDetails.address).instance;
-      // instance.balanceOf.call({}, [account.address])
-      // .then((amount) =>{
-      //   const drgBalance = formatCoins(amount,4,api)
-      //   this.setState({
-      //     drgBalance,
-      //     amountFieldDisabled: false
-      //   });
-      // })
     }
   }
 
@@ -726,7 +717,7 @@ class ElementFundActions extends React.Component {
           {/* <RaisedButton label="Trade" primary={true} onClick={this.handleOpen}
             labelStyle={{ fontWeight: 700 }} /> */}
           <ElementFundActionAuthorization
-            dragoDetails={dragoDetails}
+            tokenDetails={dragoDetails}
             authMsg={authMsg}
             account={authAccount}
             onClose={this.handleCloseAuth}

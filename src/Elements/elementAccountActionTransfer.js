@@ -4,12 +4,14 @@ import { Dialog, FlatButton, TextField } from 'material-ui';
 import BigNumber from 'bignumber.js';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { ERRORS, validatePositiveNumber } from '../_utils/validation';
+import { ERRORS, validatePositiveNumber, validateAddress } from '../_utils/validation';
 import TokenSelector from '../_atomic/molecules/tokenSelector';
 import ElementDialogHeadTitle from './elementDialogHeadTitle'
 import ElementDialogAddressTitle from './elementDialogAddressTitle'
 import PoolsApi from '../PoolsApi/src'
 import { connect } from 'react-redux';
+import {ETH, GRG} from '../_utils/const'
+import ElementFundActionAuthorization from '../Elements/elementActionAuthorization'
 
 const NAME_ID = ' ';
 
@@ -26,19 +28,23 @@ class ElementAccountActionTransfer extends Component {
   static propTypes = {
     account: PropTypes.object.isRequired,
     open: PropTypes.bool.isRequired,
-    snackBar: PropTypes.func
+    snackBar: PropTypes.func,
+    dispatch: PropTypes.func,
+    onTransferOpen: PropTypes.func.isRequired
   }
 
   state = {
-    open: this.props.open,
-    amount: 0,
+    amount: 1,
     amountError: ERRORS.invalidAmount,
+    // amountError: '',
+    // toAddress: '0x00791547B03F5541971B199a2d347446eB8Dc9bE',
     toAddress: '',
     toAddressError: ERRORS.toAddressError,
+    // toAddressError: '',
     value: 'default',
     sending: false,
     complete: false,
-    token: "ETH"
+    token: ETH
   }
 
   buttonsStyle = {
@@ -47,11 +53,41 @@ class ElementAccountActionTransfer extends Component {
     color: 'white',
   }
 
-  render () {
-    const { complete } = this.state;
+  addTransactionToQueueAction = (transactionId, transactionDetails) => {
+    return {
+      type: 'ADD_TRANSACTION',
+      transaction: { transactionId, transactionDetails }
+    }
+  };
 
-    if (complete) {
+  handleCloseAuth = () => {
+    this.setState(
+      {
+        openAuth: false,
+      }
+      , this.props.onTransferOpen
+    )
+  }
+
+  render () {
+    const { openAuth, authMsg, authAccount } = this.state
+
+    if (!this.props.open) {
       return null;
+    }
+
+    if (openAuth) {
+      return (
+        <div>
+          {/* <RaisedButton label="Trade" primary={true} onClick={this.handleOpen}
+            labelStyle={{ fontWeight: 700 }} /> */}
+          <ElementFundActionAuthorization
+            authMsg={authMsg}
+            account={authAccount}
+            onClose={this.handleCloseAuth}
+          />
+        </div>
+      )
     }
 
     const titleStyle = {
@@ -59,7 +95,7 @@ class ElementAccountActionTransfer extends Component {
       lineHeight: '20px',
       fontSize: 16
     }
-    console.log(this.props)
+
     return (
       <Dialog
         title={this.renderHeader()}
@@ -82,24 +118,7 @@ class ElementAccountActionTransfer extends Component {
     )
   }
 
-  onClose =() =>{
-    this.setState({
-      open: false
-    });
-  }
-
   renderActions () {
-    const { complete } = this.state;
-
-    if (complete) {
-      return (
-        <FlatButton
-          label='Done'
-          primary
-          onTouchTap={ this.props.onClose } />
-      );
-    }
-
     const { amountError, sending } = this.state;
     const hasError = !!(amountError);
 
@@ -109,13 +128,13 @@ class ElementAccountActionTransfer extends Component {
         label='Cancel'
         name='deposit'
         primary
-        onTouchTap={ this.onClose} />,
+        onTouchTap={ this.props.onTransferOpen } />,
       <FlatButton
         key="TransferButton"
         label='Transfer'
         primary
         disabled={ hasError || sending }
-        onTouchTap={ this.Transfer } />
+        onTouchTap={ this.onTransfer } />
     ]);
   }
 
@@ -151,11 +170,10 @@ class ElementAccountActionTransfer extends Component {
   }
 
   onSelectToken = (token) => {
-    console.log(token)
-      this.setState({
-        token
-      }, this.validateTotal);
-    }
+    this.setState({
+      token
+    }, this.validateTotal);
+  }
 
   onChangeAmount = (event, amount) => {
     this.setState({
@@ -164,12 +182,18 @@ class ElementAccountActionTransfer extends Component {
     }, this.validateTotal);
   }
 
+  onChangeAddress = (event, toAddress) => {
+    const { api } = this.context
+    this.setState({
+      toAddress,
+      toAddressError: validateAddress(toAddress, api)
+    }, this.validateTotal);
+  }
+
   validateTotal = () => {
     const { amount, token } = this.state;
     const { account } = this.props;
     var amountError = ''
-    console.log(account)
-
     let bn = null;
     
     try {
@@ -180,8 +204,6 @@ class ElementAccountActionTransfer extends Component {
       });
       return
     }
-    console.log(bn)
-    console.log(bn.lte(0))
     if (bn.lte(0)) {
       this.setState({
         amountError: ERRORS.invalidAmount
@@ -189,12 +211,12 @@ class ElementAccountActionTransfer extends Component {
     return
     }
     switch (token) {
-      case "ETH":
+      case ETH:
         if (bn.gt(account.ethBalance.replace(/,/g, ''))) {
           amountError = ERRORS.invalidTotal
         }
         break;
-      case "GRG":
+      case GRG:
         if (bn.gt(account.rigoTokenBalance.replace(/,/g, ''))) {
           amountError = ERRORS.invalidTotal
         }
@@ -208,67 +230,131 @@ class ElementAccountActionTransfer extends Component {
     });
   }
 
-  // onTransfer = () => {
-  //   const { api } = this.context;
-  //   const accountAddress = this.props.account.address
-  //   const amount = api.util.toWei(this.state.amount).toString()
-  //   const authMsg = 'You trasferred ' + this.state.unitsSummary + ' units of GRG for ' + this.state.amountSummary + ' ETH'
-  //   const transactionId = api.util.sha3(new Date() + accountAddress)
-  //   // Setting variables depending on account source
-  //   var provider = this.props.account.source === 'MetaMask' ? window.web3 : api
-  //   var dragoApi = null;
-  //   // Initializing transaction variables
-  //   var transactionDetails = {
-  //     status: this.props.account.source === 'MetaMask' ? 'pending' : 'authorization',
-  //     hash: '',
-  //     parityId: null,
-  //     timestamp: new Date(),
-  //     account: this.props.account,
-  //     error: false,
-  //     action: 'TransferGRG',
-  //     symbol: 'GRG',
-  //     amount: this.state.amount
-  //   }
-  //   // this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
-  //   const {account} = this.state
+  onTransfer = () => {
+    switch(this.state.token) {
+      case ETH:
+        this.onTransferETH()
+        break
+      case GRG:
+        this.onTransferGRG()
+        break
+    } 
+  }
 
-  //   // Sending the transaction
-  //   dragoApi = new DragoApi(provider)
-  //   dragoApi.contract.drago.init(dragoDetails.address)
-  //   dragoApi.contract.drago.buyDrago(accountAddress, amount)
-  //     .then((receipt) => {
-  //       console.log(receipt)
-  //       // Adding transaciont to the queue
-  //       // Parity returns an internal transaction ID straighaway. The transaction then needs to be authorized inside the wallet.
-  //       // MetaMask returns a receipt of the transaction once it has been mined by the network. It can take a long time.
-  //       if (account.source === 'MetaMask') {
-  //         transactionDetails.status = 'executed'
-  //         transactionDetails.receipt = receipt
-  //         transactionDetails.hash = receipt.transactionHash
-  //         transactionDetails.timestamp = new Date ()
-  //         this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
-  //       } else {
-  //         transactionDetails.parityId = receipt
-  //         this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       this.props.snackBar('Your wallet returned an error.')
-  //       transactionDetails.status = 'error'
-  //       transactionDetails.error = error
-  //       console.log(error)
-  //       this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
-  //       this.setState({
-  //         sending: false
-  //       })
-  //     })
-  //   this.setState({
-  //     authMsg: authMsg,
-  //     authAccount: { ...this.props.account },
-  //     // sending: false,
-  //     complete: true,
-  //   }, this.handleSubmit)
-  // }
+  handleSubmit = () => {
+    this.setState(
+      { openAuth: true }
+    );
+  }
+
+  onTransferETH = () => {
+    const { api } = this.context;
+    const { token, toAddress } = this.state;
+    const { account } = this.props
+    const amount = api.util.toWei(this.state.amount).toString()
+    const authMsg = 'You trasferred ' + this.state.unitsSummary + ' units of ' + token
+    const transactionId = api.util.sha3(new Date() + toAddress)
+    // Setting variables depending on account source
+    var provider = this.props.account.source === 'MetaMask' ? window.web3 : api
+    var poolApi = null;
+    // Initializing transaction variables
+    var transactionDetails = {
+      status: this.props.account.source === 'MetaMask' ? 'pending' : 'authorization',
+      hash: '',
+      parityId: null,
+      timestamp: new Date(),
+      account: account,
+      error: false,
+      action: 'Transfer' + token,
+      symbol: token,
+      amount: this.state.amount
+    }
+    this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+    // Sending the transaction
+    poolApi = new PoolsApi(provider)
+    poolApi.contract.ether.transfer(account.address, toAddress, amount)
+      .then((receipt) => {
+        // Adding transaciont to the queue
+        // Parity returns an internal transaction ID straighaway. The transaction then needs to be authorized inside the wallet.
+        // MetaMask returns a receipt of the transaction once it has been mined by the network. It can take a long time.
+        if (account.source === 'MetaMask') {
+          transactionDetails.status = 'executed'
+          transactionDetails.receipt = receipt
+          transactionDetails.hash = receipt.transactionHash
+          transactionDetails.timestamp = new Date ()
+          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+        } else {
+          transactionDetails.parityId = receipt
+          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+        }
+      })
+      .catch((error) => {
+        this.props.snackBar('Your wallet returned an error.')
+        transactionDetails.status = 'error'
+        transactionDetails.error = error
+        console.log(error)
+        this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+      })
+    this.setState({
+      authMsg: authMsg,
+      authAccount: { ...account},
+    }, this.handleSubmit)
+  }
+
+  onTransferGRG = () => {
+    const { api } = this.context;
+    const { token, toAddress } = this.state;
+    const { account } = this.props
+    const amount = api.util.toWei(this.state.amount).toString()
+    const authMsg = 'You trasferred ' + this.state.unitsSummary + ' units of ' + token
+    const transactionId = api.util.sha3(new Date() + toAddress)
+    // Setting variables depending on account source
+    var provider = this.props.account.source === 'MetaMask' ? window.web3 : api
+    var poolApi = null;
+    // Initializing transaction variables
+    var transactionDetails = {
+      status: this.props.account.source === 'MetaMask' ? 'pending' : 'authorization',
+      hash: '',
+      parityId: null,
+      timestamp: new Date(),
+      account: account,
+      error: false,
+      action: 'Transfer' + token,
+      symbol: token,
+      amount: this.state.amount
+    }
+    this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+    // Sending the transaction
+    poolApi = new PoolsApi(provider)
+    poolApi.contract.rigotoken.init()
+    poolApi.contract.rigotoken.transfer(account.address, toAddress, amount)
+      .then((receipt) => {
+        // Adding transaciont to the queue
+        // Parity returns an internal transaction ID straighaway. The transaction then needs to be authorized inside the wallet.
+        // MetaMask returns a receipt of the transaction once it has been mined by the network. It can take a long time.
+        if (account.source === 'MetaMask') {
+          transactionDetails.status = 'executed'
+          transactionDetails.receipt = receipt
+          transactionDetails.hash = receipt.transactionHash
+          transactionDetails.timestamp = new Date ()
+          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+        } else {
+          transactionDetails.parityId = receipt
+          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+        }
+      })
+      .catch((error) => {
+        this.props.snackBar('Your wallet returned an error.')
+        transactionDetails.status = 'error'
+        transactionDetails.error = error
+        console.log(error)
+        this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+      })
+    this.setState({
+      authMsg: authMsg,
+      authAccount: { ...account},
+    }, this.handleSubmit)
+  }
 
 }
 

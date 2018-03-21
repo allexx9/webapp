@@ -83,6 +83,7 @@ class utilities {
     const logToEvent = (log) => {
       const key = api.util.sha3(JSON.stringify(log))
       const { blockNumber, logIndex, transactionHash, transactionIndex, params, type } = log
+      
       // Getting the transaction amounts if it's a buy or sell event
       if (typeof params.amount !== 'undefined') {
         ethvalue = (log.event === 'BuyVault') ? formatEth(params.amount.value, null, api) : formatEth(params.revenue.value, null, api);
@@ -178,6 +179,7 @@ class utilities {
               return dragoApi.contract.vaulteventful
                 .getAllLogs(eventsFilterCreate)
                 .then((dragoTransactionsLog) => {
+                  console.log(dragoTransactionsLog)
                   const createLogs = dragoTransactionsLog.map(logToEvent)
                   return createLogs
                 }

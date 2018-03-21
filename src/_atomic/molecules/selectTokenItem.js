@@ -3,6 +3,7 @@
 import React, { Component } from 'react';
 import ImgETH from '../atoms/imgETH'
 import ImgGRG from '../atoms/imgGRG'
+import {ETH, GRG} from '../../_utils/const'
 
 import styles from './selectTokenItem.module.css';
 
@@ -21,11 +22,11 @@ export default class SelectTokenItem extends Component {
     let balance;
     let tokenName;
     switch(token) {
-      case "ETH":
+      case ETH:
       balance = account.ethBalance;
       tokenName = 'Ethereum'
       break;
-      case "GRG":
+      case GRG:
       balance = account.rigoTokenBalance;
       tokenName = 'RigoBlock'
       break;

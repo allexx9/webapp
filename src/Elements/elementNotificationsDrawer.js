@@ -125,53 +125,67 @@ class ElementNotificationsDrawer extends Component {
       var value = transaction.pop()
       var key = transaction.pop()
       timeStamp = value.receipt ? utils.dateFromTimeStamp(value.timestamp) : utils.dateFromTimeStamp(value.timestamp)
-      txHash = value.hash.length !== 0 ? txHash = value.hash : ''
-      // console.log('txHash: ' + txHash)
-      // console.log(value)
+      txHash = value.hash.length !== 0 ? txHash = value.hash : ""
       switch (value.action) {
         case "BuyDrago":
           drgvalue = value.amount
           symbol = value.symbol
-          primaryText = "Buy " + drgvalue + ' ' + symbol
-          secondaryText[0] = 'Status: ' + value.status.charAt(0).toUpperCase() + value.status.slice(1)
+          primaryText = "Buy " + drgvalue + " " + symbol
+          secondaryText[0] = "Status: " + value.status.charAt(0).toUpperCase() + value.status.slice(1)
           secondaryText[1] = timeStamp
           eventStatus = value.status
           break;
         case "SellDrago":
           drgvalue = value.amount
           symbol = value.symbol
-          primaryText = "Sell " + drgvalue + ' ' + symbol
-          secondaryText[0] = 'Status: ' + value.status.charAt(0).toUpperCase() + value.status.slice(1)
+          primaryText = "Sell " + drgvalue + " " + symbol
+          secondaryText[0] = "Status: " + value.status.charAt(0).toUpperCase() + value.status.slice(1)
           secondaryText[1] = timeStamp
           eventStatus = value.status
           break;
         case "BuyVault":
           drgvalue = value.amount
           symbol = value.symbol
-          primaryText = "Deposit " + drgvalue + ' ETH'
-          secondaryText[0] = 'Status: ' + value.status.charAt(0).toUpperCase() + value.status.slice(1)
+          primaryText = "Deposit " + drgvalue + " ETH"
+          secondaryText[0] = "Status: " + value.status.charAt(0).toUpperCase() + value.status.slice(1)
           secondaryText[1] = timeStamp
           eventStatus = value.status
         break;
         case "SellVault":
           drgvalue = value.amount
           symbol = value.symbol
-          primaryText = "Withdraw " + drgvalue + ' ETH'
-          secondaryText[0] = 'Status: ' + value.status.charAt(0).toUpperCase() + value.status.slice(1)
+          primaryText = "Withdraw " + drgvalue + " ETH"
+          secondaryText[0] = "Status: " + value.status.charAt(0).toUpperCase() + value.status.slice(1)
           secondaryText[1] = timeStamp
           eventStatus = value.status
           break;
         case "DragoCreated":
           symbol = value.symbol
           primaryText = "Deploy " + symbol
-          secondaryText[0] = 'Status: ' + value.status.charAt(0).toUpperCase() + value.status.slice(1)
+          secondaryText[0] = "Status: " + value.status.charAt(0).toUpperCase() + value.status.slice(1)
           secondaryText[1] = timeStamp
           eventStatus = value.status
           break;
         case "CreateVault":
           symbol = value.symbol
           primaryText = "Deploy " + symbol
-          secondaryText[0] = 'Status: ' + value.status.charAt(0).toUpperCase() + value.status.slice(1)
+          secondaryText[0] = "Status: " + value.status.charAt(0).toUpperCase() + value.status.slice(1)
+          secondaryText[1] = timeStamp
+          eventStatus = value.status
+          break;
+        case "TransferGRG":
+          drgvalue = value.amount
+          symbol = value.symbol
+          primaryText = "Transfer " + drgvalue + " " + symbol
+          secondaryText[0] = "Status: " + value.status.charAt(0).toUpperCase() + value.status.slice(1)
+          secondaryText[1] = timeStamp
+          eventStatus = value.status
+          break;
+        case "TransferETH":
+          drgvalue = value.amount
+          symbol = value.symbol
+          primaryText = "Transfer " + drgvalue + " " + symbol
+          secondaryText[0] = "Status: " + value.status.charAt(0).toUpperCase() + value.status.slice(1)
           secondaryText[1] = timeStamp
           eventStatus = value.status
           break;

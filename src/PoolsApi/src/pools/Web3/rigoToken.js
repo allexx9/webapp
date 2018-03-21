@@ -3,7 +3,7 @@
 
 import * as abis from '../../contracts/abi';
 import Registry from '../registry';
-import { RIGOTOKEN } from '../../utils/const'
+import {RIGOTOKEN_ADDRESSES} from '../../utils/const'
 
 class RigoTokenWeb3 {
   constructor (api) {
@@ -14,7 +14,6 @@ class RigoTokenWeb3 {
     this._abi = abis.rigotoken
     this._registry = new Registry(api)
     this._constunctorName = this.constructor.name
-    this._contractName = RIGOTOKEN
   }
 
   get instance () {
@@ -25,13 +24,12 @@ class RigoTokenWeb3 {
   }
 
   init = () => {
-    const contractAbi = this._abi
-    const contractName = this._contractName
-    return this._registry.instance(contractAbi, contractName)
-      .then (contract => {
-        this._instance = contract
-        return this._instance
-      })
+    const api = this._api
+    const abi = this._abi
+    const address = RIGOTOKEN_ADDRESSES[api._rb.network.id]
+    this._instance = new api.eth.Contract(abi)
+    this._instance.options.address = address
+    return this._instance
   }
 
   balanceOf = (accountAddress) =>{
@@ -39,11 +37,10 @@ class RigoTokenWeb3 {
       throw new Error('accountAddress needs to be provided')
     }
     const instance = this._instance
-    console.log(instance)
     return instance.methods.balanceOf(accountAddress).call({},)
   }
 
-  transfer = (toAddress, amount) => {
+  transfer = (fromAddress, toAddress, amount) => {
     if (!toAddress) {
       throw new Error('toAddress needs to be provided')
     }
@@ -52,7 +49,7 @@ class RigoTokenWeb3 {
     }
     const instance = this._instance
     const options = {
-      // value: amount
+      from: fromAddress
     }
 
     return instance.methods.transfer(toAddress, amount).estimateGas(options)

@@ -127,7 +127,7 @@ class Interfaces {
       })
   }
 
-  getAccountsMetamask () {
+  getAccountsMetamask() {
     console.log(`${this._sourceLogClass} -> getAccountsMetamask`)
     const api = this._api
     const web3 = window.web3
@@ -151,62 +151,57 @@ class Interfaces {
 
     // Checking if MetaMask is connected to the same network as the endpoint
     return web3.eth.net.getId()
-    .then((metaMaskNetworkId) => {
-      var currentState = this._success
-      if (metaMaskNetworkId != parityNetworkId) {
-        const stateUpdate = {
-          networkCorrect: false,
-          warnMsg: MSG_NO_SUPPORTED_NETWORK
+      .then((metaMaskNetworkId) => {
+        var currentState = this._success
+        if (metaMaskNetworkId != parityNetworkId) {
+          const stateUpdate = {
+            networkCorrect: false,
+            warnMsg: MSG_NO_SUPPORTED_NETWORK
+          }
+          this._success = { ...currentState, ...stateUpdate }
+        } else {
+          const stateUpdate = {
+            networkCorrect: true
+          }
+          this._success = { ...currentState, ...stateUpdate }
         }
-        this._success = {...currentState, ...stateUpdate}
-      } else {
-        const stateUpdate = {
-          networkCorrect: true
-        }
-        this._success = {...currentState, ...stateUpdate}
-      }
-    })
-    // Getting ETH and GRG balances
-    .then (() =>{
-      return web3.eth.getAccounts()
-      .then(accounts => {
-        // Returning empty object if MetaMask is locked.
-        if (accounts.length === 0) {
-          return {}
-        }
-        return web3.eth.getBalance(accounts[0])
-        .then(balance => {
-          ethBalance = balance
-        })
-        .then(()=>{
-          // const rigoTokenContract = api.newContract(rigotoken, GRG_ADDRESS_KV)
-          // return rigoTokenContract.instance.balanceOf.call({}, [accounts[0]])
-          var poolsApi = new PoolsApi(web3)
-          return poolsApi.contract.rigotoken.init()
-          .then(() =>{
-            console.log(accounts[0])
-            return poolsApi.contract.rigotoken.balanceOf(accounts[0])
-            .then((rigoTokenBalance) => {
-              console.log(rigoTokenBalance)
-              accountsMetaMask = {
-                [accounts[0]]: {
-                  ethBalance: api.util.fromWei(ethBalance).toFormat(3),
-                  rigoTokenBalance: api.util.fromWei(rigoTokenBalance).toFormat(3),
-                  name: "MetaMask",
-                  source: "MetaMask"
-                }
-              }
-              return accountsMetaMask;
-            })
+      })
+      // Getting ETH and GRG balances
+      .then(() => {
+        return web3.eth.getAccounts()
+          .then(accounts => {
+            // Returning empty object if MetaMask is locked.
+            if (accounts.length === 0) {
+              return {}
+            }
+            return web3.eth.getBalance(accounts[0])
+              .then(balance => {
+                ethBalance = balance
+              })
+              .then(() => {
+                // const rigoTokenContract = api.newContract(rigotoken, GRG_ADDRESS_KV)
+                // return rigoTokenContract.instance.balanceOf.call({}, [accounts[0]])
+                var poolsApi = new PoolsApi(web3)
+                poolsApi.contract.rigotoken.init()
+                return poolsApi.contract.rigotoken.balanceOf(accounts[0])
+                  .then((rigoTokenBalance) => {
+                    accountsMetaMask = {
+                      [accounts[0]]: {
+                        ethBalance: api.util.fromWei(ethBalance).toFormat(3),
+                        rigoTokenBalance: api.util.fromWei(rigoTokenBalance).toFormat(3),
+                        name: "MetaMask",
+                        source: "MetaMask"
+                      }
+                    }
+                    return accountsMetaMask;
+                  })
+              })
           })
-
-        })
+          .catch((error) => {
+            console.warn(error)
+            return {}
+          })
       })
-      .catch((error) =>{
-        console.warn(error)
-        return {}
-      })
-    })
   }
 
   attachInterfaceInfuraV2 = () => {
