@@ -48,7 +48,6 @@ class DragoRegistryParity {
       throw new Error('DragoID needs to be provided to drago')
     }
     const instance = this._instance
-    console.log(instance)
     return Promise.all([
       instance.fromId.call({}, [dragoID])
     ])

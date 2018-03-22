@@ -240,10 +240,10 @@ class ElementListTransactions extends PureComponent {
       case "SellDrago":
         return <span style={{ color: Colors.red300, fontWeight: 600 }}>SELL</span>
 
-      case "SellVault":
+      case "BuyVault":
         return <span style={{ color: Colors.green300, fontWeight: 600 }}>DEPOSIT</span>
 
-      case "BuytVault":
+      case "SellVault":
         return <span style={{ color: Colors.red300, fontWeight: 600 }}>WITHDRAW</span>
 
       case "DragoCreated":

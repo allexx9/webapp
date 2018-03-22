@@ -109,8 +109,6 @@ class ApplicationVaultHome extends Component {
       notificationsOpen,
       endpoint
     } = this.props
-
-    console.log(endpoint)
     if (endpoint.loading) {
       return <Loading></Loading>
     }

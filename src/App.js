@@ -264,14 +264,14 @@ export class App extends Component {
             .then((result) => {
               // this.setState({...this.state, ...blockchain.success})
               // Subscribing to newBlockNumber event
-              // this._api.subscribe('eth_blockNumber', this.onNewBlockNumber)
-              //   .then((subscriptionID) => {
-              //     console.log(`${sourceLogClass}: Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);
-              //     subscriptionData = subscriptionID
-              //   })
-              //   .catch((error) => {
-              //     console.warn('error subscription', error)
-              //   });
+              this._api.subscribe('eth_blockNumber', this.onNewBlockNumber)
+                .then((subscriptionID) => {
+                  console.log(`${sourceLogClass}: Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);
+                  subscriptionData = subscriptionID
+                })
+                .catch((error) => {
+                  console.warn('error subscription', error)
+                });
                 return result
             })
             .catch(()=>{
@@ -289,13 +289,13 @@ export class App extends Component {
               }
               // Subscribing to newBlockNumber event
               const web3 = new Web3(WsSecureUrl)
-              // Promise
-              //   .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
-              //   .then(result => {
-              //     var subscription = result[0]
-              //     console.log(`${sourceLogClass}: Subscribed to eth_blockNumber`);
-              //     subscriptionData = subscription
-              //   })
+              Promise
+                .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
+                .then(result => {
+                  var subscription = result[0]
+                  console.log(`${sourceLogClass}: Subscribed to eth_blockNumber`);
+                  subscriptionData = subscription
+                })
                 return result
             })
             .catch(()=>{
@@ -313,13 +313,13 @@ export class App extends Component {
               }
               // Subscribing to newBlockNumber event
               const web3 = new Web3(WsSecureUrl)
-              // Promise
-              //   .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
-              //   .then(result => {
-              //     var subscription = result[0]
-              //     console.log(`${sourceLogClass}: Subscribed to eth_blockNumber`);
-              //     subscriptionData = subscription
-              //   })
+              Promise
+                .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
+                .then(result => {
+                  var subscription = result[0]
+                  console.log(`${sourceLogClass}: Subscribed to eth_blockNumber`);
+                  subscriptionData = subscription
+                })
             })
             .catch(()=>{
               // this.setState({...this.state, ...blockchain.error})
@@ -394,7 +394,7 @@ export class App extends Component {
             var balDifference = account.ethBalance - newEthBalance
             if (balDifference > 0) {
               console.log(`${sourceLogClass} -> You transferred ${balDifference.toFixed(4)} ETH!`)
-              secondaryText[0] = `${sourceLogClass} -> You transferred ${balDifference.toFixed(4)} ETH!`
+              secondaryText[0] = `You transferred ${balDifference.toFixed(4)} ETH!`
               secondaryText[1] = utils.dateFromTimeStamp(new Date())
             } else {
               console.log(`${sourceLogClass} -> You received ${Math.abs(balDifference).toFixed(4)} ETH!`)

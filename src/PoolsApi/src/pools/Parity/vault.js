@@ -57,15 +57,13 @@ class VaultParity {
       from: accountAddress,
       value: amount
     }
+    // return instance.buyVault.postTransaction(options, [])
     return instance.buyVault
     .estimateGas(options, [])
     .then((gasEstimate) => {
       options.gas =  gasEstimate.mul(1.2).toFixed(0);
       console.log(`Buy Vault: gas estimated as ${gasEstimate.toFixed(0)} setting to ${options.gas}`)
       return instance.buyVault.postTransaction(options, [])
-      // .then((receipt) => {
-      //   return api.parity.checkRequest(receipt, [])
-      // })
     })
   }
 

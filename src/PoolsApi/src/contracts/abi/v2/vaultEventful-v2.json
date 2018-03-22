@@ -1,16 +1,37 @@
 [
 	{
-		"constant": true,
-		"inputs": [],
-		"name": "REGISTRY",
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_who",
+				"type": "address"
+			},
+			{
+				"name": "_newVault",
+				"type": "address"
+			},
+			{
+				"name": "_name",
+				"type": "string"
+			},
+			{
+				"name": "_symbol",
+				"type": "string"
+			},
+			{
+				"name": "_vaultId",
+				"type": "uint256"
+			}
+		],
+		"name": "createVault",
 		"outputs": [
 			{
-				"name": "",
-				"type": "address"
+				"name": "success",
+				"type": "bool"
 			}
 		],
 		"payable": false,
-		"stateMutability": "view",
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -25,15 +46,23 @@
 				"type": "address"
 			},
 			{
+				"name": "_value",
+				"type": "uint256"
+			},
+			{
 				"name": "_amount",
 				"type": "uint256"
 			},
 			{
-				"name": "_revenue",
-				"type": "uint256"
+				"name": "_name",
+				"type": "bytes"
+			},
+			{
+				"name": "_symbol",
+				"type": "bytes"
 			}
 		],
-		"name": "sellVault",
+		"name": "buyVault",
 		"outputs": [
 			{
 				"name": "success",
@@ -65,37 +94,6 @@
 			}
 		],
 		"name": "withdrawFromCasper",
-		"outputs": [
-			{
-				"name": "success",
-				"type": "bool"
-			}
-		],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_who",
-				"type": "address"
-			},
-			{
-				"name": "_targetVault",
-				"type": "address"
-			},
-			{
-				"name": "_value",
-				"type": "uint256"
-			},
-			{
-				"name": "_amount",
-				"type": "uint256"
-			}
-		],
-		"name": "buyVault",
 		"outputs": [
 			{
 				"name": "success",
@@ -221,49 +219,6 @@
 				"type": "address"
 			},
 			{
-				"name": "_vaultFactory",
-				"type": "address"
-			},
-			{
-				"name": "_newVault",
-				"type": "address"
-			},
-			{
-				"name": "_name",
-				"type": "string"
-			},
-			{
-				"name": "_symbol",
-				"type": "string"
-			},
-			{
-				"name": "_vaultId",
-				"type": "uint256"
-			},
-			{
-				"name": "_owner",
-				"type": "address"
-			}
-		],
-		"name": "createVault",
-		"outputs": [
-			{
-				"name": "success",
-				"type": "bool"
-			}
-		],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_who",
-				"type": "address"
-			},
-			{
 				"name": "_targetVault",
 				"type": "address"
 			},
@@ -311,6 +266,45 @@
 		"type": "function"
 	},
 	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_who",
+				"type": "address"
+			},
+			{
+				"name": "_targetVault",
+				"type": "address"
+			},
+			{
+				"name": "_amount",
+				"type": "uint256"
+			},
+			{
+				"name": "_revenue",
+				"type": "uint256"
+			},
+			{
+				"name": "_name",
+				"type": "bytes"
+			},
+			{
+				"name": "_symbol",
+				"type": "bytes"
+			}
+		],
+		"name": "sellVault",
+		"outputs": [
+			{
+				"name": "success",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"constant": true,
 		"inputs": [],
 		"name": "VERSION",
@@ -328,10 +322,6 @@
 		"inputs": [
 			{
 				"name": "_authority",
-				"type": "address"
-			},
-			{
-				"name": "_registry",
 				"type": "address"
 			}
 		],
@@ -370,12 +360,12 @@
 			{
 				"indexed": false,
 				"name": "name",
-				"type": "bytes32"
+				"type": "bytes"
 			},
 			{
 				"indexed": false,
 				"name": "symbol",
-				"type": "bytes32"
+				"type": "bytes"
 			}
 		],
 		"name": "BuyVault",
@@ -412,15 +402,37 @@
 			{
 				"indexed": false,
 				"name": "name",
-				"type": "bytes32"
+				"type": "bytes"
 			},
 			{
 				"indexed": false,
 				"name": "symbol",
-				"type": "bytes32"
+				"type": "bytes"
 			}
 		],
 		"name": "SellVault",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"name": "vault",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "newRatio",
+				"type": "uint256"
+			}
+		],
+		"name": "NewRatio",
 		"type": "event"
 	},
 	{

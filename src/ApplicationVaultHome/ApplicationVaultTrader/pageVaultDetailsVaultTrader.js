@@ -20,7 +20,7 @@ import BigNumber from 'bignumber.js';
 import IdentityIcon from '../../_atomic/atoms/identityIcon'
 import InfoTable from '../../Elements/elementInfoTable'
 import Loading from '../../_atomic/atoms/loading'
-import DragoApi from '../../PoolsApi/src'
+import PoolApi from '../../PoolsApi/src'
 import AppBar from 'material-ui/AppBar';
 import ElementListTransactions from '../Elements/elementListTransactions'
 import ElementFeesBox from '../Elements/elementFeesBox'
@@ -85,6 +85,7 @@ class PageFundDetailsVaultTrader extends Component {
     componentWillReceiveProps(nextProps) {
       // Updating the lists on each new block if the accounts balances have changed
       // Doing this this to improve performances by avoiding useless re-rendering
+      console.log(this.props)
       const vaultId = this.props.match.params.dragoid
       const sourceLogClass = this.constructor.name
       const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
@@ -331,7 +332,7 @@ class PageFundDetailsVaultTrader extends Component {
     // Initializing Drago API
     // Passing Parity API
     //      
-    const dragoApi = new DragoApi(api)
+    const dragoApi = new PoolApi(api)
     //
     // Initializing registry contract
     //
@@ -348,13 +349,14 @@ class PageFundDetailsVaultTrader extends Component {
             //
             // Initializing vault contract
             //
+            console.log(vaultDetails)
             dragoApi.contract.vault.init(vaultAddress)
             //
             // Calling getPrice method
             //
             dragoApi.contract.vault.getAdminData()
               .then((data) => {
-                const price = (new BigNumber(data[3]).div(100).toFixed(2))
+                const price = (new BigNumber(data[4]).div(100).toFixed(2))
                 this.setState({
                   vaultDetails: {
                     address: vaultDetails[0][0],
@@ -385,6 +387,7 @@ class PageFundDetailsVaultTrader extends Component {
   getTransactions = (vaultAddress, contract, accounts) => {
     const { api } = this.context
     var sourceLogClass = this.constructor.name
+    console.log(vaultAddress)
     const logToEvent = (log) => {
       const key = api.util.sha3(JSON.stringify(log))
       const { blockNumber, logIndex, transactionHash, transactionIndex, params, type } = log
@@ -438,7 +441,7 @@ class PageFundDetailsVaultTrader extends Component {
     const eventsFilterBuy = {
       topics: [
         [contract.hexSignature.BuyVault],
-        hexVaultAddress,
+        [hexVaultAddress],
         hexAccounts,
         null
       ]
@@ -446,7 +449,7 @@ class PageFundDetailsVaultTrader extends Component {
     const eventsFilterSell = {
       topics: [
         [contract.hexSignature.SellVault],
-        hexVaultAddress,
+        [hexVaultAddress],
         hexAccounts,
         null
       ]
@@ -454,6 +457,7 @@ class PageFundDetailsVaultTrader extends Component {
     const buyVaultEvents = contract
       .getAllLogs(eventsFilterBuy)
       .then((vaultTransactionsLog) => {
+        console.log(vaultTransactionsLog)
         const buyLogs = vaultTransactionsLog.map(logToEvent)
         return buyLogs
       }

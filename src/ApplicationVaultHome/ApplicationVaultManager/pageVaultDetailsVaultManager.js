@@ -14,7 +14,7 @@ import React, { Component } from 'react'
 import Search from 'material-ui/svg-icons/action/search'
 import Snackbar from 'material-ui/Snackbar'
 import { formatCoins, formatEth } from '../../_utils/format'
-import DragoApi from '../../PoolsApi/src'
+import PoolApi from '../../PoolsApi/src'
 import ElementVaultActionsList from '../Elements/elementVaultActionsList'
 import ElementListTransactions from '../Elements/elementListTransactions'
 import ElementListWrapper from '../../Elements/elementListWrapper'
@@ -26,6 +26,11 @@ import utils from '../../_utils/utils'
 import styles from './pageVaultDetailsVaultManager.module.css';
 import ElementFundNotFound from '../../Elements/elementFundNotFound'
 import BigNumber from 'bignumber.js';
+import { connect } from 'react-redux';
+
+function mapStateToProps(state) {
+  return state
+}
 
 
 class PageVaultDetailsVaultManager extends Component {
@@ -52,7 +57,7 @@ class PageVaultDetailsVaultManager extends Component {
         addresssOwner: null,
         addressGroup: null,
       },
-      vaultTransactionsLogs: null,
+      vaultTransactionsLogs: [],
       loading: true,
       snackBar: false,
       snackBarMsg: '',
@@ -91,6 +96,7 @@ class PageVaultDetailsVaultManager extends Component {
       const  sourceLogClass = this.constructor.name
       var stateUpdate = true
       var propsUpdate = true
+      console.log(this.props)
       const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
       const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
       stateUpdate = !utils.shallowEqual(this.state, nextState)
@@ -252,7 +258,9 @@ class PageVaultDetailsVaultManager extends Component {
                         {console.log(vaultTransactionList)}
                           <ElementListWrapper list={vaultTransactionList}
                               renderCopyButton={this.renderCopyButton}
-                              renderEtherscanButton={this.renderEtherscanButton}>
+                              renderEtherscanButton={this.renderEtherscanButton}
+                              loading={loading}
+                              >
                             <ElementListTransactions  />
                           </ElementListWrapper>
                         {/* <ElementListTransactions accountsInfo={accountsInfo} list={vaultTransactionList} 
@@ -289,74 +297,75 @@ class PageVaultDetailsVaultManager extends Component {
       )
     }
 
-    // Getting the vault details from dragoId
-    getVaultDetails = (dragoId) => {
-      const { api } = this.context
-      const { accounts } = this.props
-      //
-      // Initializing Drago API
-      // Passing Parity API
-      //      
-      const dragoApi = new DragoApi(api)
-      //
-      // Initializing registry contract
-      //
-      dragoApi.contract.dragoregistry
-        .init()
-        .then(() => {
-          //
-          // Looking for drago from dragoId
-          //
-          dragoApi.contract.dragoregistry
-            .fromId(dragoId)
-            .then((vaultDetails) => {
-              const vaultAddress = vaultDetails[0][0]
-              //
-              // Initializing vault contract
-              //
-              dragoApi.contract.vault.init(vaultAddress)
-              //
-              // Calling getPrice method
-              //
-              dragoApi.contract.vault.getTransactionFee()
-                .then((data) => {
-                  this.setState({
-                    vaultDetails: {
-                      address: vaultDetails[0][0],
-                      name: vaultDetails[0][1].charAt(0).toUpperCase() + vaultDetails[0][1].slice(1),
-                      symbol: vaultDetails[0][2],
-                      dragoId: vaultDetails[0][3].c[0],
-                      addresssOwner: vaultDetails[0][4],
-                      addressGroup: vaultDetails[0][5],
-                      sellPrice: 1,
-                      buyPrice: 1,
-                      price: ((data.div(100).toFixed(2)))
-                    },
-                    loading: false
-                  })
+  // Getting the vault details from vaultId
+  getVaultDetails = (vaultId) => {
+    const { api } = this.context
+    const { accounts } = this.props
+    //
+    // Initializing Drago API
+    // Passing Parity API
+    //      
+    const dragoApi = new PoolApi(api)
+    //
+    // Initializing registry contract
+    //
+    dragoApi.contract.dragoregistry
+      .init()
+      .then(() => {
+        //
+        // Looking for drago from vaultId
+        //
+        dragoApi.contract.dragoregistry
+          .fromId(vaultId)
+          .then((vaultDetails) => {
+            const vaultAddress = vaultDetails[0][0]
+            //
+            // Initializing vault contract
+            //
+            console.log(vaultDetails)
+            dragoApi.contract.vault.init(vaultAddress)
+            //
+            // Calling getPrice method
+            //
+            dragoApi.contract.vault.getAdminData()
+              .then((data) => {
+                const price = (new BigNumber(data[4]).div(100).toFixed(2))
+                this.setState({
+                  vaultDetails: {
+                    address: vaultDetails[0][0],
+                    name: vaultDetails[0][1].charAt(0).toUpperCase() + vaultDetails[0][1].slice(1),
+                    symbol: vaultDetails[0][2].toUpperCase(),
+                    vaultId: vaultDetails[0][3].c[0],
+                    addresssOwner: vaultDetails[0][4],
+                    addressGroup: vaultDetails[0][5],
+                    sellPrice: 1,
+                    buyPrice: 1,
+                    price: price,
+                  },
+                  loading: false
                 })
-              dragoApi.contract.vaulteventful.init()
-                .then(() => {
-                  this.getTransactions(vaultDetails[0][0], dragoApi.contract.vaulteventful, accounts)
-                }
-                )
-              // this.getTransactions (vaultDetails[0][0], contract, accounts)
-            })
-        })
-  
-    }   
+              })
+            dragoApi.contract.vaulteventful.init()
+              .then(() => {
+                this.getTransactions(vaultDetails[0][0], dragoApi.contract.vaulteventful, accounts)
+              }
+              )
+            // this.getTransactions (vaultDetails[0][0], contract, accounts)
+          })
+      })
 
-  // Getting last transactions
-  getTransactions = (vaultAddress, contract, accounts) => {
+  }  
+
+   // Getting last transactions
+   getTransactions = (vaultAddress, contract, accounts) => {
     const { api } = this.context
     var sourceLogClass = this.constructor.name
+    console.log(vaultAddress)
     const logToEvent = (log) => {
       const key = api.util.sha3(JSON.stringify(log))
-      console.log(log)
       const { blockNumber, logIndex, transactionHash, transactionIndex, params, type } = log
       var ethvalue = (log.event === 'SellVault') ? formatEth(params.amount.value, null, api) : formatEth(params.revenue.value, null, api);
       var drgvalue = (log.event === 'SellVault') ? formatCoins(params.amount.value, null, api) : formatCoins(params.revenue.value, null, api);
-      console.log(drgvalue)
       // let ethvalue = null
       // let drgvalue = null     
       // if ((log.event === 'BuyDrago')) {
@@ -401,10 +410,11 @@ class PageVaultDetailsVaultManager extends Component {
     //   fromBlock: 0,
     //   toBlock: 'pending',
     // }
+    console.log(contract)
     const eventsFilterBuy = {
       topics: [
-        [contract.hexSignature.SellVault],
-        hexVaultAddress,
+        [contract.hexSignature.BuyVault],
+        [hexVaultAddress],
         hexAccounts,
         null
       ]
@@ -412,14 +422,15 @@ class PageVaultDetailsVaultManager extends Component {
     const eventsFilterSell = {
       topics: [
         [contract.hexSignature.SellVault],
-        hexVaultAddress,
-        null,
-        hexAccounts
+        [hexVaultAddress],
+        hexAccounts,
+        null
       ]
     }
     const buyVaultEvents = contract
       .getAllLogs(eventsFilterBuy)
       .then((vaultTransactionsLog) => {
+        console.log(vaultTransactionsLog)
         const buyLogs = vaultTransactionsLog.map(logToEvent)
         return buyLogs
       }
@@ -437,6 +448,7 @@ class PageVaultDetailsVaultManager extends Component {
         return allLogs
       })
       .then((vaultTransactionsLog) => {
+        console.log(vaultTransactionsLog)
         // Creating an array of promises that will be executed to add timestamp to each entry
         // Doing so because for each entry we need to make an async call to the client
         // For additional refernce: https://stackoverflow.com/questions/39452083/using-promise-function-inside-javascript-array-map
@@ -455,21 +467,21 @@ class PageVaultDetailsVaultManager extends Component {
               return log
             })
         })
-        Promise.all(promises)
-        .then((results) => {
+        Promise.all(promises).then((results) => {
           this.setState({
             vaultTransactionsLogs: results,
-          })
-        })
-        .then(() => {
-          console.log(`${sourceLogClass} -> Transactions list loaded`);
-          this.setState({
             loading: false,
           })
         })
-    })
+          .then(() => {
+            console.log(`${sourceLogClass} -> Transactions list loaded`);
+            this.setState({
+              loading: false,
+            })
+          })
+      })
   }
     
   }
 
-  export default withRouter(PageVaultDetailsVaultManager)
+  export default withRouter(connect(mapStateToProps)(PageVaultDetailsVaultManager))

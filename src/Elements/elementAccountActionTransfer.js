@@ -34,7 +34,7 @@ class ElementAccountActionTransfer extends Component {
   }
 
   state = {
-    amount: 1,
+    amount: 0,
     amountError: ERRORS.invalidAmount,
     // amountError: '',
     // toAddress: '0x00791547B03F5541971B199a2d347446eB8Dc9bE',
