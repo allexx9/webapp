@@ -148,14 +148,14 @@ class ElementListVaults extends PureComponent {
                   cellRenderer={({rowData}) => this.renderISIN(rowData)}
                   flexGrow={1}
                 />
-                <Column
+                {/* <Column
                   width={100}
                   label="SYMBOL"
                   cellDataGetter={({rowData}) => rowData.params.symbol.value.toUpperCase()}
                   dataKey="symbol"
                   className={styles.exampleColumn}
                   cellRenderer={({cellData}) => cellData}
-                />
+                /> */}
                 <Column
                   width={210}
                   disableSort

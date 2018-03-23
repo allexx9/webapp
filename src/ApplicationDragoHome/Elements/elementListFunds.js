@@ -145,14 +145,16 @@ class ElementListFunds extends PureComponent {
                   cellRenderer={({rowData}) => this.renderISIN(rowData)}
                   flexGrow={1}
                 />
-                <Column
+                {/* <Column
                   width={100}
+                  disableSort
                   label="SYMBOL"
-                  cellDataGetter={({rowData}) => rowData.params.symbol.value.toUpperCase()}
+                  cellDataGetter={({rowData}) => rowData}
                   dataKey="symbol"
+                  cellRenderer={({cellData}) => this.renderSymbol(cellData)}
                   className={styles.exampleColumn}
-                  cellRenderer={({cellData}) => cellData}
-                />
+                  flexShrink={1}
+                /> */}
                 <Column
                   width={210}
                   disableSort
@@ -180,6 +182,13 @@ class ElementListFunds extends PureComponent {
       </Row>
       
     );
+  }
+
+  renderSymbol(input) {
+    console.log(input)
+    return (
+      <div>{input.symbol.toUpperCase()}</div>
+    )
   }
 
   renderISIN(rowData) {
