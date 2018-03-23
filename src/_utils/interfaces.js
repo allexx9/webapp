@@ -1,12 +1,10 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
-import { rigotoken } from '../PoolsApi/src/contracts/abi'
 import BigNumber from 'bignumber.js';
 import {
   MSG_NO_SUPPORTED_NETWORK,
   MSG_NETWORK_STATUS_ERROR,
-  NETWORK_WARNING,
-  GRG_ADDRESS_KV,
+  NETWORK_WARNING
 } from './const'
 import PoolsApi from '../PoolsApi/src'
 
