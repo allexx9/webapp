@@ -2,7 +2,7 @@ import { DRG_ISIN } from './const';
 import { formatCoins, formatEth } from './format';
 import { APP, DS } from './const.js'
 import BigNumber from 'bignumber.js'
-import DragoApi from '../PoolsApi/src'
+import PoolApi from '../PoolsApi/src'
 
 class utilities {
 
@@ -20,7 +20,7 @@ class utilities {
     var checkTransaction = true
     var shouldTransactionListUpdate = false
     var newRecentTransactions = new Map(recentTransactions)
-    newRecentTransactions.forEach((value, key, map) => {
+    newRecentTransactions.forEach((value) => {
       if (value.status === 'executed' || value.status === 'error') {
         return
       }
@@ -75,7 +75,7 @@ class utilities {
   getTransactionsVaultOptV2 = (api, dragoAddress, accounts, options = { balance: true, supply: false, limit: 20, trader: true }) => {
     const sourceLogClass = this.constructor.name
     var resultsAll = null
-    const dragoApi = new DragoApi(api)
+    const poolApi = new PoolApi(api)
     var ethvalue = 0
     var drgvalue = 0
     var dragoSymbolRegistry = new Map()
@@ -133,14 +133,14 @@ class utilities {
     }
 
     // Initializing the eventful contract
-    return dragoApi.contract.dragoregistry.init()
+    return poolApi.contract.dragoregistry.init()
       .then(() => {
-        return dragoApi.contract.vaulteventful.init()
+        return poolApi.contract.vaulteventful.init()
           .then(() => {
             // Filter for create events
             const eventsFilterCreate = {
               topics: [
-                [dragoApi.contract.vaulteventful.hexSignature.VaultCreated],
+                [poolApi.contract.vaulteventful.hexSignature.VaultCreated],
                 null,
                 null,
                 hexAccounts
@@ -149,7 +149,7 @@ class utilities {
             // Filter for buy events
             const eventsFilterBuy = {
               topics: [
-                [dragoApi.contract.vaulteventful.hexSignature.BuyVault],
+                [poolApi.contract.vaulteventful.hexSignature.BuyVault],
                 null,
                 hexAccounts,
                 null
@@ -158,7 +158,7 @@ class utilities {
             // Filter for sell events
             const eventsFilterSell = {
               topics: [
-                [dragoApi.contract.vaulteventful.hexSignature.SellVault],
+                [poolApi.contract.vaulteventful.hexSignature.SellVault],
                 null,
                 null,
                 hexAccounts
@@ -176,7 +176,7 @@ class utilities {
             }
 
             const createDragoEvents = () => {
-              return dragoApi.contract.vaulteventful
+              return poolApi.contract.vaulteventful
                 .getAllLogs(eventsFilterCreate)
                 .then((dragoTransactionsLog) => {
                   console.log(dragoTransactionsLog)
@@ -187,7 +187,7 @@ class utilities {
             }
 
             // const buyDragoEvents = () => {
-            //   return dragoApi.contract.vaulteventful
+            //   return poolApi.contract.vaulteventful
             //     .getAllLogs(eventsFilterBuy)
             //     .then((dragoTransactionsLog) => {
             //       const buyLogs = dragoTransactionsLog.map(logToEvent)
@@ -197,7 +197,7 @@ class utilities {
             // }
 
             // const sellDragoEvents = () => {
-            //   return dragoApi.contract.vaulteventful
+            //   return poolApi.contract.vaulteventful
             //     .getAllLogs(eventsFilterSell)
             //     .then((dragoTransactionsLog) => {
             //       const sellLogs = dragoTransactionsLog.map(logToEvent)
@@ -207,7 +207,7 @@ class utilities {
             // }
 
             const buySellDragoEvents = () => {
-              return dragoApi.contract.vaulteventful
+              return poolApi.contract.vaulteventful
                 .getAllLogs(eventsFilterBuySell)
                 .then((dragoTransactionsLog) => {
                   const buySellLogs = dragoTransactionsLog.map(logToEvent)
@@ -259,7 +259,7 @@ class utilities {
                   var arrayPromises = []
                   dragoSymbolRegistry.forEach((v, k) => {
                     arrayPromises.push(
-                      dragoApi.contract.dragoregistry.fromAddress(k)
+                      poolApi.contract.dragoregistry.fromAddress(k)
                         .then((dragoDetails) => {
                           // console.log(dragoDetails)
                           dragoSymbolRegistry.set(k, { symbol: dragoDetails[2].trim(), vaultId: dragoDetails[3].toFixed(), name: dragoDetails[1].trim() })
@@ -276,9 +276,9 @@ class utilities {
 
                   // dragoSymbolRegistry.forEach((v, k) => {
                   //   arrayPromises.push(
-                  //     dragoApi.contract.dragoregistry.init()
+                  //     poolApi.contract.dragoregistry.init()
                   //       .then(() => {
-                  //         return dragoApi.contract.dragoregistry.fromAddress(k)
+                  //         return poolApi.contract.dragoregistry.fromAddress(k)
                   //           .then((dragoDetails) => {
                   //             dragoSymbolRegistry.set(k, { symbol: dragoDetails[2].trim(), dragoId: dragoDetails[3].toFixed(), name: dragoDetails[1].trim() })
                   //           }
@@ -299,9 +299,9 @@ class utilities {
                     return arrayPromises
                   }
                   dragoSymbolRegistry.forEach((v, k) => {
-                    dragoApi.contract.vault.init(k)
+                    poolApi.contract.vault.init(k)
                     arrayPromises.push(
-                      dragoApi.contract.vault.totalSupply()
+                      poolApi.contract.vault.totalSupply()
                         .then((dragoSupply) => {
                           const symbol = dragoSymbolRegistry.get(k).symbol
                           const name = dragoSymbolRegistry.get(k).name.trim()
@@ -331,9 +331,9 @@ class utilities {
                   hexAccounts.map(account => {
                     balances[account] = []
                     dragoSymbolRegistry.forEach((v, k) => {
-                      dragoApi.contract.vault.init(k)
+                      poolApi.contract.vault.init(k)
                       arrayPromises.push(
-                        dragoApi.contract.vault.balanceOf(account)
+                        poolApi.contract.vault.balanceOf(account)
                           .then((dragoBalance) => {
                             const symbol = dragoSymbolRegistry.get(k).symbol
                             const name = dragoSymbolRegistry.get(k).name.trim()
@@ -459,7 +459,7 @@ class utilities {
   getTransactionsDragoOptV2 = (api, dragoAddress, accounts, options = { balance: true, supply: false, limit: 20, trader: true }) => {
     const sourceLogClass = this.constructor.name
     var resultsAll = null
-    const dragoApi = new DragoApi(api)
+    const poolApi = new PoolApi(api)
     var ethvalue = 0
     var drgvalue = 0
     var dragoSymbolRegistry = new Map()
@@ -513,14 +513,14 @@ class utilities {
     }
 
     // Initializing the eventful contract
-    return dragoApi.contract.dragoregistry.init()
+    return poolApi.contract.dragoregistry.init()
       .then(() => {
-        return dragoApi.contract.dragoeventful.init()
+        return poolApi.contract.dragoeventful.init()
           .then(() => {
             // Filter for create events
             const eventsFilterCreate = {
               topics: [
-                [dragoApi.contract.dragoeventful.hexSignature.DragoCreated],
+                [poolApi.contract.dragoeventful.hexSignature.DragoCreated],
                 null,
                 null,
                 hexAccounts
@@ -529,7 +529,7 @@ class utilities {
             // Filter for buy events
             const eventsFilterBuy = {
               topics: [
-                [dragoApi.contract.dragoeventful.hexSignature.BuyDrago],
+                [poolApi.contract.dragoeventful.hexSignature.BuyDrago],
                 null,
                 hexAccounts,
                 null
@@ -538,7 +538,7 @@ class utilities {
             // Filter for sell events
             const eventsFilterSell = {
               topics: [
-                [dragoApi.contract.dragoeventful.hexSignature.SellDrago],
+                [poolApi.contract.dragoeventful.hexSignature.SellDrago],
                 null,
                 null,
                 hexAccounts
@@ -556,7 +556,7 @@ class utilities {
             }
 
             const createDragoEvents = () => {
-              return dragoApi.contract.dragoeventful
+              return poolApi.contract.dragoeventful
                 .getAllLogs(eventsFilterCreate)
                 .then((dragoTransactionsLog) => {
                   const createLogs = dragoTransactionsLog.map(logToEvent)
@@ -566,7 +566,7 @@ class utilities {
             }
 
             // const buyDragoEvents = () => {
-            //   return dragoApi.contract.dragoeventful
+            //   return poolApi.contract.dragoeventful
             //     .getAllLogs(eventsFilterBuy)
             //     .then((dragoTransactionsLog) => {
             //       const buyLogs = dragoTransactionsLog.map(logToEvent)
@@ -576,7 +576,7 @@ class utilities {
             // }
 
             // const sellDragoEvents = () => {
-            //   return dragoApi.contract.dragoeventful
+            //   return poolApi.contract.dragoeventful
             //     .getAllLogs(eventsFilterSell)
             //     .then((dragoTransactionsLog) => {
             //       const sellLogs = dragoTransactionsLog.map(logToEvent)
@@ -586,7 +586,7 @@ class utilities {
             // }
 
             const buySellDragoEvents = () => {
-              return dragoApi.contract.dragoeventful
+              return poolApi.contract.dragoeventful
                 .getAllLogs(eventsFilterBuySell)
                 .then((dragoTransactionsLog) => {
                   const buySellLogs = dragoTransactionsLog.map(logToEvent)
@@ -637,7 +637,7 @@ class utilities {
                   var arrayPromises = []
                   dragoSymbolRegistry.forEach((v, k) => {
                     arrayPromises.push(
-                      dragoApi.contract.dragoregistry.fromAddress(k)
+                      poolApi.contract.dragoregistry.fromAddress(k)
                         .then((dragoDetails) => {
                           // console.log(dragoDetails)
                           dragoSymbolRegistry.set(k, { symbol: dragoDetails[2].trim(), dragoId: dragoDetails[3].toFixed(), name: dragoDetails[1].trim() })
@@ -654,9 +654,9 @@ class utilities {
 
                   // dragoSymbolRegistry.forEach((v, k) => {
                   //   arrayPromises.push(
-                  //     dragoApi.contract.dragoregistry.init()
+                  //     poolApi.contract.dragoregistry.init()
                   //       .then(() => {
-                  //         return dragoApi.contract.dragoregistry.fromAddress(k)
+                  //         return poolApi.contract.dragoregistry.fromAddress(k)
                   //           .then((dragoDetails) => {
                   //             dragoSymbolRegistry.set(k, { symbol: dragoDetails[2].trim(), dragoId: dragoDetails[3].toFixed(), name: dragoDetails[1].trim() })
                   //           }
@@ -677,9 +677,9 @@ class utilities {
                     return arrayPromises
                   }
                   dragoSymbolRegistry.forEach((v, k) => {
-                    dragoApi.contract.drago.init(k)
+                    poolApi.contract.drago.init(k)
                     arrayPromises.push(
-                      dragoApi.contract.drago.totalSupply()
+                      poolApi.contract.drago.totalSupply()
                         .then((dragoSupply) => {
                           const symbol = dragoSymbolRegistry.get(k).symbol
                           const name = dragoSymbolRegistry.get(k).name.trim()
@@ -709,9 +709,9 @@ class utilities {
                   hexAccounts.map(account => {
                     balances[account] = []
                     dragoSymbolRegistry.forEach((v, k) => {
-                      dragoApi.contract.drago.init(k)
+                      poolApi.contract.drago.init(k)
                       arrayPromises.push(
-                        dragoApi.contract.drago.balanceOf(account)
+                        poolApi.contract.drago.balanceOf(account)
                           .then((dragoBalance) => {
                             const symbol = dragoSymbolRegistry.get(k).symbol
                             const name = dragoSymbolRegistry.get(k).name.trim()

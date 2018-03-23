@@ -6,7 +6,7 @@ import Avatar from 'material-ui/Avatar';
 import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import DragoApi from '../../PoolsApi/src'
+import PoolApi from '../../PoolsApi/src'
 import ElementListFunds from '../Elements/elementListFunds'
 import FilterFunds from '../Elements/elementFilterFunds'
 import utils from '../../_utils/utils'
@@ -142,7 +142,7 @@ class PageFundsDragoTrader extends Component {
 
     getDragos () {
       const { api } = this.context;
-      const dragoApi = new DragoApi(api)
+      const poolApi = new PoolApi(api)
       const logToEvent = (log) => {
         const key = api.util.sha3(JSON.stringify(log))
         const { blockNumber, logIndex, transactionHash, transactionIndex, params, type } = log        
@@ -169,10 +169,10 @@ class PageFundsDragoTrader extends Component {
       // dragoFactoryEventsSignatures accesses the contract ABI, gets all the events and for each creates a hex signature
       // to be passed to getAllLogs. Events are indexed and filtered by topics
       // more at: http://solidity.readthedocs.io/en/develop/contracts.html?highlight=event#events
-      dragoApi.contract.dragoeventful.init()
+      poolApi.contract.dragoeventful.init()
       .then(() =>{
-        dragoApi.contract.dragoeventful.getAllLogs({
-          topics: [ dragoApi.contract.dragoeventful.hexSignature.DragoCreated ]
+        poolApi.contract.dragoeventful.getAllLogs({
+          topics: [ poolApi.contract.dragoeventful.hexSignature.DragoCreated ]
         })
         .then((dragoCreatedLogs) => {
           console.log(dragoCreatedLogs)

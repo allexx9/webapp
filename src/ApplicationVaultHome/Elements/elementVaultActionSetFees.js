@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { ERRORS, validateAccount, validatePositiveNumber } from '../../_utils/validation';
 import AccountSelector from '../../Elements/elementAccountSelector';
-import DragoApi from '../../PoolsApi/src'
+import PoolApi from '../../PoolsApi/src'
 import ElementDialogAddressTitle from '../../Elements/elementDialogAddressTitle'
 import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle'
 import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization'
@@ -316,16 +316,16 @@ export default class ElementVaultActionSetFees extends Component {
     const options = {
       from: this.state.account.address
     };
-    var dragoApi = null;
+    var poolApi = null;
     var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
     this.setState({
       sending: true
     });
     
     // price must be in basis points. Mimimum fee = 0.01%, equal to price = 1
-    dragoApi = new DragoApi(provider)
-    dragoApi.contract.vault.init(vaultDetails.address)
-    dragoApi.contract.vault.setTransactionFee(this.state.account.address, price)
+    poolApi = new PoolApi(provider)
+    poolApi.contract.vault.init(vaultDetails.address)
+    poolApi.contract.vault.setTransactionFee(this.state.account.address, price)
     .then ((result) =>{
       console.log(result)
       this.setState({

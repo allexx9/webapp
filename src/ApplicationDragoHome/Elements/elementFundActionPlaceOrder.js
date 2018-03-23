@@ -10,7 +10,7 @@ import { ERRORS, validateAccount, validatePositiveNumber} from '../../_utils/val
 import AccountSelector from '../../Elements/elementAccountSelector';
 import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle'
 import ElementDialogAddressTitle from '../../Elements/elementDialogAddressTitle'
-import DragoApi from '../../PoolsApi/src'
+import PoolApi from '../../PoolsApi/src'
 
 const NAME_ID = ' ';
 const ADDRESS_0 = '0x0000000000000000000000000000000000000000'; //ADDRESS_0 is for ETH deposits
@@ -255,13 +255,13 @@ export default class ElementFundActionPlaceOrder extends Component {
 
     onFindAsset = () => {
       const { api } = this.context;
-      var dragoApi = new DragoApi(api)
-      console.log(dragoApi)
-      dragoApi.contract.ethusd.init()
+      var poolApi = new PoolApi(api)
+      console.log(poolApi)
+      poolApi.contract.ethusd.init()
       .then(() =>{
         this.setState({
           //loading: false,
-          assetAddress: dragoApi.contract.ethusd._contract._address
+          assetAddress: poolApi.contract.ethusd._contract._address
         });
       })
     }
@@ -269,17 +269,17 @@ export default class ElementFundActionPlaceOrder extends Component {
   onFindExchange = () => {
     const { dragoDetails } = this.props
     const { api } = this.context;
-    var dragoApi = new DragoApi(api)
-    dragoApi.contract.exchange.init()
+    var poolApi = new PoolApi(api)
+    poolApi.contract.exchange.init()
     .then(() =>{
-      return dragoApi.contract.exchange.balanceOf(ADDRESS_0, dragoDetails.address.toString())
+      return poolApi.contract.exchange.balanceOf(ADDRESS_0, dragoDetails.address.toString())
     })
     .then ((balanceExchange) =>{
       console.log(balanceExchange)
       this.setState({
         loading: false,
         balanceExchange,
-        exchangeAddress: dragoApi.contract.exchange._contract._address
+        exchangeAddress: poolApi.contract.exchange._contract._address
       });
     })
   }
@@ -311,7 +311,7 @@ export default class ElementFundActionPlaceOrder extends Component {
     const options = {
       from: this.state.account.address
     };
-    var dragoApi = null;
+    var poolApi = null;
 
     this.setState({
       sending: true
@@ -319,9 +319,9 @@ export default class ElementFundActionPlaceOrder extends Component {
     console.log(values)
     if(this.state.account.source === 'MetaMask') {
       const web3 = window.web3
-      dragoApi = new DragoApi(web3)
-      dragoApi.contract.drago.init(dragoDetails.address)
-      dragoApi.contract.drago.placeOrderCFDExchange(this.state.account.address, exchangeAddress.toString(), 
+      poolApi = new PoolApi(web3)
+      poolApi.contract.drago.init(dragoDetails.address)
+      poolApi.contract.drago.placeOrderCFDExchange(this.state.account.address, exchangeAddress.toString(), 
                                                 cfd.toString(), is_stable, adjustment.toFixed(0), stake.toFixed(0))
       .then ((result) =>{
         console.log(result)
@@ -338,9 +338,9 @@ export default class ElementFundActionPlaceOrder extends Component {
       this.onClose()
       this.props.snackBar('Deposit awaiting for authorization')
     } else {
-      dragoApi = new DragoApi(api)
-      dragoApi.contract.drago.init(dragoDetails.address)
-      dragoApi.contract.drago.placeOrderCFDExchange(this.state.account.address, exchangeAddress.toString(), 
+      poolApi = new PoolApi(api)
+      poolApi.contract.drago.init(dragoDetails.address)
+      poolApi.contract.drago.placeOrderCFDExchange(this.state.account.address, exchangeAddress.toString(), 
                                                 cfd.toString(), is_stable, adjustment.toFixed(0), stake.toFixed(0))
       .then((result) => {
         this.onClose()

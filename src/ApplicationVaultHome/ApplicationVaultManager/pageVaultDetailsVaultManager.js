@@ -305,17 +305,17 @@ class PageVaultDetailsVaultManager extends Component {
     // Initializing Drago API
     // Passing Parity API
     //      
-    const dragoApi = new PoolApi(api)
+    const poolApi = new PoolApi(api)
     //
     // Initializing registry contract
     //
-    dragoApi.contract.dragoregistry
+    poolApi.contract.dragoregistry
       .init()
       .then(() => {
         //
         // Looking for drago from vaultId
         //
-        dragoApi.contract.dragoregistry
+        poolApi.contract.dragoregistry
           .fromId(vaultId)
           .then((vaultDetails) => {
             const vaultAddress = vaultDetails[0][0]
@@ -323,11 +323,11 @@ class PageVaultDetailsVaultManager extends Component {
             // Initializing vault contract
             //
             console.log(vaultDetails)
-            dragoApi.contract.vault.init(vaultAddress)
+            poolApi.contract.vault.init(vaultAddress)
             //
             // Calling getPrice method
             //
-            dragoApi.contract.vault.getAdminData()
+            poolApi.contract.vault.getAdminData()
               .then((data) => {
                 const price = (new BigNumber(data[4]).div(100).toFixed(2))
                 this.setState({
@@ -345,9 +345,9 @@ class PageVaultDetailsVaultManager extends Component {
                   loading: false
                 })
               })
-            dragoApi.contract.vaulteventful.init()
+            poolApi.contract.vaulteventful.init()
               .then(() => {
-                this.getTransactions(vaultDetails[0][0], dragoApi.contract.vaulteventful, accounts)
+                this.getTransactions(vaultDetails[0][0], poolApi.contract.vaulteventful, accounts)
               }
               )
             // this.getTransactions (vaultDetails[0][0], contract, accounts)

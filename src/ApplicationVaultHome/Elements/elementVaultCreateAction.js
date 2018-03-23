@@ -8,7 +8,7 @@ import React from 'react';
 import TextField from 'material-ui/TextField';
 import { ERRORS, validateAccount, validateNewName, validateNewSymbol } from '../../_utils/validation';
 import AccountSelector from '../../Elements/elementAccountSelector'
-import DragoApi from '../../PoolsApi/src'
+import PoolApi from '../../PoolsApi/src'
 import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle'
 import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization'
 import { connect } from 'react-redux';
@@ -133,7 +133,7 @@ class ElementVaultCreateAction extends React.Component {
       const values = [vaultName, vaultSymbol, this.state.account.address]
       // Setting variables depending on account source
       var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
-      var dragoApi = null;
+      var poolApi = null;
       // Initializing transaction variables
       const authMsg = 'You deployed the vault ' + vaultSymbol + ' | ' + vaultName 
       const transactionId = api.util.sha3(new Date() + vaultSymbol)
@@ -153,10 +153,10 @@ class ElementVaultCreateAction extends React.Component {
       this.setState({
         sending: true
       })
-      dragoApi = new DragoApi(provider)
-      dragoApi.contract.vaultfactory.init()
+      poolApi = new PoolApi(provider)
+      poolApi.contract.vaultfactory.init()
       .then(()=>{
-        dragoApi.contract.vaultfactory.createVault(vaultName, vaultSymbol, this.state.account.address)
+        poolApi.contract.vaultfactory.createVault(vaultName, vaultSymbol, this.state.account.address)
         .then ((receipt) =>{
           console.log(receipt)
           // this.props.snackBar('Deploy awaiting for authorization')

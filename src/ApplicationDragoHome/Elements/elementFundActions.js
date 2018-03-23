@@ -22,7 +22,7 @@ import { ERRORS, validateAccount, validatePositiveNumber } from '../../_utils/va
 import { formatCoins } from '../../_utils/format';
 import AccountSelector from '../../Elements/elementAccountSelector'
 import ElementFundActionsHeader from './elementFundActionsHeader'
-import DragoApi from '../../PoolsApi/src'
+import PoolApi from '../../PoolsApi/src'
 import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization'
 
 import styles from './elementFundActions.module.css';
@@ -294,9 +294,9 @@ class ElementFundActions extends React.Component {
 
     // Getting the account balance if account passed validation
     if (!accountError) {
-      const dragoApi = new DragoApi(provider)
-      dragoApi.contract.drago.init(dragoDetails.address)
-      dragoApi.contract.drago.balanceOf(account.address)
+      const poolApi = new PoolApi(provider)
+      poolApi.contract.drago.init(dragoDetails.address)
+      poolApi.contract.drago.balanceOf(account.address)
       .then((amount) =>{
         const drgBalance = formatCoins(amount,4,api)
         this.setState({
@@ -430,7 +430,7 @@ class ElementFundActions extends React.Component {
     const transactionId = api.util.sha3(new Date() + accountAddress)
     // Setting variables depending on account source
     var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
-    var dragoApi = null;
+    var poolApi = null;
     // Initializing transaction variables
     var transactionDetails = {
       status: this.state.account.source === 'MetaMask' ? 'pending' : 'authorization',
@@ -447,9 +447,9 @@ class ElementFundActions extends React.Component {
     const {account} = this.state
 
     // Sending the transaction
-    dragoApi = new DragoApi(provider)
-    dragoApi.contract.drago.init(dragoDetails.address)
-    dragoApi.contract.drago.buyDrago(accountAddress, amount)
+    poolApi = new PoolApi(provider)
+    poolApi.contract.drago.init(dragoDetails.address)
+    poolApi.contract.drago.buyDrago(accountAddress, amount)
       .then((receipt) => {
         console.log(receipt)
         // Adding transaciont to the queue
@@ -494,7 +494,7 @@ class ElementFundActions extends React.Component {
     const transactionId = api.util.sha3(new Date() + accountAddress)
     // Setting variables depending on account source
     var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
-    var dragoApi = null;
+    var poolApi = null;
     // Initializing transaction variables
     var transactionDetails = {
       status: this.state.account.source === 'MetaMask' ? 'pending' : 'authorization',
@@ -511,9 +511,9 @@ class ElementFundActions extends React.Component {
     const {account} = this.state
     
     
-    dragoApi = new DragoApi(provider)
-    dragoApi.contract.drago.init(dragoDetails.address)
-    dragoApi.contract.drago.sellDrago(accountAddress, amount)
+    poolApi = new PoolApi(provider)
+    poolApi.contract.drago.init(dragoDetails.address)
+    poolApi.contract.drago.sellDrago(accountAddress, amount)
       .then((receipt) => {
         console.log(receipt)
         // Adding transaciont to the queue

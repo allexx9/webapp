@@ -27,9 +27,11 @@ class ElementListTransactions extends PureComponent {
   constructor(props, context) {
     super(props, context);
     const { list } = this.props
-    const sortBy = 'symbol';
     const sortDirection = SortDirection.ASC;
-    const sortedList = this._sortList({sortBy, sortDirection});
+    const sortedList = list.sortBy(item => item.timestamp)
+                      .update(
+                        list => (sortDirection === SortDirection.DESC ? list : list.reverse()),
+                      );
     const rowCount = list.size
 
     this.state = {
@@ -42,7 +44,6 @@ class ElementListTransactions extends PureComponent {
       rowHeight: 40,
       rowCount: rowCount,
       scrollToIndex: undefined,
-      sortBy,
       sortDirection,
       sortedList,
       useDynamicRowHeight: false
@@ -59,7 +60,6 @@ class ElementListTransactions extends PureComponent {
 
   componentWillReceiveProps (nextProps) {
     const { list } = nextProps
-    const sortBy = 'symbol';
     const sortDirection = SortDirection.ASC;
     const sortedList = list.sortBy(item => item.timestamp)
                       .update(
@@ -148,16 +148,16 @@ class ElementListTransactions extends PureComponent {
                     cellRenderer={({cellData}) => this.renderAction(cellData)}
                     flexShrink={1}
                   />
-                  {/* <Column
+                  <Column
                     width={100}
                     disableSort
-                    label="Symbol"
+                    label="SYMBOL"
                     cellDataGetter={({rowData}) => rowData}
                     dataKey="symbol"
                     cellRenderer={({cellData}) => this.renderSymbol(cellData)}
                     className={styles.exampleColumn}
                     flexShrink={1}
-                  /> */}
+                  />
                   {/* formatEth(price) }<small> ETH</small> */}
                   <Column
                     width={100}
@@ -217,7 +217,7 @@ class ElementListTransactions extends PureComponent {
 
   renderSymbol(input) {
     return (
-      <div>{input.symbol}</div>
+      <div>{input.symbol.toUpperCase()}</div>
     )
   }
 
@@ -252,7 +252,7 @@ class ElementListTransactions extends PureComponent {
 
   renderDrgValue(rowData) {
     return (
-      <div>{new BigNumber(rowData.drgvalue).toFixed(4)} <small>{rowData.symbol}</small></div>
+      <div>{new BigNumber(rowData.drgvalue).toFixed(4)} <small>{rowData.symbol.toUpperCase()}</small></div>
     )
   }
 

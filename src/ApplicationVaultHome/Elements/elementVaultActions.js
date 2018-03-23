@@ -21,7 +21,7 @@ import { ERRORS, validateAccount, validatePositiveNumber } from '../../_utils/va
 import { formatCoins } from '../../_utils/format';
 import AccountSelector from '../../Elements/elementAccountSelector'
 import ElementVaultActionsHeader from './elementVaultActionsHeader'
-import DragoApi from '../../PoolsApi/src'
+import PoolApi from '../../PoolsApi/src'
 import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization'
 
 import styles from './elementVaultActions.module.css';
@@ -272,11 +272,11 @@ class ElementVaultActions extends React.Component {
 
     // Getting the account balance if account passed validation
     if (!accountError) {
-      const dragoApi = new DragoApi(provider)
+      const poolApi = new PoolApi(provider)
       console.log(vaultDetails.address)
-      dragoApi.contract.vault.init(vaultDetails.address)
-      console.log(dragoApi.contract.vault.balanceOf(account.address))
-      dragoApi.contract.vault.balanceOf(account.address)
+      poolApi.contract.vault.init(vaultDetails.address)
+      console.log(poolApi.contract.vault.balanceOf(account.address))
+      poolApi.contract.vault.balanceOf(account.address)
       .then((amount) =>{
         console.log(amount)
         const drgBalance = formatCoins(new BigNumber(amount),4,api)
@@ -420,7 +420,7 @@ class ElementVaultActions extends React.Component {
     const transactionId = api.util.sha3(new Date() + accountAddress)
     // Setting variables depending on account source
     var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
-    var dragoApi = null;
+    var poolApi = null;
     // Initializing transaction variables
     var transactionDetails = {
       status: this.state.account.source === 'MetaMask' ? 'pending' : 'authorization',
@@ -437,9 +437,9 @@ class ElementVaultActions extends React.Component {
     const {account} = this.state
 
     // Sending the transaction
-    dragoApi = new DragoApi(provider)
-    dragoApi.contract.vault.init(vaultDetails.address)
-    dragoApi.contract.vault.buyVault(accountAddress, amount)
+    poolApi = new PoolApi(provider)
+    poolApi.contract.vault.init(vaultDetails.address)
+    poolApi.contract.vault.buyVault(accountAddress, amount)
       .then((receipt) => {
         console.log(receipt)
         // Adding transaciont to the queue
@@ -483,7 +483,7 @@ class ElementVaultActions extends React.Component {
     const transactionId = api.util.sha3(new Date() + accountAddress)
     // Setting variables depending on account source
     var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
-    var dragoApi = null;
+    var poolApi = null;
     // Initializing transaction variables
     var transactionDetails = {
       status: this.state.account.source === 'MetaMask' ? 'pending' : 'authorization',
@@ -501,9 +501,9 @@ class ElementVaultActions extends React.Component {
     const {account} = this.state
     
     // Sending the transaction
-    dragoApi = new DragoApi(provider)
-    dragoApi.contract.vault.init(vaultDetails.address)
-    dragoApi.contract.vault.sellVault(accountAddress, amount)
+    poolApi = new PoolApi(provider)
+    poolApi.contract.vault.init(vaultDetails.address)
+    poolApi.contract.vault.sellVault(accountAddress, amount)
       .then((receipt) => {
         console.log(receipt)
         // Adding transaciont to the queue
