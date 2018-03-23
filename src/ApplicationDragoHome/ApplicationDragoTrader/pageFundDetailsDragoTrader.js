@@ -341,17 +341,17 @@ class PageFundDetailsDragoTrader extends Component {
     // Initializing Drago API
     // Passing Parity API
     //      
-    const dragoApi = new PoolApi(api)
+    const poolApi = new PoolApi(api)
     //
     // Initializing registry contract
     //
-    dragoApi.contract.dragoregistry
+    poolApi.contract.dragoregistry
       .init()
       .then(() => {
         //
         // Looking for drago from dragoId
         //
-        dragoApi.contract.dragoregistry
+        poolApi.contract.dragoregistry
           .fromId(dragoId)
           .then((dragoDetails) => {
             const dragoAddress = dragoDetails[0][0]
@@ -359,20 +359,18 @@ class PageFundDetailsDragoTrader extends Component {
             //
             // Initializing drago contract
             //
-            dragoApi.contract.drago.init(dragoAddress)
+            poolApi.contract.drago.init(dragoAddress)
 
             //
             // Calling getData method
             //
-            dragoApi.contract.drago.getData()
+            poolApi.contract.drago.getData()
               .then((data) => {
                 //
                 // Gettin balance for each account
                 //
-
-                console.log(data)
                 accounts.map(account => {
-                  dragoApi.contract.drago.balanceOf(account.address)
+                  poolApi.contract.drago.balanceOf(account.address)
                     .then(balance => {
                       balanceDRG = balanceDRG.add(balance)
                       console.log(balance)
@@ -404,14 +402,13 @@ class PageFundDetailsDragoTrader extends Component {
                   loading: false
                 })
               })
-            dragoApi.contract.dragoeventful.init()
+            poolApi.contract.dragoeventful.init()
               .then(() => {
-                this.getTransactions(dragoDetails[0][0], dragoApi.contract.dragoeventful, accounts)
+                this.getTransactions(dragoDetails[0][0], poolApi.contract.dragoeventful, accounts)
               }
               )
           })
       })
-
   }  
 
   // Getting last transactions

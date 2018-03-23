@@ -66,7 +66,8 @@ class PageFundDetailsVaultTrader extends Component {
       openBuySellDialog: {
         open: false,
         action: 'deposit'
-      }
+      },
+      balanceDRG: new BigNumber(0).toFormat(4),
     }
 
     subTitle = (account) => {
@@ -246,16 +247,16 @@ class PageFundDetailsVaultTrader extends Component {
                 <Grid fluid>
                   <Row>
                     <Col xs={6}>
-                      <Paper zDepth={1}>
+                      <div>
                         <AppBar
-                          title="DETAILS"
+                          title={"MY HOLDING IN " + vaultDetails.symbol}
                           showMenuIconButton={false}
                           titleStyle={{ fontSize: 20 }}
                         />
-                        <div className={styles.detailsTabContent}>
-                        <InfoTable  rows={tableInfo} columnsStyle={columnsStyle}/>
+                        <div className={styles.holdings}>
+                          <div>{this.state.balanceDRG} <small>UNITS</small><br /></div>
                         </div>
-                      </Paper>
+                      </div>
                     </Col>
                     <Col xs={6}>
                       <Paper zDepth={1}>
@@ -275,6 +276,21 @@ class PageFundDetailsVaultTrader extends Component {
                       </Paper>
                     </Col>
                   </Row>
+                  <br />
+                  <Row>
+                      <Col xs={12}>
+                      <Paper zDepth={1}>
+                        <AppBar
+                          title="DETAILS"
+                          showMenuIconButton={false}
+                          titleStyle={{ fontSize: 20 }}
+                        />
+                        <div className={styles.detailsTabContent}>
+                        <InfoTable  rows={tableInfo} columnsStyle={columnsStyle}/>
+                        </div>
+                      </Paper>
+                      </Col>
+                    </Row>
                   <Row>
                     <Col xs={12} className={styles.detailsTabContent}>
                       <Paper style={paperStyle} zDepth={1} >
@@ -328,21 +344,22 @@ class PageFundDetailsVaultTrader extends Component {
   getVaultDetails = (vaultId) => {
     const { api } = this.context
     const { accounts } = this.props
+    var balanceDRG = new BigNumber(0)
     //
     // Initializing Drago API
     // Passing Parity API
     //      
-    const dragoApi = new PoolApi(api)
+    const poolApi = new PoolApi(api)
     //
     // Initializing registry contract
     //
-    dragoApi.contract.dragoregistry
+    poolApi.contract.dragoregistry
       .init()
       .then(() => {
         //
         // Looking for drago from vaultId
         //
-        dragoApi.contract.dragoregistry
+        poolApi.contract.dragoregistry
           .fromId(vaultId)
           .then((vaultDetails) => {
             const vaultAddress = vaultDetails[0][0]
@@ -350,12 +367,33 @@ class PageFundDetailsVaultTrader extends Component {
             // Initializing vault contract
             //
             console.log(vaultDetails)
-            dragoApi.contract.vault.init(vaultAddress)
+            poolApi.contract.vault.init(vaultAddress)
             //
-            // Calling getPrice method
+            // Calling getAdminData method
             //
-            dragoApi.contract.vault.getAdminData()
+            poolApi.contract.vault.getAdminData()
               .then((data) => {
+                //
+                // Gettin balance for each account
+                //
+                accounts.map(account => {
+                  poolApi.contract.vault.balanceOf(account.address)
+                    .then(balance => {
+                      balanceDRG = balanceDRG.add(balance)
+                      console.log(balance)
+                      // console.log(api.util.fromWei(balance).toFormat(4))
+                    })
+                    .then(() => {
+                      // console.log(api.util.fromWei(balanceDRG.toNumber(4)).toFormat(4))
+                      // console.log(balanceDRG)
+                      var balanceETH = balanceDRG.times(formatCoins(balanceDRG, 4, api))
+                      // console.log(balanceETH)
+                      this.setState({
+                        balanceETH: formatEth(balanceETH, 4, api),
+                        balanceDRG: formatCoins(balanceDRG, 4, api)
+                      })
+                    })
+                })
                 const price = (new BigNumber(data[4]).div(100).toFixed(2))
                 this.setState({
                   vaultDetails: {
@@ -372,22 +410,19 @@ class PageFundDetailsVaultTrader extends Component {
                   loading: false
                 })
               })
-            dragoApi.contract.vaulteventful.init()
+            poolApi.contract.vaulteventful.init()
               .then(() => {
-                this.getTransactions(vaultDetails[0][0], dragoApi.contract.vaulteventful, accounts)
+                this.getTransactions(vaultDetails[0][0], poolApi.contract.vaulteventful, accounts)
               }
               )
-            // this.getTransactions (vaultDetails[0][0], contract, accounts)
           })
       })
-
   }  
 
   // Getting last transactions
   getTransactions = (vaultAddress, contract, accounts) => {
     const { api } = this.context
     var sourceLogClass = this.constructor.name
-    console.log(vaultAddress)
     const logToEvent = (log) => {
       const key = api.util.sha3(JSON.stringify(log))
       const { blockNumber, logIndex, transactionHash, transactionIndex, params, type } = log
