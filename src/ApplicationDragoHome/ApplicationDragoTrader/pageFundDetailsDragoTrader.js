@@ -370,7 +370,7 @@ class PageFundDetailsDragoTrader extends Component {
                 // Gettin balance for each account
                 //
 
-                // console.log(accounts)
+                console.log(data)
                 accounts.map(account => {
                   dragoApi.contract.drago.balanceOf(account.address)
                     .then(balance => {
