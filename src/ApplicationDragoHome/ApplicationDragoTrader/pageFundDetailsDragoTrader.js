@@ -500,6 +500,7 @@ class PageFundDetailsDragoTrader extends Component {
         return allLogs
       })
       .then((dragoTransactionsLog) => {
+        console.log(dragoTransactionsLog)
         // Creating an array of promises that will be executed to add timestamp to each entry
         // Doing so because for each entry we need to make an async call to the client
         // For additional refernce: https://stackoverflow.com/questions/39452083/using-promise-function-inside-javascript-array-map

@@ -148,7 +148,7 @@ class ElementListTransactions extends PureComponent {
                     cellRenderer={({cellData}) => this.renderAction(cellData)}
                     flexShrink={1}
                   />
-                  <Column
+                  {/* <Column
                     width={100}
                     disableSort
                     label="SYMBOL"
@@ -157,7 +157,7 @@ class ElementListTransactions extends PureComponent {
                     cellRenderer={({cellData}) => this.renderSymbol(cellData)}
                     className={styles.exampleColumn}
                     flexShrink={1}
-                  />
+                  /> */}
                   {/* formatEth(price) }<small> ETH</small> */}
                   <Column
                     width={100}
@@ -252,7 +252,7 @@ class ElementListTransactions extends PureComponent {
 
   renderDrgValue(rowData) {
     return (
-      <div>{new BigNumber(rowData.drgvalue).toFixed(4)} <small>{rowData.symbol.toUpperCase()}</small></div>
+      <div>{new BigNumber(rowData.drgvalue).toFixed(4)} <small>{rowData.symbol}</small></div>
     )
   }
 
