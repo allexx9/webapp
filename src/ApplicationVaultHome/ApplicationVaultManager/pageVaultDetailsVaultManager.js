@@ -386,7 +386,8 @@ class PageVaultDetailsVaultManager extends Component {
         params,
         key,
         ethvalue,
-        drgvalue
+        drgvalue,
+        symbol: String.fromCharCode(...params.symbol.value)
       }
     }
 

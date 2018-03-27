@@ -1,25 +1,62 @@
 [
 	{
-		"constant": true,
+		"constant": false,
 		"inputs": [
 			{
-				"name": "_owner",
-				"type": "address"
+				"name": "_newSellPrice",
+				"type": "uint256"
 			},
 			{
-				"name": "_spender",
-				"type": "address"
+				"name": "_newBuyPrice",
+				"type": "uint256"
 			}
 		],
-		"name": "allowance",
+		"name": "setPrices",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_transactionFee",
+				"type": "uint256"
+			}
+		],
+		"name": "setTransactionFee",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getVersion",
 		"outputs": [
 			{
-				"name": "remaining",
-				"type": "uint256"
+				"name": "",
+				"type": "string"
 			}
 		],
 		"payable": false,
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_new",
+				"type": "address"
+			}
+		],
+		"name": "setOwner",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -37,52 +74,17 @@
 		"type": "function"
 	},
 	{
-		"constant": true,
-		"inputs": [
-			{
-				"name": "_who",
-				"type": "address"
-			}
-		],
-		"name": "balanceOf",
-		"outputs": [
-			{
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
+		"constant": false,
 		"inputs": [],
-		"name": "getAdminData",
+		"name": "buyDrago",
 		"outputs": [
 			{
-				"name": "feeCollector",
-				"type": "address"
-			},
-			{
-				"name": "dragodAO",
-				"type": "address"
-			},
-			{
-				"name": "ratio",
-				"type": "uint256"
-			},
-			{
-				"name": "transactionFee",
-				"type": "uint256"
-			},
-			{
-				"name": "minPeriod",
-				"type": "uint32"
+				"name": "success",
+				"type": "bool"
 			}
 		],
-		"payable": false,
-		"stateMutability": "view",
+		"payable": true,
+		"stateMutability": "payable",
 		"type": "function"
 	},
 	{
@@ -112,104 +114,37 @@
 		"type": "function"
 	},
 	{
-		"constant": true,
-		"inputs": [],
-		"name": "getDragoEventful",
-		"outputs": [
-			{
-				"name": "",
-				"type": "address"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [],
-		"name": "getOwner",
-		"outputs": [
-			{
-				"name": "",
-				"type": "address"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [],
-		"name": "getVersion",
-		"outputs": [
-			{
-				"name": "",
-				"type": "string"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [],
-		"name": "owner",
-		"outputs": [
-			{
-				"name": "",
-				"type": "address"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
 		"constant": false,
 		"inputs": [
 			{
-				"name": "_exchange",
-				"type": "address"
-			},
-			{
-				"name": "_token",
-				"type": "address"
-			},
-			{
-				"name": "_value",
-				"type": "uint256"
+				"name": "_minPeriod",
+				"type": "uint32"
 			}
 		],
-		"name": "depositToExchange",
+		"name": "changeMinPeriod",
 		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
-		"anonymous": false,
+		"constant": false,
 		"inputs": [
 			{
-				"indexed": true,
-				"name": "_owner",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"name": "_spender",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"name": "_value",
+				"name": "_amount",
 				"type": "uint256"
 			}
 		],
-		"name": "Approval",
-		"type": "event"
+		"name": "sellDrago",
+		"outputs": [
+			{
+				"name": "success",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
 	},
 	{
 		"constant": false,
@@ -231,6 +166,39 @@
 		"type": "function"
 	},
 	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_who",
+				"type": "address"
+			}
+		],
+		"name": "balanceOf",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getEventful",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"constant": false,
 		"inputs": [
 			{
@@ -238,15 +206,115 @@
 				"type": "address"
 			},
 			{
-				"name": "_token",
-				"type": "address"
-			},
-			{
-				"name": "_value",
+				"name": "_amount",
 				"type": "uint256"
 			}
 		],
-		"name": "withdrawFromExchange",
+		"name": "depositToExchange",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "owner",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getAdminData",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			},
+			{
+				"name": "feeCollector",
+				"type": "address"
+			},
+			{
+				"name": "dragoDao",
+				"type": "address"
+			},
+			{
+				"name": "ratio",
+				"type": "uint256"
+			},
+			{
+				"name": "transactionFee",
+				"type": "uint256"
+			},
+			{
+				"name": "minPeriod",
+				"type": "uint32"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_feeCollector",
+				"type": "address"
+			}
+		],
+		"name": "changeFeeCollector",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_dragoDao",
+				"type": "address"
+			}
+		],
+		"name": "changeDragoDao",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_exchange",
+				"type": "address"
+			}
+		],
+		"name": "operateOnExchange",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_ratio",
+				"type": "uint256"
+			}
+		],
+		"name": "changeRatio",
 		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
@@ -280,278 +348,9 @@
 		"type": "constructor"
 	},
 	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_exchange",
-				"type": "address"
-			},
-			{
-				"name": "orderAddresses",
-				"type": "address[5]"
-			},
-			{
-				"name": "orderValues",
-				"type": "uint256[6]"
-			},
-			{
-				"name": "fillTakerTokenAmount",
-				"type": "uint256"
-			},
-			{
-				"name": "stableOrSufficient",
-				"type": "bool"
-			},
-			{
-				"name": "v",
-				"type": "uint8"
-			},
-			{
-				"name": "signature",
-				"type": "bytes32[2]"
-			}
-		],
-		"name": "placeOrderExchange",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [],
-		"name": "buyDrago",
-		"outputs": [
-			{
-				"name": "success",
-				"type": "bool"
-			}
-		],
-		"payable": true,
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_amount",
-				"type": "uint256"
-			}
-		],
-		"name": "sellDrago",
-		"outputs": [
-			{
-				"name": "success",
-				"type": "bool"
-			}
-		],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"payable": true,
 		"stateMutability": "payable",
 		"type": "fallback"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_newSellPrice",
-				"type": "uint256"
-			},
-			{
-				"name": "_newBuyPrice",
-				"type": "uint256"
-			}
-		],
-		"name": "setPrices",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_transactionFee",
-				"type": "uint256"
-			}
-		],
-		"name": "setTransactionFee",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_from",
-				"type": "address"
-			},
-			{
-				"name": "_to",
-				"type": "address"
-			},
-			{
-				"name": "_value",
-				"type": "uint256"
-			}
-		],
-		"name": "transferFrom",
-		"outputs": [
-			{
-				"name": "success",
-				"type": "bool"
-			}
-		],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_spender",
-				"type": "address"
-			},
-			{
-				"name": "_value",
-				"type": "uint256"
-			}
-		],
-		"name": "approve",
-		"outputs": [
-			{
-				"name": "success",
-				"type": "bool"
-			}
-		],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_minPeriod",
-				"type": "uint32"
-			}
-		],
-		"name": "changeMinPeriod",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_to",
-				"type": "address"
-			},
-			{
-				"name": "_value",
-				"type": "uint256"
-			}
-		],
-		"name": "transfer",
-		"outputs": [
-			{
-				"name": "success",
-				"type": "bool"
-			}
-		],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_dragoDao",
-				"type": "address"
-			}
-		],
-		"name": "changeDragoDao",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_exchange",
-				"type": "address"
-			},
-			{
-				"name": "orderAddresses",
-				"type": "address[5]"
-			},
-			{
-				"name": "orderValues",
-				"type": "uint256[6]"
-			},
-			{
-				"name": "fillTakerTokenAmount",
-				"type": "uint256"
-			},
-			{
-				"name": "stableOrSufficient",
-				"type": "bool"
-			},
-			{
-				"name": "v",
-				"type": "uint8"
-			},
-			{
-				"name": "signature",
-				"type": "bytes32[2]"
-			}
-		],
-		"name": "placeTradeExchange",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"name": "from",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"name": "to",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"name": "_amount",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"name": "_revenue",
-				"type": "uint256"
-			}
-		],
-		"name": "Buy",
-		"type": "event"
 	},
 	{
 		"anonymous": false,
@@ -569,148 +368,5 @@
 		],
 		"name": "NewOwner",
 		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"name": "from",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"name": "to",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"name": "_amount",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"name": "_revenue",
-				"type": "uint256"
-			}
-		],
-		"name": "Sell",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"name": "_from",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"name": "_to",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"name": "_value",
-				"type": "uint256"
-			}
-		],
-		"name": "Transfer",
-		"type": "event"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_new",
-				"type": "address"
-			}
-		],
-		"name": "setOwner",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_exchange",
-				"type": "address"
-			},
-			{
-				"name": "orderAddresses",
-				"type": "address[5]"
-			},
-			{
-				"name": "orderValues",
-				"type": "uint256[6]"
-			},
-			{
-				"name": "cancelTakerTokenAmount",
-				"type": "uint256"
-			}
-		],
-		"name": "cancelOrderExchange",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_feeCollector",
-				"type": "address"
-			}
-		],
-		"name": "changeFeeCollector",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_ratio",
-				"type": "uint256"
-			}
-		],
-		"name": "changeRatio",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_exchange",
-				"type": "address"
-			},
-			{
-				"name": "orderAddresses",
-				"type": "address[5]"
-			},
-			{
-				"name": "orderValues",
-				"type": "uint256[6]"
-			},
-			{
-				"name": "cancelTakerTokenAmount",
-				"type": "uint256"
-			}
-		],
-		"name": "finalizeDeal",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
 	}
 ]

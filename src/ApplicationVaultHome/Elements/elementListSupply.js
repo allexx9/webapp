@@ -25,7 +25,7 @@ class ElementListSupply extends PureComponent {
   constructor(props, context) {
     super(props, context);
     const { list } = this.props
-    const sortBy = 'symbol';
+    // const sortBy = 'symbol';
     const sortDirection = SortDirection.ASC;
     const sortedList = list.sortBy(item => item.symbol)
                       .update(
@@ -42,7 +42,7 @@ class ElementListSupply extends PureComponent {
       rowHeight: 40,
       rowCount: rowCount,
       scrollToIndex: undefined,
-      sortBy,
+      // sortBy,
       sortDirection,
       sortedList,
       useDynamicRowHeight: false
@@ -59,7 +59,7 @@ class ElementListSupply extends PureComponent {
 
   componentWillReceiveProps (nextProps) {
     const { list } = nextProps
-    const sortBy = 'symbol';
+    // const sortBy = 'symbol';
     const sortDirection = SortDirection.ASC;
     const sortedList = list.sortBy(item => item.symbol)
                       .update(
@@ -120,7 +120,7 @@ class ElementListSupply extends PureComponent {
                   <Column
                     width={150}
                     disableSort
-                    label="Symbol"
+                    label="SYMBOL"
                     cellDataGetter={({rowData}) => rowData.symbol}
                     dataKey="symbol"
                     className={styles.exampleColumn}
@@ -130,7 +130,7 @@ class ElementListSupply extends PureComponent {
                   <Column
                     width={width}
                     disableSort
-                    label="Name"
+                    label="NAME"
                     cellDataGetter={({rowData}) => rowData.name}
                     dataKey="name"
                     className={styles.exampleColumn}
@@ -140,7 +140,7 @@ class ElementListSupply extends PureComponent {
                   <Column
                     width={250}
                     disableSort
-                    label="Supply"
+                    label="SUPPLY"
                     cellDataGetter={({rowData}) => rowData.supply}
                     dataKey="drg"
                     className={styles.exampleColumn}
@@ -150,7 +150,7 @@ class ElementListSupply extends PureComponent {
                   <Column
                     width={210}
                     disableSort
-                    label="Actions"
+                    label="ACTIONS"
                     cellDataGetter={({rowData}) => rowData.symbol}
                     dataKey="actions"
                     className={styles.exampleColumn}

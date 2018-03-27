@@ -398,7 +398,7 @@ export class App extends Component {
               secondaryText[1] = utils.dateFromTimeStamp(new Date())
             } else {
               console.log(`${sourceLogClass} -> You received ${Math.abs(balDifference).toFixed(4)} ETH!`)
-              secondaryText[0] = `${sourceLogClass} -> You received ${Math.abs(balDifference).toFixed(4)} ETH!`
+              secondaryText[0] = `You received ${Math.abs(balDifference).toFixed(4)} ETH!`
               secondaryText[1] = utils.dateFromTimeStamp(new Date())
             }
             if (this._notificationSystem && endpoint.accountsBalanceError === false) {

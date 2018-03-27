@@ -263,7 +263,7 @@ class ElementListTransactions extends PureComponent {
 
   renderDrgValue(rowData) {
     return (
-      <div>{new BigNumber(rowData.drgvalue).toFixed(4)} <small>{rowData.symbol}</small></div>
+      <div>{new BigNumber(rowData.drgvalue).toFixed(4)} <small>{rowData.symbol.toUpperCase()}</small></div>
     )
   }
 

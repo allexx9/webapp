@@ -190,7 +190,7 @@
 		"outputs": [
 			{
 				"name": "",
-				"type": "uint128"
+				"type": "uint256"
 			}
 		],
 		"payable": false,

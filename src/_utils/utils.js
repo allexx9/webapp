@@ -866,7 +866,7 @@ class utilities {
   }
 
   dragoISIN(symbol, dragoId) {
-    return DRG_ISIN + dragoId.toString().padStart(7, "0") + symbol;
+    return DRG_ISIN + dragoId.toString().padStart(7, "0") + symbol.toUpperCase();
   }
 }
 

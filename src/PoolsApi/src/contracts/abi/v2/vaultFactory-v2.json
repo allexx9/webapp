@@ -1,5 +1,69 @@
 [
 	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_new",
+				"type": "address"
+			}
+		],
+		"name": "setOwner",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_vaultDao",
+				"type": "address"
+			}
+		],
+		"name": "setBeneficiary",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getStorage",
+		"outputs": [
+			{
+				"name": "vaultDao",
+				"type": "address"
+			},
+			{
+				"name": "version",
+				"type": "string"
+			},
+			{
+				"name": "nextVaultId",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_newVaultDao",
+				"type": "address"
+			}
+		],
+		"name": "changeVaultDao",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"constant": true,
 		"inputs": [],
 		"name": "getRegistry",
@@ -14,17 +78,17 @@
 		"type": "function"
 	},
 	{
-		"constant": true,
-		"inputs": [],
-		"name": "VERSION",
-		"outputs": [
+		"constant": false,
+		"inputs": [
 			{
-				"name": "",
-				"type": "string"
+				"name": "_fee",
+				"type": "uint256"
 			}
 		],
+		"name": "setFee",
+		"outputs": [],
 		"payable": false,
-		"stateMutability": "view",
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -35,20 +99,6 @@
 			{
 				"name": "",
 				"type": "address"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [],
-		"name": "getNextId",
-		"outputs": [
-			{
-				"name": "nextVaultId",
-				"type": "uint256"
 			}
 		],
 		"payable": false,
@@ -70,17 +120,49 @@
 		"type": "function"
 	},
 	{
-		"constant": true,
+		"constant": false,
 		"inputs": [],
-		"name": "getVersion",
-		"outputs": [
+		"name": "drain",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
 			{
-				"name": "",
+				"name": "_name",
+				"type": "string"
+			},
+			{
+				"name": "_symbol",
 				"type": "string"
 			}
 		],
+		"name": "createVault",
+		"outputs": [
+			{
+				"name": "success",
+				"type": "bool"
+			}
+		],
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_newRegistry",
+				"type": "address"
+			}
+		],
+		"name": "setRegistry",
+		"outputs": [],
 		"payable": false,
-		"stateMutability": "view",
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -103,69 +185,6 @@
 		"type": "function"
 	},
 	{
-		"constant": true,
-		"inputs": [],
-		"name": "getVaultDao",
-		"outputs": [
-			{
-				"name": "",
-				"type": "address"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [],
-		"name": "getStorage",
-		"outputs": [
-			{
-				"name": "vaultDao",
-				"type": "address"
-			},
-			{
-				"name": "nextVaultId",
-				"type": "uint256"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [],
-		"name": "getOwner",
-		"outputs": [
-			{
-				"name": "",
-				"type": "address"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"name": "old",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"name": "current",
-				"type": "address"
-			}
-		],
-		"name": "NewOwner",
-		"type": "event"
-	},
-	{
 		"constant": false,
 		"inputs": [
 			{
@@ -184,18 +203,37 @@
 		"type": "function"
 	},
 	{
-		"constant": false,
+		"constant": true,
+		"inputs": [],
+		"name": "VERSION",
+		"outputs": [
+			{
+				"name": "",
+				"type": "string"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"inputs": [
 			{
-				"name": "_new",
+				"name": "_registry",
+				"type": "address"
+			},
+			{
+				"name": "_vaultDao",
+				"type": "address"
+			},
+			{
+				"name": "_authority",
 				"type": "address"
 			}
 		],
-		"name": "setOwner",
-		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
-		"type": "function"
+		"type": "constructor"
 	},
 	{
 		"anonymous": false,
@@ -230,110 +268,20 @@
 		"type": "event"
 	},
 	{
-		"constant": false,
+		"anonymous": false,
 		"inputs": [
 			{
-				"name": "_newVaultDao",
-				"type": "address"
-			}
-		],
-		"name": "changeVaultDao",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_name",
-				"type": "string"
-			},
-			{
-				"name": "_symbol",
-				"type": "string"
-			}
-		],
-		"name": "createVault",
-		"outputs": [
-			{
-				"name": "success",
-				"type": "bool"
-			}
-		],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [],
-		"name": "drain",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_fee",
-				"type": "uint256"
-			}
-		],
-		"name": "setFee",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_vaultDao",
-				"type": "address"
-			}
-		],
-		"name": "setBeneficiary",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_newRegistry",
-				"type": "address"
-			}
-		],
-		"name": "setRegistry",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"name": "_registry",
+				"indexed": true,
+				"name": "old",
 				"type": "address"
 			},
 			{
-				"name": "_vaultDao",
-				"type": "address"
-			},
-			{
-				"name": "_authority",
+				"indexed": true,
+				"name": "current",
 				"type": "address"
 			}
 		],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "constructor"
+		"name": "NewOwner",
+		"type": "event"
 	}
 ]
