@@ -255,7 +255,6 @@ class PageVaultDetailsVaultManager extends Component {
                       <div className={styles.detailsTabContent}>
                           <p>Your last 20 transactions on this Drago.</p>
                         </div>
-                        {console.log(vaultTransactionList)}
                           <ElementListWrapper list={vaultTransactionList}
                               renderCopyButton={this.renderCopyButton}
                               renderEtherscanButton={this.renderEtherscanButton}
@@ -330,6 +329,7 @@ class PageVaultDetailsVaultManager extends Component {
             poolApi.contract.vault.getAdminData()
               .then((data) => {
                 const price = (new BigNumber(data[4]).div(100).toFixed(2))
+                console.log(data[4])
                 this.setState({
                   vaultDetails: {
                     address: vaultDetails[0][0],

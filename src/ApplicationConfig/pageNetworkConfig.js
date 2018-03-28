@@ -18,6 +18,7 @@ import {
  } from '../_utils/const';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
+import { Interfaces } from '../_utils/interfaces'
 import { connect } from 'react-redux';
 
 function mapStateToProps(state) {
@@ -87,6 +88,7 @@ class PageNetworkConfig extends Component {
     };
 
     onChangeEndpoint = (event, key) => {
+      this.unsubscribeFromNewBlock()
       var endpoint = {}
       switch (key) {
         case 0:
@@ -108,6 +110,7 @@ class PageNetworkConfig extends Component {
     }
 
     onChangeNetwork = (event, key) => {
+      this.unsubscribeFromNewBlock()
       var endpoint = {}
       switch (key) {
         case 0:
@@ -128,7 +131,25 @@ class PageNetworkConfig extends Component {
       this.props.dispatch(this.updateInterfaceAction(endpoint))
     }
 
+    unsubscribeFromNewBlock = () => {
+      const { api } = this.context
+      // const { api } = this.context;
+      const inter = new Interfaces()
+      inter.detachInterface(api, this.props.endpoint.subscriptionData)
+      // const selectedEndpoint = this.props.endpoint.endpointInfo.name
+      // switch (selectedEndpoint) {
+      //   case INFURA:
+      //   break;
+      //   case RIGOBLOCK:
+      //   break;
+      //   case LOCAL:
+      //   break;
+      // }
+    }
+
     handleRefresh = () =>{
+      const endpoint ={ prevBlockNumber: "0"}
+      this.props.dispatch(this.updateInterfaceAction(endpoint))
       window.location.reload(false)
     }
 

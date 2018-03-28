@@ -10,7 +10,7 @@ import React, { Component } from 'react';
 import Web3 from 'web3'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
-import { rigotoken } from './PoolsApi/src/contracts/abi'
+// import { rigotoken } from './PoolsApi/src/contracts/abi'
 
 import ApplicationConfigPage from './Application/applicationConfig';
 import ApplicationDragoPage from './Application/applicationDrago';
@@ -74,6 +74,7 @@ export class App extends Component {
     sourceLogClass = this.constructor.name
     // Connecting to blockchain client
     console.log(this.props)
+    console.log(this.props.endpoint.networkInfo.name)
     var endpoint = new Endpoint(this.props.endpoint.endpointInfo, this.props.endpoint.networkInfo)
     this._api = endpoint.connect()
     console.log(endpoint)
@@ -255,24 +256,29 @@ export class App extends Component {
     var WsSecureUrl = ''
     const selectedEndpoint = this.props.endpoint.endpointInfo.name
     const networkId = this.props.endpoint.networkInfo.id
-    console.log(networkId)
+    const networkName = this.props.endpoint.networkInfo.name
+    var subscriptionData
+    var endpoint = {}
     var blockchain = new Interfaces(this._api, networkId)
       switch (selectedEndpoint) {
         case INFURA:
           console.log(`${sourceLogClass} -> ${INFURA}`)
           return blockchain.attachInterfaceInfuraV2(this._api, networkId)
-            .then((result) => {
+            .then((attachedInterface) => {
               // this.setState({...this.state, ...blockchain.success})
               // Subscribing to newBlockNumber event
-              this._api.subscribe('eth_blockNumber', this.onNewBlockNumber)
+              return this._api.subscribe('eth_blockNumber', this.onNewBlockNumber)
                 .then((subscriptionID) => {
                   console.log(`${sourceLogClass}: Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);
                   subscriptionData = subscriptionID
+                  attachedInterface.subscriptionData = subscriptionData
+                  attachedInterface.prevBlockNumber = "0"
+                  return attachedInterface
                 })
                 .catch((error) => {
                   console.warn('error subscription', error)
                 });
-                return result
+                
             })
             .catch(()=>{
               // this.setState({...this.state, ...blockchain.error})
@@ -280,23 +286,29 @@ export class App extends Component {
         case RIGOBLOCK:
           console.log(`${sourceLogClass} -> ${RIGOBLOCK}`)
           return blockchain.attachInterfaceRigoBlockV2(this._api, networkId)
-            .then((result) => {
+            .then((attachedInterface) => {
               // Setting connection to node
+              console.log(networkName)
+              
               if (PROD) {
-                WsSecureUrl = EP_RIGOBLOCK_KV_PROD_WS
+                WsSecureUrl = this.props.endpoint.endpointInfo.wss[networkName].prod
               } else {
-                WsSecureUrl = EP_RIGOBLOCK_KV_DEV_WS
+                WsSecureUrl = this.props.endpoint.endpointInfo.wss[networkName].dev
               }
               // Subscribing to newBlockNumber event
+              console.log(WsSecureUrl)
               const web3 = new Web3(WsSecureUrl)
-              Promise
+              return Promise
                 .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
                 .then(result => {
                   var subscription = result[0]
                   console.log(`${sourceLogClass}: Subscribed to eth_blockNumber`);
                   subscriptionData = subscription
+                  attachedInterface.subscriptionData = subscriptionData
+                  attachedInterface.prevBlockNumber = "0"
+                  return attachedInterface
                 })
-                return result
+                
             })
             .catch(()=>{
               this.setState(...this.state, ...blockchain.error)
@@ -304,7 +316,7 @@ export class App extends Component {
         case LOCAL:
           console.log(`${sourceLogClass} -> ${LOCAL}`)
           return blockchain.attachInterfaceRigoBlockV2(this._api, networkId)
-            .then(() => {
+            .then((attachedInterface) => {
               // Setting connection to node
               if (PROD) {
                 WsSecureUrl = EP_RIGOBLOCK_KV_PROD_WS
@@ -313,12 +325,15 @@ export class App extends Component {
               }
               // Subscribing to newBlockNumber event
               const web3 = new Web3(WsSecureUrl)
-              Promise
+              return Promise
                 .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
                 .then(result => {
                   var subscription = result[0]
                   console.log(`${sourceLogClass}: Subscribed to eth_blockNumber`);
                   subscriptionData = subscription
+                  attachedInterface.subscriptionData = subscriptionData
+                  attachedInterface.prevBlockNumber = "0"
+                  return attachedInterface
                 })
             })
             .catch(()=>{
@@ -335,6 +350,9 @@ export class App extends Component {
     }
     // const { api } = this.context;
     const { endpoint } = this.props;
+    console.log(blockNumber)
+    this._api.parity.chain().then((result) =>{console.log(result)})
+    console.log(endpoint)
     const prevBlockNumber = endpoint.prevBlockNumber
     var newBlockNumber = new BigNumber(0)
     // Checking if blockNumber is passed by Parity Api or Web3
