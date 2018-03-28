@@ -99,7 +99,7 @@ class PageNetworkConfig extends Component {
           endpoint.endpointInfo = ENDPOINTS.local
           break
       }
-      console.log(endpoint.endpointInfo)
+      endpoint.prevBlockNumber = "0";
       this.setState({
         selectedEndpoint: key,
         save: false
@@ -120,7 +120,7 @@ class PageNetworkConfig extends Component {
           endpoint.networkInfo = NETWORKS.mainnet
           break
       }
-      console.log(endpoint.networkInfo)
+      endpoint.prevBlockNumber = "0";
       this.setState({
         selectedNetwork: key,
         save: false
