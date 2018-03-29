@@ -13,7 +13,6 @@ import styles from './elementNotificationsDrawer.module.css';
 var timerId = null;
 
 function mapStateToProps(state) {
-  console.log(state)
   return {
     recentTransactions: state.transactions.queue
   };
@@ -67,7 +66,6 @@ class ElementNotificationsDrawer extends Component {
     const that = this
     var runTick = () => {
       timerId = setTimeout(function tick() {
-        console.log('tick')
         that.updateTransactionsQueue()
         timerId = setTimeout(tick, 2000); // (*)
       }, 2000);
@@ -79,9 +77,7 @@ class ElementNotificationsDrawer extends Component {
     // Processing the queue in order to update the transactions status
     const { api } = this.context
     const { recentTransactions } = this.props
-    console.log('recentTransactions', recentTransactions)
     const newRecentTransactions = utils.updateTransactionsQueue(api, recentTransactions)
-    console.log('newRecentTransactions', newRecentTransactions)
     this.props.dispatch(this.updateTransactionsQueueAction(newRecentTransactions))
   }
 
@@ -205,7 +201,6 @@ class ElementNotificationsDrawer extends Component {
 
   render () {
     const { notificationsOpen } = this.props
-    console.log('render')
     return (
       <span>
         <Drawer width={300} openSecondary={true}
@@ -230,7 +225,6 @@ class ElementNotificationsDrawer extends Component {
   }
 
   detachInterface = () => {
-    console.log('Clear timer ID')
     clearInterval(timerId)
   }  
 }

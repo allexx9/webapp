@@ -288,15 +288,12 @@ export class App extends Component {
           return blockchain.attachInterfaceRigoBlockV2(this._api, networkId)
             .then((attachedInterface) => {
               // Setting connection to node
-              console.log(networkName)
-              
               if (PROD) {
                 WsSecureUrl = this.props.endpoint.endpointInfo.wss[networkName].prod
               } else {
                 WsSecureUrl = this.props.endpoint.endpointInfo.wss[networkName].dev
               }
               // Subscribing to newBlockNumber event
-              console.log(WsSecureUrl)
               const web3 = new Web3(WsSecureUrl)
               return Promise
                 .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
@@ -350,9 +347,6 @@ export class App extends Component {
     }
     // const { api } = this.context;
     const { endpoint } = this.props;
-    console.log(blockNumber)
-    this._api.parity.chain().then((result) =>{console.log(result)})
-    console.log(endpoint)
     const prevBlockNumber = endpoint.prevBlockNumber
     var newBlockNumber = new BigNumber(0)
     // Checking if blockNumber is passed by Parity Api or Web3
@@ -405,11 +399,12 @@ export class App extends Component {
         const rigoTokenBalances = results
         const prevAccounts = [].concat(endpoint.accounts)
         prevAccounts.map((account,index) =>{
+          // Checking ETH balance
           const newEthBalance = this._api.util.fromWei(ethBalances[index]).toFormat(3)
           if ((account.ethBalance !== newEthBalance) && prevBlockNumber != 0) {
             console.log(`${account.name} balance changed.`)
-            var secondaryText = []
-            var balDifference = account.ethBalance - newEthBalance
+            let secondaryText = []
+            let balDifference = account.ethBalance - newEthBalance
             if (balDifference > 0) {
               console.log(`${sourceLogClass} -> You transferred ${balDifference.toFixed(4)} ETH!`)
               secondaryText[0] = `You transferred ${balDifference.toFixed(4)} ETH!`
@@ -417,6 +412,30 @@ export class App extends Component {
             } else {
               console.log(`${sourceLogClass} -> You received ${Math.abs(balDifference).toFixed(4)} ETH!`)
               secondaryText[0] = `You received ${Math.abs(balDifference).toFixed(4)} ETH!`
+              secondaryText[1] = utils.dateFromTimeStamp(new Date())
+            }
+            if (this._notificationSystem && endpoint.accountsBalanceError === false) {
+              this._notificationSystem.addNotification({
+                  level: 'info',
+                  position: 'br',
+                  autoDismiss: 10,
+                  children: this.notificationAlert(account.name, secondaryText)
+              });
+            }
+          }
+          // Checking GRG balance
+          const newRigoTokenBalance = this._api.util.fromWei(rigoTokenBalances[index]).toFormat(3)
+          if ((account.rigoTokenBalance !== newRigoTokenBalance) && prevBlockNumber != 0) {
+            console.log(`${account.name} balance changed.`)
+            let secondaryText = []
+            let balDifference = account.rigoTokenBalance - newRigoTokenBalance
+            if (balDifference > 0) {
+              console.log(`${sourceLogClass} -> You transferred ${balDifference.toFixed(4)} GRG!`)
+              secondaryText[0] = `You transferred ${balDifference.toFixed(4)} GRG!`
+              secondaryText[1] = utils.dateFromTimeStamp(new Date())
+            } else {
+              console.log(`${sourceLogClass} -> You received ${Math.abs(balDifference).toFixed(4)} GRG!`)
+              secondaryText[0] = `You received ${Math.abs(balDifference).toFixed(4)} GRG!`
               secondaryText[1] = utils.dateFromTimeStamp(new Date())
             }
             if (this._notificationSystem && endpoint.accountsBalanceError === false) {
