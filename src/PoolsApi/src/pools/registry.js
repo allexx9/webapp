@@ -33,7 +33,6 @@ class Registry {
 
   _getParityRegistryContractAddress = () => {
     const api = this._api
-    console.log(api)
     // // Checking if using Web3
     // if (typeof api.version !== 'undefined') {
     //   return api.eth.net.getId()
@@ -71,16 +70,6 @@ class Registry {
           return Promise.all([
             registry.getAddress.call({}, [api.util.sha3(contractName), 'A'])
           ])
-
-
-          // return this._getParityRegistryContractAddress()
-          //   .then((parityRegistryContractAddress) => {
-          //     console.log(`${this.constructor.name} -> Registry found at ${parityRegistryContractAddress}`)
-          //     const registry = api.newContract(abis.parityregister, parityRegistryContractAddress).instance;
-          //     return Promise.all([
-          //       registry.getAddress.call({}, [api.util.sha3(contractName), 'A'])
-          //     ])
-          //   });
         }
       }
       console.log(`${this.constructor.name} -> RigoBlock node detected.`)
@@ -108,20 +97,6 @@ class Registry {
         console.log(address)
         return address[0]
       })
-
-
-      // return this._getParityRegistryContractAddress()
-      //   .then((parityRegistryContractAddress) => {
-      //     console.log(`${this.constructor.name} -> Registry found at ${parityRegistryContractAddress}`)
-      //     registryContract.options.address = parityRegistryContractAddress
-      //     return Promise.all([
-      //       registryContract.methods.getAddress(api.utils.sha3(contractName), 'A').call()
-      //     ])
-      //     .then((address) => {
-      //       console.log(address)
-      //       return address[0]
-      //     })
-      //   })
     }
   }
 
@@ -152,8 +127,10 @@ class Registry {
         isMetaMask = api._provider.isMetaMask
       }
       if (isMetaMask) {
+        console.log(`${this.constructor.name} -> Contract ${contractName} found at ${address}`)
         return new api.eth.Contract(abi, address)
       }
+      console.log(`${this.constructor.name} -> Contract ${contractName} found at ${address}`)
       return api.newContract(abi, address)
     })
     return contract

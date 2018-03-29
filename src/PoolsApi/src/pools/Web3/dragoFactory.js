@@ -3,7 +3,7 @@
 
 import * as abis from '../../contracts/abi';
 import Registry from '../registry';
-import { DRAGOREGISTRY } from '../../utils/const'
+import { DRAGOFACTORY } from '../../utils/const'
 
 
 class DragoFactoryWeb3 {
@@ -15,7 +15,7 @@ class DragoFactoryWeb3 {
     this._abi = abis.dragofactory
     this._registry = new Registry(api)
     this._constunctorName = this.constructor.name
-    this._contractName = DRAGOREGISTRY
+    this._contractName = DRAGOFACTORY
   }
 
   get instance () {
@@ -24,8 +24,6 @@ class DragoFactoryWeb3 {
     }
     return this._instance;
   }
-
-
 
   get hexSignature() {
     return this._hexSignature
@@ -55,34 +53,17 @@ class DragoFactoryWeb3 {
     const options = {
       from: accountAddress
     }
-    console.log(options)
     instance.options.from = accountAddress
-    // instance.methods.createDrago(dragoName, dragoSymbol).estimateGas(options)
-    // .then(function(gasAmount){
-    //   console.log(gasAmount)
-    //   console.log('gas')
-    //   var gasEstimateCorrect = 0
-    //   // (gasEstimate) ? gasEstimateCorrect = 4600000 : gasEstimateCorrect = gasEstimate
-    //   instance.options.gas =  gasEstimateCorrect
-    // }
-    // )
-    // // instance.options.gas = 4600000
-    instance.options.gas = "0x442168"
-    return instance.methods.createDrago(dragoName, dragoSymbol)
+    return instance.methods.createDrago(dragoName, dragoSymbol).estimateGas(options)
+    .then(function(gasAmount){
+      instance.options.gas =  gasAmount
+      return instance.methods.createDrago(dragoName, dragoSymbol)
       .send(options)
       .then((receipt) =>{
-        console.log(receipt)
         return receipt
       })
-    // return instance.createDrago
-    // .estimateGas(options, values)
-    // .then((gasEstimate) => {
-    //   options.gas = gasEstimate.mul(1.2).toFixed(0);
-    //   return instance.createDrago.postTransaction(options, values)
-    // })
-    // .catch((error) => {
-    //   console.error('error', error)
-    // })
+    }
+    )
   }
 }
 

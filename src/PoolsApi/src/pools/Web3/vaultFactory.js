@@ -56,18 +56,12 @@ class VaultFactoryWeb3 {
     instance.options.from = accountAddress
     return instance.methods.createVault(vaultName, vaultSymbol).estimateGas(options)
       .then(function (gasAmount) {
-        console.log(gasAmount)
         instance.options.gas = gasAmount
         return instance.methods.createVault(vaultName, vaultSymbol)
           .send(options)
           .then((receipt) => {
-            console.log(receipt)
             return receipt
           })
-          // .catch((error) => {
-          //   console.log(error)
-          //   return error
-          // })
       }
       )
   }

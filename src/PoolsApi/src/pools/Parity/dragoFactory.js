@@ -70,7 +70,6 @@ class DragoFactoryParity {
     return instance.createDrago
     .estimateGas(options, values)
     .then((gasEstimate) => {
-      console.log(gasEstimate.toFormat())
       options.gas = gasEstimate.mul(1.2).toFixed(0);
       return instance.createDrago.postTransaction(options, values)
     })

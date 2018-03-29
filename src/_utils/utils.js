@@ -25,7 +25,6 @@ class utilities {
         return
       }
       // 1.1 Checking if it's a transaction belonging to a Parity account
-      console.log(value.parityId)
       if (value.parityId) {
         // 1.2 Checking if the transaction has been accepted (it has got an blockNumber)
         console.log(`Checking if blockhash undefined`)
@@ -40,7 +39,6 @@ class utilities {
         console.log(`Checking request on Parity wallet`)
         api.parity.checkRequest(value.parityId, [])
           .then(hash => {
-            console.log(hash)
             if (hash) {
               value.hash = hash
               api.eth.getTransactionByHash(hash)
