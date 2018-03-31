@@ -98,7 +98,9 @@ class DragoWeb3 {
       from: accountAddress,
     }
     instance.options.from = accountAddress
-    const basisPoints = price * 100
+    console.log(price)
+    const basisPoints = (price * 100).toFixed(0)
+    console.log(basisPoints)
     return instance.methods.setTransactionFee(basisPoints)
     .estimateGas(options)
     .then((gasEstimate) => {
