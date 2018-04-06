@@ -58,7 +58,8 @@ class RigoTokenWeb3 {
     return instance.methods.transfer(toAddress, amount).estimateGas(options)
     .then((gasEstimate) => {
       console.log(gasEstimate)
-      options.gas = new BigNumber(gasEstimate).times(1.2).toFixed(0)
+      // options.gas = new BigNumber(gasEstimate).times(1.2).toFixed(0)
+      options.gas = gasEstimate
       console.log(options.gas)
     })
     .then(()=>{

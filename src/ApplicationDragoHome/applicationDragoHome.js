@@ -16,6 +16,7 @@ import utils from '../_utils/utils'
 import ElementNotificationsDrawer from '../Elements/elementNotificationsDrawer'
 import CheckAuthPage from '../Elements/checkAuthPage'
 import ElementBottomStatusBar from '../Elements/elementBottomStatusBar'
+import DragoComingSoon from '../Elements/elementDragoComingSoon'
 
 
 import { connect } from 'react-redux';
@@ -129,6 +130,43 @@ class ApplicationDragoHome extends Component {
         </span>
     )
     }
+
+    return (
+      <div ref={node => this.node = node}>
+        <Row className={styles.maincontainer}>
+          <Col xs={12}>
+            <Row center="xs">
+              <Col xs={3} >
+
+              </Col>
+              <Col xs={6} >
+                <DragoComingSoon />
+              </Col>
+              <Col xs={3} >
+
+              </Col>
+            </Row>
+          </Col>
+          <Row>
+            <Col xs={12}>
+                {notificationsOpen ? (
+                  <ElementNotificationsDrawer
+                    handleToggleNotifications={handleToggleNotifications}
+                    notificationsOpen={notificationsOpen}
+                  />
+                ) : (
+                    null
+                  )}
+            </Col>
+          </Row>
+        </Row>
+        <ElementBottomStatusBar 
+        blockNumber={endpoint.prevBlockNumber}
+        networkName={endpoint.networkInfo.name}
+        networkError={endpoint.networkError}
+        networkStatus={endpoint.networkStatus} />
+      </div>
+    );
 
     if (user.isManager) {
       return (

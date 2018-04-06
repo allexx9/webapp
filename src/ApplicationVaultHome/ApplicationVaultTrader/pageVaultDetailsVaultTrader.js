@@ -399,11 +399,11 @@ class PageFundDetailsVaultTrader extends Component {
                     .then(() => {
                       // console.log(api.util.fromWei(balanceDRG.toNumber(4)).toFormat(4))
                       // console.log(balanceDRG)
-                      var balanceETH = balanceDRG.times(formatCoins(balanceDRG, 4, api))
+                      var balanceETH = balanceDRG.times(formatCoins(balanceDRG, 6, api))
                       // console.log(balanceETH)
                       this.setState({
-                        balanceETH: formatEth(balanceETH, 4, api),
-                        balanceDRG: formatCoins(balanceDRG, 4, api)
+                        balanceETH: formatEth(balanceETH, 6, api),
+                        balanceDRG: formatCoins(balanceDRG, 6, api)
                       })
                     })
                 })
