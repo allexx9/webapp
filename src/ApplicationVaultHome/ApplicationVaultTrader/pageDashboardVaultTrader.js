@@ -304,6 +304,9 @@ class PageDashboardVaultTrader extends Component {
         console.log(results)
         this.props.dispatch(this.updateTransactionsVault(results))
       })
+      .catch((error) => {
+        console.warn(error)
+      })
     }
   }
 

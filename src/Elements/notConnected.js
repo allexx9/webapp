@@ -55,7 +55,8 @@ class NotConnected extends Component {
     }
 
     renderSyncing = () => {
-      const progress = new BigNumber(this.props.syncStatus.currentBlock).div(new BigNumber(this.props.syncStatus.highestBlock)).mul(100).toFixed(2)
+      const progressBlocks = new BigNumber(this.props.syncStatus.currentBlock).div(new BigNumber(this.props.syncStatus.highestBlock)).mul(100).toFixed(2)
+      const progressWarp = new BigNumber(this.props.syncStatus.warpChunksProcessed).div(new BigNumber(this.props.syncStatus.warpChunksAmount)).mul(100).toFixed(2)
       return (
         <Dialog
         open={true}
@@ -84,8 +85,10 @@ class NotConnected extends Component {
               <h3 className={styles.warningText}>Node syncing.</h3>
               <p>Your node is syncing with Ethereum blockchain.</p>
               <p>Please wait until fully synced before accessing RigoBlock.</p>
-              <p>Syncing progress:</p>
-              <p>Blocks {new BigNumber(this.props.syncStatus.currentBlock).toFormat()} of {new BigNumber(this.props.syncStatus.highestBlock).toFormat()} ({progress}%)</p>
+              <p>Syncing progressBlocks:</p>
+              <p>Block sync {new BigNumber(this.props.syncStatus.currentBlock).toFormat()} of {new BigNumber(this.props.syncStatus.highestBlock).toFormat()} ({progressBlocks}%)</p>
+              <p>Warp sync {new BigNumber(this.props.syncStatus.warpChunksProcessed).toFormat()} of {new BigNumber(this.props.syncStatus.warpChunksAmount).toFormat()} ({progressWarp}%)</p>
+
             </Col>
           </Row>
           </Col>

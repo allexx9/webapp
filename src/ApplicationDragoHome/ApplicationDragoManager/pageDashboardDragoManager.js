@@ -317,6 +317,9 @@ class PageDashboardDragoManager extends Component {
           loading: false,
         });
       })
+      .catch((error) => {
+        console.warn(error)
+      })
     }
   }
 
