@@ -327,6 +327,19 @@ class PageFundDetailsDragoTrader extends Component {
             action="close"
             onActionTouchTap={this.handlesnackBarRequestClose}
             onRequestClose={this.handlesnackBarRequestClose}
+            bodyStyle={{
+              height: "auto",
+              flexGrow: 0,
+              paddingTop: "10px",
+              lineHeight: "20px",
+              borderRadius: "2px 2px 0px 0px",
+              backgroundColor: "#fafafa",
+              boxShadow: "#bdbdbd 0px 0px 5px 0px"
+            }}
+            contentStyle={{
+              color: "#000000 !important",
+              fontWeight: "600"
+            }}
           />
         </Row>
       )

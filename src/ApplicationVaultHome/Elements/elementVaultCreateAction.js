@@ -176,12 +176,11 @@ class ElementVaultCreateAction extends React.Component {
           });
         })
         .catch((error) => {
-          console.log(error)
-          this.props.snackBar('Your wallet returned an error.')
+          const errorArray = error.message.split(/\r?\n/)
+          this.props.snackBar(errorArray[0])
           transactionDetails.status = 'error'
-          transactionDetails.hash = ''
-          transactionDetails.error = error
-          console.log(transactionDetails)
+          transactionDetails.error = errorArray[0]
+          console.log(error)
           this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
           this.setState({
             sending: false

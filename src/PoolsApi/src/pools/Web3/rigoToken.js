@@ -4,6 +4,7 @@
 import * as abis from '../../contracts/abi';
 import Registry from '../registry';
 import {RIGOTOKEN_ADDRESSES} from '../../utils/const'
+import BigNumber from 'bignumber.js';
 
 class RigoTokenWeb3 {
   constructor (api) {
@@ -51,11 +52,14 @@ class RigoTokenWeb3 {
     const options = {
       from: fromAddress
     }
+    this._api.eth.getGasPrice()
+    .then(console.log);
 
     return instance.methods.transfer(toAddress, amount).estimateGas(options)
     .then((gasEstimate) => {
       console.log(gasEstimate)
-      options.gas = gasEstimate
+      options.gas = new BigNumber(gasEstimate).times(1.2).toFixed(0)
+      console.log(options.gas)
     })
     .then(()=>{
       return instance.methods.transfer(toAddress, amount).send(options)
