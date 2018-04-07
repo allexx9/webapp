@@ -34,7 +34,7 @@ export default class ElementFeesBox extends Component {
         backgroundColor: Colors.red300
       },
       marketPrice: {
-        // backgroundColor: Colors.blue500,
+        // backgroundColor: Colors.indigo500,
         fontWeight: 500
       },
     }
@@ -50,7 +50,7 @@ export default class ElementFeesBox extends Component {
 
     const buttonStyle = {
       border: "1px solid",
-      borderColor: Colors.blueGrey200,
+      borderColor: Colors.indigoGrey200,
       width: "140px"
     }
 

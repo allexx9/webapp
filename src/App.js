@@ -39,6 +39,8 @@ import { Interfaces } from './_utils/interfaces'
 import { connect } from 'react-redux';
 import ElementNotification from './Elements/elementNotification'
 import PoolsApi from './PoolsApi/src'
+import AppLoading from './Elements/elementAppLoading'
+import NotConnected from './Elements/notConnected'
 // import Actions from './actions/actions'
 
 var appHashPath = true;
@@ -162,6 +164,7 @@ export class App extends Component {
 
   componentWillUpdate() {
   }
+  
 
   // This function is passed down with context and used as a call back function to show a warning page
   // if the connection with the node drops
@@ -213,20 +216,27 @@ export class App extends Component {
     }
     return (
       <div>
-        <NotificationSystem ref={n => this._notificationSystem = n} style={notificationStyle}/>
-        <Router history={history}>
-          <Switch>
-            <Route exact path={"/app/" + appHashPath + "/home"} component={ApplicationHomePage} />
-            <Route path={"/app/" + appHashPath + "/vault"} component={ApplicationVaultPage} />
-            <Route path={"/app/" + appHashPath + "/drago"} component={ApplicationDragoPage} />
-            <Route path={"/app/" + appHashPath + "/config"} component={ApplicationConfigPage} />
-            <Redirect from="/vault/" to={"/app/" + appHashPath + "/vault"} />
-            <Redirect from="/vault/" to={"/app/" + appHashPath + "/vault"} />
-            <Redirect from="/drago" to={"/app/" + appHashPath + "/drago"} />
-            <Redirect from="/" to={"/app/" + appHashPath + "/home"} />
-            <Route component={Whoops404} />
-          </Switch>
-        </Router>
+        {this.state.appLoading
+          ? <Router history={history}>
+            <AppLoading ></AppLoading>
+          </Router>
+          : <div><NotificationSystem ref={n => this._notificationSystem = n} style={notificationStyle} />
+
+            <Router history={history}>
+              <Switch>
+                <Route exact path={"/app/" + appHashPath + "/home"} component={ApplicationHomePage} />
+                <Route path={"/app/" + appHashPath + "/vault"} component={ApplicationVaultPage} />
+                <Route path={"/app/" + appHashPath + "/drago"} component={ApplicationDragoPage} />
+                <Route path={"/app/" + appHashPath + "/config"} component={ApplicationConfigPage} />
+                <Redirect from="/vault/" to={"/app/" + appHashPath + "/vault"} />
+                <Redirect from="/vault/" to={"/app/" + appHashPath + "/vault"} />
+                <Redirect from="/drago" to={"/app/" + appHashPath + "/drago"} />
+                <Redirect from="/" to={"/app/" + appHashPath + "/home"} />
+                <Route component={Whoops404} />
+              </Switch>
+            </Router>
+          </div>
+        }
       </div>
     )
   }
@@ -268,12 +278,14 @@ export class App extends Component {
                   subscriptionData = subscriptionID
                   attachedInterface.subscriptionData = subscriptionData
                   attachedInterface.prevBlockNumber = "0"
+                  this.setState({
+                    appLoading: false
+                  })
                   return attachedInterface
                 })
                 .catch((error) => {
                   console.warn('error subscription', error)
                 });
-                
             })
             .catch(()=>{
               // this.setState({...this.state, ...blockchain.error})
@@ -298,9 +310,11 @@ export class App extends Component {
                   subscriptionData = subscription
                   attachedInterface.subscriptionData = subscriptionData
                   attachedInterface.prevBlockNumber = "0"
+                  this.setState({
+                    appLoading: false
+                  })
                   return attachedInterface
-                })
-                
+                })  
             })
             .catch(()=>{
               this.setState(...this.state, ...blockchain.error)

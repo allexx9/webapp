@@ -117,13 +117,13 @@ class NavLinks extends Component {
 
     renderTopLinks = (links) => {
       const activeLink = this.activeSectionPath()
-      var backgroundColorActive = Colors.blue500
+      var backgroundColorActive = Colors.indigo500
       const { location } = this.props
       return links.map((link) => {
-        link.to === activeLink ? backgroundColorActive = Colors.blue300 : backgroundColorActive = Colors.blue500
+        link.to === activeLink ? backgroundColorActive = Colors.indigo300 : backgroundColorActive = Colors.indigo500
         return (
           <FlatButton key={link.label} label={link.label.toUpperCase()} containerElement={<Link to={DS + APP + DS + this.buildUrlPath(location) + DS + link.to} />} disableTouchRipple={true} 
-          hoverColor="#2196f3" className={styles.topbarbuttons}
+          hoverColor="#3F51B5" className={styles.topbarbuttons}
           icon={link.icon}
           labelStyle={{fontWeight: 700}}
           backgroundColor={backgroundColorActive}
@@ -196,7 +196,7 @@ class NavLinks extends Component {
               labelStyle={{ color: '#FFFFFF' }}
               style={buttonAccountType}
               icon={<ArrowDropDown color='#FFFFFF' />}
-              hoverColor={Colors.blue300}
+              hoverColor={Colors.indigo300}
             />
             <Popover
               open={this.state.open}

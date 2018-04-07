@@ -260,8 +260,8 @@ class ElementFundCreateAction extends React.Component {
           <div>
           <FlatButton label="Deploy" primary={true} onClick={this.handleOpen} 
             labelStyle={labelStyle}
-            backgroundColor={Colors.blue500}
-            hoverColor={Colors.blue300}
+            backgroundColor={Colors.indigo500}
+            hoverColor={Colors.indigo300}
             />
             <ElementFundActionAuthorization
               dragoDetails={dragoDetails}
@@ -276,8 +276,8 @@ class ElementFundCreateAction extends React.Component {
         <div>
           <FlatButton label="Deploy" primary={true} onClick={this.handleOpen} 
             labelStyle={labelStyle}
-            backgroundColor={Colors.blue500}
-            hoverColor={Colors.blue300}
+            backgroundColor={Colors.indigo500}
+            hoverColor={Colors.indigo300}
             />
             <Dialog
               title={this.renderHeader()}

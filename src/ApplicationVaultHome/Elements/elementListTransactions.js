@@ -247,10 +247,10 @@ class ElementListTransactions extends PureComponent {
         return <span style={{ color: Colors.red300, fontWeight: 600 }}>WITHDRAW</span>
 
       case "DragoCreated":
-        return <span style={{ color: Colors.blue300, fontWeight: 600 }}>CREATED</span>
+        return <span style={{ color: Colors.indigo300, fontWeight: 600 }}>CREATED</span>
 
       case "VaultCreated":
-        return <span style={{ color: Colors.blue300, fontWeight: 600 }}>CREATED</span>
+        return <span style={{ color: Colors.indigo300, fontWeight: 600 }}>CREATED</span>
 
     }
   }

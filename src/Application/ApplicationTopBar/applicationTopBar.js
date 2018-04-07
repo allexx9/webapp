@@ -17,13 +17,23 @@ class ApplicationTopBar extends Component {
     };
 
     state = {
+
     }
+
+renderTitle = () =>{
+  return (
+    <div>
+      <span>RigoBlock</span>&nbsp;<span style={{fontSize: "12px"}}>beta</span>
+    </div>
+    
+  )
+}
 
     render() {
       const { location, handleTopBarSelectAccountType, handleToggleNotifications } = this.props
       return (
         <AppBar
-          title="RigoBlock"
+          title={this.renderTitle()}
           showMenuIconButton={false}
           iconElementRight={<NavLinks handleToggleNotifications={handleToggleNotifications}
           location={location} handleTopBarSelectAccountType={ handleTopBarSelectAccountType }/>}

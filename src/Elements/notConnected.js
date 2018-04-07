@@ -120,7 +120,6 @@ class NotConnected extends Component {
     }
     
     render() {
-      // console.log(this.props)
       const { isSyncing, syncStatus} = this.context
       console.log('Sync Status: ', syncStatus)
       console.log('Syncing: ', isSyncing)

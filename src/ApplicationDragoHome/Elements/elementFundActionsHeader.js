@@ -31,10 +31,10 @@ export default class ElementFundActionsHeader extends React.Component {
       fontWeight: 700,
       fontSize: 20
     },
-    bgSelected:  Colors.blue300,
-    bGNotSelected: "#2196f3",
-    hoverSelected: Colors.blue300,
-    hoverNotSelected: "#2196F3",
+    bgSelected:  Colors.indigo300,
+    bGNotSelected: "#3F51B5",
+    hoverSelected: Colors.indigo300,
+    hoverNotSelected: "#3F51B5",
   }
 
   buttonsStyle = {
@@ -74,14 +74,14 @@ export default class ElementFundActionsHeader extends React.Component {
             <Col xsOffset={4} xs={2}><FlatButton label="Sell" style={this.buttonsStyle} 
               backgroundColor={this.setButtonStyle(action).sellButtonStyleBg}
               labelStyle={this.setButtonStyle(action).sellButtonStyle}
-              hoverColor={Colors.blue300}
+              hoverColor={Colors.indigo300}
               fullWidth={true}  
               onClick={handleSellAction}/>
             </Col>
             <Col xs={2}><FlatButton label="Buy" style={this.buttonsStyle} 
               backgroundColor={this.setButtonStyle(action).buyButtonStyleBg}
               labelStyle={this.setButtonStyle(action).buyButtonStyle}
-              hoverColor={Colors.blue300}
+              hoverColor={Colors.indigo300}
               fullWidth={true}  
               onClick={handleBuyAction}/>
             </Col>

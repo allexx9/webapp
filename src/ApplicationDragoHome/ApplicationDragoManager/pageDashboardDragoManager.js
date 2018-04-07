@@ -200,15 +200,15 @@ class PageDashboardDragoManager extends Component {
                     <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle}>
                       <Tab label="Accounts" className={styles.detailsTab}
                         onActive={() => scrollToComponent(this.Accounts, { offset: -80, align: 'top', duration: 500 })}
-                        icon={<ActionList color={Colors.blue500} />}>
+                        icon={<ActionList color={Colors.indigo500} />}>
                       </Tab>
                       <Tab label="Funds" className={styles.detailsTab}
                         onActive={() => scrollToComponent(this.Dragos, { offset: -80, align: 'top', duration: 500 })}
-                        icon={<ActionAssessment color={Colors.blue500} />}>
+                        icon={<ActionAssessment color={Colors.indigo500} />}>
                       </Tab>
                       <Tab label="Transactions" className={styles.detailsTab}
                         onActive={() => scrollToComponent(this.Transactions, { offset: -80, align: 'top', duration: 500 })}
-                        icon={<ActionShowChart color={Colors.blue500} />}>
+                        icon={<ActionShowChart color={Colors.indigo500} />}>
                       </Tab>
                     </Tabs>
                   </Col>
