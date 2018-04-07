@@ -110,7 +110,7 @@ class ApplicationDragoPage extends Component {
                   handleToggleNotifications={this.handleToggleNotifications}
                 />
               ) : (
-                  <NotConnected isSyncing={this.context.isSyncing} syncStatus={this.context.syncStatus} />
+                  <NotConnected/>
                 )}
             </Col>
           </Row>

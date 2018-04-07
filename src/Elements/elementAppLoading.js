@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Row, Col, Grid } from 'react-flexbox-grid';
+import { Row, Col } from 'react-flexbox-grid';
 import BigNumber from 'bignumber.js';
 import Dialog from 'material-ui/Dialog';
 import { Link } from 'react-router-dom'
@@ -10,7 +10,7 @@ import {APP, DS} from '../_utils/const.js'
 
 var td = null
 
-class NotConnected extends Component {
+class AppLoading extends Component {
 
     state = {
       counter: 15
@@ -60,12 +60,26 @@ class NotConnected extends Component {
         <Dialog
         open={true}
         modal={true}
-        title={this.renderTitle()}
         >
+        <Row >
+          <Col xs={12}>
+          <Row>
+          <Col xs={12}>
+            <div className={styles.titleRBHeaderContainer}>
+            <div className={styles.titleRBHeader}>
+              <img src="img/RigoLogoTop.png" alt="logo" />
+              <div className={styles.titlePrimaryText}>
+                RIGOBLOCK
+                </div>
+                <div className={styles.titleSecondaryText}>
+                BLOCKCHAIN TOKEN POOLS
+                </div>
+            </div>
+            </div>
+          </Col>
+          </Row>
           <Row>
             <Col xs={12}>
-              <Row>
-              <Col xs={12}>
               <br />
               <h3 className={styles.warningText}>Node syncing.</h3>
               <p>Your node is syncing with Ethereum blockchain.</p>
@@ -74,9 +88,9 @@ class NotConnected extends Component {
               <p>Block sync {new BigNumber(this.props.syncStatus.currentBlock).toFormat()} of {new BigNumber(this.props.syncStatus.highestBlock).toFormat()} ({progressBlocks}%)</p>
               <p>Warp sync {new BigNumber(this.props.syncStatus.warpChunksProcessed).toFormat()} of {new BigNumber(this.props.syncStatus.warpChunksAmount).toFormat()} ({progressWarp}%)</p>
             </Col>
-              </Row>
-            </Col>
           </Row>
+          </Col>
+        </Row>
         </Dialog>
       )
     }
@@ -84,38 +98,36 @@ class NotConnected extends Component {
     renderNotConnected = () => {
       return (
         <Dialog
-          open={true}
-          modal={true}
-          title={this.renderTitle()}
+        open={true}
+        modal={true}
         >
+        <Row >
+          <Col xs={12}>
+            <div className={styles.titleRBHeaderContainer}>
+            <div className={styles.titleRBHeader}>
+              <img src="img/RigoLogoTop.png" alt="logo" />
+              <div className={styles.titlePrimaryText}>
+                RIGOBLOCK
+                </div>
+                <div className={styles.titleSecondaryText}>
+                BLOCKCHAIN TOKEN POOLS
+                </div>
+            </div>
+            </div>
+          </Col>
+          <Col xs={12}>
           <Row>
             <Col xs={12}>
-              <Row>
-                <Col xs={12}>
-                  <h3 className={styles.warningText}>CONNECTION ERROR</h3>
-                  <p>Unable to connect to the network.</p>
-                  <p>Trying to establish a new connection in {this.state.counter} seconds... </p>
-                  <p>Please contact our support or {<Link to={DS + APP + DS + this.buildUrlPath() + DS + "config"}>select</Link>} a different network.</p>
-                </Col>
-              </Row>
+              <br />
+              <h3 className={styles.warningText}>Connection error.</h3>
+              <p>Unable to connect to the network.</p>
+              <p>Trying to establish a new connection in {this.state.counter} seconds... </p>
+              <p>Please contact our support or {<Link to={DS + APP + DS + this.buildUrlPath() + DS + "config"}>select</Link>} a different network.</p>
             </Col>
           </Row>
+          </Col>
+        </Row>
         </Dialog>
-      )
-    }
-
-    renderTitle = () =>{
-      return (
-      <Row className={styles.modalHeader}>
-        <Col xs={12}>
-          <Row className={styles.modalHeaderActions} middle="xs" center="xs">
-            <Col xs>
-            <img src="img/rb_black.png" alt="logo" />
-            
-            </Col>
-          </Row>
-        </Col>
-      </Row>
       )
     }
     
@@ -128,4 +140,4 @@ class NotConnected extends Component {
     }
   }
 
-  export default NotConnected
+  export default AppLoading

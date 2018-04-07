@@ -73,16 +73,13 @@ export class App extends Component {
     this._notificationSystem = null;
     sourceLogClass = this.constructor.name
     // Connecting to blockchain client
-    console.log(this.props)
-    console.log(this.props.endpoint.networkInfo.name)
     var endpoint = new Endpoint(this.props.endpoint.endpointInfo, this.props.endpoint.networkInfo)
     this._api = endpoint.connect()
-    console.log(endpoint)
-    console.log(this._api)
     this.state = {
       isConnected: true,
       isSyncing: false,
       syncStatus: {},
+      appLoading: true
     }
   }
 
@@ -175,7 +172,6 @@ export class App extends Component {
   }
 
   checkConnectionToNode = () =>{
-    console.log('Connected: ', this._api.isConnected)
     if (this._api.isConnected) {
       if (!this.state.isConnected) {
         this.props.dispatch(this.attachInterfaceAction())
@@ -185,7 +181,6 @@ export class App extends Component {
       })
       this._api.eth.syncing()
       .then(result => {
-        console.log('Syncing: ',result)
         if(result !== false) {
           this.setState({
             isSyncing: true,
@@ -497,8 +492,6 @@ export class App extends Component {
   }
 
   detachInterface = () => {
-    // const { subscriptionData } = this.state;
-    // const { api } = this.context;
     Interfaces.detachInterface(this._api,subscriptionData)
   } 
 }
