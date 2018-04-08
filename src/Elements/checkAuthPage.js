@@ -65,8 +65,7 @@ class CheckAuthPage extends Component {
               <Row>
                 <Col xs={12} className={styles.walletBox}>
                 <h2>NETWORK</h2>
-                <p>The default configuration for the Ethereum network endpoint is INFURA.</p>
-                <p>You can change it at in the <Link to={DS+APP+DS+this.buildUrlPath(location)+DS+"config/network"}>network configuration</Link> page.</p>
+                <p>You can change the Ethereum network endpoint an Network in the <Link to={DS+APP+DS+this.buildUrlPath(location)+DS+"config/network"}>network configuration</Link> page.</p>
                 <h2>ACCOUNTS</h2>
                 <p>You need to connect to an external wallet. Please <b>unlock</b> your MetaMask account and <b>refresh</b> your browser.</p>
                     <p>If you do not have MetaMask installed, please read the instruction below.</p>

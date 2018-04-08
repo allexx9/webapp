@@ -2,7 +2,7 @@ export const APP = "app";
 export const DS = "/";
 export const DRG_ISIN = "DR";
 // Set connetions to production server
-export const PROD = true;
+export const PROD = false;
 // Set connetions to WebSocketSecure or HTTPs
 export const WS = true;
 // Address of the Parity registry of smart contracts

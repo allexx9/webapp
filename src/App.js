@@ -47,6 +47,7 @@ import NotConnected from './Elements/notConnected'
 var appHashPath = true;
 var sourceLogClass = null
 const isConnectedTimeout = 4000
+const isMetaMaskUnlockedTimeout = 1000
 var subscriptionData = {}
 
 // Detectiong if the app is running inside Parity client
@@ -87,7 +88,8 @@ export class App extends Component {
   }
 
   scrollPosition = 0
-  td = null
+  tdIsConnected = null
+  tdIsMetaMaskUnlocked = null
   
 
   // Defining the properties of the context variables passed down to children
@@ -151,13 +153,15 @@ export class App extends Component {
     // Starting connection checking. this is not necessary runnin inside Parity UI
     // because the checki is done by Parity and a messagge will be displayed by the client
     if (this.props.endpoint.endpointInfo.name !== 'local') {
-      this.td = setTimeout(this.checkConnectionToNode,2000)
+      this.tdIsConnected = setTimeout(this.checkConnectionToNode,1000)
+      this.tdIsMetaMaskUnlocked = setTimeout(this.checkMetaMaskUnlocked,isMetaMaskUnlockedTimeout)
     }
   }
 
   componentWillUnmount() {
     if (this.props.endpoint.endpointInfo.name !== 'local') {
-      clearTimeout(this.td)
+      clearTimeout(this.tdIsConnected)
+      clearTimeout(this.tdIsMetaMaskUnlocked)
     }
     // Unsubscribing to the event when the the user moves away from this page
     this.detachInterface();
@@ -191,16 +195,74 @@ export class App extends Component {
             syncStatus: result
           })
         }
-        // console.log(api.net.peerCount())
-        // console.log('synching ', result)
       })
-      this.td = setTimeout(this.checkConnectionToNode,isConnectedTimeout)
+      this.tdIsConnected = setTimeout(this.checkConnectionToNode,isConnectedTimeout)
     } else {
       this.setState({
         isConnected: false
       })  
-      this.td = setTimeout(this.checkConnectionToNode,isConnectedTimeout)
+      this.tdIsMetaMaskUnlocked = setTimeout(this.checkConnectionToNode,isConnectedTimeout)
     }    
+  }
+
+  checkMetaMaskUnlocked = () => {
+    if (typeof window.web3 !== 'undefined') {
+      const web3 = window.web3
+      web3.eth.getAccounts()
+      .then((accounts) => {
+        // If MetaMask is unlocked then remove from accounts list.
+        if (accounts.length === 0) {
+          // Checking if MetaMask was already locked in order to avoid unnecessary update of the state
+          // if(this.props.endpoint.accounts.length === 0) {
+          //   return accounts
+          // }
+          let metaMaskAccountIndex = this.props.endpoint.accounts.findIndex(account => {
+            console.log(account.address)
+            console.log(accounts[0])
+            return (account.source === 'MetaMask')
+          });
+          console.log(metaMaskAccountIndex)
+          if (metaMaskAccountIndex > 0) {
+            // const newAccounts = this.props.endpoint.accounts.filter(account => {
+            //   return (account.source !== 'MetaMask')
+            // })
+            const newEndpoint = { ...this.props.endpoint }
+            newEndpoint.accounts.splice(metaMaskAccountIndex, 1)
+            console.log(newEndpoint.accounts)
+            this.props.dispatch(this.updateInterfaceAction(newEndpoint))
+          }
+        } else {
+          // Checking if the MetaMask account is already in accounts list.
+          // console.log(accounts.length)
+          let metaMaskAccountIndex = this.props.endpoint.accounts.findIndex(account => {
+            console.log(account.address)
+            console.log(accounts[0])
+            return (account.address === accounts[0])
+          });
+          
+          // If it is NOT then add it to the accounts list.
+          if (metaMaskAccountIndex < 0) {
+            const networkId = this.props.endpoint.networkInfo.id
+            const blockchain = new Interfaces(this._api, networkId)
+            return blockchain.attachInterfaceInfuraV2()
+              .then((result) => {
+                console.log(result)
+                console.log(this.props.endpoint)
+                const newEndpoint = { ...this.props.endpoint }
+                newEndpoint.accounts.push(result.accounts[0]) 
+                this.props.dispatch(this.updateInterfaceAction(newEndpoint))
+                return result
+              })
+            }
+          }
+          console.log(accounts)
+          return accounts
+        }
+        )
+        .then(() => {
+          this.tdIsConnected = setTimeout(this.checkMetaMaskUnlocked, isMetaMaskUnlockedTimeout)
+        })
+    }
   }
 
   render() {

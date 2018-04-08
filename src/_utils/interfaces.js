@@ -107,20 +107,6 @@ class Interfaces {
       })
       .catch((error) => {
         console.warn('getAccounts', error);
-        // return api.parity
-        //   .accounts()
-        //   .then((accountsInfo) => {
-        //     return Object
-        //       .keys(accountsInfo)
-        //       .filter((address) => accountsInfo[address].uuid)
-        //       .reduce((ret, address) => {
-        //         ret[address] = {
-        //           name: accountsInfo[address].name
-        //         };
-        //         return ret;
-        //       }, {});
-        //   }
-        // );
         return {}
       })
   }
@@ -131,21 +117,9 @@ class Interfaces {
     const web3 = window.web3
     const parityNetworkId = this._parityNetworkId
     var accountsMetaMask = {}
-    var ethBalance = new BigNumber(0)
-
     if (typeof web3 === 'undefined') {
       return;
     }
-
-    // var poolsApi = new PoolsApi(web3)
-    // console.log(poolsApi.contract)
-    // poolsApi.contract.rigotoken.init()
-    // .then(() =>{
-    //   poolsApi.contract.rigotoken.balanceOf('0x00791547B03F5541971B199a2d347446eB8Dc9bE')
-    //   .then((rigoTokenBalance) => {
-    //     console.log(api.util.fromWei(rigoTokenBalance).toFormat(3))
-    //   })
-    // })
 
     // Checking if MetaMask is connected to the same network as the endpoint
     return web3.eth.net.getId()
@@ -163,6 +137,7 @@ class Interfaces {
           }
           this._success = { ...currentState, ...stateUpdate }
         }
+        return null
       })
       // Getting ETH and GRG balances
       .then(() => {
@@ -173,10 +148,7 @@ class Interfaces {
               return {}
             }
             return web3.eth.getBalance(accounts[0])
-              .then(balance => {
-                ethBalance = balance
-              })
-              .then(() => {
+              .then((ethBalance) => {
                 // const rigoTokenContract = api.newContract(rigotoken, GRG_ADDRESS_KV)
                 // return rigoTokenContract.instance.balanceOf.call({}, [accounts[0]])
                 var poolsApi = new PoolsApi(web3)
