@@ -199,15 +199,15 @@ class PageDashboardVaultManager extends Component {
                     <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle}>
                       <Tab label="Accounts" className={styles.detailsTab}
                         onActive={() => scrollToComponent(this.Accounts, { offset: -80, align: 'top', duration: 500 })}
-                        icon={<ActionList color={Colors.indigoGrey500} />}>
+                        icon={<ActionList color={Colors.blueGrey500} />}>
                       </Tab>
                       <Tab label="Vaults" className={styles.detailsTab}
                         onActive={() => scrollToComponent(this.Dragos, { offset: -80, align: 'top', duration: 500 })}
-                        icon={<ActionAssessment color={Colors.indigoGrey500} />}>
+                        icon={<ActionAssessment color={Colors.blueGrey500} />}>
                       </Tab>
                       <Tab label="Transactions" className={styles.detailsTab}
                         onActive={() => scrollToComponent(this.Transactions, { offset: -80, align: 'top', duration: 500 })}
-                        icon={<ActionShowChart color={Colors.indigoGrey500} />}>
+                        icon={<ActionShowChart color={Colors.blueGrey500} />}>
                       </Tab>
                     </Tabs>
                   </Col>

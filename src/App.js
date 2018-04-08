@@ -285,10 +285,18 @@ export class App extends Component {
                 })
                 .catch((error) => {
                   console.warn('error subscription', error)
+                  this.setState({
+                    appLoading: false,
+                    isConnected: false,
+                  })
                 });
             })
             .catch(()=>{
               // this.setState({...this.state, ...blockchain.error})
+              this.setState({
+                appLoading: false,
+                isConnected: false,
+              })
             })
         case RIGOBLOCK:
           console.log(`${sourceLogClass} -> ${RIGOBLOCK}`)
@@ -315,9 +323,20 @@ export class App extends Component {
                   })
                   return attachedInterface
                 })  
+                .catch((error) => {
+                  console.warn('error subscription', error)
+                  this.setState({
+                    appLoading: false,
+                    isConnected: false,
+                  })
+                });
             })
             .catch(()=>{
               this.setState(...this.state, ...blockchain.error)
+              this.setState({
+                appLoading: false,
+                isConnected: false,
+              })
             })
         case LOCAL:
           console.log(`${sourceLogClass} -> ${LOCAL}`)

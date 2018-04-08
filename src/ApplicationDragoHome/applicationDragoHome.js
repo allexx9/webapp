@@ -168,81 +168,81 @@ class ApplicationDragoHome extends Component {
       </div>
     );
 
-    if (user.isManager) {
-      return (
-        <div ref={node => this.node = node}>
-          <Row className={styles.maincontainer}>
-            <Col xs={2}>
-              <LeftSideDrawerFunds location={location} isManager={user.isManager}/>
-            </Col>
-            <Col xs={10}>
-              <ApplicationDragoManager
-                blockNumber={blockNumber}
-                accounts={endpoint.accounts}
-                ethBalance={endpoint.ethBalance}
-                accountsInfo={endpoint.accountsInfo}
-                isManager={user.isManager}
-              />
-            </Col>
-            <Row>
-              <Col xs={12}>
-                {notificationsOpen ? (
-                  <ElementNotificationsDrawer
-                    handleToggleNotifications={handleToggleNotifications}
-                    notificationsOpen={notificationsOpen}
-                  />
-                ) : (
-                    null
-                  )}
-              </Col>
-            </Row>
-          </Row>
-          <ElementBottomStatusBar 
-          blockNumber={endpoint.prevBlockNumber}
-          networkName={endpoint.networkInfo.name}
-          networkError={endpoint.networkError}
-          networkStatus={endpoint.networkStatus} />
-        </div>
-      );
-    }
+    // if (user.isManager) {
+    //   return (
+    //     <div ref={node => this.node = node}>
+    //       <Row className={styles.maincontainer}>
+    //         <Col xs={2}>
+    //           <LeftSideDrawerFunds location={location} isManager={user.isManager} />
+    //         </Col>
+    //         <Col xs={10}>
+    //           <ApplicationDragoManager
+    //             blockNumber={blockNumber}
+    //             accounts={endpoint.accounts}
+    //             ethBalance={endpoint.ethBalance}
+    //             accountsInfo={endpoint.accountsInfo}
+    //             isManager={user.isManager}
+    //           />
+    //         </Col>
+    //         <Row>
+    //           <Col xs={12}>
+    //             {notificationsOpen ? (
+    //               <ElementNotificationsDrawer
+    //                 handleToggleNotifications={handleToggleNotifications}
+    //                 notificationsOpen={notificationsOpen}
+    //               />
+    //             ) : (
+    //                 null
+    //               )}
+    //           </Col>
+    //         </Row>
+    //       </Row>
+    //       <ElementBottomStatusBar
+    //         blockNumber={endpoint.prevBlockNumber}
+    //         networkName={endpoint.networkInfo.name}
+    //         networkError={endpoint.networkError}
+    //         networkStatus={endpoint.networkStatus} />
+    //     </div>
+    //   );
+    // }
 
-    if (!user.isManager) {
-      return (
-        <div ref={node => this.node = node}>
-          <Row className={styles.maincontainer}>
-            <Col xs={2}>
-            <LeftSideDrawerFunds location={location} isManager={user.isManager}/>
-            </Col>
-            <Col xs={10}>
-              <ApplicationDragoTrader 
-                blockNumber={blockNumber}
-                accounts={endpoint.accounts}
-                ethBalance={endpoint.ethBalance}
-                accountsInfo={endpoint.accountsInfo}
-                isManager={user.isManager}
-              />
-            </Col>
-          </Row>
-            <Row>
-            <Col xs={12}>
-              {notificationsOpen ? (
-                <ElementNotificationsDrawer 
-                handleToggleNotifications={handleToggleNotifications} 
-                notificationsOpen={notificationsOpen}
-                />
-              ) : (
-                null
-              )}
-            </Col>
-          </Row>
-          <ElementBottomStatusBar 
-          blockNumber={endpoint.prevBlockNumber}
-          networkName={endpoint.networkInfo.name}
-          networkError={endpoint.networkError}
-          networkStatus={endpoint.networkStatus} />
-        </div>
-      );
-    }
+    // if (!user.isManager) {
+    //   return (
+    //     <div ref={node => this.node = node}>
+    //       <Row className={styles.maincontainer}>
+    //         <Col xs={2}>
+    //           <LeftSideDrawerFunds location={location} isManager={user.isManager} />
+    //         </Col>
+    //         <Col xs={10}>
+    //           <ApplicationDragoTrader
+    //             blockNumber={blockNumber}
+    //             accounts={endpoint.accounts}
+    //             ethBalance={endpoint.ethBalance}
+    //             accountsInfo={endpoint.accountsInfo}
+    //             isManager={user.isManager}
+    //           />
+    //         </Col>
+    //       </Row>
+    //       <Row>
+    //         <Col xs={12}>
+    //           {notificationsOpen ? (
+    //             <ElementNotificationsDrawer
+    //               handleToggleNotifications={handleToggleNotifications}
+    //               notificationsOpen={notificationsOpen}
+    //             />
+    //           ) : (
+    //               null
+    //             )}
+    //         </Col>
+    //       </Row>
+    //       <ElementBottomStatusBar
+    //         blockNumber={endpoint.prevBlockNumber}
+    //         networkName={endpoint.networkInfo.name}
+    //         networkError={endpoint.networkError}
+    //         networkStatus={endpoint.networkStatus} />
+    //     </div>
+    //   );
+    // }
   }
 
 }

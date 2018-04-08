@@ -50,7 +50,7 @@ export default class ElementFeesBox extends Component {
 
     const buttonStyle = {
       border: "1px solid",
-      borderColor: Colors.indigoGrey200,
+      borderColor: Colors.blueGrey200,
       width: "140px"
     }
 

@@ -32,9 +32,9 @@ export default class ElementFundActionsHeader extends React.Component {
       fontSize: 20
     },
     bgSelected:  Colors.indigo300,
-    bGNotSelected: "#3F51B5",
+    bGNotSelected: Colors.indigo500,
     hoverSelected: Colors.indigo300,
-    hoverNotSelected: "#3F51B5",
+    hoverNotSelected: Colors.indigo500,
   }
 
   buttonsStyle = {

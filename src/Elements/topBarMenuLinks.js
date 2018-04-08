@@ -123,7 +123,7 @@ class NavLinks extends Component {
         link.to === activeLink ? backgroundColorActive = Colors.indigo300 : backgroundColorActive = Colors.indigo500
         return (
           <FlatButton key={link.label} label={link.label.toUpperCase()} containerElement={<Link to={DS + APP + DS + this.buildUrlPath(location) + DS + link.to} />} disableTouchRipple={true} 
-          hoverColor="#3F51B5" className={styles.topbarbuttons}
+          hoverColor={Colors.indigo500} className={styles.topbarbuttons}
           icon={link.icon}
           labelStyle={{fontWeight: 700}}
           backgroundColor={backgroundColorActive}

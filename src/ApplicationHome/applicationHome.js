@@ -1,5 +1,5 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
-
+import  * as Colors from 'material-ui/styles/colors'
 import styles from './applicationHome.module.css';
 // import bgimage from '../assets/images/blockchainLight.jpg';
 import React, { Component } from 'react';
@@ -8,6 +8,8 @@ import RaisedButton from 'material-ui/RaisedButton';
 import {Card, CardActions, CardTitle, CardText} from 'material-ui/Card';
 import Paper from 'material-ui/Paper';
 import { Row, Col } from 'react-flexbox-grid';
+import FlatButton from 'material-ui/FlatButton'
+import ArrowDropDown from 'material-ui/svg-icons/navigation/arrow-drop-down'
 
 // import ApplicationDragoFactory from '../ApplicationDragoFactory';
 
@@ -60,6 +62,14 @@ export default class ApplicationHome extends Component {
   render() {
     const { connected } = this.state;
 
+    const buttonTelegram = {
+      border: "2px solid",
+      borderColor: Colors.indigo500,
+      fontWeight: "600",
+      height: "45px"
+      // width: "140px"
+    }
+
     if (!connected) {
       return (
         <Loading />
@@ -74,8 +84,17 @@ export default class ApplicationHome extends Component {
           <Row>
             <Col xs={12}>
               <h1 className={styles.headline}>RigoBlock: Decentralized Pools of Digital Tokens </h1>
-              <h2>Ever dreamed of running your own investment fund?</h2>
               <p>&nbsp;</p>
+              <a href="https://t.me/rigoblockprotocol" target="_blank" rel="noopener noreferrer">
+                <FlatButton
+                  labelPosition="before"
+                  label="Join us on telegram!"
+                  labelStyle={{ color: Colors.indigo500, fontWeight: "600", fontSize: "20px" }}
+                  style={buttonTelegram}
+                  icon={<img src="/img/t_logo.png" height="30px" />}
+                // hoverColor={Colors.indigo300}
+                />
+              </a>
               <p>&nbsp;</p>
             </Col>
           </Row>

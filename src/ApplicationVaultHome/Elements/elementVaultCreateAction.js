@@ -254,8 +254,8 @@ class ElementVaultCreateAction extends React.Component {
           <div>
           <FlatButton label="Deploy" primary={true} onClick={this.handleOpen} 
             labelStyle={labelStyle}
-            backgroundColor={Colors.indigoGrey500}
-            hoverColor={Colors.indigoGrey300}
+            backgroundColor={Colors.blueGrey500}
+            hoverColor={Colors.blueGrey300}
             
             />
             <ElementFundActionAuthorization
@@ -271,8 +271,8 @@ class ElementVaultCreateAction extends React.Component {
         <div>
           <FlatButton label="Deploy" primary={true} onClick={this.handleOpen} 
             labelStyle={labelStyle}
-            backgroundColor={Colors.indigoGrey500}
-            hoverColor={Colors.indigoGrey300}
+            backgroundColor={Colors.blueGrey500}
+            hoverColor={Colors.blueGrey300}
             icon={<Add color='#FFFFFF'/>}
             />
             <Dialog

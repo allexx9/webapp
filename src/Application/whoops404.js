@@ -1,7 +1,7 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
 import React, { Component } from 'react';
-
+import  * as Colors from 'material-ui/styles/colors';
 import PropTypes from 'prop-types';
 import ApplicationTopBar from './ApplicationTopBar';
 
@@ -17,7 +17,7 @@ import { connect } from 'react-redux';
 
 const muiTheme = getMuiTheme({
   palette: {
-    "primary1Color": "#3F51B5",
+    "primary1Color": Colors.indigo500,
 
   },
   appBar: {

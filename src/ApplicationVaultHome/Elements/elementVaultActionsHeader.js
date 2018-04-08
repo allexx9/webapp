@@ -20,16 +20,16 @@ export default class ElementVaultActionsHeader extends React.Component {
     selected: {
       fontWeight: 700,
       fontSize: 20,
-      color: Colors.indigoGrey50
+      color: Colors.blueGrey50
     },
     notSelected: {
       fontWeight: 700,
       fontSize: 20
     },
-    bgSelected:  Colors.indigoGrey300,
-    bGNotSelected: Colors.indigoGrey500,
-    hoverSelected: Colors.indigoGrey300,
-    hoverNotSelected: Colors.indigoGrey500,
+    bgSelected:  Colors.blueGrey300,
+    bGNotSelected: Colors.blueGrey500,
+    hoverSelected: Colors.blueGrey300,
+    hoverNotSelected: Colors.blueGrey500,
   }
 
   buttonsStyle = {
@@ -69,14 +69,14 @@ export default class ElementVaultActionsHeader extends React.Component {
             <Col xsOffset={3} xs={3}><FlatButton label="Withdraw" style={this.buttonsStyle} 
               backgroundColor={this.setButtonStyle(action).sellButtonStyleBg}
               labelStyle={this.setButtonStyle(action).sellButtonStyle}
-              hoverColor={Colors.indigoGrey300}
+              hoverColor={Colors.blueGrey300}
               fullWidth={true}  
               onClick={handleSellAction}/>
             </Col>
             <Col xs={3}><FlatButton label="Deposit" style={this.buttonsStyle} 
               backgroundColor={this.setButtonStyle(action).buyButtonStyleBg}
               labelStyle={this.setButtonStyle(action).buyButtonStyle}
-              hoverColor={Colors.indigoGrey300}
+              hoverColor={Colors.blueGrey300}
               fullWidth={true}  
               onClick={handleBuyAction}/>
             </Col>

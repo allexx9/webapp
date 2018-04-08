@@ -3,19 +3,20 @@ import { Row, Col } from 'react-flexbox-grid';
 import BigNumber from 'bignumber.js';
 import Dialog from 'material-ui/Dialog';
 import { Link } from 'react-router-dom'
-
+import  * as Colors from 'material-ui/styles/colors';
 import styles from './elementAppLoading.module.css'
 import PropTypes from 'prop-types';
 import {APP, DS} from '../_utils/const.js'
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Loading from '../_atomic/atoms/loading';
+import LinearProgress from 'material-ui/LinearProgress';
 
 var td = null
 
 const muiTheme = getMuiTheme({
   palette: {
-    "primary1Color": "#3F51B5",
+    "primary1Color": Colors.indigo500,
 
   },
   appBar: {
@@ -69,45 +70,27 @@ class AppLoading extends Component {
 
     renderNotConnected = () => {
       return (
-        <Dialog
-          open={true}
-          modal={true}
-          title={this.renderTitle()}
-        >
-        
-          <Row>
+        <div className={styles.divFullHeight}>
+          <Row className={styles.loadingDiv}>
             <Col xs={12}>
               <Row>
-                <Col xs={12}>
-                  <h4 className={styles.warningText}>Loading</h4>
+                <Col xs={12} style={{textAlign: "center"}}>
+                  <img src="/img/GGG.png" width="60px"/>
+                  <br />
+                  <br />
                   {/* <p>Unable to connect to the network.</p>
                   <p>Trying to establish a new connection in {this.state.counter} seconds... </p>
                   <p>Please contact our support or {<Link to={DS + APP + DS + this.buildUrlPath() + DS + "config"}>select</Link>} a different network.</p> */}
-                <Loading />
+                <LinearProgress mode="indeterminate" color={Colors.blueGrey900}/>
                 </Col>
               </Row>
             </Col>
           </Row>
-          </Dialog>
+        </div>
       )
       
     }
-
-    renderTitle = () =>{
-      return (
-      <Row className={styles.modalHeader}>
-        <Col xs={12}>
-          <Row className={styles.modalHeaderActions} middle="xs" center="xs">
-            <Col xs>
-            <img src="/img/rb_black.png" alt="logo" />
-            
-            </Col>
-          </Row>
-        </Col>
-      </Row>
-      )
-    }
-    
+ 
     render() {
       // console.log(this.props)
       // const { isSyncing, syncStatus} = this.context
