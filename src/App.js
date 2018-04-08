@@ -222,7 +222,7 @@ export class App extends Component {
             return (account.source === 'MetaMask')
           });
           console.log(metaMaskAccountIndex)
-          if (metaMaskAccountIndex > 0) {
+          if (metaMaskAccountIndex !== -1) {
             // const newAccounts = this.props.endpoint.accounts.filter(account => {
             //   return (account.source !== 'MetaMask')
             // })
