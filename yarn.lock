@@ -1400,17 +1400,17 @@ blockies@0.0.2:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/blockies/-/blockies-0.0.2.tgz#22ad58da4f6b382bc79bf4386c5820c70047e4ed"
 
-indigobird@3.3.1:
+bluebird@3.3.1:
   version "3.3.1"
-  resolved "https://registry.yarnpkg.com/indigobird/-/indigobird-3.3.1.tgz#f97ae1970f41d85177283053e9a120160e66c61d"
+  resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.3.1.tgz#f97ae1970f41d85177283053e9a120160e66c61d"
 
-indigobird@^2.9.34:
+bluebird@^2.9.34:
   version "2.11.0"
-  resolved "https://registry.yarnpkg.com/indigobird/-/indigobird-2.11.0.tgz#534b9033c022c9579c56ba3b3e5a5caafbb650e1"
+  resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-2.11.0.tgz#534b9033c022c9579c56ba3b3e5a5caafbb650e1"
 
-indigobird@^3.4.7, indigobird@^3.5.0, indigobird@^3.5.1:
+bluebird@^3.4.7, bluebird@^3.5.0, bluebird@^3.5.1:
   version "3.5.1"
-  resolved "https://registry.yarnpkg.com/indigobird/-/indigobird-3.5.1.tgz#d9551f9de98f1fcda1e683d17ee91a0602ee2eb9"
+  resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.1.tgz#d9551f9de98f1fcda1e683d17ee91a0602ee2eb9"
 
 bn.js@4.11.6:
   version "4.11.6"
@@ -3184,7 +3184,7 @@ eslint-watch@^3.1.3:
   resolved "https://registry.yarnpkg.com/eslint-watch/-/eslint-watch-3.1.3.tgz#e3882a93f02ba4d8a797562fa9c3815e3181c4ba"
   dependencies:
     babel-polyfill "^6.20.0"
-    indigobird "^3.5.1"
+    bluebird "^3.5.1"
     chalk "^2.1.0"
     chokidar "^1.4.3"
     debug "^3.0.1"
@@ -4358,7 +4358,7 @@ html-webpack-plugin@2.29.0:
   version "2.29.0"
   resolved "https://registry.yarnpkg.com/html-webpack-plugin/-/html-webpack-plugin-2.29.0.tgz#e987f421853d3b6938c8c4c8171842e5fd17af23"
   dependencies:
-    indigobird "^3.4.7"
+    bluebird "^3.4.7"
     html-minifier "^3.2.3"
     loader-utils "^0.2.16"
     lodash "^4.17.3"
@@ -8858,7 +8858,7 @@ swarm-js@0.1.37:
   version "0.1.37"
   resolved "https://registry.yarnpkg.com/swarm-js/-/swarm-js-0.1.37.tgz#27d485317a340bbeec40292af783cc10acfa4663"
   dependencies:
-    indigobird "^3.5.0"
+    bluebird "^3.5.0"
     buffer "^5.0.5"
     decompress "^4.0.0"
     eth-lib "^0.1.26"
@@ -8921,7 +8921,7 @@ tar.gz@^1.0.5:
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/tar.gz/-/tar.gz-1.0.7.tgz#577ef2c595faaa73452ef0415fed41113212257b"
   dependencies:
-    indigobird "^2.9.34"
+    bluebird "^2.9.34"
     commander "^2.8.1"
     fstream "^1.0.8"
     mout "^0.11.0"
@@ -9480,7 +9480,7 @@ web3-core-promievent@1.0.0-beta.30:
   version "1.0.0-beta.30"
   resolved "https://registry.yarnpkg.com/web3-core-promievent/-/web3-core-promievent-1.0.0-beta.30.tgz#6205192bfb097441132226a5939ec5aed3a8a291"
   dependencies:
-    indigobird "3.3.1"
+    bluebird "3.3.1"
     eventemitter3 "1.1.1"
 
 web3-core-requestmanager@1.0.0-beta.30:
@@ -9523,7 +9523,7 @@ web3-eth-accounts@1.0.0-beta.30:
   version "1.0.0-beta.30"
   resolved "https://registry.yarnpkg.com/web3-eth-accounts/-/web3-eth-accounts-1.0.0-beta.30.tgz#8f0a1b342c4283812372242a6e2df268887b3b70"
   dependencies:
-    indigobird "3.3.1"
+    bluebird "3.3.1"
     crypto-browserify "^3.12.0"
     eth-lib "0.2.7"
     scrypt.js "0.2.0"
@@ -9662,7 +9662,7 @@ webpack-dashboard@^1.0.0-2:
     babel-types "^6.23.0"
     babylon "^6.16.1"
     blessed "^0.1.81"
-    indigobird "^3.5.0"
+    bluebird "^3.5.0"
     chalk "^1.1.3"
     commander "^2.9.0"
     cross-spawn "^4.0.0"

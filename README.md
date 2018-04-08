@@ -84,7 +84,7 @@ Please run the following commands to build master branch.
 
 Copy the files inside the `build` directory to the document root folder of your webserver.
 
-To build another branch execute the following command after `git clone`:
+To build another branch execute the following command after `cd app`:
 
     git checkout <branch-name>
 
