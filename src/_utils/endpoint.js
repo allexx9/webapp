@@ -24,7 +24,7 @@ class Endpoint {
     this._network = networkInfo
     this._prod = prod
     // Infura does not support WebSocket on Kovan network yet. Disabling.
-    this._onWs = this._network.name === INFURA ? false : ws
+    this._onWs = (this._network.name === KOVAN && this._endpoint.name === INFURA) ? false : ws
     // Setting production or development endpoints
     if (prod) {
       this._https = endpointInfo.https[this._network.name].prod

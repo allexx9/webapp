@@ -29,6 +29,7 @@ import {
   PROD,
   EP_RIGOBLOCK_KV_DEV_WS,
   EP_RIGOBLOCK_KV_PROD_WS,
+  KOVAN
 } from './_utils/const'
 import {
   ATTACH_INTERFACE,
@@ -272,7 +273,15 @@ export class App extends Component {
             .then((attachedInterface) => {
               // this.setState({...this.state, ...blockchain.success})
               // Subscribing to newBlockNumber event
-              return this._api.subscribe('eth_blockNumber', this.onNewBlockNumber)
+              // Setting connection to node
+              if (PROD) {
+                WsSecureUrl = this.props.endpoint.endpointInfo.wss[networkName].prod
+              } else {
+                WsSecureUrl = this.props.endpoint.endpointInfo.wss[networkName].dev
+              }
+              // Infura does not support WebSocket for Kovan yet.
+              if (networkName === KOVAN) {
+                return this._api.subscribe('eth_blockNumber', this.onNewBlockNumber)
                 .then((subscriptionID) => {
                   console.log(`${sourceLogClass}: Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);
                   subscriptionData = subscriptionID
@@ -290,6 +299,31 @@ export class App extends Component {
                     isConnected: false,
                   })
                 });
+              } else {
+              // Subscribing to newBlockNumber event
+              const web3 = new Web3(WsSecureUrl)
+              return Promise
+                .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
+                .then(result => {
+                  var subscription = result[0]
+                  console.log(`${sourceLogClass}: Subscribed to eth_blockNumber`);
+                  subscriptionData = subscription
+                  attachedInterface.subscriptionData = subscriptionData
+                  attachedInterface.prevBlockNumber = "0"
+                  this.setState({
+                    appLoading: false
+                  })
+                  return attachedInterface
+                })  
+                .catch((error) => {
+                  console.warn('error subscription', error)
+                  this.setState({
+                    appLoading: false,
+                    isConnected: false,
+                  })
+                });
+              }
+
             })
             .catch(()=>{
               // this.setState({...this.state, ...blockchain.error})

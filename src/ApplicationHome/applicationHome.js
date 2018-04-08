@@ -64,7 +64,7 @@ export default class ApplicationHome extends Component {
 
     const buttonTelegram = {
       border: "2px solid",
-      borderColor: Colors.indigo500,
+      borderColor: Colors.indigo400,
       fontWeight: "600",
       height: "45px"
       // width: "140px"
@@ -89,7 +89,7 @@ export default class ApplicationHome extends Component {
                 <FlatButton
                   labelPosition="before"
                   label="Join us on telegram!"
-                  labelStyle={{ color: Colors.indigo500, fontWeight: "600", fontSize: "20px" }}
+                  labelStyle={{ color: Colors.indigo400, fontWeight: "600", fontSize: "20px" }}
                   style={buttonTelegram}
                   icon={<img src="/img/t_logo.png" height="30px" />}
                 // hoverColor={Colors.indigo300}

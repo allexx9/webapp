@@ -54,8 +54,8 @@ class NotConnected extends Component {
     }
 
     renderSyncing = () => {
-      const progressBlocks = new BigNumber(this.props.syncStatus.currentBlock).div(new BigNumber(this.props.syncStatus.highestBlock)).mul(100).toFixed(2)
-      const progressWarp = new BigNumber(this.props.syncStatus.warpChunksProcessed).div(new BigNumber(this.props.syncStatus.warpChunksAmount)).mul(100).toFixed(2)
+      const progressBlocks = new BigNumber(this.context.syncStatus.currentBlock).div(new BigNumber(this.context.syncStatus.highestBlock)).mul(100).toFixed(2)
+      const progressWarp = new BigNumber(this.context.syncStatus.warpChunksProcessed).div(new BigNumber(this.context.syncStatus.warpChunksAmount)).mul(100).toFixed(2)
       return (
         <Dialog
         open={true}
@@ -67,12 +67,13 @@ class NotConnected extends Component {
               <Row>
               <Col xs={12}>
               <br />
-              <h3 className={styles.warningText}>Node syncing.</h3>
+              <h3 className={styles.warningText}>NODE SYNCING</h3>
               <p>Your node is syncing with Ethereum blockchain.</p>
               <p>Please wait until fully synced before accessing RigoBlock.</p>
               <p>Syncing progress:</p>
-              <p>Block sync {new BigNumber(this.props.syncStatus.currentBlock).toFormat()} of {new BigNumber(this.props.syncStatus.highestBlock).toFormat()} ({progressBlocks}%)</p>
-              <p>Warp sync {new BigNumber(this.props.syncStatus.warpChunksProcessed).toFormat()} of {new BigNumber(this.props.syncStatus.warpChunksAmount).toFormat()} ({progressWarp}%)</p>
+              <p>Block sync {new BigNumber(this.context.syncStatus.currentBlock).toFormat()} of {new BigNumber(this.context.syncStatus.highestBlock).toFormat()} ({progressBlocks}%)</p>
+              <p>Warp sync {new BigNumber(this.context.syncStatus.warpChunksProcessed).toFormat()} of {new BigNumber(this.context.syncStatus.warpChunksAmount).toFormat()} ({progressWarp}%)</p>
+              <p>Please contact our support or {<Link to={DS + APP + DS + this.buildUrlPath() + DS + "config"}>select</Link>} a different endpoint.</p>
             </Col>
               </Row>
             </Col>
