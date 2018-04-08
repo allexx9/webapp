@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import  * as Colors from 'material-ui/styles/colors';
-import {List, ListItem} from 'material-ui/List';
-import Subheader from 'material-ui/Subheader';
+import {ListItem} from 'material-ui/List';
 import Avatar from 'material-ui/Avatar';
 import styles from './elementNotification.module.css';
 import LinearProgress from 'material-ui/LinearProgress';
@@ -10,7 +9,6 @@ import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import Search from 'material-ui/svg-icons/action/search'
-import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types';
 
 const transactionStyle = {
@@ -75,7 +73,7 @@ export default class ElementNotification extends Component {
     txHash: PropTypes.string.isRequired
   };
 
-  kovanLink = () => {
+  etherscanLink = () => {
     const { ethereumNetworkName } = this.context
     const {txHash} = this.props
     return (
@@ -85,7 +83,6 @@ export default class ElementNotification extends Component {
 
   transactionMenu = () =>{
     const {txHash} = this.props
-    const { ethereumNetworkName } = this.context
     const etherScanDisabled = txHash.length === 0 ? true : false
     return (
       <div className={styles.menu}>
@@ -95,7 +92,7 @@ export default class ElementNotification extends Component {
           targetOrigin={{ horizontal: 'right', vertical: 'top' }}
         >
           <MenuItem leftIcon={<Search/>} primaryText="Etherscan" 
-                      containerElement={this.kovanLink()}
+                      containerElement={this.etherscanLink()}
                       disabled={etherScanDisabled}
                       />
           {/* <MenuItem primaryText="Receipt" /> */}
@@ -105,7 +102,7 @@ export default class ElementNotification extends Component {
   }
 
   render() {
-    const { primaryText, secondaryText, eventType, eventStatus } = this.props
+    const { primaryText, secondaryText, eventStatus } = this.props
     const showProgressBar = ['pending', 'authorization']
     return (
       <div style={transactionStyle[eventStatus]}>

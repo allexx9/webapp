@@ -1,52 +1,40 @@
 import  * as Colors from 'material-ui/styles/colors';
-import { Grid, Row, Col } from 'react-flexbox-grid';
-import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
-import ActionSwapHoriz from 'material-ui/svg-icons/action/swap-horiz';
-import Add from 'material-ui/svg-icons/content/add';
-import BigNumber from 'bignumber.js';
+import { Row, Col } from 'react-flexbox-grid';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import PropTypes from 'prop-types';
-import RaisedButton from 'material-ui/RaisedButton';
 import React from 'react';
 import TextField from 'material-ui/TextField';
-
-import {
-  Table,
-  TableBody,
-  TableHeader,
-  TableHeaderColumn,
-  TableRow,
-  TableRowColumn,
-} from 'material-ui/Table';
-
-import { ERRORS, validateAccount, validatePositiveNumber, validateNewName, validateNewSymbol } from './validation';
-import { formatCoins, formatEth, formatHash, toHex } from '../../format';
-import * as abis from '../../contracts';
+import { ERRORS, validateAccount, validateNewName, validateNewSymbol } from '../../_utils/validation';
 import AccountSelector from '../../Elements/elementAccountSelector'
-import IdentityIcon from '../../IdentityIcon'
-import utils, {dragoApi} from '../../utils/utils'
-import DragoApi from '../../DragoApi/src'
+import PoolApi from '../../PoolsApi/src'
 import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle'
 import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization'
-
-
-import styles from './elementFundCreateAction.module.css';
+import { connect } from 'react-redux';
 
 const customContentStyle = {
   minHeight: '500px',
 };
 
-export default class ElementFundCreateAction extends React.Component {
+function mapStateToProps(state) {
+  return state
+//   return {
+//     count: state.count
+//   };
+}
+
+class ElementFundCreateAction extends React.Component {
 
   static contextTypes = {
     api: PropTypes.object.isRequired,
-    addTransactionToQueue: PropTypes.func
+    addTransactionToQueue: PropTypes.func,
+    
   };
 
   static propTypes = {
     // dragoDetails: PropTypes.object.isRequired, 
-    accounts: PropTypes.array.isRequired
+    accounts: PropTypes.array.isRequired,
+    dispatch: PropTypes.func.isRequired
   };
   
   state = {
@@ -64,6 +52,12 @@ export default class ElementFundCreateAction extends React.Component {
     dragoDetails: ''
   }
 
+  addTransactionToQueueAction = (transactionId, transactionDetails) => {
+    return {
+      type: 'ADD_TRANSACTION',
+      transaction: { transactionId, transactionDetails }
+    }
+  };
 
   handleOpen = () => {
     console.log('open')
@@ -136,9 +130,9 @@ export default class ElementFundCreateAction extends React.Component {
         name: dragoName,
         symbol: dragoSymbol
       }
-      const values = [dragoName, dragoSymbol, this.state.account.address]
+      // Setting variables depending on account source
       var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
-      var dragoApi, provider = null;
+      var poolApi = null;
       // Initializing transaction variables
       const authMsg = 'You deployed the fund ' + dragoSymbol + ' | ' + dragoName 
       const transactionId = api.util.sha3(new Date() + dragoSymbol)
@@ -154,19 +148,18 @@ export default class ElementFundCreateAction extends React.Component {
         amount: ''
       }
 
-      // Setting variables depending on account source
-      var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
-      this.context.addTransactionToQueue(transactionId, transactionDetails)
+
+      this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
       const {account} = this.state
 
 
       this.setState({
         sending: true
       })
-      dragoApi = new DragoApi(provider)
-      dragoApi.contract.dragofactory.init()
+      poolApi = new PoolApi(provider)
+      poolApi.contract.dragofactory.init()
       .then(()=>{
-        dragoApi.contract.dragofactory.createDrago(dragoName, dragoSymbol, this.state.account.address)
+        poolApi.contract.dragofactory.createDrago(dragoName, dragoSymbol, this.state.account.address)
         .then ((receipt) =>{
           console.log(receipt)
           // this.props.snackBar('Deploy awaiting for authorization')
@@ -175,10 +168,10 @@ export default class ElementFundCreateAction extends React.Component {
             transactionDetails.receipt = receipt
             transactionDetails.hash = receipt.transactionHash
             transactionDetails.timestamp = new Date ()
-            this.context.addTransactionToQueue(transactionId, transactionDetails)
+            this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
           } else {
             transactionDetails.parityId = receipt
-            this.context.addTransactionToQueue(transactionId, transactionDetails)
+            this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
           }
           this.setState({
             sending: false,
@@ -187,43 +180,17 @@ export default class ElementFundCreateAction extends React.Component {
         })
         .catch((error) => {
           console.log(error)
-          this.props.snackBar('Your wallet returned an error.')
+          const errorArray = error.message.split(/\r?\n/)
+          this.props.snackBar(errorArray[0])
           transactionDetails.status = 'error'
-          transactionDetails.error = error
-          this.context.addTransactionToQueue(transactionId, transactionDetails)
+          transactionDetails.error = errorArray[0]
+          console.log(error)
+          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
           this.setState({
             sending: false
           })
         })
       })
-      // .then ((receipt) =>{
-      //   console.log(receipt)
-      //   // this.props.snackBar('Deploy awaiting for authorization')
-      //   if (this.state.account.source === 'MetaMask') {
-      //     transactionDetails.status = 'executed'
-      //     transactionDetails.receipt = receipt
-      //     transactionDetails.hash = receipt.transactionHash
-      //     transactionDetails.timestamp = new Date ()
-      //     this.context.addTransactionToQueue(transactionId, transactionDetails)
-      //   } else {
-      //     transactionDetails.parityId = receipt
-      //     this.context.addTransactionToQueue(transactionId, transactionDetails)
-      //   }
-      //   this.setState({
-      //     sending: false,
-      //     complete: true
-      //   });
-      // })
-      // .catch((error) => {
-      //   console.log(error)
-      //   this.props.snackBar('Your wallet returned an error.')
-      //   transactionDetails.status = 'error'
-      //   transactionDetails.error = error
-      //   this.context.addTransactionToQueue(transactionId, transactionDetails)
-      //   this.setState({
-      //     sending: false
-      //   })
-      // })
       this.setState({
         authMsg: authMsg,
         authAccount: { ...this.state.account },
@@ -234,7 +201,6 @@ export default class ElementFundCreateAction extends React.Component {
     }
 
     renderHeader = () => {
-      const { dragoDetails } = this.props
       return (
         <div>
             <ElementDialogHeadTitle primaryText='Deploy new Drago' />
@@ -260,20 +226,22 @@ export default class ElementFundCreateAction extends React.Component {
   
       return ([
         <FlatButton
+          key='CancelButton'
           label='Cancel'
           primary
-          onTouchTap={ this.handleClose } />,
+          onTouchTap={this.handleClose} />,
         <FlatButton
+          key='SubmitButton'
           label='Deploy'
           primary
-          disabled={ hasError || sending }
-          onTouchTap={ this.onSend } />
+          disabled={hasError || sending}
+          onTouchTap={this.onSend} />
       ]);
     }
 
     render() {
-      const { accounts  } = this.props
-      const { accountError, amountError, sending, openAuth, authMsg, authAccount, dragoDetails } = this.state;
+      const { endpoint  } = this.props
+      const { openAuth, authMsg, authAccount, dragoDetails } = this.state;
       const hasError = !!(this.state.accountError || this.state.amountError );
       const labelStyle = {
         color: '#FFFFFF',
@@ -292,8 +260,8 @@ export default class ElementFundCreateAction extends React.Component {
           <div>
           <FlatButton label="Deploy" primary={true} onClick={this.handleOpen} 
             labelStyle={labelStyle}
-            backgroundColor={Colors.blue500}
-            hoverColor={Colors.blue300}
+            backgroundColor={Colors.indigo500}
+            hoverColor={Colors.indigo300}
             />
             <ElementFundActionAuthorization
               dragoDetails={dragoDetails}
@@ -308,8 +276,8 @@ export default class ElementFundCreateAction extends React.Component {
         <div>
           <FlatButton label="Deploy" primary={true} onClick={this.handleOpen} 
             labelStyle={labelStyle}
-            backgroundColor={Colors.blue500}
-            hoverColor={Colors.blue300}
+            backgroundColor={Colors.indigo500}
+            hoverColor={Colors.indigo300}
             />
             <Dialog
               title={this.renderHeader()}
@@ -323,7 +291,7 @@ export default class ElementFundCreateAction extends React.Component {
             <Row>
               <Col xs={12}>
                 <AccountSelector
-                accounts={ this.props.accounts }
+                accounts={ endpoint.accounts }
                 account={ this.state.account }
                 errorText={ this.state.accountError }
                 floatingLabelText='From account'
@@ -366,3 +334,5 @@ export default class ElementFundCreateAction extends React.Component {
       );
     }
 }
+
+export default connect(mapStateToProps)(ElementFundCreateAction)

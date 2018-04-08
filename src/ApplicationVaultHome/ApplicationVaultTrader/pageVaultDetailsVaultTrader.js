@@ -1,57 +1,39 @@
 import  * as Colors from 'material-ui/styles/colors'
 import { Grid, Row, Col } from 'react-flexbox-grid'
-import { Link, Route, withRouter } from 'react-router-dom'
-import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card'
+import { Link, withRouter } from 'react-router-dom'
 import {CopyToClipboard} from 'react-copy-to-clipboard'
-import {List, ListItem} from 'material-ui/List'
 import {Tabs, Tab} from 'material-ui/Tabs'
-import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar'
+import {Toolbar, ToolbarGroup } from 'material-ui/Toolbar'
 import ActionAssessment from 'material-ui/svg-icons/action/assessment'
 import ActionList from 'material-ui/svg-icons/action/list'
-import Avatar from 'material-ui/Avatar'
-import BigNumber from 'bignumber.js';
-import Chip from 'material-ui/Chip'
 import CopyContent from 'material-ui/svg-icons/content/content-copy'
-import DropDownMenu from 'material-ui/DropDownMenu'
-import FlatButton from 'material-ui/FlatButton'
-import IconButton from 'material-ui/IconButton'
-import IconMenu from 'material-ui/IconMenu'
-import Immutable from 'immutable'
-import NavigationExpandMoreIcon from 'material-ui/svg-icons/navigation/expand-more'
 import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types'
-import RaisedButton from 'material-ui/RaisedButton'
 import React, { Component } from 'react'
 import Search from 'material-ui/svg-icons/action/search'
 import Snackbar from 'material-ui/Snackbar'
-
-import { dragoFactoryEventsSignatures } from '../../utils/utils.js'
-import { formatCoins, formatEth, formatHash, toHex } from '../../format'
-import * as abis from '../../contracts';
+import { formatCoins, formatEth } from '../../_utils/format'
 import ElementListWrapper from '../../Elements/elementListWrapper'
+import BigNumber from 'bignumber.js';
 
 // import ElementFundActions from '../Elements/elementFundActions'
-import IdentityIcon from '../../IdentityIcon'
+import IdentityIcon from '../../_atomic/atoms/identityIcon'
 import InfoTable from '../../Elements/elementInfoTable'
-import Loading from '../../Loading'
-import DragoApi from '../../DragoApi/src'
+import Loading from '../../_atomic/atoms/loading'
+import PoolApi from '../../PoolsApi/src'
 import AppBar from 'material-ui/AppBar';
-
-import {
-  Table,
-  TableBody,
-  TableHeader,
-  TableHeaderColumn,
-  TableRow,
-  TableRowColumn,
-} from 'material-ui/Table';
 import ElementListTransactions from '../Elements/elementListTransactions'
 import ElementFeesBox from '../Elements/elementFeesBox'
-import utils from '../../utils/utils'
+import utils from '../../_utils/utils'
 import ElementFundNotFound from '../../Elements/elementFundNotFound'
 import ElementVaultActions from '../Elements/elementVaultActions'
 
 import styles from './pageVaultDetailsVaultTrader.module.css';
+import { connect } from 'react-redux';
+
+function mapStateToProps(state) {
+  return state
+}
 
 class PageFundDetailsVaultTrader extends Component {
 
@@ -62,9 +44,9 @@ class PageFundDetailsVaultTrader extends Component {
 
   static propTypes = {
       location: PropTypes.object.isRequired,
-      ethBalance: PropTypes.object.isRequired,
+      endpoint: PropTypes.object.isRequired,
       accounts: PropTypes.array.isRequired,
-      accountsInfo: PropTypes.object.isRequired, 
+      match: PropTypes.object.isRequired, 
       isManager: PropTypes.bool.isRequired
     };
 
@@ -73,21 +55,20 @@ class PageFundDetailsVaultTrader extends Component {
         address: null,
         name: null,
         symbol: null,
-        dragoID: null,
+        vaultId: null,
         addresssOwner: null,
         addressGroup: null,
       },
-      vaultTransactionsLogs: null,
+      vaultTransactionsLogs: [],
       loading: true,
       snackBar: false,
       snackBarMsg: '',
       openBuySellDialog: {
         open: false,
         action: 'deposit'
-      }
+      },
+      balanceDRG: new BigNumber(0).toFormat(4),
     }
-
-
 
     subTitle = (account) => {
       return (
@@ -98,19 +79,20 @@ class PageFundDetailsVaultTrader extends Component {
     componentWillMount () {
       // Getting dragoid from the url parameters passed by router and then
       // the list of last transactions
-      const dragoID = this.props.match.params.dragoid
-      this.getVaultDetails(dragoID)
+      const vaultId = this.props.match.params.dragoid
+      this.getVaultDetails(vaultId)
     }
 
     componentWillReceiveProps(nextProps) {
       // Updating the lists on each new block if the accounts balances have changed
       // Doing this this to improve performances by avoiding useless re-rendering
-      const { api } = this.context
-      const dragoID = this.props.match.params.dragoid
-      const {accounts } = this.props
+      console.log(this.props)
+      const vaultId = this.props.match.params.dragoid
       const sourceLogClass = this.constructor.name
-      if (!this.props.ethBalance.eq(nextProps.ethBalance)) {
-        this.getVaultDetails(dragoID)
+      const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
+      const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
+      if (!currentBalance.eq(nextBalance)) {
+        this.getVaultDetails(vaultId)
         console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
       } else {
         null
@@ -121,15 +103,17 @@ class PageFundDetailsVaultTrader extends Component {
       const  sourceLogClass = this.constructor.name
       var stateUpdate = true
       var propsUpdate = true
+      const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
+      const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
       stateUpdate = !utils.shallowEqual(this.state, nextState)
-      propsUpdate = !this.props.ethBalance.eq(nextProps.ethBalance)
+      propsUpdate = !currentBalance.eq(nextBalance)
       if (stateUpdate || propsUpdate) {
         console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
       }
       return stateUpdate || propsUpdate
     }
 
-    componentDidUpdate(nextProps) {
+    componentDidUpdate() {
     }
 
     renderAddress (vaultDetails) {
@@ -176,7 +160,7 @@ class PageFundDetailsVaultTrader extends Component {
       }
       
       return (
-      <a key={"addressether"+text} href={'https://kovan.etherscan.io/'+type+'/' + text} target='_blank'><Search className={styles.copyAddress}/></a>
+      <a key={"addressether"+text} href={this.props.endpoint.networkInfo.etherscan+type+'/' + text} target='_blank'><Search className={styles.copyAddress}/></a>
       );
     }
 
@@ -206,12 +190,8 @@ class PageFundDetailsVaultTrader extends Component {
     }
 
     render() {
-      const { location, accounts, accountsInfo, allEvents, isManager } = this.props
-      const { vaultDetails, vaultTransactionsLogs, loading } = this.state
-      const paperContainer = {
-        marginTop: 10,
-        display: 'inline-block',
-      };
+      const { accounts, isManager } = this.props
+      const { vaultDetails, loading } = this.state
       const tabButtons = {
         inkBarStyle: {
           margin: 'auto',
@@ -223,10 +203,6 @@ class PageFundDetailsVaultTrader extends Component {
           width: 200,
         }
       }
-      const detailsBox = {
-        padding: 20,
-      }
-
       const columnsStyle = [styles.detailsTableCell, styles.detailsTableCell2, styles.detailsTableCell3]
       const tableButtonsVaultAddress = [this.renderCopyButton(vaultDetails.address), this.renderEtherscanButton('address', vaultDetails.address)]
       const tableButtonsVaultOwner = [this.renderCopyButton(vaultDetails.addresssOwner), this.renderEtherscanButton('address', vaultDetails.addresssOwner)]
@@ -237,9 +213,6 @@ class PageFundDetailsVaultTrader extends Component {
       const paperStyle = {
         marginTop: "10px"
       };
-      
-      const web3 = window.web3
-
       var dragoTransactionList = this.state.vaultTransactionsLogs
       // console.log(dragoTransactionList)
 
@@ -270,20 +243,20 @@ class PageFundDetailsVaultTrader extends Component {
             </Toolbar>
             <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle} className={styles.test}>
               <Tab label="Info" className={styles.detailsTab}
-                icon={<ActionList color={Colors.blue500} />}>
+                icon={<ActionList color={Colors.indigo500} />}>
                 <Grid fluid>
                   <Row>
                     <Col xs={6}>
-                      <Paper zDepth={1}>
+                      <div>
                         <AppBar
-                          title="DETAILS"
+                          title={"MY HOLDING IN " + vaultDetails.symbol}
                           showMenuIconButton={false}
                           titleStyle={{ fontSize: 20 }}
                         />
-                        <div className={styles.detailsTabContent}>
-                        <InfoTable  rows={tableInfo} columnsStyle={columnsStyle}/>
+                        <div className={styles.holdings}>
+                          <div>{this.state.balanceDRG} <small>UNITS</small><br /></div>
                         </div>
-                      </Paper>
+                      </div>
                     </Col>
                     <Col xs={6}>
                       <Paper zDepth={1}>
@@ -300,27 +273,24 @@ class PageFundDetailsVaultTrader extends Component {
                           actionSelected={this.state.openBuySellDialog}
                           onTransactionSent={this.onTransactionSent}
                           />
-                        {/* <ElementFundActions 
-                          vaultDetails={vaultDetails} 
-                          accounts={accounts} 
-                          snackBar={this.snackBar} 
-                          actionSelected={this.state.openBuySellDialog}
-                          onTransactionSent={this.onTransactionSent}
-                          /> */}
-                        {/* {this.state.openBuySellDialog.open
-                          ? <ElementFundActions 
-                          vaultDetails={vaultDetails} 
-                          accounts={accounts} 
-                          snackBar={this.snackBar} 
-                          actionSelected={this.state.openBuySellDialog}/>
-                          : null
-                        } */}
-                        {/* <div className={styles.tradeButton}>
-                          <ElementFundActions vaultDetails={vaultDetails} accounts={accounts} snackBar={this.snackBar} />
-                        </div> */}
                       </Paper>
                     </Col>
                   </Row>
+                  <br />
+                  <Row>
+                      <Col xs={12}>
+                      <Paper zDepth={1}>
+                        <AppBar
+                          title="DETAILS"
+                          showMenuIconButton={false}
+                          titleStyle={{ fontSize: 20 }}
+                        />
+                        <div className={styles.detailsTabContent}>
+                        <InfoTable  rows={tableInfo} columnsStyle={columnsStyle}/>
+                        </div>
+                      </Paper>
+                      </Col>
+                    </Row>
                   <Row>
                     <Col xs={12} className={styles.detailsTabContent}>
                       <Paper style={paperStyle} zDepth={1} >
@@ -332,11 +302,10 @@ class PageFundDetailsVaultTrader extends Component {
                         <div className={styles.detailsTabContent}>
                           <p>Your last 20 transactions on this fund.</p>
                         </div>
-
-
-                        <ElementListWrapper accountsInfo={accountsInfo} list={dragoTransactionList}
+                        <ElementListWrapper list={dragoTransactionList}
                           renderCopyButton={this.renderCopyButton}
-                          renderEtherscanButton={this.renderEtherscanButton}>
+                          renderEtherscanButton={this.renderEtherscanButton}
+                          loading={loading}>
 
                           <ElementListTransactions />
                         </ElementListWrapper>
@@ -346,7 +315,7 @@ class PageFundDetailsVaultTrader extends Component {
                 </Grid>
               </Tab>
               <Tab label="Stats" className={styles.detailsTab}
-                icon={<ActionAssessment color={Colors.blue500} />}>
+                icon={<ActionAssessment color={Colors.indigo500} />}>
                 <Grid fluid>
                   <Row>
                     <Col xs={12} className={styles.detailsTabContent}>
@@ -366,67 +335,101 @@ class PageFundDetailsVaultTrader extends Component {
           action="close"
           onActionTouchTap={this.handlesnackBarRequestClose}
           onRequestClose={this.handlesnackBarRequestClose}
+          bodyStyle={{
+            height: "auto",
+            flexGrow: 0,
+            paddingTop: "10px",
+            lineHeight: "20px",
+            borderRadius: "2px 2px 0px 0px",
+            backgroundColor: "#fafafa",
+            boxShadow: "#bdbdbd 0px 0px 5px 0px"
+          }}
+          contentStyle={{
+            color: "#000000 !important",
+            fontWeight: "600"
+          }}
         />
       </Row>
       )
     }
 
-  // Getting the vault details from dragoID
-  getVaultDetails = (dragoID) => {
+  // Getting the vault details from vaultId
+  getVaultDetails = (vaultId) => {
     const { api } = this.context
     const { accounts } = this.props
-    var sourceLogClass = this.constructor.name
+    var balanceDRG = new BigNumber(0)
     //
     // Initializing Drago API
     // Passing Parity API
     //      
-    const dragoApi = new DragoApi(api)
+    const poolApi = new PoolApi(api)
     //
     // Initializing registry contract
     //
-    dragoApi.contract.dragoregistry
+    poolApi.contract.dragoregistry
       .init()
-      .then((address) => {
+      .then(() => {
         //
-        // Looking for drago from dragoID
+        // Looking for drago from vaultId
         //
-        dragoApi.contract.dragoregistry
-          .drago(dragoID)
+        poolApi.contract.dragoregistry
+          .fromId(vaultId)
           .then((vaultDetails) => {
             const vaultAddress = vaultDetails[0][0]
             //
             // Initializing vault contract
             //
-            dragoApi.contract.vault.init(vaultAddress)
+            console.log(vaultDetails)
+            poolApi.contract.vault.init(vaultAddress)
             //
-            // Calling getPrice method
+            // Calling getAdminData method
             //
-            dragoApi.contract.vault.getTransactionFee()
+            poolApi.contract.vault.getAdminData()
               .then((data) => {
+                //
+                // Gettin balance for each account
+                //
+                accounts.map(account => {
+                  poolApi.contract.vault.balanceOf(account.address)
+                    .then(balance => {
+                      balanceDRG = balanceDRG.add(balance)
+                      console.log(balance)
+                      // console.log(api.util.fromWei(balance).toFormat(4))
+                    })
+                    .then(() => {
+                      // console.log(api.util.fromWei(balanceDRG.toNumber(4)).toFormat(4))
+                      // console.log(balanceDRG)
+                      var balanceETH = balanceDRG.times(formatCoins(balanceDRG, 6, api))
+                      // console.log(balanceETH)
+                      this.setState({
+                        balanceETH: formatEth(balanceETH, 6, api),
+                        balanceDRG: formatCoins(balanceDRG, 6, api)
+                      })
+                    })
+                })
+                const price = (new BigNumber(data[4]).div(100).toFixed(2))
                 this.setState({
                   vaultDetails: {
                     address: vaultDetails[0][0],
                     name: vaultDetails[0][1].charAt(0).toUpperCase() + vaultDetails[0][1].slice(1),
-                    symbol: vaultDetails[0][2],
-                    dragoID: vaultDetails[0][3].c[0],
+                    symbol: vaultDetails[0][2].toUpperCase(),
+                    vaultId: vaultDetails[0][3].c[0],
                     addresssOwner: vaultDetails[0][4],
                     addressGroup: vaultDetails[0][5],
                     sellPrice: 1,
                     buyPrice: 1,
-                    price: ((data.div(100).toFixed(2))),
+                    price: price,
                   },
                   loading: false
                 })
               })
-            dragoApi.contract.vaulteventful.init()
+            poolApi.contract.vaulteventful.init()
               .then(() => {
-                this.getTransactions(vaultDetails[0][0], dragoApi.contract.vaulteventful, accounts)
+                this.getTransactions(vaultDetails[0][0], poolApi.contract.vaulteventful, accounts)
               }
               )
-            // this.getTransactions (vaultDetails[0][0], contract, accounts)
           })
       })
-
   }  
 
   // Getting last transactions
@@ -436,8 +439,8 @@ class PageFundDetailsVaultTrader extends Component {
     const logToEvent = (log) => {
       const key = api.util.sha3(JSON.stringify(log))
       const { blockNumber, logIndex, transactionHash, transactionIndex, params, type } = log
-      var ethvalue = (log.event === 'BuyGabcoin') ? formatEth(params.amount.value, null, api) : formatEth(params.revenue.value, null, api);
-      var drgvalue = (log.event === 'SellGabcoin') ? formatCoins(params.amount.value, null, api) : formatCoins(params.revenue.value, null, api);
+      var ethvalue = (log.event === 'SellVault') ? formatEth(params.amount.value, null, api) : formatEth(params.revenue.value, null, api);
+      var drgvalue = (log.event === 'SellVault') ? formatCoins(params.amount.value, null, api) : formatCoins(params.revenue.value, null, api);
       // let ethvalue = null
       // let drgvalue = null     
       // if ((log.event === 'BuyDrago')) {
@@ -458,7 +461,8 @@ class PageFundDetailsVaultTrader extends Component {
         params,
         key,
         ethvalue,
-        drgvalue
+        drgvalue,
+        symbol: String.fromCharCode(...params.symbol.value)
       }
     }
 
@@ -478,32 +482,31 @@ class PageFundDetailsVaultTrader extends Component {
       const hexAccount = account.address
       return hexAccount
     })
-    console.log(hexAccounts)
-    console.log(hexVaultAddress)
-    const options = {
-      fromBlock: 0,
-      toBlock: 'pending',
-    }
-    console.log(contract.hexSignature)
+    // const options = {
+    //   fromBlock: 0,
+    //   toBlock: 'pending',
+    // }
+    console.log(contract)
     const eventsFilterBuy = {
       topics: [
-        [contract.hexSignature.BuyGabcoin],
-        hexVaultAddress,
+        [contract.hexSignature.BuyVault],
+        [hexVaultAddress],
         hexAccounts,
         null
       ]
     }
     const eventsFilterSell = {
       topics: [
-        [contract.hexSignature.SellGabcoin],
-        hexVaultAddress,
-        null,
-        hexAccounts
+        [contract.hexSignature.SellVault],
+        [hexVaultAddress],
+        hexAccounts,
+        null
       ]
     }
     const buyVaultEvents = contract
       .getAllLogs(eventsFilterBuy)
       .then((vaultTransactionsLog) => {
+        console.log(vaultTransactionsLog)
         const buyLogs = vaultTransactionsLog.map(logToEvent)
         return buyLogs
       }
@@ -535,6 +538,7 @@ class PageFundDetailsVaultTrader extends Component {
             .catch((error) => {
               // Sometimes Infura returns null for api.eth.getBlockByNumber, therefore we are assigning a fake timestamp to avoid
               // other issues in the app.
+              console.warn(error)
               log.timestamp = new Date()
               return log
             })
@@ -556,4 +560,4 @@ class PageFundDetailsVaultTrader extends Component {
     
   }
 
-  export default withRouter(PageFundDetailsVaultTrader)
+  export default withRouter(connect(mapStateToProps)(PageFundDetailsVaultTrader))

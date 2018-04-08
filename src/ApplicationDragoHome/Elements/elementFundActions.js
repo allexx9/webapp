@@ -1,6 +1,5 @@
 import  * as Colors from 'material-ui/styles/colors';
-import { Grid, Row, Col } from 'react-flexbox-grid';
-import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
+import { Row, Col } from 'react-flexbox-grid';
 import ActionSwapHoriz from 'material-ui/svg-icons/action/swap-horiz';
 import BigNumber from 'bignumber.js';
 import Dialog from 'material-ui/Dialog';
@@ -10,23 +9,20 @@ import RaisedButton from 'material-ui/RaisedButton';
 import React from 'react';
 import TextField from 'material-ui/TextField';
 import Paper from 'material-ui/Paper'
+import { connect } from 'react-redux';
 
 import {
   Table,
   TableBody,
-  TableHeader,
-  TableHeaderColumn,
   TableRow,
   TableRowColumn,
 } from 'material-ui/Table';
 
-import { ERRORS, validateAccount, validatePositiveNumber } from './validation';
-import { formatCoins, formatEth, formatHash, toHex } from '../../format';
-import * as abis from '../../contracts';
+import { ERRORS, validateAccount, validatePositiveNumber } from '../../_utils/validation';
+import { formatCoins } from '../../_utils/format';
 import AccountSelector from '../../Elements/elementAccountSelector'
 import ElementFundActionsHeader from './elementFundActionsHeader'
-import IdentityIcon from '../../IdentityIcon';
-import DragoApi from '../../DragoApi/src'
+import PoolApi from '../../PoolsApi/src'
 import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization'
 
 import styles from './elementFundActions.module.css';
@@ -35,7 +31,11 @@ const customContentStyle = {
   minHeight: '500px',
 };
 
-export default class ElementFundActions extends React.Component {
+function mapStateToProps(state) {
+  return state
+}
+
+class ElementFundActions extends React.Component {
 
   constructor(props) {
     super(props)
@@ -58,7 +58,6 @@ export default class ElementFundActions extends React.Component {
         account: {},
         accountError: ERRORS.invalidAccount,
         accountCorrect: false,
-        amount: 0,
         newDrgBalance: 0,
         drgBalance: 0,
         drgOrder: 0,
@@ -85,7 +84,6 @@ export default class ElementFundActions extends React.Component {
         account: {},
         accountError: ERRORS.invalidAccount,
         accountCorrect: false,
-        amount: 0,
         newDrgBalance: 0,
         drgBalance: 0,
         drgOrder: 0,
@@ -111,7 +109,6 @@ export default class ElementFundActions extends React.Component {
         account: {},
         accountError: ERRORS.invalidAccount,
         accountCorrect: false,
-        amount: 0,
         newDrgBalance: 0,
         drgBalance: 0,
         drgOrder: 0,
@@ -125,45 +122,16 @@ export default class ElementFundActions extends React.Component {
 
   static contextTypes = {
     api: PropTypes.object.isRequired,
-    addTransactionToQueue: PropTypes.func
   };
 
   static propTypes = {
     dragoDetails: PropTypes.object.isRequired, 
     actionSelected: PropTypes.object,
     accounts: PropTypes.array.isRequired,
-    onTransactionSent: PropTypes.func.isRequired
+    onTransactionSent: PropTypes.func.isRequired,
+    dispatch: PropTypes.func.isRequired
   };
   
-  // state = {
-  //   open: 'buy',
-  //   openAuth: false,
-  //   authMsg: '',
-  //   action: 'buy',
-  //   actionSummary: 'BUYING',
-  //   account: {},
-  //   accountError: ERRORS.invalidAccount,
-  //   accountCorrect: false,
-  //   amount: 0,
-  //   newDrgBalance: 0,
-  //   drgBalance: 0,
-  //   drgOrder: 0,
-  //   amountError: ERRORS.invalidAmount,
-  //   amountFieldDisabled: true,
-  //   unitsSummary: 0,
-  //   amountSummary: 0,
-  //   actionStyleBuySell: { 
-  //     color: Colors.green300
-  //   },
-  //   canSubmit: false,
-  //   sending: false,
-  //   complete: false,
-  //   switchButton: {
-  //     label: 'Units',
-  //     denomination: 'ETH',
-  //     hint: 'Amount'
-  //   }
-  // }
 
   resetState = {
     openAuth: false,
@@ -199,6 +167,13 @@ export default class ElementFundActions extends React.Component {
   actionSellStyle = {
     color: Colors.red300,
   }
+
+  addTransactionToQueueAction = (transactionId, transactionDetails) => {
+    return {
+      type: 'ADD_TRANSACTION',
+      transaction: { transactionId, transactionDetails }
+    }
+  };
 
   componentWillMount() {
 
@@ -266,7 +241,6 @@ export default class ElementFundActions extends React.Component {
       account: {},
       accountError: ERRORS.invalidAccount,
       accountCorrect: false,
-      amount: 0,
       newDrgBalance: 0,
       drgBalance: 0,
       drgOrder: 0,
@@ -296,7 +270,6 @@ export default class ElementFundActions extends React.Component {
       account: {},
       accountError: ERRORS.invalidAccount,
       accountCorrect: false,
-      amount: 0,
       newDrgBalance: 0,
       drgBalance: 0,
       drgOrder: 0,
@@ -311,6 +284,9 @@ export default class ElementFundActions extends React.Component {
     const { api } = this.context
     const {dragoDetails} = this.props
     const accountError = validateAccount(account,api)
+    // Setting variables depending on account source
+    // var provider = account.source === 'MetaMask' ? window.web3 : api
+    var provider = api
     this.setState({
       account,
       accountError: accountError
@@ -318,8 +294,9 @@ export default class ElementFundActions extends React.Component {
 
     // Getting the account balance if account passed validation
     if (!accountError) {
-      const instance = api.newContract(abis.drago, dragoDetails.address).instance;
-      instance.balanceOf.call({}, [account.address])
+      const poolApi = new PoolApi(provider)
+      poolApi.contract.drago.init(dragoDetails.address)
+      poolApi.contract.drago.balanceOf(account.address)
       .then((amount) =>{
         const drgBalance = formatCoins(amount,4,api)
         this.setState({
@@ -404,10 +381,8 @@ export default class ElementFundActions extends React.Component {
       switch(this.state.switchButton.label) {
         case "Units":
           return action == 'buy' ? new BigNumber(amount) : new BigNumber(amount).times(ratio)
-          break
         case "Amount":
           return action == 'buy' ? new BigNumber(amount).div(ratio) : new BigNumber(amount)
-          break
       } 
     }
     // First: checking if any error in the account or amount. If error then return.
@@ -453,7 +428,9 @@ export default class ElementFundActions extends React.Component {
     const amount = api.util.toWei(this.state.amountSummary).toString()
     const authMsg = 'You bought ' + this.state.unitsSummary + ' units of ' + dragoDetails.symbol.toUpperCase() + ' for ' + this.state.amountSummary + ' ETH'
     const transactionId = api.util.sha3(new Date() + accountAddress)
-    var dragoApi, provider = null;
+    // Setting variables depending on account source
+    var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
+    var poolApi = null;
     // Initializing transaction variables
     var transactionDetails = {
       status: this.state.account.source === 'MetaMask' ? 'pending' : 'authorization',
@@ -466,15 +443,13 @@ export default class ElementFundActions extends React.Component {
       symbol: dragoDetails.symbol.toUpperCase(),
       amount: this.state.amountSummary
     }
-    // Setting variables depending on account source
-    var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
-    this.context.addTransactionToQueue(transactionId, transactionDetails)
+    this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
     const {account} = this.state
 
     // Sending the transaction
-    dragoApi = new DragoApi(provider)
-    dragoApi.contract.drago.init(dragoDetails.address)
-    dragoApi.contract.drago.buyDrago(accountAddress, amount)
+    poolApi = new PoolApi(provider)
+    poolApi.contract.drago.init(dragoDetails.address)
+    poolApi.contract.drago.buyDrago(accountAddress, amount)
       .then((receipt) => {
         console.log(receipt)
         // Adding transaciont to the queue
@@ -485,18 +460,19 @@ export default class ElementFundActions extends React.Component {
           transactionDetails.receipt = receipt
           transactionDetails.hash = receipt.transactionHash
           transactionDetails.timestamp = new Date ()
-          this.context.addTransactionToQueue(transactionId, transactionDetails)
+          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
         } else {
           transactionDetails.parityId = receipt
-          this.context.addTransactionToQueue(transactionId, transactionDetails)
+          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
         }
       })
       .catch((error) => {
-        this.props.snackBar('Your wallet returned an error.')
+        const errorArray = error.message.split(/\r?\n/)
+        this.props.snackBar(errorArray[0])
         transactionDetails.status = 'error'
-        transactionDetails.error = error
+        transactionDetails.error = errorArray[0]
         console.log(error)
-        this.context.addTransactionToQueue(transactionId, transactionDetails)
+        this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
         this.setState({
           sending: false
         })
@@ -504,7 +480,7 @@ export default class ElementFundActions extends React.Component {
     this.setState({
       authMsg: authMsg,
       authAccount: { ...this.state.account },
-      sending: false,
+      // sending: false,
       complete: true,
     }, this.handleSubmit)
   }
@@ -517,7 +493,9 @@ export default class ElementFundActions extends React.Component {
     const amount = new BigNumber(this.state.unitsSummary).mul(DIVISOR).toFixed(0)
     const authMsg = 'You sold ' + this.state.unitsSummary + ' units of ' + dragoDetails.symbol.toUpperCase() + ' for ' + this.state.amountSummary + ' ETH'
     const transactionId = api.util.sha3(new Date() + accountAddress)
-    var dragoApi, provider = null;
+    // Setting variables depending on account source
+    var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
+    var poolApi = null;
     // Initializing transaction variables
     var transactionDetails = {
       status: this.state.account.source === 'MetaMask' ? 'pending' : 'authorization',
@@ -530,15 +508,13 @@ export default class ElementFundActions extends React.Component {
       symbol: dragoDetails.symbol.toUpperCase(),
       amount: this.state.amountSummary
     }
-    // Setting variables depending on account source
-    var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
-    this.context.addTransactionToQueue(transactionId, transactionDetails)    
+    this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
     const {account} = this.state
     
     
-    dragoApi = new DragoApi(provider)
-    dragoApi.contract.drago.init(dragoDetails.address)
-    dragoApi.contract.drago.sellDrago(accountAddress, amount)
+    poolApi = new PoolApi(provider)
+    poolApi.contract.drago.init(dragoDetails.address)
+    poolApi.contract.drago.sellDrago(accountAddress, amount)
       .then((receipt) => {
         console.log(receipt)
         // Adding transaciont to the queue
@@ -549,27 +525,27 @@ export default class ElementFundActions extends React.Component {
           transactionDetails.receipt = receipt
           transactionDetails.hash = receipt.transactionHash
           transactionDetails.timestamp = new Date ()
-          this.context.addTransactionToQueue(transactionId, transactionDetails)
+          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
         } else {
           transactionDetails.parityId = receipt
-          this.context.addTransactionToQueue(transactionId, transactionDetails)
+          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
         }
       })
       .catch((error) => {
-        this.props.snackBar('Your wallet returned an error.')
+        const errorArray = error.message.split(/\r?\n/)
+        this.props.snackBar(errorArray[0])
         transactionDetails.status = 'error'
-        transactionDetails.error = error
+        transactionDetails.error = errorArray[0]
         console.log(error)
-        this.context.addTransactionToQueue(transactionId, transactionDetails)
+        this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
         this.setState({
           sending: false
         })
       })
-    // this.props.snackBar('Sell order waiting for authorization for ' + this.state.amountSummary + ' ' + dragoDetails.symbol.toUpperCase())
     this.setState({
       authMsg: authMsg,
       authAccount: {...this.state.account},
-      sending: false,
+      // sending: false,
       complete: true,
     }, this.handleSubmit)
   }
@@ -687,7 +663,7 @@ export default class ElementFundActions extends React.Component {
   }
 
   holding = () => {
-    const { amount, action, newDrgBalance, drgBalance, drgOrder } = this.state
+    const { newDrgBalance, drgBalance, drgOrder } = this.state
     const { dragoDetails } = this.props
     return (
         <Table selectable={false} className={styles.detailsTable}>
@@ -715,19 +691,21 @@ export default class ElementFundActions extends React.Component {
 
 
   render() {
-    const { dragoDetails, accounts } = this.props
-    const { actionStyle, openAuth, authMsg, authAccount } = this.state
-    const { accountError, amountError, sending } = this.state;
+    const { dragoDetails } = this.props
+    const { openAuth, authMsg, authAccount } = this.state
+    const { sending } = this.state;
     const hasError = !!(this.state.accountError || this.state.amountError );
 
     const actions = [
       <FlatButton
+        key="CancelButton"
         label="Cancel"
         primary={true}
         onClick={this.handleCancel}
         onTouchTap={this.handleCancel}
       />,
       <FlatButton
+        key="SubmitButton"
         label="Submit"
         primary={true}
         disabled={ hasError || sending }
@@ -736,13 +714,12 @@ export default class ElementFundActions extends React.Component {
     ];
 
     if (openAuth) {
-      console.log(this.state)
       return (
         <div>
           {/* <RaisedButton label="Trade" primary={true} onClick={this.handleOpen}
             labelStyle={{ fontWeight: 700 }} /> */}
           <ElementFundActionAuthorization
-            dragoDetails={dragoDetails}
+            tokenDetails={dragoDetails}
             authMsg={authMsg}
             account={authAccount}
             onClose={this.handleCloseAuth}
@@ -813,3 +790,5 @@ export default class ElementFundActions extends React.Component {
     );
   }
 }
+
+export default connect(mapStateToProps)(ElementFundActions)

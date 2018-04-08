@@ -1,17 +1,13 @@
-import { Grid, Row, Col } from 'react-flexbox-grid';
-import { Link, Route, withRouter, HashRouter } from 'react-router-dom'
-import { List, Column, Table, AutoSizer, SortDirection, SortIndicator } from 'react-virtualized';
+import { Row, Col } from 'react-flexbox-grid';
+import { Link, withRouter } from 'react-router-dom'
+import { Column, Table, AutoSizer, SortDirection, SortIndicator } from 'react-virtualized';
 import FlatButton from 'material-ui/FlatButton';
-import moment from 'moment';
 import PropTypes from 'prop-types';
 import React, {PureComponent} from 'react';
 
 import 'react-virtualized/styles.css'
-
-import { generateRandomList } from './utils';
-import {APP, DS} from '../../utils/const.js'
-import {LabeledInput, InputRow} from './labeledInput';
-import utils from '../../utils/utils'
+import {DS} from '../../_utils/const.js'
+import utils from '../../_utils/utils'
 
 import styles from './elementListTransactions.module.css';
 
@@ -27,7 +23,7 @@ class ElementListBalances extends PureComponent {
 
   constructor(props, context) {
     super(props, context);
-    const { accountsInfo, list } = this.props
+    const { list } = this.props
     const sortBy = 'symbol';
     const sortDirection = SortDirection.ASC;
     const sortedList = this._sortList({sortBy, sortDirection});
@@ -57,8 +53,8 @@ class ElementListBalances extends PureComponent {
     this._sort = this._sort.bind(this);
   }
 
-  componentWillReceiveProps (nextProps, nextState) {
-    const { accountsInfo, list } = nextProps
+  componentWillReceiveProps (nextProps) {
+    const { list } = nextProps
     const sortBy = 'symbol';
     const sortDirection = SortDirection.ASC;
     const sortedList = list.sortBy(item => item.symbol)
@@ -172,9 +168,8 @@ class ElementListBalances extends PureComponent {
 
   actionButton(cellData, rowData) {
     const { match} = this.props;
-    console.log(match)
-    const url =  rowData.dragoID + "/" + utils.dragoISIN(cellData, rowData.dragoID)
-    var poolType = match.path.includes('drago') ? 'drago' : 'vaultv2'
+    const url =  rowData.vaultId + "/" + utils.dragoISIN(cellData, rowData.vaultId)
+    var poolType = match.path.includes('drago') ? 'drago' : 'vault'
     return <FlatButton label="View" primary={true} containerElement={<Link to={utils.rootPath(match.path)+DS+poolType+"/pools/"+url} />} />
   }
 

@@ -10,13 +10,8 @@
   /* width: 130px !important; */
 }
 
-.tokensAmmount {
-  /* float: left;
-  clear: none;  */
-}
-
-.tokensSymbolText {
-  font-size: 12px;
+.transferButton {
+  font-weight: 600 !important;
 }
 
 .copyAddress {

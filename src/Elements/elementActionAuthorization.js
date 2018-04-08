@@ -1,19 +1,12 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
 import  * as Colors from 'material-ui/styles/colors';
-import { Dialog, FlatButton, TextField } from 'material-ui';
-import { Grid, Row, Col } from 'react-flexbox-grid';
-import BigNumber from 'bignumber.js';
-import DropDownMenu from 'material-ui/DropDownMenu';
-import MenuItem from 'material-ui/MenuItem';
+import { Dialog, FlatButton } from 'material-ui';
+import { Row, Col } from 'react-flexbox-grid';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-
-import AccountSelector from '../Elements/elementAccountSelector';
 import ElementDialogAddressTitle from './elementDialogAddressTitle'
 import ElementDialogHeadTitle from './elementDialogHeadTitle'
-import IdentityIcon from '../IdentityIcon';
-import InfoTable from './elementInfoTable'
 import NotificationWifi from 'material-ui/svg-icons/notification/wifi';
 
 import styles from './elementActionAuthorization.module.css';
@@ -26,7 +19,9 @@ export default class ElementActionAuthorization extends Component {
 
   static propTypes = {
     account: PropTypes.object.isRequired,
-    onClose: PropTypes.func
+    onClose: PropTypes.func,
+    authMsg: PropTypes.string,
+    tokenDetails: PropTypes.object
   }
 
   state = {
@@ -43,14 +38,12 @@ export default class ElementActionAuthorization extends Component {
   handleClose = () => {
     // Executing onClose function passed by parent if exists, otherwise setting state.
     if (typeof this.props.onClose !== 'undefined') {
-      console.log('onClose props')
       this.props.onClose()
     } else {
       this.setState({
         open: false,
       })
     }
-
   }
 
   renderHeader = () => {
@@ -80,6 +73,7 @@ export default class ElementActionAuthorization extends Component {
     }
     const actions = [
       <FlatButton
+        key="CloseButton"
         label="Close"
         primary={true}
         onClick={this.handleClose}
@@ -103,7 +97,7 @@ export default class ElementActionAuthorization extends Component {
             Please check your {account.source.charAt(0).toUpperCase() + account.source.slice(1)} wallet and authorize this transaction.
         </Col>
           <Col xs={12}>
-            Click on the {<NotificationWifi color={Colors.blue500} />} icon in the top bar to track the progress of your transaction.
+            Click on the {<NotificationWifi color={Colors.indigo500} />} icon in the top bar to track the progress of your transaction.
         </Col>
           <Col xs={12}>
             Transactions can take up to 45 seconds to be mined into a new block.

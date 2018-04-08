@@ -1,17 +1,14 @@
-import { Grid, Row, Col } from 'react-flexbox-grid';
-import { Link, Route, withRouter, HashRouter } from 'react-router-dom'
-import { List, Column, Table, AutoSizer, SortDirection, SortIndicator } from 'react-virtualized';
+import { Row, Col } from 'react-flexbox-grid';
+import { Link, withRouter } from 'react-router-dom'
+import { Column, Table, AutoSizer, SortDirection, SortIndicator } from 'react-virtualized';
 import FlatButton from 'material-ui/FlatButton';
-import moment from 'moment';
 import PropTypes from 'prop-types';
 import React, {PureComponent} from 'react';
 
 import 'react-virtualized/styles.css'
 
-import { generateRandomList } from './utils';
-import {APP, DS} from '../../utils/const.js'
-import {LabeledInput, InputRow} from './labeledInput';
-import utils from '../../utils/utils'
+import {DS} from '../../_utils/const.js'
+import utils from '../../_utils/utils'
 
 import styles from './elementListTransactions.module.css';
 
@@ -27,8 +24,8 @@ class ElementListSupply extends PureComponent {
 
   constructor(props, context) {
     super(props, context);
-    const { accountsInfo, list } = this.props
-    const sortBy = 'symbol';
+    const { list } = this.props
+    // const sortBy = 'symbol';
     const sortDirection = SortDirection.ASC;
     const sortedList = list.sortBy(item => item.symbol)
                       .update(
@@ -45,7 +42,7 @@ class ElementListSupply extends PureComponent {
       rowHeight: 40,
       rowCount: rowCount,
       scrollToIndex: undefined,
-      sortBy,
+      // sortBy,
       sortDirection,
       sortedList,
       useDynamicRowHeight: false
@@ -60,9 +57,9 @@ class ElementListSupply extends PureComponent {
     this._sort = this._sort.bind(this);
   }
 
-  componentWillReceiveProps (nextProps, nextState) {
-    const { accountsInfo, list } = nextProps
-    const sortBy = 'symbol';
+  componentWillReceiveProps (nextProps) {
+    const { list } = nextProps
+    // const sortBy = 'symbol';
     const sortDirection = SortDirection.ASC;
     const sortedList = list.sortBy(item => item.symbol)
                       .update(
@@ -123,10 +120,9 @@ class ElementListSupply extends PureComponent {
                   <Column
                     width={150}
                     disableSort
-                    label="Symbol"
+                    label="SYMBOL"
                     cellDataGetter={({rowData}) => rowData.symbol}
                     dataKey="symbol"
-                    cellRenderer={({cellData}) => cellData.symbol}
                     className={styles.exampleColumn}
                     cellRenderer={({cellData}) => cellData}
                     flexShrink={1}
@@ -134,10 +130,9 @@ class ElementListSupply extends PureComponent {
                   <Column
                     width={width}
                     disableSort
-                    label="Name"
+                    label="NAME"
                     cellDataGetter={({rowData}) => rowData.name}
                     dataKey="name"
-                    cellRenderer={({cellData}) => cellData.name}
                     className={styles.exampleColumn}
                     cellRenderer={({cellData}) => cellData}
                     flexShrink={1}
@@ -145,7 +140,7 @@ class ElementListSupply extends PureComponent {
                   <Column
                     width={250}
                     disableSort
-                    label="Supply"
+                    label="SUPPLY"
                     cellDataGetter={({rowData}) => rowData.supply}
                     dataKey="drg"
                     className={styles.exampleColumn}
@@ -155,7 +150,7 @@ class ElementListSupply extends PureComponent {
                   <Column
                     width={210}
                     disableSort
-                    label="Actions"
+                    label="ACTIONS"
                     cellDataGetter={({rowData}) => rowData.symbol}
                     dataKey="actions"
                     className={styles.exampleColumn}
@@ -173,8 +168,8 @@ class ElementListSupply extends PureComponent {
 
   actionButton(cellData, rowData) {
     const { match} = this.props;
-    const url =  rowData.dragoID + "/" + utils.dragoISIN(cellData, rowData.dragoID)
-    return <FlatButton label="View" primary={true} containerElement={<Link to={utils.rootPath(match.path)+DS+"vaultv2/pools/"+url} />} />
+    const url =  rowData.vaultId + "/" + utils.dragoISIN(cellData, rowData.vaultId)
+    return <FlatButton label="View" primary={true} containerElement={<Link to={utils.rootPath(match.path)+DS+"vault/pools/"+url} />} />
   }
 
   renderEthValue(ethValue) {

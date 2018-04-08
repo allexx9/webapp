@@ -1,11 +1,10 @@
 import  * as Colors from 'material-ui/styles/colors'
 import { Row, Col } from 'react-flexbox-grid';
-import { transparent} from 'material-ui/styles/colors';
 import NotificationWifi from 'material-ui/svg-icons/notification/wifi';
 import AccessTime from 'material-ui/svg-icons/device/access-time';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import utils from '../utils/utils'
+import utils from '../_utils/utils'
 
 import styles from './elementBottomStatusBar.module.css';
 import classnames from 'classnames'
@@ -16,7 +15,7 @@ export default class ElementBottomStatusBar extends Component {
 
   static propTypes = {
     // accountName: PropTypes.string.isRequired,
-    // blockNumber: PropTypes.string,
+    blockNumber: PropTypes.string.isRequired,
     networkName: PropTypes.string.isRequired,
     networkError: PropTypes.string.isRequired,
     networkStatus: PropTypes.string.isRequired,
@@ -32,7 +31,6 @@ export default class ElementBottomStatusBar extends Component {
   }
 
   componentDidMount () {
-    // this.blockNumber()
     this.startTime()
   }
 
@@ -60,7 +58,7 @@ export default class ElementBottomStatusBar extends Component {
     const { networkStatus, networkError } = this.props
     var networkIconColor = Colors.green600
     var toolTipType = 'info'
-    switch (this.props.networkError) {
+    switch (networkError) {
       case ('networkOk'):
         networkIconColor = Colors.green600
         break;
@@ -70,7 +68,7 @@ export default class ElementBottomStatusBar extends Component {
       default:
         networkIconColor = Colors.green600
     }
-    switch (this.props.networkError) {
+    switch (networkError) {
       case ('networkOk'):
         toolTipType = 'info'
         break;
@@ -81,9 +79,6 @@ export default class ElementBottomStatusBar extends Component {
         toolTipType = 'info'
     }
 
-    const tooltip = {
-      backgroundColor: '#fff',
-    }
     return (
       <a className={classnames(styles.tooltip)}>
         <NotificationWifi
@@ -116,34 +111,6 @@ export default class ElementBottomStatusBar extends Component {
     }, 1000);
   }
 
-  // blockNumber = (blockNumber) => {
-  //   const { api } = this.context
-  //   var currentBlock = null
-
-  //   function addZero(i) {
-  //     return (i < 10) ? "0" + i : i;
-  //   }
-
-  //   if (typeof blockNumber !== 'undefined') {
-  //     currentBlock = blockNumber 
-  //   } else {
-  //     currentBlock = this.props.blockNumber
-  //   } 
-
-  //   if (currentBlock != 0) {
-  //     api.eth
-  //     .getBlockByNumber(currentBlock)
-  //     .then((block) => {
-  //       var t = block.timestamp
-  //       var blockTime = addZero(t.getHours())+':'+addZero(t.getMinutes())+':'+addZero(t.getSeconds())
-  //       console.log(blockTime)
-  //       this.setState({
-  //         lastBlockTime: blockTime
-  //       })
-  //     })
-  //   }
-  // }
-
   renderCurrentTime = () => {
     return (
       <span>
@@ -158,10 +125,11 @@ export default class ElementBottomStatusBar extends Component {
   render() {
     const { blockNumber, networkName, networkStatus, networkError } = this.props
     var toolTipType = 'info'
+    var networkClass = classnames(styles.networkName, styles[networkName])
     const numberWithCommas = (x) => {
       return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
-    switch (this.props.networkError) {
+    switch (networkError) {
       case ('networkOk'):
         toolTipType = 'info'
         break;
@@ -179,9 +147,8 @@ export default class ElementBottomStatusBar extends Component {
         <Col xs={8} className={styles.networkStatusCounter}>
           <div className={styles.networkDataContainer}>
             {this.renderCurrentTime()}&nbsp;&nbsp;&nbsp;&nbsp;
-            {/* Blockchain: {this.state.lastBlockTime}&nbsp;/&nbsp;  */}
             Blockchain:
-         #{numberWithCommas(blockNumber)}&nbsp;&nbsp;<span className={styles.networkName}>{networkName}</span>&nbsp;&nbsp;{this.renderNetworkStatus()}
+         #{numberWithCommas(blockNumber)}&nbsp;&nbsp;<span className={networkClass}>{networkName}</span>&nbsp;&nbsp;{this.renderNetworkStatus()}
           </div>
         </Col>
         <span>{networkStatus}</span>

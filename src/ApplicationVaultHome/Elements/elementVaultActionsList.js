@@ -6,9 +6,6 @@ import MenuItem from 'material-ui/MenuItem'
 import RaisedButton from 'material-ui/RaisedButton'
 import Subheader from 'material-ui/Subheader'
 import Popover, {PopoverAnimationVertical} from 'material-ui/Popover';
-
-import IdentityIcon from '../../IdentityIcon';
-
 // import styles from './elementAccountItem.module.css';
 
 import PropTypes from 'prop-types';

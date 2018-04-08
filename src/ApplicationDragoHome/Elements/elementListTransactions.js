@@ -1,14 +1,11 @@
-import { Grid, Row, Col } from 'react-flexbox-grid';
-import { Link, Route, withRouter, HashRouter } from 'react-router-dom'
-import { List, Column, Table, AutoSizer, SortDirection, SortIndicator, WindowScroller } from 'react-virtualized';
+import { Row, Col } from 'react-flexbox-grid';
+import { Link, withRouter} from 'react-router-dom'
+import { Column, Table, AutoSizer, SortDirection, SortIndicator} from 'react-virtualized';
 import FlatButton from 'material-ui/FlatButton';
-import moment from 'moment';
 import PropTypes from 'prop-types';
 import React, {PureComponent} from 'react';
 
-import { generateRandomList } from './utils';
-import {LabeledInput, InputRow} from './labeledInput';
-import utils from '../../utils/utils'
+import utils from '../../_utils/utils'
 
 import styles from './elementListTransactions.module.css';
 import 'react-virtualized/styles.css'
@@ -29,10 +26,12 @@ class ElementListTransactions extends PureComponent {
 
   constructor(props, context) {
     super(props, context);
-    const { accountsInfo, list } = this.props
-    const sortBy = 'symbol';
+    const { list } = this.props
     const sortDirection = SortDirection.ASC;
-    const sortedList = this._sortList({sortBy, sortDirection});
+    const sortedList = list.sortBy(item => item.timestamp)
+                      .update(
+                        list => (sortDirection === SortDirection.DESC ? list : list.reverse()),
+                      );
     const rowCount = list.size
 
     this.state = {
@@ -45,7 +44,6 @@ class ElementListTransactions extends PureComponent {
       rowHeight: 40,
       rowCount: rowCount,
       scrollToIndex: undefined,
-      sortBy,
       sortDirection,
       sortedList,
       useDynamicRowHeight: false
@@ -60,9 +58,8 @@ class ElementListTransactions extends PureComponent {
     this._sort = this._sort.bind(this);
   }
 
-  componentWillReceiveProps (nextProps, nextState) {
+  componentWillReceiveProps (nextProps) {
     const { list } = nextProps
-    const sortBy = 'symbol';
     const sortDirection = SortDirection.ASC;
     const sortedList = list.sortBy(item => item.timestamp)
                       .update(
@@ -154,7 +151,7 @@ class ElementListTransactions extends PureComponent {
                   {/* <Column
                     width={100}
                     disableSort
-                    label="Symbol"
+                    label="SYMBOL"
                     cellDataGetter={({rowData}) => rowData}
                     dataKey="symbol"
                     cellRenderer={({cellData}) => this.renderSymbol(cellData)}
@@ -214,13 +211,13 @@ class ElementListTransactions extends PureComponent {
 
   actionButton(cellData, rowData) {
     const { match} = this.props;
-    const url =  rowData.params.dragoID.value.c + "/" + utils.dragoISIN(cellData, rowData.params.dragoID.value.c)
+    const url =  rowData.params.dragoId.value.c + "/" + utils.dragoISIN(cellData, rowData.params.dragoId.value.c)
     return <FlatButton label="View" primary={true} containerElement={<Link to={match.path+"/"+url} />} />
   }
 
   renderSymbol(input) {
     return (
-      <div>{input.symbol}</div>
+      <div>{input.symbol.toUpperCase()}</div>
     )
   }
 
@@ -240,13 +237,10 @@ class ElementListTransactions extends PureComponent {
     switch(action) {
       case "BuyDrago":
         return <span style={{color: Colors.green300, fontWeight: 600}}>BUY</span>
-        break
       case "SellDrago":
         return <span style={{color: Colors.red300, fontWeight: 600}}>SELL</span>
-        break
       case "DragoCreated":
-        return <span style={{color: Colors.blue300, fontWeight: 600}}>CREATED</span>
-        break
+        return <span style={{color: Colors.indigo300, fontWeight: 600}}>CREATED</span>
     } 
   }
 

@@ -1,27 +1,20 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
 import { Dialog, FlatButton, TextField } from 'material-ui';
-import { Grid, Row, Col } from 'react-flexbox-grid';
 import BigNumber from 'bignumber.js';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import IdentityIcon from '../../IdentityIcon';
-import  * as Colors from 'material-ui/styles/colors';
-
-import { ERRORS, validateAccount, validatePositiveNumber, tradeIdError, cfdError, exchangeNameError } from './validation';
-import * as abis from '../../contracts';
+import { ERRORS, validateAccount, validatePositiveNumber } from '../../_utils/validation';
 import AccountSelector from '../../Elements/elementAccountSelector';
 import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle'
 import ElementDialogAddressTitle from '../../Elements/elementDialogAddressTitle'
-
-import styles from './elementFundActionFinalize.module.css';
-import DragoApi from '../../DragoApi/src'
+import PoolApi from '../../PoolsApi/src'
 
 const NAME_ID = ' ';
 const ADDRESS_0 = '0x0000000000000000000000000000000000000000'; //ADDRESS_0 is for ETH deposits
-const DIVISOR = 10 ** 9;  //adjustment in billionths
+
 
 //TODO: add address exchange
 
@@ -118,14 +111,16 @@ export default class ElementFundActionFinalizeOrder extends Component {
       );
     }
 
-    const { accountError, amountError, fromAddressError, cfdError, tradeIdError, sending } = this.state;
+    const { accountError, cfdError, tradeIdError, sending } = this.state;
     const hasError = !!(accountError || cfdError || tradeIdError);
     return ([
       <FlatButton
+       key="CancelButton"
         label='Cancel'
         primary
         onTouchTap={ this.onClose} />,
       <FlatButton
+      key="SubmitButton"
         label='Submit'
         primary
         disabled={ hasError || sending }
@@ -134,13 +129,7 @@ export default class ElementFundActionFinalizeOrder extends Component {
   }
 
   renderFields () {
-    const fromAccountLabel ='Address of target drago';
-    const amountLabel = 'The amount you want to deposit';
     const tradeIdLabel = 'The ID of the order you want to cancel';
-    const cfdLabel = 'The CFD you want to trade';
-
-    const value = this.state;
-    const assetName = this.state;
 
     return (
       <div>
@@ -227,13 +216,13 @@ export default class ElementFundActionFinalizeOrder extends Component {
 
     onFindAsset = () => {
       const { api } = this.context;
-      var dragoApi = new DragoApi(api)
-      console.log(dragoApi)
-      dragoApi.contract.ethusd.init()
+      var poolApi = new PoolApi(api)
+      console.log(poolApi)
+      poolApi.contract.ethusd.init()
       .then(() =>{
         this.setState({
           //loading: false,
-          assetAddress: dragoApi.contract.ethusd._contract._address
+          assetAddress: poolApi.contract.ethusd._contract._address
         });
       })
     }
@@ -241,23 +230,23 @@ export default class ElementFundActionFinalizeOrder extends Component {
   onFindExchange = () => {
     const { dragoDetails } = this.props
     const { api } = this.context;
-    var dragoApi = new DragoApi(api)
-    dragoApi.contract.exchange.init()
+    var poolApi = new PoolApi(api)
+    poolApi.contract.exchange.init()
     .then(() =>{
-      return dragoApi.contract.exchange.balanceOf(ADDRESS_0, dragoDetails.address.toString())
+      return poolApi.contract.exchange.balanceOf(ADDRESS_0, dragoDetails.address.toString())
     })
     .then ((balanceExchange) =>{
       console.log(balanceExchange)
       this.setState({
         loading: false,
         balanceExchange,
-        exchangeAddress: dragoApi.contract.exchange._contract._address
+        exchangeAddress: poolApi.contract.exchange._contract._address
       });
     })
   }
 
   validateTotal = () => {
-    const { account, accountError, cfd, cfdError, tradeId, tradeIdError } = this.state;
+    const { account, accountError, cfdError, tradeId, tradeIdError } = this.state;
 
     if (accountError || cfdError || tradeIdError) {
       return;
@@ -280,7 +269,7 @@ export default class ElementFundActionFinalizeOrder extends Component {
     const options = {
       from: this.state.account.address
     };
-    var dragoApi = null;
+    var poolApi = null;
 
     this.setState({
       sending: true
@@ -288,9 +277,9 @@ export default class ElementFundActionFinalizeOrder extends Component {
     console.log(values)
     if(this.state.account.source === 'MetaMask') {
       const web3 = window.web3
-      dragoApi = new DragoApi(web3)
-      dragoApi.contract.drago.init(dragoDetails.address)
-      dragoApi.contract.drago.finalizeOrderCFDExchange(this.state.account.address, exchangeAddress.toString(), cfd.toString(), tradeId.toFixed(0))
+      poolApi = new PoolApi(web3)
+      poolApi.contract.drago.init(dragoDetails.address)
+      poolApi.contract.drago.finalizeOrderCFDExchange(this.state.account.address, exchangeAddress.toString(), cfd.toString(), tradeId.toFixed(0))
       .then ((result) =>{
         console.log(result)
         this.setState({
@@ -306,9 +295,9 @@ export default class ElementFundActionFinalizeOrder extends Component {
       this.onClose()
       this.props.snackBar('Deposit awaiting for authorization')
     } else {
-      dragoApi = new DragoApi(api)
-      dragoApi.contract.drago.init(dragoDetails.address)
-      dragoApi.contract.drago.finalizeOrderCFDExchange(this.state.account.address, exchangeAddress.toString(), cfd.toString(), tradeId.toFixed(0))
+      poolApi = new PoolApi(api)
+      poolApi.contract.drago.init(dragoDetails.address)
+      poolApi.contract.drago.finalizeOrderCFDExchange(this.state.account.address, exchangeAddress.toString(), cfd.toString(), tradeId.toFixed(0))
       .then((result) => {
         this.onClose()
         this.props.snackBar('Deposit awaiting for authorization')

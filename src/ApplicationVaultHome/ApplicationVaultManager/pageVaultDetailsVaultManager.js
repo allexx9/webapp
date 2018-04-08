@@ -1,56 +1,36 @@
 import  * as Colors from 'material-ui/styles/colors'
 import { Grid, Row, Col } from 'react-flexbox-grid'
-import { Link, Route, withRouter } from 'react-router-dom'
-import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card'
+import { Link, withRouter } from 'react-router-dom'
 import {CopyToClipboard} from 'react-copy-to-clipboard'
-import {List, ListItem} from 'material-ui/List'
 import {Tabs, Tab} from 'material-ui/Tabs'
-import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar'
+import {Toolbar, ToolbarGroup } from 'material-ui/Toolbar'
 import ActionAssessment from 'material-ui/svg-icons/action/assessment'
 import ActionList from 'material-ui/svg-icons/action/list'
 import AppBar from 'material-ui/AppBar';
-import Avatar from 'material-ui/Avatar'
-import Chip from 'material-ui/Chip'
 import CopyContent from 'material-ui/svg-icons/content/content-copy'
-import DropDownMenu from 'material-ui/DropDownMenu'
-import FlatButton from 'material-ui/FlatButton'
-import IconButton from 'material-ui/IconButton'
-import IconMenu from 'material-ui/IconMenu'
-import Immutable from 'immutable'
-import NavigationExpandMoreIcon from 'material-ui/svg-icons/navigation/expand-more'
 import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types'
-import RaisedButton from 'material-ui/RaisedButton'
 import React, { Component } from 'react'
 import Search from 'material-ui/svg-icons/action/search'
 import Snackbar from 'material-ui/Snackbar'
-import Subheader from 'material-ui/Subheader'
-
-import { dragoFactoryEventsSignatures } from '../../utils/utils.js'
-import { formatCoins, formatEth, formatHash, toHex } from '../../format'
-import * as abis from '../../contracts';
-import DragoApi from '../../DragoApi/src'
+import { formatCoins, formatEth } from '../../_utils/format'
+import PoolApi from '../../PoolsApi/src'
 import ElementVaultActionsList from '../Elements/elementVaultActionsList'
 import ElementListTransactions from '../Elements/elementListTransactions'
 import ElementListWrapper from '../../Elements/elementListWrapper'
 import ElementFeesBox from '../Elements/elementFeesBox'
-import IdentityIcon from '../../IdentityIcon'
+import IdentityIcon from '../../_atomic/atoms/identityIcon'
 import InfoTable from '../../Elements/elementInfoTable'
-import Loading from '../../Loading'
-import utils from '../../utils/utils'
-
-
-import {
-  Table,
-  TableBody,
-  TableHeader,
-  TableHeaderColumn,
-  TableRow,
-  TableRowColumn,
-} from 'material-ui/Table';
-
+import Loading from '../../_atomic/atoms/loading'
+import utils from '../../_utils/utils'
 import styles from './pageVaultDetailsVaultManager.module.css';
 import ElementFundNotFound from '../../Elements/elementFundNotFound'
+import BigNumber from 'bignumber.js';
+import { connect } from 'react-redux';
+
+function mapStateToProps(state) {
+  return state
+}
 
 
 class PageVaultDetailsVaultManager extends Component {
@@ -62,9 +42,9 @@ class PageVaultDetailsVaultManager extends Component {
 
   static propTypes = {
       location: PropTypes.object.isRequired,
-      ethBalance: PropTypes.object.isRequired,
+      endpoint: PropTypes.object.isRequired,
       accounts: PropTypes.array.isRequired,
-      accountsInfo: PropTypes.object.isRequired, 
+      match: PropTypes.object.isRequired, 
       isManager: PropTypes.bool.isRequired
     };
 
@@ -73,11 +53,11 @@ class PageVaultDetailsVaultManager extends Component {
         address: null,
         name: null,
         symbol: null,
-        dragoID: null,
+        dragoId: null,
         addresssOwner: null,
         addressGroup: null,
       },
-      vaultTransactionsLogs: null,
+      vaultTransactionsLogs: [],
       loading: true,
       snackBar: false,
       snackBarMsg: '',
@@ -92,20 +72,20 @@ class PageVaultDetailsVaultManager extends Component {
     componentWillMount () {
       // Getting dragoid from the url parameters passed by router and then
       // the list of last transactions
-      const dragoID = this.props.match.params.dragoid
-      this.getVaultDetails(dragoID)
+      const dragoId = this.props.match.params.dragoid
+      this.getVaultDetails(dragoId)
     }
 
     componentWillReceiveProps(nextProps) {
       // Updating the lists on each new block if the accounts balances have changed
       // Doing this this to improve performances by avoiding useless re-rendering
-      const { api } = this.context
-      const dragoID = this.props.match.params.dragoid
-      const {accounts } = this.props
+      const dragoId = this.props.match.params.dragoid
       const sourceLogClass = this.constructor.name
       // console.log(nextProps)
-      if (!this.props.ethBalance.eq(nextProps.ethBalance)) {
-        this.getVaultDetails(dragoID)
+      const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
+      const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
+      if (!currentBalance.eq(nextBalance)) {
+        this.getVaultDetails(dragoId)
         console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
       } else {
         null
@@ -116,8 +96,11 @@ class PageVaultDetailsVaultManager extends Component {
       const  sourceLogClass = this.constructor.name
       var stateUpdate = true
       var propsUpdate = true
+      console.log(this.props)
+      const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
+      const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
       stateUpdate = !utils.shallowEqual(this.state, nextState)
-      propsUpdate = !this.props.ethBalance.eq(nextProps.ethBalance)
+      propsUpdate = !currentBalance.eq(nextBalance)
       if (stateUpdate || propsUpdate) {
         console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
       }
@@ -169,7 +152,7 @@ class PageVaultDetailsVaultManager extends Component {
       }
       
       return (
-      <a key={"addressether"+text} href={'https://kovan.etherscan.io/'+type+'/' + text} target='_blank'><Search className={styles.copyAddress}/></a>
+      <a key={"addressether"+text} href={this.props.endpoint.networkInfo.etherscan+type+'/' + text} target='_blank'><Search className={styles.copyAddress}/></a>
       );
     }
 
@@ -183,12 +166,8 @@ class PageVaultDetailsVaultManager extends Component {
 
     
     render() {
-      const { location, accounts, accountsInfo, allEvents, isManager } = this.props
-      const { vaultDetails, vaultTransactionsLogs, loading } = this.state
-      const paperContainer = {
-        marginTop: 10,
-        display: 'inline-block',
-      };
+      const { accounts, isManager } = this.props
+      const { vaultDetails, loading } = this.state
       const tabButtons = {
         inkBarStyle: {
           margin: 'auto',
@@ -199,9 +178,6 @@ class PageVaultDetailsVaultManager extends Component {
           margin: 'auto',
           width: 200,
         }
-      }
-      const detailsBox = {
-        padding: 20,
       }
 
       const columnsStyle = [styles.detailsTableCell, styles.detailsTableCell2, styles.detailsTableCell3]
@@ -215,9 +191,6 @@ class PageVaultDetailsVaultManager extends Component {
         const paperStyle = {
 
       };
-      
-      const web3 = window.web3
-
       var vaultTransactionList = this.state.vaultTransactionsLogs
       // console.log(vaultTransactionList)
 
@@ -246,7 +219,7 @@ class PageVaultDetailsVaultManager extends Component {
             </Toolbar>
             <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle} className={styles.test}>
               <Tab label="Info" className={styles.detailsTab}
-                icon={<ActionList color={Colors.blue500} />}>
+                icon={<ActionList color={Colors.indigo500} />}>
                 <Grid fluid>
                   <Row>
                     <Col xs={6}>
@@ -282,10 +255,11 @@ class PageVaultDetailsVaultManager extends Component {
                       <div className={styles.detailsTabContent}>
                           <p>Your last 20 transactions on this Drago.</p>
                         </div>
-                        {console.log(vaultTransactionList)}
-                          <ElementListWrapper accountsInfo={accountsInfo} list={vaultTransactionList}
+                          <ElementListWrapper list={vaultTransactionList}
                               renderCopyButton={this.renderCopyButton}
-                              renderEtherscanButton={this.renderEtherscanButton}>
+                              renderEtherscanButton={this.renderEtherscanButton}
+                              loading={loading}
+                              >
                             <ElementListTransactions  />
                           </ElementListWrapper>
                         {/* <ElementListTransactions accountsInfo={accountsInfo} list={vaultTransactionList} 
@@ -297,7 +271,7 @@ class PageVaultDetailsVaultManager extends Component {
                 </Grid>
               </Tab>
               <Tab label="Stats" className={styles.detailsTab}
-                icon={<ActionAssessment color={Colors.blue500} />}>
+                icon={<ActionAssessment color={Colors.indigo500} />}>
                 <Grid fluid>
                   <Row>
                     <Col xs={12} className={styles.detailsTabContent}>
@@ -317,80 +291,94 @@ class PageVaultDetailsVaultManager extends Component {
           action="close"
           onActionTouchTap={this.handlesnackBarRequestClose}
           onRequestClose={this.handlesnackBarRequestClose}
+          bodyStyle={{
+            height: "auto",
+            flexGrow: 0,
+            paddingTop: "10px",
+            lineHeight: "20px",
+            borderRadius: "2px 2px 0px 0px",
+            backgroundColor: "#fafafa",
+            boxShadow: "#bdbdbd 0px 0px 5px 0px"
+          }}
+          contentStyle={{
+            color: "#000000 !important",
+            fontWeight: "600"
+          }}
         />
       </Row>
       )
     }
 
-    // Getting the vault details from dragoID
-    getVaultDetails = (dragoID) => {
-      const { api } = this.context
-      const { accounts } = this.props
-      var sourceLogClass = this.constructor.name
-      //
-      // Initializing Drago API
-      // Passing Parity API
-      //      
-      const dragoApi = new DragoApi(api)
-      //
-      // Initializing registry contract
-      //
-      dragoApi.contract.dragoregistry
-        .init()
-        .then((address) => {
-          //
-          // Looking for drago from dragoID
-          //
-          dragoApi.contract.dragoregistry
-            .drago(dragoID)
-            .then((vaultDetails) => {
-              const vaultAddress = vaultDetails[0][0]
-              //
-              // Initializing vault contract
-              //
-              dragoApi.contract.vault.init(vaultAddress)
-              //
-              // Calling getPrice method
-              //
-              dragoApi.contract.vault.getTransactionFee()
-                .then((data) => {
-                  this.setState({
-                    vaultDetails: {
-                      address: vaultDetails[0][0],
-                      name: vaultDetails[0][1].charAt(0).toUpperCase() + vaultDetails[0][1].slice(1),
-                      symbol: vaultDetails[0][2],
-                      dragoID: vaultDetails[0][3].c[0],
-                      addresssOwner: vaultDetails[0][4],
-                      addressGroup: vaultDetails[0][5],
-                      sellPrice: 1,
-                      buyPrice: 1,
-                      price: ((data.div(100).toFixed(2)))
-                    },
-                    loading: false
-                  })
+  // Getting the vault details from vaultId
+  getVaultDetails = (vaultId) => {
+    const { api } = this.context
+    const { accounts } = this.props
+    //
+    // Initializing Drago API
+    // Passing Parity API
+    //      
+    const poolApi = new PoolApi(api)
+    //
+    // Initializing registry contract
+    //
+    poolApi.contract.dragoregistry
+      .init()
+      .then(() => {
+        //
+        // Looking for drago from vaultId
+        //
+        poolApi.contract.dragoregistry
+          .fromId(vaultId)
+          .then((vaultDetails) => {
+            const vaultAddress = vaultDetails[0][0]
+            //
+            // Initializing vault contract
+            //
+            console.log(vaultDetails)
+            poolApi.contract.vault.init(vaultAddress)
+            //
+            // Calling getPrice method
+            //
+            poolApi.contract.vault.getAdminData()
+              .then((data) => {
+                const price = (new BigNumber(data[4]).div(100).toFixed(2))
+                console.log(data[4])
+                this.setState({
+                  vaultDetails: {
+                    address: vaultDetails[0][0],
+                    name: vaultDetails[0][1].charAt(0).toUpperCase() + vaultDetails[0][1].slice(1),
+                    symbol: vaultDetails[0][2].toUpperCase(),
+                    vaultId: vaultDetails[0][3].c[0],
+                    addresssOwner: vaultDetails[0][4],
+                    addressGroup: vaultDetails[0][5],
+                    sellPrice: 1,
+                    buyPrice: 1,
+                    price: price,
+                  },
+                  loading: false
                 })
-              dragoApi.contract.vaulteventful.init()
-                .then(() => {
-                  this.getTransactions(vaultDetails[0][0], dragoApi.contract.vaulteventful, accounts)
-                }
-                )
-              // this.getTransactions (vaultDetails[0][0], contract, accounts)
-            })
-        })
-  
-    }   
+              })
+            poolApi.contract.vaulteventful.init()
+              .then(() => {
+                this.getTransactions(vaultDetails[0][0], poolApi.contract.vaulteventful, accounts)
+              }
+              )
+            // this.getTransactions (vaultDetails[0][0], contract, accounts)
+          })
+      })
 
-  // Getting last transactions
-  getTransactions = (vaultAddress, contract, accounts) => {
+  }  
+
+   // Getting last transactions
+   getTransactions = (vaultAddress, contract, accounts) => {
     const { api } = this.context
     var sourceLogClass = this.constructor.name
+    console.log(vaultAddress)
     const logToEvent = (log) => {
       const key = api.util.sha3(JSON.stringify(log))
-      console.log(log)
       const { blockNumber, logIndex, transactionHash, transactionIndex, params, type } = log
-      var ethvalue = (log.event === 'BuyGabcoin') ? formatEth(params.amount.value, null, api) : formatEth(params.revenue.value, null, api);
-      var drgvalue = (log.event === 'SellGabcoin') ? formatCoins(params.amount.value, null, api) : formatCoins(params.revenue.value, null, api);
-      console.log(drgvalue)
+      var ethvalue = (log.event === 'SellVault') ? formatEth(params.amount.value, null, api) : formatEth(params.revenue.value, null, api);
+      var drgvalue = (log.event === 'SellVault') ? formatCoins(params.amount.value, null, api) : formatCoins(params.revenue.value, null, api);
       // let ethvalue = null
       // let drgvalue = null     
       // if ((log.event === 'BuyDrago')) {
@@ -411,7 +399,8 @@ class PageVaultDetailsVaultManager extends Component {
         params,
         key,
         ethvalue,
-        drgvalue
+        drgvalue,
+        symbol: String.fromCharCode(...params.symbol.value)
       }
     }
 
@@ -431,29 +420,31 @@ class PageVaultDetailsVaultManager extends Component {
       const hexAccount = account.address
       return hexAccount
     })
-    const options = {
-      fromBlock: 0,
-      toBlock: 'pending',
-    }
+    // const options = {
+    //   fromBlock: 0,
+    //   toBlock: 'pending',
+    // }
+    console.log(contract)
     const eventsFilterBuy = {
       topics: [
-        [contract.hexSignature.BuyGabcoin],
-        hexVaultAddress,
+        [contract.hexSignature.BuyVault],
+        [hexVaultAddress],
         hexAccounts,
         null
       ]
     }
     const eventsFilterSell = {
       topics: [
-        [contract.hexSignature.SellGabcoin],
-        hexVaultAddress,
-        null,
-        hexAccounts
+        [contract.hexSignature.SellVault],
+        [hexVaultAddress],
+        hexAccounts,
+        null
       ]
     }
     const buyVaultEvents = contract
       .getAllLogs(eventsFilterBuy)
       .then((vaultTransactionsLog) => {
+        console.log(vaultTransactionsLog)
         const buyLogs = vaultTransactionsLog.map(logToEvent)
         return buyLogs
       }
@@ -471,6 +462,7 @@ class PageVaultDetailsVaultManager extends Component {
         return allLogs
       })
       .then((vaultTransactionsLog) => {
+        console.log(vaultTransactionsLog)
         // Creating an array of promises that will be executed to add timestamp to each entry
         // Doing so because for each entry we need to make an async call to the client
         // For additional refernce: https://stackoverflow.com/questions/39452083/using-promise-function-inside-javascript-array-map
@@ -484,25 +476,26 @@ class PageVaultDetailsVaultManager extends Component {
             .catch((error) => {
               // Sometimes Infura returns null for api.eth.getBlockByNumber, therefore we are assigning a fake timestamp to avoid
               // other issues in the app.
+              console.warn(error)
               log.timestamp = new Date()
               return log
             })
         })
-        Promise.all(promises)
-        .then((results) => {
+        Promise.all(promises).then((results) => {
           this.setState({
             vaultTransactionsLogs: results,
-          })
-        })
-        .then(() => {
-          console.log(`${sourceLogClass} -> Transactions list loaded`);
-          this.setState({
             loading: false,
           })
         })
-    })
+          .then(() => {
+            console.log(`${sourceLogClass} -> Transactions list loaded`);
+            this.setState({
+              loading: false,
+            })
+          })
+      })
   }
     
   }
 
-  export default withRouter(PageVaultDetailsVaultManager)
+  export default withRouter(connect(mapStateToProps)(PageVaultDetailsVaultManager))

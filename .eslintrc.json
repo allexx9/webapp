@@ -2,11 +2,13 @@
     "plugins": [
         "react"
     ],
+    "parser": "babel-eslint",
     "parserOptions": {
         "ecmaVersion": 6,
         "sourceType": "module",
         "ecmaFeatures": {
-            "jsx": true
+            "jsx": true,
+            "modules": true
         }
     },
     "env": {
@@ -20,5 +22,9 @@
         "plugin:react/recommended"
     ],    
     "rules": {
+        "no-console": "off",
+        "no-unused-vars": ["error", { "vars": "local", "args": "after-used", "ignoreRestSiblings": false }],
+        "react/jsx-uses-react": 1,
+        "react/jsx-uses-vars": 1
     }
 }

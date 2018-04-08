@@ -1,17 +1,13 @@
-import { Grid, Row, Col } from 'react-flexbox-grid';
-import { Link, Route, withRouter, HashRouter } from 'react-router-dom'
-import { List, Column, Table, AutoSizer, SortDirection, SortIndicator } from 'react-virtualized';
+import { Row, Col } from 'react-flexbox-grid';
+import { Link, withRouter} from 'react-router-dom'
+import { Column, Table, AutoSizer, SortDirection, SortIndicator } from 'react-virtualized';
 import FlatButton from 'material-ui/FlatButton';
-import moment from 'moment';
 import PropTypes from 'prop-types';
 import React, {PureComponent} from 'react';
 
 import 'react-virtualized/styles.css'
 
-import { generateRandomList } from './utils';
-import {APP, DS} from '../../utils/const.js'
-import {LabeledInput, InputRow} from './labeledInput';
-import utils from '../../utils/utils'
+import utils from '../../_utils/utils'
 
 import styles from './elementListTransactions.module.css';
 
@@ -27,7 +23,7 @@ class ElementListBalances extends PureComponent {
 
   constructor(props, context) {
     super(props, context);
-    const { accountsInfo, list } = this.props
+    const { list } = this.props
     const sortBy = 'symbol';
     const sortDirection = SortDirection.ASC;
     const sortedList = this._sortList({sortBy, sortDirection});
@@ -57,8 +53,8 @@ class ElementListBalances extends PureComponent {
     this._sort = this._sort.bind(this);
   }
 
-  componentWillReceiveProps (nextProps, nextState) {
-    const { accountsInfo, list } = nextProps
+  componentWillReceiveProps (nextProps, ) {
+    const { list } = nextProps
     const sortBy = 'symbol';
     const sortDirection = SortDirection.ASC;
     const sortedList = list.sortBy(item => item.symbol)
@@ -121,14 +117,13 @@ class ElementListBalances extends PureComponent {
                   sortDirection={sortDirection}
                   width={width}>
                   <Column
-                    width={150}
+                    width={200}
                     disableSort
                     label="SYMBOL"
-                    cellDataGetter={({rowData}) => rowData.symbol}
+                    cellDataGetter={({rowData}) => rowData}
                     dataKey="symbol"
-                    cellRenderer={({cellData}) => cellData.symbol}
+                    cellRenderer={({cellData}) => this.renderSymbol(cellData)}
                     className={styles.exampleColumn}
-                    cellRenderer={({cellData}) => cellData}
                     flexShrink={1}
                   />
                   <Column
@@ -172,8 +167,14 @@ class ElementListBalances extends PureComponent {
 
   actionButton(cellData, rowData) {
     const { match} = this.props;
-    const url =  rowData.dragoID + "/" + utils.dragoISIN(cellData, rowData.dragoID)
-    return <FlatButton label="View" primary={true} containerElement={<Link to={utils.rootPath(match.path)+DS+"drago/pools/"+url} />} />
+    const url =  rowData.dragoId + "/" + utils.dragoISIN(cellData, rowData.dragoId)
+    return <FlatButton label="View" primary={true} containerElement={<Link to={utils.rootPath(match.path)+"/"+"drago/pools/"+url} />} />
+  }
+
+  renderSymbol(input) {
+    return (
+      <div>{input.symbol.toUpperCase()}</div>
+    )
   }
 
   renderEthValue(ethValue) {
@@ -184,7 +185,7 @@ class ElementListBalances extends PureComponent {
   
   renderDrgValue(rowData) {
     return (
-      <div>{rowData.balance} <small>{rowData.symbol}</small></div>
+      <div>{rowData.balance} <small>{rowData.symbol.toUpperCase()}</small></div>
     )
   }
 

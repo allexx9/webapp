@@ -1,9 +1,7 @@
 import Immutable from 'immutable'
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom'
-
-import Loading from '../Loading'
+import Loading from '../_atomic/atoms/loading'
 
 class ElementListWrapper extends Component {
 
@@ -11,14 +9,16 @@ class ElementListWrapper extends Component {
     list: PropTypes.array,
     location: PropTypes.object,
     match: PropTypes.object,
-    poolType: PropTypes.string
+    poolType: PropTypes.string,
+    children: PropTypes.object,
+    loading: PropTypes.bool
   };
 
   render() {
     // Exstracting the list form props
     // and checking if the list === null
     const {list, ...rest} = this.props;
-    if ((list === null)) {
+    if (Object.keys(list).length === 0 && this.props.loading) {
       return <Loading />
     }
     // Rendering the table is list is an array

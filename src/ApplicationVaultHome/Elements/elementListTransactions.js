@@ -1,15 +1,11 @@
-import { Grid, Row, Col } from 'react-flexbox-grid';
-import { Link, Route, withRouter, HashRouter } from 'react-router-dom'
-import { List, Column, Table, AutoSizer, SortDirection, SortIndicator, WindowScroller } from 'react-virtualized';
+import { Row, Col } from 'react-flexbox-grid';
+import { Link, withRouter } from 'react-router-dom'
+import { Column, Table, AutoSizer, SortDirection, SortIndicator } from 'react-virtualized';
 import FlatButton from 'material-ui/FlatButton';
-import moment from 'moment';
 import PropTypes from 'prop-types';
 import React, {PureComponent} from 'react';
 import BigNumber from 'bignumber.js';
-
-import { generateRandomList } from './utils';
-import {LabeledInput, InputRow} from './labeledInput';
-import utils from '../../utils/utils'
+import utils from '../../_utils/utils'
 
 import styles from './elementListTransactions.module.css';
 import 'react-virtualized/styles.css'
@@ -29,7 +25,7 @@ class ElementListTransactions extends PureComponent {
 
   constructor(props, context) {
     super(props, context);
-    const { accountsInfo, list } = this.props
+    const { list } = this.props
     const sortBy = 'symbol';
     const sortDirection = SortDirection.ASC;
     const sortedList = this._sortList({sortBy, sortDirection});
@@ -60,7 +56,7 @@ class ElementListTransactions extends PureComponent {
     this._sort = this._sort.bind(this);
   }
 
-  componentWillReceiveProps (nextProps, nextState) {
+  componentWillReceiveProps (nextProps) {
     const { list } = nextProps
     const sortBy = 'symbol';
     const sortDirection = SortDirection.ASC;
@@ -214,7 +210,7 @@ class ElementListTransactions extends PureComponent {
 
   actionButton(cellData, rowData) {
     const { match} = this.props;
-    const url =  rowData.params.dragoID.value.c + "/" + utils.dragoISIN(cellData, rowData.params.dragoID.value.c)
+    const url =  rowData.params.dragoId.value.c + "/" + utils.dragoISIN(cellData, rowData.params.dragoId.value.c)
     return <FlatButton label="View" primary={true} containerElement={<Link to={match.path+"/"+url} />} />
   }
 
@@ -240,22 +236,22 @@ class ElementListTransactions extends PureComponent {
     switch (action) {
       case "BuyDrago":
         return <span style={{ color: Colors.green300, fontWeight: 600 }}>BUY</span>
-        break
+
       case "SellDrago":
         return <span style={{ color: Colors.red300, fontWeight: 600 }}>SELL</span>
-        break
-      case "BuyGabcoin":
+
+      case "BuyVault":
         return <span style={{ color: Colors.green300, fontWeight: 600 }}>DEPOSIT</span>
-        break
-      case "SellGabcoin":
+
+      case "SellVault":
         return <span style={{ color: Colors.red300, fontWeight: 600 }}>WITHDRAW</span>
-        break
+
       case "DragoCreated":
-        return <span style={{ color: Colors.blue300, fontWeight: 600 }}>CREATED</span>
-        break
-      case "GabcoinCreated":
-        return <span style={{ color: Colors.blue300, fontWeight: 600 }}>CREATED</span>
-        break
+        return <span style={{ color: Colors.indigo300, fontWeight: 600 }}>CREATED</span>
+
+      case "VaultCreated":
+        return <span style={{ color: Colors.indigo300, fontWeight: 600 }}>CREATED</span>
+
     }
   }
 
@@ -267,7 +263,7 @@ class ElementListTransactions extends PureComponent {
 
   renderDrgValue(rowData) {
     return (
-      <div>{new BigNumber(rowData.drgvalue).toFixed(4)} <small>{rowData.symbol}</small></div>
+      <div>{new BigNumber(rowData.drgvalue).toFixed(4)} <small>{rowData.symbol.toUpperCase()}</small></div>
     )
   }
 

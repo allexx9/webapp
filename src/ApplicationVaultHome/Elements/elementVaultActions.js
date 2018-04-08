@@ -1,6 +1,5 @@
 import  * as Colors from 'material-ui/styles/colors';
-import { Grid, Row, Col } from 'react-flexbox-grid';
-import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
+import { Row, Col } from 'react-flexbox-grid';
 import ActionSwapHoriz from 'material-ui/svg-icons/action/swap-horiz';
 import BigNumber from 'bignumber.js';
 import Dialog from 'material-ui/Dialog';
@@ -14,22 +13,19 @@ import Paper from 'material-ui/Paper'
 import {
   Table,
   TableBody,
-  TableHeader,
-  TableHeaderColumn,
   TableRow,
   TableRowColumn,
 } from 'material-ui/Table';
 
-import { ERRORS, validateAccount, validatePositiveNumber } from './validation';
-import { formatCoins, formatEth, formatHash, toHex } from '../../format';
-import * as abis from '../../contracts';
+import { ERRORS, validateAccount, validatePositiveNumber } from '../../_utils/validation';
+import { formatCoins } from '../../_utils/format';
 import AccountSelector from '../../Elements/elementAccountSelector'
 import ElementVaultActionsHeader from './elementVaultActionsHeader'
-import IdentityIcon from '../../IdentityIcon';
-import DragoApi from '../../DragoApi/src'
+import PoolApi from '../../PoolsApi/src'
 import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization'
 
 import styles from './elementVaultActions.module.css';
+import { connect } from 'react-redux';
 
 const customContentStyle = {
   minHeight: '500px',
@@ -37,7 +33,14 @@ const customContentStyle = {
 
 const zeroAmount = new BigNumber(0).toFormat(4)
 
-export default class ElementVaultActions extends React.Component {
+function mapStateToProps(state) {
+  return state
+//   return {
+//     count: state.count
+//   };
+}
+
+class ElementVaultActions extends React.Component {
 
   constructor(props) {
     super(props)
@@ -60,7 +63,6 @@ export default class ElementVaultActions extends React.Component {
         account: {},
         accountError: ERRORS.invalidAccount,
         accountCorrect: false,
-        amount:  zeroAmount,
         newDrgBalance:  zeroAmount,
         drgBalance:  zeroAmount,
         drgOrder:  zeroAmount,
@@ -87,7 +89,6 @@ export default class ElementVaultActions extends React.Component {
         account: {},
         accountError: ERRORS.invalidAccount,
         accountCorrect: false,
-        amount: zeroAmount,
         newDrgBalance: zeroAmount,
         drgBalance: zeroAmount,
         drgOrder: zeroAmount,
@@ -101,14 +102,14 @@ export default class ElementVaultActions extends React.Component {
 
   static contextTypes = {
     api: PropTypes.object.isRequired,
-    addTransactionToQueue: PropTypes.func
   };
 
   static propTypes = {
     vaultDetails: PropTypes.object.isRequired, 
     actionSelected: PropTypes.object,
     accounts: PropTypes.array.isRequired,
-    onTransactionSent: PropTypes.func.isRequired
+    onTransactionSent: PropTypes.func.isRequired,
+    dispatch: PropTypes.func.isRequired
   };
   
   resetState = {
@@ -145,6 +146,13 @@ export default class ElementVaultActions extends React.Component {
   actionSellStyle = {
     color: Colors.red300,
   }
+
+  addTransactionToQueueAction = (transactionId, transactionDetails) => {
+    return {
+      type: 'ADD_TRANSACTION',
+      transaction: { transactionId, transactionDetails }
+    }
+  };
 
   componentWillMount() {
 
@@ -198,7 +206,7 @@ export default class ElementVaultActions extends React.Component {
     return this.setState({
       open: true,
       action: 'withdraw',
-      amount: 0,
+      amount: zeroAmount,
       actionSummary: 'WITHDRAWING',
       actionStyleBuySell: this.actionSellStyle,
       switchButton: {
@@ -212,7 +220,6 @@ export default class ElementVaultActions extends React.Component {
       account: {},
       accountError: ERRORS.invalidAccount,
       accountCorrect: false,
-      amount: zeroAmount,
       newDrgBalance: zeroAmount,
       drgBalance: zeroAmount,
       drgOrder: zeroAmount,
@@ -224,11 +231,10 @@ export default class ElementVaultActions extends React.Component {
   }
 
   handleBuyAction = () => {
-    const {vaultDetails} = this.props
     return this.setState({
       open: true,
       action: 'deposit',
-      amount: 0,
+      amount: zeroAmount,
       actionSummary: 'SENDING',
       actionStyleBuySell: this.actionBuyStyle,
       switchButton: {
@@ -242,7 +248,6 @@ export default class ElementVaultActions extends React.Component {
       account: {},
       accountError: ERRORS.invalidAccount,
       accountCorrect: false,
-      amount: zeroAmount,
       newDrgBalance: zeroAmount,
       drgBalance: zeroAmount,
       drgOrder: zeroAmount,
@@ -257,6 +262,9 @@ export default class ElementVaultActions extends React.Component {
     const { api } = this.context
     const {vaultDetails} = this.props
     const accountError = validateAccount(account,api)
+    // Setting variables depending on account source
+    // var provider = account.source === 'MetaMask' ? window.web3 : api
+    var provider = api
     this.setState({
       account,
       accountError: accountError
@@ -264,15 +272,28 @@ export default class ElementVaultActions extends React.Component {
 
     // Getting the account balance if account passed validation
     if (!accountError) {
-      const instance = api.newContract(abis.drago, vaultDetails.address).instance;
-      instance.balanceOf.call({}, [account.address])
+      const poolApi = new PoolApi(provider)
+      console.log(vaultDetails.address)
+      poolApi.contract.vault.init(vaultDetails.address)
+      console.log(poolApi.contract.vault.balanceOf(account.address))
+      poolApi.contract.vault.balanceOf(account.address)
       .then((amount) =>{
-        const drgBalance = formatCoins(amount,4,api)
+        console.log(amount)
+        const drgBalance = formatCoins(new BigNumber(amount),4,api)
         this.setState({
           drgBalance,
           amountFieldDisabled: false
         });
       })
+      // const instance = api.newContract(abis.drago, vaultDetails.address).instance;
+      // instance.balanceOf.call({}, [account.address])
+      // .then((amount) =>{
+      //   const drgBalance = formatCoins(amount,4,api)
+      //   this.setState({
+      //     drgBalance,
+      //     amountFieldDisabled: false
+      //   });
+      // })
     }
   }
 
@@ -350,10 +371,8 @@ export default class ElementVaultActions extends React.Component {
       switch(this.state.switchButton.label) {
         case "Units":
           return action == 'deposit' ? new BigNumber(amount) : new BigNumber(amount).times(ratio)
-          break
         case "Amount":
           return action == 'deposit' ? new BigNumber(amount).div(ratio) : new BigNumber(amount)
-          break
       } 
     }
     // First: checking if any error in the account or amount. If error then return.
@@ -399,7 +418,9 @@ export default class ElementVaultActions extends React.Component {
     const amount = api.util.toWei(this.state.amountSummary).toString()
     const authMsg = 'You sent ' + this.state.amountSummary + ' ETH to the vault ' + vaultDetails.symbol.toUpperCase()
     const transactionId = api.util.sha3(new Date() + accountAddress)
-    var dragoApi, provider = null;
+    // Setting variables depending on account source
+    var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
+    var poolApi = null;
     // Initializing transaction variables
     var transactionDetails = {
       status: this.state.account.source === 'MetaMask' ? 'pending' : 'authorization',
@@ -412,15 +433,13 @@ export default class ElementVaultActions extends React.Component {
       symbol: vaultDetails.symbol.toUpperCase(),
       amount: this.state.amountSummary
     }
-    // Setting variables depending on account source
-    var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
-    this.context.addTransactionToQueue(transactionId, transactionDetails)
+    this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
     const {account} = this.state
 
     // Sending the transaction
-    dragoApi = new DragoApi(provider)
-    dragoApi.contract.vault.init(vaultDetails.address)
-    dragoApi.contract.vault.buyVault(accountAddress, amount)
+    poolApi = new PoolApi(provider)
+    poolApi.contract.vault.init(vaultDetails.address)
+    poolApi.contract.vault.buyVault(accountAddress, amount)
       .then((receipt) => {
         console.log(receipt)
         // Adding transaciont to the queue
@@ -431,17 +450,19 @@ export default class ElementVaultActions extends React.Component {
           transactionDetails.receipt = receipt
           transactionDetails.hash = receipt.transactionHash
           transactionDetails.timestamp = new Date ()
-          this.context.addTransactionToQueue(transactionId, transactionDetails)
+          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
         } else {
           transactionDetails.parityId = receipt
-          this.context.addTransactionToQueue(transactionId, transactionDetails)
+          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
         }
       })
       .catch((error) => {
-        this.props.snackBar('Your wallet returned an error.')
+        const errorArray = error.message.split(/\r?\n/)
+        this.props.snackBar(errorArray[0])
         transactionDetails.status = 'error'
-        transactionDetails.error = error
-        this.context.addTransactionToQueue(transactionId, transactionDetails)
+        transactionDetails.error = errorArray[0]
+        console.log(error)
+        this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
         this.setState({
           sending: false
         })
@@ -462,7 +483,9 @@ export default class ElementVaultActions extends React.Component {
     const amount = new BigNumber(this.state.unitsSummary).mul(DIVISOR).toFixed(0)
     const authMsg = 'You withdrew ' + this.state.amountSummary + ' ETH from the vault ' + vaultDetails.symbol.toUpperCase()
     const transactionId = api.util.sha3(new Date() + accountAddress)
-    var dragoApi, provider = null;
+    // Setting variables depending on account source
+    var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
+    var poolApi = null;
     // Initializing transaction variables
     var transactionDetails = {
       status: this.state.account.source === 'MetaMask' ? 'pending' : 'authorization',
@@ -475,15 +498,14 @@ export default class ElementVaultActions extends React.Component {
       symbol: vaultDetails.symbol.toUpperCase(),
       amount: this.state.amountSummary
     }
-    // Setting variables depending on account source
-    var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
-    this.context.addTransactionToQueue(transactionId, transactionDetails)    
+
+    this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
     const {account} = this.state
     
-    
-    dragoApi = new DragoApi(provider)
-    dragoApi.contract.vault.init(vaultDetails.address)
-    dragoApi.contract.vault.sellVault(accountAddress, amount)
+    // Sending the transaction
+    poolApi = new PoolApi(provider)
+    poolApi.contract.vault.init(vaultDetails.address)
+    poolApi.contract.vault.sellVault(accountAddress, amount)
       .then((receipt) => {
         console.log(receipt)
         // Adding transaciont to the queue
@@ -494,17 +516,19 @@ export default class ElementVaultActions extends React.Component {
           transactionDetails.receipt = receipt
           transactionDetails.hash = receipt.transactionHash
           transactionDetails.timestamp = new Date ()
-          this.context.addTransactionToQueue(transactionId, transactionDetails)
+          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
         } else {
           transactionDetails.parityId = receipt
-          this.context.addTransactionToQueue(transactionId, transactionDetails)
+          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
         }
       })
       .catch((error) => {
-        this.props.snackBar('Your wallet returned an error.')
+        const errorArray = error.message.split(/\r?\n/)
+        this.props.snackBar(errorArray[0])
         transactionDetails.status = 'error'
-        transactionDetails.error = error
-        this.context.addTransactionToQueue(transactionId, transactionDetails)
+        transactionDetails.error = errorArray[0]
+        console.log(error)
+        this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
         this.setState({
           sending: false
         })
@@ -631,7 +655,7 @@ export default class ElementVaultActions extends React.Component {
   }
 
   holding = () => {
-    const { amount, action, newDrgBalance, drgBalance, drgOrder } = this.state
+    const { newDrgBalance, drgBalance, drgOrder } = this.state
     const { vaultDetails } = this.props
     
     return (
@@ -661,18 +685,20 @@ export default class ElementVaultActions extends React.Component {
 
 
   render() {
-    const { vaultDetails, accounts } = this.props
-    const { actionStyle, openAuth, authMsg, authAccount } = this.state
-    const { accountError, amountError, sending } = this.state;
+    const { vaultDetails } = this.props
+    const { openAuth, authMsg, authAccount } = this.state
+    const { sending } = this.state;
     const hasError = !!(this.state.accountError || this.state.amountError );
     const actions = [
       <FlatButton
+        key='CancelButton'
         label="Cancel"
         primary={true}
         onClick={this.handleCancel}
         onTouchTap={this.handleCancel}
       />,
       <FlatButton
+        key='SubmitButton'
         label="Submit"
         primary={true}
         disabled={ hasError || sending }
@@ -756,3 +782,5 @@ export default class ElementVaultActions extends React.Component {
     );
   }
 }
+
+export default connect(mapStateToProps)(ElementVaultActions)

@@ -1,6 +1,4 @@
-import Immutable from 'immutable'
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom'
 import TextField from 'material-ui/TextField';
 import PropTypes from 'prop-types';
 
@@ -8,17 +6,17 @@ import PropTypes from 'prop-types';
 class FilterFunds extends Component {
 
   static propTypes = {
-    fundsList: PropTypes.object,
+    list: PropTypes.object,
     filterList: PropTypes.func,
   };
 
   filterFunds = (event, newValue) => {
-    const { fundsList, filterList } = this.props
+    const { list, filterList } = this.props
     const inputValue = newValue.trim().toLowerCase();
     const inputLength = inputValue.length;
-    const funds = fundsList.toJS()
+    const funds = list.toJS()
     const filteredFunds = () => {
-      return inputLength === 0 ? fundsList.toJS() : funds.filter(fund =>
+      return inputLength === 0 ? list.toJS() : funds.filter(fund =>
       fund.params.name.value.toLowerCase().slice(0, inputLength) === inputValue)
     }
     filterList(filteredFunds())

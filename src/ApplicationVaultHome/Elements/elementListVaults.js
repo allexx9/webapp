@@ -1,19 +1,16 @@
-import { Grid, Row, Col } from 'react-flexbox-grid';
-import { Link, Route, withRouter, HashRouter } from 'react-router-dom'
-import { List, Column, Table, AutoSizer, SortDirection, SortIndicator } from 'react-virtualized';
+import { Row, Col } from 'react-flexbox-grid';
+import { Link, withRouter } from 'react-router-dom'
+import { Column, Table, AutoSizer, SortDirection, SortIndicator } from 'react-virtualized';
 import FlatButton from 'material-ui/FlatButton';
-import moment from 'moment';
+import BigNumber from 'bignumber.js';
+
 import PropTypes from 'prop-types';
 import React, {PureComponent} from 'react';
-
-import { generateRandomList } from './utils';
-import {LabeledInput, InputRow} from './labeledInput';
-import utils from '../../utils/utils'
+import utils from '../../_utils/utils'
 
 import styles from './elementListVaults.module.css';
 import 'react-virtualized/styles.css'
 
-// const list = Immutable.List(generateRandomList());
 
 class ElementListVaults extends PureComponent {
 
@@ -126,7 +123,7 @@ class ElementListVaults extends PureComponent {
                 {/* {!hideIndexRow && (
                   <Column
                     label="Index"
-                    cellDataGetter={({rowData}) => rowData.params.dragoID.value.c}
+                    cellDataGetter={({rowData}) => rowData.params.dragoId.value.c}
                     dataKey="index"
                     // disableSort={!this._isSortEnabled()}
                     width={60}
@@ -144,21 +141,21 @@ class ElementListVaults extends PureComponent {
                 <Column
                   width={100}
                   disableSort
-                  label={label}
+                  label="VAULT CODE"
                   cellDataGetter={({rowData}) => rowData.params.symbol.value}
-                  dataKey="dragocode"
+                  dataKey="vaultcode"
                   className={styles.exampleColumn}
-                  cellRenderer={({cellData, rowData}) => utils.dragoISIN(cellData, rowData.params.dragoID.value.c)}
+                  cellRenderer={({rowData}) => this.renderISIN(rowData)}
                   flexGrow={1}
                 />
-                <Column
+                {/* <Column
                   width={100}
                   label="SYMBOL"
                   cellDataGetter={({rowData}) => rowData.params.symbol.value.toUpperCase()}
                   dataKey="symbol"
                   className={styles.exampleColumn}
                   cellRenderer={({cellData}) => cellData}
-                />
+                /> */}
                 <Column
                   width={210}
                   disableSort
@@ -176,7 +173,7 @@ class ElementListVaults extends PureComponent {
                   cellDataGetter={({rowData}) => rowData.params.symbol.value}
                   dataKey="actions"
                   className={styles.exampleColumn}
-                  cellRenderer={({cellData, rowData}) => this.actionButton(cellData, rowData)}
+                  cellRenderer={({cellData, rowData}) => this.actionButton(rowData)}
                   flexShrink={1}
                 />
               </Table>
@@ -188,15 +185,27 @@ class ElementListVaults extends PureComponent {
     );
   }
 
-  actionButton (cellData, rowData) {
+  renderISIN(rowData) {
+    console.log(rowData)
+    const vaultId = new BigNumber(rowData.params.vaultId.value).toFixed()
+    const symbol = rowData.params.symbol.value
+    return (
+      utils.dragoISIN(symbol, vaultId)
+    )
+  }
+
+  actionButton (rowData) {
     const { match} = this.props;
-    const url =  rowData.params.dragoID.value.c + "/" + utils.dragoISIN(cellData, rowData.params.dragoID.value.c)
+    const vaultId = new BigNumber(rowData.params.vaultId.value).toFixed()
+    const symbol = rowData.params.symbol.value
+    console.log(match.path)
+    const url =  vaultId + "/" + utils.dragoISIN(symbol, vaultId)
     return <FlatButton label="View" primary={true} containerElement={<Link to={match.path+"/"+url} />} />
   }
 
   renderLabel(rowData) {
     console.log(rowData)
-    if(typeof rowData.params.gabcoinID !== 'undefined') {
+    if(typeof rowData.params.vaultId !== 'undefined') {
       return "bla"
     }
     return (

@@ -72,7 +72,7 @@ Alternatively you can ran `yarn watch` and the app bill be built into the build 
 
 ## Building for beta.rigoblock.com
 
-Please run the following commands. 
+Please run the following commands to build master branch. 
 
     git clone https://github.com/RigoBlock/webapp app
     cd app
@@ -83,6 +83,10 @@ Please run the following commands.
     ./deploy-cloudflare.sh
 
 Copy the files inside the `build` directory to the document root folder of your webserver.
+
+To build another branch execute the following command after `cd app`:
+
+    git checkout <branch-name>
 
 ## Visual Studio Code
 
