@@ -34,16 +34,6 @@ class CheckAuthPage extends Component {
       return (
         <NetworkAlert />
       )
-      return (
-        <Row>
-          <Col xs={12}>
-            <div className={styles.warnMsgBox}>
-              <p>{warnMsg}</p>
-            </div>
-
-          </Col>
-        </Row>
-      )
     }
 
     buildUrlPath = (location) => {

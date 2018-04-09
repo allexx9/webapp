@@ -120,11 +120,10 @@ class ElementListBalances extends PureComponent {
                     width={150}
                     disableSort
                     label="SYMBOL"
-                    cellDataGetter={({rowData}) => rowData.symbol}
+                    cellDataGetter={({rowData}) => rowData}
                     dataKey="symbol"
-                    cellRenderer={({cellData}) => cellData.symbol}
+                    cellRenderer={({cellData}) => this.renderSymbol(cellData)}
                     className={styles.exampleColumn}
-                    cellRenderer={({cellData}) => cellData}
                     flexShrink={1}
                   />
                   <Column
@@ -173,6 +172,12 @@ class ElementListBalances extends PureComponent {
     return <FlatButton label="View" primary={true} containerElement={<Link to={utils.rootPath(match.path)+DS+poolType+"/pools/"+url} />} />
   }
 
+  renderSymbol(input) {
+    return (
+      <div>{input.symbol.toUpperCase()}</div>
+    )
+  }
+
   renderEthValue(ethValue) {
     return (
       <div>{ethValue} <small>ETH</small></div>
@@ -181,7 +186,7 @@ class ElementListBalances extends PureComponent {
 
   renderDrgValue(rowData) {
     return (
-      <div>{rowData.balance} <small>{rowData.symbol}</small></div>
+      <div>{rowData.balance} <small>{rowData.symbol.toUpperCase()}</small></div>
     )
   }
 
