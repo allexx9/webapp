@@ -9,6 +9,7 @@ import React, { Component } from 'react'
 import {APP, DS} from '../_utils/const.js'
 import styles from './checkAuthPage.module.css'
 import { withRouter } from 'react-router-dom'
+import NetworkAlert from './elementNetworkAlert'
 
 class CheckAuthPage extends Component {
 
@@ -29,7 +30,10 @@ class CheckAuthPage extends Component {
     
     renderWarnMsg = () =>{
       const { warnMsg } = this.props
-      if (warnMsg === null) return
+      if (warnMsg === '') return
+      return (
+        <NetworkAlert />
+      )
       return (
         <Row>
           <Col xs={12}>

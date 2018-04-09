@@ -133,11 +133,11 @@ class Interfaces {
             warnMsg: MSG_NO_SUPPORTED_NETWORK
           }
           this._success = { ...currentState, ...stateUpdate }
-          console.log('differente network')
           return accountsMetaMask
         } else {
           const stateUpdate = {
-            networkCorrect: true
+            networkCorrect: true,
+            warnMsg: ''
           }
           this._success = { ...currentState, ...stateUpdate }
           return web3.eth.getAccounts()
