@@ -45,7 +45,7 @@ const initialState = {
     networkStatus: MSG_NETWORK_STATUS_OK,
     prevBlockNumber: "0",
     rigoTokenBalance: null,
-    warnMsg: null,
+    warnMsg: '',
   },
   user :{
     isManager: false

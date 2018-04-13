@@ -4,9 +4,6 @@ import React, { Component } from 'react';
 import ApplicationVaultManager from './ApplicationVaultManager'
 import ApplicationVaultTrader from './ApplicationVaultTrader'
 import Loading from '../_atomic/atoms/loading';
-import {
-  DEFAULT_NETWORK_NAME,
-} from '../_utils/const'
 import { Row, Col } from 'react-flexbox-grid';
 import { connect } from 'react-redux';
 import LeftSideDrawerVaults from '../Elements/leftSideDrawerVaults';
@@ -17,8 +14,6 @@ import CheckAuthPage from '../Elements/checkAuthPage'
 import ElementBottomStatusBar from '../Elements/elementBottomStatusBar'
 
 import styles from './applicationVaultHome.module.css';
-
-
 
 
 function mapStateToProps(state) {

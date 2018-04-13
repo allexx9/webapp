@@ -191,7 +191,7 @@ export const NETWORKS = {
 }
 
 // Default messages
-export const MSG_NO_SUPPORTED_NETWORK = "We have detected that MetaMask is not connected to correct network."
+export const MSG_NO_SUPPORTED_NETWORK = "We have detected that MetaMask is not connected to the correct network."
 export const MSG_NETWORK_STATUS_OK = "Service is operating normally."
 export const MSG_NETWORK_STATUS_ERROR = "Service disruption. Cannot update accounts balances. Account balances could be out of date."
 

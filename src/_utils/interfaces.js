@@ -107,20 +107,6 @@ class Interfaces {
       })
       .catch((error) => {
         console.warn('getAccounts', error);
-        // return api.parity
-        //   .accounts()
-        //   .then((accountsInfo) => {
-        //     return Object
-        //       .keys(accountsInfo)
-        //       .filter((address) => accountsInfo[address].uuid)
-        //       .reduce((ret, address) => {
-        //         ret[address] = {
-        //           name: accountsInfo[address].name
-        //         };
-        //         return ret;
-        //       }, {});
-        //   }
-        // );
         return {}
       })
   }
@@ -131,52 +117,38 @@ class Interfaces {
     const web3 = window.web3
     const parityNetworkId = this._parityNetworkId
     var accountsMetaMask = {}
-    var ethBalance = new BigNumber(0)
-
     if (typeof web3 === 'undefined') {
       return;
     }
 
-    // var poolsApi = new PoolsApi(web3)
-    // console.log(poolsApi.contract)
-    // poolsApi.contract.rigotoken.init()
-    // .then(() =>{
-    //   poolsApi.contract.rigotoken.balanceOf('0x00791547B03F5541971B199a2d347446eB8Dc9bE')
-    //   .then((rigoTokenBalance) => {
-    //     console.log(api.util.fromWei(rigoTokenBalance).toFormat(3))
-    //   })
-    // })
-
     // Checking if MetaMask is connected to the same network as the endpoint
     return web3.eth.net.getId()
       .then((metaMaskNetworkId) => {
+        console.log(metaMaskNetworkId)
+        console.log(parityNetworkId)
         var currentState = this._success
-        if (metaMaskNetworkId != parityNetworkId) {
+        if (metaMaskNetworkId !== parityNetworkId) {
           const stateUpdate = {
             networkCorrect: false,
             warnMsg: MSG_NO_SUPPORTED_NETWORK
           }
           this._success = { ...currentState, ...stateUpdate }
+          return accountsMetaMask
         } else {
           const stateUpdate = {
-            networkCorrect: true
+            networkCorrect: true,
+            warnMsg: ''
           }
           this._success = { ...currentState, ...stateUpdate }
-        }
-      })
-      // Getting ETH and GRG balances
-      .then(() => {
-        return web3.eth.getAccounts()
+          return web3.eth.getAccounts()
           .then(accounts => {
             // Returning empty object if MetaMask is locked.
             if (accounts.length === 0) {
               return {}
             }
+            console.log('not locked')
             return web3.eth.getBalance(accounts[0])
-              .then(balance => {
-                ethBalance = balance
-              })
-              .then(() => {
+              .then((ethBalance) => {
                 // const rigoTokenContract = api.newContract(rigotoken, GRG_ADDRESS_KV)
                 // return rigoTokenContract.instance.balanceOf.call({}, [accounts[0]])
                 var poolsApi = new PoolsApi(web3)
@@ -194,12 +166,56 @@ class Interfaces {
                     return accountsMetaMask;
                   })
               })
+              .catch((error) => {
+                console.warn(error)
+                return {}
+              })
           })
           .catch((error) => {
             console.warn(error)
             return {}
           })
+        }
+
       })
+      // Getting ETH and GRG balances
+      // .then(() => {
+      //   return web3.eth.getAccounts()
+      //     .then(accounts => {
+      //       // Returning empty object if MetaMask is locked.
+      //       if (accounts.length === 0) {
+      //         return {}
+      //       }
+      //       console.log('not locked')
+      //       return web3.eth.getBalance(accounts[0])
+      //         .then((ethBalance) => {
+      //           // const rigoTokenContract = api.newContract(rigotoken, GRG_ADDRESS_KV)
+      //           // return rigoTokenContract.instance.balanceOf.call({}, [accounts[0]])
+      //           var poolsApi = new PoolsApi(web3)
+      //           poolsApi.contract.rigotoken.init()
+      //           return poolsApi.contract.rigotoken.balanceOf(accounts[0])
+      //             .then((rigoTokenBalance) => {
+      //               accountsMetaMask = {
+      //                 [accounts[0]]: {
+      //                   ethBalance: api.util.fromWei(ethBalance).toFormat(3),
+      //                   rigoTokenBalance: api.util.fromWei(rigoTokenBalance).toFormat(3),
+      //                   name: "MetaMask",
+      //                   source: "MetaMask"
+      //                 }
+      //               }
+      //               return accountsMetaMask;
+      //             })
+      //         })
+      //         .catch((error) => {
+      //           console.warn(error)
+      //           return {}
+      //         })
+      //     })
+      //     .catch((error) => {
+      //       console.warn(error)
+      //       return {}
+      //     })
+      // })
   }
 
   attachInterfaceInfuraV2 = () => {
@@ -252,10 +268,11 @@ class Interfaces {
         if (result.availability === 'public') {
           console.log(result.availability)
           // if Parity in --public-node then getting only MetaMask accounts
-          return [this.getAccountsMetamask(api)]
+          // return [this.getAccountsMetamask(api)]
+          return [this.getAccountsParity(api), this.getAccountsMetamask(api)]
         }
         else {
-          // if Parity NOT in --public-node then getting bot Parity and MetaMask accounts
+          // if Parity NOT in --public-node then getting both Parity and MetaMask accounts
           console.log(result.availability)
           return [this.getAccountsParity(api), this.getAccountsMetamask(api)]
         }
@@ -267,25 +284,31 @@ class Interfaces {
             const allAccounts = { ...accountsInfo, ...accountsMetaMask }
             console.log('Parity accounts loaded: ', accountsInfo)
             console.log('MetaMask account loaded: ', accountsMetaMask)
+            console.log(Object.keys(allAccounts).length)
             const stateUpdate = {
               loading: false,
               ethBalance: new BigNumber(0),
-              accounts: Object
-                .keys(allAccounts)
-                .map((address) => {
-                  const info = allAccounts[address] || {};
-                  return {
-                    address,
-                    name: info.name,
-                    source: info.source,
-                    ethBalance: info.ethBalance,
-                    rigoTokenBalance: info.rigoTokenBalance,
-                    nonce: info.nonce
-                  };
-                })
+              accounts: Object.keys(allAccounts).length !== 0
+                ? Object
+                  .keys(allAccounts)
+                  .map((address) => {
+                    const info = allAccounts[address] || {};
+                    console.log(info)
+                    return {
+                      address,
+                      name: info.name,
+                      source: info.source,
+                      ethBalance: info.ethBalance,
+                      rigoTokenBalance: info.rigoTokenBalance,
+                      nonce: info.nonce
+                    };
+                  })
+                : []
             }
+            console.log(stateUpdate)
             const result = {...this._success, ...stateUpdate}
             this._success = result
+            console.log(result.accounts)
             return result
           })
           .catch((error) => {

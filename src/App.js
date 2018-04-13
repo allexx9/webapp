@@ -41,13 +41,18 @@ import { connect } from 'react-redux';
 import ElementNotification from './Elements/elementNotification'
 import PoolsApi from './PoolsApi/src'
 import AppLoading from './Elements/elementAppLoading'
-import NotConnected from './Elements/notConnected'
+// import NotConnected from './Elements/notConnected'
+import ReactGA from 'react-ga';
 // import Actions from './actions/actions'
 
 var appHashPath = true;
 var sourceLogClass = null
 const isConnectedTimeout = 4000
+const isMetaMaskUnlockedTimeout = 1000
 var subscriptionData = {}
+
+ReactGA.initialize('UA-117171641-1');
+ReactGA.pageview(window.location.pathname + window.location.search);
 
 // Detectiong if the app is running inside Parity client
 var pathArray = window.location.hash.split('/');
@@ -87,7 +92,8 @@ export class App extends Component {
   }
 
   scrollPosition = 0
-  td = null
+  tdIsConnected = null
+  tdIsMetaMaskUnlocked = null
   
 
   // Defining the properties of the context variables passed down to children
@@ -120,9 +126,24 @@ export class App extends Component {
   attachInterfaceAction = () => {
     return {
       type: ATTACH_INTERFACE,
-      payload: new Promise(resolve => {
+      // payload: new Promise(resolve => {
+      //   this.attachInterface().then(result => {
+      //     resolve(result);
+      //   })
+      payload: new Promise((resolve) => {
         this.attachInterface().then(result => {
           resolve(result);
+        })
+      })
+      .catch(error => {
+        console.log(error)
+        var newEndpoint = { ...this.props.endpoint }
+        newEndpoint.networkStatus = MSG_NETWORK_STATUS_ERROR
+        newEndpoint.networkError = NETWORK_WARNING
+        this.props.dispatch(this.updateInterfaceAction(newEndpoint))
+        this.setState({
+          appLoading: false,
+          isConnected: false,
         })
       })
     }
@@ -151,13 +172,15 @@ export class App extends Component {
     // Starting connection checking. this is not necessary runnin inside Parity UI
     // because the checki is done by Parity and a messagge will be displayed by the client
     if (this.props.endpoint.endpointInfo.name !== 'local') {
-      this.td = setTimeout(this.checkConnectionToNode,2000)
+      this.tdIsConnected = setTimeout(this.checkConnectionToNode,1000)
+      this.tdIsMetaMaskUnlocked = setTimeout(this.checkMetaMaskUnlocked,isMetaMaskUnlockedTimeout)
     }
   }
 
   componentWillUnmount() {
     if (this.props.endpoint.endpointInfo.name !== 'local') {
-      clearTimeout(this.td)
+      clearTimeout(this.tdIsConnected)
+      clearTimeout(this.tdIsMetaMaskUnlocked)
     }
     // Unsubscribing to the event when the the user moves away from this page
     this.detachInterface();
@@ -191,16 +214,73 @@ export class App extends Component {
             syncStatus: result
           })
         }
-        // console.log(api.net.peerCount())
-        // console.log('synching ', result)
       })
-      this.td = setTimeout(this.checkConnectionToNode,isConnectedTimeout)
+      this.tdIsConnected = setTimeout(this.checkConnectionToNode,isConnectedTimeout)
     } else {
       this.setState({
         isConnected: false
       })  
-      this.td = setTimeout(this.checkConnectionToNode,isConnectedTimeout)
+      this.tdIsMetaMaskUnlocked = setTimeout(this.checkConnectionToNode,isConnectedTimeout)
     }    
+  }
+
+  checkMetaMaskUnlocked = () => {
+    if (typeof window.web3 !== 'undefined') {
+      const web3 = window.web3
+      const { endpoint } = this.props
+      var newEndpoint = { ...endpoint }
+      var newAccounts = [].concat(endpoint.accounts)
+      web3.eth.getAccounts()
+      .then((accountsMetaMask) => {
+        // If MetaMask is unlocked then remove from accounts list.
+        if (accountsMetaMask.length === 0) {
+          // Checking if MetaMask was already locked in order to avoid unnecessary update of the state
+          let metaMaskAccountIndex = endpoint.accounts.findIndex(account => {
+            return (account.source === 'MetaMask')
+          });
+          if (metaMaskAccountIndex !== -1) {
+            newAccounts.splice(metaMaskAccountIndex, 1)
+            newEndpoint.accounts = newAccounts
+            this.props.dispatch(this.updateInterfaceAction(newEndpoint))
+          }
+        } else {
+          // Checking if the MetaMask account is already in accounts list.
+          let metaMaskAccountIndex = endpoint.accounts.findIndex(account => {
+            return (account.address === accountsMetaMask[0])
+          });
+          // If it is NOT then add it to the accounts list.
+          if (metaMaskAccountIndex < 0) {
+            const networkId = this.props.endpoint.networkInfo.id
+            const blockchain = new Interfaces(this._api, networkId)
+            return blockchain.attachInterfaceInfuraV2()
+              .then((result) => {
+                if (result.accounts.length !== 0) {
+                  newAccounts.push(result.accounts[0]) 
+                } 
+                newEndpoint.accounts = newAccounts
+                this.props.dispatch(this.updateInterfaceAction(newEndpoint))
+                return result
+              })
+            }
+          }
+          return endpoint.accounts
+        }
+        )
+        .then(() => {
+          this.tdIsConnected = setTimeout(this.checkMetaMaskUnlocked, isMetaMaskUnlockedTimeout)
+        })
+        .catch(() =>{
+          let metaMaskAccountIndex = endpoint.accounts.findIndex(account => {
+            return (account.source === 'MetaMask')
+          });
+          if (metaMaskAccountIndex !== -1) {
+            newAccounts.splice(metaMaskAccountIndex, 1)
+            newEndpoint.accounts = newAccounts
+            this.props.dispatch(this.updateInterfaceAction(newEndpoint))
+          }
+          this.tdIsConnected = setTimeout(this.checkMetaMaskUnlocked, isMetaMaskUnlockedTimeout)
+        })
+    }
   }
 
   render() {
@@ -290,6 +370,7 @@ export class App extends Component {
                   this.setState({
                     appLoading: false
                   })
+                  console.log(attachedInterface)
                   return attachedInterface
                 })
                 .catch((error) => {
@@ -298,6 +379,7 @@ export class App extends Component {
                     appLoading: false,
                     isConnected: false,
                   })
+                  // this.props.dispatch(this.updateInterfaceAction(newEndpoint))
                 });
               } else {
               // Subscribing to newBlockNumber event
@@ -419,9 +501,6 @@ export class App extends Component {
     }
     console.log(`${sourceLogClass} -> Last block: ` + prevBlockNumber)
     console.log(`${sourceLogClass} -> New block: ` + newBlockNumber.toFixed())
-    this.setState({
-      prevBlockNumber: newBlockNumber.toFixed()
-    })
     // Checking that the current newBlockNumber is higher than previous one.
     if (prevBlockNumber > newBlockNumber.toFixed()) {
       console.log(`${sourceLogClass} -> Detected prevBlockNumber > currentBlockNumber. Skipping accounts update.`)
@@ -433,129 +512,136 @@ export class App extends Component {
     }
     const accounts = [].concat(endpoint.accounts);
 
+    console.log(accounts)
+    if (accounts.length !== 0) {
+      const poolsApi = new PoolsApi(this._api)
+      poolsApi.contract.rigotoken.init()
 
-    // Checking RigoToken balance
-    // const rigoTokenContract = this._api.newContract(rigotoken, GRG_ADDRESS_KV)
-    const poolsApi = new PoolsApi(this._api)
-    poolsApi.contract.rigotoken.init()
-    
-    const tokensQueries = accounts.map((account) => {
-      console.log(`${sourceLogClass} -> API call getBalance RigoToken-> applicationDragoHome: Getting balance of account ${account.name}`)
-      // return rigoTokenContract.instance.balanceOf.call({}, [account.address])
-      return poolsApi.contract.rigotoken.balanceOf(account.address)
-    })
+      const tokensQueries = accounts.map((account) => {
+        console.log(`${sourceLogClass} -> API call getBalance RigoToken-> applicationDragoHome: Getting balance of account ${account.name}`)
+        // return rigoTokenContract.instance.balanceOf.call({}, [account.address])
+        return poolsApi.contract.rigotoken.balanceOf(account.address)
+      })
 
-    // Checking ethereum balance
-    const ethQueries = accounts.map((account) => {
-      console.log(`${sourceLogClass} -> API call getBalance -> applicationDragoHome: Getting balance of account ${account.name}`)
-      return this._api.eth.getBalance(account.address, newBlockNumber)
-    })
-    const promisesBalances = [...ethQueries, ...tokensQueries]
+      // Checking ethereum balance
+      const ethQueries = accounts.map((account) => {
+        console.log(`${sourceLogClass} -> API call getBalance -> applicationDragoHome: Getting balance of account ${account.name}`)
+        return this._api.eth.getBalance(account.address, newBlockNumber)
+      })
+      const promisesBalances = [...ethQueries, ...tokensQueries]
 
-    Promise
-      .all(promisesBalances)
-      .then((results) => {
-        // Splitting the the result array between ethBalances and rigoTokenBalances
-        const halfLength = Math.ceil(results.length / 2)
-        const ethBalances = results.splice(0,halfLength)
-        const rigoTokenBalances = results
-        const prevAccounts = [].concat(endpoint.accounts)
-        prevAccounts.map((account,index) =>{
-          // Checking ETH balance
-          const newEthBalance = this._api.util.fromWei(ethBalances[index]).toFormat(3)
-          if ((account.ethBalance !== newEthBalance) && prevBlockNumber != 0) {
-            console.log(`${account.name} balance changed.`)
-            let secondaryText = []
-            let balDifference = account.ethBalance - newEthBalance
-            if (balDifference > 0) {
-              console.log(`${sourceLogClass} -> You transferred ${balDifference.toFixed(4)} ETH!`)
-              secondaryText[0] = `You transferred ${balDifference.toFixed(4)} ETH!`
-              secondaryText[1] = utils.dateFromTimeStamp(new Date())
-            } else {
-              console.log(`${sourceLogClass} -> You received ${Math.abs(balDifference).toFixed(4)} ETH!`)
-              secondaryText[0] = `You received ${Math.abs(balDifference).toFixed(4)} ETH!`
-              secondaryText[1] = utils.dateFromTimeStamp(new Date())
-            }
-            if (this._notificationSystem && endpoint.accountsBalanceError === false) {
-              this._notificationSystem.addNotification({
+      Promise
+        .all(promisesBalances)
+        .then((results) => {
+          // Splitting the the result array between ethBalances and rigoTokenBalances
+          const halfLength = Math.ceil(results.length / 2)
+          const ethBalances = results.splice(0, halfLength)
+          const rigoTokenBalances = results
+          const prevAccounts = [].concat(endpoint.accounts)
+          prevAccounts.map((account, index) => {
+            // Checking ETH balance
+            const newEthBalance = this._api.util.fromWei(ethBalances[index]).toFormat(3)
+            if ((account.ethBalance !== newEthBalance) && prevBlockNumber != 0) {
+              console.log(`${account.name} balance changed.`)
+              let secondaryText = []
+              let balDifference = account.ethBalance - newEthBalance
+              if (balDifference > 0) {
+                console.log(`${sourceLogClass} -> You transferred ${balDifference.toFixed(4)} ETH!`)
+                secondaryText[0] = `You transferred ${balDifference.toFixed(4)} ETH!`
+                secondaryText[1] = utils.dateFromTimeStamp(new Date())
+              } else {
+                console.log(`${sourceLogClass} -> You received ${Math.abs(balDifference).toFixed(4)} ETH!`)
+                secondaryText[0] = `You received ${Math.abs(balDifference).toFixed(4)} ETH!`
+                secondaryText[1] = utils.dateFromTimeStamp(new Date())
+              }
+              if (this._notificationSystem && endpoint.accountsBalanceError === false) {
+                this._notificationSystem.addNotification({
                   level: 'info',
                   position: 'br',
                   autoDismiss: 10,
                   children: this.notificationAlert(account.name, secondaryText)
-              });
+                });
+              }
             }
-          }
-          // Checking GRG balance
-          const newRigoTokenBalance = this._api.util.fromWei(rigoTokenBalances[index]).toFormat(3)
-          if ((account.rigoTokenBalance !== newRigoTokenBalance) && prevBlockNumber != 0) {
-            console.log(`${account.name} balance changed.`)
-            let secondaryText = []
-            let balDifference = account.rigoTokenBalance - newRigoTokenBalance
-            if (balDifference > 0) {
-              console.log(`${sourceLogClass} -> You transferred ${balDifference.toFixed(4)} GRG!`)
-              secondaryText[0] = `You transferred ${balDifference.toFixed(4)} GRG!`
-              secondaryText[1] = utils.dateFromTimeStamp(new Date())
-            } else {
-              console.log(`${sourceLogClass} -> You received ${Math.abs(balDifference).toFixed(4)} GRG!`)
-              secondaryText[0] = `You received ${Math.abs(balDifference).toFixed(4)} GRG!`
-              secondaryText[1] = utils.dateFromTimeStamp(new Date())
-            }
-            if (this._notificationSystem && endpoint.accountsBalanceError === false) {
-              this._notificationSystem.addNotification({
+            // Checking GRG balance
+            const newRigoTokenBalance = this._api.util.fromWei(rigoTokenBalances[index]).toFormat(3)
+            if ((account.rigoTokenBalance !== newRigoTokenBalance) && prevBlockNumber != 0) {
+              console.log(`${account.name} balance changed.`)
+              let secondaryText = []
+              let balDifference = account.rigoTokenBalance - newRigoTokenBalance
+              if (balDifference > 0) {
+                console.log(`${sourceLogClass} -> You transferred ${balDifference.toFixed(4)} GRG!`)
+                secondaryText[0] = `You transferred ${balDifference.toFixed(4)} GRG!`
+                secondaryText[1] = utils.dateFromTimeStamp(new Date())
+              } else {
+                console.log(`${sourceLogClass} -> You received ${Math.abs(balDifference).toFixed(4)} GRG!`)
+                secondaryText[0] = `You received ${Math.abs(balDifference).toFixed(4)} GRG!`
+                secondaryText[1] = utils.dateFromTimeStamp(new Date())
+              }
+              if (this._notificationSystem && endpoint.accountsBalanceError === false) {
+                this._notificationSystem.addNotification({
                   level: 'info',
                   position: 'br',
                   autoDismiss: 10,
                   children: this.notificationAlert(account.name, secondaryText)
-              });
+                });
+              }
             }
-          }
-          return
+            return
+          })
+          return [ethBalances, rigoTokenBalances]
         })
-        return [ethBalances,rigoTokenBalances]
-      })
-      .then((balances) => {
-        const ethBalances = balances[0]
-        const rigoTokenBalances = balances[1]
-        const endpoint = {
-          prevBlockNumber: newBlockNumber.toFixed(),
-          loading: false,
-          networkError: NETWORK_OK,
-          networkStatus: MSG_NETWORK_STATUS_OK,
-          accountsBalanceError: false,
-          rigoTokenBalance: rigoTokenBalances.reduce((total, balance) => total.add(balance), new BigNumber(0)),
-          ethBalance: ethBalances.reduce((total, balance) => total.add(balance), new BigNumber(0)),
-          accounts: [].concat(accounts.map((account, index) => {
-            const ethBalance = ethBalances[index];
-            account.ethBalance = this._api.util.fromWei(ethBalance).toFormat(3);
-            const rigoTokenBalance = rigoTokenBalances[index];
-            account.rigoTokenBalance = this._api.util.fromWei(rigoTokenBalance).toFormat(3);
-            return account;
-          })
-        )
-        }
-        this.props.dispatch(this.updateInterfaceAction(endpoint))
-        
-      })
-      .catch((error) => {
-        console.warn(`${sourceLogClass} -> ${error}`)
-        // Setting the balances to 0 if receiving an error from the endpoint. It happens with Infura.
-        const endpoint = {
-          prevBlockNumber: newBlockNumber.toFixed(),
-          loading: false,
-          networkError: NETWORK_WARNING,
-          networkStatus: MSG_NETWORK_STATUS_ERROR,
-          accountsBalanceError: true,
-          ethBalance: new BigNumber(0),
-          rigoTokenBalance: new BigNumber(0),
-          accounts: [].concat(accounts.map((account) => {
-            account.ethBalance = this._api.util.fromWei(new BigNumber(0)).toFormat(3);
-            account.rigoTokenBalance = this._api.util.fromWei(new BigNumber(0)).toFormat(3);
-            return account;
-          })
-        )
-        }
-        this.props.dispatch(this.updateInterfaceAction(endpoint))
-      });
+        .then((balances) => {
+          const ethBalances = balances[0]
+          const rigoTokenBalances = balances[1]
+          const endpoint = {
+            prevBlockNumber: newBlockNumber.toFixed(),
+            loading: false,
+            networkError: NETWORK_OK,
+            networkStatus: MSG_NETWORK_STATUS_OK,
+            accountsBalanceError: false,
+            rigoTokenBalance: rigoTokenBalances.reduce((total, balance) => total.add(balance), new BigNumber(0)),
+            ethBalance: ethBalances.reduce((total, balance) => total.add(balance), new BigNumber(0)),
+            accounts: [].concat(accounts.map((account, index) => {
+              const ethBalance = ethBalances[index];
+              account.ethBalance = this._api.util.fromWei(ethBalance).toFormat(3);
+              const rigoTokenBalance = rigoTokenBalances[index];
+              account.rigoTokenBalance = this._api.util.fromWei(rigoTokenBalance).toFormat(3);
+              return account;
+            })
+            )
+          }
+          this.props.dispatch(this.updateInterfaceAction(endpoint))
+          return endpoint
+        })
+        .catch((error) => {
+          console.warn(`${sourceLogClass} -> ${error}`)
+          // Setting the balances to 0 if receiving an error from the endpoint. It happens with Infura.
+          const endpoint = {
+            prevBlockNumber: newBlockNumber.toFixed(),
+            loading: false,
+            networkError: NETWORK_WARNING,
+            networkStatus: MSG_NETWORK_STATUS_ERROR,
+            accountsBalanceError: true,
+            ethBalance: new BigNumber(0),
+            rigoTokenBalance: new BigNumber(0),
+            accounts: [].concat(accounts.map((account) => {
+              account.ethBalance = this._api.util.fromWei(new BigNumber(0)).toFormat(3);
+              account.rigoTokenBalance = this._api.util.fromWei(new BigNumber(0)).toFormat(3);
+              return account;
+            })
+            )
+          }
+          this.props.dispatch(this.updateInterfaceAction(endpoint))
+          return endpoint
+        });
+    }
+    else {
+      const newEndpoint = {...endpoint}
+      newEndpoint.prevBlockNumber = newBlockNumber.toFixed()
+      this.props.dispatch(this.updateInterfaceAction(newEndpoint))  
+    }
+    
   }
 
   detachInterface = () => {

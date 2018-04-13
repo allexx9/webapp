@@ -3,5 +3,32 @@
 		{
 			"path": "."
 		}
-	]
+	],
+	"settings": {
+		"cSpell.enabledLanguageIds": [
+			"c",
+			"cpp",
+			"csharp",
+			"css",
+			"go",
+			"handlebars",
+			"html",
+			"jade",
+			"javascript",
+			"latex",
+			"less",
+			"markdown",
+			"php",
+			"plaintext",
+			"pub",
+			"python",
+			"restructuredtext",
+			"rust",
+			"scss",
+			"text",
+			"typescript",
+			"typescriptreact",
+			"yml"
+		]
+	}
 }

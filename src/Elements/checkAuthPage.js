@@ -9,6 +9,7 @@ import React, { Component } from 'react'
 import {APP, DS} from '../_utils/const.js'
 import styles from './checkAuthPage.module.css'
 import { withRouter } from 'react-router-dom'
+import NetworkAlert from './elementNetworkAlert'
 
 class CheckAuthPage extends Component {
 
@@ -29,16 +30,9 @@ class CheckAuthPage extends Component {
     
     renderWarnMsg = () =>{
       const { warnMsg } = this.props
-      if (warnMsg === null) return
+      if (warnMsg === '') return
       return (
-        <Row>
-          <Col xs={12}>
-            <div className={styles.warnMsgBox}>
-              <p>{warnMsg}</p>
-            </div>
-
-          </Col>
-        </Row>
+        <NetworkAlert />
       )
     }
 
@@ -65,8 +59,7 @@ class CheckAuthPage extends Component {
               <Row>
                 <Col xs={12} className={styles.walletBox}>
                 <h2>NETWORK</h2>
-                <p>The default configuration for the Ethereum network endpoint is INFURA.</p>
-                <p>You can change it at in the <Link to={DS+APP+DS+this.buildUrlPath(location)+DS+"config/network"}>network configuration</Link> page.</p>
+                <p>You can change the Ethereum network endpoint an Network in the <Link to={DS+APP+DS+this.buildUrlPath(location)+DS+"config/network"}>network configuration</Link> page.</p>
                 <h2>ACCOUNTS</h2>
                 <p>You need to connect to an external wallet. Please <b>unlock</b> your MetaMask account and <b>refresh</b> your browser.</p>
                     <p>If you do not have MetaMask installed, please read the instruction below.</p>
