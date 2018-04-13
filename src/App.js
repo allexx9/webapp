@@ -130,11 +130,13 @@ export class App extends Component {
       //   this.attachInterface().then(result => {
       //     resolve(result);
       //   })
-      payload: new Promise(() => {
-        throw new Error('foo');
+      payload: new Promise((resolve) => {
+        this.attachInterface().then(result => {
+          resolve(result);
+        })
       })
       .catch(error => {
-        console.log(error.message); // 'foo'
+        console.log(error)
         var newEndpoint = { ...this.props.endpoint }
         newEndpoint.networkStatus = MSG_NETWORK_STATUS_ERROR
         newEndpoint.networkError = NETWORK_WARNING

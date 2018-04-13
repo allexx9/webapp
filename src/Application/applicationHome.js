@@ -89,7 +89,6 @@ class ApplicationHomePage extends Component {
           <Row className={classNames(styles.content)}>
             <Col xs={12}>
               {this.context.isConnected && !this.context.isSyncing ? (
-                // {false ? (
                   <ApplicationHome />
               ) : (
                   <NotConnected isSyncing={this.context.isSyncing} syncStatus={this.context.syncStatus} />
