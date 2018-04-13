@@ -13,6 +13,10 @@
   left: 0;
 }
 
+.copyright {
+  text-align: left;
+}
+
 .networkStatusCounter{
   text-align: right;
 }

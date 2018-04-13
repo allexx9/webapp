@@ -5,6 +5,7 @@ import AccessTime from 'material-ui/svg-icons/device/access-time';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import utils from '../_utils/utils'
+import {APP_VERSION} from '../_utils/const'
 
 import styles from './elementBottomStatusBar.module.css';
 import classnames from 'classnames'
@@ -141,10 +142,10 @@ export default class ElementBottomStatusBar extends Component {
     } 
     return (
       <Row className={styles.networkStatus} between="xs">
-        <Col xs={4}>
-          ©2017 RigoInvestment. All rights reserved.
+        <Col xs={6} className={styles.copyright}>
+          ©2017 RigoInvestment. All rights reserved. {APP_VERSION}
         </Col>
-        <Col xs={8} className={styles.networkStatusCounter}>
+        <Col xs={6} className={styles.networkStatusCounter}>
           <div className={styles.networkDataContainer}>
             {this.renderCurrentTime()}&nbsp;&nbsp;&nbsp;&nbsp;
             Blockchain:
