@@ -126,9 +126,22 @@ export class App extends Component {
   attachInterfaceAction = () => {
     return {
       type: ATTACH_INTERFACE,
-      payload: new Promise(resolve => {
-        this.attachInterface().then(result => {
-          resolve(result);
+      // payload: new Promise(resolve => {
+      //   this.attachInterface().then(result => {
+      //     resolve(result);
+      //   })
+      payload: new Promise(() => {
+        throw new Error('foo');
+      })
+      .catch(error => {
+        console.log(error.message); // 'foo'
+        var newEndpoint = { ...this.props.endpoint }
+        newEndpoint.networkStatus = MSG_NETWORK_STATUS_ERROR
+        newEndpoint.networkError = NETWORK_WARNING
+        this.props.dispatch(this.updateInterfaceAction(newEndpoint))
+        this.setState({
+          appLoading: false,
+          isConnected: false,
         })
       })
     }
@@ -254,6 +267,17 @@ export class App extends Component {
         .then(() => {
           this.tdIsConnected = setTimeout(this.checkMetaMaskUnlocked, isMetaMaskUnlockedTimeout)
         })
+        .catch(() =>{
+          let metaMaskAccountIndex = endpoint.accounts.findIndex(account => {
+            return (account.source === 'MetaMask')
+          });
+          if (metaMaskAccountIndex !== -1) {
+            newAccounts.splice(metaMaskAccountIndex, 1)
+            newEndpoint.accounts = newAccounts
+            this.props.dispatch(this.updateInterfaceAction(newEndpoint))
+          }
+          this.tdIsConnected = setTimeout(this.checkMetaMaskUnlocked, isMetaMaskUnlockedTimeout)
+        })
     }
   }
 
@@ -344,6 +368,7 @@ export class App extends Component {
                   this.setState({
                     appLoading: false
                   })
+                  console.log(attachedInterface)
                   return attachedInterface
                 })
                 .catch((error) => {
@@ -352,6 +377,7 @@ export class App extends Component {
                     appLoading: false,
                     isConnected: false,
                   })
+                  // this.props.dispatch(this.updateInterfaceAction(newEndpoint))
                 });
               } else {
               // Subscribing to newBlockNumber event

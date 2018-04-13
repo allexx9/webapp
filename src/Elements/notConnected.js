@@ -10,6 +10,23 @@ import {APP, DS} from '../_utils/const.js'
 
 var td = null
 
+const style = {
+  dialogRoot: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingTop: 0
+  },
+  dialogContent: {
+    position: "relative",
+    width: "80vw",
+    transform: "",
+  },
+  dialogBody: {
+    paddingBottom: 0
+  }
+};
+
 class NotConnected extends Component {
 
     state = {
@@ -61,6 +78,10 @@ class NotConnected extends Component {
         open={true}
         modal={true}
         title={this.renderTitle()}
+        contentStyle={ style.dialogContent }
+        bodyStyle={ style.dialogBody }
+        style={ style.dialogRoot }
+        repositionOnUpdate={ false }
         >
           <Row>
             <Col xs={12}>
@@ -88,6 +109,10 @@ class NotConnected extends Component {
           open={true}
           modal={true}
           title={this.renderTitle()}
+          contentStyle={ style.dialogContent }
+          bodyStyle={ style.dialogBody }
+          style={ style.dialogRoot }
+          repositionOnUpdate={ false }
         >
           <Row>
             <Col xs={12}>
