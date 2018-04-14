@@ -13,6 +13,7 @@ class DragoParity {
     this._abi = abis.drago
     this._registry = new Registry(api)
     this._constunctorName = this.constructor.name
+    this._contractAddress = ''
   }
 
   get instance () {
@@ -28,6 +29,7 @@ class DragoParity {
     }
     const api = this._api
     const abi = this._abi
+    // this._contractAddress = address
     this._instance = api.newContract(abi, address).instance
     return this._instance
   }
@@ -35,6 +37,12 @@ class DragoParity {
   getData = () => {
     const instance = this._instance
     return instance.getData.call({})
+  }
+
+  getBalance = () => {
+    const api = this._api
+    const instance = this._instance
+    return api.eth.getBalance(instance.address)
   }
 
   balanceOf = (accountAddress) => {

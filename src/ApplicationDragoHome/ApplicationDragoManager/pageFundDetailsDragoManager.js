@@ -55,6 +55,7 @@ class PageFundDetailsDragoManager extends Component {
         dragoId: null,
         addresssOwner: null,
         addressGroup: null,
+        dragoBalance: null
       },
       dragoTransactionsLogs: [],
       loading: true,
@@ -219,7 +220,30 @@ class PageFundDetailsDragoManager extends Component {
                 icon={<ActionList color={Colors.indigo500} />}>
                 <Grid fluid>
                   <Row>
+                  <Col xs={6}>
+                        <div>
+                          <AppBar
+                            title={"ETH LIQUIDITY"}
+                            showMenuIconButton={false}
+                            titleStyle={{ fontSize: 20 }}
+                          />
+                          <div className={styles.ETHliquidity}>
+                            <div>{this.state.dragoDetails.dragoBalance} <small>ETH</small><br /></div>
+                          </div>
+                        </div>
+                      </Col>
                     <Col xs={6}>
+                      <Paper zDepth={1}>
+                        <ElementPriceBox 
+                        accounts={accounts} 
+                        isManager={isManager}
+                        dragoDetails={dragoDetails} />
+                      </Paper>
+                    </Col>
+                  </Row>
+                  <br />
+                  <Row>
+                  <Col xs={12}>
                       <Paper zDepth={1}>
                         <AppBar
                           title="DETAILS"
@@ -229,14 +253,6 @@ class PageFundDetailsDragoManager extends Component {
                         <div className={styles.detailsTabContent}>
                         <InfoTable  rows={tableInfo} columnsStyle={columnsStyle}/>
                         </div>
-                      </Paper>
-                    </Col>
-                    <Col xs={6}>
-                      <Paper zDepth={1}>
-                        <ElementPriceBox 
-                        accounts={accounts} 
-                        isManager={isManager}
-                        dragoDetails={dragoDetails} />
                       </Paper>
                     </Col>
                   </Row>
@@ -339,47 +355,89 @@ class PageFundDetailsDragoManager extends Component {
             //
             // Calling getData method
             //
-            poolApi.contract.drago.getData()
-              .then((data) => {
-                //
-                // Gettin balance for each account
-                //
 
-                // console.log(accounts)
-                accounts.map(account => {
-                  poolApi.contract.drago.balanceOf(account.address)
-                    .then(balance => {
-                      balanceDRG = balanceDRG.add(balance)
-                      console.log(balance)
-                      // console.log(api.util.fromWei(balance).toFormat(4))
-                    })
-                    .then(() => {
-                      // console.log(api.util.fromWei(balanceDRG.toNumber(4)).toFormat(4))
-                      // console.log(balanceDRG)
-                      var balanceETH = balanceDRG.times(formatCoins(balanceDRG, 4, api))
-                      // console.log(balanceETH)
-                      this.setState({
-                        balanceETH: formatEth(balanceETH, 4, api),
-                        balanceDRG: formatCoins(balanceDRG, 4, api)
-                      })
-                    })
-                })
+            Promise
+            .all([poolApi.contract.drago.getData(), poolApi.contract.drago.getBalance()])
+            .then(result =>{
+              console.log(result)
+              const data = result[0]
+              const dragoBalance = result [1]
 
-                this.setState({
-                  dragoDetails: {
-                    address: dragoDetails[0][0],
-                    name: dragoDetails[0][1].charAt(0).toUpperCase() + dragoDetails[0][1].slice(1),
-                    symbol: dragoDetails[0][2],
-                    dragoId: dragoDetails[0][3].c[0],
-                    addresssOwner: dragoDetails[0][4],
-                    addressGroup: dragoDetails[0][5],
-                    sellPrice: api.util.fromWei(data[2].toNumber(4)).toFormat(4),
-                    buyPrice: api.util.fromWei(data[3].toNumber(4)).toFormat(4),
-                  },
-                  loading: false
-                })
+              accounts.map(account => {
+                poolApi.contract.drago.balanceOf(account.address)
+                  .then(balance => {
+                    balanceDRG = balanceDRG.add(balance)
+                  })
+                  .then(() => {
+                    var balanceETH = balanceDRG.times(formatCoins(balanceDRG, 4, api))
+                    this.setState({
+                      balanceETH: formatEth(balanceETH, 4, api),
+                      balanceDRG: formatCoins(balanceDRG, 4, api)
+                    })
+                  })
               })
-            poolApi.contract.dragoeventful.init()
+
+              this.setState({
+                dragoDetails: {
+                  address: dragoDetails[0][0],
+                  name: dragoDetails[0][1].charAt(0).toUpperCase() + dragoDetails[0][1].slice(1),
+                  symbol: dragoDetails[0][2],
+                  dragoId: dragoDetails[0][3].c[0],
+                  addresssOwner: dragoDetails[0][4],
+                  addressGroup: dragoDetails[0][5],
+                  sellPrice: api.util.fromWei(data[2].toNumber(4)).toFormat(4),
+                  buyPrice: api.util.fromWei(data[3].toNumber(4)).toFormat(4),
+                  dragoBalance: formatEth(dragoBalance, 4, api)
+                },
+                loading: false
+              })
+            })
+            // poolApi.contract.drago.getData()
+            //   .then((data) => {
+            //     //
+            //     // Gettin balance for each account
+            //     //
+
+            //     // console.log(accounts)
+            //     accounts.map(account => {
+            //       poolApi.contract.drago.balanceOf(account.address)
+            //         .then(balance => {
+            //           balanceDRG = balanceDRG.add(balance)
+            //           console.log(balance)
+            //           // console.log(api.util.fromWei(balance).toFormat(4))
+            //         })
+            //         .then(() => {
+            //           // console.log(api.util.fromWei(balanceDRG.toNumber(4)).toFormat(4))
+            //           // console.log(balanceDRG)
+            //           var balanceETH = balanceDRG.times(formatCoins(balanceDRG, 4, api))
+            //           // console.log(balanceETH)
+            //           this.setState({
+            //             balanceETH: formatEth(balanceETH, 4, api),
+            //             balanceDRG: formatCoins(balanceDRG, 4, api)
+            //           })
+            //         })
+            //     })
+
+            //     this.setState({
+            //       dragoDetails: {
+            //         address: dragoDetails[0][0],
+            //         name: dragoDetails[0][1].charAt(0).toUpperCase() + dragoDetails[0][1].slice(1),
+            //         symbol: dragoDetails[0][2],
+            //         dragoId: dragoDetails[0][3].c[0],
+            //         addresssOwner: dragoDetails[0][4],
+            //         addressGroup: dragoDetails[0][5],
+            //         sellPrice: api.util.fromWei(data[2].toNumber(4)).toFormat(4),
+            //         buyPrice: api.util.fromWei(data[3].toNumber(4)).toFormat(4),
+            //       },
+            //       loading: false
+            //     })
+            //   })
+
+            //
+            // Reading transactions
+            //
+            
+              poolApi.contract.dragoeventful.init()
               .then(() => {
                 this.getTransactions(dragoDetails[0][0], poolApi.contract.dragoeventful, accounts)
               }
