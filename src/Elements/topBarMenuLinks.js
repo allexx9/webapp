@@ -5,6 +5,7 @@ import AccountIcon from 'material-ui/svg-icons/action/account-circle'
 import ActionAccountBalance from 'material-ui/svg-icons/action/account-balance'
 import ActionHome from 'material-ui/svg-icons/action/home'
 import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
+import ActionPolymer from 'material-ui/svg-icons/action/polymer'
 import Settings from 'material-ui/svg-icons/action/settings'
 import Help from 'material-ui/svg-icons/action/help'
 import FlatButton from 'material-ui/FlatButton'
@@ -161,10 +162,9 @@ class NavLinks extends Component {
       var userTypeLabel = 'HOLDER'
       const links = [
         {label: 'home', to: 'home', icon: <ActionHome color="white"/>},
-        // {label: 'vault', to: 'vault', icon: <ActionAccountBalance color="white"/>},
         {label: 'vault', to: 'vault', icon: <ActionAccountBalance color="white"/>},
         {label: 'drago', to: 'drago', icon: <ActionShowChart color="white"/>},
-        // {label: 'exchange', to: 'exchange', icon: <ActionPolymer color="white"/>}
+        {label: 'exchange', to: 'exchange', icon: <ActionPolymer color="white"/>}
          ]
       const buttonAccountType = {
         border: "1px solid",

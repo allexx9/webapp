@@ -3,7 +3,7 @@
 import React, { Component } from 'react';
 import  * as Colors from 'material-ui/styles/colors';
 import PropTypes from 'prop-types';
-import ApplicationVaultHome from '../ApplicationVaultHome';
+import ApplicationExchangeHome from '../ApplicationExchangeHome';
 import ApplicationTopBar from './ApplicationTopBar';
 
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
@@ -27,9 +27,9 @@ const muiTheme = getMuiTheme({
   },
 });
 
-const muiThemeVault = getMuiTheme({
+const muiThemeExchange = getMuiTheme({
   palette: {
-    "primary1Color": Colors.blueGrey500,
+    "primary1Color": Colors.grey500,
   },
   appBar: {
     height: 45,
@@ -41,7 +41,7 @@ function mapStateToProps(state) {
   return state
 }
 
-class ApplicationDragoPage extends Component {
+class ApplicationExchangePage extends Component {
 
   constructor(props) {
     super(props);
@@ -65,18 +65,18 @@ class ApplicationDragoPage extends Component {
     api: PropTypes.object.isRequired,
     isConnected: PropTypes.bool.isRequired,
     isSyncing: PropTypes.bool.isRequired,
-    syncStatus: PropTypes.object.isRequired
+    syncStatus: PropTypes.object.isRequired,
   };
-
-  static propTypes = {
-    location: PropTypes.object
-  }
 
   componentWillMount() {
   }
 
   componentWillUnmount() {
   }
+
+  static propTypes = {
+    location: PropTypes.object.isRequired,
+  };
 
   handleToggleNotifications = () => {
     this.setState({ notificationsOpen: !this.state.notificationsOpen })
@@ -85,7 +85,6 @@ class ApplicationDragoPage extends Component {
   render() {
     const { notificationsOpen } = this.state
     const { location } = this.props
-    // console.log('is Manager = '+this.state.isManager)
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
         <Grid fluid className={styles.maincontainer}>
@@ -98,19 +97,19 @@ class ApplicationDragoPage extends Component {
               />
             </Col>
           </Row>
-          <MuiThemeProvider muiTheme={muiThemeVault}>
+          <MuiThemeProvider muiTheme={muiThemeExchange}>
             <Row className={classNames(styles.content)}>
               <Col xs={12}>
                 {this.context.isConnected && !this.context.isSyncing ? (
                   // {false ? (
-                  <ApplicationVaultHome
+                  <ApplicationExchangeHome
                     isManager={this.state.isManager}
                     location={location}
                     notificationsOpen={notificationsOpen}
                     handleToggleNotifications={this.handleToggleNotifications}
                   />
                 ) : (
-                    <NotConnected/>
+                    <NotConnected isSyncing={this.context.isSyncing} syncStatus={this.context.syncStatus} />
                   )}
               </Col>
             </Row>
@@ -121,8 +120,7 @@ class ApplicationDragoPage extends Component {
   }
 }
 
-export default connect(mapStateToProps)(ApplicationDragoPage)
-
+export default connect(mapStateToProps)(ApplicationExchangePage)
 
 
 

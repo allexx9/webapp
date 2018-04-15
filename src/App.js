@@ -10,12 +10,11 @@ import React, { Component } from 'react';
 import Web3 from 'web3'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
-// import { rigotoken } from './PoolsApi/src/contracts/abi'
-
 import ApplicationConfigPage from './Application/applicationConfig';
 import ApplicationDragoPage from './Application/applicationDrago';
 import ApplicationVaultPage from './Application/applicationVault';
 import ApplicationHomePage from './Application/applicationHome';
+import ApplicationExchangePage from './Application/applicationExchange';
 import Whoops404 from './Application/whoops404';
 import {
   DEFAULT_NETWORK_NAME,
@@ -302,14 +301,14 @@ export class App extends Component {
             <AppLoading ></AppLoading>
           </Router>
           : <div><NotificationSystem ref={n => this._notificationSystem = n} style={notificationStyle} />
-
             <Router history={history}>
               <Switch>
                 <Route exact path={"/app/" + appHashPath + "/home"} component={ApplicationHomePage} />
                 <Route path={"/app/" + appHashPath + "/vault"} component={ApplicationVaultPage} />
                 <Route path={"/app/" + appHashPath + "/drago"} component={ApplicationDragoPage} />
+                <Route path={"/app/" + appHashPath + "/exchange"} component={ApplicationExchangePage} />
                 <Route path={"/app/" + appHashPath + "/config"} component={ApplicationConfigPage} />
-                <Redirect from="/vault/" to={"/app/" + appHashPath + "/vault"} />
+                <Redirect from="/exchange/" to={"/app/" + appHashPath + "/exchange"} />
                 <Redirect from="/vault/" to={"/app/" + appHashPath + "/vault"} />
                 <Redirect from="/drago" to={"/app/" + appHashPath + "/drago"} />
                 <Redirect from="/" to={"/app/" + appHashPath + "/home"} />

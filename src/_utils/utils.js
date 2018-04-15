@@ -525,23 +525,23 @@ class utilities {
               ]
             }
             // Filter for buy events
-            const eventsFilterBuy = {
-              topics: [
-                [poolApi.contract.dragoeventful.hexSignature.BuyDrago],
-                null,
-                hexAccounts,
-                null
-              ]
-            }
-            // Filter for sell events
-            const eventsFilterSell = {
-              topics: [
-                [poolApi.contract.dragoeventful.hexSignature.SellDrago],
-                null,
-                null,
-                hexAccounts
-              ]
-            }
+            // const eventsFilterBuy = {
+            //   topics: [
+            //     [poolApi.contract.dragoeventful.hexSignature.BuyDrago],
+            //     null,
+            //     hexAccounts,
+            //     null
+            //   ]
+            // }
+            // // Filter for sell events
+            // const eventsFilterSell = {
+            //   topics: [
+            //     [poolApi.contract.dragoeventful.hexSignature.SellDrago],
+            //     null,
+            //     null,
+            //     hexAccounts
+            //   ]
+            // }
 
             // Filter for buy and sell events
             const eventsFilterBuySell = {

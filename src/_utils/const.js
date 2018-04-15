@@ -1,5 +1,5 @@
 export const APP = "app";
-export const APP_VERSION = "v0.1.2-beta180415"
+export const APP_VERSION = "v0.2.0-beta180415"
 export const DS = "/";
 export const DRG_ISIN = "DR";
 // Set connetions to production server
