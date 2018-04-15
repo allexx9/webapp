@@ -78,3 +78,10 @@
 .detailsTable {
   /* width: 50% !important; */
 }
+
+.ETHliquidity {
+  padding-left: 5px;
+  padding-top: 20px;
+  font-size: 20px;
+  /* color: #616161; */
+}

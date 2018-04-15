@@ -241,7 +241,7 @@ class PageFundDetailsDragoTrader extends Component {
                   <Grid fluid>
                     <Row>
                       <Col xs={6}>
-                        <div>
+                        <Paper zDepth={1} style={{height: "100%"}}> 
                           <AppBar
                             title={"MY HOLDING IN " + dragoDetails.symbol}
                             showMenuIconButton={false}
@@ -250,22 +250,24 @@ class PageFundDetailsDragoTrader extends Component {
                           <div className={styles.holdings}>
                             <div>{this.state.balanceDRG} <small>UNITS</small><br /></div>
                           </div>
-                        </div>
+                        </Paper>
                       </Col>
                       <Col xs={6}>
-                          <ElementPriceBox
-                            dragoDetails={dragoDetails}
-                            accounts={accounts}
-                            handleBuySellButtons={this.handleBuySellButtons}
-                            isManager={isManager}
-                          />
-                          <ElementFundActions
-                            dragoDetails={dragoDetails}
-                            accounts={accounts}
-                            snackBar={this.snackBar}
-                            actionSelected={this.state.openBuySellDialog}
-                            onTransactionSent={this.onTransactionSent}
-                          />
+                        <Paper zDepth={1} style={{height: "100%"}}> 
+                            <ElementPriceBox
+                              dragoDetails={dragoDetails}
+                              accounts={accounts}
+                              handleBuySellButtons={this.handleBuySellButtons}
+                              isManager={isManager}
+                            />
+                            <ElementFundActions
+                              dragoDetails={dragoDetails}
+                              accounts={accounts}
+                              snackBar={this.snackBar}
+                              actionSelected={this.state.openBuySellDialog}
+                              onTransactionSent={this.onTransactionSent}
+                            />
+                        </Paper>
                       </Col>
                     </Row>
                     <br />

@@ -216,123 +216,126 @@ class PageFundDetailsDragoManager extends Component {
           <ElementNoAdminAccess />
         )
       }
+
       return (
-      <Row>
-        <Col xs={12}>
-          <Paper className={styles.paperContainer} zDepth={1}>
-            <Toolbar className={styles.detailsToolbar}>
-              <ToolbarGroup className={styles.detailsToolbarGroup}>
-                {this.renderAddress(dragoDetails)}
-              </ToolbarGroup>
-              <ToolbarGroup>
-                <ElementFundActionsList accounts={accounts} dragoDetails={dragoDetails} snackBar={this.snackBar}/>
-              </ToolbarGroup>
-            </Toolbar>
-            <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle} className={styles.test}>
-              <Tab label="Info" className={styles.detailsTab}
-                icon={<ActionList color={Colors.indigo500} />}>
-                <Grid fluid>
-                  <Row>
-                  <Col xs={6}>
-                        <div>
+        <Row>
+          <Col xs={12}>
+            <Paper className={styles.paperContainer} zDepth={1}>
+              <Toolbar className={styles.detailsToolbar}>
+                <ToolbarGroup className={styles.detailsToolbarGroup}>
+                  {this.renderAddress(dragoDetails)}
+                </ToolbarGroup>
+                <ToolbarGroup>
+                  <ElementFundActionsList accounts={accounts} dragoDetails={dragoDetails} snackBar={this.snackBar} />
+                </ToolbarGroup>
+              </Toolbar>
+              <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle} className={styles.test}>
+                <Tab label="Info" className={styles.detailsTab}
+                  icon={<ActionList color={Colors.indigo500} />}>
+                  <Grid fluid>
+                    <Row>
+                      <Col xs={6}>
+                        <Paper zDepth={1} style={{height: "100%"}}>
+                          <div id="zio cane" style={{height: "100%"}}> 
+                            <AppBar
+                              title={"ETH LIQUIDITY"}
+                              showMenuIconButton={false}
+                              titleStyle={{ fontSize: 20 }}
+                            />
+                            <div className={styles.ETHliquidity}>
+                              <div>{this.state.dragoDetails.dragoBalance} <small>ETH</small><br /></div>
+                            </div>
+                          </div>
+                        </Paper>
+                      </Col>
+                      <Col xs={6}>
+                        <Paper zDepth={1}>
+                          <ElementPriceBox
+                            accounts={accounts}
+                            isManager={isManager}
+                            dragoDetails={dragoDetails} />
+                        </Paper>
+                      </Col>
+                    </Row>
+                    <br />
+                    <Row>
+                      <Col xs={12}>
+                        <Paper zDepth={1}>
                           <AppBar
-                            title={"ETH LIQUIDITY"}
+                            title="DETAILS"
                             showMenuIconButton={false}
                             titleStyle={{ fontSize: 20 }}
                           />
-                          <div className={styles.ETHliquidity}>
-                            <div>{this.state.dragoDetails.dragoBalance} <small>ETH</small><br /></div>
+                          <div className={styles.detailsTabContent}>
+                            <InfoTable rows={tableInfo} columnsStyle={columnsStyle} />
                           </div>
-                        </div>
+                        </Paper>
                       </Col>
-                    <Col xs={6}>
-                      <Paper zDepth={1}>
-                        <ElementPriceBox 
-                        accounts={accounts} 
-                        isManager={isManager}
-                        dragoDetails={dragoDetails} />
-                      </Paper>
-                    </Col>
-                  </Row>
-                  <br />
-                  <Row>
-                  <Col xs={12}>
-                      <Paper zDepth={1}>
-                        <AppBar
-                          title="DETAILS"
-                          showMenuIconButton={false}
-                          titleStyle={{ fontSize: 20 }}
-                        />
-                        <div className={styles.detailsTabContent}>
-                        <InfoTable  rows={tableInfo} columnsStyle={columnsStyle}/>
-                        </div>
-                      </Paper>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col xs={12} className={styles.detailsTabContent}>
-                    <Paper style={paperStyle} zDepth={1} >
-                    <AppBar
-                          title="LAST TRANSACTIONS"
-                          showMenuIconButton={false}
-                          titleStyle={{ fontSize: 20 }}
-                        />
-                      
-                      <div className={styles.detailsTabContent}>
-                          <p>Your last 20 transactions on this Drago.</p>
-                        </div>
-                          
+                    </Row>
+                    <Row>
+                      <Col xs={12} className={styles.detailsTabContent}>
+                        <Paper style={paperStyle} zDepth={1} >
+                          <AppBar
+                            title="LAST TRANSACTIONS"
+                            showMenuIconButton={false}
+                            titleStyle={{ fontSize: 20 }}
+                          />
+
+                          <div className={styles.detailsTabContent}>
+                            <p>Your last 20 transactions on this Drago.</p>
+                          </div>
+
                           <ElementListWrapper list={dragoTransactionList}
-                              renderCopyButton={this.renderCopyButton}
-                              renderEtherscanButton={this.renderEtherscanButton}
-                              loading={loading}
-                              >
-                            <ElementListTransactions  />
+                            renderCopyButton={this.renderCopyButton}
+                            renderEtherscanButton={this.renderEtherscanButton}
+                            loading={loading}
+                          >
+                            <ElementListTransactions />
                           </ElementListWrapper>
-                        {/* <ElementListTransactions accountsInfo={accountsInfo} list={dragoTransactionList} 
+                          {/* <ElementListTransactions accountsInfo={accountsInfo} list={dragoTransactionList} 
                         renderCopyButton={this.renderCopyButton}
                         renderEtherscanButton={this.renderEtherscanButton}/> */}
-                      </Paper>
-                    </Col>
-                  </Row>
-                </Grid>
-              </Tab>
-              <Tab label="Stats" className={styles.detailsTab}
-                icon={<ActionAssessment color={Colors.indigo500} />}>
-                <Grid fluid>
-                  <Row>
-                    <Col xs={12} className={styles.detailsTabContent}>
-                      <p>
-                        Stats
-                      </p>   
-                    </Col>
-                  </Row>
-                </Grid>
-              </Tab>
-            </Tabs>
-          </Paper>
-        </Col>
-        <Snackbar
-          open={this.state.snackBar}
-          message={this.state.snackBarMsg}
-          action="close"
-          onActionTouchTap={this.handlesnackBarRequestClose}
-          onRequestClose={this.handlesnackBarRequestClose}
-          bodyStyle={{
-            height: "auto",
-            flexGrow: 0,
-            paddingTop: "10px",
-            lineHeight: "20px",
-            borderRadius: "2px 2px 0px 0px",
-            backgroundColor: "#fafafa",
-            boxShadow: "#bdbdbd 0px 0px 5px 0px"
-          }}
-          contentStyle={{
-            color: "#000000 !important",
-            fontWeight: "600"
-          }}
-        />
-      </Row>
+                        </Paper>
+                      </Col>
+                    </Row>
+                  </Grid>
+                </Tab>
+                <Tab label="Stats" className={styles.detailsTab}
+                  icon={<ActionAssessment color={Colors.indigo500} />}>
+                  <Grid fluid>
+                    <Row>
+                      <Col xs={12} className={styles.detailsTabContent}>
+                        <p>
+                          Stats
+                      </p>
+                      </Col>
+                    </Row>
+                  </Grid>
+                </Tab>
+              </Tabs>
+            </Paper>
+          </Col>
+          <Snackbar
+            open={this.state.snackBar}
+            message={this.state.snackBarMsg}
+            action="close"
+            onActionTouchTap={this.handlesnackBarRequestClose}
+            onRequestClose={this.handlesnackBarRequestClose}
+            bodyStyle={{
+              height: "auto",
+              flexGrow: 0,
+              paddingTop: "10px",
+              lineHeight: "20px",
+              borderRadius: "2px 2px 0px 0px",
+              backgroundColor: "#fafafa",
+              boxShadow: "#bdbdbd 0px 0px 5px 0px"
+            }}
+            contentStyle={{
+              color: "#000000 !important",
+              fontWeight: "600"
+            }}
+          />
+        </Row>
       )
     }
 
@@ -366,7 +369,7 @@ class PageFundDetailsDragoManager extends Component {
             poolApi.contract.drago.init(dragoAddress)
 
             //
-            // Calling getData method
+            // Getting Drago details and ETH balance
             //
 
             Promise
@@ -405,46 +408,6 @@ class PageFundDetailsDragoManager extends Component {
                 loading: false
               })
             })
-            // poolApi.contract.drago.getData()
-            //   .then((data) => {
-            //     //
-            //     // Gettin balance for each account
-            //     //
-
-            //     // console.log(accounts)
-            //     accounts.map(account => {
-            //       poolApi.contract.drago.balanceOf(account.address)
-            //         .then(balance => {
-            //           balanceDRG = balanceDRG.add(balance)
-            //           console.log(balance)
-            //           // console.log(api.util.fromWei(balance).toFormat(4))
-            //         })
-            //         .then(() => {
-            //           // console.log(api.util.fromWei(balanceDRG.toNumber(4)).toFormat(4))
-            //           // console.log(balanceDRG)
-            //           var balanceETH = balanceDRG.times(formatCoins(balanceDRG, 4, api))
-            //           // console.log(balanceETH)
-            //           this.setState({
-            //             balanceETH: formatEth(balanceETH, 4, api),
-            //             balanceDRG: formatCoins(balanceDRG, 4, api)
-            //           })
-            //         })
-            //     })
-
-            //     this.setState({
-            //       dragoDetails: {
-            //         address: dragoDetails[0][0],
-            //         name: dragoDetails[0][1].charAt(0).toUpperCase() + dragoDetails[0][1].slice(1),
-            //         symbol: dragoDetails[0][2],
-            //         dragoId: dragoDetails[0][3].c[0],
-            //         addresssOwner: dragoDetails[0][4],
-            //         addressGroup: dragoDetails[0][5],
-            //         sellPrice: api.util.fromWei(data[2].toNumber(4)).toFormat(4),
-            //         buyPrice: api.util.fromWei(data[3].toNumber(4)).toFormat(4),
-            //       },
-            //       loading: false
-            //     })
-            //   })
 
             //
             // Reading transactions

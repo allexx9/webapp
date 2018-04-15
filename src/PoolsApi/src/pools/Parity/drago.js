@@ -48,7 +48,6 @@ class DragoParity {
   getBalance = () => {
     const api = this._api
     const instance = this._instance
-    console.log(instance.address)
     return api.eth.getBalance(instance.address)
   }
 
