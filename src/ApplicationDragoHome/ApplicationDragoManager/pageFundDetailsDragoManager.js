@@ -56,7 +56,7 @@ class PageFundDetailsDragoManager extends Component {
         dragoId: null,
         addresssOwner: null,
         addressGroup: null,
-        dragoBalance: null
+        dragoETHBalance: null
       },
       dragoTransactionsLogs: [],
       loading: true,
@@ -235,17 +235,18 @@ class PageFundDetailsDragoManager extends Component {
                   <Grid fluid>
                     <Row>
                       <Col xs={6}>
-                        <Paper zDepth={1} style={{height: "100%"}}>
-                          <div id="zio cane" style={{height: "100%"}}> 
+                        <Paper zDepth={1} style={{height: "100%"}}> 
                             <AppBar
                               title={"ETH LIQUIDITY"}
                               showMenuIconButton={false}
                               titleStyle={{ fontSize: 20 }}
                             />
                             <div className={styles.ETHliquidity}>
-                              <div>{this.state.dragoDetails.dragoBalance} <small>ETH</small><br /></div>
+                              <div>
+                                {this.state.dragoDetails.dragoETHBalance} <small>ETH</small><br />
+                                {this.state.dragoDetails.dragoWETHBalance} <small>W-ETH</small><br />
+                              </div>
                             </div>
-                          </div>
                         </Paper>
                       </Col>
                       <Col xs={6}>
@@ -373,11 +374,12 @@ class PageFundDetailsDragoManager extends Component {
             //
 
             Promise
-            .all([poolApi.contract.drago.getData(), poolApi.contract.drago.getBalance()])
+            .all([poolApi.contract.drago.getData(), poolApi.contract.drago.getBalance(), poolApi.contract.drago.getBalanceWETH()])
             .then(result =>{
               console.log(result)
               const data = result[0]
-              const dragoBalance = result [1]
+              const dragoETHBalance = result[1]
+              const dragoWETHBalance = result[2]
 
               accounts.map(account => {
                 poolApi.contract.drago.balanceOf(account.address)
@@ -403,7 +405,8 @@ class PageFundDetailsDragoManager extends Component {
                   addressGroup: dragoDetails[0][5],
                   sellPrice: api.util.fromWei(data[2].toNumber(4)).toFormat(4),
                   buyPrice: api.util.fromWei(data[3].toNumber(4)).toFormat(4),
-                  dragoBalance: formatEth(dragoBalance, 4, api)
+                  dragoETHBalance: formatEth(dragoETHBalance, 4, api),
+                  dragoWETHBalance: formatEth(dragoWETHBalance, 4, api)
                 },
                 loading: false
               })

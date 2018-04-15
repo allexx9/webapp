@@ -3,6 +3,7 @@
 
 import * as abis from '../../contracts/abi'
 import Registry from '../registry'
+import { WETH_ADDRESSES } from '../../utils/const'
 
 class DragoParity {
   constructor(api) {
@@ -49,6 +50,13 @@ class DragoParity {
     const api = this._api
     const instance = this._instance
     return api.eth.getBalance(instance.address)
+  }
+
+  getBalanceWETH = () => {
+    const api = this._api
+    const instance = this._instance
+    const wethInstance = api.newContract(abis.weth, WETH_ADDRESSES[api._rb.network.id]).instance
+    return wethInstance.balanceOf.call({}, [instance.address])
   }
 
   buyDrago = (accountAddress, amount) => {
