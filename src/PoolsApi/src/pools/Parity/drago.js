@@ -1,11 +1,12 @@
 // Copyright 2017 Rigo Investment Sarl.
 // This file is part of RigoBlock.
 
-import * as abis from '../../contracts/abi';
-import Registry from '../registry';
+import * as abis from '../../contracts/abi'
+import Registry from '../registry'
+import { WETH_ADDRESSES } from '../../utils/const'
 
 class DragoParity {
-  constructor (api) {
+  constructor(api) {
     if (!api) {
       throw new Error('API instance needs to be provided to Contract')
     }
@@ -15,14 +16,14 @@ class DragoParity {
     this._constunctorName = this.constructor.name
   }
 
-  get instance () {
+  get instance() {
     if (typeof this._instance === 'undefined') {
       throw new Error('The contract needs to be initialized.')
     }
-    return this._instance;
+    return this._instance
   }
 
-  init = (address) => {
+  init = address => {
     if (!address) {
       throw new Error('Contract address needs to be provided')
     }
@@ -37,12 +38,25 @@ class DragoParity {
     return instance.getData.call({})
   }
 
-  balanceOf = (accountAddress) => {
+  balanceOf = accountAddress => {
     if (!accountAddress) {
       throw new Error('accountAddress needs to be provided')
     }
     const instance = this._instance
     return instance.balanceOf.call({}, [accountAddress])
+  }
+
+  getBalance = () => {
+    const api = this._api
+    const instance = this._instance
+    return api.eth.getBalance(instance.address)
+  }
+
+  getBalanceWETH = () => {
+    const api = this._api
+    const instance = this._instance
+    const wethInstance = api.newContract(abis.weth, WETH_ADDRESSES[api._rb.network.id]).instance
+    return wethInstance.balanceOf.call({}, [instance.address])
   }
 
   buyDrago = (accountAddress, amount) => {
@@ -57,11 +71,13 @@ class DragoParity {
       from: accountAddress,
       value: amount
     }
-    return instance.buyDrago
-    .estimateGas(options, [])
-    .then((gasEstimate) => {
-      options.gas =  gasEstimate.mul(1.2).toFixed(0);
-      console.log(`Buy Drago: gas estimated as ${gasEstimate.toFixed(0)} setting to ${options.gas}`)
+    return instance.buyDrago.estimateGas(options, []).then(gasEstimate => {
+      options.gas = gasEstimate.mul(1.2).toFixed(0)
+      console.log(
+        `Buy Drago: gas estimated as ${gasEstimate.toFixed(0)} setting to ${
+          options.gas
+        }`
+      )
       return instance.buyDrago.postTransaction(options, [])
       // .then((receipt) => {
       //   return api.parity.checkRequest(receipt, [])
@@ -85,30 +101,31 @@ class DragoParity {
     const instance = this._instance
     const options = {
       from: accountAddress
-    };
+    }
     const values = [accountAddress, exchangeAddress, cfd, tradeId]
     console.log(exchangeAddress)
     return instance.cancelOrderCFDExchange
-    .estimateGas(options, values)
-    .then((gasEstimate) => {
-      console.log(gasEstimate.toFormat())
-      options.gas = gasEstimate.mul(1.2).toFixed(0);
-      return instance.cancelOrderCFDExchange.postTransaction(options, values)
-    })
-    .catch((error) => {
-      console.error('error', error)
-    })
+      .estimateGas(options, values)
+      .then(gasEstimate => {
+        console.log(gasEstimate.toFormat())
+        options.gas = gasEstimate.mul(1.2).toFixed(0)
+        return instance.cancelOrderCFDExchange.postTransaction(options, values)
+      })
+      .catch(error => {
+        console.error('error', error)
+      })
   }
 
-  depositToExchange = (accountAddress, exchangeAddress, tokenAddress, amount) => {
+  depositToExchange = (
+    accountAddress,
+    exchangeAddress,
+    amount
+  ) => {
     if (!accountAddress) {
       throw new Error('accountAddress needs to be provided')
     }
     if (!exchangeAddress) {
       throw new Error('exchangeAddress needs to be provided')
-    }
-    if (!tokenAddress) {
-      throw new Error('tokenAddress needs to be provided')
     }
     if (!amount) {
       throw new Error('amount needs to be provided')
@@ -116,22 +133,29 @@ class DragoParity {
     const instance = this._instance
     const options = {
       from: accountAddress
-    };
-    const values = [exchangeAddress, tokenAddress, amount]
+    }
+    const values = [exchangeAddress, amount]
     console.log(exchangeAddress)
     return instance.depositToExchange
-    .estimateGas(options, values)
-    .then((gasEstimate) => {
-      console.log(gasEstimate.toFormat())
-      options.gas = gasEstimate.mul(1.2).toFixed(0);
-      return instance.depositToExchange.postTransaction(options, values)
-    })
-    .catch((error) => {
-      console.error('error', error)
-    })
+      .estimateGas(options, values)
+      .then(gasEstimate => {
+        console.log(gasEstimate.toFormat())
+        options.gas = gasEstimate.mul(1.2).toFixed(0)
+        return instance.depositToExchange.postTransaction(options, values)
+      })
+      .catch(error => {
+        console.error('error', error)
+      })
   }
 
-  placeOrderCFDExchange = (accountAddress, exchangeAddress, cfd, is_stable, adjustment, stake) => {
+  placeOrderCFDExchange = (
+    accountAddress,
+    exchangeAddress,
+    cfd,
+    is_stable,
+    adjustment,
+    stake
+  ) => {
     if (!accountAddress) {
       throw new Error('accountAddress needs to be provided')
     }
@@ -153,19 +177,26 @@ class DragoParity {
     const instance = this._instance
     const options = {
       from: accountAddress
-    };
-    const values = [exchangeAddress, exchangeAddress, cfd, is_stable, adjustment, stake]
+    }
+    const values = [
+      exchangeAddress,
+      exchangeAddress,
+      cfd,
+      is_stable,
+      adjustment,
+      stake
+    ]
     console.log(exchangeAddress)
     return instance.depositToExchange
-    .estimateGas(options, values)
-    .then((gasEstimate) => {
-      console.log(gasEstimate.toFormat())
-      options.gas = gasEstimate.mul(1.2).toFixed(0);
-      return instance.depositToExchange.postTransaction(options, values)
-    })
-    .catch((error) => {
-      console.error('error', error)
-    })
+      .estimateGas(options, values)
+      .then(gasEstimate => {
+        console.log(gasEstimate.toFormat())
+        options.gas = gasEstimate.mul(1.2).toFixed(0)
+        return instance.depositToExchange.postTransaction(options, values)
+      })
+      .catch(error => {
+        console.error('error', error)
+      })
   }
 
   sellDrago = (accountAddress, amount) => {
@@ -182,11 +213,13 @@ class DragoParity {
     }
     console.log(options)
     console.log(values)
-    return instance.sellDrago
-    .estimateGas(options, values)
-    .then((gasEstimate) => {
-      options.gas =  gasEstimate.mul(1.2).toFixed(0);
-      console.log(`Sell Drago: gas estimated as ${gasEstimate.toFixed(0)} setting to ${options.gas}.`)
+    return instance.sellDrago.estimateGas(options, values).then(gasEstimate => {
+      options.gas = gasEstimate.mul(1.2).toFixed(0)
+      console.log(
+        `Sell Drago: gas estimated as ${gasEstimate.toFixed(0)} setting to ${
+          options.gas
+        }.`
+      )
       return instance.sellDrago.postTransaction(options, values)
     })
   }
@@ -210,22 +243,28 @@ class DragoParity {
     const options = {
       from: accountAddress
     }
-    return instance.setPrices
-    .estimateGas(options, values)
-    .then((gasEstimate) => {
-      options.gas =  gasEstimate.mul(1.2).toFixed(0);
-      console.log(`setPrices Drago: gas estimated as ${gasEstimate.toFixed(0)} setting to ${options.gas}. Setting values: ${values}`)
+    return instance.setPrices.estimateGas(options, values).then(gasEstimate => {
+      options.gas = gasEstimate.mul(1.2).toFixed(0)
+      console.log(
+        `setPrices Drago: gas estimated as ${gasEstimate.toFixed(
+          0
+        )} setting to ${options.gas}. Setting values: ${values}`
+      )
       return instance.setPrices.postTransaction(options, values)
     })
-
   }
 
-  totalSupply =() =>{
+  totalSupply = () => {
     const instance = this._instance
-    return instance.totalSupply.call({},[])
+    return instance.totalSupply.call({}, [])
   }
 
-  withdrawFromExchange = (accountAddress, exchangeAddress, tokenAddress, amount) => {
+  withdrawFromExchange = (
+    accountAddress,
+    exchangeAddress,
+    tokenAddress,
+    amount
+  ) => {
     if (!accountAddress) {
       throw new Error('accountAddress needs to be provided')
     }
@@ -241,21 +280,19 @@ class DragoParity {
     const instance = this._instance
     const options = {
       from: accountAddress
-    };
+    }
     const values = [exchangeAddress, tokenAddress, amount]
     return instance.withdrawFromExchange
-    .estimateGas(options, values)
-    .then((gasEstimate) => {
-      console.log(gasEstimate.toFormat())
-      options.gas = gasEstimate.mul(1.2).toFixed(0);
-      return instance.withdrawFromExchange.postTransaction(options, values)
-    })
-    .catch((error) => {
-      console.error('error', error)
-    })
+      .estimateGas(options, values)
+      .then(gasEstimate => {
+        console.log(gasEstimate.toFormat())
+        options.gas = gasEstimate.mul(1.2).toFixed(0)
+        return instance.withdrawFromExchange.postTransaction(options, values)
+      })
+      .catch(error => {
+        console.error('error', error)
+      })
   }
 }
 
-
-
-export default DragoParity;
+export default DragoParity
