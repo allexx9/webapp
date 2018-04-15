@@ -25,6 +25,7 @@ import Loading from '../../_atomic/atoms/loading'
 import utils from '../../_utils/utils'
 import styles from './pageVaultDetailsVaultManager.module.css';
 import ElementFundNotFound from '../../Elements/elementFundNotFound'
+import ElementNoAdminAccess from '../../Elements/elementNoAdminAccess'
 import BigNumber from 'bignumber.js';
 import { connect } from 'react-redux';
 
@@ -166,7 +167,7 @@ class PageVaultDetailsVaultManager extends Component {
 
     
     render() {
-      const { accounts, isManager } = this.props
+      const { accounts, isManager, endpoint } = this.props
       const { vaultDetails, loading } = this.state
       const tabButtons = {
         inkBarStyle: {
@@ -205,6 +206,17 @@ class PageVaultDetailsVaultManager extends Component {
           <ElementFundNotFound />
         );
       }
+
+      // Checking if the user is the account manager
+      let metaMaskAccountIndex = endpoint.accounts.findIndex(account => {
+        return (account.address === vaultDetails.addresssOwner)
+      });
+      if (metaMaskAccountIndex === -1) {
+        return (
+          <ElementNoAdminAccess />
+        )
+      }
+
       return (
       <Row>
         <Col xs={12}>

@@ -25,6 +25,7 @@ import Loading from '../../_atomic/atoms/loading'
 import utils from '../../_utils/utils'
 import styles from './pageFundDetailsDragoManager.module.css';
 import ElementFundNotFound from '../../Elements/elementFundNotFound'
+import ElementNoAdminAccess from '../../Elements/elementNoAdminAccess'
 import BigNumber from 'bignumber.js';
 import { connect } from 'react-redux';
 
@@ -165,7 +166,7 @@ class PageFundDetailsDragoManager extends Component {
 
     
     render() {
-      const { accounts, isManager } = this.props
+      const { accounts, isManager, endpoint } = this.props
       const { dragoDetails, loading } = this.state
       const tabButtons = {
         inkBarStyle: {
@@ -190,7 +191,7 @@ class PageFundDetailsDragoManager extends Component {
       };
   
       var dragoTransactionList = this.state.dragoTransactionsLogs
-      // console.log(dragoTransactionList)
+
 
       // Waiting until getDragoDetails returns the drago details
       if (loading) {
@@ -198,10 +199,22 @@ class PageFundDetailsDragoManager extends Component {
           <Loading />
         );
       }
+
+      // Checking if the fund exists
       if (dragoDetails.address === '0x0000000000000000000000000000000000000000') {
         return (
           <ElementFundNotFound />
         );
+      }
+
+      // Checking if the user is the account manager
+      let metaMaskAccountIndex = endpoint.accounts.findIndex(account => {
+        return (account.address === dragoDetails.addresssOwner)
+      });
+      if (metaMaskAccountIndex === -1) {
+        return (
+          <ElementNoAdminAccess />
+        )
       }
       return (
       <Row>

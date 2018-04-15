@@ -10,11 +10,12 @@ import { ERRORS, validateAccount, validatePositiveNumber } from '../../_utils/va
 import AccountSelector from '../../Elements/elementAccountSelector';
 import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle'
 import ElementDialogAddressTitle from '../../Elements/elementDialogAddressTitle'
+import styles from './elementFundActionDeposit.module.css';
 
 import PoolApi from '../../PoolsApi/src'
 
 const NAME_ID = ' ';
-const ADDRESS_0 = '0x0000000000000000000000000000000000000000'; //ADDRESS_0 is for ETH deposits
+const WETH = '0xd0a1e359811322d97991e03f863a0c30c2cf029c'; //Address of WETH contract
 
 const APPROVED_EXCHANGES = ['exchange2', 'exchangenot']; //we have to created a component to inject array into
 
@@ -111,12 +112,15 @@ export default class ElementFundActionDeposit extends Component {
 
     return ([
       <FlatButton
+        key='Cancel'
         label='Cancel'
-        name='deposit'
+        name='Cancel'
         primary
         onTouchTap={ this.onClose} />,
       <FlatButton
+        key='Deposit'
         label='Deposit'
+        name='Deposit'
         primary
         disabled={ hasError || sending }
         onTouchTap={ this.onSend } />
@@ -124,7 +128,6 @@ export default class ElementFundActionDeposit extends Component {
   }
 
   renderFields () {
-    const value = this.state;
     const amountLabel = 'The amount you want to deposit';
 
     return (
@@ -137,12 +140,12 @@ export default class ElementFundActionDeposit extends Component {
           hintText='The account the transaction will be made from'
           onSelect={ this.onChangeAddress } />
         <DropDownMenu
-          value={this.state.value}
-          onChange={this.onChangeExchange}
+          value={'0XExchange'}
+          // onChange={this.onChangeExchange}
           >
           <MenuItem value={'default'} primaryText='Select the exchange from the list' />
           {/* <MenuItem value={'exchange2'} primaryText='CFD Exchange' /> */}
-          <MenuItem value={'cfdexchange'} primaryText='CFD Exchange' />
+          <MenuItem value={'0XExchange'} primaryText='0XExchange' />
         </DropDownMenu>
         <TextField
           autoComplete='off'
@@ -182,23 +185,23 @@ export default class ElementFundActionDeposit extends Component {
     }, this.validateTotal);
   }
 
-  onFindExchange = () => {
-    const { dragoDetails } = this.props
-    const { api } = this.context;
-    var poolApi = new PoolApi(api)
-    poolApi.contract.exchange.init()
-    .then(() =>{
-      return poolApi.contract.exchange.balanceOf(ADDRESS_0, dragoDetails.address.toString())
-    })
-    .then ((balanceExchange) =>{
-      console.log(balanceExchange)
-      this.setState({
-        loading: false,
-        balanceExchange,
-        exchangeAddress: poolApi.contract.exchange._contract._address
-      });
-    })
-  }
+  // onFindExchange = () => {
+  //   const { dragoDetails } = this.props
+  //   const { api } = this.context;
+  //   var poolApi = new PoolApi(api)
+  //   poolApi.contract.exchange.init()
+  //   .then(() =>{
+  //     return poolApi.contract.exchange.balanceOf(ADDRESS_0, dragoDetails.address.toString())
+  //   })
+  //   .then ((balanceExchange) =>{
+  //     console.log(balanceExchange)
+  //     this.setState({
+  //       loading: false,
+  //       balanceExchange,
+  //       exchangeAddress: poolApi.contract.exchange._contract._address
+  //     });
+  //   })
+  // }
 
   validateTotal = () => {
     const { account, accountError, amount, amountError } = this.state;
@@ -218,13 +221,7 @@ export default class ElementFundActionDeposit extends Component {
     const { api } = this.context;
     const { dragoDetails } = this.props
     // const { instance } = this.context;
-    const exchangeAddress = this.state.exchangeAddress; //cfd exchange; //this.state.exchange;
-    const values = [exchangeAddress.toString(), ADDRESS_0, api.util.toWei(this.state.amount).toString()]; //this.state.account.address
-    const options = {
-      from: this.state.account.address
-    };
     var poolApi = null;
-
     this.setState({
       sending: true
     });
@@ -232,8 +229,8 @@ export default class ElementFundActionDeposit extends Component {
       const web3 = window.web3
       poolApi = new PoolApi(web3)
       poolApi.contract.drago.init(dragoDetails.address)
-      poolApi.contract.drago.depositToExchange(this.state.account.address, exchangeAddress.toString(), 
-                                                ADDRESS_0, api.util.toWei(this.state.amount).toString())
+      poolApi.contract.drago.depositToExchange(this.state.account.address, WETH, 
+                                                api.util.toWei(this.state.amount).toString())
       .then ((result) =>{
         console.log(result)
         this.setState({
@@ -251,9 +248,10 @@ export default class ElementFundActionDeposit extends Component {
     } else {
       poolApi = new PoolApi(api)
       poolApi.contract.drago.init(dragoDetails.address)
-      poolApi.contract.drago.depositToExchange(this.state.account.address, exchangeAddress.toString(), 
-                                                ADDRESS_0, api.util.toWei(this.state.amount).toString())
+      poolApi.contract.drago.depositToExchange(this.state.account.address, WETH, 
+        api.util.toWei(this.state.amount).toString())
       .then((result) => {
+        console.log(result)
         this.onClose()
         this.props.snackBar('Deposit awaiting for authorization')
       })

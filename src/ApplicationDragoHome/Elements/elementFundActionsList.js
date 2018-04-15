@@ -108,7 +108,6 @@ export default class ElementFundActionsList extends Component {
   render () {
     const { dragoDetails } = this.props
     // Selectiong only the account which is the owner of the Drago
-    console.log(dragoDetails.addresssOwner)
     const accounts = this.props.accounts.filter((account) =>{
       return account.address == dragoDetails.addresssOwner
     })
@@ -138,7 +137,7 @@ export default class ElementFundActionsList extends Component {
             <MenuItem value="2" primaryText="Fee Account" disabled={true}/>
             <MenuItem value="3" primaryText="Estimante NAV" disabled={true}/>
             <Subheader inset={false}>Exchange</Subheader>
-            <MenuItem value="deposit" primaryText="Deposit" disabled={true}/>
+            <MenuItem value="deposit" primaryText="Deposit"/>
             <MenuItem value="withdraw" primaryText="Withdraw" disabled={true}/>
             <MenuItem value="placeOrder" primaryText="Place Order" disabled={true}/>
             <MenuItem value="cancelOrder" primaryText="Cancel Order" disabled={true}/>

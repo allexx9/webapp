@@ -48,6 +48,7 @@ class DragoParity {
   getBalance = () => {
     const api = this._api
     const instance = this._instance
+    console.log(instance.address)
     return api.eth.getBalance(instance.address)
   }
 
@@ -111,7 +112,6 @@ class DragoParity {
   depositToExchange = (
     accountAddress,
     exchangeAddress,
-    tokenAddress,
     amount
   ) => {
     if (!accountAddress) {
@@ -120,9 +120,6 @@ class DragoParity {
     if (!exchangeAddress) {
       throw new Error('exchangeAddress needs to be provided')
     }
-    if (!tokenAddress) {
-      throw new Error('tokenAddress needs to be provided')
-    }
     if (!amount) {
       throw new Error('amount needs to be provided')
     }
@@ -130,7 +127,7 @@ class DragoParity {
     const options = {
       from: accountAddress
     }
-    const values = [exchangeAddress, tokenAddress, amount]
+    const values = [exchangeAddress, amount]
     console.log(exchangeAddress)
     return instance.depositToExchange
       .estimateGas(options, values)
