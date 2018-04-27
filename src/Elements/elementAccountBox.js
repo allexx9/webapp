@@ -136,7 +136,7 @@ class ElementAccountBox extends Component {
                   label="TRANSFER"
                   // labelColor={Colors.indigo500}
                   labelStyle={{ fontWeight: 600 }}
-                  onTouchTap={this.onTransferOpen}
+                  onClick={this.onTransferOpen}
                 />
                 <ElementAccountActionTransfer
                   open={this.state.transferOpen}

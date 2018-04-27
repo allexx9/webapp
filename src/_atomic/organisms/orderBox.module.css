@@ -1,0 +1,21 @@
+.sectionHeaderOrderTable {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.appBar {
+  z-index: 0 !important;
+  text-align: center;
+}
+
+.sellButton {
+  text-align: center;
+}
+
+.buyButton {
+  text-align: center;
+}
+
+.orderBookContainer{
+  /* font-weight: 600; */
+}

@@ -12,6 +12,7 @@ import IdentityIcon from '../../_atomic/atoms/identityIcon';
 // import styles from './elementAccountItem.module.css';
 
 import PropTypes from 'prop-types';
+import ElementFundActionWrapETH from '../Elements/elementFundActionWrapETH'
 import ElementFundActionDeposit from '../Elements/elementFundActionDeposit'
 import ElementFundActionWithdraw from '../Elements/elementFundActionWithdraw'
 import ElementFundActionPlaceOrder from '../Elements/elementFundActionPlaceOrder'
@@ -29,6 +30,7 @@ export default class ElementFundActionsList extends Component {
   state = {
     openMenuActions: false,
     showActionMenuItem:{
+      wrapETH: true,
       deposit: false,
       withdraw: false,
       placeOrder: false,
@@ -57,10 +59,10 @@ export default class ElementFundActionsList extends Component {
     });
     console.log(value)
     switch (value) {
-      case 'deposit':
+      case 'wrapETH':
         this.setState({
           showActionMenuItem: {
-            deposit: !this.state.showActionMenuItem.deposit
+            deposit: !this.state.showActionMenuItem.wrapETH
           }
         })
         break;
@@ -137,15 +139,15 @@ export default class ElementFundActionsList extends Component {
             <MenuItem value="2" primaryText="Fee Account" disabled={true}/>
             <MenuItem value="3" primaryText="Estimante NAV" disabled={true}/>
             <Subheader inset={false}>Exchange</Subheader>
-            <MenuItem value="deposit" primaryText="Deposit"/>
+            <MenuItem value="wrapETH" primaryText="Wrap ETH"/>
             <MenuItem value="withdraw" primaryText="Withdraw" disabled={true}/>
             <MenuItem value="placeOrder" primaryText="Place Order" disabled={true}/>
             <MenuItem value="cancelOrder" primaryText="Cancel Order" disabled={true}/>
             <MenuItem value="finalizeOrder" primaryText="Finalize" disabled={true}/>
           </Menu>
         </Popover>
-        {this.state.showActionMenuItem.deposit ?
-              <ElementFundActionDeposit accounts={accounts} 
+        {this.state.showActionMenuItem.wrapETH ?
+              <ElementFundActionWrapETH accounts={accounts} 
                 dragoDetails={dragoDetails} 
                 openActionForm={this.openActionForm}
                 snackBar={this.props.snackBar}/> :

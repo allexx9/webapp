@@ -3,7 +3,7 @@
 
 import * as abis from '../../contracts/abi'
 import Registry from '../registry'
-import { WETH_ADDRESSES } from '../../utils/const'
+import { WETH_ADDRESSES, ZRX_ADDRESSES } from '../../utils/const'
 
 class DragoParity {
   constructor(api) {
@@ -56,6 +56,13 @@ class DragoParity {
     const api = this._api
     const instance = this._instance
     const wethInstance = api.newContract(abis.weth, WETH_ADDRESSES[api._rb.network.id]).instance
+    return wethInstance.balanceOf.call({}, [instance.address])
+  }
+
+  getBalanceZRX = () => {
+    const api = this._api
+    const instance = this._instance
+    const wethInstance = api.newContract(abis.weth, ZRX_ADDRESSES[api._rb.network.id]).instance
     return wethInstance.balanceOf.call({}, [instance.address])
   }
 

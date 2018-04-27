@@ -122,7 +122,7 @@ export default class ElementVaultActionSetFees extends Component {
         <FlatButton key='dialogButton1'
           label='Done'
           primary
-          onTouchTap={ this.props.onClose } />
+          onClick={ this.props.onClose } />
       );
     }
 
@@ -135,13 +135,13 @@ export default class ElementVaultActionSetFees extends Component {
         label='Cancel'
         name='setPrice'
         primary
-        onTouchTap={ this.onClose} />,
+        onClick={ this.onClose} />,
       <FlatButton
         key='dialogButton2'
         label='Save'
         primary
         disabled={ hasError || sending }
-        onTouchTap={ this.onSend } />
+        onClick={ this.onSend } />
     ]);
   }
 

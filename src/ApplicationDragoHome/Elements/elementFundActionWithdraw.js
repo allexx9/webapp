@@ -101,7 +101,7 @@ export default class ElementFundActionWithdraw extends Component {
         <FlatButton
           label='Done'
           primary
-          onTouchTap={ this.props.onClose } />
+          onClick={ this.props.onClose } />
       );
     }
 
@@ -113,13 +113,13 @@ export default class ElementFundActionWithdraw extends Component {
         key='CancelButton'
         label='Cancel'
         primary
-        onTouchTap={ this.onClose} />,
+        onClick={ this.onClose} />,
       <FlatButton
         key='SubmitButton'
         label='Withdraw'
         primary
         disabled={ hasError || sending }
-        onTouchTap={ this.onSend } />
+        onClick={ this.onSend } />
     ]);
   }
 

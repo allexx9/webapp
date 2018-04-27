@@ -43,8 +43,7 @@ class PageFundDetailsDragoManager extends Component {
   static propTypes = {
       location: PropTypes.object.isRequired,
       endpoint: PropTypes.object.isRequired,
-      accounts: PropTypes.array.isRequired,
-      isManager: PropTypes.bool.isRequired,
+      user: PropTypes.object.isRequired,
       match: PropTypes.object.isRequired,
     };
 
@@ -166,7 +165,8 @@ class PageFundDetailsDragoManager extends Component {
 
     
     render() {
-      const { accounts, isManager, endpoint } = this.props
+      const { endpoint } = this.props
+      const { isManager } = this.props.user
       const { dragoDetails, loading } = this.state
       const tabButtons = {
         inkBarStyle: {
@@ -185,11 +185,7 @@ class PageFundDetailsDragoManager extends Component {
       const tableInfo = [['Symbol', dragoDetails.symbol, ''], 
         ['Name', dragoDetails.name, ''], 
         ['Address', dragoDetails.address, tableButtonsDragoAddress],
-        ['Manager', dragoDetails.addresssOwner, tableButtonsDragoOwner]]   
-      const paperStyle = {
-
-      };
-  
+        ['Manager', dragoDetails.addresssOwner, tableButtonsDragoOwner]]     
       var dragoTransactionList = this.state.dragoTransactionsLogs
 
 
@@ -226,7 +222,7 @@ class PageFundDetailsDragoManager extends Component {
                   {this.renderAddress(dragoDetails)}
                 </ToolbarGroup>
                 <ToolbarGroup>
-                  <ElementFundActionsList accounts={accounts} dragoDetails={dragoDetails} snackBar={this.snackBar} />
+                  <ElementFundActionsList accounts={endpoint.accounts} dragoDetails={dragoDetails} snackBar={this.snackBar} />
                 </ToolbarGroup>
               </Toolbar>
               <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle} className={styles.test}>
@@ -252,7 +248,7 @@ class PageFundDetailsDragoManager extends Component {
                       <Col xs={6}>
                         <Paper zDepth={1}>
                           <ElementPriceBox
-                            accounts={accounts}
+                            accounts={endpoint.accounts}
                             isManager={isManager}
                             dragoDetails={dragoDetails} />
                         </Paper>
@@ -275,7 +271,7 @@ class PageFundDetailsDragoManager extends Component {
                     </Row>
                     <Row>
                       <Col xs={12} className={styles.detailsTabContent}>
-                        <Paper style={paperStyle} zDepth={1} >
+                        <Paper zDepth={1} >
                           <AppBar
                             title="LAST TRANSACTIONS"
                             showMenuIconButton={false}
@@ -343,7 +339,7 @@ class PageFundDetailsDragoManager extends Component {
   // Getting the drago details from dragoId
   getDragoDetails = (dragoId) => {
     const { api } = this.context
-    const { accounts } = this.props
+    const { endpoint } = this.props
     var balanceDRG = new BigNumber(0)
     //
     // Initializing Drago API
@@ -381,7 +377,7 @@ class PageFundDetailsDragoManager extends Component {
               const dragoETHBalance = result[1]
               const dragoWETHBalance = result[2]
 
-              accounts.map(account => {
+              endpoint.accounts.map(account => {
                 poolApi.contract.drago.balanceOf(account.address)
                   .then(balance => {
                     balanceDRG = balanceDRG.add(balance)
@@ -418,7 +414,7 @@ class PageFundDetailsDragoManager extends Component {
             
               poolApi.contract.dragoeventful.init()
               .then(() => {
-                this.getTransactions(dragoDetails[0][0], poolApi.contract.dragoeventful, accounts)
+                this.getTransactions(dragoDetails[0][0], poolApi.contract.dragoeventful, endpoint.accounts)
               }
               )
           })

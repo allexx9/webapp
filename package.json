@@ -4,10 +4,12 @@
   "private": true,
   "homepage": "./",
   "dependencies": {
+    "0x.js": "^0.36.3",
     "@parity/api": "^2.1.20",
     "bignumber.js": "^5.0.0",
     "classnames": "^2.2.5",
     "css-loader": "^0.28.7",
+    "detect-browser": "^2.4.0",
     "immutable": "^3.8.2",
     "jss": "^9.0.0",
     "material-ui": "^0.19.4",

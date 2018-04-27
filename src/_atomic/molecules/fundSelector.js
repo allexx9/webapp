@@ -1,13 +1,15 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
 import SelectFundItem from '../molecules/selectFundItem.js';
+import styles from './fundSelector.module.css';
 import React, { Component } from 'react';
 import { MenuItem, SelectField } from 'material-ui';
 import PropTypes from 'prop-types';
+import { Row, Col } from 'react-flexbox-grid';
 
 export default class FundSelector extends Component {
   static propTypes = {
-    funds: PropTypes.object.isRequired,
+    funds: PropTypes.array.isRequired,
     onSelectFund: PropTypes.func,
   }
 
@@ -15,43 +17,45 @@ export default class FundSelector extends Component {
     value: 0,
   };
 
-  onSelect = (event, key) => {
-    console.log(key)
-    var tokens = {
-      0: 'ETH',
-      1: 'GRG'
-    };
+  onSelectFund = (event, key) => {
+    const { funds } = this.props
     this.setState({
       value: key
-    });
-    this.props.onSelectFund(tokens[key])
+    })
+    this.props.onSelectFund(funds[key.toString()])
   }
 
   renderFunds = () =>{
     const { funds } = this.props
-    funds.map((fund,key) =>{
+    return funds.map((fund,key) =>{
       return (
-      <MenuItem key={key} value={key} primaryText={<SelectFundItem fund={fund} />} />
+      <MenuItem key={key} 
+        value={key} 
+        primaryText={<SelectFundItem fund={fund} />} 
+      />
     )
     })
   }
 
   render () {
     return (
-      <div>
-        <SelectField
-          floatingLabelText="Type of token transfer"
-          fullWidth
-          value={this.state.value}
-          onChange={this.onSelect}
-          style={{height: 90}}
-        >
-        {this.renderFunds()}
-        </SelectField>
-
-      </div>
+      <Row>
+        <Col xs={12}>
+          <div className={styles.sectionTitle}>
+            Fund
+        </div>
+        </Col>
+        <Col xs={12}>
+          <SelectField
+            fullWidth
+            value={this.state.value}
+            onChange={this.onSelectFund}
+          // style={{height: 90}}
+          >
+            {this.renderFunds()}
+          </SelectField>
+        </Col>
+      </Row>
     );
   }
-
-
 }

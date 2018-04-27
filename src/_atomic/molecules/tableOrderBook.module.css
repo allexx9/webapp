@@ -1,0 +1,29 @@
+.sectionTitle {
+  font-size: 10px;
+}
+
+.sectionOrder {
+  font-size: 12px;
+  margin-right: -6px !important;
+  margin-left: -4px !important;
+}
+
+.sectionOrderEmpty {
+  font-size: 12px;
+}
+
+.cellOrder:hover{
+  background:#F5F5F5 !important;
+}
+
+.cellOrder{
+  margin-right: -6px;
+}
+
+
+.containerOrders {
+  text-align: right;
+}
+
+
+

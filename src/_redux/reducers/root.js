@@ -3,6 +3,7 @@
 import transactionsReducer from './transactions'
 import usersReducer from './users'
 import endpointsReducer from './endpoints'
+import exchangeReducer from './exchange'
 import {
   eventfulDragoReducer,
   eventfulVaultReducer
@@ -12,6 +13,7 @@ import {combineReducers } from "redux"
 class reducers {
 
   rootReducer = combineReducers({
+    exchange: exchangeReducer,
     transactions: transactionsReducer,
     user: usersReducer,
     endpoint: endpointsReducer,

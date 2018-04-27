@@ -94,10 +94,8 @@ export class App extends Component {
   tdIsConnected = null
   tdIsMetaMaskUnlocked = null
   
-
   // Defining the properties of the context variables passed down to children
   static childContextTypes = {
-    // muiTheme: PropTypes.object,
     api: PropTypes.object,
     isConnected: PropTypes.bool,
     isSyncing: PropTypes.bool,
@@ -113,7 +111,6 @@ export class App extends Component {
   // Passing down the context variables passed down to children
   getChildContext() {
     return {
-      // muiTheme,
       api: this._api,
       isConnected: this.state.isConnected,
       isSyncing: this.state.isSyncing,
@@ -125,10 +122,6 @@ export class App extends Component {
   attachInterfaceAction = () => {
     return {
       type: ATTACH_INTERFACE,
-      // payload: new Promise(resolve => {
-      //   this.attachInterface().then(result => {
-      //     resolve(result);
-      //   })
       payload: new Promise((resolve) => {
         this.attachInterface().then(result => {
           resolve(result);
@@ -369,7 +362,6 @@ export class App extends Component {
                   this.setState({
                     appLoading: false
                   })
-                  console.log(attachedInterface)
                   return attachedInterface
                 })
                 .catch((error) => {
@@ -484,6 +476,7 @@ export class App extends Component {
   }
 
   onNewBlockNumber = (_error, blockNumber ) => {
+    utils.logger.disable()
     if (_error) {
       console.error('onNewBlockNumber', _error)
       return
@@ -510,8 +503,6 @@ export class App extends Component {
       return null
     }
     const accounts = [].concat(endpoint.accounts);
-
-    console.log(accounts)
     if (accounts.length !== 0) {
       const poolsApi = new PoolsApi(this._api)
       poolsApi.contract.rigotoken.init()
@@ -640,7 +631,7 @@ export class App extends Component {
       newEndpoint.prevBlockNumber = newBlockNumber.toFixed()
       this.props.dispatch(this.updateInterfaceAction(newEndpoint))  
     }
-    
+    utils.logger.enable()
   }
 
   detachInterface = () => {

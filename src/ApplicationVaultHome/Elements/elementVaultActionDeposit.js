@@ -96,7 +96,7 @@ export default class ElementVaultActionDeposit extends Component {
         <FlatButton
           label='Done'
           primary
-          onTouchTap={ this.props.onClose } />
+          onClick={ this.props.onClose } />
       );
     }
 
@@ -109,13 +109,13 @@ export default class ElementVaultActionDeposit extends Component {
         label='Cancel'
         name='deposit'
         primary
-        onTouchTap={ this.onClose} />,
+        onClick={ this.onClose} />,
       <FlatButton
         key="DepositButton"
         label='Deposit'
         primary
         disabled={ hasError || sending }
-        onTouchTap={ this.onSend } />
+        onClick={ this.onSend } />
     ]);
   }
 

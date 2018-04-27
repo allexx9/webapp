@@ -217,7 +217,7 @@ class ElementFundCreateAction extends React.Component {
           <FlatButton
             label='Done'
             primary
-            onTouchTap={ this.handleClose } />
+            onClick={ this.handleClose } />
         );
       }
   
@@ -229,13 +229,13 @@ class ElementFundCreateAction extends React.Component {
           key='CancelButton'
           label='Cancel'
           primary
-          onTouchTap={this.handleClose} />,
+          onClick={this.handleClose} />,
         <FlatButton
           key='SubmitButton'
           label='Deploy'
           primary
           disabled={hasError || sending}
-          onTouchTap={this.onSend} />
+          onClick={this.onSend} />
       ]);
     }
 

@@ -11,6 +11,22 @@ import {
 import BigNumber from 'bignumber.js';
 
 const initialState = {
+  exchange: {
+    selectedFund: {
+      details: {},
+      liquidity: {
+        ETH: new BigNumber(0),
+        WETH: new BigNumber(0),
+        ZRX: new BigNumber(0),
+      }
+    },
+    selectedOrder: {
+      details: {},
+      type: {},
+      quantityToAvailable: {},
+      quantityToFill: {}
+    }
+  },
   transactions: {
     queue: new Map(),
   },

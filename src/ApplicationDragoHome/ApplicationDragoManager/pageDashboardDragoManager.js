@@ -46,9 +46,7 @@ class PageDashboardDragoManager extends Component {
   static propTypes = {
       location: PropTypes.object.isRequired,
       endpoint: PropTypes.object.isRequired,
-      accounts: PropTypes.array.isRequired,
       dispatch: PropTypes.func.isRequired,
-      transactionsDrago: PropTypes.object.isRequired,
     };
 
     state = {
@@ -65,8 +63,8 @@ class PageDashboardDragoManager extends Component {
     };
 
     componentDidMount() {
-      const {accounts } = this.props
-      this.getTransactions (null, accounts)
+      const { endpoint } = this.props
+      this.getTransactions (null, endpoint.accounts)
     }
 
     componentWillMount() {
@@ -76,7 +74,7 @@ class PageDashboardDragoManager extends Component {
     componentWillReceiveProps(nextProps) {
       // Updating the lists on each new block if the accounts balances have changed
       // Doing this this to improve performances by avoiding useless re-rendering
-      const {accounts } = this.props
+      const { endpoint } = this.props
       const sourceLogClass = this.constructor.name
       console.log(`${sourceLogClass} -> componentWillReceiveProps-> nextProps received.`);
       // Updating the transaction list if there have been a change in total accounts balance and the previous balance is
@@ -84,7 +82,7 @@ class PageDashboardDragoManager extends Component {
       const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
       const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
       if (!currentBalance.eq(nextBalance) && !currentBalance.eq(0)) {
-        this.getTransactions (null, accounts)
+        this.getTransactions (null, endpoint.accounts)
         console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
       }
     }
@@ -144,7 +142,7 @@ class PageDashboardDragoManager extends Component {
     }
 
     render() {
-      const { accounts } = this.props
+      const { accounts } = this.props.endpoint
       // const { dragoTransactionsLogs, dragoList } = this.state 
       const dragoTransactionsLogs = this.props.transactionsDrago.manager.logs
       const dragoList  = this.props.transactionsDrago.manager.list

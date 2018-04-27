@@ -103,7 +103,7 @@ export default class ElementFundActionDeposit extends Component {
         <FlatButton
           label='Done'
           primary
-          onTouchTap={ this.props.onClose } />
+          onClick={ this.props.onClose } />
       );
     }
 
@@ -116,14 +116,14 @@ export default class ElementFundActionDeposit extends Component {
         label='Cancel'
         name='Cancel'
         primary
-        onTouchTap={ this.onClose} />,
+        onClick={ this.onClose} />,
       <FlatButton
         key='Deposit'
         label='Deposit'
         name='Deposit'
         primary
         disabled={ hasError || sending }
-        onTouchTap={ this.onSend } />
+        onClick={ this.onSend } />
     ]);
   }
 

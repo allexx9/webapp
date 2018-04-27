@@ -29,11 +29,11 @@ const muiTheme = getMuiTheme({
 
 const muiThemeExchange = getMuiTheme({
   palette: {
-    "primary1Color": Colors.grey500,
+    "primary1Color": Colors.grey900,
   },
   appBar: {
-    height: 45,
-    fontSize: "20px !important"
+    height: 20,
+    fontSize: "15px !important"
   }
 });
 

@@ -1,7 +1,12 @@
+export const OMG_MN = "0xd26114cd6ee289accf82350c8d8487fedb8a0c07"
+export const WETH_MN = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+export const ZRX_MN = "0xe41d2489571d322189246dafa5ebde1f4699f498"
+
 export const APP = "app";
 export const APP_VERSION = "v0.2.0-beta180415"
 export const DS = "/";
 export const DRG_ISIN = "DR";
+export const LOGGER = true;
 // Set connetions to production server
 export const PROD = true;
 // Set connetions to WebSocketSecure or HTTPs
@@ -10,6 +15,8 @@ export const WS = true;
 export const REGISTRY_KOVAN = '0xfAb104398BBefbd47752E7702D9fE23047E1Bca3';
 // Address of RigoToken GRG
 // export const GRG_ADDRESS_KV = "0x56B28058d303bc0475a34D439aa586307adAc1f5";
+
+export const ZEROEX_CONTRACT_ADDRESS_MN = '0x12459c951127e0c374ff9105dda097662a027093'
 
 export const GRG = "GRG"
 export const ETH = "ETH"
@@ -121,8 +128,8 @@ export const ENDPOINTS = {
         prod: "https://ropsten.endpoint.network:8645"
       },
       mainnet: {
-        dev: "https://srv03.endpoint.network:8745",
-        prod: "https://mainnet.endpoint.network:8745"
+        dev: "wss://mainnet.endpoint.network:8945",
+        prod: "https://mainnet.endpoint.network:8945"
       },
     },
     wss: {
@@ -135,8 +142,8 @@ export const ENDPOINTS = {
         prod: "wss://ropsten.endpoint.network:8646"
       },
       mainnet: {
-        dev: "wss://srv03.endpoint.network:8746",
-        prod: "wss://mainnet.endpoint.network:8746"
+        dev: "wss://mainnet.endpoint.network:8946",
+        prod: "wss://mainnet.endpoint.network:8946"
       },
     }
   },
@@ -177,17 +184,21 @@ export const NETWORKS = {
   kovan: {
     id: 42,
     name: "kovan",
-    etherscan: "https://kovan.etherscan.io/"
+    etherscan: "https://kovan.etherscan.io/",
+    fundProxyContractAddress: "0x9fd942f59118460d7cd424ffcda39142af424245"
   },
   ropsten: {
     id: 3,
     name: "ropsten",
-    etherscan: "https://ropsten.etherscan.io/"
+    etherscan: "https://ropsten.etherscan.io/",
+    fundProxyContractAddress: ""
   },
   mainnet: {
     id: 1,
     name: "mainnet",
-    etherscan: "https://etherscan.io"
+    etherscan: "https://etherscan.io",
+    fundProxyContractAddress: "",
+    zeroExExchangeContractAddress: "0x12459c951127e0c374ff9105dda097662a027093"
   }, 
 }
 
@@ -216,4 +227,8 @@ export const UPDATE_TRANSACTIONS_DRAGO_HOLDER = 'UPDATE_TRANSACTIONS_DRAGO_HOLDE
 export const UPDATE_TRANSACTIONS_DRAGO_MANAGER = 'UPDATE_TRANSACTIONS_DRAGO_MANAGER'
 export const UPDATE_TRANSACTIONS_VAULT_HOLDER = 'UPDATE_TRANSACTIONS_VAULT_HOLDER'
 export const UPDATE_TRANSACTIONS_VAULT_MANAGER = 'UPDATE_TRANSACTIONS_VAULT_MANAGER'
+
+// Exchange
+export const UPDATE_SELECTED_FUND = 'UPDATE_SELECTED_FUND'
+export const UPDATE_SELECTED_ORDER = 'UPDATE_SELECTED_ORDER'
 

@@ -21,9 +21,6 @@ function transactionsReducer(state = initialState.transactions, action) {
       return {
         ...state,
         queue: new Map(action.transactions)
-        // transactions: {
-        //   queue: new Map(action.transactions)
-        // }
       };
     default: return state;
   }

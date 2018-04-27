@@ -1,0 +1,14 @@
+.title {
+  /* border-bottom-width: 1px;
+  border-bottom-style: solid;
+  padding-bottom: 10px; */
+  padding-top: 10px;
+  width: 100%;
+  /* border-bottom-color: #E0E0E0; */
+  font-weight: 600;
+}
+
+.summaryRow {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}

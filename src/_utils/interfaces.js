@@ -112,7 +112,7 @@ class Interfaces {
   }
 
   getAccountsMetamask() {
-    console.log(`${this._sourceLogClass} -> getAccountsMetamask`)
+    // console.log(`${this._sourceLogClass} -> getAccountsMetamask`)
     const api = this._api
     const web3 = window.web3
     const parityNetworkId = this._parityNetworkId
@@ -124,8 +124,6 @@ class Interfaces {
     // Checking if MetaMask is connected to the same network as the endpoint
     return web3.eth.net.getId()
       .then((metaMaskNetworkId) => {
-        console.log(metaMaskNetworkId)
-        console.log(parityNetworkId)
         var currentState = this._success
         if (metaMaskNetworkId !== parityNetworkId) {
           const stateUpdate = {
@@ -146,7 +144,6 @@ class Interfaces {
             if (accounts.length === 0) {
               return {}
             }
-            console.log('not locked')
             return web3.eth.getBalance(accounts[0])
               .then((ethBalance) => {
                 // const rigoTokenContract = api.newContract(rigotoken, GRG_ADDRESS_KV)
@@ -219,7 +216,7 @@ class Interfaces {
   }
 
   attachInterfaceInfuraV2 = () => {
-    console.log(`${this._sourceLogClass} -> Interface Infura`)
+    // console.log(`${this._sourceLogClass} -> Interface Infura`)
     const api = this._api
     return Promise
     .all([
