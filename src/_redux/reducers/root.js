@@ -4,6 +4,7 @@ import transactionsReducer from './transactions'
 import usersReducer from './users'
 import endpointsReducer from './endpoints'
 import exchangeReducer from './exchange'
+import pingReducer from './ping'
 import {
   eventfulDragoReducer,
   eventfulVaultReducer
@@ -13,6 +14,7 @@ import {combineReducers } from "redux"
 class reducers {
 
   rootReducer = combineReducers({
+    ping: pingReducer,
     exchange: exchangeReducer,
     transactions: transactionsReducer,
     user: usersReducer,

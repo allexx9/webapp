@@ -4,8 +4,6 @@
 
 .sectionOrder {
   font-size: 12px;
-  margin-right: -6px !important;
-  margin-left: -4px !important;
 }
 
 .sectionOrderEmpty {
@@ -17,12 +15,20 @@
 }
 
 .cellOrder{
-  margin-right: -6px;
+  /* margin-right: -6px; */
 }
 
 
 .containerOrders {
   text-align: right;
+  border-top-width: 1px;
+  border-top-style: solid;
+  padding-top: 1px;
+  border-top-color: rgb(224, 224, 224);
+  border-bottom-color: rgb(224, 224, 224);
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  padding-bottom: 1px;
 }
 
 

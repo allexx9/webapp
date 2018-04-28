@@ -66,8 +66,8 @@ class TableOrderBook extends Component {
     }
 
     const progressBarAmountColor = {
-      asks: Colors.red50,
-      bids: Colors.green50,
+      asks: Colors.red100,
+      bids: Colors.green100,
     }
 
     // var arr = [1,2,3];
@@ -127,7 +127,7 @@ class TableOrderBook extends Component {
 
     return (
       <Row className={styles.containerOrders}>
-        <Col xs={12} style={{marginRight: "-4px"}}>
+        <Col xs={12}>
           {this.renderRows(orders)}
         </Col>
       </Row>

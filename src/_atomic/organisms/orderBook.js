@@ -6,8 +6,9 @@ import styles from './orderBook.module.css'
 import AppBar from 'material-ui/AppBar'
 import Paper from 'material-ui/Paper'
 
+
 const paperStyle = {
-  paddingLeft: "12px"
+  // paddingLeft: "12px"
 }
 
 class OrderBook extends Component {
@@ -30,7 +31,7 @@ class OrderBook extends Component {
         <Col xs={12}>
           <Row className={styles.sectionTitle}>
             <Col xs={12}>
-            
+
               <AppBar
                 title='ORDER BOOK'
                 showMenuIconButton={false}
@@ -38,46 +39,48 @@ class OrderBook extends Component {
                 titleStyle={{ fontSize: 14 }}
               />
               <Paper style={paperStyle} zDepth={1} >
-              <Row className={styles.orderBookContainer}>
-                <Col xs={12}>
-                  <Row className={styles.sectionHeaderOrderTable}>
-                    <Col xs={6} className={styles.quantityText}>
-                      QUANTITY
+                <Row className={styles.orderBookContainer}>
+                  <Col xs={12}>
+                    <Row className={styles.sectionHeaderOrderTable}>
+                      <Col xs={6} className={styles.quantityText}>
+                        QUANTITY
                     </Col>
-                    <Col xs={6} className={styles.priceText}>
-                      PRICE
+                      <Col xs={6} className={styles.priceText}>
+                        PRICE
                     </Col>
-                  </Row>
-                </Col>
-                <Row bottom="xs" className={styles.ordersContainer}>
-                    <Col xs={12}>
-                    {ordersAsksSorted.length !== 0
-                    ? <TableOrderBook
-                    key="asksBook"
-                    orders={ordersAsksSorted}
-                    orderType="asks"
-                    />
-                    : null}
-                    </Col>
-                </Row>
-               
+                    </Row>
+                  </Col>
+                  <Col xs={12}>
+                    <Row bottom="xs" className={styles.ordersContainer}>
+                      <Col xs={12}>
+                        {ordersAsksSorted.length !== 0
+                          ? <TableOrderBook
+                            key="asksBook"
+                            orders={ordersAsksSorted}
+                            orderType="asks"
+                          />
+                          : null}
+                      </Col>
+                    </Row>
+                  </Col>
                   <Col xs={12}>
                     <div className={styles.spread}>SPREAD</div>
                   </Col>
-                
-                  <Row className={styles.ordersContainer}>
                   <Col xs={12}>
-                  {ordersBidsSorted.length !== 0
-                   ? <TableOrderBook 
-                        key="bidsBook"
-                        orders={ordersBidsSorted}
-                        orderType="bids"
-                        />
-                    : null
-                    }
+                    <Row className={styles.ordersContainer}>
+                      <Col xs={12}>
+                        {ordersBidsSorted.length !== 0
+                          ? <TableOrderBook
+                            key="bidsBook"
+                            orders={ordersBidsSorted}
+                            orderType="bids"
+                          />
+                          : null
+                        }
+                      </Col>
+                    </Row>
                   </Col>
-                  </Row>
-              </Row>
+                </Row>
               </Paper>
             </Col>
           </Row>

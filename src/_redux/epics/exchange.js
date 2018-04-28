@@ -5,25 +5,26 @@ import 'rxjs/add/operator/bufferTime';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/mergeMap';
 
-const PING = 'PING';
+import {
+  NEW_ORDER_FROM_RELAY
+} from '../../_utils/const'
+
+const PING = 'NEW_ORDER';
 var orders = Array()
-const fetchUserFulfilled = payload => ({ type: 'PONG', payload });
+
 function setMe(user) {
   return {
     type: 'PONG',
-    payload: user
+    paloard: user
   };
 }
 
-const pingEpic = action$ => {
+export const newOrderEpic = action$ => {
   console.log(action$)
   console.log(orders)
-  return action$.ofType(PING)
-    .map(action => action.payload)
+  return action$.ofType(NEW_ORDER_FROM_RELAY)
+    .delay(1000)
+    .map(_ => Math.floor(Math.random() * 100))
     .bufferTime(4000)
     .map(setMe)
-    
-  // .mapTo(value => value)
-    // .mapTo({ type: 'PONG' });
 }
-export default pingEpic

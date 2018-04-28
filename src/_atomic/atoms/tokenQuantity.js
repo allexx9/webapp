@@ -11,8 +11,8 @@ import { formatEth } from '../../_utils/format'
 export default class TokenQuantity extends Component {
 
   static propTypes = {
-    quantity: PropTypes.number,
-    // onChangeQuantity: PropTypes.func.isRequired,
+    quantity: PropTypes.number.isRequired,
+    onChangeQuantity: PropTypes.func.isRequired,
   }
 
   static defaultProps = {

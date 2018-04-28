@@ -36,6 +36,7 @@ import OrderBox from '../_atomic/organisms/orderBox'
 import Web3 from 'web3';
 import * as abis from '../PoolsApi/src/contracts/abi'
 import Exchange from '../_utils/exchange'
+import FlatButton from 'material-ui/FlatButton'
 
 function mapStateToProps(state) {
   return state
@@ -117,6 +118,7 @@ class ApplicationExchangeHome extends Component {
     this.getTransactions (null, accounts)
     this.connectToRadarRelay()
     this.connectToExchange()
+    // this.props.dispatch({ type: 'PING' })
   }
 
   componentWillUnmount() {
@@ -125,6 +127,7 @@ class ApplicationExchangeHome extends Component {
   componentWillUpdate() {
     // Storing the active document, so we can preserve focus in forms.
     this.activeElement = document.activeElement
+    console.log(this.props.ping)
   }
 
   componentDidUpdate() {
@@ -161,6 +164,11 @@ class ApplicationExchangeHome extends Component {
       bidsOrders: bidsOrders, 
       asksOrders: asksOrders
     })
+  }
+
+  onButtonTest = () => {
+    console.log('ping')
+    this.props.dispatch({ type: 'PING', payload: 'resttter' })
   }
 
   render() {
@@ -234,7 +242,10 @@ class ApplicationExchangeHome extends Component {
                 </Row>
               </Col>
               <Col xs={12}>
-                test 3
+              <FlatButton primary={true} label="Submit"
+                labelStyle={{ fontWeight: 700, fontSize: '18px'}}
+                onClick={this.onButtonTest}
+              />
               </Col>
           </Row>
           <Row>

@@ -8,6 +8,7 @@
   font-size: 12px;
   font-weight: 700;
   margin-top: 5px;
+  padding-bottom: 5px;
 }
 
 .appBar {
@@ -31,6 +32,7 @@
 .orderBookContainer{
   font-weight: 600;
   cursor: pointer;
+  padding-bottom: 3px;
 }
 
 .ordersContainer {
