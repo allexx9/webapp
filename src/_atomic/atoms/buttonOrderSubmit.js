@@ -7,29 +7,38 @@ import PropTypes from 'prop-types';
 class ButtonOrderSubmit extends Component {
 
   static propTypes = {
-    onSubmit: PropTypes.func,
+    onSubmitOrder: PropTypes.func.isRequired,
+    disabled: PropTypes.bool,
   }
 
   render() {
 
     const buttonOrderSubmitStyle = {
-      // border: "1px solid",
-      // borderColor: Colors.blue500,
-      // color: '#ffffff',
-      // backgroundColor: Colors.blue500
-      width: "200px"
+      width: "100%"
     }
 
-    return (
+    return (this.props.disabled)
+    ? (
+      <div className={styles.buttonContainer}>
+        <FlatButton label="Submit"
+          labelStyle={{ fontWeight: 700, fontSize: '18px'}}
+          onClick={this.props.onSubmitOrder}
+          style={buttonOrderSubmitStyle}
+          disabled={this.props.disabled}
+        />
+      </div>
+    )
+    : (
       <div className={styles.buttonContainer}>
         <FlatButton primary={true} label="Submit"
-      labelStyle={{ fontWeight: 700, fontSize: '18px', color: '#ffffff' }}
-      onClick={this.onSubmit}
-      style={buttonOrderSubmitStyle}
-      hoverColor={Colors.blue400}
-      backgroundColor={Colors.blue500}
-    />
-    </div>
+          labelStyle={{ fontWeight: 700, fontSize: '18px', color: '#ffffff' }}
+          onClick={this.props.onSubmitOrder}
+          style={buttonOrderSubmitStyle}
+          hoverColor={Colors.blue400}
+          backgroundColor={Colors.blue500}
+          disabled={this.props.disabled}
+        />
+      </div>
     )
   }
 }

@@ -30,7 +30,7 @@ export default class ElementFundActionsList extends Component {
   state = {
     openMenuActions: false,
     showActionMenuItem:{
-      wrapETH: true,
+      wrapETH: false,
       deposit: false,
       withdraw: false,
       placeOrder: false,
@@ -113,7 +113,6 @@ export default class ElementFundActionsList extends Component {
     const accounts = this.props.accounts.filter((account) =>{
       return account.address == dragoDetails.addresssOwner
     })
-    console.log(accounts)
     return (
       <div>
         <RaisedButton

@@ -372,7 +372,6 @@ class PageFundDetailsDragoManager extends Component {
             Promise
             .all([poolApi.contract.drago.getData(), poolApi.contract.drago.getBalance(), poolApi.contract.drago.getBalanceWETH()])
             .then(result =>{
-              console.log(result)
               const data = result[0]
               const dragoETHBalance = result[1]
               const dragoWETHBalance = result[2]
@@ -479,7 +478,7 @@ class PageFundDetailsDragoManager extends Component {
       topics: [
         [contract.hexSignature.BuyDrago],
         [hexDragoAddress],
-        hexAccounts,
+        null,
         null
       ]
     }
@@ -487,7 +486,7 @@ class PageFundDetailsDragoManager extends Component {
       topics: [
         [contract.hexSignature.SellDrago],
         [hexDragoAddress],
-        hexAccounts,
+        null,
         null
       ]
     }

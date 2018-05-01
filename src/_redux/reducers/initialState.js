@@ -7,11 +7,16 @@ import {
   NETWORK_OK,
   ENDPOINTS,
   NETWORKS,
+  ERC20_TOKENS
 } from '../../_utils/const'
 import BigNumber from 'bignumber.js';
 
 const initialState = {
   exchange: {
+    // orders: {
+    //   bidsOrders: [], 
+    //   asksOrders: [],
+    // },
     selectedFund: {
       details: {},
       liquidity: {
@@ -20,11 +25,23 @@ const initialState = {
         ZRX: new BigNumber(0),
       }
     },
+    selectedTokensPair: {
+      baseToken: ERC20_TOKENS[DEFAULT_NETWORK_NAME].ZRX,
+      quoteToken: ERC20_TOKENS[DEFAULT_NETWORK_NAME].WETH
+    },
     selectedOrder: {
       details: {},
-      type: {},
-      quantityToAvailable: {},
-      quantityToFill: {}
+      orderAmountError: true,
+      orderPriceError: true,
+      orderFillAmount: '0',
+      orderMaxAmount: '0',
+      orderPrice: '0',
+      orderType: 'asks',
+      takerOrder: false,
+      selectedTokensPair: {
+        baseToken: ERC20_TOKENS[DEFAULT_NETWORK_NAME].ZRX,
+        quoteToken: ERC20_TOKENS[DEFAULT_NETWORK_NAME].WETH
+      },
     }
   },
   transactions: {

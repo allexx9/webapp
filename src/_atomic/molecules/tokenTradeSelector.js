@@ -5,40 +5,32 @@ import React, { Component } from 'react';
 import { MenuItem, SelectField } from 'material-ui';
 import PropTypes from 'prop-types';
 import { Row, Col } from 'react-flexbox-grid';
+import { TRADE_TOKENS_PAIRS } from '../../_utils/const'
 
 // const tradableTokens = ["WETH / ZRX", "WETH / GRG"]
 
-const tradableTokens = {
-  WETH: {
-    OMG: "OMG",
-    ZRX: "ZRX"
-  }
-}
-  
-
+const tradableTokens = TRADE_TOKENS_PAIRS
 
 export default class TokenTradeSelector extends Component {
   static propTypes = {
-    onSelectTokenTrade: PropTypes.func,
+    selectedTradeTokensPair: PropTypes.object.isRequired,
+    onSelectTokenTrade: PropTypes.func.isRequired
   }
 
-  state = {
-    value: "ZRX",
-  };
-
-
+  // state = {
+  //   value: "ZRX",
+  // };
 
   onSelectTokenTrade = (event, key, payload) => {
-    this.setState({
-      value: payload
-    })
+    // this.setState({
+    //   value: payload
+    // })
     this.props.onSelectTokenTrade(payload)
   }
 
   renderTokens = () =>{
     var menu =[]
     for (var baseToken in tradableTokens) {
-      console.log(baseToken, tradableTokens[baseToken]);
       Object.keys(tradableTokens[baseToken]).forEach(function (key) {
         let quoteToken = tradableTokens[baseToken][key];
         menu.push(
@@ -63,7 +55,7 @@ export default class TokenTradeSelector extends Component {
         <Col xs={12}>
           <SelectField
             fullWidth
-            value={this.state.value}
+            value={this.props.selectedTradeTokensPair.baseToken.symbol}
             onChange={this.onSelectTokenTrade}
           // style={{height: 90}}
           >

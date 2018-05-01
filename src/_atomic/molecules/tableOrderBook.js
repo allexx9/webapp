@@ -20,6 +20,7 @@ class TableOrderBook extends Component {
   static propTypes = {
     orders: PropTypes.array.isRequired,
     orderType: PropTypes.string.isRequired,
+    exchange: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired
   };
 
@@ -27,10 +28,18 @@ class TableOrderBook extends Component {
     api: PropTypes.object.isRequired,
   };
 
-  updateSelectedOrder = (order, orderType) => {
+  updateSelectedOrder = (order) => {
+    const { selectedTokensPair } = this.props.exchange
     const payload = {
       details: {...order}, 
-      type: orderType
+      orderAmountError: false,
+      orderPriceError: false,
+      orderFillAmount: order.orderAmount,
+      orderMaxAmount: order.orderAmount,
+      orderPrice: order.orderPrice,
+      orderType: order.orderType,
+      takerOrder: true,
+      selectedTokensPair: selectedTokensPair
     }
     return {
       type: UPDATE_SELECTED_ORDER,
@@ -38,10 +47,10 @@ class TableOrderBook extends Component {
     }
   };
 
-  onClickOrder = (id, orderType) =>{
-    console.log(id, orderType)
+  onClickOrder = (id) =>{
+    console.log(id)
     var order = this.props.orders[id]
-    this.props.dispatch(this.updateSelectedOrder(order, orderType))
+    this.props.dispatch(this.updateSelectedOrder(order))
   }
 
   renderRows = (ordersSorted) =>{
@@ -103,7 +112,7 @@ class TableOrderBook extends Component {
       return (
         <Row key={"order" + key} >
 
-          <Col xs={12} className={styles.sectionOrder} id={key} onClick={() => this.onClickOrder(key, orderType)}>
+          <Col xs={12} className={styles.sectionOrder} id={key} onClick={() => this.onClickOrder(key)}>
             <Row className={styles.cellOrder}>
               <Col xs={2} style={{ ...orderStyleAmount[orderType], backgroundImage: amountGradient }}>
               </Col>

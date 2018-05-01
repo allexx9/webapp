@@ -108,7 +108,7 @@ export class App extends Component {
     dispatch: PropTypes.func.isRequired,
   };
 
-  // Passing down the context variables passed down to children
+  // Passing down the context variables to children
   getChildContext() {
     return {
       api: this._api,

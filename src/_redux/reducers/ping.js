@@ -4,7 +4,7 @@ const PING = 'PING';
 const PONG = 'PONG';
 
 const pingReducer = (state = { isPinging: false }, action) => {
-  console.log(action)
+  // console.log(action)
   switch (action.type) {
     // case PING:
     // return {

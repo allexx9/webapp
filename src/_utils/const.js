@@ -180,12 +180,63 @@ export const ENDPOINTS = {
   }, 
 }
 
+export const TRADE_TOKENS_PAIRS = {
+  WETH: {
+    GNT: "GNT",
+    ZRX: "ZRX"
+  }
+}
+
+export const ERC20_TOKENS = {
+  kovan: {
+    WETH: {
+      symbol: 'WETH',
+      address: '0xd0a1e359811322d97991e03f863a0c30c2cf029c',
+      decimals: 18,
+      name: 'Wrapped Ether'
+    },
+    ZRX: {
+      symbol: 'ZRX',
+      address: '0x6ff6c0ff1d68b964901f986d4c9fa3ac68346570',
+      decimals: 18,
+      name: '0x Protocol Token'
+    },
+    GNT: {
+      symbol: 'GNT',
+      address: '0xef7fff64389b814a946f3e92105513705ca6b990',
+      decimals: 18,
+      name: 'Golem Network Token'
+    }
+  },
+  mainnet: {
+    WETH: {
+      symbol: 'WETH',
+      address: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+      decimals: 18,
+      name: 'Wrapped Ether'
+    },
+    ZRX: {
+      symbol: 'ZRX',
+      address: '0xe41d2489571d322189246dafa5ebde1f4699f498',
+      decimals: 18,
+      name: '0x Protocol Token'
+    },
+    GNT: {
+      symbol: 'GNT',
+      address: '0xa74476443119A942dE498590Fe1f2454d7D4aC0d',
+      decimals: 18,
+      name: 'Golem Network Token'
+    }
+  }, 
+}
+
 export const NETWORKS = {
   kovan: {
     id: 42,
     name: "kovan",
     etherscan: "https://kovan.etherscan.io/",
-    fundProxyContractAddress: "0x9fd942f59118460d7cd424ffcda39142af424245"
+    fundProxyContractAddress: "0x9fd942f59118460d7cd424ffcda39142af424245",
+    zeroExExchangeContractAddress: "0x90fe2af704b34e0224bf2299c838e04d4dcf1364"
   },
   ropsten: {
     id: 3,
@@ -232,6 +283,11 @@ export const UPDATE_TRANSACTIONS_VAULT_MANAGER = 'UPDATE_TRANSACTIONS_VAULT_MANA
 export const UPDATE_SELECTED_FUND = 'UPDATE_SELECTED_FUND'
 export const UPDATE_SELECTED_ORDER = 'UPDATE_SELECTED_ORDER'
 export const NEW_ORDER_FROM_RELAY = 'NEW_ORDER_FROM_RELAY'
+export const UPDATE_TRADE_TOKENS_PAIR = 'UPDATE_TRADE_TOKENS_PAIR'
+export const CANCEL_SELECTED_ORDER = 'CANCEL_SELECTED_ORDER'
+
+
+
 
 
 

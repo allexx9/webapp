@@ -5,6 +5,7 @@ import BigNumber from 'bignumber.js'
 import Divider from 'material-ui/Divider';
 
 import styles from './orderSummary.module.css'
+import classNames from 'classnames';
 
 class OrderSummary extends Component {
 
@@ -19,12 +20,42 @@ class OrderSummary extends Component {
  
   render() {
     const { order } = this.props
-    var price, amount, fee
-    price = order.details.orderPrice
-    amount = order.details.orderAmount
+    var fee, total, action
+    // price = (order.orderPrice !== '') ? order.orderPrice : '0'
+    // amount = (order.orderFillAmount !== '') ? order.orderFillAmount : '0'
+
+    // price = (order.orderPrice !== '') ? order.orderPrice : '0'
+    // amount = (order.orderFillAmount !== '') ? order.orderFillAmount : '0'
+
+    const price = () => {
+      try {
+        new BigNumber(order.orderPrice)
+        return order.orderPrice
+      }
+      catch (error) {
+        return 0
+      }
+    }
+
+    const amount = () => {
+      try {
+        new BigNumber(order.orderFillAmount)
+        return order.orderFillAmount
+      }
+      catch (error) {
+        return 0
+      }
+    }
     fee = new BigNumber(order.details.order.takerFee).toFixed(5)
+    total = new BigNumber(price()).mul(amount()).toFixed(5)
+
+    action = (order.orderType === 'asks') ? 'BUY' : 'SELL'
     return (
+      
       <Row className={styles.containerOrders}>
+        <Col xs={12} className={classNames(styles.action, styles[order.orderType])}>
+          <div>{action}</div>
+        </Col>
         <Col xs={12}>
           <div className={styles.title}>SUMMARY</div>
         </Col>
@@ -34,11 +65,25 @@ class OrderSummary extends Component {
         <Col xs={12} className={styles.summaryRow}>
           <Row>
             <Col xs={6}>
-              <div>Quantity</div>
+              <div>Quantities</div>
             </Col>
             <Col xs={6}>
-              <div>{amount}</div>
+            <Row>
+              <Col xs={8}>
+                <div>{amount()}</div>
+              </Col>
+              <Col xs={2}>
+                <div>{order.selectedTokensPair.baseToken.symbol}</div>
+              </Col>
+              <Col xs={8}>
+                <div>{(amount()*price()).toFixed(5)}</div>
+              </Col>
+              <Col xs={2}>
+                <div>{order.selectedTokensPair.quoteToken.symbol}</div>
+              </Col>
+              </Row>
             </Col>
+            
           </Row>
         </Col>
         <Col xs={12} className={styles.summaryRow}>
@@ -47,7 +92,7 @@ class OrderSummary extends Component {
               <div>Price</div>
             </Col>
             <Col xs={6}>
-              <div>{price}</div>
+              <div>{price()}</div>
             </Col>
           </Row>
         </Col>
@@ -70,7 +115,7 @@ class OrderSummary extends Component {
               <div>TOTAL</div>
             </Col>
             <Col xs={6}>
-              <div>{fee}</div>
+              <div>{total}</div>
             </Col>
           </Row>
         </Col>

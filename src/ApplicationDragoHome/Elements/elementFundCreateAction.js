@@ -110,7 +110,7 @@ class ElementFundCreateAction extends React.Component {
 
     onChangeName = (event, dragoName) => {
       this.setState({
-        dragoName : dragoName.toLowerCase(),
+        dragoName : dragoName,
         dragoNameError: validateNewName(dragoName)
       });
     }

@@ -10,7 +10,8 @@ import {
   EP_RIGOBLOCK_MN_PROD_WS,
   ZEROEX_CONTRACT_ADDRESS_MN,
   ZRX_MN,
-  WETH_MN
+  WETH_MN,
+  ERC20_TOKENS
 } from '../_utils/const'
 import { Row, Col, Grid } from 'react-flexbox-grid';
 // import LeftSideDrawerFunds from '../Elements/leftSideDrawerFunds';
@@ -25,16 +26,15 @@ import TokenTradeSelector from '../_atomic/molecules/tokenTradeSelector'
 import TokenLiquidity from '../_atomic/atoms/tokenLiquidity'
 import {
   UPDATE_SELECTED_FUND,
-  UPDATE_TRANSACTIONS_DRAGO_MANAGER
+  UPDATE_TRANSACTIONS_DRAGO_MANAGER,
+  UPDATE_TRADE_TOKENS_PAIR,
+  CANCEL_SELECTED_ORDER
 } from '../_utils/const'
-import Immutable from 'immutable'
 import { fakeOrders } from '../_utils/fakeOrders'
 import Paper from 'material-ui/Paper'
 import { connect } from 'react-redux';
 import OrderBook from '../_atomic/organisms/orderBook';
 import OrderBox from '../_atomic/organisms/orderBox'
-import Web3 from 'web3';
-import * as abis from '../PoolsApi/src/contracts/abi'
 import Exchange from '../_utils/exchange'
 import FlatButton from 'material-ui/FlatButton'
 
@@ -54,6 +54,17 @@ class ApplicationExchangeHome extends Component {
     api: PropTypes.object.isRequired,
   };
 
+  static childContextTypes = {
+    exchangeUtils: PropTypes.object
+  };
+
+
+  getChildContext() {
+    return {
+      exchangeUtils: this.state.exchangeUtils,
+    };
+  }
+
   static propTypes = {
     location: PropTypes.object.isRequired,
     endpoint: PropTypes.object.isRequired,
@@ -61,12 +72,16 @@ class ApplicationExchangeHome extends Component {
     handleToggleNotifications: PropTypes.func.isRequired,
     user: PropTypes.object.isRequired,
     notificationsOpen: PropTypes.bool.isRequired,
-    dispatch: PropTypes.func.isRequired
+    dispatch: PropTypes.func.isRequired,
+    exchange: PropTypes.object.isRequired,
   };
 
   state = {
-    bidsOrders: [], 
-    asksOrders: [],
+    exchangeUtils: {},
+    orders: {
+      bidsOrders: [], 
+      asksOrders: [],
+    }
   }
 
   scrollPosition = 0
@@ -94,6 +109,14 @@ class ApplicationExchangeHome extends Component {
     }
   };
 
+  updateSelectedTradeTokensPair = (tradeTokensPair) => {
+    return {
+      type: UPDATE_TRADE_TOKENS_PAIR,
+      payload: tradeTokensPair
+    }
+  };
+
+
   shouldComponentUpdate(nextProps, nextState) {
     var stateUpdate = true
     var propsUpdate = true
@@ -115,9 +138,11 @@ class ApplicationExchangeHome extends Component {
 
   componentDidMount() {
     const {accounts } = this.props.endpoint
+    const { selectedTokensPair} = this.props.exchange
     this.getTransactions (null, accounts)
     this.connectToRadarRelay()
-    this.connectToExchange()
+    this.connectToExchange(selectedTokensPair
+    )
     // this.props.dispatch({ type: 'PING' })
   }
 
@@ -127,13 +152,14 @@ class ApplicationExchangeHome extends Component {
   componentWillUpdate() {
     // Storing the active document, so we can preserve focus in forms.
     this.activeElement = document.activeElement
-    console.log(this.props.ping)
   }
 
   componentDidUpdate() {
     // The following code is needed to fix a bug in tables. The scrolling posision is reset at every component re-render.
     // Setting the page scroll position
     console.log(`${this.sourceLogClass} -> componentDidUpdate`);
+    // const { ws } = this.state
+    // console.log(ws)
     // const element = ReactDOM.findDOMNode(this);
     const element = this.node
     if (element != null) {
@@ -157,13 +183,23 @@ class ApplicationExchangeHome extends Component {
   }
 
   onSelectTokenTrade = (token) => {
-    console.log(token)
-    const bidsOrders = this.state.exchangeUtils.formatOrders(Array.from(JSON.parse(fakeOrders[token]).payload.bids), 'bids')
-    const asksOrders = this.state.exchangeUtils.formatOrders(Array.from(JSON.parse(fakeOrders[token]).payload.asks), 'asks')
-    this.setState({
-      bidsOrders: bidsOrders, 
-      asksOrders: asksOrders
+    const { ws } = this.state
+    const { api } = this.context
+    const baseToken = ERC20_TOKENS[api._rb.network.name][token]
+    const tradeTokensPair = {
+      baseToken: baseToken,
+      quoteToken: {
+        symbol: 'WETH',
+        address: '0xd0a1e359811322d97991e03f863a0c30c2cf029c',
+        decimals: 18
+      }
+    }
+    this.props.dispatch({
+      type: CANCEL_SELECTED_ORDER,
     })
+    this.props.dispatch(this.updateSelectedTradeTokensPair(tradeTokensPair))
+    ws.close()
+    this.connectToExchange(tradeTokensPair)
   }
 
   onButtonTest = () => {
@@ -197,10 +233,10 @@ class ApplicationExchangeHome extends Component {
     }
 
     if (user.isManager) {
-      // console.log(this.state.bidsList)
-      const { bidsOrders, asksOrders } = this.state
-      const bidsOrderNormalized = bidsOrders.slice(0,20)
-      const asksOrderNormalized = asksOrders.slice(0,20)
+      const { bidsOrders, asksOrders } = this.state.orders
+      const asksOrderNormalized = asksOrders.slice(asksOrders.length-20,asksOrders.length)
+      const bidsOrderNormalized = bidsOrders.slice(bidsOrders.length-20,bidsOrders.length)
+      
       // const bidsOrderNormalizedFilled = [ ...Array(20 - bidsOrderNormalized.length).fill(null), ...bidsOrderNormalized ]
       // const asksOrderNormalizedFilled = [ ...Array(20 - asksOrderNormalized.length).fill(null), ...asksOrderNormalized]
       const selectedOrder = {...exchange.selectedOrder}
@@ -220,6 +256,7 @@ class ApplicationExchangeHome extends Component {
                   </Col>
                   <Col xs={4}>
                     <TokenTradeSelector
+                      selectedTradeTokensPair={exchange.selectedTokensPair}
                       onSelectTokenTrade={this.onSelectTokenTrade}
                     />
                   </Col>
@@ -229,8 +266,7 @@ class ApplicationExchangeHome extends Component {
               <Col xs={12}>
                 <Row>
                 <Col xs={6}>
-                    <OrderBox order={selectedOrder}
-                    />
+                    <OrderBox />
                   </Col>
                   <Col xs={6}>
                     <OrderBook 
@@ -340,36 +376,58 @@ class ApplicationExchangeHome extends Component {
   }
 
 
-  connectToExchange = () =>{
-    const networkInfo = {
-      id: 1,
-      name: "mainnet",
-      etherscan: "https://www.etherscan.io/",
-      zeroExExchangeContractAddress: "0x12459c951127e0c374ff9105dda097662a027093"
-    }
+  connectToExchange = async (tradeTokensPair) => {
+    // const networkInfo = {
+    //   id: 1,
+    //   name: "mainnet",
+    //   etherscan: "https://www.etherscan.io/",
+    //   zeroExExchangeContractAddress: "0x12459c951127e0c374ff9105dda097662a027093"
+    // }
+    console.log(tradeTokensPair)
+    const { api } = this.context
+    const networkInfo = api._rb.network
     const endpoints = this.props.endpoint.endpointInfo
-    var exchangeUtils = new Exchange(endpoints, networkInfo)
+    var exchangeUtils = new Exchange(endpoints, networkInfo, tradeTokensPair)
     var contract = exchangeUtils.init()
     const subscription = contract.events.allEvents({
       fromBlock: 0,
       toBlock: 'latest'
     }, this.onNewEventZeroExEchange)
-    console.log(subscription)
-    const orders = exchangeUtils.formatOrders(Array.from(JSON.parse(fakeOrders.OMG).payload.asks), 'asks')
-    console.log(orders)
-    console.log(exchangeUtils)
-    exchangeUtils.baseTokenAddress = ZRX_MN
-    exchangeUtils.quoteTokenAddress = WETH_MN
-    var relayOrders = exchangeUtils.getOrdersFromRelay()
-    console.log(relayOrders)
+    exchangeUtils.tradeTokensPair = tradeTokensPair
 
-    const bidsOrders = exchangeUtils.formatOrders(Array.from(JSON.parse(fakeOrders.OMG).payload.bids), 'bids')
-    const asksOrders = exchangeUtils.formatOrders(Array.from(JSON.parse(fakeOrders.OMG).payload.asks), 'asks')
-
+    // Connection to relay
+    var ws = await exchangeUtils.getOrderBookFromRelay()
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data)
+      console.log(event)
+      console.log(data)
+      if (data.type === 'snapshot') {
+        console.log(data)
+        const bidsOrders = exchangeUtils.formatOrders(Array.from(data.payload.bids), 'bids')
+        console.log(bidsOrders)
+        const asksOrders = exchangeUtils.formatOrders(Array.from(data.payload.asks), 'asks')
+        console.log(asksOrders)
+        this.setState({
+          exchangeUtils: exchangeUtils,
+          orders: {
+            bidsOrders: bidsOrders, 
+            asksOrders: asksOrders
+          }
+        })
+      }
+      if (data.type === 'update') {
+        console.log(data)
+        const order = data.payload
+        const newOrders = exchangeUtils.addOrderToOrderBook(order, this.state.orders)
+        this.setState({
+          exchangeUtils: exchangeUtils,
+          orders: newOrders
+        })
+      }
+    }
     this.setState({
-      exchangeUtils: exchangeUtils,
-      bidsOrders: bidsOrders, 
-      asksOrders: asksOrders
+      ws: ws,
+      exchangeUtils: exchangeUtils
     })
   }
 

@@ -7,7 +7,6 @@ import 'rxjs/add/operator/mergeMap';
 
 const PING = 'PING';
 var orders = Array()
-const fetchUserFulfilled = payload => ({ type: 'PONG', payload });
 function setMe(user) {
   return {
     type: 'PONG',
