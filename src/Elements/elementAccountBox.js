@@ -134,7 +134,7 @@ class ElementAccountBox extends Component {
               <Col xs={12}>
                 <RaisedButton
                   label="TRANSFER"
-                  // labelColor={Colors.indigo500}
+                  // labelColor={Colors.blue500}
                   labelStyle={{ fontWeight: 600 }}
                   onClick={this.onTransferOpen}
                 />

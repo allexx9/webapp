@@ -32,7 +32,7 @@ export default class ElementPriceBox extends Component {
         backgroundColor: Colors.red300
       },
       marketPrice: {
-        backgroundColor: Colors.indigo500,
+        backgroundColor: Colors.blue500,
         fontWeight: 500
       },
     }

@@ -36,6 +36,10 @@ class DragoEventfulParity {
     return this._hexSignature
   }
 
+  get abi() {
+    return this._abi
+  }
+
   init = () => {
     const contractAbi = this._abi
     const contractName = this._contractName

@@ -66,7 +66,7 @@ class ApplicationHome extends Component {
     const { endpoint } = this.props
     const buttonTelegram = {
       border: "2px solid",
-      borderColor: Colors.indigo400,
+      borderColor: Colors.blue400,
       fontWeight: "600",
       height: "45px"
       // width: "140px"
@@ -91,10 +91,10 @@ class ApplicationHome extends Component {
                     <FlatButton
                       labelPosition="before"
                       label="Join us on telegram!"
-                      labelStyle={{ color: Colors.indigo400, fontWeight: "600", fontSize: "20px" }}
+                      labelStyle={{ color: Colors.blue400, fontWeight: "600", fontSize: "20px" }}
                       style={buttonTelegram}
                       icon={<img src="/img/t_logo.png" height="30px" />}
-                    // hoverColor={Colors.indigo300}
+                    // hoverColor={Colors.blue300}
                     />
                   </a>
                   <p>&nbsp;</p>

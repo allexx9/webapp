@@ -635,6 +635,7 @@ export class App extends Component {
   }
 
   detachInterface = () => {
+    const { subscriptionData } = this.state
     Interfaces.detachInterface(this._api,subscriptionData)
   } 
 }

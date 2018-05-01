@@ -28,6 +28,11 @@ import ElementFundNotFound from '../../Elements/elementFundNotFound'
 import ElementNoAdminAccess from '../../Elements/elementNoAdminAccess'
 import BigNumber from 'bignumber.js';
 import { connect } from 'react-redux';
+import {
+  PROD,
+  ENDPOINTS,
+} from '../../_utils/const'
+import Web3 from 'web3';
 
 function mapStateToProps(state) {
   return state
@@ -74,6 +79,19 @@ class PageFundDetailsDragoManager extends Component {
       // the list of last transactions
       const dragoId = this.props.match.params.dragoid
       this.getDragoDetails(dragoId)
+    }
+
+    componentWillUnmount () {
+      const { contractSubscription } = this.state
+      const sourceLogClass = this.constructor.name
+      contractSubscription.unsubscribe(function (error, success) {
+        if (success) {
+          console.log(`${sourceLogClass}: Successfully unsubscribed from contract.`);
+        }
+        if (error) {
+          console.warn(`${sourceLogClass}: Unsubscribe error ${error}.`)
+        }
+      });
     }
 
     componentWillReceiveProps(nextProps) {
@@ -227,7 +245,7 @@ class PageFundDetailsDragoManager extends Component {
               </Toolbar>
               <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle} className={styles.test}>
                 <Tab label="Info" className={styles.detailsTab}
-                  icon={<ActionList color={Colors.indigo500} />}>
+                  icon={<ActionList color={Colors.blue500} />}>
                   <Grid fluid>
                     <Row>
                       <Col xs={6}>
@@ -298,7 +316,7 @@ class PageFundDetailsDragoManager extends Component {
                   </Grid>
                 </Tab>
                 <Tab label="Stats" className={styles.detailsTab}
-                  icon={<ActionAssessment color={Colors.indigo500} />}>
+                  icon={<ActionAssessment color={Colors.blue500} />}>
                   <Grid fluid>
                     <Row>
                       <Col xs={12} className={styles.detailsTabContent}>
@@ -335,6 +353,34 @@ class PageFundDetailsDragoManager extends Component {
         </Row>
       )
     }
+
+  subscribeToEvents = (contract) =>{
+    const networkName = this.props.endpoint.networkInfo.name
+    var WsSecureUrl = ''
+    const eventfullContracAddress = contract.contract.address[0]
+    if (PROD) {
+      WsSecureUrl = ENDPOINTS.rigoblock.wss[networkName].prod
+    } else {
+      WsSecureUrl = ENDPOINTS.rigoblock.wss[networkName].dev
+    }
+    const web3 = new Web3(WsSecureUrl)
+    const eventfullContract = new web3.eth.Contract(contract.abi, eventfullContracAddress)
+    const subscription = eventfullContract.events.allEvents({
+      fromBlock:'latest',
+      topics: [
+        null,
+        null,
+        null,
+        null
+      ]
+    }, (error, events) => { 
+      const dragoId = this.props.match.params.dragoid
+      this.getDragoDetails(dragoId)
+    })
+    this.setState({
+      contractSubscription: subscription
+    })
+  }
 
   // Getting the drago details from dragoId
   getDragoDetails = (dragoId) => {
@@ -413,6 +459,7 @@ class PageFundDetailsDragoManager extends Component {
             
               poolApi.contract.dragoeventful.init()
               .then(() => {
+                this.subscribeToEvents(poolApi.contract.dragoeventful)
                 this.getTransactions(dragoDetails[0][0], poolApi.contract.dragoeventful, endpoint.accounts)
               }
               )
