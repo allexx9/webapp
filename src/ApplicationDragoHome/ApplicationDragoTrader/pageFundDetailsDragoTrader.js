@@ -243,7 +243,7 @@ class PageFundDetailsDragoTrader extends Component {
                       <Col xs={6}>
                         <Paper zDepth={1} style={{height: "100%"}}> 
                           <AppBar
-                            title={"MY HOLDING IN " + dragoDetails.symbol}
+                            title={"MY HOLDING IN " + dragoDetails.symbol.toUpperCase()}
                             showMenuIconButton={false}
                             titleStyle={{ fontSize: 20 }}
                           />

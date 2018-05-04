@@ -140,9 +140,8 @@ class ApplicationExchangeHome extends Component {
     const {accounts } = this.props.endpoint
     const { selectedTokensPair} = this.props.exchange
     this.getTransactions (null, accounts)
-    this.connectToRadarRelay()
-    this.connectToExchange(selectedTokensPair
-    )
+    // this.connectToRadarRelay()
+    this.connectToExchange(selectedTokensPair)
     // this.props.dispatch({ type: 'PING' })
   }
 
@@ -395,40 +394,100 @@ class ApplicationExchangeHome extends Component {
     }, this.onNewEventZeroExEchange)
     exchangeUtils.tradeTokensPair = tradeTokensPair
 
-    // Connection to relay
-    var ws = await exchangeUtils.getOrderBookFromRelay()
+    var ordersERCDex = await exchangeUtils.getOrderBookFromRelayERCDex()
+    console.log(ordersERCDex)
+    const ws = ordersERCDex.ws
+    const bidsOrders = exchangeUtils.formatOrders(ordersERCDex.bids, 'bids')
+    console.log(bidsOrders)
+    const asksOrders = exchangeUtils.formatOrders(ordersERCDex.asks, 'asks')
+    console.log(asksOrders)
     ws.onmessage = (event) => {
-      const data = JSON.parse(event.data)
-      console.log(event)
-      console.log(data)
-      if (data.type === 'snapshot') {
-        console.log(data)
-        const bidsOrders = exchangeUtils.formatOrders(Array.from(data.payload.bids), 'bids')
-        console.log(bidsOrders)
-        const asksOrders = exchangeUtils.formatOrders(Array.from(data.payload.asks), 'asks')
-        console.log(asksOrders)
-        this.setState({
-          exchangeUtils: exchangeUtils,
-          orders: {
-            bidsOrders: bidsOrders, 
-            asksOrders: asksOrders
-          }
-        })
+      // if (data.channel === `sub:account-notification/${myAccountAddress}`) {
+      //   /**
+      //    * {
+      //    *   "channel": "account-notification/0x5409ed021d9299bf6814279a6a1411a7e866a631",
+      //    *   "data":{
+      //    *     "notification":{
+      //    *       "account":"0x5409ed021d9299bf6814279a6a1411a7e866a631",
+      //    *       "label":"An order was canceled.",
+      //    *       "expirationDate":"2018-02-09T15:49:45.197Z",
+      //    *       "dateUpdated":"2018-02-08T15:49:45.199Z",
+      //    *       "dateCreated":"2018-02-08T15:49:45.199Z",
+      //    *       "id":1657
+      //    *     }
+      //    *   }
+      //    * }
+      //    */
+      //   console.log(data);
+      //   return;
+      // }
+      const msg = JSON.parse(event.data)
+      console.log(msg.data.eventType)
+      console.log(this.state.orders)
+      var newOrders
+      switch (msg.data.eventType) {
+        case 'created':
+          console.log(JSON.parse(event.data));
+          newOrders = exchangeUtils.updateOrderToOrderBook(msg.data.order, this.state.orders, 'add')
+          break;
+        case 'canceled':
+          console.log(JSON.parse(event.data));
+          newOrders = exchangeUtils.updateOrderToOrderBook(msg.data.order, this.state.orders, 'remove')
+          break;
+        default:
+          console.log('default')
+          newOrders = {...this.state.orders}
+          break;
       }
-      if (data.type === 'update') {
-        console.log(data)
-        const order = data.payload
-        const newOrders = exchangeUtils.addOrderToOrderBook(order, this.state.orders)
-        this.setState({
-          exchangeUtils: exchangeUtils,
-          orders: newOrders
-        })
-      }
-    }
+      console.log(newOrders)
+      this.setState({
+        exchangeUtils: exchangeUtils,
+        orders: newOrders
+      })
+    };
     this.setState({
-      ws: ws,
-      exchangeUtils: exchangeUtils
+      exchangeUtils: exchangeUtils,
+      orders: {
+        bidsOrders: bidsOrders, 
+        asksOrders: asksOrders
+      },
+      ws: ws
     })
+
+    // // Connection to relay
+    // var ws = await exchangeUtils.getOrderBookFromRelay()
+    // ws.onmessage = (event) => {
+    //   const data = JSON.parse(event.data)
+    //   // console.log(event)
+    //   // console.log(data)
+    //   if (data.type === 'snapshot') {
+    //     console.log(data)
+    //     const bidsOrders = exchangeUtils.formatOrders(Array.from(data.payload.bids), 'bids')
+    //     console.log(bidsOrders)
+    //     const asksOrders = exchangeUtils.formatOrders(Array.from(data.payload.asks), 'asks')
+    //     console.log(asksOrders)
+    //     this.setState({
+    //       exchangeUtils: exchangeUtils,
+    //       orders: {
+    //         bidsOrders: bidsOrders, 
+    //         asksOrders: asksOrders
+    //       }
+    //     })
+    //   }
+    //   if (data.type === 'update') {
+    //     console.log(data)
+    //     const order = data.payload
+    //     const newOrders = exchangeUtils.addOrderToOrderBook(order, this.state.orders)
+    //     this.setState({
+    //       exchangeUtils: exchangeUtils,
+    //       orders: newOrders
+    //     })
+    //   }
+    // }
+    // this.setState({
+    //   ws: ws,
+    //   exchangeUtils: exchangeUtils
+    // })
   }
 
   // Getting last transactions

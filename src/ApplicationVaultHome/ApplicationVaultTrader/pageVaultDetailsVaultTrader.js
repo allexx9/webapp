@@ -249,7 +249,7 @@ class PageFundDetailsVaultTrader extends Component {
                     <Col xs={6}>
                       <div>
                         <AppBar
-                          title={"MY HOLDING IN " + vaultDetails.symbol}
+                          title={"MY HOLDING IN " + vaultDetails.symbol.toUpperCase()}
                           showMenuIconButton={false}
                           titleStyle={{ fontSize: 20 }}
                         />

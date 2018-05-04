@@ -82,6 +82,25 @@ class PageVaultDetailsVaultManager extends Component {
     this.getVaultDetails(dragoId)
   }
 
+  componentWillUnmount() {
+    const { contractSubscription } = this.state
+    const sourceLogClass = this.constructor.name
+    try {
+      contractSubscription.unsubscribe(function (error, success) {
+        if (success) {
+          console.log(`${sourceLogClass}: Successfully unsubscribed from contract.`);
+        }
+        if (error) {
+          console.warn(`${sourceLogClass}: Unsubscribe error ${error}.`)
+        }
+      });
+    }
+    catch (error) {
+      console.warn(`${sourceLogClass}: Unsubscribe error ${error}.`)
+    }
+  }
+
+
   componentWillReceiveProps(nextProps) {
     // Updating the lists on each new block if the accounts balances have changed
     // Doing this this to improve performances by avoiding useless re-rendering

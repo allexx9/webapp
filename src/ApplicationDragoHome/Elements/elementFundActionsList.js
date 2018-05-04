@@ -7,8 +7,6 @@ import RaisedButton from 'material-ui/RaisedButton'
 import Subheader from 'material-ui/Subheader'
 import Popover, {PopoverAnimationVertical} from 'material-ui/Popover';
 
-import IdentityIcon from '../../_atomic/atoms/identityIcon';
-
 // import styles from './elementAccountItem.module.css';
 
 import PropTypes from 'prop-types';
@@ -24,7 +22,7 @@ export default class ElementFundActionsList extends Component {
   static propTypes = {
     accounts: PropTypes.array.isRequired,
     dragoDetails: PropTypes.object.isRequired,
-    snasnackBar: PropTypes.func
+    snackBar: PropTypes.func
   };
 
   state = {
@@ -62,7 +60,7 @@ export default class ElementFundActionsList extends Component {
       case 'wrapETH':
         this.setState({
           showActionMenuItem: {
-            deposit: !this.state.showActionMenuItem.wrapETH
+            wrapETH: !this.state.showActionMenuItem.wrapETH
           }
         })
         break;
@@ -139,7 +137,7 @@ export default class ElementFundActionsList extends Component {
             <MenuItem value="3" primaryText="Estimante NAV" disabled={true}/>
             <Subheader inset={false}>Exchange</Subheader>
             <MenuItem value="wrapETH" primaryText="Wrap ETH"/>
-            <MenuItem value="withdraw" primaryText="Withdraw" disabled={true}/>
+            <MenuItem value="withdraw" primaryText="Unwrap ETH" disabled={true}/>
             <MenuItem value="placeOrder" primaryText="Place Order" disabled={true}/>
             <MenuItem value="cancelOrder" primaryText="Cancel Order" disabled={true}/>
             <MenuItem value="finalizeOrder" primaryText="Finalize" disabled={true}/>

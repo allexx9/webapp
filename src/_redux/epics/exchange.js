@@ -6,25 +6,22 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/mergeMap';
 
 import {
-  NEW_ORDER_FROM_RELAY
+  ORDER_UPDATE_FROM_RELAY
 } from '../../_utils/const'
 
 const PING = 'NEW_ORDER';
 var orders = Array()
 
-function setMe(user) {
+function processOrderBook(orders) {
   return {
-    type: 'PONG',
-    paloard: user
+    type: 'UPDATE_ORDER_BOOK',
+    paloard: orders
   };
 }
 
-export const newOrderEpic = action$ => {
-  console.log(action$)
-  console.log(orders)
-  return action$.ofType(NEW_ORDER_FROM_RELAY)
-    .delay(1000)
-    .map(_ => Math.floor(Math.random() * 100))
+export const orderUpdateFromRelayEpic = action$ => {
+  return action$.ofType(ORDER_UPDATE_FROM_RELAY)
+    .map(action => action.payload)
     .bufferTime(4000)
-    .map(setMe)
+    .map(processOrderBook)
 }

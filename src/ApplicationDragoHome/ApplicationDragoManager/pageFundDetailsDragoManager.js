@@ -1,9 +1,9 @@
-import  * as Colors from 'material-ui/styles/colors'
+import * as Colors from 'material-ui/styles/colors'
 import { Grid, Row, Col } from 'react-flexbox-grid'
 import { Link, withRouter } from 'react-router-dom'
-import {CopyToClipboard} from 'react-copy-to-clipboard'
-import {Tabs, Tab} from 'material-ui/Tabs'
-import {Toolbar, ToolbarGroup} from 'material-ui/Toolbar'
+import { CopyToClipboard } from 'react-copy-to-clipboard'
+import { Tabs, Tab } from 'material-ui/Tabs'
+import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar'
 import ActionAssessment from 'material-ui/svg-icons/action/assessment'
 import ActionList from 'material-ui/svg-icons/action/list'
 import AppBar from 'material-ui/AppBar';
@@ -46,44 +46,45 @@ class PageFundDetailsDragoManager extends Component {
   };
 
   static propTypes = {
-      location: PropTypes.object.isRequired,
-      endpoint: PropTypes.object.isRequired,
-      user: PropTypes.object.isRequired,
-      match: PropTypes.object.isRequired,
-    };
+    location: PropTypes.object.isRequired,
+    endpoint: PropTypes.object.isRequired,
+    user: PropTypes.object.isRequired,
+    match: PropTypes.object.isRequired,
+  };
 
-    state = {
-      dragoDetails: {
-        address: null,
-        name: null,
-        symbol: null,
-        dragoId: null,
-        addresssOwner: null,
-        addressGroup: null,
-        dragoETHBalance: null
-      },
-      dragoTransactionsLogs: [],
-      loading: true,
-      snackBar: false,
-      snackBarMsg: '',
-    }
+  state = {
+    dragoDetails: {
+      address: null,
+      name: null,
+      symbol: null,
+      dragoId: null,
+      addresssOwner: null,
+      addressGroup: null,
+      dragoETHBalance: null
+    },
+    dragoTransactionsLogs: [],
+    loading: true,
+    snackBar: false,
+    snackBarMsg: '',
+  }
 
-    subTitle = (account) => {
-      return (
-        account.address
-      )     
-    }
+  subTitle = (account) => {
+    return (
+      account.address
+    )
+  }
 
-    componentWillMount () {
-      // Getting dragoid from the url parameters passed by router and then
-      // the list of last transactions
-      const dragoId = this.props.match.params.dragoid
-      this.getDragoDetails(dragoId)
-    }
+  componentWillMount() {
+    // Getting dragoid from the url parameters passed by router and then
+    // the list of last transactions
+    const dragoId = this.props.match.params.dragoid
+    this.getDragoDetails(dragoId)
+  }
 
-    componentWillUnmount () {
-      const { contractSubscription } = this.state
-      const sourceLogClass = this.constructor.name
+  componentWillUnmount() {
+    const { contractSubscription } = this.state
+    const sourceLogClass = this.constructor.name
+    try {
       contractSubscription.unsubscribe(function (error, success) {
         if (success) {
           console.log(`${sourceLogClass}: Successfully unsubscribed from contract.`);
@@ -93,268 +94,272 @@ class PageFundDetailsDragoManager extends Component {
         }
       });
     }
+    catch (error) {
+      console.warn(`${sourceLogClass}: Unsubscribe error ${error}.`)
+    }
+  }
 
-    componentWillReceiveProps(nextProps) {
-      // Updating the lists on each new block if the accounts balances have changed
-      // Doing this this to improve performances by avoiding useless re-rendering
-      const dragoId = this.props.match.params.dragoid
-      const sourceLogClass = this.constructor.name
-      // console.log(nextProps)
-      const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
-      const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
-      if (!currentBalance.eq(nextBalance)) {
-        this.getDragoDetails(dragoId)
-        console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
-      } else {
-        null
-      }
+  componentWillReceiveProps(nextProps) {
+    // Updating the lists on each new block if the accounts balances have changed
+    // Doing this this to improve performances by avoiding useless re-rendering
+    const dragoId = this.props.match.params.dragoid
+    const sourceLogClass = this.constructor.name
+    // console.log(nextProps)
+    const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
+    const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
+    if (!currentBalance.eq(nextBalance)) {
+      this.getDragoDetails(dragoId)
+      console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
+    } else {
+      null
+    }
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    const sourceLogClass = this.constructor.name
+    var stateUpdate = true
+    var propsUpdate = true
+    const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
+    const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
+    stateUpdate = !utils.shallowEqual(this.state, nextState)
+    propsUpdate = !currentBalance.eq(nextBalance)
+    if (stateUpdate || propsUpdate) {
+      console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
+    }
+    return stateUpdate || propsUpdate
+  }
+
+
+  renderAddress(dragoDetails) {
+    if (!dragoDetails.address) {
+      return <p>empty</p>;
     }
 
-    shouldComponentUpdate(nextProps, nextState){
-      const  sourceLogClass = this.constructor.name
-      var stateUpdate = true
-      var propsUpdate = true
-      const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
-      const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
-      stateUpdate = !utils.shallowEqual(this.state, nextState)
-      propsUpdate = !currentBalance.eq(nextBalance)
-      if (stateUpdate || propsUpdate) {
-        console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
-      }
-      return stateUpdate || propsUpdate
-    }
-
-
-    renderAddress (dragoDetails) {
-      if (!dragoDetails.address ) {
-        return <p>empty</p>;
-      }
-  
-      return (
-        <Row className={styles.detailsToolbarGroup}>
-          <Col xs={12} md={1} className={styles.dragoTitle}>
-            <h2 ><IdentityIcon address={ dragoDetails.address } /></h2>
-          </Col>
-          <Col xs={12} md={11} className={styles.dragoTitle}>
+    return (
+      <Row className={styles.detailsToolbarGroup}>
+        <Col xs={12} md={1} className={styles.dragoTitle}>
+          <h2 ><IdentityIcon address={dragoDetails.address} /></h2>
+        </Col>
+        <Col xs={12} md={11} className={styles.dragoTitle}>
           <p>{dragoDetails.symbol} | {dragoDetails.name} </p>
           <small>{dragoDetails.address}</small>
-          </Col>
-        </Row>
+        </Col>
+      </Row>
+    );
+  }
+
+  snackBar = (msg) => {
+    this.setState({
+      snackBar: true,
+      snackBarMsg: msg
+    })
+  }
+
+  renderCopyButton = (text) => {
+    if (!text) {
+      return null;
+    }
+
+    return (
+      <CopyToClipboard text={text} key={"address" + text}
+        onCopy={() => this.snackBar('Copied to clilpboard')}>
+        <Link to={'#'} key={"addresslink" + text}><CopyContent className={styles.copyAddress} /></Link>
+      </CopyToClipboard>
+    );
+  }
+
+  renderEtherscanButton = (type, text) => {
+    if (!text) {
+      return null;
+    }
+
+    return (
+      <a key={"addressether" + text} href={this.props.endpoint.networkInfo.etherscan + type + '/' + text} target='_blank'><Search className={styles.copyAddress} /></a>
+    );
+  }
+
+  handlesnackBarRequestClose = () => {
+    this.setState({
+      snackBar: false,
+      snackBarMsg: ''
+    })
+  }
+
+
+
+  render() {
+    const { endpoint } = this.props
+    const { isManager } = this.props.user
+    const { dragoDetails, loading } = this.state
+    const tabButtons = {
+      inkBarStyle: {
+        margin: 'auto',
+        width: 100,
+        backgroundColor: 'white'
+      },
+      tabItemContainerStyle: {
+        margin: 'auto',
+        width: 200,
+      }
+    }
+    const columnsStyle = [styles.detailsTableCell, styles.detailsTableCell2, styles.detailsTableCell3]
+    const tableButtonsDragoAddress = [this.renderCopyButton(dragoDetails.address), this.renderEtherscanButton('address', dragoDetails.address)]
+    const tableButtonsDragoOwner = [this.renderCopyButton(dragoDetails.addresssOwner), this.renderEtherscanButton('address', dragoDetails.addresssOwner)]
+    const tableInfo = [['Symbol', dragoDetails.symbol, ''],
+    ['Name', dragoDetails.name, ''],
+    ['Address', dragoDetails.address, tableButtonsDragoAddress],
+    ['Manager', dragoDetails.addresssOwner, tableButtonsDragoOwner]]
+    var dragoTransactionList = this.state.dragoTransactionsLogs
+
+
+    // Waiting until getDragoDetails returns the drago details
+    if (loading) {
+      return (
+        <Loading />
       );
     }
 
-    snackBar = (msg) =>{
-      this.setState({
-        snackBar: true,
-        snackBarMsg: msg
-      })
-    }
-
-    renderCopyButton = (text) =>{
-      if (!text ) {
-        return null;
-      }
-      
+    // Checking if the fund exists
+    if (dragoDetails.address === '0x0000000000000000000000000000000000000000') {
       return (
-        <CopyToClipboard text={text} key={"address"+text}
-            onCopy={() => this.snackBar('Copied to clilpboard')}>
-            <Link to={'#'} key={"addresslink"+text}><CopyContent className={styles.copyAddress}/></Link>
-        </CopyToClipboard>
+        <ElementFundNotFound />
       );
     }
 
-    renderEtherscanButton = (type, text) =>{
-      if (!text ) {
-        return null;
-      }
-      
+    // Checking if the user is the account manager
+    let metaMaskAccountIndex = endpoint.accounts.findIndex(account => {
+      return (account.address === dragoDetails.addresssOwner)
+    });
+    if (metaMaskAccountIndex === -1) {
       return (
-      <a key={"addressether"+text} href={this.props.endpoint.networkInfo.etherscan+type+'/' + text} target='_blank'><Search className={styles.copyAddress}/></a>
-      );
-    }
-
-    handlesnackBarRequestClose = () => {
-      this.setState({
-        snackBar: false,
-        snackBarMsg: ''
-      })
-    }
-
-
-    
-    render() {
-      const { endpoint } = this.props
-      const { isManager } = this.props.user
-      const { dragoDetails, loading } = this.state
-      const tabButtons = {
-        inkBarStyle: {
-          margin: 'auto',
-          width: 100,
-          backgroundColor: 'white'
-          },
-        tabItemContainerStyle: {
-          margin: 'auto',
-          width: 200,
-        }
-      }
-      const columnsStyle = [styles.detailsTableCell, styles.detailsTableCell2, styles.detailsTableCell3]
-      const tableButtonsDragoAddress = [this.renderCopyButton(dragoDetails.address), this.renderEtherscanButton('address', dragoDetails.address)]
-      const tableButtonsDragoOwner = [this.renderCopyButton(dragoDetails.addresssOwner), this.renderEtherscanButton('address', dragoDetails.addresssOwner)]
-      const tableInfo = [['Symbol', dragoDetails.symbol, ''], 
-        ['Name', dragoDetails.name, ''], 
-        ['Address', dragoDetails.address, tableButtonsDragoAddress],
-        ['Manager', dragoDetails.addresssOwner, tableButtonsDragoOwner]]     
-      var dragoTransactionList = this.state.dragoTransactionsLogs
-
-
-      // Waiting until getDragoDetails returns the drago details
-      if (loading) {
-        return (
-          <Loading />
-        );
-      }
-
-      // Checking if the fund exists
-      if (dragoDetails.address === '0x0000000000000000000000000000000000000000') {
-        return (
-          <ElementFundNotFound />
-        );
-      }
-
-      // Checking if the user is the account manager
-      let metaMaskAccountIndex = endpoint.accounts.findIndex(account => {
-        return (account.address === dragoDetails.addresssOwner)
-      });
-      if (metaMaskAccountIndex === -1) {
-        return (
-          <ElementNoAdminAccess />
-        )
-      }
-
-      return (
-        <Row>
-          <Col xs={12}>
-            <Paper className={styles.paperContainer} zDepth={1}>
-              <Toolbar className={styles.detailsToolbar}>
-                <ToolbarGroup className={styles.detailsToolbarGroup}>
-                  {this.renderAddress(dragoDetails)}
-                </ToolbarGroup>
-                <ToolbarGroup>
-                  <ElementFundActionsList accounts={endpoint.accounts} dragoDetails={dragoDetails} snackBar={this.snackBar} />
-                </ToolbarGroup>
-              </Toolbar>
-              <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle} className={styles.test}>
-                <Tab label="Info" className={styles.detailsTab}
-                  icon={<ActionList color={Colors.blue500} />}>
-                  <Grid fluid>
-                    <Row>
-                      <Col xs={6}>
-                        <Paper zDepth={1} style={{height: "100%"}}> 
-                            <AppBar
-                              title={"ETH LIQUIDITY"}
-                              showMenuIconButton={false}
-                              titleStyle={{ fontSize: 20 }}
-                            />
-                            <div className={styles.ETHliquidity}>
-                              <div>
-                                {this.state.dragoDetails.dragoETHBalance} <small>ETH</small><br />
-                                {this.state.dragoDetails.dragoWETHBalance} <small>W-ETH</small><br />
-                              </div>
-                            </div>
-                        </Paper>
-                      </Col>
-                      <Col xs={6}>
-                        <Paper zDepth={1}>
-                          <ElementPriceBox
-                            accounts={endpoint.accounts}
-                            isManager={isManager}
-                            dragoDetails={dragoDetails} />
-                        </Paper>
-                      </Col>
-                    </Row>
-                    <br />
-                    <Row>
-                      <Col xs={12}>
-                        <Paper zDepth={1}>
-                          <AppBar
-                            title="DETAILS"
-                            showMenuIconButton={false}
-                            titleStyle={{ fontSize: 20 }}
-                          />
-                          <div className={styles.detailsTabContent}>
-                            <InfoTable rows={tableInfo} columnsStyle={columnsStyle} />
-                          </div>
-                        </Paper>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col xs={12} className={styles.detailsTabContent}>
-                        <Paper zDepth={1} >
-                          <AppBar
-                            title="LAST TRANSACTIONS"
-                            showMenuIconButton={false}
-                            titleStyle={{ fontSize: 20 }}
-                          />
-
-                          <div className={styles.detailsTabContent}>
-                            <p>Your last 20 transactions on this Drago.</p>
-                          </div>
-
-                          <ElementListWrapper list={dragoTransactionList}
-                            renderCopyButton={this.renderCopyButton}
-                            renderEtherscanButton={this.renderEtherscanButton}
-                            loading={loading}
-                          >
-                            <ElementListTransactions />
-                          </ElementListWrapper>
-                          {/* <ElementListTransactions accountsInfo={accountsInfo} list={dragoTransactionList} 
-                        renderCopyButton={this.renderCopyButton}
-                        renderEtherscanButton={this.renderEtherscanButton}/> */}
-                        </Paper>
-                      </Col>
-                    </Row>
-                  </Grid>
-                </Tab>
-                <Tab label="Stats" className={styles.detailsTab}
-                  icon={<ActionAssessment color={Colors.blue500} />}>
-                  <Grid fluid>
-                    <Row>
-                      <Col xs={12} className={styles.detailsTabContent}>
-                        <p>
-                          Stats
-                      </p>
-                      </Col>
-                    </Row>
-                  </Grid>
-                </Tab>
-              </Tabs>
-            </Paper>
-          </Col>
-          <Snackbar
-            open={this.state.snackBar}
-            message={this.state.snackBarMsg}
-            action="close"
-            onActionTouchTap={this.handlesnackBarRequestClose}
-            onRequestClose={this.handlesnackBarRequestClose}
-            bodyStyle={{
-              height: "auto",
-              flexGrow: 0,
-              paddingTop: "10px",
-              lineHeight: "20px",
-              borderRadius: "2px 2px 0px 0px",
-              backgroundColor: "#fafafa",
-              boxShadow: "#bdbdbd 0px 0px 5px 0px"
-            }}
-            contentStyle={{
-              color: "#000000 !important",
-              fontWeight: "600"
-            }}
-          />
-        </Row>
+        <ElementNoAdminAccess />
       )
     }
 
-  subscribeToEvents = (contract) =>{
+    return (
+      <Row>
+        <Col xs={12}>
+          <Paper className={styles.paperContainer} zDepth={1}>
+            <Toolbar className={styles.detailsToolbar}>
+              <ToolbarGroup className={styles.detailsToolbarGroup}>
+                {this.renderAddress(dragoDetails)}
+              </ToolbarGroup>
+              <ToolbarGroup>
+                <ElementFundActionsList accounts={endpoint.accounts} dragoDetails={dragoDetails} snackBar={this.snackBar} />
+              </ToolbarGroup>
+            </Toolbar>
+            <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle} className={styles.test}>
+              <Tab label="Info" className={styles.detailsTab}
+                icon={<ActionList color={Colors.blue500} />}>
+                <Grid fluid>
+                  <Row>
+                    <Col xs={6}>
+                      <Paper zDepth={1} style={{ height: "100%" }}>
+                        <AppBar
+                          title={"ETH LIQUIDITY"}
+                          showMenuIconButton={false}
+                          titleStyle={{ fontSize: 20 }}
+                        />
+                        <div className={styles.ETHliquidity}>
+                          <div>
+                            {this.state.dragoDetails.dragoETHBalance} <small>ETH</small><br />
+                            {this.state.dragoDetails.dragoWETHBalance} <small>W-ETH</small><br />
+                          </div>
+                        </div>
+                      </Paper>
+                    </Col>
+                    <Col xs={6}>
+                      <Paper zDepth={1}>
+                        <ElementPriceBox
+                          accounts={endpoint.accounts}
+                          isManager={isManager}
+                          dragoDetails={dragoDetails} />
+                      </Paper>
+                    </Col>
+                  </Row>
+                  <br />
+                  <Row>
+                    <Col xs={12}>
+                      <Paper zDepth={1}>
+                        <AppBar
+                          title="DETAILS"
+                          showMenuIconButton={false}
+                          titleStyle={{ fontSize: 20 }}
+                        />
+                        <div className={styles.detailsTabContent}>
+                          <InfoTable rows={tableInfo} columnsStyle={columnsStyle} />
+                        </div>
+                      </Paper>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col xs={12} className={styles.detailsTabContent}>
+                      <Paper zDepth={1} >
+                        <AppBar
+                          title="LAST TRANSACTIONS"
+                          showMenuIconButton={false}
+                          titleStyle={{ fontSize: 20 }}
+                        />
+
+                        <div className={styles.detailsTabContent}>
+                          <p>Your last 20 transactions on this Drago.</p>
+                        </div>
+
+                        <ElementListWrapper list={dragoTransactionList}
+                          renderCopyButton={this.renderCopyButton}
+                          renderEtherscanButton={this.renderEtherscanButton}
+                          loading={loading}
+                        >
+                          <ElementListTransactions />
+                        </ElementListWrapper>
+                        {/* <ElementListTransactions accountsInfo={accountsInfo} list={dragoTransactionList} 
+                        renderCopyButton={this.renderCopyButton}
+                        renderEtherscanButton={this.renderEtherscanButton}/> */}
+                      </Paper>
+                    </Col>
+                  </Row>
+                </Grid>
+              </Tab>
+              <Tab label="Stats" className={styles.detailsTab}
+                icon={<ActionAssessment color={Colors.blue500} />}>
+                <Grid fluid>
+                  <Row>
+                    <Col xs={12} className={styles.detailsTabContent}>
+                      <p>
+                        Stats
+                      </p>
+                    </Col>
+                  </Row>
+                </Grid>
+              </Tab>
+            </Tabs>
+          </Paper>
+        </Col>
+        <Snackbar
+          open={this.state.snackBar}
+          message={this.state.snackBarMsg}
+          action="close"
+          onActionTouchTap={this.handlesnackBarRequestClose}
+          onRequestClose={this.handlesnackBarRequestClose}
+          bodyStyle={{
+            height: "auto",
+            flexGrow: 0,
+            paddingTop: "10px",
+            lineHeight: "20px",
+            borderRadius: "2px 2px 0px 0px",
+            backgroundColor: "#fafafa",
+            boxShadow: "#bdbdbd 0px 0px 5px 0px"
+          }}
+          contentStyle={{
+            color: "#000000 !important",
+            fontWeight: "600"
+          }}
+        />
+      </Row>
+    )
+  }
+
+  subscribeToEvents = (contract) => {
     const networkName = this.props.endpoint.networkInfo.name
     var WsSecureUrl = ''
     const eventfullContracAddress = contract.contract.address[0]
@@ -366,14 +371,14 @@ class PageFundDetailsDragoManager extends Component {
     const web3 = new Web3(WsSecureUrl)
     const eventfullContract = new web3.eth.Contract(contract.abi, eventfullContracAddress)
     const subscription = eventfullContract.events.allEvents({
-      fromBlock:'latest',
+      fromBlock: 'latest',
       topics: [
         null,
         null,
         null,
         null
       ]
-    }, (error, events) => { 
+    }, (error, events) => {
       const dragoId = this.props.match.params.dragoid
       this.getDragoDetails(dragoId)
     })
@@ -416,48 +421,48 @@ class PageFundDetailsDragoManager extends Component {
             //
 
             Promise
-            .all([poolApi.contract.drago.getData(), poolApi.contract.drago.getBalance(), poolApi.contract.drago.getBalanceWETH()])
-            .then(result =>{
-              const data = result[0]
-              const dragoETHBalance = result[1]
-              const dragoWETHBalance = result[2]
+              .all([poolApi.contract.drago.getData(), poolApi.contract.drago.getBalance(), poolApi.contract.drago.getBalanceWETH()])
+              .then(result => {
+                const data = result[0]
+                const dragoETHBalance = result[1]
+                const dragoWETHBalance = result[2]
 
-              endpoint.accounts.map(account => {
-                poolApi.contract.drago.balanceOf(account.address)
-                  .then(balance => {
-                    balanceDRG = balanceDRG.add(balance)
-                  })
-                  .then(() => {
-                    var balanceETH = balanceDRG.times(formatCoins(balanceDRG, 4, api))
-                    this.setState({
-                      balanceETH: formatEth(balanceETH, 4, api),
-                      balanceDRG: formatCoins(balanceDRG, 4, api)
+                endpoint.accounts.map(account => {
+                  poolApi.contract.drago.balanceOf(account.address)
+                    .then(balance => {
+                      balanceDRG = balanceDRG.add(balance)
                     })
-                  })
-              })
+                    .then(() => {
+                      var balanceETH = balanceDRG.times(formatCoins(balanceDRG, 4, api))
+                      this.setState({
+                        balanceETH: formatEth(balanceETH, 4, api),
+                        balanceDRG: formatCoins(balanceDRG, 4, api)
+                      })
+                    })
+                })
 
-              this.setState({
-                dragoDetails: {
-                  address: dragoDetails[0][0],
-                  name: dragoDetails[0][1].charAt(0).toUpperCase() + dragoDetails[0][1].slice(1),
-                  symbol: dragoDetails[0][2],
-                  dragoId: dragoDetails[0][3].c[0],
-                  addresssOwner: dragoDetails[0][4],
-                  addressGroup: dragoDetails[0][5],
-                  sellPrice: api.util.fromWei(data[2].toNumber(4)).toFormat(4),
-                  buyPrice: api.util.fromWei(data[3].toNumber(4)).toFormat(4),
-                  dragoETHBalance: formatEth(dragoETHBalance, 4, api),
-                  dragoWETHBalance: formatEth(dragoWETHBalance, 4, api)
-                },
-                loading: false
+                this.setState({
+                  dragoDetails: {
+                    address: dragoDetails[0][0],
+                    name: dragoDetails[0][1].charAt(0).toUpperCase() + dragoDetails[0][1].slice(1),
+                    symbol: dragoDetails[0][2],
+                    dragoId: dragoDetails[0][3].c[0],
+                    addresssOwner: dragoDetails[0][4],
+                    addressGroup: dragoDetails[0][5],
+                    sellPrice: api.util.fromWei(data[2].toNumber(4)).toFormat(4),
+                    buyPrice: api.util.fromWei(data[3].toNumber(4)).toFormat(4),
+                    dragoETHBalance: formatEth(dragoETHBalance, 4, api),
+                    dragoWETHBalance: formatEth(dragoWETHBalance, 4, api)
+                  },
+                  loading: false
+                })
               })
-            })
 
             //
             // Reading transactions
             //
-            
-              poolApi.contract.dragoeventful.init()
+
+            poolApi.contract.dragoeventful.init()
               .then(() => {
                 this.subscribeToEvents(poolApi.contract.dragoeventful)
                 this.getTransactions(dragoDetails[0][0], poolApi.contract.dragoeventful, endpoint.accounts)
@@ -466,7 +471,7 @@ class PageFundDetailsDragoManager extends Component {
           })
       })
 
-  }  
+  }
 
   // Getting last transactions
   getTransactions = (dragoAddress, contract, accounts) => {
@@ -589,7 +594,7 @@ class PageFundDetailsDragoManager extends Component {
           })
       })
   }
-    
-  }
 
-  export default withRouter(connect(mapStateToProps)(PageFundDetailsDragoManager))
+}
+
+export default withRouter(connect(mapStateToProps)(PageFundDetailsDragoManager))

@@ -8,7 +8,7 @@ export const DS = "/";
 export const DRG_ISIN = "DR";
 export const LOGGER = true;
 // Set connetions to production server
-export const PROD = true;
+export const PROD = false;
 // Set connetions to WebSocketSecure or HTTPs
 export const WS = true;
 // Address of the Parity registry of smart contracts
@@ -63,7 +63,7 @@ export const PARITY_NETWORKS_ID = {
   ropsten: 3,
   foundation: 1
 }
-export const DEFAULT_ENDPOINT = 'infura';
+export const DEFAULT_ENDPOINT = 'rigoblock';
 // Please refert to the following link for network IDs
 // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md
 // kovan = 42
@@ -282,7 +282,7 @@ export const UPDATE_TRANSACTIONS_VAULT_MANAGER = 'UPDATE_TRANSACTIONS_VAULT_MANA
 // Exchange
 export const UPDATE_SELECTED_FUND = 'UPDATE_SELECTED_FUND'
 export const UPDATE_SELECTED_ORDER = 'UPDATE_SELECTED_ORDER'
-export const NEW_ORDER_FROM_RELAY = 'NEW_ORDER_FROM_RELAY'
+export const ORDER_UPDATE_FROM_RELAY = 'ORDER_UPDATE_FROM_RELAY'
 export const UPDATE_TRADE_TOKENS_PAIR = 'UPDATE_TRADE_TOKENS_PAIR'
 export const CANCEL_SELECTED_ORDER = 'CANCEL_SELECTED_ORDER'
 

@@ -34,10 +34,10 @@ class Exchange {
     this._tradeTokensPair = null
     this._baseTokenAddress = null
     this._quoteTokenAddress = null
-    this._supportedRelays = [
-      "wss://ws.kovan.radarrelay.com/0x/v0/ws",
-      ""
-    ]
+    this._supportedRelays = {
+      radarrelay: "wss://ws.kovan.radarrelay.com/0x/v0/ws",
+      ercdex: "https://api.ercdex.com/api/standard"
+    }
     // Infura does not support WebSocket on Kovan network yet. Disabling.
     this._onWs = (this._network.name === KOVAN && this._endpoint.name === INFURA) ? false : ws
     // Setting production or development endpoints
@@ -124,7 +124,7 @@ class Exchange {
           "limit": 100
       }
     }`
-    console.log(subscribeMsg)
+    // console.log(subscribeMsg)
     var ws = new ReconnectingWebSocket(relay);
     ws.onopen = function () {
       console.log(`Connected to ${relay}`);
@@ -139,6 +139,57 @@ class Exchange {
       console.log('Connection closed')
     }
     return ws
+  }
+
+  getOrderBookFromRelayERCDex = (relay = 'https://api.ercdex.com/api/standard') => {
+    console.log('Fetching from ERCDex')
+    if (!this._baseTokenAddress) {
+      throw new Error('baseTokenAddress needs to be set')
+    }
+    if (!this._quoteTokenAddress) {
+      throw new Error('quoteTokenAddress needs to be set')
+    }
+    var options = {
+      method: 'GET',
+      uri: `${relay}/${this._network.id}/v0/orderbook`,
+      qs: {
+        baseTokenAddress: this._baseTokenAddress, // -> uri + '?access_token=xxxxx%20xxxxx'
+        quoteTokenAddress: this._quoteTokenAddress
+      },
+      json: true // Automatically stringifies the body to JSON
+    };
+    console.log(options)
+    return rp(options)
+      .then((ordersERCDex) => {
+        var ws = new ReconnectingWebSocket('wss://api.ercdex.com');
+        ws.onopen = () => {
+          console.log(`Connected to wss://api.ercdex.com`);
+          // console.log((`sub:pair-order-change/${this._baseTokenAddress}/${this._quoteTokenAddress}`))
+          // console.log((`sub:pair-order-change/${this._baseTokenAddress}/${this._quoteTokenAddress}`))
+          ws.send(`sub:pair-order-change/${this._baseTokenAddress}/${this._quoteTokenAddress}`);
+          ws.send(`sub:pair-order-change/${this._quoteTokenAddress}/${this._baseTokenAddress}`);
+          // ws.send(`sub:pair-taker-event/${this._quoteTokenAddress}/${this._baseTokenAddress}`);
+          // ws.send(`sub:account-order-change/0xec4ee1bcf8107480815b08b530e0ead75b9f804f`);
+          // ws.send(`sub:ticker`);
+          // ws.send(subscribeMsg);
+        };
+        ws.onerror = (event) => {
+          console.log(event)
+          console.log('Connection error')
+        }
+        ws.onclose = async (event) => {
+          console.log(event)
+          console.log('Connection closed')
+        }
+        ordersERCDex.ws = ws
+        return ordersERCDex
+        // POST succeeded...
+      })
+      .catch(function (err) {
+        console.log(err)
+        return err
+        // POST failed...
+      });
   }
 
   formatOrders = (orders, orderType) =>{
@@ -264,16 +315,16 @@ class Exchange {
       uri: relayerApiUrl,
       body: signedOrder,
       json: true // Automatically stringifies the body to JSON
-  };
-  
-  rp(options)
+    };
+
+    rp(options)
       .then(function (parsedBody) {
         console.log(parsedBody)
-          // POST succeeded...
+        // POST succeeded...
       })
       .catch(function (err) {
         console.log(err)
-          // POST failed...
+        // POST failed...
       });
   }
 
@@ -305,8 +356,8 @@ class Exchange {
     return order
   }
 
-  addOrderToOrderBook = (order, orders) => {
-    console.log(order, orders)
+  updateOrderToOrderBook = (order, orders, action) => {
+    console.log(order, orders, action)
     var orderPrice, orderAmount, orderType
     (this._baseTokenAddress === order.makerTokenAddress ? orderType = 'asks' : orderType = 'bids')
     switch (orderType) {
@@ -319,24 +370,48 @@ class Exchange {
         orderAmount = new BigNumber(this.api.utils.fromWei(order.takerTokenAmount, 'ether')).toFixed(5)
         break;
     }
-    var orderHash = ZeroEx.getOrderHashHex(order)
+    // var orderHash = ZeroEx.getOrderHashHex(order)
     var orderObject = {
       order,
       orderAmount,
       orderType,
       orderPrice,
-      orderHash
+      orderHash: order.orderHash
     }
-    switch (orderType) {
-      case "asks":
-        orders.asksOrders.push(orderObject)
+    var newOrders = { ...orders }
+
+    switch (action) {
+      case 'add':
+        console.log(action)
+        switch (orderType) {
+          case "asks":
+            newOrders.asksOrders.push(orderObject)
+            break;
+          case "bids":
+            newOrders.bidsOrders.push(orderObject)
+            break;
+        }
         break;
-      case "bids":
-        orders.bidsOrders.push(orderObject)
+      case 'remove':
+        console.log(action)
+        switch (orderType) {
+          case "asks":
+            newOrders.asksOrders = orders.asksOrders.filter(oldOrder => {
+              return oldOrder.orderHash !== order.orderHash
+            });
+            break;
+          case "bids":
+            newOrders.bidsOrders = orders.bidsOrders.filter(oldOrder => {
+              return oldOrder.orderHash !== order.orderHash
+            });
+            break;
+        }
         break;
+      default:
+        newOrders = { ...orders }
     }
-    console.log(orders)
-    return orders
+    console.log(newOrders)
+    return newOrders
   }
 }
 

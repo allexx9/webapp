@@ -7,15 +7,21 @@ import MenuItem from 'material-ui/MenuItem';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { ERRORS, validateAccount, validatePositiveNumber } from '../../_utils/validation';
-import AccountSelector from '../../Elements/elementAccountSelector';
+// import AccountSelector from '../../Elements/elementAccountSelector';
 import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle'
 import ElementDialogAddressTitle from '../../Elements/elementDialogAddressTitle'
 import styles from './elementFundActionWrapETH.module.css';
 
 import PoolApi from '../../PoolsApi/src'
 
+import {
+  ERC20_TOKENS
+} from '../../_utils/const'
+
 const NAME_ID = ' ';
 const WETH = '0xd0a1e359811322d97991e03f863a0c30c2cf029c'; //Address of WETH contract
+
+
 
 const APPROVED_EXCHANGES = ['exchange2', 'exchangenot']; //we have to created a component to inject array into
 
@@ -31,7 +37,8 @@ export default class ElementFundActionWrapETH extends Component {
     accounts: PropTypes.array.isRequired,
     dragoDetails: PropTypes.object.isRequired,
     openActionForm: PropTypes.func.isRequired,
-    snackBar: PropTypes.func
+    snackBar: PropTypes.func,
+    onClose: PropTypes.func
   }
 
   state = {
@@ -57,7 +64,6 @@ export default class ElementFundActionWrapETH extends Component {
 
   render () {
     const { complete } = this.state;
-
     if (complete) {
       return null;
     }
@@ -98,7 +104,6 @@ export default class ElementFundActionWrapETH extends Component {
 
   renderActions () {
     const { complete } = this.state;
-
     if (complete) {
       return (
         <FlatButton
@@ -277,6 +282,8 @@ export default class ElementFundActionWrapETH extends Component {
     const { dragoDetails } = this.props
     // const { instance } = this.context;
     var poolApi = null;
+    const WETHaddress = ERC20_TOKENS[api._rb.network.name].WETH.address
+    console.log(WETHaddress)
     this.setState({
       sending: true
     });
@@ -284,8 +291,8 @@ export default class ElementFundActionWrapETH extends Component {
       const web3 = window.web3
       poolApi = new PoolApi(web3)
       console.log(poolApi)
-      poolApi.contract.fundproxy.init()
-      poolApi.contract.fundproxy.wrapETH(this.state.account.address, api.util.toWei(this.state.amount))
+      poolApi.contract.drago.init(dragoDetails.address)
+      poolApi.contract.drago.depositToExchange(WETHaddress, this.state.account.address, api.util.toWei(this.state.amount))
       .then ((result) =>{
         console.log(result)
         this.setState({
@@ -294,16 +301,19 @@ export default class ElementFundActionWrapETH extends Component {
       })
       .catch((error) => {
         console.error('error', error)
+        this.props.snackBar('Error while sending the transaction')
         this.setState({
           sending: false
         })
+        return
       })
-      this.onClose()
       this.props.snackBar('Wrapping awaiting for authorization')
+      this.onClose()
+      
     } else {
       poolApi = new PoolApi(api)
-      poolApi.contract.fundproxy.init()
-      poolApi.contract.fundproxy.wrapETH(this.state.account.address, api.util.toWei(this.state.amount))
+      poolApi.contract.drago.init(dragoDetails)
+      poolApi.contract.drago.depositToExchange(WETHaddress, this.state.account.address, api.util.toWei(this.state.amount))
       .then((result) => {
         console.log(result)
         this.onClose()
@@ -311,6 +321,7 @@ export default class ElementFundActionWrapETH extends Component {
       })
       .catch((error) => {
         console.error('error', error);
+        this.props.snackBar('Error while sending the transaction')
         this.setState({
           sending: false
         })
