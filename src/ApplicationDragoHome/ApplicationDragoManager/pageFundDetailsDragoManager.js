@@ -1,38 +1,36 @@
-import * as Colors from 'material-ui/styles/colors'
-import { Grid, Row, Col } from 'react-flexbox-grid'
-import { Link, withRouter } from 'react-router-dom'
-import { CopyToClipboard } from 'react-copy-to-clipboard'
-import { Tabs, Tab } from 'material-ui/Tabs'
-import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar'
-import ActionAssessment from 'material-ui/svg-icons/action/assessment'
-import ActionList from 'material-ui/svg-icons/action/list'
-import AppBar from 'material-ui/AppBar';
-import CopyContent from 'material-ui/svg-icons/content/content-copy'
-import Paper from 'material-ui/Paper'
-import PropTypes from 'prop-types'
-import React, { Component } from 'react'
-import Search from 'material-ui/svg-icons/action/search'
-import Snackbar from 'material-ui/Snackbar'
-import { formatCoins, formatEth } from '../../_utils/format'
-import PoolApi from '../../PoolsApi/src'
-import ElementFundActionsList from '../Elements/elementFundActionsList'
-import ElementListTransactions from '../Elements/elementListTransactions'
-import ElementListWrapper from '../../Elements/elementListWrapper'
-import ElementPriceBox from '../Elements/elementPricesBox'
-import IdentityIcon from '../../_atomic/atoms/identityIcon'
-import InfoTable from '../../Elements/elementInfoTable'
-import Loading from '../../_atomic/atoms/loading'
-import utils from '../../_utils/utils'
-import styles from './pageFundDetailsDragoManager.module.css';
-import ElementFundNotFound from '../../Elements/elementFundNotFound'
-import ElementNoAdminAccess from '../../Elements/elementNoAdminAccess'
 import BigNumber from 'bignumber.js';
+import AppBar from 'material-ui/AppBar';
+import Paper from 'material-ui/Paper';
+import Snackbar from 'material-ui/Snackbar';
+import { Tab, Tabs } from 'material-ui/Tabs';
+import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
+import * as Colors from 'material-ui/styles/colors';
+import ActionAssessment from 'material-ui/svg-icons/action/assessment';
+import ActionList from 'material-ui/svg-icons/action/list';
+import Search from 'material-ui/svg-icons/action/search';
+import CopyContent from 'material-ui/svg-icons/content/content-copy';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { Col, Grid, Row } from 'react-flexbox-grid';
 import { connect } from 'react-redux';
-import {
-  PROD,
-  ENDPOINTS,
-} from '../../_utils/const'
+import { Link, withRouter } from 'react-router-dom';
 import Web3 from 'web3';
+import ElementFundNotFound from '../../Elements/elementFundNotFound';
+import InfoTable from '../../Elements/elementInfoTable';
+import ElementListWrapper from '../../Elements/elementListWrapper';
+import ElementNoAdminAccess from '../../Elements/elementNoAdminAccess';
+import PoolApi from '../../PoolsApi/src';
+import IdentityIcon from '../../_atomic/atoms/identityIcon';
+import Loading from '../../_atomic/atoms/loading';
+import { ENDPOINTS, ERC20_TOKENS, PROD } from '../../_utils/const';
+import { formatCoins, formatEth } from '../../_utils/format';
+import utils from '../../_utils/utils';
+import ElementFundActionsList from '../Elements/elementFundActionsList';
+import ElementListTransactions from '../Elements/elementListTransactions';
+import ElementListAssets from '../Elements/elementListAssets';
+import ElementPriceBox from '../Elements/elementPricesBox';
+import styles from './pageFundDetailsDragoManager.module.css';
 
 function mapStateToProps(state) {
   return state
@@ -62,6 +60,7 @@ class PageFundDetailsDragoManager extends Component {
       addressGroup: null,
       dragoETHBalance: null
     },
+    dragoAssets: [],
     dragoTransactionsLogs: [],
     loading: true,
     snackBar: false,
@@ -168,14 +167,21 @@ class PageFundDetailsDragoManager extends Component {
     );
   }
 
-  renderEtherscanButton = (type, text) => {
-    if (!text) {
+  renderEtherscanButton = (type, address1, address2 = null) => {
+    if (!address1) {
       return null;
     }
+    switch (type) {
+      case 'tx':
+      return (
+        <a key={"addressether" + address1} href={this.props.endpoint.networkInfo.etherscan + type + '/' + address1} target='_blank'><Search className={styles.copyAddress} /></a>
+      );
+      case 'token':
+      return (
+        <a key={"addressether" + address1} href={this.props.endpoint.networkInfo.etherscan + 'token' + '/' + address1 + '?a=' + address2} target='_blank'><Search className={styles.copyAddress} /></a>
+      );
+    }
 
-    return (
-      <a key={"addressether" + text} href={this.props.endpoint.networkInfo.etherscan + type + '/' + text} target='_blank'><Search className={styles.copyAddress} /></a>
-    );
   }
 
   handlesnackBarRequestClose = () => {
@@ -209,7 +215,8 @@ class PageFundDetailsDragoManager extends Component {
     ['Name', dragoDetails.name, ''],
     ['Address', dragoDetails.address, tableButtonsDragoAddress],
     ['Manager', dragoDetails.addresssOwner, tableButtonsDragoOwner]]
-    var dragoTransactionList = this.state.dragoTransactionsLogs
+    var dragoTransactionsList = this.state.dragoTransactionsLogs
+    var dragoAssetsList = this.state.dragoAssets
 
 
     // Waiting until getDragoDetails returns the drago details
@@ -307,12 +314,14 @@ class PageFundDetailsDragoManager extends Component {
                           <p>Drago asset porfolio.</p>
                         </div>
 
-                        <ElementListWrapper list={dragoTransactionList}
+                        <ElementListWrapper 
+                          list={dragoAssetsList}
                           renderCopyButton={this.renderCopyButton}
                           renderEtherscanButton={this.renderEtherscanButton}
+                          dragoDetails={this.state.dragoDetails}
                           loading={loading}
                         >
-                          <ElementListTransactions />
+                          <ElementListAssets />
                         </ElementListWrapper>
                         {/* <ElementListTransactions accountsInfo={accountsInfo} list={dragoTransactionList} 
                         renderCopyButton={this.renderCopyButton}
@@ -334,16 +343,13 @@ class PageFundDetailsDragoManager extends Component {
                           <p>Your last 20 transactions on this Drago.</p>
                         </div>
 
-                        <ElementListWrapper list={dragoTransactionList}
+                        <ElementListWrapper list={dragoTransactionsList}
                           renderCopyButton={this.renderCopyButton}
                           renderEtherscanButton={this.renderEtherscanButton}
                           loading={loading}
                         >
                           <ElementListTransactions />
                         </ElementListWrapper>
-                        {/* <ElementListTransactions accountsInfo={accountsInfo} list={dragoTransactionList} 
-                        renderCopyButton={this.renderCopyButton}
-                        renderEtherscanButton={this.renderEtherscanButton}/> */}
                       </Paper>
                     </Col>
                   </Row>
@@ -448,7 +454,6 @@ class PageFundDetailsDragoManager extends Component {
             //
             // Getting Drago details and ETH balance
             //
-
             Promise
               .all([poolApi.contract.drago.getData(), poolApi.contract.drago.getBalance(), poolApi.contract.drago.getBalanceWETH()])
               .then(result => {
@@ -486,6 +491,24 @@ class PageFundDetailsDragoManager extends Component {
                   loading: false
                 })
               })
+
+            //
+            // Getting Drago assets
+            //
+            const getTokensBalances = async () =>{
+              var dragoAssets = ERC20_TOKENS[api._rb.network.name]
+              for (var token in dragoAssets) {
+                dragoAssets[token].balance = await poolApi.contract.drago.getTokenBalance(ERC20_TOKENS[api._rb.network.name][token].address)
+              }
+              return dragoAssets
+            } 
+
+          getTokensBalances().then(dragoAssets => {
+            console.log(Object.values(dragoAssets))
+            this.setState({
+              dragoAssets: Object.values(dragoAssets)
+            })
+          })
 
             //
             // Reading transactions

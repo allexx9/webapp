@@ -50,7 +50,7 @@ ReactDOM.render(
     <Provider store={store}><App /></Provider>,
     document.getElementById('root'))
 
-// registerServiceWorker()
+registerServiceWorker()
 
 // Hot Module Reload
 if (module.hot) {

@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import React, {PureComponent} from 'react';
 
 import utils from '../../_utils/utils'
+import { toUnitAmount } from '../../_utils/format'
 
 import styles from './elementListTransactions.module.css';
 import 'react-virtualized/styles.css'
@@ -21,23 +22,25 @@ class ElementListAssets extends PureComponent {
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
     renderCopyButton: PropTypes.func.isRequired,
-    renderEtherscanButton: PropTypes.func.isRequired
+    renderEtherscanButton: PropTypes.func.isRequired,
+    dragoDetails: PropTypes.object.isRequired
   };
+
+  
 
   constructor(props, context) {
     super(props, context);
     const { list } = this.props
-    const sortDirection = SortDirection.ASC;
-    const sortedList = list.sortBy(item => item.timestamp)
+    const sortDirection = SortDirection.DESC;
+    const sortedList = list.sortBy(item => item.symbol)
                       .update(
                         list => (sortDirection === SortDirection.DESC ? list : list.reverse()),
                       );
     const rowCount = list.size
-
     this.state = {
       disableHeader: false,
       headerHeight: 30,
-      height: 500,
+      height: 200,
       width: 600,
       hideIndexRow: false,
       overscanRowCount: 10,
@@ -60,8 +63,8 @@ class ElementListAssets extends PureComponent {
 
   componentWillReceiveProps (nextProps) {
     const { list } = nextProps
-    const sortDirection = SortDirection.ASC;
-    const sortedList = list.sortBy(item => item.timestamp)
+    const sortDirection = SortDirection.DESC;
+    const sortedList = list.sortBy(item => item.symbol)
                       .update(
                         list => (sortDirection === SortDirection.DESC ? list : list.reverse()),
                       );
@@ -122,21 +125,41 @@ class ElementListAssets extends PureComponent {
                   <Column
                     width={200}
                     disableSort
+                    label="SYMBOL"
+                    cellDataGetter={({rowData}) => rowData.symbol}
+                    dataKey="symbol"
+                    className={styles.exampleColumn}
+                    cellRenderer={({cellData}) => this.renderSymbol(cellData)}
+                    flexShrink={1}
+                  />
+                  <Column
+                    width={200}
+                    disableSort
                     label="NAME"
-                    cellDataGetter={({rowData}) => rowData.timestamp}
+                    cellDataGetter={({rowData}) => rowData.name}
                     dataKey="date"
                     className={styles.exampleColumn}
-                    cellRenderer={({cellData}) => this.renderTime(cellData)}
+                    cellRenderer={({cellData}) => this.renderName(cellData)}
                     flexShrink={1}
                   />
                   <Column
                     width={100}
                     disableSort
                     label="AMOUNT"
-                    cellDataGetter={({rowData}) => rowData.drgvalue}
-                    dataKey="drg"
+                    cellDataGetter={({rowData}) => rowData}
+                    dataKey="amount"
                     className={styles.exampleColumn}
-                    cellRenderer={({rowData}) => this.renderDrgValue(rowData)}
+                    cellRenderer={({rowData}) => this.renderBalance(rowData)}
+                    flexShrink={1}
+                  />
+                  <Column
+                    width={100}
+                    disableSort
+                    label="TX"
+                    cellDataGetter={({rowData}) => rowData}
+                    dataKey="tx"
+                    className={styles.exampleColumn}
+                    cellRenderer={({rowData}) => this.renderTx(rowData)}
                     flexShrink={1}
                   />
                 </Table>
@@ -156,7 +179,13 @@ class ElementListAssets extends PureComponent {
 
   renderSymbol(input) {
     return (
-      <div>{input.symbol.toUpperCase()}</div>
+      <div>{input.toUpperCase()}</div>
+    )
+  }
+
+  renderName(input) {
+    return (
+      <div>{input}</div>
     )
   }
 
@@ -166,9 +195,15 @@ class ElementListAssets extends PureComponent {
     )
   }
 
-  renderTx(transactionHash) {
+  renderBalance(token) {
     return (
-      <span>{this.props.renderCopyButton(transactionHash)} {this.props.renderEtherscanButton('tx', transactionHash)}</span>
+      <div>{toUnitAmount(new BigNumber(token.balance), token.decimals).toFixed(4)} <small>{token.symbol.toUpperCase()}</small></div>
+    )
+  }
+
+  renderTx(token) {
+    return (
+      <span>{this.props.renderEtherscanButton('token', token.address, this.props.dragoDetails.address)}</span>
     )
   }
 

@@ -273,7 +273,6 @@ class DragoParity {
     return erc20Instance.balanceOf.call({}, [instance.address])
   }
 
-
   getAssets = () =>{
 
   }
