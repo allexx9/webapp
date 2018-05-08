@@ -2,7 +2,7 @@ import { ERC20_TOKENS } from './tokens'
 export { ERC20_TOKENS }
 
 export const APP = "app";
-export const APP_VERSION = "v0.2.0-beta180415"
+export const APP_VERSION = "v0.2.1-beta180508"
 export const DS = "/";
 export const DRG_ISIN = "DR";
 export const LOGGER = true;
