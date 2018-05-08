@@ -112,7 +112,7 @@ export default class ElementFundActionPlaceOrder extends Component {
         <FlatButton
           label='Done'
           primary
-          onTouchTap={ this.props.onClose } />
+          onClick={ this.props.onClose } />
       );
     }
 
@@ -124,13 +124,13 @@ export default class ElementFundActionPlaceOrder extends Component {
         key='CancelOrder'
         label='Cancel'
         primary
-        onTouchTap={ this.onClose} />,
+        onClick={ this.onClose} />,
       <FlatButton
         key='SubmitOrder'
         label='Submit'
         primary
         disabled={ hasError || sending }
-        onTouchTap={ this.onSend } />
+        onClick={ this.onSend } />
     ]);
   }
 

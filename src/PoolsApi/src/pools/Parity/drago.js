@@ -3,7 +3,7 @@
 
 import * as abis from '../../contracts/abi'
 import Registry from '../registry'
-import { WETH_ADDRESSES } from '../../utils/const'
+import { WETH_ADDRESSES, ZRX_ADDRESSES } from '../../utils/const'
 
 class DragoParity {
   constructor(api) {
@@ -56,6 +56,13 @@ class DragoParity {
     const api = this._api
     const instance = this._instance
     const wethInstance = api.newContract(abis.weth, WETH_ADDRESSES[api._rb.network.id]).instance
+    return wethInstance.balanceOf.call({}, [instance.address])
+  }
+
+  getBalanceZRX = () => {
+    const api = this._api
+    const instance = this._instance
+    const wethInstance = api.newContract(abis.weth, ZRX_ADDRESSES[api._rb.network.id]).instance
     return wethInstance.balanceOf.call({}, [instance.address])
   }
 
@@ -259,40 +266,17 @@ class DragoParity {
     return instance.totalSupply.call({}, [])
   }
 
-  withdrawFromExchange = (
-    accountAddress,
-    exchangeAddress,
-    tokenAddress,
-    amount
-  ) => {
-    if (!accountAddress) {
-      throw new Error('accountAddress needs to be provided')
-    }
-    if (!exchangeAddress) {
-      throw new Error('exchangeAddress needs to be provided')
-    }
-    if (!tokenAddress) {
-      throw new Error('tokenAddress needs to be provided')
-    }
-    if (!amount) {
-      throw new Error('amount needs to be provided')
-    }
+  getTokenBalance = ( tokenAddress ) =>{
+    const api = this._api
     const instance = this._instance
-    const options = {
-      from: accountAddress
-    }
-    const values = [exchangeAddress, tokenAddress, amount]
-    return instance.withdrawFromExchange
-      .estimateGas(options, values)
-      .then(gasEstimate => {
-        console.log(gasEstimate.toFormat())
-        options.gas = gasEstimate.mul(1.2).toFixed(0)
-        return instance.withdrawFromExchange.postTransaction(options, values)
-      })
-      .catch(error => {
-        console.error('error', error)
-      })
+    const erc20Instance = api.newContract(abis.erc20, tokenAddress).instance
+    return erc20Instance.balanceOf.call({}, [instance.address])
   }
+
+  getAssets = () =>{
+
+  }
+
 }
 
 export default DragoParity

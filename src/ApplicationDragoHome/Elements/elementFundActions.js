@@ -702,7 +702,7 @@ class ElementFundActions extends React.Component {
         label="Cancel"
         primary={true}
         onClick={this.handleCancel}
-        onTouchTap={this.handleCancel}
+        onClick={this.handleCancel}
       />,
       <FlatButton
         key="SubmitButton"

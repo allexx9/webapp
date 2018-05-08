@@ -18,7 +18,7 @@ import { connect } from 'react-redux';
 
 const muiTheme = getMuiTheme({
   palette: {
-    "primary1Color": Colors.indigo500,
+    "primary1Color": Colors.blue500,
 
   },
   appBar: {
@@ -99,21 +99,21 @@ class ApplicationDragoPage extends Component {
             </Col>
           </Row>
           <MuiThemeProvider muiTheme={muiThemeVault}>
-          <Row className={classNames(styles.content)}>
-            <Col xs={12}>
-              {this.context.isConnected && !this.context.isSyncing ? (
-                // {false ? (
-                <ApplicationVaultHome
-                  isManager={this.state.isManager}
-                  location={location}
-                  notificationsOpen={notificationsOpen}
-                  handleToggleNotifications={this.handleToggleNotifications}
-                />
-              ) : (
-                  <NotConnected/>
-                )}
-            </Col>
-          </Row>
+            <Row className={classNames(styles.content)}>
+              <Col xs={12}>
+                {this.context.isConnected && !this.context.isSyncing ? (
+                  // {false ? (
+                  <ApplicationVaultHome
+                    isManager={this.state.isManager}
+                    location={location}
+                    notificationsOpen={notificationsOpen}
+                    handleToggleNotifications={this.handleToggleNotifications}
+                  />
+                ) : (
+                    <NotConnected/>
+                  )}
+              </Col>
+            </Row>
           </MuiThemeProvider>
         </Grid>
       </MuiThemeProvider>

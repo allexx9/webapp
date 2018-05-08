@@ -39,10 +39,11 @@
 
 .detailsTabContent {
   padding: 10px;
+  height: 100%;
 }
 
 .detailsTab {
-  color: #3F51B5 !important;
+  color: #2196F3 !important;
   background-color: white !important;
   font-weight: 700 !important;
   font-size: 14px !important;

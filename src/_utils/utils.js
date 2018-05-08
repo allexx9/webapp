@@ -6,6 +6,10 @@ import PoolApi from '../PoolsApi/src'
 
 class utilities {
 
+  constructor(){
+    var oldConsoleLog = null;
+  }
+
   dateFromTimeStamp = (timestamp) => {
     const day = ("0" + timestamp.getDate()).slice(-2)
     const month = ("0" + (timestamp.getMonth() + 1)).slice(-2)
@@ -471,7 +475,23 @@ class utilities {
       }
       // Creating a map with list of dragos
       if (log.event === 'BuyDrago' || log.event === 'DragoCreated') {
-        !dragoSymbolRegistry.has(params.drago.value) ? dragoSymbolRegistry.set(params.drago.value, { symbol: null, dragoId: null, name: null }) : null
+        //Checking if the value is an array of bytes or string
+        // var symbol
+        // console.log(params.symbol.value.toString())
+        // if (Array.isArray(params.symbol.value)) {
+        //   symbol = String.fromCharCode(params.symbol.value)
+        // } else {
+        //   symbol = params.symbol.value
+        // }
+        const dragoData = {
+          symbol: null,
+          dragoId: params.symbol.value,
+          name: null,
+          address: params.drago.value
+        }
+        !dragoSymbolRegistry.has(params.drago.value) 
+        ? dragoSymbolRegistry.set(params.drago.value, dragoData) 
+        : null
       }
       return {
         type: log.event,
@@ -525,23 +545,23 @@ class utilities {
               ]
             }
             // Filter for buy events
-            const eventsFilterBuy = {
-              topics: [
-                [poolApi.contract.dragoeventful.hexSignature.BuyDrago],
-                null,
-                hexAccounts,
-                null
-              ]
-            }
-            // Filter for sell events
-            const eventsFilterSell = {
-              topics: [
-                [poolApi.contract.dragoeventful.hexSignature.SellDrago],
-                null,
-                null,
-                hexAccounts
-              ]
-            }
+            // const eventsFilterBuy = {
+            //   topics: [
+            //     [poolApi.contract.dragoeventful.hexSignature.BuyDrago],
+            //     null,
+            //     hexAccounts,
+            //     null
+            //   ]
+            // }
+            // // Filter for sell events
+            // const eventsFilterSell = {
+            //   topics: [
+            //     [poolApi.contract.dragoeventful.hexSignature.SellDrago],
+            //     null,
+            //     null,
+            //     hexAccounts
+            //   ]
+            // }
 
             // Filter for buy and sell events
             const eventsFilterBuySell = {
@@ -609,13 +629,13 @@ class utilities {
 
                 function compare(a, b) {
                   // Use toUpperCase() to ignore character casing
-                  const bloclNumberA = a.blockNumber
-                  const bloclNumberB = b.blockNumber
+                  const blocklNumberA = a.blockNumber
+                  const blocklNumberB = b.blockNumber
 
                   let comparison = 0;
-                  if (bloclNumberA.gt(bloclNumberB)) {
+                  if (blocklNumberA.gt(blocklNumberB)) {
                     comparison = 1;
-                  } else if (bloclNumberA.lt(bloclNumberB)) {
+                  } else if (blocklNumberA.lt(blocklNumberB)) {
                     comparison = -1;
                   }
                   return comparison;
@@ -637,8 +657,13 @@ class utilities {
                     arrayPromises.push(
                       poolApi.contract.dragoregistry.fromAddress(k)
                         .then((dragoDetails) => {
-                          // console.log(dragoDetails)
-                          dragoSymbolRegistry.set(k, { symbol: dragoDetails[2].trim(), dragoId: dragoDetails[3].toFixed(), name: dragoDetails[1].trim() })
+                          const dragoData = {
+                            symbol: dragoDetails[2].trim(),
+                            dragoId: dragoDetails[3].toFixed(),
+                            name: dragoDetails[1].trim(),
+                            address: k.trim()
+                          }
+                          dragoSymbolRegistry.set(k, dragoData)
                           return dragoDetails
                         }
                         )
@@ -682,11 +707,13 @@ class utilities {
                           const symbol = dragoSymbolRegistry.get(k).symbol
                           const name = dragoSymbolRegistry.get(k).name.trim()
                           const dragoId = dragoSymbolRegistry.get(k).dragoId
+                          const address = dragoSymbolRegistry.get(k).address
                           supply.push({
                             supply: formatCoins(new BigNumber(dragoSupply), 4, api),
                             name,
                             symbol: symbol,
-                            dragoId: dragoId
+                            dragoId: dragoId,
+                            address: address
                           })
                         }
                         )
@@ -815,6 +842,18 @@ class utilities {
 
   }
 
+
+  async getDragoLiquidity(dragoAddress, api) {
+    const poolApi = new PoolApi(api)
+    poolApi.contract.drago.init(dragoAddress)
+    const dragoETHBalance = await poolApi.contract.drago.getBalance()
+    const dragoWETHBalance = await poolApi.contract.drago.getBalanceWETH()
+    const dragoZRXBalance = await poolApi.contract.drago.getBalanceZRX()
+    return [dragoETHBalance, dragoWETHBalance, dragoZRXBalance]
+  }
+
+
+
   shallowEqual(objA: mixed, objB: mixed): boolean {
     const sourceLogClass = this.constructor.name
     if (objA === objB) {
@@ -866,6 +905,26 @@ class utilities {
   dragoISIN(symbol, dragoId) {
     return DRG_ISIN + dragoId.toString().padStart(7, "0") + symbol.toUpperCase();
   }
+
+  logger = function()
+  {
+      var pub = {};
+
+      pub.enable = function enableLogger() {
+        if (this.oldConsoleLog == null)
+          return;
+
+        window['console']['log'] = this.oldConsoleLog;
+      };
+
+      pub.disable = function disableLogger() {
+        this.oldConsoleLog = console.log;
+        window['console']['log'] = function () { };
+      };
+
+      return pub;
+
+  }()
 }
 
 var utils = new utilities();

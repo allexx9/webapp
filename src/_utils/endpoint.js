@@ -12,7 +12,7 @@ import {
 
 class Endpoint {
 
-  constructor(endpointInfo, networkInfo = KOVAN, prod = PROD, ws = WS) {
+  constructor(endpointInfo, networkInfo = { name: KOVAN }, prod = PROD, ws = WS) {
     if (!endpointInfo) {
       throw new Error('endpointInfo connection data needs to be provided to Endpoint')
     }

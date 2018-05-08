@@ -10,12 +10,11 @@ import React, { Component } from 'react';
 import Web3 from 'web3'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
-// import { rigotoken } from './PoolsApi/src/contracts/abi'
-
 import ApplicationConfigPage from './Application/applicationConfig';
 import ApplicationDragoPage from './Application/applicationDrago';
 import ApplicationVaultPage from './Application/applicationVault';
 import ApplicationHomePage from './Application/applicationHome';
+import ApplicationExchangePage from './Application/applicationExchange';
 import Whoops404 from './Application/whoops404';
 import {
   DEFAULT_NETWORK_NAME,
@@ -95,10 +94,8 @@ export class App extends Component {
   tdIsConnected = null
   tdIsMetaMaskUnlocked = null
   
-
   // Defining the properties of the context variables passed down to children
   static childContextTypes = {
-    // muiTheme: PropTypes.object,
     api: PropTypes.object,
     isConnected: PropTypes.bool,
     isSyncing: PropTypes.bool,
@@ -111,10 +108,9 @@ export class App extends Component {
     dispatch: PropTypes.func.isRequired,
   };
 
-  // Passing down the context variables passed down to children
+  // Passing down the context variables to children
   getChildContext() {
     return {
-      // muiTheme,
       api: this._api,
       isConnected: this.state.isConnected,
       isSyncing: this.state.isSyncing,
@@ -126,10 +122,6 @@ export class App extends Component {
   attachInterfaceAction = () => {
     return {
       type: ATTACH_INTERFACE,
-      // payload: new Promise(resolve => {
-      //   this.attachInterface().then(result => {
-      //     resolve(result);
-      //   })
       payload: new Promise((resolve) => {
         this.attachInterface().then(result => {
           resolve(result);
@@ -159,7 +151,7 @@ export class App extends Component {
   shouldComponentUpdate(nextProps, nextState) {
     const propsUpdate = (!utils.shallowEqual(this.props, nextProps))
     const stateUpdate = (!utils.shallowEqual(this.state, nextState))
-    console.log(`${sourceLogClass} -> propsUpdate: %c${propsUpdate}.%c stateUpdate: %c${stateUpdate}`, `color: ${propsUpdate ? 'green' : 'red'}; font-weight: bold;`,'',`color: ${stateUpdate ? 'green' : 'red'}; font-weight: bold;`)
+    // console.log(`${sourceLogClass} -> propsUpdate: %c${propsUpdate}.%c stateUpdate: %c${stateUpdate}`, `color: ${propsUpdate ? 'green' : 'red'}; font-weight: bold;`,'',`color: ${stateUpdate ? 'green' : 'red'}; font-weight: bold;`)
     return stateUpdate || propsUpdate 
   }
 
@@ -302,14 +294,14 @@ export class App extends Component {
             <AppLoading ></AppLoading>
           </Router>
           : <div><NotificationSystem ref={n => this._notificationSystem = n} style={notificationStyle} />
-
             <Router history={history}>
               <Switch>
                 <Route exact path={"/app/" + appHashPath + "/home"} component={ApplicationHomePage} />
                 <Route path={"/app/" + appHashPath + "/vault"} component={ApplicationVaultPage} />
                 <Route path={"/app/" + appHashPath + "/drago"} component={ApplicationDragoPage} />
+                {/* <Route path={"/app/" + appHashPath + "/exchange"} component={ApplicationExchangePage} /> */}
                 <Route path={"/app/" + appHashPath + "/config"} component={ApplicationConfigPage} />
-                <Redirect from="/vault/" to={"/app/" + appHashPath + "/vault"} />
+                {/* <Redirect from="/exchange/" to={"/app/" + appHashPath + "/exchange"} /> */}
                 <Redirect from="/vault/" to={"/app/" + appHashPath + "/vault"} />
                 <Redirect from="/drago" to={"/app/" + appHashPath + "/drago"} />
                 <Redirect from="/" to={"/app/" + appHashPath + "/home"} />
@@ -370,7 +362,6 @@ export class App extends Component {
                   this.setState({
                     appLoading: false
                   })
-                  console.log(attachedInterface)
                   return attachedInterface
                 })
                 .catch((error) => {
@@ -485,6 +476,7 @@ export class App extends Component {
   }
 
   onNewBlockNumber = (_error, blockNumber ) => {
+    utils.logger.disable()
     if (_error) {
       console.error('onNewBlockNumber', _error)
       return
@@ -511,8 +503,6 @@ export class App extends Component {
       return null
     }
     const accounts = [].concat(endpoint.accounts);
-
-    console.log(accounts)
     if (accounts.length !== 0) {
       const poolsApi = new PoolsApi(this._api)
       poolsApi.contract.rigotoken.init()
@@ -641,10 +631,11 @@ export class App extends Component {
       newEndpoint.prevBlockNumber = newBlockNumber.toFixed()
       this.props.dispatch(this.updateInterfaceAction(newEndpoint))  
     }
-    
+    utils.logger.enable()
   }
 
   detachInterface = () => {
+    const { subscriptionData } = this.state
     Interfaces.detachInterface(this._api,subscriptionData)
   } 
 }

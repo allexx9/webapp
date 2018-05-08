@@ -21,7 +21,6 @@ class ElementListWrapper extends Component {
     if (Object.keys(list).length === 0 && this.props.loading) {
       return <Loading />
     }
-    // Rendering the table is list is an array
     const immutableList = Immutable.List(list) 
     // Merging the immutable list into the props passed to children
     const newProps = { list: immutableList,  ...rest}

@@ -14,17 +14,22 @@ import persistState, {mergePersistedState} from 'redux-localstorage';
 import adapter from 'redux-localstorage/lib/adapters/localStorage';
 import filter from 'redux-localstorage-filter';
 import logger from 'redux-logger'
+import { createEpicMiddleware } from 'redux-observable';
+import { rootEpic } from './_redux/epics/root';
 
 import './index.module.css';
 
+const epicMiddleware = createEpicMiddleware(rootEpic);
+
 const middlewares = [
     thunkMiddleware,
+    epicMiddleware,
     promiseMiddleware()
 ];
 
-if (process.env.NODE_ENV === `development`) {
-  middlewares.push(logger);
-}
+// if (process.env.NODE_ENV === `development`) {
+//   middlewares.push(logger);
+// }
 
 const reducer = compose(
     mergePersistedState()
@@ -45,7 +50,7 @@ ReactDOM.render(
     <Provider store={store}><App /></Provider>,
     document.getElementById('root'))
 
-// registerServiceWorker()
+registerServiceWorker()
 
 // Hot Module Reload
 if (module.hot) {

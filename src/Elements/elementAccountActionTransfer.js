@@ -128,13 +128,13 @@ class ElementAccountActionTransfer extends Component {
         label='Cancel'
         name='deposit'
         primary
-        onTouchTap={ this.props.onTransferOpen } />,
+        onClick={ this.props.onTransferOpen } />,
       <FlatButton
         key="TransferButton"
         label='Transfer'
         primary
         disabled={ hasError || sending }
-        onTouchTap={ this.onTransfer } />
+        onClick={ this.onTransfer } />
     ]);
   }
 

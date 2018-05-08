@@ -5,6 +5,7 @@ import AccountIcon from 'material-ui/svg-icons/action/account-circle'
 import ActionAccountBalance from 'material-ui/svg-icons/action/account-balance'
 import ActionHome from 'material-ui/svg-icons/action/home'
 import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
+import ActionPolymer from 'material-ui/svg-icons/action/polymer'
 import Settings from 'material-ui/svg-icons/action/settings'
 import Help from 'material-ui/svg-icons/action/help'
 import FlatButton from 'material-ui/FlatButton'
@@ -117,13 +118,13 @@ class NavLinks extends Component {
 
     renderTopLinks = (links) => {
       const activeLink = this.activeSectionPath()
-      var backgroundColorActive = Colors.indigo500
+      var backgroundColorActive = Colors.blue500
       const { location } = this.props
       return links.map((link) => {
-        link.to === activeLink ? backgroundColorActive = Colors.indigo300 : backgroundColorActive = Colors.indigo500
+        link.to === activeLink ? backgroundColorActive = Colors.blue300 : backgroundColorActive = Colors.blue500
         return (
           <FlatButton key={link.label} label={link.label.toUpperCase()} containerElement={<Link to={DS + APP + DS + this.buildUrlPath(location) + DS + link.to} />} disableTouchRipple={true} 
-          hoverColor={Colors.indigo500} className={styles.topbarbuttons}
+          hoverColor={Colors.blue500} className={styles.topbarbuttons}
           icon={link.icon}
           labelStyle={{fontWeight: 700}}
           backgroundColor={backgroundColorActive}
@@ -161,10 +162,9 @@ class NavLinks extends Component {
       var userTypeLabel = 'HOLDER'
       const links = [
         {label: 'home', to: 'home', icon: <ActionHome color="white"/>},
-        // {label: 'vault', to: 'vault', icon: <ActionAccountBalance color="white"/>},
         {label: 'vault', to: 'vault', icon: <ActionAccountBalance color="white"/>},
         {label: 'drago', to: 'drago', icon: <ActionShowChart color="white"/>},
-        // {label: 'exchange', to: 'exchange', icon: <ActionPolymer color="white"/>}
+        {label: 'exchange', to: 'exchange', icon: <ActionPolymer color="white"/>}
          ]
       const buttonAccountType = {
         border: "1px solid",
@@ -196,7 +196,7 @@ class NavLinks extends Component {
               labelStyle={{ color: '#FFFFFF' }}
               style={buttonAccountType}
               icon={<ArrowDropDown color='#FFFFFF' />}
-              hoverColor={Colors.indigo300}
+              hoverColor={Colors.blue300}
             />
             <Popover
               open={this.state.open}

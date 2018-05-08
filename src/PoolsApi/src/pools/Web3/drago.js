@@ -60,97 +60,6 @@ class DragoWeb3 {
       })
   }
 
-  depositToExchange = (
-    accountAddress,
-    exchangeAddress,
-    amount
-  ) => {
-    if (!accountAddress) {
-      throw new Error('accountAddress needs to be provided')
-    }
-    if (!exchangeAddress) {
-      throw new Error('exchangeAddress needs to be provided')
-    }
-    if (!amount) {
-      throw new Error('amount needs to be provided')
-    }
-    const instance = this._instance
-    const options = {
-      from: accountAddress
-    }
-    instance.options.from = options.from
-    console.log(amount)
-    console.log('API web3 Deposit to Exchange')
-    return instance.methods
-      .depositToExchange(exchangeAddress, amount)
-      .estimateGas(options)
-      .then(gasEstimate => {
-        console.log(gasEstimate)
-        instance.options.gas = gasEstimate
-        return instance.methods
-          .depositToExchange(exchangeAddress, amount)
-          .send(options)
-      })
-  }
-
-  placeOrderCFDExchange = (
-    accountAddress,
-    exchangeAddress,
-    cfd,
-    is_stable,
-    adjustment,
-    stake
-  ) => {
-    if (!accountAddress) {
-      throw new Error('accountAddress needs to be provided')
-    }
-    if (!exchangeAddress) {
-      throw new Error('exchangeAddress needs to be provided')
-    }
-    if (!cfd) {
-      throw new Error('cfd needs to be provided')
-    }
-    if (!is_stable) {
-      throw new Error('is_stable needs to be provided')
-    }
-    if (!adjustment) {
-      throw new Error('adjustment needs to be provided')
-    }
-    if (!stake) {
-      throw new Error('stake needs to be provided')
-    }
-    const instance = this._instance
-    const options = {
-      from: accountAddress
-    }
-    console.log(exchangeAddress)
-    return instance.methods
-      .placeOrderCFDExchange(
-        exchangeAddress,
-        exchangeAddress,
-        cfd,
-        is_stable,
-        adjustment,
-        stake
-      )
-      .estimateGas(options)
-      .then(gasEstimate => {
-        options.gas = gasEstimate
-        return instance.methods
-          .placeOrderCFDExchange(
-            exchangeAddress,
-            exchangeAddress,
-            cfd,
-            is_stable,
-            adjustment,
-            stake
-          )
-          .send(options)
-      })
-    // .catch((error) => {
-    //   console.error('error', error)
-    // })
-  }
 
   sellDrago = (accountAddress, amount) => {
     if (!accountAddress) {
@@ -215,6 +124,62 @@ class DragoWeb3 {
     const instance = this._instance
     return instance.methods.totalSupply.call({})
   }
+  
+
+  depositToExchange = (exchangeAddress, fromAddress, amount) => {
+    if (!fromAddress) {
+      throw new Error('toAddress needs to be provided')
+    }
+    if (!amount) {
+      throw new Error('amount needs to be provided')
+    }
+    if (!exchangeAddress) {
+      throw new Error('exchangeAddress needs to be provided')
+    }
+    const instance = this._instance
+    const options = {
+      from: fromAddress
+    }
+    console.log(exchangeAddress)
+    return instance.methods
+      .depositToExchange(exchangeAddress, amount)
+      .estimateGas(options)
+      .then(gasEstimate => {
+        console.log(gasEstimate)
+        options.gas = gasEstimate
+      })
+      .then(() => {
+        return instance.methods.depositToExchange(exchangeAddress, amount).send(options)
+      })
+  }
+
+  withdrawFromExchange = (exchangeAddress, fromAddress, amount) => {
+    if (!fromAddress) {
+      throw new Error('toAddress needs to be provided')
+    }
+    if (!amount) {
+      throw new Error('amount needs to be provided')
+    }
+    if (!exchangeAddress) {
+      throw new Error('exchangeAddress needs to be provided')
+    }
+    const instance = this._instance
+    const options = {
+      from: fromAddress
+    }
+    console.log(exchangeAddress)
+    return instance.methods
+      .withdrawFromExchange(exchangeAddress, amount)
+      .estimateGas(options)
+      .then(gasEstimate => {
+        console.log(gasEstimate)
+        options.gas = gasEstimate
+      })
+      .then(() => {
+        return instance.methods.withdrawFromExchange(exchangeAddress, amount).send(options)
+      })
+  }
+
 }
 
 export default DragoWeb3

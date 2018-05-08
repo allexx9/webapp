@@ -110,7 +110,7 @@ class ElementFundCreateAction extends React.Component {
 
     onChangeName = (event, dragoName) => {
       this.setState({
-        dragoName : dragoName.toLowerCase(),
+        dragoName : dragoName,
         dragoNameError: validateNewName(dragoName)
       });
     }
@@ -217,7 +217,7 @@ class ElementFundCreateAction extends React.Component {
           <FlatButton
             label='Done'
             primary
-            onTouchTap={ this.handleClose } />
+            onClick={ this.handleClose } />
         );
       }
   
@@ -229,13 +229,13 @@ class ElementFundCreateAction extends React.Component {
           key='CancelButton'
           label='Cancel'
           primary
-          onTouchTap={this.handleClose} />,
+          onClick={this.handleClose} />,
         <FlatButton
           key='SubmitButton'
           label='Deploy'
           primary
           disabled={hasError || sending}
-          onTouchTap={this.onSend} />
+          onClick={this.onSend} />
       ]);
     }
 
@@ -260,8 +260,8 @@ class ElementFundCreateAction extends React.Component {
           <div>
           <FlatButton label="Deploy" primary={true} onClick={this.handleOpen} 
             labelStyle={labelStyle}
-            backgroundColor={Colors.indigo500}
-            hoverColor={Colors.indigo300}
+            backgroundColor={Colors.blue500}
+            hoverColor={Colors.blue300}
             />
             <ElementFundActionAuthorization
               dragoDetails={dragoDetails}
@@ -276,8 +276,8 @@ class ElementFundCreateAction extends React.Component {
         <div>
           <FlatButton label="Deploy" primary={true} onClick={this.handleOpen} 
             labelStyle={labelStyle}
-            backgroundColor={Colors.indigo500}
-            hoverColor={Colors.indigo300}
+            backgroundColor={Colors.blue500}
+            hoverColor={Colors.blue300}
             />
             <Dialog
               title={this.renderHeader()}

@@ -243,13 +243,13 @@ class PageFundDetailsVaultTrader extends Component {
             </Toolbar>
             <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle} className={styles.test}>
               <Tab label="Info" className={styles.detailsTab}
-                icon={<ActionList color={Colors.indigo500} />}>
+                icon={<ActionList color={Colors.blue500} />}>
                 <Grid fluid>
                   <Row>
                     <Col xs={6}>
                       <div>
                         <AppBar
-                          title={"MY HOLDING IN " + vaultDetails.symbol}
+                          title={"MY HOLDING IN " + vaultDetails.symbol.toUpperCase()}
                           showMenuIconButton={false}
                           titleStyle={{ fontSize: 20 }}
                         />
@@ -315,7 +315,7 @@ class PageFundDetailsVaultTrader extends Component {
                 </Grid>
               </Tab>
               <Tab label="Stats" className={styles.detailsTab}
-                icon={<ActionAssessment color={Colors.indigo500} />}>
+                icon={<ActionAssessment color={Colors.blue500} />}>
                 <Grid fluid>
                   <Row>
                     <Col xs={12} className={styles.detailsTabContent}>

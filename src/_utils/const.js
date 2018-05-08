@@ -1,9 +1,13 @@
+import { ERC20_TOKENS } from './tokens'
+export { ERC20_TOKENS }
+
 export const APP = "app";
-export const APP_VERSION = "v0.1.2-beta180415"
+export const APP_VERSION = "v0.2.1-beta180508"
 export const DS = "/";
 export const DRG_ISIN = "DR";
+export const LOGGER = true;
 // Set connetions to production server
-export const PROD = true;
+export const PROD = false;
 // Set connetions to WebSocketSecure or HTTPs
 export const WS = true;
 // Address of the Parity registry of smart contracts
@@ -56,7 +60,7 @@ export const PARITY_NETWORKS_ID = {
   ropsten: 3,
   foundation: 1
 }
-export const DEFAULT_ENDPOINT = 'infura';
+export const DEFAULT_ENDPOINT = 'rigoblock';
 // Please refert to the following link for network IDs
 // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md
 // kovan = 42
@@ -121,8 +125,8 @@ export const ENDPOINTS = {
         prod: "https://ropsten.endpoint.network:8645"
       },
       mainnet: {
-        dev: "https://srv03.endpoint.network:8745",
-        prod: "https://mainnet.endpoint.network:8745"
+        dev: "wss://mainnet.endpoint.network:8945",
+        prod: "https://mainnet.endpoint.network:8945"
       },
     },
     wss: {
@@ -135,8 +139,8 @@ export const ENDPOINTS = {
         prod: "wss://ropsten.endpoint.network:8646"
       },
       mainnet: {
-        dev: "wss://srv03.endpoint.network:8746",
-        prod: "wss://mainnet.endpoint.network:8746"
+        dev: "wss://mainnet.endpoint.network:8946",
+        prod: "wss://mainnet.endpoint.network:8946"
       },
     }
   },
@@ -173,21 +177,35 @@ export const ENDPOINTS = {
   }, 
 }
 
+export const TRADE_TOKENS_PAIRS = {
+  WETH: {
+    GNT: "GNT",
+    ZRX: "ZRX"
+  }
+}
+
+
+
 export const NETWORKS = {
   kovan: {
     id: 42,
     name: "kovan",
-    etherscan: "https://kovan.etherscan.io/"
+    etherscan: "https://kovan.etherscan.io/",
+    fundProxyContractAddress: "0x9fd942f59118460d7cd424ffcda39142af424245",
+    zeroExExchangeContractAddress: "0x90fe2af704b34e0224bf2299c838e04d4dcf1364"
   },
   ropsten: {
     id: 3,
     name: "ropsten",
-    etherscan: "https://ropsten.etherscan.io/"
+    etherscan: "https://ropsten.etherscan.io/",
+    fundProxyContractAddress: ""
   },
   mainnet: {
     id: 1,
     name: "mainnet",
-    etherscan: "https://etherscan.io"
+    etherscan: "https://etherscan.io",
+    fundProxyContractAddress: "",
+    zeroExExchangeContractAddress: "0x12459c951127e0c374ff9105dda097662a027093"
   }, 
 }
 
@@ -216,4 +234,16 @@ export const UPDATE_TRANSACTIONS_DRAGO_HOLDER = 'UPDATE_TRANSACTIONS_DRAGO_HOLDE
 export const UPDATE_TRANSACTIONS_DRAGO_MANAGER = 'UPDATE_TRANSACTIONS_DRAGO_MANAGER'
 export const UPDATE_TRANSACTIONS_VAULT_HOLDER = 'UPDATE_TRANSACTIONS_VAULT_HOLDER'
 export const UPDATE_TRANSACTIONS_VAULT_MANAGER = 'UPDATE_TRANSACTIONS_VAULT_MANAGER'
+
+// Exchange
+export const UPDATE_SELECTED_FUND = 'UPDATE_SELECTED_FUND'
+export const UPDATE_SELECTED_ORDER = 'UPDATE_SELECTED_ORDER'
+export const ORDER_UPDATE_FROM_RELAY = 'ORDER_UPDATE_FROM_RELAY'
+export const UPDATE_TRADE_TOKENS_PAIR = 'UPDATE_TRADE_TOKENS_PAIR'
+export const CANCEL_SELECTED_ORDER = 'CANCEL_SELECTED_ORDER'
+
+
+
+
+
 

@@ -126,7 +126,7 @@ export default class ElementFundActionSetPrice extends Component {
         <FlatButton key='dialoButton1'
           label='Done'
           primary
-          onTouchTap={ this.props.onClose } />
+          onClick={ this.props.onClose } />
       );
     }
 
@@ -139,13 +139,13 @@ export default class ElementFundActionSetPrice extends Component {
         label='Cancel'
         name='setPrice'
         primary
-        onTouchTap={ this.onClose} />,
+        onClick={ this.onClose} />,
       <FlatButton
         key='dialoButton2'
         label='Save'
         primary
         disabled={ hasError || sending }
-        onTouchTap={ this.onSend } />
+        onClick={ this.onSend } />
     ]);
   }
 

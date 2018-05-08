@@ -16,7 +16,7 @@ var td = null
 
 const muiTheme = getMuiTheme({
   palette: {
-    "primary1Color": Colors.indigo500,
+    "primary1Color": Colors.blue500,
 
   },
   appBar: {

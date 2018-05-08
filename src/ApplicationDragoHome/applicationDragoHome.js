@@ -178,7 +178,6 @@ class ApplicationDragoHome extends Component {
             <Col xs={10}>
               <ApplicationDragoManager
                 blockNumber={blockNumber}
-                accounts={endpoint.accounts}
                 ethBalance={endpoint.ethBalance}
                 accountsInfo={endpoint.accountsInfo}
                 isManager={user.isManager}

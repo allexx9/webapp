@@ -1,9 +1,9 @@
-import  * as Colors from 'material-ui/styles/colors'
+import * as Colors from 'material-ui/styles/colors'
 import { Grid, Row, Col } from 'react-flexbox-grid'
 import { Link, withRouter } from 'react-router-dom'
-import {CopyToClipboard} from 'react-copy-to-clipboard'
-import {Tabs, Tab} from 'material-ui/Tabs'
-import {Toolbar, ToolbarGroup } from 'material-ui/Toolbar'
+import { CopyToClipboard } from 'react-copy-to-clipboard'
+import { Tabs, Tab } from 'material-ui/Tabs'
+import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar'
 import ActionAssessment from 'material-ui/svg-icons/action/assessment'
 import ActionList from 'material-ui/svg-icons/action/list'
 import AppBar from 'material-ui/AppBar';
@@ -28,6 +28,11 @@ import ElementFundNotFound from '../../Elements/elementFundNotFound'
 import ElementNoAdminAccess from '../../Elements/elementNoAdminAccess'
 import BigNumber from 'bignumber.js';
 import { connect } from 'react-redux';
+import {
+  PROD,
+  ENDPOINTS,
+} from '../../_utils/const'
+import Web3 from 'web3';
 
 function mapStateToProps(state) {
   return state
@@ -42,182 +47,201 @@ class PageVaultDetailsVaultManager extends Component {
   };
 
   static propTypes = {
-      location: PropTypes.object.isRequired,
-      endpoint: PropTypes.object.isRequired,
-      accounts: PropTypes.array.isRequired,
-      match: PropTypes.object.isRequired, 
-      isManager: PropTypes.bool.isRequired
-    };
+    location: PropTypes.object.isRequired,
+    endpoint: PropTypes.object.isRequired,
+    accounts: PropTypes.array.isRequired,
+    match: PropTypes.object.isRequired,
+    isManager: PropTypes.bool.isRequired
+  };
 
-    state = {
-      vaultDetails: {
-        address: null,
-        name: null,
-        symbol: null,
-        dragoId: null,
-        addresssOwner: null,
-        addressGroup: null,
-      },
-      vaultTransactionsLogs: [],
-      loading: true,
-      snackBar: false,
-      snackBarMsg: '',
+  state = {
+    vaultDetails: {
+      address: null,
+      name: null,
+      symbol: null,
+      dragoId: null,
+      addresssOwner: null,
+      addressGroup: null,
+    },
+    vaultTransactionsLogs: [],
+    loading: true,
+    snackBar: false,
+    snackBarMsg: '',
+  }
+
+  subTitle = (account) => {
+    return (
+      account.address
+    )
+  }
+
+  componentWillMount() {
+    // Getting dragoid from the url parameters passed by router and then
+    // the list of last transactions
+    const dragoId = this.props.match.params.dragoid
+    this.getVaultDetails(dragoId)
+  }
+
+  componentWillUnmount() {
+    const { contractSubscription } = this.state
+    const sourceLogClass = this.constructor.name
+    try {
+      contractSubscription.unsubscribe(function (error, success) {
+        if (success) {
+          console.log(`${sourceLogClass}: Successfully unsubscribed from contract.`);
+        }
+        if (error) {
+          console.warn(`${sourceLogClass}: Unsubscribe error ${error}.`)
+        }
+      });
     }
-
-    subTitle = (account) => {
-      return (
-        account.address
-      )     
+    catch (error) {
+      console.warn(`${sourceLogClass}: Unsubscribe error ${error}.`)
     }
+  }
 
-    componentWillMount () {
-      // Getting dragoid from the url parameters passed by router and then
-      // the list of last transactions
-      const dragoId = this.props.match.params.dragoid
+
+  componentWillReceiveProps(nextProps) {
+    // Updating the lists on each new block if the accounts balances have changed
+    // Doing this this to improve performances by avoiding useless re-rendering
+    const dragoId = this.props.match.params.dragoid
+    const sourceLogClass = this.constructor.name
+    // console.log(nextProps)
+    const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
+    const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
+    if (!currentBalance.eq(nextBalance)) {
       this.getVaultDetails(dragoId)
+      console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
+    } else {
+      null
+    }
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    const sourceLogClass = this.constructor.name
+    var stateUpdate = true
+    var propsUpdate = true
+    console.log(this.props)
+    const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
+    const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
+    stateUpdate = !utils.shallowEqual(this.state, nextState)
+    propsUpdate = !currentBalance.eq(nextBalance)
+    if (stateUpdate || propsUpdate) {
+      console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
+    }
+    return stateUpdate || propsUpdate
+  }
+
+
+  renderAddress(vaultDetails) {
+    if (!vaultDetails.address) {
+      return <p>empty</p>;
     }
 
-    componentWillReceiveProps(nextProps) {
-      // Updating the lists on each new block if the accounts balances have changed
-      // Doing this this to improve performances by avoiding useless re-rendering
-      const dragoId = this.props.match.params.dragoid
-      const sourceLogClass = this.constructor.name
-      // console.log(nextProps)
-      const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
-      const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
-      if (!currentBalance.eq(nextBalance)) {
-        this.getVaultDetails(dragoId)
-        console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
-      } else {
-        null
-      }
-    }
-
-    shouldComponentUpdate(nextProps, nextState){
-      const  sourceLogClass = this.constructor.name
-      var stateUpdate = true
-      var propsUpdate = true
-      console.log(this.props)
-      const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
-      const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
-      stateUpdate = !utils.shallowEqual(this.state, nextState)
-      propsUpdate = !currentBalance.eq(nextBalance)
-      if (stateUpdate || propsUpdate) {
-        console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
-      }
-      return stateUpdate || propsUpdate
-    }
-
-
-    renderAddress (vaultDetails) {
-      if (!vaultDetails.address ) {
-        return <p>empty</p>;
-      }
-  
-      return (
-        <Row className={styles.detailsToolbarGroup}>
-          <Col xs={12} md={1} className={styles.dragoTitle}>
-            <h2 ><IdentityIcon address={ vaultDetails.address } /></h2>
-          </Col>
-          <Col xs={12} md={11} className={styles.dragoTitle}>
+    return (
+      <Row className={styles.detailsToolbarGroup}>
+        <Col xs={12} md={1} className={styles.dragoTitle}>
+          <h2 ><IdentityIcon address={vaultDetails.address} /></h2>
+        </Col>
+        <Col xs={12} md={11} className={styles.dragoTitle}>
           <p>{vaultDetails.symbol} | {vaultDetails.name} </p>
           <small>{vaultDetails.address}</small>
-          </Col>
-        </Row>
+        </Col>
+      </Row>
+    );
+  }
+
+  snackBar = (msg) => {
+    this.setState({
+      snackBar: true,
+      snackBarMsg: msg
+    })
+  }
+
+  renderCopyButton = (text) => {
+    if (!text) {
+      return null;
+    }
+
+    return (
+      <CopyToClipboard text={text} key={"address" + text}
+        onCopy={() => this.snackBar('Copied to clilpboard')}>
+        <Link to={'#'} key={"addresslink" + text}><CopyContent className={styles.copyAddress} /></Link>
+      </CopyToClipboard>
+    );
+  }
+
+  renderEtherscanButton = (type, text) => {
+    if (!text) {
+      return null;
+    }
+
+    return (
+      <a key={"addressether" + text} href={this.props.endpoint.networkInfo.etherscan + type + '/' + text} target='_blank'><Search className={styles.copyAddress} /></a>
+    );
+  }
+
+  handlesnackBarRequestClose = () => {
+    this.setState({
+      snackBar: false,
+      snackBarMsg: ''
+    })
+  }
+
+
+
+  render() {
+    const { accounts, isManager, endpoint } = this.props
+    const { vaultDetails, loading } = this.state
+    const tabButtons = {
+      inkBarStyle: {
+        margin: 'auto',
+        width: 100,
+        backgroundColor: 'white'
+      },
+      tabItemContainerStyle: {
+        margin: 'auto',
+        width: 200,
+      }
+    }
+
+    const columnsStyle = [styles.detailsTableCell, styles.detailsTableCell2, styles.detailsTableCell3]
+    const tableButtonsVaultAddress = [this.renderCopyButton(vaultDetails.address), this.renderEtherscanButton('address', vaultDetails.address)]
+    const tableButtonsVaultOwner = [this.renderCopyButton(vaultDetails.addresssOwner), this.renderEtherscanButton('address', vaultDetails.addresssOwner)]
+    const tableInfo = [['Symbol', vaultDetails.symbol, ''],
+    ['Name', vaultDetails.name, ''],
+    ['Address', vaultDetails.address, tableButtonsVaultAddress],
+    ['Owner', vaultDetails.addresssOwner, tableButtonsVaultOwner]]
+
+    const paperStyle = {
+
+    };
+    var vaultTransactionList = this.state.vaultTransactionsLogs
+    // console.log(vaultTransactionList)
+
+    // Waiting until getVaultDetails returns the drago details
+    if (loading) {
+      return (
+        <Loading />
+      );
+    }
+    if (vaultDetails.address === '0x0000000000000000000000000000000000000000') {
+      return (
+        <ElementFundNotFound />
       );
     }
 
-    snackBar = (msg) =>{
-      this.setState({
-        snackBar: true,
-        snackBarMsg: msg
-      })
-    }
-
-    renderCopyButton = (text) =>{
-      if (!text ) {
-        return null;
-      }
-      
+    // Checking if the user is the account manager
+    let metaMaskAccountIndex = endpoint.accounts.findIndex(account => {
+      return (account.address === vaultDetails.addresssOwner)
+    });
+    if (metaMaskAccountIndex === -1) {
       return (
-        <CopyToClipboard text={text} key={"address"+text}
-            onCopy={() => this.snackBar('Copied to clilpboard')}>
-            <Link to={'#'} key={"addresslink"+text}><CopyContent className={styles.copyAddress}/></Link>
-        </CopyToClipboard>
-      );
+        <ElementNoAdminAccess />
+      )
     }
 
-    renderEtherscanButton = (type, text) =>{
-      if (!text ) {
-        return null;
-      }
-      
-      return (
-      <a key={"addressether"+text} href={this.props.endpoint.networkInfo.etherscan+type+'/' + text} target='_blank'><Search className={styles.copyAddress}/></a>
-      );
-    }
-
-    handlesnackBarRequestClose = () => {
-      this.setState({
-        snackBar: false,
-        snackBarMsg: ''
-      })
-    }
-
-
-    
-    render() {
-      const { accounts, isManager, endpoint } = this.props
-      const { vaultDetails, loading } = this.state
-      const tabButtons = {
-        inkBarStyle: {
-          margin: 'auto',
-          width: 100,
-          backgroundColor: 'white'
-          },
-        tabItemContainerStyle: {
-          margin: 'auto',
-          width: 200,
-        }
-      }
-
-      const columnsStyle = [styles.detailsTableCell, styles.detailsTableCell2, styles.detailsTableCell3]
-      const tableButtonsVaultAddress = [this.renderCopyButton(vaultDetails.address), this.renderEtherscanButton('address', vaultDetails.address)]
-      const tableButtonsVaultOwner = [this.renderCopyButton(vaultDetails.addresssOwner), this.renderEtherscanButton('address', vaultDetails.addresssOwner)]
-      const tableInfo = [['Symbol', vaultDetails.symbol, ''], 
-        ['Name', vaultDetails.name, ''], 
-        ['Address', vaultDetails.address, tableButtonsVaultAddress],
-        ['Owner', vaultDetails.addresssOwner, tableButtonsVaultOwner]]
-      
-        const paperStyle = {
-
-      };
-      var vaultTransactionList = this.state.vaultTransactionsLogs
-      // console.log(vaultTransactionList)
-
-      // Waiting until getVaultDetails returns the drago details
-      if (loading) {
-        return (
-          <Loading />
-        );
-      }
-      if (vaultDetails.address === '0x0000000000000000000000000000000000000000') {
-        return (
-          <ElementFundNotFound />
-        );
-      }
-
-      // Checking if the user is the account manager
-      let metaMaskAccountIndex = endpoint.accounts.findIndex(account => {
-        return (account.address === vaultDetails.addresssOwner)
-      });
-      if (metaMaskAccountIndex === -1) {
-        return (
-          <ElementNoAdminAccess />
-        )
-      }
-
-      return (
+    return (
       <Row>
         <Col xs={12}>
           <Paper className={styles.paperContainer} zDepth={1}>
@@ -226,32 +250,32 @@ class PageVaultDetailsVaultManager extends Component {
                 {this.renderAddress(vaultDetails)}
               </ToolbarGroup>
               <ToolbarGroup>
-                <ElementVaultActionsList accounts={accounts} vaultDetails={vaultDetails} snackBar={this.snackBar}/>
+                <ElementVaultActionsList accounts={accounts} vaultDetails={vaultDetails} snackBar={this.snackBar} />
               </ToolbarGroup>
             </Toolbar>
             <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle} className={styles.test}>
               <Tab label="Info" className={styles.detailsTab}
-                icon={<ActionList color={Colors.indigo500} />}>
+                icon={<ActionList color={Colors.blue500} />}>
                 <Grid fluid>
                   <Row>
                     <Col xs={6}>
                       <Paper zDepth={1} >
-                          <AppBar
-                            title={"ETH LIQUIDITY"}
-                            showMenuIconButton={false}
-                            titleStyle={{ fontSize: 20 }}
-                          />
-                          <div className={styles.ETHliquidity}>
-                            <div>{this.state.vaultDetails.vaultBalance} <small>ETH</small><br /></div>
-                          </div>
+                        <AppBar
+                          title={"ETH LIQUIDITY"}
+                          showMenuIconButton={false}
+                          titleStyle={{ fontSize: 20 }}
+                        />
+                        <div className={styles.ETHliquidity}>
+                          <div>{this.state.vaultDetails.vaultBalance} <small>ETH</small><br /></div>
+                        </div>
                       </Paper>
                     </Col>
                     <Col xs={6}>
                       <Paper zDepth={1}>
-                        <ElementFeesBox 
-                        accounts={accounts} 
-                        isManager={isManager}
-                        vaultDetails={vaultDetails} />
+                        <ElementFeesBox
+                          accounts={accounts}
+                          isManager={isManager}
+                          vaultDetails={vaultDetails} />
                       </Paper>
                     </Col>
                   </Row>
@@ -265,46 +289,46 @@ class PageVaultDetailsVaultManager extends Component {
                           titleStyle={{ fontSize: 20 }}
                         />
                         <div className={styles.detailsTabContent}>
-                        <InfoTable  rows={tableInfo} columnsStyle={columnsStyle}/>
+                          <InfoTable rows={tableInfo} columnsStyle={columnsStyle} />
                         </div>
                       </Paper>
                     </Col>
                   </Row>
-                    <Row>
-                      <Col xs={12} className={styles.detailsTabContent}>
-                        <Paper style={paperStyle} zDepth={1} >
-                          <AppBar
-                            title="LAST TRANSACTIONS"
-                            showMenuIconButton={false}
-                            titleStyle={{ fontSize: 20 }}
-                          />
+                  <Row>
+                    <Col xs={12} className={styles.detailsTabContent}>
+                      <Paper style={paperStyle} zDepth={1} >
+                        <AppBar
+                          title="LAST TRANSACTIONS"
+                          showMenuIconButton={false}
+                          titleStyle={{ fontSize: 20 }}
+                        />
 
-                          <div className={styles.detailsTabContent}>
-                            <p>Your last 20 transactions on this Drago.</p>
-                          </div>
-                          <ElementListWrapper list={vaultTransactionList}
-                            renderCopyButton={this.renderCopyButton}
-                            renderEtherscanButton={this.renderEtherscanButton}
-                            loading={loading}
-                          >
-                            <ElementListTransactions />
-                          </ElementListWrapper>
-                          {/* <ElementListTransactions accountsInfo={accountsInfo} list={vaultTransactionList} 
+                        <div className={styles.detailsTabContent}>
+                          <p>Your last 20 transactions on this Drago.</p>
+                        </div>
+                        <ElementListWrapper list={vaultTransactionList}
+                          renderCopyButton={this.renderCopyButton}
+                          renderEtherscanButton={this.renderEtherscanButton}
+                          loading={loading}
+                        >
+                          <ElementListTransactions />
+                        </ElementListWrapper>
+                        {/* <ElementListTransactions accountsInfo={accountsInfo} list={vaultTransactionList} 
                         renderCopyButton={this.renderCopyButton}
                         renderEtherscanButton={this.renderEtherscanButton}/> */}
-                        </Paper>
-                      </Col>
-                    </Row>
+                      </Paper>
+                    </Col>
+                  </Row>
                 </Grid>
               </Tab>
               <Tab label="Stats" className={styles.detailsTab}
-                icon={<ActionAssessment color={Colors.indigo500} />}>
+                icon={<ActionAssessment color={Colors.blue500} />}>
                 <Grid fluid>
                   <Row>
                     <Col xs={12} className={styles.detailsTabContent}>
                       <p>
                         Stats
-                      </p>   
+                      </p>
                     </Col>
                   </Row>
                 </Grid>
@@ -333,8 +357,36 @@ class PageVaultDetailsVaultManager extends Component {
           }}
         />
       </Row>
-      )
+    )
+  }
+
+  subscribeToEvents = (contract) => {
+    const networkName = this.props.endpoint.networkInfo.name
+    var WsSecureUrl = ''
+    const eventfullContracAddress = contract.contract.address[0]
+    if (PROD) {
+      WsSecureUrl = ENDPOINTS.rigoblock.wss[networkName].prod
+    } else {
+      WsSecureUrl = ENDPOINTS.rigoblock.wss[networkName].dev
     }
+    const web3 = new Web3(WsSecureUrl)
+    const eventfullContract = new web3.eth.Contract(contract.abi, eventfullContracAddress)
+    const subscription = eventfullContract.events.allEvents({
+      fromBlock: 'latest',
+      topics: [
+        null,
+        null,
+        null,
+        null
+      ]
+    }, (error, events) => {
+      const dragoId = this.props.match.params.dragoid
+      this.getDragoDetails(dragoId)
+    })
+    this.setState({
+      contractSubscription: subscription
+    })
+  }
 
   // Getting the vault details from vaultId
   getVaultDetails = (vaultId) => {
@@ -368,30 +420,30 @@ class PageVaultDetailsVaultManager extends Component {
             //
 
             Promise
-            .all([poolApi.contract.vault.getAdminData(), poolApi.contract.vault.getBalance()])
-            .then(result =>{
-              console.log(result)
-              const data = result[0]
-              const vaultBalance = result [1]
-              const price = (new BigNumber(data[4]).div(100).toFixed(2))
-              
-              this.setState({
-                vaultDetails: {
-                  address: vaultDetails[0][0],
-                  name: vaultDetails[0][1].charAt(0).toUpperCase() + vaultDetails[0][1].slice(1),
-                  symbol: vaultDetails[0][2].toUpperCase(),
-                  vaultId: vaultDetails[0][3].c[0],
-                  addresssOwner: vaultDetails[0][4],
-                  addressGroup: vaultDetails[0][5],
-                  sellPrice: 1,
-                  buyPrice: 1,
-                  price: price,
-                  vaultBalance: formatEth(vaultBalance, 4, api)
-                },
-                loading: false
+              .all([poolApi.contract.vault.getAdminData(), poolApi.contract.vault.getBalance()])
+              .then(result => {
+                console.log(result)
+                const data = result[0]
+                const vaultBalance = result[1]
+                const price = (new BigNumber(data[4]).div(100).toFixed(2))
+
+                this.setState({
+                  vaultDetails: {
+                    address: vaultDetails[0][0],
+                    name: vaultDetails[0][1].charAt(0).toUpperCase() + vaultDetails[0][1].slice(1),
+                    symbol: vaultDetails[0][2].toUpperCase(),
+                    vaultId: vaultDetails[0][3].c[0],
+                    addresssOwner: vaultDetails[0][4],
+                    addressGroup: vaultDetails[0][5],
+                    sellPrice: 1,
+                    buyPrice: 1,
+                    price: price,
+                    vaultBalance: formatEth(vaultBalance, 4, api)
+                  },
+                  loading: false
+                })
               })
-            })
-            
+
             // poolApi.contract.vault.getAdminData()
             //   .then((data) => {
             //     const price = (new BigNumber(data[4]).div(100).toFixed(2))
@@ -412,6 +464,7 @@ class PageVaultDetailsVaultManager extends Component {
             //   })
             poolApi.contract.vaulteventful.init()
               .then(() => {
+                this.subscribeToEvents(poolApi.contract.vaulteventful)
                 this.getTransactions(vaultDetails[0][0], poolApi.contract.vaulteventful, accounts)
               }
               )
@@ -419,10 +472,10 @@ class PageVaultDetailsVaultManager extends Component {
           })
       })
 
-  }  
+  }
 
-   // Getting last transactions
-   getTransactions = (vaultAddress, contract, accounts) => {
+  // Getting last transactions
+  getTransactions = (vaultAddress, contract, accounts) => {
     const { api } = this.context
     var sourceLogClass = this.constructor.name
     console.log(vaultAddress)
@@ -547,7 +600,7 @@ class PageVaultDetailsVaultManager extends Component {
           })
       })
   }
-    
-  }
 
-  export default withRouter(connect(mapStateToProps)(PageVaultDetailsVaultManager))
+}
+
+export default withRouter(connect(mapStateToProps)(PageVaultDetailsVaultManager))

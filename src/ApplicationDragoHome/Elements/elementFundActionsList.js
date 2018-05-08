@@ -7,11 +7,10 @@ import RaisedButton from 'material-ui/RaisedButton'
 import Subheader from 'material-ui/Subheader'
 import Popover, {PopoverAnimationVertical} from 'material-ui/Popover';
 
-import IdentityIcon from '../../_atomic/atoms/identityIcon';
-
 // import styles from './elementAccountItem.module.css';
 
 import PropTypes from 'prop-types';
+import ElementFundActionWrapETH from '../Elements/elementFundActionWrapETH'
 import ElementFundActionDeposit from '../Elements/elementFundActionDeposit'
 import ElementFundActionWithdraw from '../Elements/elementFundActionWithdraw'
 import ElementFundActionPlaceOrder from '../Elements/elementFundActionPlaceOrder'
@@ -23,12 +22,13 @@ export default class ElementFundActionsList extends Component {
   static propTypes = {
     accounts: PropTypes.array.isRequired,
     dragoDetails: PropTypes.object.isRequired,
-    snasnackBar: PropTypes.func
+    snackBar: PropTypes.func
   };
 
   state = {
     openMenuActions: false,
     showActionMenuItem:{
+      wrapETH: false,
       deposit: false,
       withdraw: false,
       placeOrder: false,
@@ -57,10 +57,10 @@ export default class ElementFundActionsList extends Component {
     });
     console.log(value)
     switch (value) {
-      case 'deposit':
+      case 'wrapETH':
         this.setState({
           showActionMenuItem: {
-            deposit: !this.state.showActionMenuItem.deposit
+            wrapETH: !this.state.showActionMenuItem.wrapETH
           }
         })
         break;
@@ -111,7 +111,6 @@ export default class ElementFundActionsList extends Component {
     const accounts = this.props.accounts.filter((account) =>{
       return account.address == dragoDetails.addresssOwner
     })
-    console.log(accounts)
     return (
       <div>
         <RaisedButton
@@ -137,15 +136,15 @@ export default class ElementFundActionsList extends Component {
             <MenuItem value="2" primaryText="Fee Account" disabled={true}/>
             <MenuItem value="3" primaryText="Estimante NAV" disabled={true}/>
             <Subheader inset={false}>Exchange</Subheader>
-            <MenuItem value="deposit" primaryText="Deposit"/>
-            <MenuItem value="withdraw" primaryText="Withdraw" disabled={true}/>
+            <MenuItem value="wrapETH" primaryText="Wrap ETH"/>
+            <MenuItem value="withdraw" primaryText="Unwrap ETH" disabled={true}/>
             <MenuItem value="placeOrder" primaryText="Place Order" disabled={true}/>
             <MenuItem value="cancelOrder" primaryText="Cancel Order" disabled={true}/>
             <MenuItem value="finalizeOrder" primaryText="Finalize" disabled={true}/>
           </Menu>
         </Popover>
-        {this.state.showActionMenuItem.deposit ?
-              <ElementFundActionDeposit accounts={accounts} 
+        {this.state.showActionMenuItem.wrapETH ?
+              <ElementFundActionWrapETH accounts={accounts} 
                 dragoDetails={dragoDetails} 
                 openActionForm={this.openActionForm}
                 snackBar={this.props.snackBar}/> :
