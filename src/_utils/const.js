@@ -1,6 +1,5 @@
-export const OMG_MN = "0xd26114cd6ee289accf82350c8d8487fedb8a0c07"
-export const WETH_MN = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
-export const ZRX_MN = "0xe41d2489571d322189246dafa5ebde1f4699f498"
+import { ERC20_TOKENS } from './tokens'
+export { ERC20_TOKENS }
 
 export const APP = "app";
 export const APP_VERSION = "v0.2.0-beta180415"
@@ -15,8 +14,6 @@ export const WS = true;
 export const REGISTRY_KOVAN = '0xfAb104398BBefbd47752E7702D9fE23047E1Bca3';
 // Address of RigoToken GRG
 // export const GRG_ADDRESS_KV = "0x56B28058d303bc0475a34D439aa586307adAc1f5";
-
-export const ZEROEX_CONTRACT_ADDRESS_MN = '0x12459c951127e0c374ff9105dda097662a027093'
 
 export const GRG = "GRG"
 export const ETH = "ETH"
@@ -187,48 +184,7 @@ export const TRADE_TOKENS_PAIRS = {
   }
 }
 
-export const ERC20_TOKENS = {
-  kovan: {
-    WETH: {
-      symbol: 'WETH',
-      address: '0xd0a1e359811322d97991e03f863a0c30c2cf029c',
-      decimals: 18,
-      name: 'Wrapped Ether'
-    },
-    ZRX: {
-      symbol: 'ZRX',
-      address: '0x6ff6c0ff1d68b964901f986d4c9fa3ac68346570',
-      decimals: 18,
-      name: '0x Protocol Token'
-    },
-    GNT: {
-      symbol: 'GNT',
-      address: '0xef7fff64389b814a946f3e92105513705ca6b990',
-      decimals: 18,
-      name: 'Golem Network Token'
-    }
-  },
-  mainnet: {
-    WETH: {
-      symbol: 'WETH',
-      address: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
-      decimals: 18,
-      name: 'Wrapped Ether'
-    },
-    ZRX: {
-      symbol: 'ZRX',
-      address: '0xe41d2489571d322189246dafa5ebde1f4699f498',
-      decimals: 18,
-      name: '0x Protocol Token'
-    },
-    GNT: {
-      symbol: 'GNT',
-      address: '0xa74476443119A942dE498590Fe1f2454d7D4aC0d',
-      decimals: 18,
-      name: 'Golem Network Token'
-    }
-  }, 
-}
+
 
 export const NETWORKS = {
   kovan: {

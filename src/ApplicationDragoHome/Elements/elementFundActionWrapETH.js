@@ -1,27 +1,22 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
-import { Dialog, FlatButton, TextField } from 'material-ui';
 import BigNumber from 'bignumber.js';
+import { Dialog, FlatButton, TextField } from 'material-ui';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { ERRORS, validateAccount, validatePositiveNumber } from '../../_utils/validation';
+import { Col, Row } from 'react-flexbox-grid';
+import ElementDialogAddressTitle from '../../Elements/elementDialogAddressTitle';
 // import AccountSelector from '../../Elements/elementAccountSelector';
-import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle'
-import ElementDialogAddressTitle from '../../Elements/elementDialogAddressTitle'
-import styles from './elementFundActionWrapETH.module.css';
-
-import PoolApi from '../../PoolsApi/src'
-
-import {
-  ERC20_TOKENS
-} from '../../_utils/const'
+import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle';
+import PoolApi from '../../PoolsApi/src';
+import { ERC20_TOKENS } from '../../_utils/const';
+import { ERRORS, validateAccount, validatePositiveNumber } from '../../_utils/validation';
+import ImgETH from '../../_atomic/atoms/imgETH';
+import RaisedButton from 'material-ui/RaisedButton';
 
 const NAME_ID = ' ';
-const WETH = '0xd0a1e359811322d97991e03f863a0c30c2cf029c'; //Address of WETH contract
-
-
 
 const APPROVED_EXCHANGES = ['exchange2', 'exchangenot']; //we have to created a component to inject array into
 
@@ -135,34 +130,49 @@ export default class ElementFundActionWrapETH extends Component {
   }
 
   renderFields () {
-    const amountLabel = 'The amount you want to wrap';
+    var amountLabel
+    this.state.action === 'wrap' ? amountLabel = 'The amount you want to wrap' : amountLabel = 'The amount you want to un-wrap'
     return (
       <div>
-        {/* <AccountSelector
-          accounts={ this.props.accounts }
-          account={ this.state.account }
-          errorText={ this.state.accountError }
-          floatingLabelText='From account'
-          hintText='The account the transaction will be made from'
-          onSelect={ this.onChangeAddress } /> */}
-        <DropDownMenu
-          value={this.state.action}
-          onChange={this.onChangeWrap}
-          >
-          <MenuItem value={'wrap'} primaryText='Wrap ETH' />
-          <MenuItem value={'unwrap'} primaryText='Unwrap ETH' />
-        </DropDownMenu>
-        <TextField
-          autoComplete='off'
-          floatingLabelFixed
-          floatingLabelText='Amount you want to wrap'
-          fullWidth
-          hintText={ amountLabel }
-          errorText={ this.state.amountError }
-          name={ NAME_ID }
-          id={ NAME_ID }
-          value={ this.state.amount }
-          onChange={ this.onChangeAmount } />
+        <Row middle="xs">
+          <Col xs={1}>
+          <ImgETH/>
+          </Col>
+          <Col xs={11}>
+            <DropDownMenu
+              value={this.state.action}
+              onChange={this.onChangeWrap}
+            >
+              <MenuItem value={'wrap'} primaryText='Wrap ETH' />
+              <MenuItem value={'unwrap'} primaryText='Unwrap ETH' />
+            </DropDownMenu>
+          </Col>
+        </Row>
+        <Row middle="xs">
+          <Col xs={10}>
+            <TextField
+              autoComplete='off'
+              floatingLabelText={amountLabel}
+              floatingLabelFixed
+              fullWidth
+              hintText={amountLabel}
+              errorText={this.state.amountError}
+              name={NAME_ID}
+              id={NAME_ID}
+              value={this.state.amount}
+              onChange={this.onChangeAmount} />
+          </Col>
+          <Col xs={2}>
+            <RaisedButton
+              label='Maximum'
+              secondary={true}
+              // style={styles.button}
+              // icon={<ActionSwapHoriz />}
+              onClick={this.onMaximumAmount}
+            />
+          </Col>
+        </Row>
+
       </div>
     );
   }
@@ -182,6 +192,14 @@ export default class ElementFundActionWrapETH extends Component {
   }
 
   onChangeAmount = (event, amount) => {
+    this.setState({
+      amount,
+      amountError: validatePositiveNumber(amount)
+    }, this.validateTotal);
+  }
+
+  onMaximumAmount = () => {
+    const amount = this.state.action === 'wrap' ? this.props.dragoDetails.dragoETHBalance : this.props.dragoDetails.dragoWETHBalance
     this.setState({
       amount,
       amountError: validatePositiveNumber(amount)
@@ -236,6 +254,7 @@ export default class ElementFundActionWrapETH extends Component {
     const { dragoDetails } = this.props
     // const { instance } = this.context;
     var poolApi = null;
+    const WETHaddress = ERC20_TOKENS[api._rb.network.name].WETH.address
     this.setState({
       sending: true
     });
@@ -243,8 +262,8 @@ export default class ElementFundActionWrapETH extends Component {
       const web3 = window.web3
       poolApi = new PoolApi(web3)
       console.log(poolApi)
-      poolApi.contract.fundproxy.init()
-      poolApi.contract.fundproxy.unwrapETH(this.state.account.address, api.util.toWei(this.state.amount))
+      poolApi.contract.drago.init(dragoDetails.address)
+      poolApi.contract.drago.withdrawFromExchange(WETHaddress, this.state.account.address, api.util.toWei(this.state.amount))
       .then ((result) =>{
         console.log(result)
         this.setState({
@@ -258,15 +277,15 @@ export default class ElementFundActionWrapETH extends Component {
         })
       })
       this.onClose()
-      this.props.snackBar('Wrapping awaiting for authorization')
+      this.props.snackBar('Un-wrapping awaiting for authorization')
     } else {
       poolApi = new PoolApi(api)
-      poolApi.contract.fundproxy.init()
-      poolApi.contract.fundproxy.unwrapETH(this.state.account.address, api.util.toWei(this.state.amount))
+      poolApi.contract.drago.init(dragoDetails.address)
+      poolApi.contract.drago.withdrawFromExchange(WETHaddress, this.state.account.address, api.util.toWei(this.state.amount))
       .then((result) => {
         console.log(result)
         this.onClose()
-        this.props.snackBar('Wrapping awaiting for authorization')
+        this.props.snackBar('Un-wrapping awaiting for authorization')
       })
       .catch((error) => {
         console.error('error', error);

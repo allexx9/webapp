@@ -250,7 +250,9 @@ class PageFundDetailsDragoManager extends Component {
             </Toolbar>
             <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle} className={styles.test}>
               <Tab label="Info" className={styles.detailsTab}
-                icon={<ActionList color={Colors.blue500} />}>
+                icon={<ActionList 
+                color={Colors.blue500} 
+                />}>
                 <Grid fluid>
                   <Row>
                     <Col xs={6}>
@@ -292,6 +294,33 @@ class PageFundDetailsDragoManager extends Component {
                       </Paper>
                     </Col>
                   </Row>
+                  <Row>
+                    <Col xs={12} className={styles.detailsTabContent}>
+                      <Paper zDepth={1} >
+                        <AppBar
+                          title="ASSETS"
+                          showMenuIconButton={false}
+                          titleStyle={{ fontSize: 20 }}
+                        />
+
+                        <div className={styles.detailsTabContent}>
+                          <p>Drago asset porfolio.</p>
+                        </div>
+
+                        <ElementListWrapper list={dragoTransactionList}
+                          renderCopyButton={this.renderCopyButton}
+                          renderEtherscanButton={this.renderEtherscanButton}
+                          loading={loading}
+                        >
+                          <ElementListTransactions />
+                        </ElementListWrapper>
+                        {/* <ElementListTransactions accountsInfo={accountsInfo} list={dragoTransactionList} 
+                        renderCopyButton={this.renderCopyButton}
+                        renderEtherscanButton={this.renderEtherscanButton}/> */}
+                      </Paper>
+                    </Col>
+                  </Row>
+
                   <Row>
                     <Col xs={12} className={styles.detailsTabContent}>
                       <Paper zDepth={1} >
@@ -427,19 +456,19 @@ class PageFundDetailsDragoManager extends Component {
                 const dragoETHBalance = result[1]
                 const dragoWETHBalance = result[2]
 
-                endpoint.accounts.map(account => {
-                  poolApi.contract.drago.balanceOf(account.address)
-                    .then(balance => {
-                      balanceDRG = balanceDRG.add(balance)
-                    })
-                    .then(() => {
-                      var balanceETH = balanceDRG.times(formatCoins(balanceDRG, 4, api))
-                      this.setState({
-                        balanceETH: formatEth(balanceETH, 4, api),
-                        balanceDRG: formatCoins(balanceDRG, 4, api)
-                      })
-                    })
-                })
+                // endpoint.accounts.map(account => {
+                //   poolApi.contract.drago.balanceOf(account.address)
+                //     .then(balance => {
+                //       balanceDRG = balanceDRG.add(balance)
+                //     })
+                //     .then(() => {
+                //       var balanceETH = balanceDRG.times(formatCoins(balanceDRG, 4, api))
+                //       this.setState({
+                //         balanceETH: formatEth(balanceETH, 4, api),
+                //         balanceDRG: formatCoins(balanceDRG, 4, api)
+                //       })
+                //     })
+                // })
 
                 this.setState({
                   dragoDetails: {

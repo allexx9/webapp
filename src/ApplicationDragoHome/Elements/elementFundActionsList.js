@@ -28,7 +28,7 @@ export default class ElementFundActionsList extends Component {
   state = {
     openMenuActions: false,
     showActionMenuItem:{
-      wrapETH: false,
+      wrapETH: true,
       deposit: false,
       withdraw: false,
       placeOrder: false,

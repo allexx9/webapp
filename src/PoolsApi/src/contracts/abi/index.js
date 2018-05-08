@@ -6,6 +6,7 @@ import dragoeventful from './v2/dragoEventful-v2.json'
 import dragofactory from './v2/dragoFactory-v2.json'
 import parityregister from './v2/parityRegister.json'
 import dragoregistry from './v2/dragoRegistry-v2.json'
+import erc20 from './v2/erc20.json'
 import fundproxy from './v2/fundProxy.json'
 import rigotoken from './v2/rigoToken-v2.json'
 import vault from './v2/vault-v2.json'
@@ -39,6 +40,7 @@ export {
   vaultfactory,
   dragoregistry,
   exchange,
+  erc20,
   dragofactory,
   drago,
   dragoeventful,

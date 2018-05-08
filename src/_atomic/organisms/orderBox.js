@@ -75,11 +75,11 @@ class OrderBox extends Component {
     if (selectedOrder.takerOrder) {
       exchangeUtils.fillOrderToExchange(selectedOrder.details.order, selectedOrder.orderFillAmount)
     }
-    // else {
-    //   var signedOrder = await exchangeUtils.signOrder(selectedOrder)
-    //   console.log(signedOrder)
-    //   exchangeUtils.sendOrderToRelay(signedOrder)
-    // }
+    else {
+      var signedOrder = await exchangeUtils.signOrder(selectedOrder)
+      console.log(signedOrder)
+      exchangeUtils.sendOrderToRelay(signedOrder)
+    }
   }
 
   onCancelOrder = () =>{

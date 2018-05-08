@@ -133,6 +133,9 @@ class DragoWeb3 {
     if (!amount) {
       throw new Error('amount needs to be provided')
     }
+    if (!exchangeAddress) {
+      throw new Error('exchangeAddress needs to be provided')
+    }
     const instance = this._instance
     const options = {
       from: fromAddress
@@ -149,6 +152,34 @@ class DragoWeb3 {
         return instance.methods.depositToExchange(exchangeAddress, amount).send(options)
       })
   }
+
+  withdrawFromExchange = (exchangeAddress, fromAddress, amount) => {
+    if (!fromAddress) {
+      throw new Error('toAddress needs to be provided')
+    }
+    if (!amount) {
+      throw new Error('amount needs to be provided')
+    }
+    if (!exchangeAddress) {
+      throw new Error('exchangeAddress needs to be provided')
+    }
+    const instance = this._instance
+    const options = {
+      from: fromAddress
+    }
+    console.log(exchangeAddress)
+    return instance.methods
+      .withdrawFromExchange(exchangeAddress, amount)
+      .estimateGas(options)
+      .then(gasEstimate => {
+        console.log(gasEstimate)
+        options.gas = gasEstimate
+      })
+      .then(() => {
+        return instance.methods.withdrawFromExchange(exchangeAddress, amount).send(options)
+      })
+  }
+
 }
 
 export default DragoWeb3

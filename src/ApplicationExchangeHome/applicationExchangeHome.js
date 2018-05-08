@@ -6,11 +6,6 @@ import React, { Component } from 'react';
 import Loading from '../_atomic/atoms/loading';
 import styles from './applicationExchangeHome.module.css';
 import {
-  DEFAULT_NETWORK_NAME,
-  EP_RIGOBLOCK_MN_PROD_WS,
-  ZEROEX_CONTRACT_ADDRESS_MN,
-  ZRX_MN,
-  WETH_MN,
   ERC20_TOKENS
 } from '../_utils/const'
 import { Row, Col, Grid } from 'react-flexbox-grid';
