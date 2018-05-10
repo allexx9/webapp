@@ -9,6 +9,7 @@ import {
   eventfulDragoReducer,
   eventfulVaultReducer
 } from './eventful'
+import { webSocketReducer } from '../epics/exchange'
 import {combineReducers } from "redux"
 
 class reducers {
@@ -20,7 +21,8 @@ class reducers {
     user: usersReducer,
     endpoint: endpointsReducer,
     transactionsDrago: eventfulDragoReducer,
-    transactionsVault: eventfulVaultReducer
+    transactionsVault: eventfulVaultReducer,
+    webSocketReducer: webSocketReducer
   });
 
 }

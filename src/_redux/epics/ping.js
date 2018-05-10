@@ -7,6 +7,7 @@ import 'rxjs/add/operator/mergeMap';
 
 const PING = 'PING';
 var orders = Array()
+
 function setMe(user) {
   return {
     type: 'PONG',

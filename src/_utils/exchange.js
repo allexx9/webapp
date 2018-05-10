@@ -16,6 +16,68 @@ import { HttpClient } from '@0xproject/connect';
 import rp from 'request-promise'
 import { Aqueduct } from 'aqueduct';
 
+export const getOrderBookFromRelayERCDex = (uri, baseTokenAddress, quoteTokenAddress) => {
+  console.log('Fetching from ERCDex')
+  if (!uri) {
+    throw new Error('relay needs to be set')
+  }
+  if (!baseTokenAddress) {
+    throw new Error('baseTokenAddress needs to be set')
+  }
+  if (!quoteTokenAddress) {
+    throw new Error('quoteTokenAddress needs to be set')
+  }
+  var options = {
+    method: 'GET',
+    uri: `${uri}`,
+    qs: {
+      baseTokenAddress: baseTokenAddress, // -> uri + '?access_token=xxxxx%20xxxxx'
+      quoteTokenAddress: quoteTokenAddress
+    },
+    json: true // Automatically stringifies the body to JSON
+  };
+  console.log(options)
+  return rp(options)
+  .then(orders => {
+    console.log(orders)
+    const bidsOrders = formatOrders(orders.bids, 'bids')
+    console.log(bidsOrders)
+    const asksOrders = formatOrders(orders.asks, 'asks')
+    console.log(asksOrders)
+    return {
+      bids: bidsOrders,
+      asks: asksOrders 
+    }
+  })
+}
+
+export const formatOrders = (orders, orderType) =>{
+  var orderPrice, orderAmount
+  let web3 = new Web3(Web3.currentProvider)
+  var formattedOrders = orders.map((order) => {
+    switch (orderType) {
+      case "asks":
+        orderPrice = new BigNumber(order.takerTokenAmount).div(new BigNumber(order.makerTokenAmount)).toFixed(7)
+        orderAmount = new BigNumber(web3.utils.fromWei(order.makerTokenAmount, 'ether')).toFixed(5)
+        break;
+      case "bids":
+        orderPrice = new BigNumber(1).div(new BigNumber(order.takerTokenAmount).div(new BigNumber(order.makerTokenAmount))).toFixed(7)
+        orderAmount = new BigNumber(web3.utils.fromWei(order.takerTokenAmount, 'ether')).toFixed(5)
+        break;
+    }
+    var orderHash = ZeroEx.getOrderHashHex(order)
+    var orderObject = {
+      order,
+      orderAmount,
+      orderType,
+      orderPrice,
+      orderHash
+    }
+    return orderObject
+  })
+  return formattedOrders
+}
+
 class Exchange {
 
   constructor(endpointInfo, networkInfo = { name: KOVAN }, prod = PROD, ws = WS) {
@@ -164,8 +226,8 @@ class Exchange {
         var ws = new ReconnectingWebSocket('wss://api.ercdex.com');
         ws.onopen = () => {
           console.log(`Connected to wss://api.ercdex.com`);
-          // console.log((`sub:pair-order-change/${this._baseTokenAddress}/${this._quoteTokenAddress}`))
-          // console.log((`sub:pair-order-change/${this._baseTokenAddress}/${this._quoteTokenAddress}`))
+          console.log((`sub:pair-order-change/${this._baseTokenAddress}/${this._quoteTokenAddress}`))
+          console.log((`sub:pair-order-change/${this._quoteTokenAddress}/${this._baseTokenAddress}`))
           ws.send(`sub:pair-order-change/${this._baseTokenAddress}/${this._quoteTokenAddress}`);
           ws.send(`sub:pair-order-change/${this._quoteTokenAddress}/${this._baseTokenAddress}`);
           // ws.send(`sub:pair-taker-event/${this._quoteTokenAddress}/${this._baseTokenAddress}`);

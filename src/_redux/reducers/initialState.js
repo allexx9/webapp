@@ -13,10 +13,6 @@ import BigNumber from 'bignumber.js';
 
 const initialState = {
   exchange: {
-    // orders: {
-    //   bidsOrders: [], 
-    //   asksOrders: [],
-    // },
     selectedFund: {
       details: {},
       liquidity: {
@@ -42,7 +38,16 @@ const initialState = {
         baseToken: ERC20_TOKENS[DEFAULT_NETWORK_NAME].ZRX,
         quoteToken: ERC20_TOKENS[DEFAULT_NETWORK_NAME].WETH
       },
+    },
+    orderBook: {
+      asks: [],
+      bids: []
+    },
+    relay: {
+      url: 'https://api.ercdex.com/api/standard',
+      networkID: '42'
     }
+
   },
   transactions: {
     queue: new Map(),
