@@ -209,6 +209,29 @@ export const NETWORKS = {
   }, 
 }
 
+export const EXCHANGES = {
+  zeroEx: {
+    kovan :{
+      tokenTransferProxyAddress: "0x087eed4bc1ee3de49befbd66c662b434b15d49d4",
+      exchangeContractAddress: "0x90fe2af704b34e0224bf2299c838e04d4dcf1364", 
+      name: 'ZeroEx'
+    },
+    mainnet:{
+
+    }
+  },
+  rigoBlock: {
+    kovan: {
+      tokenTransferProxy: "0xcc040edf6e508c4372a62b1a902c69dcc52ceb1d",
+      exchangeContractAddress: "0xf307de6528fa16473d8f6509b7b1d8851320dba5",
+      name: 'RigoBlock' 
+    },
+    mainnet:{
+
+    }
+  }
+}
+
 // Default messages
 export const MSG_NO_SUPPORTED_NETWORK = "We have detected that MetaMask is not connected to the correct network."
 export const MSG_NETWORK_STATUS_OK = "Service is operating normally."

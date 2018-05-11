@@ -7,20 +7,33 @@ import {
 } from '../../_utils/const'
 
 function transactionsReducer(state = initialState.transactions, action) {
+  var pendingTransactions = 0
   switch (action.type) {
     case ADD_TRANSACTION:
       var transactions = Object.assign({}, state)
-      console.log(transactions)
       transactions.queue.set(action.transaction.transactionId, action.transaction.transactionDetails)
+      transactions.queue.forEach((value) => {
+        if (value.status !== 'executed' && value.status !== 'error') {
+          pendingTransactions = pendingTransactions + 1
+        }
+      })
+      transactions.pending = pendingTransactions
       return {
         ...state,
-        ...transactions
+        ...transactions,
       };
     case UPDATE_TRANSACTIONS:
-      
+      pendingTransactions = 0
+      transactions = new Map(action.transactions)
+      transactions.forEach((value) => {
+        if (value.status !== 'executed' && value.status !== 'error') {
+          pendingTransactions = pendingTransactions + 1
+        }
+      })
       return {
         ...state,
-        queue: new Map(action.transactions)
+        queue: new Map(action.transactions),
+        pending: pendingTransactions
       };
     default: return state;
   }

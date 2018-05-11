@@ -180,7 +180,7 @@ class ElementFundActions extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    console.log(nextProps)
+    // console.log(nextProps)
     if (this.props.actionSelected.action != nextProps.actionSelected.action) {
       nextProps.actionSelected.action == 'buy' 
       ? this.handleBuyAction()
@@ -424,32 +424,34 @@ class ElementFundActions extends React.Component {
   onSendBuy = () => {
     const { api } = this.context;
     const { dragoDetails } = this.props
-    const accountAddress = this.state.account.address
+    const { account } = this.state
     const amount = api.util.toWei(this.state.amountSummary).toString()
     const authMsg = 'You bought ' + this.state.unitsSummary + ' units of ' + dragoDetails.symbol.toUpperCase() + ' for ' + this.state.amountSummary + ' ETH'
-    const transactionId = api.util.sha3(new Date() + accountAddress)
+    const transactionId = api.util.sha3(new Date() + account.address)
+   
+    
     // Setting variables depending on account source
-    var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
+    var provider = account.source === 'MetaMask' ? window.web3 : api
     var poolApi = null;
+    
     // Initializing transaction variables
     var transactionDetails = {
-      status: this.state.account.source === 'MetaMask' ? 'pending' : 'authorization',
+      status: account.source === 'MetaMask' ? 'pending' : 'authorization',
       hash: '',
       parityId: null,
       timestamp: new Date(),
-      account: this.state.account,
+      account: account,
       error: false,
       action: 'BuyDrago',
       symbol: dragoDetails.symbol.toUpperCase(),
       amount: this.state.amountSummary
     }
     this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
-    const {account} = this.state
-
+    
     // Sending the transaction
     poolApi = new PoolApi(provider)
     poolApi.contract.drago.init(dragoDetails.address)
-    poolApi.contract.drago.buyDrago(accountAddress, amount)
+    poolApi.contract.drago.buyDrago(account.address, amount)
       .then((receipt) => {
         console.log(receipt)
         // Adding transaciont to the queue
@@ -489,32 +491,33 @@ class ElementFundActions extends React.Component {
     const { api } = this.context;
     const { dragoDetails } = this.props
     const DIVISOR = 10 ** 6;  //dragos are divisible by 1 million
-    const accountAddress = this.state.account.address
+    const {account} = this.state
     const amount = new BigNumber(this.state.unitsSummary).mul(DIVISOR).toFixed(0)
     const authMsg = 'You sold ' + this.state.unitsSummary + ' units of ' + dragoDetails.symbol.toUpperCase() + ' for ' + this.state.amountSummary + ' ETH'
-    const transactionId = api.util.sha3(new Date() + accountAddress)
+    const transactionId = api.util.sha3(new Date() + account.address)
+
+
     // Setting variables depending on account source
-    var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
+    var provider = account.source === 'MetaMask' ? window.web3 : api
     var poolApi = null;
+    
     // Initializing transaction variables
     var transactionDetails = {
-      status: this.state.account.source === 'MetaMask' ? 'pending' : 'authorization',
+      status: account.source === 'MetaMask' ? 'pending' : 'authorization',
       hash: '',
       parityId: null,
       timestamp: new Date(),
-      account: this.state.account,
+      account: account,
       error: false,
       action: 'SellDrago',
       symbol: dragoDetails.symbol.toUpperCase(),
       amount: this.state.amountSummary
     }
     this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
-    const {account} = this.state
-    
     
     poolApi = new PoolApi(provider)
     poolApi.contract.drago.init(dragoDetails.address)
-    poolApi.contract.drago.sellDrago(accountAddress, amount)
+    poolApi.contract.drago.sellDrago(account.address, amount)
       .then((receipt) => {
         console.log(receipt)
         // Adding transaciont to the queue

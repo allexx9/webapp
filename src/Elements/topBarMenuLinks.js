@@ -24,6 +24,7 @@ import { connect } from 'react-redux';
 import {IS_MANAGER} from '../_utils/const'
 import styles from './elements.module.css'
 import utils from '../_utils/utils'
+import Badge from 'material-ui/Badge';
 
 
 function mapStateToProps(state) {
@@ -157,7 +158,8 @@ class NavLinks extends Component {
       };
 
     render() {
-      var { location, user, handleToggleNotifications } = this.props
+      const { location, user, handleToggleNotifications } = this.props
+      const { transactions } = this.props
       let userTypeDisabled = false;
       var userTypeLabel = 'HOLDER'
       const links = [
@@ -171,8 +173,6 @@ class NavLinks extends Component {
         borderColor: '#FFFFFF',
         // width: "140px"
       }
-
-
       // Disabling user type if isManager not defined
       if (typeof user.isManager === 'undefined') {
         user.isManager = false;
@@ -242,9 +242,25 @@ class NavLinks extends Component {
                 containerElement={<Link to={DS + APP + DS + this.buildUrlPath(location) + DS + "config"} />} />
               <MenuItem leftIcon={<Help />} value="help" primaryText="Help" />
             </IconMenu>
-            <IconButton tooltip="Network" onClick={handleToggleNotifications} iconStyle={menuStyles.profileIcon}>
-              <NotificationWifi />
-            </IconButton>
+            {transactions.pending > 0
+              ?
+              <Badge
+                badgeContent={transactions.pending}
+                secondary={true}
+                style={{ padding: "0px !important" }}
+                badgeStyle={{ top: 0, right: 0, fontSize: "10px", width: "20px", height: "20px" }}
+              >
+                <IconButton tooltip="Network" onClick={handleToggleNotifications} iconStyle={menuStyles.profileIcon}>
+                  <NotificationWifi />
+                </IconButton>
+              </Badge>
+              :
+
+              <IconButton tooltip="Network" onClick={handleToggleNotifications} iconStyle={menuStyles.profileIcon}>
+                <NotificationWifi />
+              </IconButton>
+            }
+
           </ToolbarGroup>
         </ToolbarGroup>
       )

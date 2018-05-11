@@ -15,14 +15,17 @@ import { ERC20_TOKENS } from '../../_utils/const';
 import { ERRORS, validateAccount, validatePositiveNumber } from '../../_utils/validation';
 import ImgETH from '../../_atomic/atoms/imgETH';
 import RaisedButton from 'material-ui/RaisedButton';
+import { connect } from 'react-redux';
+import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization'
+
 
 const NAME_ID = ' ';
 
-const APPROVED_EXCHANGES = ['exchange2', 'exchangenot']; //we have to created a component to inject array into
+function mapStateToProps(state) {
+  return state
+}
 
-//TODO: add address exchange
-
-export default class ElementFundActionWrapETH extends Component {
+class ElementFundActionWrapETH extends Component {
 
   static contextTypes = {
     api: PropTypes.object.isRequired,
@@ -33,15 +36,16 @@ export default class ElementFundActionWrapETH extends Component {
     dragoDetails: PropTypes.object.isRequired,
     openActionForm: PropTypes.func.isRequired,
     snackBar: PropTypes.func,
-    onClose: PropTypes.func
+    onClose: PropTypes.func,
+    dispatch: PropTypes.func
   }
 
   state = {
+    openAuth: false,
     account: this.props.accounts[0],
     accountError: ERRORS.invalidAccount,
     amount: 0,
     amountError: ERRORS.invalidAmount,
-    approvedExchange: APPROVED_EXCHANGES,
     exchangeName: {},
     exchangeNameError: null, //ERRORS.invalidAccount,
     exchangeAddress: ' ',
@@ -57,8 +61,23 @@ export default class ElementFundActionWrapETH extends Component {
     color: 'white',
   }
 
+  handleSubmit = () => {
+    this.setState(
+      { openAuth: true }
+    );
+  }
+
+  addTransactionToQueueAction = (transactionId, transactionDetails) => {
+    return {
+      type: 'ADD_TRANSACTION',
+      transaction: { transactionId, transactionDetails }
+    }
+  };
+
   render () {
     const { complete } = this.state;
+    const { openAuth, authMsg, authAccount } = this.state
+    const { dragoDetails } = this.props
     if (complete) {
       return null;
     }
@@ -67,6 +86,21 @@ export default class ElementFundActionWrapETH extends Component {
       padding: 0,
       lineHeight: '20px',
       fontSize: 16
+    }
+
+    if (openAuth) {
+      return (
+        <div>
+          {/* <RaisedButton label="Trade" primary={true} onClick={this.handleOpen}
+            labelStyle={{ fontWeight: 700 }} /> */}
+          <ElementFundActionAuthorization
+            tokenDetails={dragoDetails}
+            authMsg={authMsg}
+            account={authAccount}
+            onClose={this.handleCloseAuth}
+          />
+        </div>
+      )
     }
 
     return (
@@ -88,7 +122,15 @@ export default class ElementFundActionWrapETH extends Component {
           <ElementDialogHeadTitle primaryText='ETH Wrapper' />
           <ElementDialogAddressTitle tokenDetails={dragoDetails} />
       </div>
+    )
+  }
 
+  handleCloseAuth = () => {
+    this.setState(
+      {
+        openAuth: false,
+      }
+      , this.onClose
     )
   }
 
@@ -99,14 +141,15 @@ export default class ElementFundActionWrapETH extends Component {
 
   renderActions () {
     const { complete } = this.state;
-    if (complete) {
-      return (
-        <FlatButton
-          label='Done'
-          primary
-          onClick={ this.props.onClose } />
-      );
-    }
+    // if (complete) {
+    //   return (
+    //     <FlatButton
+    //       label='Done'
+    //       primary
+    //       onClick={ this.props.onClose } 
+    //       />
+    //   );
+    // }
 
     const { amountError, sending } = this.state;
     const hasError = !!( amountError );
@@ -132,6 +175,7 @@ export default class ElementFundActionWrapETH extends Component {
   renderFields () {
     var amountLabel
     this.state.action === 'wrap' ? amountLabel = 'The amount you want to wrap' : amountLabel = 'The amount you want to un-wrap'
+    
     return (
       <div>
         <Row middle="xs">
@@ -206,24 +250,6 @@ export default class ElementFundActionWrapETH extends Component {
     }, this.validateTotal);
   }
 
-  // onFindExchange = () => {
-  //   const { dragoDetails } = this.props
-  //   const { api } = this.context;
-  //   var poolApi = new PoolApi(api)
-  //   poolApi.contract.exchange.init()
-  //   .then(() =>{
-  //     return poolApi.contract.exchange.balanceOf(ADDRESS_0, dragoDetails.address.toString())
-  //   })
-  //   .then ((balanceExchange) =>{
-  //     console.log(balanceExchange)
-  //     this.setState({
-  //       loading: false,
-  //       balanceExchange,
-  //       exchangeAddress: poolApi.contract.exchange._contract._address
-  //     });
-  //   })
-  // }
-
   validateTotal = () => {
     const { account, accountError, amount, amountError } = this.state;
 
@@ -258,42 +284,100 @@ export default class ElementFundActionWrapETH extends Component {
     this.setState({
       sending: true
     });
-    if(this.state.account.source === 'MetaMask') {
-      const web3 = window.web3
-      poolApi = new PoolApi(web3)
-      console.log(poolApi)
-      poolApi.contract.drago.init(dragoDetails.address)
-      poolApi.contract.drago.withdrawFromExchange(WETHaddress, this.state.account.address, api.util.toWei(this.state.amount))
-      .then ((result) =>{
-        console.log(result)
-        this.setState({
-          sending: false
-        });
-      })
-      .catch((error) => {
-        console.error('error', error)
-        this.setState({
-          sending: false
-        })
-      })
-      this.onClose()
-      this.props.snackBar('Un-wrapping awaiting for authorization')
-    } else {
-      poolApi = new PoolApi(api)
-      poolApi.contract.drago.init(dragoDetails.address)
-      poolApi.contract.drago.withdrawFromExchange(WETHaddress, this.state.account.address, api.util.toWei(this.state.amount))
-      .then((result) => {
-        console.log(result)
-        this.onClose()
-        this.props.snackBar('Un-wrapping awaiting for authorization')
-      })
-      .catch((error) => {
-        console.error('error', error);
-        this.setState({
-          sending: false
-        })
-      })
+    var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
+    const {account} = this.state
+    const authMsg = 'You un-wrapped ' + this.state.amount + ' ETH'
+
+    // Initializing transaction variables
+    const transactionId = api.util.sha3(new Date() + account.address)
+    var transactionDetails = {
+      status: account.source === 'MetaMask' ? 'pending' : 'authorization',
+      hash: '',
+      parityId: null,
+      timestamp: new Date(),
+      account: account,
+      error: false,
+      action: 'UnWrapETH',
+      symbol: 'ETH',
+      amount: this.state.amount
     }
+    this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+    
+    poolApi = new PoolApi(provider)
+    poolApi.contract.drago.init(dragoDetails.address)
+    poolApi.contract.drago.withdrawFromExchange(WETHaddress, account.address, api.util.toWei(this.state.amount))
+    .then((receipt) => {
+        console.log(receipt)
+        // Adding transaciont to the queue
+        // Parity returns an internal transaction ID straighaway. The transaction then needs to be authorized inside the wallet.
+        // MetaMask returns a receipt of the transaction once it has been mined by the network. It can take a long time.
+        if (account.source === 'MetaMask') {
+          transactionDetails.status = 'executed'
+          transactionDetails.receipt = receipt
+          transactionDetails.hash = receipt.transactionHash
+          transactionDetails.timestamp = new Date ()
+          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+        } else {
+          transactionDetails.parityId = receipt
+          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+        }
+      })
+      .catch((error) => {
+        console.log(error)
+        const errorArray = error.message.split(/\r?\n/)
+        this.props.snackBar(errorArray[0])
+        transactionDetails.status = 'error'
+        transactionDetails.error = errorArray[0]
+        this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+        this.setState({
+          sending: false
+        })
+      })
+      this.setState({
+        authMsg: authMsg,
+        authAccount: {...this.state.account},
+        // sending: false,
+        // complete: true,
+      }, this.handleSubmit)
+
+
+
+    // if(this.state.account.source === 'MetaMask') {
+    //   const web3 = window.web3
+    //   poolApi = new PoolApi(web3)
+    //   console.log(poolApi)
+    //   poolApi.contract.drago.init(dragoDetails.address)
+    //   poolApi.contract.drago.withdrawFromExchange(WETHaddress, account.address, api.util.toWei(this.state.amount))
+    //   .then ((result) =>{
+    //     console.log(result)
+    //     this.setState({
+    //       sending: false
+    //     });
+    //   })
+    //   .catch((error) => {
+    //     console.error('error', error)
+    //     this.setState({
+    //       sending: false
+    //     })
+    //   })
+    //   this.onClose()
+    //   this.props.snackBar('Un-wrapping awaiting for authorization')
+    // } else {
+    //   poolApi = new PoolApi(api)
+    //   poolApi.contract.drago.init(dragoDetails.address)
+    //   poolApi.contract.drago.withdrawFromExchange(WETHaddress, account.address, api.util.toWei(this.state.amount))
+    //   .then((result) => {
+    //     console.log(result)
+    //     this.onClose()
+    //     this.props.snackBar('Un-wrapping awaiting for authorization')
+    //   })
+    //   .catch((error) => {
+    //     console.error('error', error);
+    //     this.setState({
+    //       sending: false
+    //     })
+    //   })
+    // }
   }
 
   onSendWrap = () => {
@@ -302,49 +386,66 @@ export default class ElementFundActionWrapETH extends Component {
     // const { instance } = this.context;
     var poolApi = null;
     const WETHaddress = ERC20_TOKENS[api._rb.network.name].WETH.address
-    console.log(WETHaddress)
     this.setState({
       sending: true
     });
-    if(this.state.account.source === 'MetaMask') {
-      const web3 = window.web3
-      poolApi = new PoolApi(web3)
-      console.log(poolApi)
-      poolApi.contract.drago.init(dragoDetails.address)
-      poolApi.contract.drago.depositToExchange(WETHaddress, this.state.account.address, api.util.toWei(this.state.amount))
-      .then ((result) =>{
-        console.log(result)
-        this.setState({
-          sending: false
-        });
-      })
-      .catch((error) => {
-        console.error('error', error)
-        this.props.snackBar('Error while sending the transaction')
-        this.setState({
-          sending: false
-        })
-        return
-      })
-      this.props.snackBar('Wrapping awaiting for authorization')
-      this.onClose()
-      
-    } else {
-      poolApi = new PoolApi(api)
-      poolApi.contract.drago.init(dragoDetails)
-      poolApi.contract.drago.depositToExchange(WETHaddress, this.state.account.address, api.util.toWei(this.state.amount))
-      .then((result) => {
-        console.log(result)
-        this.onClose()
-        this.props.snackBar('Wrapping awaiting for authorization')
-      })
-      .catch((error) => {
-        console.error('error', error);
-        this.props.snackBar('Error while sending the transaction')
-        this.setState({
-          sending: false
-        })
-      })
+    var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
+    const {account} = this.state
+    const authMsg = 'You wrapped ' + this.state.amount + ' ETH'
+
+    // Initializing transaction variables
+    const transactionId = api.util.sha3(new Date() + account.address)
+    var transactionDetails = {
+      status: account.source === 'MetaMask' ? 'pending' : 'authorization',
+      hash: '',
+      parityId: null,
+      timestamp: new Date(),
+      account: account,
+      error: false,
+      action: 'WrapETH',
+      symbol: 'ETH',
+      amount: this.state.amount
     }
+    this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+
+    poolApi = new PoolApi(provider)
+    poolApi.contract.drago.init(dragoDetails.address)
+    poolApi.contract.drago.depositToExchange(WETHaddress, account.address, api.util.toWei(this.state.amount))
+    .then((receipt) => {
+        console.log(receipt)
+        // Adding transaciont to the queue
+        // Parity returns an internal transaction ID straighaway. The transaction then needs to be authorized inside the wallet.
+        // MetaMask returns a receipt of the transaction once it has been mined by the network. It can take a long time.
+        if (account.source === 'MetaMask') {
+          transactionDetails.status = 'executed'
+          transactionDetails.receipt = receipt
+          transactionDetails.hash = receipt.transactionHash
+          transactionDetails.timestamp = new Date ()
+          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+        } else {
+          transactionDetails.parityId = receipt
+          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+        }
+      })
+      .catch((error) => {
+        console.log(error)
+        const errorArray = error.message.split(/\r?\n/)
+        this.props.snackBar(errorArray[0])
+        transactionDetails.status = 'error'
+        transactionDetails.error = errorArray[0]
+        this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+        this.setState({
+          sending: false
+        })
+      })
+      this.setState({
+        authMsg: authMsg,
+        authAccount: {...this.state.account},
+        // sending: false,
+        // complete: true,
+      }, this.handleSubmit)
+
   }
 }
+
+export default connect(mapStateToProps)(ElementFundActionWrapETH)

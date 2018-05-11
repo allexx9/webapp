@@ -7,7 +7,8 @@ import {
   NETWORK_OK,
   ENDPOINTS,
   NETWORKS,
-  ERC20_TOKENS
+  ERC20_TOKENS,
+  EXCHANGES
 } from '../../_utils/const'
 import BigNumber from 'bignumber.js';
 
@@ -21,6 +22,7 @@ const initialState = {
         ZRX: new BigNumber(0),
       }
     },
+    selectedExchange: EXCHANGES.zeroEx[DEFAULT_NETWORK_NAME],
     selectedTokensPair: {
       baseToken: ERC20_TOKENS[DEFAULT_NETWORK_NAME].ZRX,
       quoteToken: ERC20_TOKENS[DEFAULT_NETWORK_NAME].WETH
@@ -51,6 +53,7 @@ const initialState = {
   },
   transactions: {
     queue: new Map(),
+    pending: 0
   },
   transactionsDrago: {
     holder: {
