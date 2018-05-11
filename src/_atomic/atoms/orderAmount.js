@@ -69,7 +69,7 @@ export default class OrderAmount extends Component {
   render () {
     const { symbol, orderFillAmount } = this.props
     // const amount = Math.min(orderFillAmount, orderMaxAmount)
-    console.log(orderFillAmount)
+    // console.log(orderFillAmount)
     return (
       <Row bottom="xs">
         <Col xs={12} >

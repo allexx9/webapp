@@ -151,7 +151,7 @@ class ApplicationExchangeHome extends Component {
   componentDidUpdate() {
     // The following code is needed to fix a bug in tables. The scrolling posision is reset at every component re-render.
     // Setting the page scroll position
-    console.log(`${this.sourceLogClass} -> componentDidUpdate`);
+    // console.log(`${this.sourceLogClass} -> componentDidUpdate`);
     // const { ws } = this.state
     // console.log(ws)
     // const element = ReactDOM.findDOMNode(this);
@@ -197,8 +197,23 @@ class ApplicationExchangeHome extends Component {
   }
 
   onButtonTest = () => {
-    console.log('ping')
-    this.props.dispatch({ type: 'PING', payload: 'resttter' })
+    console.log('open')
+    // this.props.dispatch({ type: 'PING', payload: 'resttter' })
+    this.props.dispatch({ type: 'RELAY_OPEN_WEBSOCKET', payload: { url: 'wss://api.ercdex.com'}})
+    this.props.dispatch({ type: 'RELAY_INIT_ORDERS', payload: { 
+      uri: `${this.props.exchange.relay.url}/${this.props.exchange.relay.id}/v0/orderbook`,
+      // baseTokenAddress: '0x6ff6c0ff1d68b964901f986d4c9fa3ac68346570',
+      // quoteTokenAddress: '0xd0a1e359811322d97991e03f863a0c30c2cf029c' 
+    }})
+    // this.props.dispatch({ type: 'RELAY_SUBSCRIBE_WEBSOCKET', payload: { sub: 'sub:ticker2' }})
+  }
+
+  onButtonTest2 = () => {
+    console.log('subcribe')
+    // this.props.dispatch({ type: 'PING', payload: 'resttter' })
+    // this.props.dispatch({ type: 'RELAY_OPEN_WEBSOCKET', payload: { url: 'wss://api.ercdex.com'}})
+    // this.props.dispatch({ type: 'RELAY_SUBSCRIBE_WEBSOCKET', payload: { sub: 'sub:ticker' }})
+    // this.props.dispatch({ type: 'RELAY_SUBSCRIBE_WEBSOCKET', payload: { sub: 'sub:ticker2' }})
   }
 
   render() {
@@ -227,9 +242,9 @@ class ApplicationExchangeHome extends Component {
     }
 
     if (user.isManager) {
-      const { bidsOrders, asksOrders } = this.state.orders
-      const asksOrderNormalized = asksOrders.slice(asksOrders.length-20,asksOrders.length)
-      const bidsOrderNormalized = bidsOrders.slice(bidsOrders.length-20,bidsOrders.length)
+      const { bids, asks} = this.props.exchange.orderBook
+      const asksOrderNormalized = asks.slice(asks.length-20,asks.length)
+      const bidsOrderNormalized = bids.slice(bids.length-20,bids.length)
       
       // const bidsOrderNormalizedFilled = [ ...Array(20 - bidsOrderNormalized.length).fill(null), ...bidsOrderNormalized ]
       // const asksOrderNormalizedFilled = [ ...Array(20 - asksOrderNormalized.length).fill(null), ...asksOrderNormalized]
@@ -275,6 +290,10 @@ class ApplicationExchangeHome extends Component {
               <FlatButton primary={true} label="Submit"
                 labelStyle={{ fontWeight: 700, fontSize: '18px'}}
                 onClick={this.onButtonTest}
+              />
+              <FlatButton primary={true} label="Submit2"
+                labelStyle={{ fontWeight: 700, fontSize: '18px'}}
+                onClick={this.onButtonTest2}
               />
               </Col>
           </Row>
@@ -389,64 +408,65 @@ class ApplicationExchangeHome extends Component {
     }, this.onNewEventZeroExEchange)
     exchangeUtils.tradeTokensPair = tradeTokensPair
 
-    var ordersERCDex = await exchangeUtils.getOrderBookFromRelayERCDex()
-    console.log(ordersERCDex)
-    const ws = ordersERCDex.ws
-    const bidsOrders = exchangeUtils.formatOrders(ordersERCDex.bids, 'bids')
-    console.log(bidsOrders)
-    const asksOrders = exchangeUtils.formatOrders(ordersERCDex.asks, 'asks')
-    console.log(asksOrders)
-    ws.onmessage = (event) => {
-      // if (data.channel === `sub:account-notification/${myAccountAddress}`) {
-      //   /**
-      //    * {
-      //    *   "channel": "account-notification/0x5409ed021d9299bf6814279a6a1411a7e866a631",
-      //    *   "data":{
-      //    *     "notification":{
-      //    *       "account":"0x5409ed021d9299bf6814279a6a1411a7e866a631",
-      //    *       "label":"An order was canceled.",
-      //    *       "expirationDate":"2018-02-09T15:49:45.197Z",
-      //    *       "dateUpdated":"2018-02-08T15:49:45.199Z",
-      //    *       "dateCreated":"2018-02-08T15:49:45.199Z",
-      //    *       "id":1657
-      //    *     }
-      //    *   }
-      //    * }
-      //    */
-      //   console.log(data);
-      //   return;
-      // }
-      const msg = JSON.parse(event.data)
-      console.log(msg.data.eventType)
-      console.log(this.state.orders)
-      var newOrders
-      switch (msg.data.eventType) {
-        case 'created':
-          console.log(JSON.parse(event.data));
-          newOrders = exchangeUtils.updateOrderToOrderBook(msg.data.order, this.state.orders, 'add')
-          break;
-        case 'canceled':
-          console.log(JSON.parse(event.data));
-          newOrders = exchangeUtils.updateOrderToOrderBook(msg.data.order, this.state.orders, 'remove')
-          break;
-        default:
-          console.log('default')
-          newOrders = {...this.state.orders}
-          break;
-      }
-      console.log(newOrders)
-      this.setState({
-        exchangeUtils: exchangeUtils,
-        orders: newOrders
-      })
-    };
+    // var ordersERCDex = await exchangeUtils.getOrderBookFromRelayERCDex()
+    // console.log(ordersERCDex)
+    // const ws = ordersERCDex.ws
+    // const bidsOrders = exchangeUtils.formatOrders(ordersERCDex.bids, 'bids')
+    // console.log(bidsOrders)
+    // const asksOrders = exchangeUtils.formatOrders(ordersERCDex.asks, 'asks')
+    // console.log(asksOrders)
+    // ws.onmessage = (event) => {
+    //   // if (data.channel === `sub:account-notification/${myAccountAddress}`) {
+    //   //   /**
+    //   //    * {
+    //   //    *   "channel": "account-notification/0x5409ed021d9299bf6814279a6a1411a7e866a631",
+    //   //    *   "data":{
+    //   //    *     "notification":{
+    //   //    *       "account":"0x5409ed021d9299bf6814279a6a1411a7e866a631",
+    //   //    *       "label":"An order was canceled.",
+    //   //    *       "expirationDate":"2018-02-09T15:49:45.197Z",
+    //   //    *       "dateUpdated":"2018-02-08T15:49:45.199Z",
+    //   //    *       "dateCreated":"2018-02-08T15:49:45.199Z",
+    //   //    *       "id":1657
+    //   //    *     }
+    //   //    *   }
+    //   //    * }
+    //   //    */
+    //   //   console.log(data);
+    //   //   return;
+    //   // }
+    //   console.log(event)
+    //   const msg = JSON.parse(event.data)
+    //   console.log(msg.data.eventType)
+    //   console.log(this.state.orders)
+    //   var newOrders
+    //   switch (msg.data.eventType) {
+    //     case 'created':
+    //       console.log(JSON.parse(event.data));
+    //       newOrders = exchangeUtils.updateOrderToOrderBook(msg.data.order, this.state.orders, 'add')
+    //       break;
+    //     case 'canceled':
+    //       console.log(JSON.parse(event.data));
+    //       newOrders = exchangeUtils.updateOrderToOrderBook(msg.data.order, this.state.orders, 'remove')
+    //       break;
+    //     default:
+    //       console.log('default')
+    //       newOrders = {...this.state.orders}
+    //       break;
+    //   }
+    //   console.log(newOrders)
+    //   this.setState({
+    //     exchangeUtils: exchangeUtils,
+    //     orders: newOrders
+    //   })
+    // };
     this.setState({
       exchangeUtils: exchangeUtils,
-      orders: {
-        bidsOrders: bidsOrders, 
-        asksOrders: asksOrders
-      },
-      ws: ws
+      // orders: {
+      //   bidsOrders: bidsOrders, 
+      //   asksOrders: asksOrders
+      // },
+      // ws: ws
     })
 
     // // Connection to relay

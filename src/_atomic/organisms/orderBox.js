@@ -16,6 +16,7 @@ import {
   UPDATE_SELECTED_ORDER,
   CANCEL_SELECTED_ORDER
 } from '../../_utils/const'
+import { signOrder, sendOrderToRelay } from '../../_utils/exchange'
 
 
 function mapStateToProps(state) {
@@ -76,9 +77,16 @@ class OrderBox extends Component {
       exchangeUtils.fillOrderToExchange(selectedOrder.details.order, selectedOrder.orderFillAmount)
     }
     else {
-      var signedOrder = await exchangeUtils.signOrder(selectedOrder)
+      console.log(selectedOrder)
+      var signedOrder = await signOrder(selectedOrder)
       console.log(signedOrder)
-      exchangeUtils.sendOrderToRelay(signedOrder)
+      sendOrderToRelay(signedOrder)
+      .then(function (parsedBody) {
+        console.log(parsedBody)
+      })
+      .catch(function (err) {
+        console.log(err)
+      });
     }
   }
 
@@ -112,7 +120,6 @@ class OrderBox extends Component {
   
   render() {
     const { selectedOrder, selectedTokensPair } = this.props.exchange
-
     var buySelected = (selectedOrder.orderType === 'asks')
     var sellSelected = (selectedOrder.orderType === 'bids')
     return (

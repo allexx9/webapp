@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { Row, Col } from 'react-flexbox-grid';
 import BigNumber from 'bignumber.js'
 import Divider from 'material-ui/Divider';
+import Web3 from 'web3'
 
 import styles from './orderSummary.module.css'
 import classNames from 'classnames';
@@ -21,6 +22,7 @@ class OrderSummary extends Component {
   render() {
     const { order } = this.props
     var fee, total, action
+    const web3 = new Web3(Web3.currentProvider)
     // price = (order.orderPrice !== '') ? order.orderPrice : '0'
     // amount = (order.orderFillAmount !== '') ? order.orderFillAmount : '0'
 
@@ -46,7 +48,7 @@ class OrderSummary extends Component {
         return 0
       }
     }
-    fee = new BigNumber(order.details.order.takerFee).toFixed(5)
+    fee = new BigNumber(web3.utils.fromWei(order.details.order.takerFee, 'ether')).toFixed(5)
     total = new BigNumber(price()).mul(amount()).toFixed(5)
 
     action = (order.orderType === 'asks') ? 'BUY' : 'SELL'
@@ -92,7 +94,7 @@ class OrderSummary extends Component {
               <div>Price</div>
             </Col>
             <Col xs={6}>
-              <div>{price()}</div>
+              <div>{new BigNumber(price()).toFixed(5)}</div>
             </Col>
           </Row>
         </Col>
