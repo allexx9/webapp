@@ -199,7 +199,7 @@ class ApplicationExchangeHome extends Component {
   onButtonTest = () => {
     console.log('open')
     // this.props.dispatch({ type: 'PING', payload: 'resttter' })
-    this.props.dispatch({ type: 'RELAY_OPEN_WEBSOCKET', payload: { url: 'wss://api.ercdex.com', sub: 'sub:ticker'}})
+    this.props.dispatch({ type: 'RELAY_OPEN_WEBSOCKET', payload: { url: 'wss://api.ercdex.com'}})
     this.props.dispatch({ type: 'RELAY_INIT_ORDERS', payload: { 
       uri: `${this.props.exchange.relay.url}/${this.props.exchange.relay.id}/v0/orderbook`,
       // baseTokenAddress: '0x6ff6c0ff1d68b964901f986d4c9fa3ac68346570',
@@ -408,65 +408,65 @@ class ApplicationExchangeHome extends Component {
     }, this.onNewEventZeroExEchange)
     exchangeUtils.tradeTokensPair = tradeTokensPair
 
-    var ordersERCDex = await exchangeUtils.getOrderBookFromRelayERCDex()
-    console.log(ordersERCDex)
-    const ws = ordersERCDex.ws
-    const bidsOrders = exchangeUtils.formatOrders(ordersERCDex.bids, 'bids')
-    console.log(bidsOrders)
-    const asksOrders = exchangeUtils.formatOrders(ordersERCDex.asks, 'asks')
-    console.log(asksOrders)
-    ws.onmessage = (event) => {
-      // if (data.channel === `sub:account-notification/${myAccountAddress}`) {
-      //   /**
-      //    * {
-      //    *   "channel": "account-notification/0x5409ed021d9299bf6814279a6a1411a7e866a631",
-      //    *   "data":{
-      //    *     "notification":{
-      //    *       "account":"0x5409ed021d9299bf6814279a6a1411a7e866a631",
-      //    *       "label":"An order was canceled.",
-      //    *       "expirationDate":"2018-02-09T15:49:45.197Z",
-      //    *       "dateUpdated":"2018-02-08T15:49:45.199Z",
-      //    *       "dateCreated":"2018-02-08T15:49:45.199Z",
-      //    *       "id":1657
-      //    *     }
-      //    *   }
-      //    * }
-      //    */
-      //   console.log(data);
-      //   return;
-      // }
-      console.log(event)
-      const msg = JSON.parse(event.data)
-      console.log(msg.data.eventType)
-      console.log(this.state.orders)
-      var newOrders
-      switch (msg.data.eventType) {
-        case 'created':
-          console.log(JSON.parse(event.data));
-          newOrders = exchangeUtils.updateOrderToOrderBook(msg.data.order, this.state.orders, 'add')
-          break;
-        case 'canceled':
-          console.log(JSON.parse(event.data));
-          newOrders = exchangeUtils.updateOrderToOrderBook(msg.data.order, this.state.orders, 'remove')
-          break;
-        default:
-          console.log('default')
-          newOrders = {...this.state.orders}
-          break;
-      }
-      console.log(newOrders)
-      this.setState({
-        exchangeUtils: exchangeUtils,
-        orders: newOrders
-      })
-    };
+    // var ordersERCDex = await exchangeUtils.getOrderBookFromRelayERCDex()
+    // console.log(ordersERCDex)
+    // const ws = ordersERCDex.ws
+    // const bidsOrders = exchangeUtils.formatOrders(ordersERCDex.bids, 'bids')
+    // console.log(bidsOrders)
+    // const asksOrders = exchangeUtils.formatOrders(ordersERCDex.asks, 'asks')
+    // console.log(asksOrders)
+    // ws.onmessage = (event) => {
+    //   // if (data.channel === `sub:account-notification/${myAccountAddress}`) {
+    //   //   /**
+    //   //    * {
+    //   //    *   "channel": "account-notification/0x5409ed021d9299bf6814279a6a1411a7e866a631",
+    //   //    *   "data":{
+    //   //    *     "notification":{
+    //   //    *       "account":"0x5409ed021d9299bf6814279a6a1411a7e866a631",
+    //   //    *       "label":"An order was canceled.",
+    //   //    *       "expirationDate":"2018-02-09T15:49:45.197Z",
+    //   //    *       "dateUpdated":"2018-02-08T15:49:45.199Z",
+    //   //    *       "dateCreated":"2018-02-08T15:49:45.199Z",
+    //   //    *       "id":1657
+    //   //    *     }
+    //   //    *   }
+    //   //    * }
+    //   //    */
+    //   //   console.log(data);
+    //   //   return;
+    //   // }
+    //   console.log(event)
+    //   const msg = JSON.parse(event.data)
+    //   console.log(msg.data.eventType)
+    //   console.log(this.state.orders)
+    //   var newOrders
+    //   switch (msg.data.eventType) {
+    //     case 'created':
+    //       console.log(JSON.parse(event.data));
+    //       newOrders = exchangeUtils.updateOrderToOrderBook(msg.data.order, this.state.orders, 'add')
+    //       break;
+    //     case 'canceled':
+    //       console.log(JSON.parse(event.data));
+    //       newOrders = exchangeUtils.updateOrderToOrderBook(msg.data.order, this.state.orders, 'remove')
+    //       break;
+    //     default:
+    //       console.log('default')
+    //       newOrders = {...this.state.orders}
+    //       break;
+    //   }
+    //   console.log(newOrders)
+    //   this.setState({
+    //     exchangeUtils: exchangeUtils,
+    //     orders: newOrders
+    //   })
+    // };
     this.setState({
       exchangeUtils: exchangeUtils,
-      orders: {
-        bidsOrders: bidsOrders, 
-        asksOrders: asksOrders
-      },
-      ws: ws
+      // orders: {
+      //   bidsOrders: bidsOrders, 
+      //   asksOrders: asksOrders
+      // },
+      // ws: ws
     })
 
     // // Connection to relay

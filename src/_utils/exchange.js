@@ -11,7 +11,7 @@ import {
 import * as abis from '../PoolsApi/src/contracts/abi'
 import { ZeroEx } from '0x.js';
 import { BigNumber } from '@0xproject/utils';
-import ReconnectingWebSocket from 'reconnectingwebsocket'
+// import ReconnectingWebSocket from 'reconnectingwebsocket'
 import { HttpClient } from '@0xproject/connect';
 import rp from 'request-promise'
 import { Aqueduct } from 'aqueduct';
@@ -31,7 +31,7 @@ export const getOrderBookFromRelayERCDex = (uri, baseTokenAddress, quoteTokenAdd
     method: 'GET',
     uri: `${uri}`,
     qs: {
-      baseTokenAddress: baseTokenAddress, // -> uri + '?access_token=xxxxx%20xxxxx'
+      baseTokenAddress: baseTokenAddress, 
       quoteTokenAddress: quoteTokenAddress
     },
     json: true // Automatically stringifies the body to JSON
@@ -76,6 +76,98 @@ export const formatOrders = (orders, orderType) =>{
     return orderObject
   })
   return formattedOrders
+}
+
+export const signOrder = async (order) => {
+  const DECIMALS = 18;
+  var makerTokenAmount, takerTokenAmount
+  const ZeroExConfig = {
+    networkId: 42,
+    // exchangeContractAddress: this._network.id
+  }
+  const zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig);
+
+  switch (order.orderType) {
+    case "asks":
+      makerTokenAmount = new BigNumber(order.orderFillAmount)
+      takerTokenAmount = new BigNumber(makerTokenAmount).mul(new BigNumber(order.orderPrice))
+      break;
+    case "bids":
+      makerTokenAmount = new BigNumber(order.orderFillAmount).mul(new BigNumber(order.orderPrice))
+      takerTokenAmount = new BigNumber(order.orderFillAmount)
+      break;
+  }
+  const tokensAmounts = {
+    makerTokenAmount: ZeroEx.toBaseUnitAmount(makerTokenAmount, DECIMALS), // Base 18 decimals
+    takerTokenAmount: ZeroEx.toBaseUnitAmount(takerTokenAmount, DECIMALS), // Base 18 decimals
+  };
+  var orderToBeSigned = { ...order.details.order, ...tokensAmounts }
+  const fees = await getFees(orderToBeSigned, ZeroExConfig.networkId)
+  console.log(fees)
+  const orderToBeSignedWithFees = {
+    ...orderToBeSigned,
+    ...fees
+  }
+  console.log(orderToBeSignedWithFees)
+  const orderHash = ZeroEx.getOrderHashHex(orderToBeSignedWithFees);
+  console.log(ZeroEx.isValidOrderHash(orderHash))
+  const shouldAddPersonalMessagePrefix = true;
+  const signer = await zeroEx.getAvailableAddressesAsync();
+  const ecSignature = await zeroEx.signOrderHashAsync(orderHash, signer[0], shouldAddPersonalMessagePrefix);
+  console.log(ZeroEx.isValidSignature(
+    orderHash,
+    ecSignature,
+    orderToBeSigned.maker
+  )
+)
+  // Append signature to order
+  const signedOrder = {
+    ...orderToBeSignedWithFees,
+    ecSignature,
+  };
+  return signedOrder
+}
+
+export const sendOrderToRelay = async (signedOrder) => {
+  console.log(signedOrder)
+  const ZeroExConfig = {
+    networkId: 42,
+    // exchangeContractAddress: this._network.id
+  }
+  const relayerApiUrl = `https://api.ercdex.com/api/standard/${ZeroExConfig.networkId}/v0/order`
+  // const relayerClient = new HttpClient(relayerApiUrl);
+  // const response = await relayerClient.submitOrderAsync(signedOrder);
+  // console.log(response)
+  var options = {
+    method: 'POST',
+    uri: relayerApiUrl,
+    body: signedOrder,
+    json: true // Automatically stringifies the body to JSON
+  };
+
+  return rp(options)
+}
+
+export const getFees = async (order, networkId) => {
+  const relayerApiUrl = `https://api.ercdex.com/api/fees`
+
+  var options = {
+    method: 'POST',
+    uri: relayerApiUrl,
+    qs: {
+      makerTokenAddress: order.makerTokenAddress,
+      takerTokenAddress: order.takerTokenAddress,
+      makerTokenAmount: new BigNumber(order.makerTokenAmount).toFixed(),
+      takerTokenAmount: new BigNumber(order.takerTokenAmount).toFixed(),
+      maker: order.maker,
+      taker: order.taker,
+      networkId: networkId
+    },
+    json: true // Automatically stringifies the body to JSON
+  };
+  console.log(options.qs)
+  return rp(options)
+
 }
 
 class Exchange {
@@ -168,91 +260,91 @@ class Exchange {
     }
   }
 
-  getOrderBookFromRelay = (relay = 'wss://ws.kovan.radarrelay.com/0x/v0/ws') => {
-    if (!this._baseTokenAddress) {
-      throw new Error('baseTokenAddress needs to be set')
-    }
-    if (!this._quoteTokenAddress) {
-      throw new Error('quoteTokenAddress needs to be set')
-    }
-    const subscribeMsg = `{
-      "type": "subscribe",
-      "channel": "orderbook",
-      "requestId": 1,
-      "payload": {
-          "baseTokenAddress": "${this._baseTokenAddress}",
-          "quoteTokenAddress": "${this._quoteTokenAddress}",
-          "snapshot": true,
-          "limit": 100
-      }
-    }`
-    // console.log(subscribeMsg)
-    var ws = new ReconnectingWebSocket(relay);
-    ws.onopen = function () {
-      console.log(`Connected to ${relay}`);
-      ws.send(subscribeMsg);
-    };
-    ws.onerror = (event) => {
-      console.log(event)
-      console.log('Connection error')
-    }
-    ws.onclose = async (event) => {
-      console.log(event)
-      console.log('Connection closed')
-    }
-    return ws
-  }
+  // getOrderBookFromRelay = (relay = 'wss://ws.kovan.radarrelay.com/0x/v0/ws') => {
+  //   if (!this._baseTokenAddress) {
+  //     throw new Error('baseTokenAddress needs to be set')
+  //   }
+  //   if (!this._quoteTokenAddress) {
+  //     throw new Error('quoteTokenAddress needs to be set')
+  //   }
+  //   const subscribeMsg = `{
+  //     "type": "subscribe",
+  //     "channel": "orderbook",
+  //     "requestId": 1,
+  //     "payload": {
+  //         "baseTokenAddress": "${this._baseTokenAddress}",
+  //         "quoteTokenAddress": "${this._quoteTokenAddress}",
+  //         "snapshot": true,
+  //         "limit": 100
+  //     }
+  //   }`
+  //   // console.log(subscribeMsg)
+  //   var ws = new ReconnectingWebSocket(relay);
+  //   ws.onopen = function () {
+  //     console.log(`Connected to ${relay}`);
+  //     ws.send(subscribeMsg);
+  //   };
+  //   ws.onerror = (event) => {
+  //     console.log(event)
+  //     console.log('Connection error')
+  //   }
+  //   ws.onclose = async (event) => {
+  //     console.log(event)
+  //     console.log('Connection closed')
+  //   }
+  //   return ws
+  // }
 
-  getOrderBookFromRelayERCDex = (relay = 'https://api.ercdex.com/api/standard') => {
-    console.log('Fetching from ERCDex')
-    if (!this._baseTokenAddress) {
-      throw new Error('baseTokenAddress needs to be set')
-    }
-    if (!this._quoteTokenAddress) {
-      throw new Error('quoteTokenAddress needs to be set')
-    }
-    var options = {
-      method: 'GET',
-      uri: `${relay}/${this._network.id}/v0/orderbook`,
-      qs: {
-        baseTokenAddress: this._baseTokenAddress, // -> uri + '?access_token=xxxxx%20xxxxx'
-        quoteTokenAddress: this._quoteTokenAddress
-      },
-      json: true // Automatically stringifies the body to JSON
-    };
-    console.log(options)
-    return rp(options)
-      .then((ordersERCDex) => {
-        var ws = new ReconnectingWebSocket('wss://api.ercdex.com');
-        ws.onopen = () => {
-          console.log(`Connected to wss://api.ercdex.com`);
-          console.log((`sub:pair-order-change/${this._baseTokenAddress}/${this._quoteTokenAddress}`))
-          console.log((`sub:pair-order-change/${this._quoteTokenAddress}/${this._baseTokenAddress}`))
-          ws.send(`sub:pair-order-change/${this._baseTokenAddress}/${this._quoteTokenAddress}`);
-          ws.send(`sub:pair-order-change/${this._quoteTokenAddress}/${this._baseTokenAddress}`);
-          // ws.send(`sub:pair-taker-event/${this._quoteTokenAddress}/${this._baseTokenAddress}`);
-          // ws.send(`sub:account-order-change/0xec4ee1bcf8107480815b08b530e0ead75b9f804f`);
-          // ws.send(`sub:ticker`);
-          // ws.send(subscribeMsg);
-        };
-        ws.onerror = (event) => {
-          console.log(event)
-          console.log('Connection error')
-        }
-        ws.onclose = async (event) => {
-          console.log(event)
-          console.log('Connection closed')
-        }
-        ordersERCDex.ws = ws
-        return ordersERCDex
-        // POST succeeded...
-      })
-      .catch(function (err) {
-        console.log(err)
-        return err
-        // POST failed...
-      });
-  }
+  // getOrderBookFromRelayERCDex = (relay = 'https://api.ercdex.com/api/standard') => {
+  //   console.log('Fetching from ERCDex')
+  //   if (!this._baseTokenAddress) {
+  //     throw new Error('baseTokenAddress needs to be set')
+  //   }
+  //   if (!this._quoteTokenAddress) {
+  //     throw new Error('quoteTokenAddress needs to be set')
+  //   }
+  //   var options = {
+  //     method: 'GET',
+  //     uri: `${relay}/${this._network.id}/v0/orderbook`,
+  //     qs: {
+  //       baseTokenAddress: this._baseTokenAddress, // -> uri + '?access_token=xxxxx%20xxxxx'
+  //       quoteTokenAddress: this._quoteTokenAddress
+  //     },
+  //     json: true // Automatically stringifies the body to JSON
+  //   };
+  //   console.log(options)
+  //   return rp(options)
+  //     .then((ordersERCDex) => {
+  //       var ws = new ReconnectingWebSocket('wss://api.ercdex.com');
+  //       ws.onopen = () => {
+  //         console.log(`Connected to wss://api.ercdex.com`);
+  //         console.log((`sub:pair-order-change/${this._baseTokenAddress}/${this._quoteTokenAddress}`))
+  //         console.log((`sub:pair-order-change/${this._quoteTokenAddress}/${this._baseTokenAddress}`))
+  //         ws.send(`sub:pair-order-change/${this._baseTokenAddress}/${this._quoteTokenAddress}`);
+  //         ws.send(`sub:pair-order-change/${this._quoteTokenAddress}/${this._baseTokenAddress}`);
+  //         // ws.send(`sub:pair-taker-event/${this._quoteTokenAddress}/${this._baseTokenAddress}`);
+  //         // ws.send(`sub:account-order-change/0xec4ee1bcf8107480815b08b530e0ead75b9f804f`);
+  //         // ws.send(`sub:ticker`);
+  //         // ws.send(subscribeMsg);
+  //       };
+  //       ws.onerror = (event) => {
+  //         console.log(event)
+  //         console.log('Connection error')
+  //       }
+  //       ws.onclose = async (event) => {
+  //         console.log(event)
+  //         console.log('Connection closed')
+  //       }
+  //       ordersERCDex.ws = ws
+  //       return ordersERCDex
+  //       // POST succeeded...
+  //     })
+  //     .catch(function (err) {
+  //       console.log(err)
+  //       return err
+  //       // POST failed...
+  //     });
+  // }
 
   formatOrders = (orders, orderType) =>{
     var orderPrice, orderAmount
@@ -281,13 +373,20 @@ class Exchange {
   }
 
   fillOrderToExchange = async (signedOrder, amount) =>{
-    const zeroEx = this._zeroEx
+    // const zeroEx = this._zeroEx
     const DECIMALS = 18;
     const shouldThrowOnInsufficientBalanceOrAllowance = true;
+    const ZeroExConfig = {
+      networkId: this._network.id,
+      exchangeContractAddress: '0xf307de6528fa16473d8f6509b7b1d8851320dba5',
+      tokenTransferProxyContractAddress: '0xcc040edf6e508c4372a62b1a902c69dcc52ceb1d'
+    }
+    const zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig);
     const fillTakerTokenAmount = ZeroEx.toBaseUnitAmount(new BigNumber(amount), DECIMALS)
     const takerAddress = await zeroEx.getAvailableAddressesAsync()
     console.log(takerAddress)
     console.log(fillTakerTokenAmount)
+
     const txHash = await zeroEx.exchange.fillOrderAsync(
       signedOrder,
       fillTakerTokenAmount,
@@ -407,7 +506,8 @@ class Exchange {
       feeRecipient: ZeroEx.NULL_ADDRESS,
       makerTokenAddress: makerTokenAddress,
       takerTokenAddress: takerTokenAddress,
-      exchangeContractAddress: EXCHANGE_ADDRESS,
+      exchangeContractAddress: '0xf307de6528fa16473d8f6509b7b1d8851320dba5',
+      // exchangeContractAddress: EXCHANGE_ADDRESS,
       salt: ZeroEx.generatePseudoRandomSalt(),
       makerFee: '0',
       takerFee: '0',

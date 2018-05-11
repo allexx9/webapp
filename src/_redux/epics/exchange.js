@@ -19,7 +19,9 @@ import 'rxjs/add/observable/fromPromise';
 import { timer } from 'rxjs/observable/timer'
 import rp from 'request-promise'
 import { getOrderBookFromRelayERCDex } from '../../_utils/exchange'
+// import io from 'socket.io-client'
 // import ReconnectingWebSocket from 'reconnectingwebsocket'
+import ReconnectingWebSocket from 'reconnecting-websocket'
 
 import {
   ORDERBOOK_UPDATE,
@@ -51,8 +53,8 @@ export const initOrderBookFromRelayERCDexEpic = (action$, store) =>
       const quoteTokenAddress = state.exchange.selectedTokensPair.quoteToken.address
       const uri = `${state.exchange.relay.url}/${state.exchange.relay.networkID}/v0/orderbook`
       return getOrderBookFromRelayERCDex$(
-        uri, 
-        baseTokenAddress, 
+        uri,
+        baseTokenAddress,
         quoteTokenAddress
       )
         .map(payload => ({ type: ORDERBOOK_INIT, payload }))
@@ -98,67 +100,86 @@ export const webSocketReducer = (state = 0, action) => {
 // https://github.com/ReactiveX/rxjs/issues/2048
 
 
-const websocketStream$ = Observable.create(observer => {
-  const websocket = new WebSocket('wss://api.ercdex.com');
-  console.log('websocketStream$')
-  // websocket.on('open', () => {
-  //   console.info('connection opened');
-  //   websocket.send(`sub:ticker`);
-  // });
-  websocket.onopen = (msg) => {
-    console.log(msg)
-    console.log('websocket open')
-    websocket.send(`sub:ticker`);
-    return observer.next(msg.data);
-  }
-  websocket.onmessage = (msg) => {
-    console.log(msg)
-    return observer.next(msg.data);
-  }
-  websocket.onclose = (msg) => {
-    console.log(msg)
-    return observer.error(msg);
-  }
-  websocket.onerror = function (error) {
-    console.log('WebSocket Error ' + error);
-    return observer.error(error)
-  };
+// const websocketStream$ = (baseTokenAddress, quoteTokenAddress) => {
+//   return Observable.create(observer => {
+//     var websocket = new WebSocket('wss://api.ercdex.com');
+//     console.log('websocketStream$')
+//     // websocket.on('open', () => {
+//     //   console.info('connection opened');
+//     //   websocket.send(`sub:ticker`);
+//     // });
+//     websocket.onopen = (msg) => {
+//       console.log(msg)
+//       console.log('WebSocket open.')
+//       // websocket.send(`sub:ticker`);
+//       websocket.send(`sub:pair-order-change/${baseTokenAddress}/${quoteTokenAddress}`);
+//       websocket.send(`sub:pair-order-change/${quoteTokenAddress}/${baseTokenAddress}`);
+//       return observer.next(msg.data);
+//     }
+//     websocket.onmessage = (msg) => {
+//       console.log(msg)
+//       return observer.next(msg.data);
+//     }
+//     websocket.onclose = (msg) => {
+//       console.log(msg)
+//       return observer.error(msg);
+//     }
+//     websocket.onerror = function (error) {
+//       console.log(error)
+//       console.log('WebSocket error.');
+//       return observer.error(error)
+//     };
 
-  console.log(websocket)
-  return () => websocket.close();
-});
+//     console.log(websocket)
+//     return () => websocket.close();
+//   })
+// }
+
+const reconnectingWebsocket$ = (baseTokenAddress, quoteTokenAddress) => {
+  return Observable.create(observer => {
+    var websocket = new ReconnectingWebSocket('wss://api.ercdex.com')
+    console.log('reconnectingWebsocket$')
+    websocket.addEventListener('open', (msg) => {
+      console.log('WebSocket open.')
+      // websocket.send(`sub:ticker`);
+      websocket.send(`sub:pair-order-change/${baseTokenAddress}/${quoteTokenAddress}`);
+      websocket.send(`sub:pair-order-change/${quoteTokenAddress}/${baseTokenAddress}`);
+      return observer.next(msg.data);
+    });
+    websocket.onmessage = (msg) => {
+      console.log(msg)
+      return observer.next(msg.data);
+    }
+    websocket.onerror = (error) => {
+      console.log(error)
+      console.log('WebSocket error.');
+      // return observer.error(error)
+    };
+    return () => websocket.close();
+  })
+}
+
 
 // const socket$ = Observable.webSocket('wss://api.ercdex.com');
 
-export const relayWebSocketEpic = (action$) =>
+export const relayWebSocketEpic = (action$, store) =>
   action$.ofType(RELAY_OPEN_WEBSOCKET)
     .mergeMap((action) => {
-      console.log('in epic mergeMap');
       console.log(action)
-
-      // We are doing this so the data passed are not enclosed in ""
-      // const webSocket$ = socket$
-      // webSocket$._config.serializer = function (value) { return value; }
-
-      // return webSocket$.multiplex(
-      //   () => {
-      //     console.log('sub');
-      //     return action.payload.sub
-      //   },
-      //   () => {
-      //     console.log('unsub');
-      //     return { unsub: '' }
-      //   },
-      //   msg => msg
-      // )
-      return websocketStream$
-        .retryWhen((err) => {
-          console.log('retry when err ');
-          console.log(err)
-          return window.navigator.onLine ? timer(1000) : Observable.fromEvent(window, 'online')
-        })
+      const state = store.getState()
+      const baseTokenAddress = state.exchange.selectedTokensPair.baseToken.address
+      const quoteTokenAddress = state.exchange.selectedTokensPair.quoteToken.address
+      return reconnectingWebsocket$(
+        baseTokenAddress,
+        quoteTokenAddress
+      )
+        // .retryWhen((err) => {
+        //   console.log('Retry when error');
+        //   console.log(err)
+        //   return window.navigator.onLine ? timer(1000) : Observable.fromEvent(window, 'online')
+        // })
         .takeUntil(
-          action$.ofType('CLOSE_TICKER_STREAM')
+          action$.ofType('RELAY_CLOSE_WEBSOCKET')
             .filter(closeAction => closeAction.ticker === action.ticker)
         )
         .map(payload => ({ type: RELAY_MSG_FROM_WEBSOCKET, payload }))
@@ -170,11 +191,12 @@ export const orderBookEpic = action$ => {
     .map(action => action.payload)
     .bufferTime(2000)
     .filter(value => {
-      value.lenght !==0
+      // console.log(value)
+      return value.length !== 0
     })
     .bufferCount(1)
-    .map(updateOrderBook)
-    // .map(payload => ({ type: RELAY_INIT_ORDERS }))
+    // .map(updateOrderBook)
+    .map(payload => ({ type: RELAY_INIT_ORDERS }))
 }
 
 
