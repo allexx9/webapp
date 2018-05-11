@@ -185,6 +185,22 @@ class ElementNotificationsDrawer extends Component {
           secondaryText[1] = timeStamp
           eventStatus = value.status
           break;
+        case "WrapETH":
+          drgvalue = value.amount
+          symbol = value.symbol
+          primaryText = "Wrap " + drgvalue + " " + symbol
+          secondaryText[0] = "Status: " + value.status.charAt(0).toUpperCase() + value.status.slice(1)
+          secondaryText[1] = timeStamp
+          eventStatus = value.status
+          break;
+        case "UnWrapETH":
+          drgvalue = value.amount
+          symbol = value.symbol
+          primaryText = "Unwrap " + drgvalue + " " + symbol
+          secondaryText[0] = "Status: " + value.status.charAt(0).toUpperCase() + value.status.slice(1)
+          secondaryText[1] = timeStamp
+          eventStatus = value.status
+          break;
       }
       return (
         <ElementNotification key={key}

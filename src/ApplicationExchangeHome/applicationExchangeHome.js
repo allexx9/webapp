@@ -245,7 +245,7 @@ class ApplicationExchangeHome extends Component {
       const { bids, asks} = this.props.exchange.orderBook
       const asksOrderNormalized = asks.slice(asks.length-20,asks.length)
       const bidsOrderNormalized = bids.slice(bids.length-20,bids.length)
-      
+      console.log(this.props.exchange.selectedExchange)
       // const bidsOrderNormalizedFilled = [ ...Array(20 - bidsOrderNormalized.length).fill(null), ...bidsOrderNormalized ]
       // const asksOrderNormalizedFilled = [ ...Array(20 - asksOrderNormalized.length).fill(null), ...asksOrderNormalized]
       const selectedOrder = {...exchange.selectedOrder}
@@ -349,53 +349,11 @@ class ApplicationExchangeHome extends Component {
     }
   }
 
-  connectToRadarRelay = () => {
-  //   const subscribeMsg =`{
-  //     "type": "subscribe",
-  //     "channel": "orderbook",
-  //     "requestId": 1,
-  //     "payload": {
-  //         "baseTokenAddress": "0xe41d2489571d322189246dafa5ebde1f4699f498",
-  //         "quoteTokenAddress": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-  //         "snapshot": true,
-  //         "limit": 100
-  //     }
-  // }`
-  //   const that = this
-  //   var ws = new WebSocket('wss://ws.radarrelay.com/0x/v0/ws');
-  //   ws.onopen = function () {
-  //     console.log('Connected to wss://ws.radarrelay.com/0x/v0/ws');
-  //     ws.send(subscribeMsg); 
-  //   };
-  //   ws.onmessage = function (event) {
-  //     console.log(event.data)
-  //     const data = JSON.parse(event.data)
-  //     if (data.type === 'snapshot') {
-  //       // const bidsList = Immutable.List(data.payload.bids) 
-  //       // const asksList = Immutable.List(data.payload.asks)
-  //       // console.log(bidsList)
-  //       // console.log(asksList)
-  //       console.log(data.payload)
-  //       // that.setState({
-  //       //   bidsList: bidsList
-  //       // })
-  //     }
-  //   };
-  // console.log(JSON.parse(fakeOrders))
-  }
-
-  onNewEventZeroExEchange = (error, event) => {
+  onNewEventZeroExExchange = (error, event) => {
     console.log(event)
   }
 
-
   connectToExchange = async (tradeTokensPair) => {
-    // const networkInfo = {
-    //   id: 1,
-    //   name: "mainnet",
-    //   etherscan: "https://www.etherscan.io/",
-    //   zeroExExchangeContractAddress: "0x12459c951127e0c374ff9105dda097662a027093"
-    // }
     console.log(tradeTokensPair)
     const { api } = this.context
     const networkInfo = api._rb.network
@@ -405,7 +363,7 @@ class ApplicationExchangeHome extends Component {
     const subscription = contract.events.allEvents({
       fromBlock: 0,
       toBlock: 'latest'
-    }, this.onNewEventZeroExEchange)
+    }, this.onNewEventZeroExExchange)
     exchangeUtils.tradeTokensPair = tradeTokensPair
 
     // var ordersERCDex = await exchangeUtils.getOrderBookFromRelayERCDex()
@@ -468,41 +426,6 @@ class ApplicationExchangeHome extends Component {
       // },
       // ws: ws
     })
-
-    // // Connection to relay
-    // var ws = await exchangeUtils.getOrderBookFromRelay()
-    // ws.onmessage = (event) => {
-    //   const data = JSON.parse(event.data)
-    //   // console.log(event)
-    //   // console.log(data)
-    //   if (data.type === 'snapshot') {
-    //     console.log(data)
-    //     const bidsOrders = exchangeUtils.formatOrders(Array.from(data.payload.bids), 'bids')
-    //     console.log(bidsOrders)
-    //     const asksOrders = exchangeUtils.formatOrders(Array.from(data.payload.asks), 'asks')
-    //     console.log(asksOrders)
-    //     this.setState({
-    //       exchangeUtils: exchangeUtils,
-    //       orders: {
-    //         bidsOrders: bidsOrders, 
-    //         asksOrders: asksOrders
-    //       }
-    //     })
-    //   }
-    //   if (data.type === 'update') {
-    //     console.log(data)
-    //     const order = data.payload
-    //     const newOrders = exchangeUtils.addOrderToOrderBook(order, this.state.orders)
-    //     this.setState({
-    //       exchangeUtils: exchangeUtils,
-    //       orders: newOrders
-    //     })
-    //   }
-    // }
-    // this.setState({
-    //   ws: ws,
-    //   exchangeUtils: exchangeUtils
-    // })
   }
 
   // Getting last transactions
