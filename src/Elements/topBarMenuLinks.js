@@ -99,7 +99,6 @@ class NavLinks extends Component {
     // value = 1 = Trader
     // value = 2 = Manager
     handleTopBarSelectAccountType = (event, value) => {
-      console.log('manager selection', value)
       const accountType = {
         false: false,
         true: true
