@@ -118,7 +118,7 @@ class ElementNotificationsDrawer extends Component {
     var txHash = ''
     const { recentTransactions } = this.props
     if (recentTransactions.size === 0) {
-      return <p className={styles.noTransacationsMsg}>No recent transactions.</p>
+      return <div className={styles.noRecentTransactions}><p className={styles.noTransacationsMsg}>No recent transactions.</p></div>
     }
     return Array.from(recentTransactions).reverse().map((transaction) => {
       secondaryText = []
@@ -220,13 +220,18 @@ class ElementNotificationsDrawer extends Component {
   }
 
   render() {
-    const { notificationsOpen } = this.props
+    const { notificationsOpen, recentTransactions } = this.props
+    var drawerHeight = 72
+    if (recentTransactions.size !== 0) {
+      drawerHeight = 72 * recentTransactions.size
+    }
     return (
       <span>
         <Drawer width={300} openSecondary={true}
           open={notificationsOpen} zDepth={1} docked={true}
           containerClassName={styles.notifications}
           onRequestChange={this.handleToggleNotifications}
+          containerStyle={{height: drawerHeight.toString()}}
         >
 
           {/* <Row>

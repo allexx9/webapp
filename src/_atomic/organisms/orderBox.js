@@ -119,14 +119,15 @@ class OrderBox extends Component {
 
   }
 
-  onToggleActivateTokenTrade = (event, isInputChecked) => {
-    const { selectedTokensPair } = this.props.exchange
+  onToggleActivateTokenTrade = () => {
+    const { selectedTokensPair, selectedExchange, makerAddress } = this.props.exchange
     const payload = {
         type: SET_TOKEN_ALLOWANCE,
         payload: {
           tokenAddress: selectedTokensPair.baseToken.address,
-          ownerAddress: 
-          selectedTokensPair.baseToken.address,
+          ownerAddress: makerAddress,
+          spenderAddress: selectedExchange.tokenTransferProxyAddress,
+          ZeroExConfig: selectedExchange
         }
     }
     this.props.dispatch(payload)
@@ -171,6 +172,9 @@ class OrderBox extends Component {
       },
       toggle: {
         // paddingRight: '5px',
+      },
+      trackSwitched: {
+        backgroundColor: '#bdbdbd',
       },
       thumbSwitched: {
         backgroundColor: Colors.blue500,
@@ -221,12 +225,12 @@ class OrderBox extends Component {
                           label="ACTIVATE"
                           style={aggregatedTogglestyles.toggle}
                           // thumbStyle={aggregatedTogglestyles.thumbOff}
-                          // trackStyle={aggregatedTogglestyles.trackOff}
+                          trackStyle={aggregatedTogglestyles.trackOff}
                           thumbSwitchedStyle={aggregatedTogglestyles.thumbSwitched}
-                          // trackSwitchedStyle={aggregatedTogglestyles.trackSwitched}
+                          trackSwitchedStyle={aggregatedTogglestyles.trackSwitched}
                           labelStyle={aggregatedTogglestyles.labelStyle}
                           onToggle={this.onToggleActivateTokenTrade}
-                          toggled={this.props.aggregated}
+                          toggled={selectedTokensPair.baseTokenAllowance}
                         />
                     </div>
                   </Col>
