@@ -86,7 +86,7 @@ class ApplicationHome extends Component {
               <Row>
                 <Col xs={12}>
                   
-                  <div className={styles.mainlogo}><img style={{height: "100px"}} src='/img/new_logo_full.png'/></div>
+                  <div className={styles.mainlogo}><img style={{height: "80px"}} src='/img/new_logo_full.png'/></div>
                   <h2 className={styles.headline}>Decentralized Pools of Digital Tokens</h2>
                   <p>&nbsp;</p>
                   <a href="https://t.me/rigoblockprotocol" target="_blank" rel="noopener noreferrer">
