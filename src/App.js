@@ -299,9 +299,9 @@ export class App extends Component {
                 <Route exact path={"/app/" + appHashPath + "/home"} component={ApplicationHomePage} />
                 <Route path={"/app/" + appHashPath + "/vault"} component={ApplicationVaultPage} />
                 <Route path={"/app/" + appHashPath + "/drago"} component={ApplicationDragoPage} />
-                {/* <Route path={"/app/" + appHashPath + "/exchange"} component={ApplicationExchangePage} /> */}
+                <Route path={"/app/" + appHashPath + "/exchange"} component={ApplicationExchangePage} />
                 <Route path={"/app/" + appHashPath + "/config"} component={ApplicationConfigPage} />
-                {/* <Redirect from="/exchange/" to={"/app/" + appHashPath + "/exchange"} /> */}
+                <Redirect from="/exchange/" to={"/app/" + appHashPath + "/exchange"} />
                 <Redirect from="/vault/" to={"/app/" + appHashPath + "/vault"} />
                 <Redirect from="/drago" to={"/app/" + appHashPath + "/drago"} />
                 <Redirect from="/" to={"/app/" + appHashPath + "/home"} />

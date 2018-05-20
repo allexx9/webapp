@@ -215,14 +215,11 @@ class Interfaces {
       // })
   }
 
-  attachInterfaceInfuraV2 = () => {
+  async attachInterfaceInfuraV2() {
     // console.log(`${this._sourceLogClass} -> Interface Infura`)
     const api = this._api
-    return Promise
-    .all([
-      this.getAccountsMetamask(api)
-    ])
-    .then(([accountsMetaMask]) => {
+    try {
+      const accountsMetaMask = await this.getAccountsMetamask(api)
       const allAccounts = {...accountsMetaMask}
       console.log('Metamask account loaded: ', accountsMetaMask)
       const stateUpdate = {
@@ -244,16 +241,15 @@ class Interfaces {
         const result = {...this._success, ...stateUpdate}
         this._success = result
         return result
-      })
-      .catch((error) => {
-        var currentState = this._error
-        const stateUpdate = {
-          networkError: NETWORK_WARNING,
-          networkStatus: MSG_NETWORK_STATUS_ERROR,
-        }
-        this._error = {...currentState, ...stateUpdate}
-        console.warn('attachInterface', error)
-      });
+    } catch(error) {
+      var currentState = this._error
+      const stateUpdate = {
+        networkError: NETWORK_WARNING,
+        networkStatus: MSG_NETWORK_STATUS_ERROR,
+      }
+      this._error = {...currentState, ...stateUpdate}
+      console.warn('attachInterface', error)
+    }
   }
 
   attachInterfaceRigoBlockV2 = () => {

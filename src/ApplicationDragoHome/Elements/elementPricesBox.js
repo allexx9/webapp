@@ -122,7 +122,7 @@ export default class ElementPriceBox extends Component {
               </div>
             </Col>
             <Col xs={7}>
-              <div className={styles.price}>{dragoDetails.buyPrice} ETH</div>
+              <div className={styles.price}>{dragoDetails.buyPrice} <small>ETH</small></div>
             </Col>
           </Row>
           <Row middle="xs">
@@ -132,7 +132,7 @@ export default class ElementPriceBox extends Component {
               </div>
             </Col>
             <Col xs={7}>
-              <div className={styles.price}>{dragoDetails.sellPrice} ETH</div>
+              <div className={styles.price}>{dragoDetails.sellPrice} <small>ETH</small></div>
             </Col>
           </Row>
         </div>

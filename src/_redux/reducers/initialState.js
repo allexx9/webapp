@@ -54,8 +54,8 @@ const initialState = {
     relay: {
       url: 'https://api.ercdex.com/api/standard',
       networkId: '42'
-    }
-
+    },
+    prices: {}
   },
   transactions: {
     queue: new Map(),
@@ -69,6 +69,11 @@ const initialState = {
     manager: {
       list: [],
       logs: []
+    },
+    selectedDrago: {
+      details: {},
+      transactions: [],
+      assets: []
     }
   },
   transactionsVault: {

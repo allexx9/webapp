@@ -15,7 +15,6 @@ import { BigNumber } from '@0xproject/utils';
 // import ReconnectingWebSocket from 'reconnectingwebsocket'
 import { HttpClient } from '@0xproject/connect';
 import rp from 'request-promise'
-import { Aqueduct, MarketOrder } from 'aqueduct';
 
 export const getOrderBookFromRelayERCDex = (networkId, baseTokenAddress, quoteTokenAddress) => {
   console.log('Fetching orderbook from ERCDex')
@@ -231,6 +230,26 @@ export const getFees = async (order, networkId) => {
   console.log(options.qs)
   return rp(options)
 }
+
+// tokenPricesTickerBitfinex = () =>{
+//   const relayerApiUrl = `https://api.bitfinex.com/v1/pubticker/btcusd`
+
+//   var options = {
+//     method: 'GET',
+//     uri: relayerApiUrl,
+//     qs: {
+//       makerTokenAddress,
+//       takerTokenAddress,
+//       baseTokenAddress,
+//       quantity,
+//       networkId,
+//       takerAddress,
+//     },
+//     json: true // Automatically stringifies the body to JSON
+//   };
+//   console.log(options.qs)
+//   return rp(options)
+// }
 
 export const setTokenAllowance = async (
   tokenAddress,

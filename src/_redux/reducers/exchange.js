@@ -9,7 +9,8 @@ import {
   ORDERBOOK_UPDATE,
   ORDERBOOK_INIT,
   ORDERBOOK_AGGREGATE_ORDERS,
-  SET_MAKER_ADDRESS
+  SET_MAKER_ADDRESS,
+  TOKEN_PRICE_TICKER_UPDATE
 } from '../../_utils/const'
 
 function transactionsReducer(state = initialState.exchange, action) {
@@ -56,26 +57,17 @@ function transactionsReducer(state = initialState.exchange, action) {
       };
 
     case ORDERBOOK_INIT:
-      console.log(action)
-      console.log(ORDERBOOK_INIT)
       newOrderBook = { ...state.orderBook, ...action.payload }
-      // return {
-      //   ...state,
-      //   selectedOrder: initialState.exchange.selectedOrder
-      // };
       return {
         ...state,
         orderBook: newOrderBook
       }
 
     case ORDERBOOK_UPDATE:
-      console.log(action)
-      console.log(ORDERBOOK_UPDATE)
-      // return {
-      //   ...state,
-      //   selectedOrder: initialState.exchange.selectedOrder
-      // };
       return { ...state, webSocket: { ...action.payload } }
+
+    case TOKEN_PRICE_TICKER_UPDATE:
+      return { ...state, prices: { ...action.payload } }
 
     default: return state;
   }

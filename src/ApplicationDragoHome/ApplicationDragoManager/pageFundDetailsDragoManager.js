@@ -32,6 +32,11 @@ import ElementListAssets from '../Elements/elementListAssets';
 import ElementPriceBox from '../Elements/elementPricesBox';
 import styles from './pageFundDetailsDragoManager.module.css';
 
+import {
+  UPDATE_SELECTED_DRAGO_MANAGER,
+  TOKEN_PRICE_TICKER_OPEN_WEBSOCKET
+} from '../../_utils/const'
+
 function mapStateToProps(state) {
   return state
 }
@@ -48,6 +53,9 @@ class PageFundDetailsDragoManager extends Component {
     endpoint: PropTypes.object.isRequired,
     user: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
+    dispatch: PropTypes.func.isRequired,
+    transactionsDrago: PropTypes.object.isRequired, 
+    exchange: PropTypes.object.isRequired 
   };
 
   state = {
@@ -60,12 +68,17 @@ class PageFundDetailsDragoManager extends Component {
       addressGroup: null,
       dragoETHBalance: null
     },
-    dragoAssets: [],
-    dragoTransactionsLogs: [],
     loading: true,
     snackBar: false,
     snackBarMsg: '',
   }
+
+  updateSelectedDragoAction = (results) => {
+    return {
+      type: UPDATE_SELECTED_DRAGO_MANAGER,
+      payload: results
+    }
+  };
 
   subTitle = (account) => {
     return (
@@ -73,11 +86,12 @@ class PageFundDetailsDragoManager extends Component {
     )
   }
 
-  componentWillMount() {
+  componentDidMount() {
     // Getting dragoid from the url parameters passed by router and then
     // the list of last transactions
     const dragoId = this.props.match.params.dragoid
     this.getDragoDetails(dragoId)
+    this.props.dispatch({type: TOKEN_PRICE_TICKER_OPEN_WEBSOCKET})
   }
 
   componentWillUnmount() {
@@ -118,10 +132,10 @@ class PageFundDetailsDragoManager extends Component {
     const sourceLogClass = this.constructor.name
     var stateUpdate = true
     var propsUpdate = true
-    const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
-    const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
+    // const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
+    // const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
     stateUpdate = !utils.shallowEqual(this.state, nextState)
-    propsUpdate = !currentBalance.eq(nextBalance)
+    propsUpdate = !utils.shallowEqual(this.props, nextProps)
     if (stateUpdate || propsUpdate) {
       console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
     }
@@ -173,13 +187,13 @@ class PageFundDetailsDragoManager extends Component {
     }
     switch (type) {
       case 'tx':
-      return (
-        <a key={"addressether" + address1} href={this.props.endpoint.networkInfo.etherscan + type + '/' + address1} target='_blank'><Search className={styles.copyAddress} /></a>
-      );
+        return (
+          <a key={"addressether" + address1} href={this.props.endpoint.networkInfo.etherscan + type + '/' + address1} target='_blank'><Search className={styles.copyAddress} /></a>
+        );
       case 'token':
-      return (
-        <a key={"addressether" + address1} href={this.props.endpoint.networkInfo.etherscan + 'token' + '/' + address1 + '?a=' + address2} target='_blank'><Search className={styles.copyAddress} /></a>
-      );
+        return (
+          <a key={"addressether" + address1} href={this.props.endpoint.networkInfo.etherscan + 'token' + '/' + address1 + '?a=' + address2} target='_blank'><Search className={styles.copyAddress} /></a>
+        );
     }
 
   }
@@ -191,12 +205,13 @@ class PageFundDetailsDragoManager extends Component {
     })
   }
 
-
-
   render() {
     const { endpoint } = this.props
     const { isManager } = this.props.user
-    const { dragoDetails, loading } = this.state
+    const { loading } = this.state
+    const dragoTransactionsList = this.props.transactionsDrago.selectedDrago.transactions
+    const dragoAssetsList = this.props.transactionsDrago.selectedDrago.assets
+    const dragoDetails = this.props.transactionsDrago.selectedDrago.details
     const tabButtons = {
       inkBarStyle: {
         margin: 'auto',
@@ -215,8 +230,8 @@ class PageFundDetailsDragoManager extends Component {
     ['Name', dragoDetails.name, ''],
     ['Address', dragoDetails.address, tableButtonsDragoAddress],
     ['Manager', dragoDetails.addresssOwner, tableButtonsDragoOwner]]
-    var dragoTransactionsList = this.state.dragoTransactionsLogs
-    var dragoAssetsList = this.state.dragoAssets
+
+    console.log(this.props.exchange.prices)
 
 
     // Waiting until getDragoDetails returns the drago details
@@ -246,7 +261,7 @@ class PageFundDetailsDragoManager extends Component {
     return (
       <Row>
         <Col xs={12}>
-          <Paper className={styles.paperContainer} zDepth={1}>
+          <Paper className={styles.paperContainer} zDepth={2}>
             <Toolbar className={styles.detailsToolbar}>
               <ToolbarGroup className={styles.detailsToolbarGroup}>
                 {this.renderAddress(dragoDetails)}
@@ -257,8 +272,8 @@ class PageFundDetailsDragoManager extends Component {
             </Toolbar>
             <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle} className={styles.test}>
               <Tab label="Info" className={styles.detailsTab}
-                icon={<ActionList 
-                color={Colors.blue500} 
+                icon={<ActionList
+                  color={Colors.blue500}
                 />}>
                 <Grid fluid>
                   <Row>
@@ -271,8 +286,8 @@ class PageFundDetailsDragoManager extends Component {
                         />
                         <div className={styles.ETHliquidity}>
                           <div>
-                            {this.state.dragoDetails.dragoETHBalance} <small>ETH</small><br />
-                            {this.state.dragoDetails.dragoWETHBalance} <small>W-ETH</small><br />
+                            {dragoDetails.dragoETHBalance} <small>ETH</small><br />
+                            {dragoDetails.dragoWETHBalance} <small>W-ETH</small><br />
                           </div>
                         </div>
                       </Paper>
@@ -314,12 +329,13 @@ class PageFundDetailsDragoManager extends Component {
                           <p>Drago asset porfolio.</p>
                         </div>
 
-                        <ElementListWrapper 
+                        <ElementListWrapper
                           list={dragoAssetsList}
                           renderCopyButton={this.renderCopyButton}
                           renderEtherscanButton={this.renderEtherscanButton}
                           dragoDetails={this.state.dragoDetails}
                           loading={loading}
+                          assetPrices={this.props.exchange.prices}
                         >
                           <ElementListAssets />
                         </ElementListWrapper>
@@ -474,9 +490,8 @@ class PageFundDetailsDragoManager extends Component {
                 //       })
                 //     })
                 // })
-
-                this.setState({
-                  dragoDetails: {
+                this.props.dispatch(this.updateSelectedDragoAction({
+                  details: {
                     address: dragoDetails[0][0],
                     name: dragoDetails[0][1].charAt(0).toUpperCase() + dragoDetails[0][1].slice(1),
                     symbol: dragoDetails[0][2],
@@ -487,7 +502,10 @@ class PageFundDetailsDragoManager extends Component {
                     buyPrice: api.util.fromWei(data[3].toNumber(4)).toFormat(4),
                     dragoETHBalance: formatEth(dragoETHBalance, 4, api),
                     dragoWETHBalance: formatEth(dragoWETHBalance, 4, api)
-                  },
+                  }
+                })
+                )
+                this.setState({
                   loading: false
                 })
               })
@@ -495,20 +513,17 @@ class PageFundDetailsDragoManager extends Component {
             //
             // Getting Drago assets
             //
-            const getTokensBalances = async () =>{
+            const getTokensBalances = async () => {
               var dragoAssets = ERC20_TOKENS[api._rb.network.name]
               for (var token in dragoAssets) {
                 dragoAssets[token].balance = await poolApi.contract.drago.getTokenBalance(ERC20_TOKENS[api._rb.network.name][token].address)
               }
               return dragoAssets
-            } 
+            }
 
-          getTokensBalances().then(dragoAssets => {
-            console.log(Object.values(dragoAssets))
-            this.setState({
-              dragoAssets: Object.values(dragoAssets)
+            getTokensBalances().then(dragoAssets => {
+              this.props.dispatch(this.updateSelectedDragoAction({assets: Object.values(dragoAssets) }))
             })
-          })
 
             //
             // Reading transactions
@@ -633,17 +648,12 @@ class PageFundDetailsDragoManager extends Component {
             })
         })
         Promise.all(promises).then((results) => {
+          this.props.dispatch(this.updateSelectedDragoAction({ transactions: results }))
+          console.log(`${sourceLogClass} -> Transactions list loaded`);
           this.setState({
-            dragoTransactionsLogs: results,
             loading: false,
           })
         })
-          .then(() => {
-            console.log(`${sourceLogClass} -> Transactions list loaded`);
-            this.setState({
-              loading: false,
-            })
-          })
       })
   }
 

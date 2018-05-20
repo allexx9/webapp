@@ -7,13 +7,15 @@ import {
   orderBookEpic,
   initOrderBookFromRelayERCDexEpic   
 } from './exchange'
-
-import { setTokenAllowanceEpic} from './token'
+import { setTokenAllowanceEpic,
+  getPricesERCdEXWebSocketEpic
+} from './token'
 
 export const rootEpic = combineEpics (
   // pingEpic,
   relayWebSocketEpic,
   orderBookEpic,
   setTokenAllowanceEpic,
-  initOrderBookFromRelayERCDexEpic
+  initOrderBookFromRelayERCDexEpic,
+  getPricesERCdEXWebSocketEpic
 );

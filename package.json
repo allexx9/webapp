@@ -7,7 +7,6 @@
     "0x.js": "^0.36.3",
     "@0xproject/connect": "^0.6.10",
     "@parity/api": "^2.1.20",
-    "aqueduct": "^1.1.20",
     "bignumber.js": "^5.0.0",
     "classnames": "^2.2.5",
     "css-loader": "^0.28.7",
