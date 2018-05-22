@@ -5,6 +5,7 @@ import usersReducer from './users'
 import endpointsReducer from './endpoints'
 import exchangeReducer from './exchange'
 import pingReducer from './ping'
+import notificationsReducer from './notification'
 import {
   eventfulDragoReducer,
   eventfulVaultReducer
@@ -22,7 +23,8 @@ class reducers {
     endpoint: endpointsReducer,
     transactionsDrago: eventfulDragoReducer,
     transactionsVault: eventfulVaultReducer,
-    webSocketReducer: webSocketReducer
+    webSocketReducer: webSocketReducer,
+    notifications: notificationsReducer
   });
 
 }

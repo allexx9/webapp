@@ -47,7 +47,7 @@ class PageFundDetailsVaultTrader extends Component {
       endpoint: PropTypes.object.isRequired,
       accounts: PropTypes.array.isRequired,
       match: PropTypes.object.isRequired, 
-      isManager: PropTypes.bool.isRequired
+      user: PropTypes.object.isRequired
     };
 
     state = {
@@ -190,7 +190,7 @@ class PageFundDetailsVaultTrader extends Component {
     }
 
     render() {
-      const { accounts, isManager } = this.props
+      const { accounts, user } = this.props
       const { vaultDetails, loading } = this.state
       const tabButtons = {
         inkBarStyle: {
@@ -215,8 +215,6 @@ class PageFundDetailsVaultTrader extends Component {
       };
       var dragoTransactionList = this.state.vaultTransactionsLogs
       // console.log(dragoTransactionList)
-
-      console.log(isManager)
 
       // Waiting until getVaultDetails returns the drago details
       if (loading) {
@@ -264,7 +262,7 @@ class PageFundDetailsVaultTrader extends Component {
                         vaultDetails={vaultDetails} 
                         accounts={accounts} 
                         handleBuySellButtons={this.handleBuySellButtons} 
-                        isManager={isManager}
+                        isManager={user.isManager}
                         />
                         <ElementVaultActions 
                           vaultDetails={vaultDetails} 

@@ -43,7 +43,7 @@ class PageFundDetailsDragoTrader extends Component {
       location: PropTypes.object.isRequired,
       endpoint: PropTypes.object.isRequired,
       accounts: PropTypes.array.isRequired,
-      isManager: PropTypes.bool.isRequired,
+      user: PropTypes.object.isRequired,
       match: PropTypes.object.isRequired,
     };
 
@@ -189,7 +189,7 @@ class PageFundDetailsDragoTrader extends Component {
     }
 
     render() {
-      const { accounts, isManager } = this.props
+      const { accounts, user } = this.props
       const { dragoDetails, loading } = this.state
       const tabButtons = {
         inkBarStyle: {
@@ -258,7 +258,7 @@ class PageFundDetailsDragoTrader extends Component {
                               dragoDetails={dragoDetails}
                               accounts={accounts}
                               handleBuySellButtons={this.handleBuySellButtons}
-                              isManager={isManager}
+                              isManager={user.isManager}
                             />
                             <ElementFundActions
                               dragoDetails={dragoDetails}

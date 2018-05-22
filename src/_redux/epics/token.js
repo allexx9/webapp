@@ -4,8 +4,13 @@ import 'rxjs/add/operator/delay';
 import 'rxjs/add/operator/mapTo';
 import 'rxjs/add/operator/bufferTime';
 import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/do';
+import 'rxjs/add/operator/concat';
 import 'rxjs/add/operator/mergeMap';
-import { setTokenAllowance } from '../../_utils/exchange'
+import { 
+  setTokenAllowance,
+  getPricesFromRelayERCDex 
+} from '../../_utils/exchange'
 import 'rxjs/observable/timer'
 import { fromPromise } from 'rxjs/add/observable/fromPromise';
 import {
@@ -13,6 +18,7 @@ import {
   UPDATE_TRADE_TOKENS_PAIR,
   GET_PRICES_BITFINEX,
   TOKEN_PRICE_TICKER_OPEN_WEBSOCKET,
+  TOKEN_PRICE_TICKER_CLOSE_WEBSOCKET,
   TOKEN_PRICE_TICKER_UPDATE
 } from '../../_utils/const'
 import ReconnectingWebSocket from 'reconnecting-websocket'
@@ -71,30 +77,40 @@ const getPricesERCdEXWebsocket$ = () => {
     websocket.onmessage = (msg) => {
       console.log(msg)
       const data = JSON.parse(msg.data)
-      return observer.next(data);
+      return observer.next(data.data.tickers);
     }
+    websocket.onclose = () => {
+      // websocket.send(`unsub:ticker`);
+      console.log('WebSocket closed.');
+      return observer.complete()
+    };
     websocket.onerror = (error) => {
       console.log(error)
       console.log('WebSocket error.');
-      // return observer.error(error)
+      return observer.error(error)
     };
     return () => websocket.close();
   })
 }
 
-export const getPricesERCdEXWebSocketEpic = (action$) =>
+const getPricesERCdEXREST$ = () => {
+  return Observable.fromPromise(getPricesFromRelayERCDex())
+}
+
+export const getPricesERCdEXEpic = (action$) =>
   action$.ofType(TOKEN_PRICE_TICKER_OPEN_WEBSOCKET)
     .mergeMap((action) => {
       console.log(action)
-      return getPricesERCdEXWebsocket$(
-      )
+      // return getPricesERCdEXWebsocket$()
         // .retryWhen((err) => {
         //   console.log('Retry when error');
         //   console.log(err)
         //   return window.navigator.onLine ? timer(1000) : Observable.fromEvent(window, 'online')
         // })
+        return getPricesERCdEXREST$().concat(getPricesERCdEXWebsocket$())
+        // .do({ error: (err) => console.log(err) })
         .takeUntil(
-          action$.ofType('TOKEN_PRICE_TICKER_CLOSE_WEBSOCKET')
+          action$.ofType(TOKEN_PRICE_TICKER_CLOSE_WEBSOCKET)
             .filter(closeAction => closeAction.ticker === action.ticker)
         )
         // .filter(message => {
@@ -106,7 +122,7 @@ export const getPricesERCdEXWebSocketEpic = (action$) =>
           console.log(message[0])
           const arrayToObject = (arr, keyField) =>
             Object.assign({}, ...arr.map(item => ({ [item[keyField]]: item })))
-          const tokenList = arrayToObject(message[0].data.tickers, 'symbol')
+          const tokenList = arrayToObject(message[0], 'symbol')
           console.log(tokenList)
           return tokenList
         })

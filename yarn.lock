@@ -7834,6 +7834,13 @@ react-tap-event-plugin@^3.0.2:
   dependencies:
     fbjs "^0.8.6"
 
+react-tooltip@^3.6.0:
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/react-tooltip/-/react-tooltip-3.6.0.tgz#61fd8502540d91fb3397e3fc90b487c0842c4189"
+  dependencies:
+    classnames "^2.2.5"
+    prop-types "^15.6.0"
+
 react-transition-group@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/react-transition-group/-/react-transition-group-1.2.1.tgz#e11f72b257f921b213229a774df46612346c7ca6"

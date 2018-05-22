@@ -11,12 +11,11 @@ class ApplicationVaultTrader extends Component {
       location: PropTypes.object.isRequired,
       accounts: PropTypes.array.isRequired,
       match: PropTypes.object.isRequired,
-      isManager: PropTypes.bool.isRequired
     };
 
 
     render() {
-      const { accounts, match, isManager } = this.props;
+      const { accounts, match} = this.props;
       return (
         <Switch>
           <Route path={match.path + "/dashboard"}
@@ -33,7 +32,6 @@ class ApplicationVaultTrader extends Component {
           <Route path={match.path+"/pools/:dragoid/:dragocode"}
             render={(props) => <PageVaultDetailsVaultTrader {...props}               
             accounts={accounts}
-            isManager={isManager}
             />
           } 
           />

@@ -32,8 +32,14 @@ import { connect } from 'react-redux';
 import OrderBook from '../_atomic/organisms/orderBook';
 import OrderBox from '../_atomic/organisms/orderBox'
 import Exchange from '../_utils/exchange'
-import { getMarketTakerOrder, getAvailableAddresses } from '../_utils/exchange'
+import {
+  getMarketTakerOrder,
+  getAvailableAddresses,
+  getTokenAllowance
+} from '../_utils/exchange'
 import FlatButton from 'material-ui/FlatButton'
+import PoolApi from '../PoolsApi/src';
+import BigNumber from 'bignumber.js';
 
 function mapStateToProps(state) {
   return state
@@ -55,7 +61,6 @@ class ApplicationExchangeHome extends Component {
     exchangeUtils: PropTypes.object
   };
 
-
   getChildContext() {
     return {
       exchangeUtils: this.state.exchangeUtils,
@@ -75,10 +80,6 @@ class ApplicationExchangeHome extends Component {
 
   state = {
     exchangeUtils: {},
-    orders: {
-      bidsOrders: [],
-      asksOrders: [],
-    }
   }
 
   scrollPosition = 0
@@ -91,14 +92,15 @@ class ApplicationExchangeHome extends Component {
     }
   };
 
-  updateSelectedFundDetails = (liquidity, fund) => {
+  updateSelectedFundDetails = (liquidity, fund, managerAccount) => {
     const payload = {
       details: fund,
       liquidity: {
         ETH: liquidity[0],
         WETH: liquidity[1],
         ZRX: liquidity[2]
-      }
+      },
+      managerAccount
     }
     return {
       type: UPDATE_SELECTED_FUND,
@@ -145,18 +147,19 @@ class ApplicationExchangeHome extends Component {
   }
 
   componentWillMount() {
+    console.log(this.context)
   }
 
   componentDidMount() {
     const { accounts } = this.props.endpoint
-    const { selectedTokensPair, selectedExchange  } = this.props.exchange
-    this.getTransactions(null, accounts)
+    const { selectedTokensPair, selectedExchange } = this.props.exchange
+    this.getSelectedFundDetails(null, accounts)
     // this.connectToRadarRelay()
     this.connectToExchange(selectedTokensPair)
     getAvailableAddresses(selectedExchange)
-    .then (adreesses => {
-      this.props.dispatch({ type: 'SET_MAKER_ADDRESS', payload: adreesses[0] })
-    })
+      .then(adreesses => {
+        this.props.dispatch({ type: 'SET_MAKER_ADDRESS', payload: adreesses[0] })
+      })
   }
 
   componentWillUnmount() {
@@ -192,32 +195,56 @@ class ApplicationExchangeHome extends Component {
     this.props.dispatch(this.relayGetOrders(filter))
   }
 
-  onSelectFund = (fund) => {
+  onSelectFund = async (fund) => {
     const { api } = this.context
-    utils.getDragoLiquidity(fund.address, api)
-      .then(liquidity => {
-        this.props.dispatch(this.updateSelectedFundDetails(liquidity, fund))
+    const { selectedTokensPair, selectedExchange } = this.props.exchange
+    try {
+      const poolApi = new PoolApi(api)
+      poolApi.contract.drago.init(fund.address)
+      // Getting drago details
+      const dragoDetails = await poolApi.contract.drago.getAdminData()
+      // Getting drago liquidity
+      const liquidity = await utils.getDragoLiquidity(fund.address, api)
+      // Getting drago allowances for the tokens pair
+      const allowanceBaseToken = await getTokenAllowance(selectedTokensPair.baseToken.address, fund.address, selectedExchange)
+      const allowanceQuoteToken = await getTokenAllowance(selectedTokensPair.quoteToken.address, fund.address, selectedExchange)
+      const tokensAllowance = {
+        baseTokenAllowance: new BigNumber(allowanceBaseToken).gt(0),
+        quoteTokenAllowance: new BigNumber(allowanceQuoteToken).gt(0)
+      }
+      this.props.dispatch({
+        type: CANCEL_SELECTED_ORDER,
       })
+      this.props.dispatch(this.updateSelectedTradeTokensPair(tokensAllowance))
+      this.props.dispatch(this.updateSelectedFundDetails(liquidity, fund, dragoDetails[0].toLowerCase()))
+    } catch (error) {
+      console.log(error)
+    }
   }
 
-  onSelectTokenTrade = (token) => {
-    const { ws } = this.state
+  onSelectTokenTrade = async (token) => {
     const { api } = this.context
-    const baseToken = ERC20_TOKENS[api._rb.network.name][token]
-    const tradeTokensPair = {
-      baseToken: baseToken,
-      quoteToken: {
-        symbol: 'WETH',
-        address: '0xd0a1e359811322d97991e03f863a0c30c2cf029c',
-        decimals: 18
+    const { selectedTokensPair, selectedExchange, selectedFund } = this.props.exchange
+    try {
+      const baseToken = ERC20_TOKENS[api._rb.network.name][token]
+      const allowanceBaseToken = await getTokenAllowance(selectedTokensPair.baseToken.address, selectedFund.details.address, selectedExchange)
+      const allowanceQuoteToken = await getTokenAllowance(selectedTokensPair.quoteToken.address, selectedFund.details.address, selectedExchange)
+      const tradeTokensPair = {
+        baseToken: baseToken,
+        quoteToken: ERC20_TOKENS[api._rb.network.name].WETH,
+        baseTokenAllowance: new BigNumber(allowanceBaseToken).gt(0),
+        quoteTokenAllowance: new BigNumber(allowanceQuoteToken).gt(0)
       }
+      this.props.dispatch({
+        type: CANCEL_SELECTED_ORDER,
+      })
+      this.props.dispatch(
+        this.updateSelectedTradeTokensPair(tradeTokensPair)
+      )
+      this.connectToExchange(tradeTokensPair)
+    } catch (error) {
+      console.log(error)
     }
-    this.props.dispatch({
-      type: CANCEL_SELECTED_ORDER,
-    })
-    this.props.dispatch(this.updateSelectedTradeTokensPair(tradeTokensPair))
-    ws.close()
-    this.connectToExchange(tradeTokensPair)
   }
 
   onButtonTest = () => {
@@ -290,7 +317,7 @@ class ApplicationExchangeHome extends Component {
       // const bidsOrderNormalizedFilled = [ ...Array(20 - bidsOrderNormalized.length).fill(null), ...bidsOrderNormalized ]
       // const asksOrderNormalizedFilled = [ ...Array(20 - asksOrderNormalized.length).fill(null), ...asksOrderNormalized]
       const selectedOrder = { ...exchange.selectedOrder }
-      console.log(aggregated)
+      // console.log(this.props.transactionsDrago.manager.list)
       return (
         <div ref={node => this.node = node}>
           <Row className={styles.maincontainer}>
@@ -424,24 +451,36 @@ class ApplicationExchangeHome extends Component {
   }
 
   // Getting last transactions
-  getTransactions = (dragoAddress, accounts) => {
+  async getSelectedFundDetails(dragoAddress, accounts) {
     const { api } = this.context
     // const options = {balance: false, supply: true}
     const options = { balance: false, supply: true, limit: 10, trader: false }
-    utils.getTransactionsDragoOptV2(api, dragoAddress, accounts, options)
-      .then(results => {
-        const createdLogs = results[1].filter(event => {
-          return event.type !== 'BuyDrago' && event.type !== 'SellDrago'
-        })
-        results[1] = createdLogs
-        this.props.dispatch(this.updateTransactionsDragoAction(results))
-        this.setState({
-          loading: false,
-        });
+    try {
+      const results = await utils.getTransactionsDragoOptV2(api, dragoAddress, accounts, options)
+      const createdLogs = results[1].filter(event => {
+        return event.type !== 'BuyDrago' && event.type !== 'SellDrago'
       })
-      .catch((error) => {
-        console.warn(error)
-      })
+      results[1] = createdLogs
+      results[2].sort(function(a, b){
+        var keyA = a.symbol,
+            keyB = b.symbol;
+        // Compare the 2 dates
+        if(keyA < keyB) return -1;
+        if(keyA > keyB) return 1;
+        return 0;
+    });
+      this.props.dispatch(this.updateTransactionsDragoAction(results))
+
+      // Setting default fund
+      results[2].length !== 0
+        ? this.onSelectFund(results[2][0])
+        : null
+      this.setState({
+        loading: false,
+      });
+    } catch (error) {
+      console.warn(error)
+    }
   }
 
 }

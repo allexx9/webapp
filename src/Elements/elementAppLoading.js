@@ -75,7 +75,7 @@ class AppLoading extends Component {
             <Col xs={12}>
               <Row>
                 <Col xs={12} style={{textAlign: "center"}}>
-                  <img src="/img/GGG.png" width="60px"/>
+                  <img src="/img/new_logo_color.png" width="42px"/>
                   <br />
                   <br />
                   {/* <p>Unable to connect to the network.</p>

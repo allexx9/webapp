@@ -34,7 +34,8 @@ import styles from './pageFundDetailsDragoManager.module.css';
 
 import {
   UPDATE_SELECTED_DRAGO_MANAGER,
-  TOKEN_PRICE_TICKER_OPEN_WEBSOCKET
+  TOKEN_PRICE_TICKER_OPEN_WEBSOCKET,
+  TOKEN_PRICE_TICKER_CLOSE_WEBSOCKET
 } from '../../_utils/const'
 
 function mapStateToProps(state) {
@@ -97,6 +98,7 @@ class PageFundDetailsDragoManager extends Component {
   componentWillUnmount() {
     const { contractSubscription } = this.state
     const sourceLogClass = this.constructor.name
+    this.props.dispatch({type: TOKEN_PRICE_TICKER_CLOSE_WEBSOCKET})
     try {
       contractSubscription.unsubscribe(function (error, success) {
         if (success) {
@@ -207,7 +209,7 @@ class PageFundDetailsDragoManager extends Component {
 
   render() {
     const { endpoint } = this.props
-    const { isManager } = this.props.user
+    const { user } = this.props
     const { loading } = this.state
     const dragoTransactionsList = this.props.transactionsDrago.selectedDrago.transactions
     const dragoAssetsList = this.props.transactionsDrago.selectedDrago.assets
@@ -296,7 +298,7 @@ class PageFundDetailsDragoManager extends Component {
                       <Paper zDepth={1}>
                         <ElementPriceBox
                           accounts={endpoint.accounts}
-                          isManager={isManager}
+                          isManager={user.isManager}
                           dragoDetails={dragoDetails} />
                       </Paper>
                     </Col>

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Row, Col } from 'react-flexbox-grid';
-import  * as Colors from 'material-ui/styles/colors'
+import * as Colors from 'material-ui/styles/colors'
 import styles from './orderBox.module.css'
 import AppBar from 'material-ui/AppBar'
 import Paper from 'material-ui/Paper'
@@ -14,14 +14,23 @@ import ButtonOrderCancel from '../atoms/buttonOrderCancel'
 import OrderSummary from '../molecules/orderSummary'
 import OrderRawDialog from '../molecules/orderRawDialog'
 import OrderTypeSelector from '../atoms/orderTypeSelector'
-import Toggle from 'material-ui/Toggle';
+import ToggleSwitch from '../atoms/toggleSwitch'
 import { connect } from 'react-redux';
 import {
   UPDATE_SELECTED_ORDER,
   CANCEL_SELECTED_ORDER,
-  SET_TOKEN_ALLOWANCE
+  UPDATE_TRADE_TOKENS_PAIR,
+  UNLIMITED_ALLOWANCE_IN_BASE_UNITS
 } from '../../_utils/const'
-import { signOrder, sendOrderToRelay, newMakerOrder, fillOrderToExchange } from '../../_utils/exchange'
+import {
+  signOrder,
+  sendOrderToRelay,
+  newMakerOrder,
+  fillOrderToExchange,
+  fillOrderToExchangeViaProxy,
+  setAllowaceOnExchangeThroughDrago
+} from '../../_utils/exchange'
+import PoolApi from '../../PoolsApi/src'
 
 
 function mapStateToProps(state) {
@@ -48,7 +57,27 @@ class OrderBox extends Component {
 
   static contextTypes = {
     exchangeUtils: PropTypes.object.isRequired,
+    api: PropTypes.object.isRequired,
   };
+
+  updateSelectedTradeTokensPair = (token, allowance) => {
+    switch (token) {
+      case 'base':
+        return {
+          type: UPDATE_TRADE_TOKENS_PAIR,
+          payload: {
+            baseTokenAllowance: allowance
+          }
+        }
+      case 'quote':
+        return {
+          type: UPDATE_TRADE_TOKENS_PAIR,
+          payload: {
+            quoteTokenAllowance: allowance
+          }
+        }
+    }
+  }
 
   onCloseOrderRawDialog = (open) => {
     this.setState({
@@ -86,9 +115,11 @@ class OrderBox extends Component {
   }
 
   onSubmitOrder = async () => {
-    const { selectedOrder, selectedExchange } = this.props.exchange
+    const { selectedOrder, selectedExchange, selectedFund } = this.props.exchange
     if (selectedOrder.takerOrder) {
-      fillOrderToExchange(selectedOrder.details.order, selectedOrder.orderFillAmount, selectedExchange)
+      // fillOrderToExchange(selectedOrder.details.order, selectedOrder.orderFillAmount, selectedExchange)
+      const receipt = await fillOrderToExchangeViaProxy(selectedFund, selectedOrder.details.order, selectedOrder.orderFillAmount, selectedExchange)
+      console.log(receipt)
     }
     else {
       console.log(selectedOrder)
@@ -119,18 +150,47 @@ class OrderBox extends Component {
 
   }
 
-  onToggleActivateTokenTrade = () => {
-    const { selectedTokensPair, selectedExchange, makerAddress } = this.props.exchange
-    const payload = {
-        type: SET_TOKEN_ALLOWANCE,
-        payload: {
-          tokenAddress: selectedTokensPair.baseToken.address,
-          ownerAddress: makerAddress,
-          spenderAddress: selectedExchange.tokenTransferProxyAddress,
-          ZeroExConfig: selectedExchange
-        }
+  onToggleAllowQuoteTokenTrade = async (event, isInputChecked) => {
+    const { selectedFund, selectedTokensPair, selectedExchange } = this.props.exchange
+    var amount
+    isInputChecked ? amount = UNLIMITED_ALLOWANCE_IN_BASE_UNITS : amount = '0'
+    try {
+      const result = await setAllowaceOnExchangeThroughDrago(selectedFund, selectedTokensPair.quoteToken, selectedExchange, amount)
+      console.log(result)
+      this.props.dispatch(this.updateSelectedTradeTokensPair('quote', isInputChecked))
+    } catch (error) {
+      console.log(error)
     }
-    this.props.dispatch(payload)
+  }
+
+  onToggleAllowanceBaseTokenTrade = async ( event, isInputChecked ) => {
+    // const { selectedFund, selectedTokensPair } = this.props.exchange
+    // try {
+    //   // var provider = account.source === 'MetaMask' ? window.web3 : api
+    //   var poolApi = null;
+    //   poolApi = new PoolApi(window.web3)
+    //   poolApi.contract.drago.init(selectedFund.details.address)
+    //   const result = await poolApi.contract.drago.setInfiniteAllowace(
+    //     selectedFund.managerAccount,
+    //     this.props.exchange.selectedExchange.tokenTransferProxyAddress,
+    //     selectedTokensPair.baseToken.address,
+    //   )
+    //   console.log(result)
+    //   this.props.dispatch(this.updateSelectedTradeTokensPair('base', true))
+    // } catch (error) {
+    //   console.log(error)
+    // }
+
+    const { selectedFund, selectedTokensPair, selectedExchange } = this.props.exchange
+    var amount
+    isInputChecked ? amount = UNLIMITED_ALLOWANCE_IN_BASE_UNITS : amount = '0'
+    try {
+      const result = await setAllowaceOnExchangeThroughDrago(selectedFund, selectedTokensPair.baseToken, selectedExchange, amount)
+      console.log(result)
+      this.props.dispatch(this.updateSelectedTradeTokensPair('base', isInputChecked))
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   onBuySell = async (orderType) => {
@@ -166,25 +226,7 @@ class OrderBox extends Component {
       sellSelected = (selectedOrder.orderType === 'bids')
     }
 
-    const aggregatedTogglestyles = {
-      block: {
-        maxWidth: 250,
-      },
-      toggle: {
-        // paddingRight: '5px',
-      },
-      trackSwitched: {
-        backgroundColor: '#bdbdbd',
-      },
-      thumbSwitched: {
-        backgroundColor: Colors.blue500,
-      },
-      labelStyle: {
-        fontSize: '12px',
-        opacity: '0.5',
-        textAlign: 'right'
-      },
-    };
+
 
     return (
       <Row>
@@ -221,17 +263,18 @@ class OrderBox extends Component {
                     <div className={styles.tokenSymbol}>{selectedTokensPair.baseToken.symbol}</div>
                     <div className={styles.tokenName}>{selectedTokensPair.baseToken.name}</div>
                     <div>
-                    <Toggle
-                          label="ACTIVATE"
-                          style={aggregatedTogglestyles.toggle}
-                          // thumbStyle={aggregatedTogglestyles.thumbOff}
-                          trackStyle={aggregatedTogglestyles.trackOff}
-                          thumbSwitchedStyle={aggregatedTogglestyles.thumbSwitched}
-                          trackSwitchedStyle={aggregatedTogglestyles.trackSwitched}
-                          labelStyle={aggregatedTogglestyles.labelStyle}
-                          onToggle={this.onToggleActivateTokenTrade}
-                          toggled={selectedTokensPair.baseTokenAllowance}
-                        />
+                      <ToggleSwitch
+                        label={"ACTIVATE " + selectedTokensPair.baseToken.symbol}
+                        onToggle={this.onToggleAllowanceBaseTokenTrade}
+                        toggled={selectedTokensPair.baseTokenAllowance}
+                        toolTip={"Activate " + selectedTokensPair.baseToken.symbol + " trading"}
+                      />
+                      <ToggleSwitch
+                        label={"ACTIVATE " + selectedTokensPair.quoteToken.symbol}
+                        onToggle={this.onToggleAllowQuoteTokenTrade}
+                        toggled={selectedTokensPair.quoteTokenAllowance}
+                        toolTip={"Activate " + selectedTokensPair.quoteToken.symbol + " trading"}
+                      />
                     </div>
                   </Col>
 

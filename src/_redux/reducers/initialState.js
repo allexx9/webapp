@@ -13,6 +13,9 @@ import {
 import BigNumber from 'bignumber.js';
 
 const initialState = {
+  notifications: {
+    message: ''
+  },
   exchange: {
     selectedFund: {
       details: {},
@@ -20,7 +23,8 @@ const initialState = {
         ETH: new BigNumber(0),
         WETH: new BigNumber(0),
         ZRX: new BigNumber(0),
-      }
+      },
+      managerAccount: '',
     },
     makerAddress: '',
     selectedExchange: EXCHANGES.zeroEx[DEFAULT_NETWORK_NAME],

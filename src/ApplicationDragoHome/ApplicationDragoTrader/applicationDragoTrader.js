@@ -12,12 +12,11 @@ class applicationDragoTrader extends Component {
       location: PropTypes.object.isRequired,
       accounts: PropTypes.array.isRequired,
       match: PropTypes.object.isRequired,
-      isManager: PropTypes.bool.isRequired
     };
 
 
     render() {
-      const { accounts, match, isManager } = this.props;
+      const { accounts, match } = this.props;
       return (
         <Switch>
           <Route exact path={match.path+"/dashboard"} 
@@ -35,7 +34,6 @@ class applicationDragoTrader extends Component {
           <Route exact path={match.path+"/pools/:dragoid/:dragocode"}
             render={(props) => <PageFundDetailsDragoTrader {...props}               
             accounts={accounts}
-            isManager={isManager}
             />
           } 
           />

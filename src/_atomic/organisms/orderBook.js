@@ -119,8 +119,8 @@ class OrderBook extends Component {
                     <Row center="xs">
                       <Col xs={12} >
                         {spread === 0
-                          ? <div className={styles.spread}>-</div>
-                          : <div className={styles.spread}>{spread}</div>
+                          ? <div className={styles.spread}><div style={{paddingRight: '5px'}}>-</div></div>
+                          : <div className={styles.spread}><div style={{paddingRight: '5px'}}>{spread}</div></div>
                         }
                       </Col>
                     </Row>

@@ -51,7 +51,7 @@ class PageVaultDetailsVaultManager extends Component {
     endpoint: PropTypes.object.isRequired,
     accounts: PropTypes.array.isRequired,
     match: PropTypes.object.isRequired,
-    isManager: PropTypes.bool.isRequired
+    user: PropTypes.object.isRequired
   };
 
   state = {
@@ -191,7 +191,7 @@ class PageVaultDetailsVaultManager extends Component {
 
 
   render() {
-    const { accounts, isManager, endpoint } = this.props
+    const { accounts, user, endpoint } = this.props
     const { vaultDetails, loading } = this.state
     const tabButtons = {
       inkBarStyle: {
@@ -274,7 +274,7 @@ class PageVaultDetailsVaultManager extends Component {
                       <Paper zDepth={1}>
                         <ElementFeesBox
                           accounts={accounts}
-                          isManager={isManager}
+                          isManager={user.isManager}
                           vaultDetails={vaultDetails} />
                       </Paper>
                     </Col>

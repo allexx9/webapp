@@ -172,7 +172,7 @@ class ElementListAssets extends PureComponent {
                     dataKey="prices"
                     className={styles.exampleColumn}
                     cellRenderer={({ rowData }) => this.renderPrice(rowData)}
-                    flexShrink={1}
+                    flexGrow={1}
                   />
                   <Column
                     width={100}
@@ -182,7 +182,7 @@ class ElementListAssets extends PureComponent {
                     dataKey="values"
                     className={styles.exampleColumn}
                     cellRenderer={({ rowData }) => this.renderValue(rowData)}
-                    flexShrink={1}
+                    flexGrow={1}
                   />
                 </Table>
               )}
@@ -233,7 +233,6 @@ class ElementListAssets extends PureComponent {
   }
 
   renderPrice(token) {
-    console.log(this.props.assetPrices[token.symbol])
     if (typeof this.props.assetPrices[token.symbol] !== 'undefined') {
       return (
         <div>{new BigNumber(this.props.assetPrices[token.symbol].priceEth).toFixed(7)}</div>
@@ -245,7 +244,6 @@ class ElementListAssets extends PureComponent {
   }
 
   renderValue(token) {
-    console.log(this.props.assetPrices[token.symbol])
     if (typeof this.props.assetPrices[token.symbol] !== 'undefined') {
       return (
         <div>{new BigNumber(this.props.assetPrices[token.symbol].priceEth).mul(toUnitAmount(new BigNumber(token.balance), token.decimals).toFixed(4)).toFixed(7)}</div>

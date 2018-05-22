@@ -93,7 +93,6 @@ class ApplicationDragoPage extends Component {
             <Col xs={12}>
               <ApplicationTopBar
                 handleTopBarSelectAccountType={this.handleTopBarSelectAccountType}
-                isManager={this.state.isManager}
                 handleToggleNotifications={this.handleToggleNotifications}
               />
             </Col>
@@ -104,7 +103,6 @@ class ApplicationDragoPage extends Component {
                 {this.context.isConnected && !this.context.isSyncing ? (
                   // {false ? (
                   <ApplicationVaultHome
-                    isManager={this.state.isManager}
                     location={location}
                     notificationsOpen={notificationsOpen}
                     handleToggleNotifications={this.handleToggleNotifications}

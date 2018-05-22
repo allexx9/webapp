@@ -81,7 +81,6 @@ class ApplicationHomePage extends Component {
             <Col xs={12}>
               <ApplicationTopBar
                 handleTopBarSelectAccountType={this.handleTopBarSelectAccountType}
-                isManager={this.state.isManager}
                 handleToggleNotifications={this.handleToggleNotifications}
               />
             </Col>

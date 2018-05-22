@@ -15,6 +15,39 @@ import { BigNumber } from '@0xproject/utils';
 // import ReconnectingWebSocket from 'reconnectingwebsocket'
 import { HttpClient } from '@0xproject/connect';
 import rp from 'request-promise'
+import PoolApi from '../PoolsApi/src'
+
+
+export const  setAllowaceOnExchangeThroughDrago = (selectedFund, token, selectedExchange, amount) => {
+  // var provider = account.source === 'MetaMask' ? window.web3 : api
+  var poolApi = null;
+  poolApi = new PoolApi(window.web3)
+  poolApi.contract.drago.init(selectedFund.details.address)
+  console.log('selectedFund.details.address ', selectedFund.details.address)
+  console.log('tokenTransferProxyAddress ', selectedExchange.tokenTransferProxyAddress)
+  console.log('token.address ', token.address)
+  console.log('selectedFund.managerAccount ', selectedFund.managerAccount)
+  console.log('amount ', amount)
+  return poolApi.contract.drago.setInfiniteAllowaceOnExchange(
+    selectedFund.managerAccount,
+    token.address,
+    selectedFund.details.address,
+    selectedExchange.tokenTransferProxyAddress,
+    amount
+  )
+}
+
+export const getPricesFromRelayERCDex = () => {
+  console.log('Fetching tokens prices from ERCDex')
+  var options = {
+    method: 'GET',
+    url: ` https://api.ercdex.com/api/reports/ticker `,
+    qs: {},
+    json: true // Automatically stringifies the body to JSON
+  };
+  console.log(options)
+  return rp(options)
+}
 
 export const getOrderBookFromRelayERCDex = (networkId, baseTokenAddress, quoteTokenAddress) => {
   console.log('Fetching orderbook from ERCDex')
@@ -101,6 +134,8 @@ export const getAggregatedOrdersFromRelayERCDex = (networkId, baseTokenAddress, 
     }
   })
 }
+
+
 
 export const formatOrdersFromAggregate = (orders) =>{
   var orderPrice, orderAmount
@@ -251,6 +286,18 @@ export const getFees = async (order, networkId) => {
 //   return rp(options)
 // }
 
+export const getTokenAllowance = async (
+  tokenAddress,
+  ownerAddress,
+  ZeroExConfig,
+) => {
+  const zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig)
+  return zeroEx.token.getProxyAllowanceAsync(
+    tokenAddress,
+    ownerAddress
+    )
+}
+
 export const setTokenAllowance = async (
   tokenAddress,
   ownerAddress,
@@ -349,6 +396,59 @@ export const fillOrderToExchange = async (signedOrder, amount, ZeroExConfig) =>{
   );
   const txReceipt = await zeroEx.awaitTransactionMinedAsync(txHash);
   console.log('FillOrder transaction receipt: ', txReceipt);
+}
+
+export const fillOrderToExchangeViaProxy = async (selectedFund, signedOrder, amount, ZeroExConfig) =>{
+  // const zeroEx = this._zeroEx
+  const DECIMALS = 18;
+
+  const order = signedOrder
+
+  console.log(JSON.stringify(signedOrder))
+
+  const orderAddresses = [
+      order.maker,
+      order.taker,
+      order.makerTokenAddress,
+      order.takerTokenAddress,
+      order.feeRecipient,
+    ]
+    const orderValues = [
+      order.makerTokenAmount,
+      order.takerTokenAmount,
+      order.makerFee,
+      order.takerFee,
+      order.expirationUnixTimestampSec,
+      order.salt
+    ]
+    const v = order.ecSignature.v
+    const r = order.ecSignature.r
+    const s = order.ecSignature.s
+    const shouldThrowOnInsufficientBalanceOrAllowance = true;
+    console.log(
+      orderAddresses,
+      orderValues,
+      ZeroEx.toBaseUnitAmount(new BigNumber(amount), DECIMALS).toString(),
+      shouldThrowOnInsufficientBalanceOrAllowance,
+      v,
+      r,
+      s
+    )
+
+    var poolApi = null;
+    poolApi = new PoolApi(window.web3)
+    poolApi.contract.drago.init(selectedFund.details.address)
+    return poolApi.contract.drago.fillOrderOnZeroExExchange(
+      selectedFund.managerAccount,
+      orderAddresses,
+      orderValues,
+      ZeroEx.toBaseUnitAmount(new BigNumber(amount), DECIMALS).toString(),
+      shouldThrowOnInsufficientBalanceOrAllowance,
+      v,
+      r,
+      s,
+      ZeroExConfig
+    )
 }
 
 class Exchange {

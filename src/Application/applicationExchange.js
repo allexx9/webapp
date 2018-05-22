@@ -92,7 +92,6 @@ class ApplicationExchangePage extends Component {
             <Col xs={12}>
               <ApplicationTopBar
                 handleTopBarSelectAccountType={this.handleTopBarSelectAccountType}
-                isManager={this.state.isManager}
                 handleToggleNotifications={this.handleToggleNotifications}
               />
             </Col>
@@ -103,7 +102,6 @@ class ApplicationExchangePage extends Component {
                 {this.context.isConnected && !this.context.isSyncing ? (
                   // {false ? (
                   <ApplicationExchangeHome
-                    isManager={this.state.isManager}
                     location={location}
                     notificationsOpen={notificationsOpen}
                     handleToggleNotifications={this.handleToggleNotifications}
