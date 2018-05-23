@@ -17,6 +17,11 @@ const initialState = {
     engine: ''
   },
   exchange: {
+    loading: {
+      liquidity: true,
+      orderSummary: true,
+      orderBox: true,
+    },
     selectedFund: {
       details: {},
       liquidity: {

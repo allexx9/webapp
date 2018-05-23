@@ -21,7 +21,7 @@ import {
   TOKEN_PRICE_TICKER_CLOSE_WEBSOCKET,
   TOKEN_PRICE_TICKER_UPDATE
 } from '../../_utils/const'
-import ReconnectingWebSocket from 'reconnecting-websocket'
+import ReconnectingWebSocket from 'reconnecting-websocket/dist/reconnecting-websocket-cjs'
 
 // Setting allowance for a token
 const setTokenAllowance$ = (tokenAddress, ownerAddress, spenderAddress, ZeroExConfig) =>
@@ -68,10 +68,12 @@ export const setTokenAllowanceEpic = action$ => {
 // }
 
 const getPricesERCdEXWebsocket$ = () => {
+  // console.log(new ReconnectingWebSocket())
   return Observable.create(observer => {
     var websocket = new ReconnectingWebSocket('wss://api.ercdex.com')
     websocket.addEventListener('open', (msg) => {
       console.log('WebSocket open.')
+      console.log(websocket.retryCount)
       websocket.send(`sub:ticker`);
     });
     websocket.onmessage = (msg) => {
@@ -79,10 +81,10 @@ const getPricesERCdEXWebsocket$ = () => {
       const data = JSON.parse(msg.data)
       return observer.next(data.data.tickers);
     }
-    websocket.onclose = () => {
+    websocket.onclose = (msg) => {
       // websocket.send(`unsub:ticker`);
       console.log('WebSocket closed.');
-      return observer.complete()
+      return msg.wasClean ? observer.complete() : null
     };
     websocket.onerror = (error) => {
       console.log(error)

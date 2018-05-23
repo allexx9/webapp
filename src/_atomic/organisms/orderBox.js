@@ -153,7 +153,9 @@ class OrderBox extends Component {
         transactionDetails.hash = receipt.transactionHash
         transactionDetails.timestamp = new Date ()
         this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
-
+        
+        // Updating drago liquidity
+        this.props.dispatch(this.updateSelectedFundLiquidity(selectedFund.details.address, this.context.api))
       }
       catch (error) {
         console.log(serializeError(error))

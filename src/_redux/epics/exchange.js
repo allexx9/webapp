@@ -13,18 +13,21 @@ import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/operator/takeUntil';
 import 'rxjs/add/operator/retryWhen';
 import 'rxjs/add/operator/filter';
+import 'rxjs/add/observable/concat';
+import 'rxjs/add/observable/of';
 import 'rxjs/observable/timer';
 import 'rxjs/observable/fromEvent';
 import 'rxjs/add/observable/fromPromise';
 import { timer } from 'rxjs/observable/timer'
 // import rp from 'request-promise'
-import { 
+import {
   getOrderBookFromRelayERCDex,
   getAggregatedOrdersFromRelayERCDex
- } from '../../_utils/exchange'
+} from '../../_utils/exchange'
 // import io from 'socket.io-client'
 // import ReconnectingWebSocket from 'reconnectingwebsocket'
-import ReconnectingWebSocket from 'reconnecting-websocket'
+import ReconnectingWebSocket from 'reconnecting-websocket/dist/reconnecting-websocket-cjs'
+import utils from '../../_utils/utils'
 
 import {
   ORDERBOOK_UPDATE,
@@ -33,8 +36,10 @@ import {
   RELAY_CLOSE_WEBSOCKET,
   RELAY_GET_ORDERS,
   ORDERBOOK_INIT,
-  RELAY_UPDATE_ORDERS
-
+  RELAY_UPDATE_ORDERS,
+  UPDATE_FUND_LIQUIDITY,
+  UPDATE_SELECTED_FUND,
+  UPDATE_ELEMENT_LOADING
 } from '../../_utils/const'
 
 
@@ -44,9 +49,9 @@ import {
 
 // Creating an observable from the promise
 const getOrderBookFromRelayERCDex$ = (networkId, baseTokenAddress, quoteTokenAddress, aggregated) =>
-  aggregated 
-  ? Observable.fromPromise(getAggregatedOrdersFromRelayERCDex(networkId, baseTokenAddress, quoteTokenAddress))
-  : Observable.fromPromise(getOrderBookFromRelayERCDex(networkId, baseTokenAddress, quoteTokenAddress))
+  aggregated
+    ? Observable.fromPromise(getAggregatedOrdersFromRelayERCDex(networkId, baseTokenAddress, quoteTokenAddress))
+    : Observable.fromPromise(getOrderBookFromRelayERCDex(networkId, baseTokenAddress, quoteTokenAddress))
 
 // Setting the epic
 export const initOrderBookFromRelayERCDexEpic = (action$) =>
@@ -61,7 +66,7 @@ export const initOrderBookFromRelayERCDexEpic = (action$) =>
         action.payload.aggregated
       )
         .map(payload => {
-          const aggregate = {aggregated: action.payload.aggregated}
+          const aggregate = { aggregated: action.payload.aggregated }
           return { type: ORDERBOOK_INIT, payload: { ...payload, ...aggregate } }
         })
     });
@@ -106,11 +111,14 @@ export const webSocketReducer = (state = 0, action) => {
 // https://github.com/ReactiveX/rxjs/issues/2048
 
 const reconnectingWebsocket$ = (baseTokenAddress, quoteTokenAddress) => {
+  console.log(ReconnectingWebSocket)
   return Observable.create(observer => {
     var websocket = new ReconnectingWebSocket('wss://api.ercdex.com')
     websocket.addEventListener('open', (msg) => {
       console.log('WebSocket open.')
       // websocket.send(`sub:ticker`);
+      console.log(websocket)
+      console.log(websocket.retryCount)
       websocket.send(`sub:pair-order-change/${baseTokenAddress}/${quoteTokenAddress}`);
       websocket.send(`sub:pair-order-change/${quoteTokenAddress}/${baseTokenAddress}`);
       return observer.next(msg.data);
@@ -119,6 +127,12 @@ const reconnectingWebsocket$ = (baseTokenAddress, quoteTokenAddress) => {
       console.log(msg)
       return observer.next(msg.data);
     }
+    websocket.onclose = (msg) => {
+      // websocket.send(`unsub:ticker`);
+      console.log(msg)
+      console.log('WebSocket closed.');
+      return msg.wasClean ? observer.complete() : null
+    };
     websocket.onerror = (error) => {
       console.log(error)
       console.log('WebSocket error.');
@@ -175,6 +189,43 @@ export const orderBookEpic = (action$, store) => {
         aggregated
       }
     }))
+}
+
+//
+// UPDATE FUND LIQUIDITY
+//
+
+const updateFundLiquidity$ = (fundAddress, api) =>
+  Observable.fromPromise(utils.getDragoLiquidity(fundAddress, api))
+  .map(liquidity => {
+    const payload = {
+      liquidity: {
+        ETH: liquidity[0],
+        WETH: liquidity[1],
+        ZRX: liquidity[2]
+      }
+    }
+    return {
+      type: UPDATE_SELECTED_FUND,
+      payload: payload
+    }
+  })
+
+export const updateFundLiquidityEpic = (action$) => {
+  return action$.ofType(UPDATE_FUND_LIQUIDITY)
+    .mergeMap((action) => {
+      console.log(action)
+      console.log('updateFundLiquidityEpic');
+
+      return Observable.concat(
+        Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { liquidity: true }}),
+        updateFundLiquidity$(
+          action.payload.fundAddress,
+          action.payload.api,
+        ),
+        Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { liquidity: false }}),
+      )
+    });
 }
 
 

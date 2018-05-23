@@ -5,7 +5,8 @@ import { combineEpics } from 'redux-observable';
 import { 
   relayWebSocketEpic, 
   orderBookEpic,
-  initOrderBookFromRelayERCDexEpic   
+  initOrderBookFromRelayERCDexEpic,
+  updateFundLiquidityEpic   
 } from './exchange'
 import { setTokenAllowanceEpic,
   getPricesERCdEXEpic
@@ -17,5 +18,6 @@ export const rootEpic = combineEpics (
   orderBookEpic,
   setTokenAllowanceEpic,
   initOrderBookFromRelayERCDexEpic,
-  getPricesERCdEXEpic
+  getPricesERCdEXEpic,
+  updateFundLiquidityEpic
 );

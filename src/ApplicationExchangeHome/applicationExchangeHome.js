@@ -27,7 +27,8 @@ import {
   RELAY_OPEN_WEBSOCKET,
   RELAY_GET_ORDERS,
   RELAY_CLOSE_WEBSOCKET,
-  ORDERBOOK_AGGREGATE_ORDERS
+  ORDERBOOK_AGGREGATE_ORDERS,
+  UPDATE_FUND_LIQUIDITY
 } from '../_utils/const'
 import Paper from 'material-ui/Paper'
 import { connect } from 'react-redux';
@@ -94,19 +95,29 @@ class ApplicationExchangeHome extends Component {
     }
   };
 
-  updateSelectedFundDetails = (liquidity, fund, managerAccount) => {
+  updateSelectedFundDetails = (fund, managerAccount) => {
     const payload = {
       details: fund,
-      liquidity: {
-        ETH: liquidity[0],
-        WETH: liquidity[1],
-        ZRX: liquidity[2]
-      },
+      // liquidity: {
+      //   ETH: liquidity[0],
+      //   WETH: liquidity[1],
+      //   ZRX: liquidity[2]
+      // },
       managerAccount
     }
     return {
       type: UPDATE_SELECTED_FUND,
       payload: payload
+    }
+  };
+
+  updateSelectedFundLiquidity = (fundAddress, api) => {
+    return {
+      type: UPDATE_FUND_LIQUIDITY,
+      payload: {
+        fundAddress, 
+        api
+      }
     }
   };
 
@@ -201,25 +212,32 @@ class ApplicationExchangeHome extends Component {
   onSelectFund = async (fund) => {
     const { api } = this.context
     const { selectedTokensPair, selectedExchange } = this.props.exchange
+
+    // Resetting current order
+    this.props.dispatch({
+      type: CANCEL_SELECTED_ORDER,
+    })
+
     try {
       const poolApi = new PoolApi(api)
       poolApi.contract.drago.init(fund.address)
+
       // Getting drago details
       const dragoDetails = await poolApi.contract.drago.getAdminData()
+      this.props.dispatch(this.updateSelectedFundDetails(fund, dragoDetails[0].toLowerCase()))
+
       // Getting drago liquidity
-      const liquidity = await utils.getDragoLiquidity(fund.address, api)
-      // Getting drago allowances for the tokens pair
+      this.props.dispatch(this.updateSelectedFundLiquidity(fund.address, api))
+
+      // Getting allowances
       const allowanceBaseToken = await getTokenAllowance(selectedTokensPair.baseToken.address, fund.address, selectedExchange)
       const allowanceQuoteToken = await getTokenAllowance(selectedTokensPair.quoteToken.address, fund.address, selectedExchange)
       const tokensAllowance = {
         baseTokenAllowance: new BigNumber(allowanceBaseToken).gt(0),
         quoteTokenAllowance: new BigNumber(allowanceQuoteToken).gt(0)
       }
-      this.props.dispatch({
-        type: CANCEL_SELECTED_ORDER,
-      })
       this.props.dispatch(this.updateSelectedTradeTokensPair(tokensAllowance))
-      this.props.dispatch(this.updateSelectedFundDetails(liquidity, fund, dragoDetails[0].toLowerCase()))
+      
     } catch (error) {
       console.log(error)
     }
@@ -345,7 +363,9 @@ class ApplicationExchangeHome extends Component {
                       onSelectFund={this.onSelectFund} />
                   </Col>
                   <Col xs={2}>
-                    <TokenLiquidity liquidity={exchange.selectedFund.liquidity} />
+                    <TokenLiquidity 
+                    liquidity={exchange.selectedFund.liquidity} 
+                    loading={exchange.loading.liquidity}/>
                   </Col>
                   <Col xs={2}>
                     <TokenTradeSelector
