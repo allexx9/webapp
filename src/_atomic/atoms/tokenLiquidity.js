@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 // import BigNumber from 'bignumber.js';
 import { formatEth } from '../../_utils/format'
 
-export default class IdentityIcon extends Component {
+export default class TokenLiquidity extends Component {
 
   static propTypes = {
     liquidity: PropTypes.object.isRequired,

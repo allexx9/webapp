@@ -14,7 +14,7 @@ import BigNumber from 'bignumber.js';
 
 const initialState = {
   notifications: {
-    message: ''
+    engine: ''
   },
   exchange: {
     selectedFund: {

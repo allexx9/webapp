@@ -8,6 +8,7 @@ import Paper from 'material-ui/Paper'
 import Toggle from 'material-ui/Toggle';
 import  * as Colors from 'material-ui/styles/colors'
 import { connect } from 'react-redux';
+import ToggleSwitch from '../atoms/toggleSwitch'
 
 const paperStyle = {
   // paddingLeft: "12px"
@@ -77,16 +78,11 @@ class OrderBook extends Component {
                     <Row center="xs">
                       <Col xs={12} >
                       <div style={{marginRight: '5px'}}>
-                        <Toggle
-                          label="AGGREGATE"
-                          style={aggregatedTogglestyles.toggle}
-                          // thumbStyle={aggregatedTogglestyles.thumbOff}
-                          trackStyle={aggregatedTogglestyles.trackOff}
-                          thumbSwitchedStyle={aggregatedTogglestyles.thumbSwitched}
-                          trackSwitchedStyle={aggregatedTogglestyles.trackSwitched}
-                          labelStyle={aggregatedTogglestyles.labelStyle}
+                        <ToggleSwitch
+                          label={"AGGREGATE"}
                           onToggle={this.onToggleAggregateOrders}
                           toggled={this.props.aggregated}
+                          toolTip={"Aggregate orders"}
                         />
                         </div>
                       </Col>

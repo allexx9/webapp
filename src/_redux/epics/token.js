@@ -119,11 +119,9 @@ export const getPricesERCdEXEpic = (action$) =>
         // })
         .bufferCount(1)
         .map(message => {
-          console.log(message[0])
           const arrayToObject = (arr, keyField) =>
             Object.assign({}, ...arr.map(item => ({ [item[keyField]]: item })))
           const tokenList = arrayToObject(message[0], 'symbol')
-          console.log(tokenList)
           return tokenList
         })
         .map(payload => ({ type: TOKEN_PRICE_TICKER_UPDATE, payload }))

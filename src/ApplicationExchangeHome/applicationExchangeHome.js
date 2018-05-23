@@ -18,6 +18,7 @@ import FundSelector from '../_atomic/molecules/fundSelector'
 import TokenTradeSelector from '../_atomic/molecules/tokenTradeSelector'
 // import DragoComingSoon from '../Elements/elementDragoComingSoon'
 import TokenLiquidity from '../_atomic/atoms/tokenLiquidity'
+import TokenPrice from '../_atomic/atoms/tokenPrice'
 import {
   UPDATE_SELECTED_FUND,
   UPDATE_TRANSACTIONS_DRAGO_MANAGER,
@@ -25,6 +26,7 @@ import {
   CANCEL_SELECTED_ORDER,
   RELAY_OPEN_WEBSOCKET,
   RELAY_GET_ORDERS,
+  RELAY_CLOSE_WEBSOCKET,
   ORDERBOOK_AGGREGATE_ORDERS
 } from '../_utils/const'
 import Paper from 'material-ui/Paper'
@@ -163,6 +165,7 @@ class ApplicationExchangeHome extends Component {
   }
 
   componentWillUnmount() {
+    this.props.dispatch({ type: RELAY_CLOSE_WEBSOCKET })
   }
 
   componentWillUpdate() {
@@ -316,8 +319,20 @@ class ApplicationExchangeHome extends Component {
       // console.log(this.props.exchange.selectedExchange)
       // const bidsOrderNormalizedFilled = [ ...Array(20 - bidsOrderNormalized.length).fill(null), ...bidsOrderNormalized ]
       // const asksOrderNormalizedFilled = [ ...Array(20 - asksOrderNormalized.length).fill(null), ...asksOrderNormalized]
-      const selectedOrder = { ...exchange.selectedOrder }
       // console.log(this.props.transactionsDrago.manager.list)
+      const { prices } = this.props.exchange
+      var currentPrice = "1"
+      var previousPrice = "0"
+      var priceVariation = "0.00"
+      if ( typeof prices[this.props.exchange.selectedTokensPair.baseToken.symbol].priceEth !== 'undefined') {
+        currentPrice = new BigNumber(prices[this.props.exchange.selectedTokensPair.baseToken.symbol].priceEth)
+      }
+      if ( typeof prices.previous[this.props.exchange.selectedTokensPair.baseToken.symbol] !== 'undefined') {
+        previousPrice = new BigNumber(prices.previous[this.props.exchange.selectedTokensPair.baseToken.symbol].priceEth)
+      }
+      if ( priceVariation !== '0.00') {
+        priceVariation = currentPrice.sub(previousPrice).div(previousPrice).mul(100).toFixed(2)
+      }
       return (
         <div ref={node => this.node = node}>
           <Row className={styles.maincontainer}>
@@ -332,10 +347,16 @@ class ApplicationExchangeHome extends Component {
                   <Col xs={2}>
                     <TokenLiquidity liquidity={exchange.selectedFund.liquidity} />
                   </Col>
-                  <Col xs={4}>
+                  <Col xs={2}>
                     <TokenTradeSelector
                       selectedTradeTokensPair={exchange.selectedTokensPair}
                       onSelectTokenTrade={this.onSelectTokenTrade}
+                    />
+                  </Col>
+                  <Col xs={4}>
+                    <TokenPrice
+                      tokenPrice={currentPrice.toFixed(6)}
+                      priceVariation={priceVariation}
                     />
                   </Col>
                 </Row>
@@ -345,7 +366,7 @@ class ApplicationExchangeHome extends Component {
               <Row>
                 <Col xs={6}>
                   <OrderBox />
-                  <Col xs={12}>
+                  {/* <Col xs={12}>
                     <FlatButton primary={true} label="Submit"
                       labelStyle={{ fontWeight: 700, fontSize: '18px' }}
                       onClick={this.onButtonTest}
@@ -354,7 +375,7 @@ class ApplicationExchangeHome extends Component {
                       labelStyle={{ fontWeight: 700, fontSize: '18px' }}
                       onClick={this.onButtonTest2}
                     />
-                  </Col>
+                  </Col> */}
                 </Col>
                 <Col xs={6}>
                   <OrderBook
@@ -438,16 +459,18 @@ class ApplicationExchangeHome extends Component {
       fromBlock: 0,
       toBlock: 'latest'
     }, this.onNewEventZeroExExchange)
-    exchangeUtils.tradeTokensPair = tradeTokensPair
-
-    this.setState({
-      exchangeUtils: exchangeUtils,
-      // orders: {
-      //   bidsOrders: bidsOrders, 
-      //   asksOrders: asksOrders
-      // },
-      // ws: ws
-    })
+    var filter = {
+      networkId: this.props.exchange.relay.networkId,
+      baseTokenAddress: this.props.exchange.selectedTokensPair.baseToken.address,
+      quoteTokenAddress: this.props.exchange.selectedTokensPair.quoteToken.address,
+      aggregated: this.props.exchange.orderBook.aggregated
+    }
+    this.props.dispatch(this.relayGetOrders(filter))
+    this.props.dispatch({ type: RELAY_OPEN_WEBSOCKET, payload: { 
+      url: 'wss://api.ercdex.com',
+      baseTokenAddress: this.props.exchange.selectedTokensPair.baseToken.address,
+      quoteTokenAddress: this.props.exchange.selectedTokensPair.quoteToken.address
+    }})
   }
 
   // Getting last transactions

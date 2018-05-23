@@ -17,6 +17,9 @@ import {
   TableRow,
   TableRowColumn,
 } from 'material-ui/Table';
+import {
+  ADD_TRANSACTION
+} from '../../_utils/const'
 
 import { ERRORS, validateAccount, validatePositiveNumber } from '../../_utils/validation';
 import { formatCoins } from '../../_utils/format';
@@ -170,7 +173,7 @@ class ElementFundActions extends React.Component {
 
   addTransactionToQueueAction = (transactionId, transactionDetails) => {
     return {
-      type: 'ADD_TRANSACTION',
+      type: ADD_TRANSACTION,
       transaction: { transactionId, transactionDetails }
     }
   };

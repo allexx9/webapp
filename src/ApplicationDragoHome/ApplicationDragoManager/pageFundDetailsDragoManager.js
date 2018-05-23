@@ -34,8 +34,6 @@ import styles from './pageFundDetailsDragoManager.module.css';
 
 import {
   UPDATE_SELECTED_DRAGO_MANAGER,
-  TOKEN_PRICE_TICKER_OPEN_WEBSOCKET,
-  TOKEN_PRICE_TICKER_CLOSE_WEBSOCKET
 } from '../../_utils/const'
 
 function mapStateToProps(state) {
@@ -92,13 +90,12 @@ class PageFundDetailsDragoManager extends Component {
     // the list of last transactions
     const dragoId = this.props.match.params.dragoid
     this.getDragoDetails(dragoId)
-    this.props.dispatch({type: TOKEN_PRICE_TICKER_OPEN_WEBSOCKET})
   }
 
   componentWillUnmount() {
     const { contractSubscription } = this.state
     const sourceLogClass = this.constructor.name
-    this.props.dispatch({type: TOKEN_PRICE_TICKER_CLOSE_WEBSOCKET})
+    // this.props.dispatch({type: TOKEN_PRICE_TICKER_CLOSE_WEBSOCKET})
     try {
       contractSubscription.unsubscribe(function (error, success) {
         if (success) {

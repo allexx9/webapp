@@ -2,14 +2,15 @@
 
 import initialState from './initialState'
 import {
-  ADD_NOTIFICATION
+  INIT_NOTIFICATION
 } from '../../_utils/const'
 
 function notificationsReducer (state = initialState.notifications, action) {
   switch (action.type) {
-    case ADD_NOTIFICATION:
+    case INIT_NOTIFICATION:
+    console.log(action)
     return {
-      ...state, message: action.payload
+      ...state, engine: action.payload
     }
     default: return state;
   }

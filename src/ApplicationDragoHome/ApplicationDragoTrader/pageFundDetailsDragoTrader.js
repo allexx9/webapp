@@ -27,6 +27,12 @@ import ElementPriceBox from '../Elements/elementPricesBox'
 import utils from '../../_utils/utils'
 import ElementFundNotFound from '../../Elements/elementFundNotFound'
 import { connect } from 'react-redux';
+import ElementListAssets from '../Elements/elementListAssets';
+import { ENDPOINTS, ERC20_TOKENS, PROD } from '../../_utils/const';
+import Web3 from 'web3';
+import {
+  UPDATE_SELECTED_DRAGO_MANAGER,
+} from '../../_utils/const'
 
 function mapStateToProps(state) {
   return state
@@ -45,6 +51,9 @@ class PageFundDetailsDragoTrader extends Component {
       accounts: PropTypes.array.isRequired,
       user: PropTypes.object.isRequired,
       match: PropTypes.object.isRequired,
+      dispatch: PropTypes.func.isRequired,
+      exchange: PropTypes.object.isRequired,
+      transactionsDrago: PropTypes.object.isRequired, 
     };
 
     state = {
@@ -68,7 +77,13 @@ class PageFundDetailsDragoTrader extends Component {
       balanceDRG: new BigNumber(0).toFormat(4),
     }
 
-
+    updateSelectedDragoAction = (results) => {
+      return {
+        type: UPDATE_SELECTED_DRAGO_MANAGER,
+        payload: results
+      }
+    };
+  
 
     subTitle = (account) => {
       return (
@@ -81,6 +96,25 @@ class PageFundDetailsDragoTrader extends Component {
       // the list of last transactions
       const dragoId = this.props.match.params.dragoid
       this.getDragoDetails(dragoId)
+    }
+
+    componentWillUnmount() {
+      const { contractSubscription } = this.state
+      const sourceLogClass = this.constructor.name
+      // this.props.dispatch({type: TOKEN_PRICE_TICKER_CLOSE_WEBSOCKET})
+      try {
+        contractSubscription.unsubscribe(function (error, success) {
+          if (success) {
+            console.log(`${sourceLogClass}: Successfully unsubscribed from contract.`);
+          }
+          if (error) {
+            console.warn(`${sourceLogClass}: Unsubscribe error ${error}.`)
+          }
+        });
+      }
+      catch (error) {
+        console.warn(`${sourceLogClass}: Unsubscribe error ${error}.`)
+      }
     }
 
     componentWillReceiveProps(nextProps) {
@@ -102,10 +136,10 @@ class PageFundDetailsDragoTrader extends Component {
       const  sourceLogClass = this.constructor.name
       var stateUpdate = true
       var propsUpdate = true
-      const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
-      const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
+      // const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
+      // const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
       stateUpdate = !utils.shallowEqual(this.state, nextState)
-      propsUpdate = !currentBalance.eq(nextBalance)
+      propsUpdate = !utils.shallowEqual(this.props, nextProps)
       if (stateUpdate || propsUpdate) {
         console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
       }
@@ -122,10 +156,11 @@ class PageFundDetailsDragoTrader extends Component {
   
       return (
         <Row className={styles.detailsToolbarGroup}>
-          <Col xs={12} md={1} className={styles.dragoTitle}>
+          {/* <Col xs={12} md={1} className={styles.dragoTitle}>
             <h2 ><IdentityIcon address={ dragoDetails.address } /></h2>
-          </Col>
-          <Col xs={12} md={11} className={styles.dragoTitle}>
+          </Col> */}
+          <div className={styles.identityIconContainer}><IdentityIcon address={ dragoDetails.address } size={'60px'}/></div>
+          <Col xs={12} className={styles.dragoTitle}>
           <p>{dragoDetails.symbol} | {dragoDetails.name} </p>
           <small>{dragoDetails.address}</small>
           </Col>
@@ -190,7 +225,10 @@ class PageFundDetailsDragoTrader extends Component {
 
     render() {
       const { accounts, user } = this.props
-      const { dragoDetails, loading } = this.state
+      const { loading } = this.state
+      const dragoAssetsList = this.props.transactionsDrago.selectedDrago.assets
+      const dragoDetails = this.props.transactionsDrago.selectedDrago.details  
+      const dragoTransactionsList = this.props.transactionsDrago.selectedDrago.transactions
       const tabButtons = {
         inkBarStyle: {
           margin: 'auto',
@@ -208,13 +246,14 @@ class PageFundDetailsDragoTrader extends Component {
       const tableInfo = [['Symbol', dragoDetails.symbol, ''], 
         ['Name', dragoDetails.name, ''], 
         ['Address', dragoDetails.address, tableButtonsDragoAddress],
-        ['Manager', dragoDetails.addresssOwner, tableButtonsDragoOwner]]        
+        ['Manager', dragoDetails.addresssOwner, tableButtonsDragoOwner]]   
+
       const paperStyle = {
         marginTop: "10px"
       };
       
-      var dragoTransactionList = this.state.dragoTransactionsLogs
-      // console.log(dragoTransactionList)
+
+      // console.log(dragoTransactionsList)
       // Waiting until getDragoDetails returns the drago details
       if (loading) {
         return (
@@ -235,6 +274,24 @@ class PageFundDetailsDragoTrader extends Component {
                   {this.renderAddress(dragoDetails)}
                 </ToolbarGroup>
               </Toolbar>
+              <Grid fluid>
+              <Row>
+                      <Col xs={12}>
+                        {/* <Paper zDepth={1}> */}
+                          {/* <AppBar
+                            title="DETAILS"
+                            showMenuIconButton={false}
+                            titleStyle={{ fontSize: 20 }}
+                          /> */}
+                          <div className={styles.detailsContent}>
+                            <InfoTable rows={tableInfo} columnsStyle={columnsStyle} />
+                          </div>
+                        {/* </Paper> */}
+                      </Col>
+                    </Row>
+              </Grid>
+            </Paper>
+            <Paper className={styles.paperContainer} zDepth={1}>
               <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle} className={styles.test}>
                 <Tab label="Info" className={styles.detailsTab}
                   icon={<ActionList color={Colors.blue500} />}>
@@ -270,8 +327,36 @@ class PageFundDetailsDragoTrader extends Component {
                         </Paper>
                       </Col>
                     </Row>
-                    <br />
                     <Row>
+                    <Col xs={12} className={styles.detailsTabContent}>
+                      <Paper zDepth={1} >
+                        <AppBar
+                          title="ASSETS"
+                          showMenuIconButton={false}
+                          titleStyle={{ fontSize: 20 }}
+                        />
+
+                        <div className={styles.detailsTabContent}>
+                          <p>Drago asset porfolio.</p>
+                        </div>
+
+                        <ElementListWrapper
+                          list={dragoAssetsList}
+                          renderCopyButton={this.renderCopyButton}
+                          renderEtherscanButton={this.renderEtherscanButton}
+                          dragoDetails={this.state.dragoDetails}
+                          loading={loading}
+                          assetPrices={this.props.exchange.prices}
+                        >
+                          <ElementListAssets />
+                        </ElementListWrapper>
+                        {/* <ElementListTransactions accountsInfo={accountsInfo} list={dragoTransactionList} 
+                        renderCopyButton={this.renderCopyButton}
+                        renderEtherscanButton={this.renderEtherscanButton}/> */}
+                      </Paper>
+                    </Col>
+                  </Row>
+                    {/* <Row>
                       <Col xs={12}>
                         <Paper zDepth={1}>
                           <AppBar
@@ -284,7 +369,7 @@ class PageFundDetailsDragoTrader extends Component {
                           </div>
                         </Paper>
                       </Col>
-                    </Row>
+                    </Row> */}
                     <Row>
                       <Col xs={12} className={styles.detailsTabContent}>
                         <Paper style={paperStyle} zDepth={1} >
@@ -296,7 +381,7 @@ class PageFundDetailsDragoTrader extends Component {
                           <div className={styles.detailsTabContent}>
                             <p>Your last 20 transactions on this fund.</p>
                           </div>
-                          <ElementListWrapper list={dragoTransactionList}
+                          <ElementListWrapper list={dragoTransactionsList}
                             renderCopyButton={this.renderCopyButton}
                             renderEtherscanButton={this.renderEtherscanButton}
                             loading={loading}>
@@ -345,6 +430,34 @@ class PageFundDetailsDragoTrader extends Component {
           />
         </Row>
       )
+    }
+
+    subscribeToEvents = (contract) => {
+      const networkName = this.props.endpoint.networkInfo.name
+      var WsSecureUrl = ''
+      const eventfullContracAddress = contract.contract.address[0]
+      if (PROD) {
+        WsSecureUrl = ENDPOINTS.rigoblock.wss[networkName].prod
+      } else {
+        WsSecureUrl = ENDPOINTS.rigoblock.wss[networkName].dev
+      }
+      const web3 = new Web3(WsSecureUrl)
+      const eventfullContract = new web3.eth.Contract(contract.abi, eventfullContracAddress)
+      const subscription = eventfullContract.events.allEvents({
+        fromBlock: 'latest',
+        topics: [
+          null,
+          null,
+          null,
+          null
+        ]
+      }, (error, events) => {
+        const dragoId = this.props.match.params.dragoid
+        this.getDragoDetails(dragoId)
+      })
+      this.setState({
+        contractSubscription: subscription
+      })
     }
 
     // Getting the drago details from dragoId
@@ -403,8 +516,8 @@ class PageFundDetailsDragoTrader extends Component {
                     })
                 })
 
-                this.setState({
-                  dragoDetails: {
+                this.props.dispatch(this.updateSelectedDragoAction({
+                  details: {
                     address: dragoDetails[0][0],
                     name: dragoDetails[0][1].charAt(0).toUpperCase() + dragoDetails[0][1].slice(1),
                     symbol: dragoDetails[0][2],
@@ -413,12 +526,47 @@ class PageFundDetailsDragoTrader extends Component {
                     addressGroup: dragoDetails[0][5],
                     sellPrice: api.util.fromWei(data[2].toNumber(4)).toFormat(4),
                     buyPrice: api.util.fromWei(data[3].toNumber(4)).toFormat(4),
-                  },
+                    // dragoETHBalance: formatEth(dragoETHBalance, 4, api),
+                    // dragoWETHBalance: formatEth(dragoWETHBalance, 4, api)
+                  }
+                })
+                )
+                this.setState({
                   loading: false
                 })
+                // this.setState({
+                //   dragoDetails: {
+                //     address: dragoDetails[0][0],
+                //     name: dragoDetails[0][1].charAt(0).toUpperCase() + dragoDetails[0][1].slice(1),
+                //     symbol: dragoDetails[0][2],
+                //     dragoId: dragoDetails[0][3].c[0],
+                //     addresssOwner: dragoDetails[0][4],
+                //     addressGroup: dragoDetails[0][5],
+                //     sellPrice: api.util.fromWei(data[2].toNumber(4)).toFormat(4),
+                //     buyPrice: api.util.fromWei(data[3].toNumber(4)).toFormat(4),
+                //   },
+                //   loading: false
+                // })
               })
+
+                        //
+            // Getting Drago assets
+            //
+            const getTokensBalances = async () => {
+              var dragoAssets = ERC20_TOKENS[api._rb.network.name]
+              for (var token in dragoAssets) {
+                dragoAssets[token].balance = await poolApi.contract.drago.getTokenBalance(ERC20_TOKENS[api._rb.network.name][token].address)
+              }
+              return dragoAssets
+            }
+
+            getTokensBalances().then(dragoAssets => {
+              this.props.dispatch(this.updateSelectedDragoAction({assets: Object.values(dragoAssets) }))
+            })
+
             poolApi.contract.dragoeventful.init()
               .then(() => {
+                this.subscribeToEvents(poolApi.contract.dragoeventful)
                 this.getTransactions(dragoDetails[0][0], poolApi.contract.dragoeventful, accounts)
               }
               )
@@ -535,17 +683,12 @@ class PageFundDetailsDragoTrader extends Component {
             })
         })
         Promise.all(promises).then((results) => {
+          this.props.dispatch(this.updateSelectedDragoAction({ transactions: results }))
+          console.log(`${sourceLogClass} -> Transactions list loaded`);
           this.setState({
-            dragoTransactionsLogs: results,
             loading: false,
           })
         })
-          .then(() => {
-            console.log(`${sourceLogClass} -> Transactions list loaded`);
-            this.setState({
-              loading: false,
-            })
-          })
       })
   }
     

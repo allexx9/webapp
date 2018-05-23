@@ -1,5 +1,10 @@
 /* pageFundDetailsTrader */
 
+.identityIconContainer {
+  position: absolute;
+  padding-top: 65px;
+}
+
 .tradeButton {
   text-align: center;
   padding: 20px;
@@ -14,11 +19,17 @@
 .cardtitle {
   background-color: #EEEEEE;
   color: black !important;
+
+}
+
+.dragoTitle {
+  padding-left: 100px;
+  padding-bottom: 20px;
 }
 
 .dragoTitle img {
-  width: 50px !important;
-  height: 50px !important;
+  width: 60px !important;
+  height: 60px !important;
 }
 
 .dragoTitle p {
@@ -27,6 +38,8 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-weight: 700;
+  opacity: 0.75;
 }
 
 .copyAddress {
@@ -45,6 +58,11 @@
 
 .detailsTabContent {
   padding: 10px;
+}
+
+.detailsContent {
+  padding: 10px;
+  padding-top: 35px;
 }
 
 .detailsTab {

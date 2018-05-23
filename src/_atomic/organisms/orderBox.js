@@ -20,7 +20,8 @@ import {
   UPDATE_SELECTED_ORDER,
   CANCEL_SELECTED_ORDER,
   UPDATE_TRADE_TOKENS_PAIR,
-  UNLIMITED_ALLOWANCE_IN_BASE_UNITS
+  UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
+  ADD_TRANSACTION
 } from '../../_utils/const'
 import {
   signOrder,
@@ -31,6 +32,9 @@ import {
   setAllowaceOnExchangeThroughDrago
 } from '../../_utils/exchange'
 import PoolApi from '../../PoolsApi/src'
+import utils from '../../_utils/utils.js'
+import serializeError from 'serialize-error';
+import { sha3_512 } from 'js-sha3';
 
 
 function mapStateToProps(state) {
@@ -46,6 +50,7 @@ class OrderBox extends Component {
   static propTypes = {
     exchange: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
+    notifications: PropTypes.object.isRequired,
   };
 
   state = {
@@ -78,6 +83,13 @@ class OrderBox extends Component {
         }
     }
   }
+
+  addTransactionToQueueAction = (transactionId, transactionDetails) => {
+    return {
+      type: ADD_TRANSACTION,
+      transaction: { transactionId, transactionDetails }
+    }
+  };
 
   onCloseOrderRawDialog = (open) => {
     this.setState({
@@ -116,13 +128,56 @@ class OrderBox extends Component {
 
   onSubmitOrder = async () => {
     const { selectedOrder, selectedExchange, selectedFund } = this.props.exchange
+
+    const transactionId = sha3_512(new Date() + selectedFund.managerAccount)
+    var transactionDetails = {
+      status: 'pending',
+      hash: '',
+      parityId: null,
+      timestamp: new Date(),
+      account: selectedFund.details.address,
+      error: false,
+      action: selectedOrder.orderType === 'asks' ? 'BuyToken' : 'SellToken',
+      symbol: selectedOrder.selectedTokensPair.baseToken.symbol.toUpperCase(),
+      amount: selectedOrder.orderFillAmount
+    }
+    this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+
     if (selectedOrder.takerOrder) {
       // fillOrderToExchange(selectedOrder.details.order, selectedOrder.orderFillAmount, selectedExchange)
-      const receipt = await fillOrderToExchangeViaProxy(selectedFund, selectedOrder.details.order, selectedOrder.orderFillAmount, selectedExchange)
-      console.log(receipt)
+      try {
+        const receipt = await fillOrderToExchangeViaProxy(selectedFund, selectedOrder.details.order, selectedOrder.orderFillAmount, selectedExchange)
+        console.log(receipt)
+        transactionDetails.status = 'executed'
+        transactionDetails.receipt = receipt
+        transactionDetails.hash = receipt.transactionHash
+        transactionDetails.timestamp = new Date ()
+        this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+
+      }
+      catch (error) {
+        console.log(serializeError(error))
+        const errorArray = serializeError(error).message.split(/\r?\n/)
+        transactionDetails.status = 'error'
+        transactionDetails.error = errorArray[0]
+        this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+        utils.notificationError(this.props.notifications.engine, serializeError(error).message)
+      }
     }
     else {
       console.log(selectedOrder)
+      const transactionId = sha3_512(new Date() + selectedFund.managerAccount)
+      var transactionDetails = {
+        status: 'pending',
+        hash: '',
+        parityId: null,
+        timestamp: new Date(),
+        account: selectedFund.details.address,
+        error: false,
+        action: selectedOrder.orderType === 'asks' ? 'BuyToken' : 'SellToken',
+        symbol: selectedOrder.selectedTokensPair.baseToken.symbol.toUpperCase(),
+        amount: selectedOrder.orderFillAmount
+      }
       var signedOrder = await signOrder(selectedOrder, selectedExchange)
       console.log(signedOrder)
       const payload = {
@@ -133,17 +188,27 @@ class OrderBox extends Component {
         orderRawDialogOpen: true
       })
       sendOrderToRelay(signedOrder)
-        .then(function (parsedBody) {
+        .then((parsedBody) => {
+          transactionDetails.status = 'executed'
+          transactionDetails.timestamp = new Date ()
+          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
           console.log(parsedBody)
         })
-        .catch(function (err) {
-          console.log(err)
+        .catch ((error) => {
+          const errorArray = serializeError(error).message.split(/\r?\n/)
+          transactionDetails.status = 'error'
+          transactionDetails.error = errorArray[0]
+          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+          console.log(error)
+          utils.notificationError(this.props.notifications.engine, serializeError(error).message)
         });
     }
   }
 
   onCancelOrder = () => {
     this.props.dispatch(this.cancelSelectedOrder())
+    
+    // this.props.dispatch(this.addNotification('test'))
   }
 
   onSelectOrderType = () => {
@@ -160,6 +225,7 @@ class OrderBox extends Component {
       this.props.dispatch(this.updateSelectedTradeTokensPair('quote', isInputChecked))
     } catch (error) {
       console.log(error)
+      utils.notificationError(this.props.notifications.engine, serializeError(error).message)
     }
   }
 
@@ -194,8 +260,8 @@ class OrderBox extends Component {
   }
 
   onBuySell = async (orderType) => {
-    const { selectedTokensPair, selectedExchange } = this.props.exchange
-    const order = await newMakerOrder(orderType, selectedTokensPair.baseToken.address, selectedTokensPair.quoteToken.address, selectedExchange)
+    const { selectedTokensPair, selectedExchange, selectedFund } = this.props.exchange
+    const order = await newMakerOrder(orderType, selectedTokensPair.baseToken.address, selectedTokensPair.quoteToken.address, selectedExchange, selectedFund)
     const payload = {
       details: {
         order: order,
@@ -212,7 +278,6 @@ class OrderBox extends Component {
       takerOrder: false,
       selectedTokensPair: selectedTokensPair,
     }
-
     this.props.dispatch(this.updateSelectedOrder(payload))
   }
 
@@ -225,8 +290,6 @@ class OrderBox extends Component {
       buySelected = (selectedOrder.orderType === 'asks')
       sellSelected = (selectedOrder.orderType === 'bids')
     }
-
-
 
     return (
       <Row>
@@ -278,13 +341,13 @@ class OrderBox extends Component {
                     </div>
                   </Col>
 
-                  <Col xs={12}>
+                  {/* <Col xs={12}>
                     <OrderTypeSelector
                       orderTypes={['Market', 'Limit']}
                       onSelectOrderType={this.onSelectOrderType}
                     />
 
-                  </Col>
+                  </Col> */}
 
                   <Col xs={12}>
                     <OrderAmount

@@ -6,8 +6,19 @@ import PoolApi from '../PoolsApi/src'
 
 class utilities {
 
-  constructor(){
+  constructor() {
     var oldConsoleLog = null;
+  }
+
+  notificationError = (notificationEngine, message) => {
+    const messageFirstLine = message.split(/\r?\n/)
+    notificationEngine.addNotification({
+      title: 'Error:',
+      message: messageFirstLine[0],
+      level: 'error',
+      position: 'bl',
+      autoDismiss: 10
+    });
   }
 
   dateFromTimeStamp = (timestamp) => {
@@ -85,7 +96,7 @@ class utilities {
     const logToEvent = (log) => {
       const key = api.util.sha3(JSON.stringify(log))
       const { blockNumber, logIndex, transactionHash, transactionIndex, params, type } = log
-      
+
       // Getting the transaction amounts if it's a buy or sell event
       if (typeof params.amount !== 'undefined') {
         ethvalue = (log.event === 'BuyVault') ? formatEth(params.amount.value, null, api) : formatEth(params.revenue.value, null, api);
@@ -440,24 +451,24 @@ class utilities {
           })
       })
 
-  } 
+  }
 
-    /**
-   * Get the event logs from a the Drago registry
-   * @param  {object} api - The Parity Api
-   * @param  {sting} dragoAddress - The drago contract address
-   * @param  {array} accounts - The ethereum accounts to filter
-   * @param  {object} options - Set the information to return
-   * @returns {promise} Promise object represents returning array of balances and transactions
-   *
-   * 
-    * This function returns an array of arrays: balances, list of transacions and supply.
-    * The parameter options set the arrays to be populated
-    * The functions always returns all the arrays. Setting the options will 
-    * make the function to return an empty array
-    * 
-    * This function can be a performance hit, so it will need to be optimized as much as possible.
-    **/
+  /**
+ * Get the event logs from a the Drago registry
+ * @param  {object} api - The Parity Api
+ * @param  {sting} dragoAddress - The drago contract address
+ * @param  {array} accounts - The ethereum accounts to filter
+ * @param  {object} options - Set the information to return
+ * @returns {promise} Promise object represents returning array of balances and transactions
+ *
+ * 
+  * This function returns an array of arrays: balances, list of transacions and supply.
+  * The parameter options set the arrays to be populated
+  * The functions always returns all the arrays. Setting the options will 
+  * make the function to return an empty array
+  * 
+  * This function can be a performance hit, so it will need to be optimized as much as possible.
+  **/
   getTransactionsDragoOptV2 = (api, dragoAddress, accounts, options = { balance: true, supply: false, limit: 20, trader: true }) => {
     const sourceLogClass = this.constructor.name
     var resultsAll = null
@@ -489,9 +500,9 @@ class utilities {
           name: null,
           address: params.drago.value
         }
-        !dragoSymbolRegistry.has(params.drago.value) 
-        ? dragoSymbolRegistry.set(params.drago.value, dragoData) 
-        : null
+        !dragoSymbolRegistry.has(params.drago.value)
+          ? dragoSymbolRegistry.set(params.drago.value, dragoData)
+          : null
       }
       return {
         type: log.event,
@@ -852,8 +863,6 @@ class utilities {
     return [dragoETHBalance, dragoWETHBalance, dragoZRXBalance]
   }
 
-
-
   shallowEqual(objA: mixed, objB: mixed): boolean {
     const sourceLogClass = this.constructor.name
     if (objA === objB) {
@@ -906,23 +915,22 @@ class utilities {
     return DRG_ISIN + dragoId.toString().padStart(7, "0") + symbol.toUpperCase();
   }
 
-  logger = function()
-  {
-      var pub = {};
+  logger = function () {
+    var pub = {};
 
-      pub.enable = function enableLogger() {
-        if (this.oldConsoleLog == null)
-          return;
+    pub.enable = function enableLogger() {
+      if (this.oldConsoleLog == null)
+        return;
 
-        window['console']['log'] = this.oldConsoleLog;
-      };
+      window['console']['log'] = this.oldConsoleLog;
+    };
 
-      pub.disable = function disableLogger() {
-        this.oldConsoleLog = console.log;
-        window['console']['log'] = function () { };
-      };
+    pub.disable = function disableLogger() {
+      this.oldConsoleLog = console.log;
+      window['console']['log'] = function () { };
+    };
 
-      return pub;
+    return pub;
 
   }()
 }

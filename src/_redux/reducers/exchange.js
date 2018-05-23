@@ -67,7 +67,11 @@ function transactionsReducer(state = initialState.exchange, action) {
       return { ...state, webSocket: { ...action.payload } }
 
     case TOKEN_PRICE_TICKER_UPDATE:
-      return { ...state, prices: { ...action.payload } }
+      var prices = {
+        ...action.payload ,
+        previous: { ...state.prices }
+      }
+      return { ...state, prices  }
 
     default: return state;
   }

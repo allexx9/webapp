@@ -1,0 +1,17 @@
+.tokenPrice {
+  font-size: 32px;
+  opacity: 0.7;
+  font-weight: 600;
+}
+
+.priceIncreased {
+color: #4CAF50;
+}
+
+.priceDecreased {
+  color: #F44336;
+}
+
+.priceNoVariation {
+  color: black;
+}

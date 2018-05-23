@@ -18,7 +18,7 @@ class OrderSummary extends Component {
     api: PropTypes.object.isRequired,
   };
 
- 
+
   render() {
     const { order } = this.props
     var fee, total, action
@@ -52,11 +52,11 @@ class OrderSummary extends Component {
     total = new BigNumber(price()).mul(amount()).toFixed(5)
 
     order.takerOrder
-    ? action = (order.orderType === 'asks') ? 'buy' : 'sell'
-    : action = (order.orderType === 'bids') ? 'buy' : 'sell'
+      ? action = (order.orderType === 'asks') ? 'buy' : 'sell'
+      : action = (order.orderType === 'bids') ? 'buy' : 'sell'
 
     return (
-      
+
       <Row className={styles.containerOrders}>
         <Col xs={12} className={classNames(styles.action, styles[action])}>
           <div>{action.toUpperCase()}</div>
@@ -73,22 +73,22 @@ class OrderSummary extends Component {
               <div>Quantities</div>
             </Col>
             <Col xs={6}>
-            <Row>
-              <Col xs={8}>
-                <div>{amount()}</div>
-              </Col>
-              <Col xs={2}>
-                <div>{order.selectedTokensPair.baseToken.symbol}</div>
-              </Col>
-              <Col xs={8}>
-                <div>{(amount()*price()).toFixed(5)}</div>
-              </Col>
-              <Col xs={2}>
-                <div>{order.selectedTokensPair.quoteToken.symbol}</div>
-              </Col>
+              <Row>
+                <Col xs={8}>
+                  <div>{amount()}</div>
+                </Col>
+                <Col xs={2}>
+                  <div>{order.selectedTokensPair.baseToken.symbol}</div>
+                </Col>
+                <Col xs={8}>
+                  <div>{(amount() * price()).toFixed(5)}</div>
+                </Col>
+                <Col xs={2}>
+                  <div>{order.selectedTokensPair.quoteToken.symbol}</div>
+                </Col>
               </Row>
             </Col>
-            
+
           </Row>
         </Col>
         <Col xs={12} className={styles.summaryRow}>
@@ -107,7 +107,14 @@ class OrderSummary extends Component {
               <div>Fee</div>
             </Col>
             <Col xs={6}>
-              <div>{fee}</div>
+              <Row>
+                <Col xs={8}>
+                  <div>{fee}</div>
+                </Col>
+                <Col xs={2}>
+                  <div>ZRX</div>
+                </Col>
+              </Row>
             </Col>
           </Row>
         </Col>
@@ -121,6 +128,14 @@ class OrderSummary extends Component {
             </Col>
             <Col xs={6}>
               <div>{total}</div>
+              <Row>
+                <Col xs={8}>
+                  <div>{total}</div>
+                </Col>
+                <Col xs={2}>
+                  <div>{order.selectedTokensPair.quoteToken.symbol}</div>
+                </Col>
+              </Row>
             </Col>
           </Row>
         </Col>

@@ -347,23 +347,23 @@ export const getMarketTakerOrder = async (
   return rp(options)
 }
 
-export const newMakerOrder = async (orderType, baseTokenAddress, quoteTokenAddress, ZeroExConfig) => {
+export const newMakerOrder = async (orderType, baseTokenAddress, quoteTokenAddress, ZeroExConfig, selectedFund) => {
   const zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig);
-  const EXCHANGE_ADDRESS = zeroEx.exchange.getContractAddress();
+  // const EXCHANGE_ADDRESS = zeroEx.exchange.getContractAddress();
+  const EXCHANGE_ADDRESS = '0xf307de6528fa16473d8f6509b7b1d8851320dba5'
   const accounts = await zeroEx.getAvailableAddressesAsync();
   const makerAddress = accounts[0]
   const makerTokenAddress = (orderType === 'asks') ? baseTokenAddress : quoteTokenAddress
   const takerTokenAddress = (orderType === 'asks') ? quoteTokenAddress : baseTokenAddress
 
   const order = {
-    // maker: "0x456c3C14aAe3A2d361E6B2879Bfc0Bae15E30c38".toLowerCase(),
-    maker: makerAddress,
+    maker: selectedFund.details.address.toLowerCase(),
+    // maker: makerAddress,
     // dragoAddress: "0x57072759Ba54479669CAdF1A25528a472Af95cEF".toLowerCase(),
     taker: ZeroEx.NULL_ADDRESS,
     feeRecipient: ZeroEx.NULL_ADDRESS,
     makerTokenAddress: makerTokenAddress,
     takerTokenAddress: takerTokenAddress,
-    // exchangeContractAddress: '0xf307de6528fa16473d8f6509b7b1d8851320dba5',
     exchangeContractAddress: EXCHANGE_ADDRESS,
     salt: ZeroEx.generatePseudoRandomSalt(),
     makerFee: '0',

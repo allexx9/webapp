@@ -22,7 +22,8 @@ export default class ToggleSwitch extends Component {
   render() {
     const aggregatedTogglestyles = {
       block: {
-        maxWidth: 250,
+        maxWidth: 150,
+        marginLeft: 'auto'
       },
       toggle: {
         // paddingRight: '5px',
@@ -41,7 +42,7 @@ export default class ToggleSwitch extends Component {
     };
 
     return (
-        <div data-tip={this.props.toolTip}>
+        <div data-tip={this.props.toolTip} style={aggregatedTogglestyles.block}>
           <Toggle
             label={this.props.label}
             style={aggregatedTogglestyles.toggle}
@@ -53,7 +54,7 @@ export default class ToggleSwitch extends Component {
             onToggle={this.props.onToggle}
             toggled={this.props.toggled}
           />
-          <ReactTooltip />
+          <ReactTooltip effect="solid" place="top" />
         </div>
       
 

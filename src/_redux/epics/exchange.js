@@ -32,7 +32,8 @@ import {
   RELAY_MSG_FROM_WEBSOCKET,
   RELAY_CLOSE_WEBSOCKET,
   RELAY_GET_ORDERS,
-  ORDERBOOK_INIT
+  ORDERBOOK_INIT,
+  RELAY_UPDATE_ORDERS
 
 } from '../../_utils/const'
 
@@ -62,7 +63,6 @@ export const initOrderBookFromRelayERCDexEpic = (action$) =>
         .map(payload => {
           const aggregate = {aggregated: action.payload.aggregated}
           return { type: ORDERBOOK_INIT, payload: { ...payload, ...aggregate } }
-
         })
     });
 
@@ -93,9 +93,9 @@ export const webSocketReducer = (state = 0, action) => {
     case RELAY_MSG_FROM_WEBSOCKET:
       console.log(RELAY_MSG_FROM_WEBSOCKET);
       return {};
-    case 'RELAY_UPDATE_ORDERS':
+    case RELAY_UPDATE_ORDERS:
       console.log(action)
-      console.log('RELAY_UPDATE_ORDERS');
+      console.log(RELAY_UPDATE_ORDERS);
       return {};
     default:
       return state;
