@@ -21,7 +21,9 @@ const initialState = {
       liquidity: true,
       orderSummary: true,
       orderBox: true,
+      marketBox: true,
     },
+    chartData: Array(),
     selectedFund: {
       details: {},
       liquidity: {

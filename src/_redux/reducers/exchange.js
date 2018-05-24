@@ -11,11 +11,18 @@ import {
   ORDERBOOK_AGGREGATE_ORDERS,
   SET_MAKER_ADDRESS,
   TOKEN_PRICE_TICKER_UPDATE,
-  UPDATE_ELEMENT_LOADING
+  UPDATE_ELEMENT_LOADING,
+  UPDATE_MARKET_DATA
 } from '../../_utils/const'
 
 function transactionsReducer(state = initialState.exchange, action) {
   switch (action.type) {
+
+    case UPDATE_MARKET_DATA:
+    return {
+      ...state,
+      chartData: action.payload
+    };
 
     case UPDATE_ELEMENT_LOADING:
     var elementLoading = action.payload

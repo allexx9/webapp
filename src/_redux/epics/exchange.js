@@ -22,7 +22,8 @@ import { timer } from 'rxjs/observable/timer'
 // import rp from 'request-promise'
 import {
   getOrderBookFromRelayERCDex,
-  getAggregatedOrdersFromRelayERCDex
+  getAggregatedOrdersFromRelayERCDex,
+  getHistoricalFromERCDex
 } from '../../_utils/exchange'
 // import io from 'socket.io-client'
 // import ReconnectingWebSocket from 'reconnectingwebsocket'
@@ -39,7 +40,9 @@ import {
   RELAY_UPDATE_ORDERS,
   UPDATE_FUND_LIQUIDITY,
   UPDATE_SELECTED_FUND,
-  UPDATE_ELEMENT_LOADING
+  UPDATE_ELEMENT_LOADING,
+  UPDATE_MARKET_DATA,
+  FETCH_MARKET_DATA
 } from '../../_utils/const'
 
 
@@ -57,8 +60,6 @@ const getOrderBookFromRelayERCDex$ = (networkId, baseTokenAddress, quoteTokenAdd
 export const initOrderBookFromRelayERCDexEpic = (action$) =>
   action$.ofType(RELAY_GET_ORDERS)
     .mergeMap((action) => {
-      console.log(action)
-      console.log('initOrderBookFromRelayERCDexEpic');
       return getOrderBookFromRelayERCDex$(
         action.payload.networkId,
         action.payload.baseTokenAddress,
@@ -75,32 +76,17 @@ export const initOrderBookFromRelayERCDexEpic = (action$) =>
 // GETTING UPDATES FROM RELAY ERCDex
 //
 
-function updateOrderBook(orders) {
-  console.log(orders)
-  return {
-    type: ORDERBOOK_UPDATE,
-    payload: orders
-  };
-}
-
 export const webSocketReducer = (state = 0, action) => {
   switch (action.type) {
     case RELAY_OPEN_WEBSOCKET:
-      console.log(RELAY_OPEN_WEBSOCKET);
       return {};
     case ORDERBOOK_UPDATE:
-      console.log(action.payload)
-      console.log(ORDERBOOK_UPDATE);
       return {};
     case RELAY_CLOSE_WEBSOCKET:
-      console.log(RELAY_CLOSE_WEBSOCKET);
       return {};
     case RELAY_MSG_FROM_WEBSOCKET:
-      console.log(RELAY_MSG_FROM_WEBSOCKET);
       return {};
     case RELAY_UPDATE_ORDERS:
-      console.log(action)
-      console.log(RELAY_UPDATE_ORDERS);
       return {};
     default:
       return state;
@@ -111,26 +97,23 @@ export const webSocketReducer = (state = 0, action) => {
 // https://github.com/ReactiveX/rxjs/issues/2048
 
 const reconnectingWebsocket$ = (baseTokenAddress, quoteTokenAddress) => {
-  console.log(ReconnectingWebSocket)
   return Observable.create(observer => {
     var websocket = new ReconnectingWebSocket('wss://api.ercdex.com')
     websocket.addEventListener('open', (msg) => {
       console.log('WebSocket open.')
       // websocket.send(`sub:ticker`);
-      console.log(websocket)
-      console.log(websocket.retryCount)
       websocket.send(`sub:pair-order-change/${baseTokenAddress}/${quoteTokenAddress}`);
       websocket.send(`sub:pair-order-change/${quoteTokenAddress}/${baseTokenAddress}`);
       return observer.next(msg.data);
     });
     websocket.onmessage = (msg) => {
+      console.log('WebSocket message.');
       console.log(msg)
       return observer.next(msg.data);
     }
     websocket.onclose = (msg) => {
       // websocket.send(`unsub:ticker`);
       console.log(msg)
-      console.log('WebSocket closed.');
       return msg.wasClean ? observer.complete() : null
     };
     websocket.onerror = (error) => {
@@ -147,7 +130,6 @@ const reconnectingWebsocket$ = (baseTokenAddress, quoteTokenAddress) => {
 export const relayWebSocketEpic = (action$) =>
   action$.ofType(RELAY_OPEN_WEBSOCKET)
     .mergeMap((action) => {
-      console.log(action)
       return reconnectingWebsocket$(
         action.payload.baseTokenAddress,
         action.payload.quoteTokenAddress
@@ -214,9 +196,6 @@ const updateFundLiquidity$ = (fundAddress, api) =>
 export const updateFundLiquidityEpic = (action$) => {
   return action$.ofType(UPDATE_FUND_LIQUIDITY)
     .mergeMap((action) => {
-      console.log(action)
-      console.log('updateFundLiquidityEpic');
-
       return Observable.concat(
         Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { liquidity: true }}),
         updateFundLiquidity$(
@@ -228,5 +207,43 @@ export const updateFundLiquidityEpic = (action$) => {
     });
 }
 
+//
+// FETCH HISTORICAL MARKET DATA
+//
 
+const getHistoricalFromERCDex$ = (networkId, baseTokenAddress, quoteTokenAddress, startDate) =>
+  Observable.fromPromise(getHistoricalFromERCDex(networkId, baseTokenAddress, quoteTokenAddress,  startDate))
+
+export const getHistoricalFromERCDexEpic = (action$) => {
+  return action$.ofType(FETCH_MARKET_DATA)
+    .mergeMap((action) => {
+      return Observable.concat(
+        Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: true }}),
+        getHistoricalFromERCDex$( 
+          action.payload.networkId,
+          action.payload.baseTokenAddress,
+          action.payload.quoteTokenAddress,
+          action.payload.startDate
+         )
+        .map(historical => {
+          // const payload = historical.map(entry =>{
+          //   const date = new Date(entry.date)
+          //   entry.date = date
+          //   return entry
+          // })
+          // console.log(payload)
+          return {
+            type: UPDATE_MARKET_DATA,
+            payload: historical.map(entry =>{
+              const date = new Date(entry.date)
+              entry.date = date
+              return entry
+            })
+          }
+        })
+        ,
+        Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: false }}),
+      )
+    });
+}
 

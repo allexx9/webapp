@@ -50,6 +50,7 @@ class TableOrderBook extends Component {
   onClickOrder = (id) =>{
     console.log(id)
     var order = this.props.orders[id]
+    console.log(order)
     this.props.dispatch(this.updateSelectedOrder(order))
   }
 

@@ -28,7 +28,8 @@ import {
   RELAY_GET_ORDERS,
   RELAY_CLOSE_WEBSOCKET,
   ORDERBOOK_AGGREGATE_ORDERS,
-  UPDATE_FUND_LIQUIDITY
+  UPDATE_FUND_LIQUIDITY,
+  FETCH_MARKET_DATA
 } from '../_utils/const'
 import Paper from 'material-ui/Paper'
 import { connect } from 'react-redux';
@@ -38,11 +39,14 @@ import Exchange from '../_utils/exchange'
 import {
   getMarketTakerOrder,
   getAvailableAddresses,
-  getTokenAllowance
+  getTokenAllowance,
+  getHistoricalFromERCDex
 } from '../_utils/exchange'
 import FlatButton from 'material-ui/FlatButton'
 import PoolApi from '../PoolsApi/src';
 import BigNumber from 'bignumber.js';
+import ChartBox from '../_atomic/organisms/chartBox'
+import { getData } from "../_utils/data"
 
 function mapStateToProps(state) {
   return state
@@ -83,6 +87,7 @@ class ApplicationExchangeHome extends Component {
 
   state = {
     exchangeUtils: {},
+    chartData: [],
   }
 
   scrollPosition = 0
@@ -115,7 +120,7 @@ class ApplicationExchangeHome extends Component {
     return {
       type: UPDATE_FUND_LIQUIDITY,
       payload: {
-        fundAddress, 
+        fundAddress,
         api
       }
     }
@@ -142,6 +147,20 @@ class ApplicationExchangeHome extends Component {
     }
   };
 
+  getChartData = (networkId, baseTokenAddress, quoteTokenAddress, startDate) => {
+    const payload = {
+      networkId,
+      baseTokenAddress,
+      quoteTokenAddress,
+      startDate
+    }
+    console.log(payload)
+    return {
+      type: FETCH_MARKET_DATA,
+      payload: payload
+    }
+  }
+
 
   shouldComponentUpdate(nextProps, nextState) {
     var stateUpdate = true
@@ -160,7 +179,6 @@ class ApplicationExchangeHome extends Component {
   }
 
   componentWillMount() {
-    console.log(this.context)
   }
 
   componentDidMount() {
@@ -173,6 +191,14 @@ class ApplicationExchangeHome extends Component {
       .then(adreesses => {
         this.props.dispatch({ type: 'SET_MAKER_ADDRESS', payload: adreesses[0] })
       })
+    var tsYesterday = new Date((Math.floor(Date.now() / 1000) - 86400 * 7) * 1000).toISOString()
+    this.props.dispatch(this.getChartData(
+      this.props.exchange.relay.networkId,
+      this.props.exchange.selectedTokensPair.baseToken.address,
+      this.props.exchange.selectedTokensPair.quoteToken.address,
+      tsYesterday
+    )
+    )
   }
 
   componentWillUnmount() {
@@ -237,7 +263,7 @@ class ApplicationExchangeHome extends Component {
         quoteTokenAllowance: new BigNumber(allowanceQuoteToken).gt(0)
       }
       this.props.dispatch(this.updateSelectedTradeTokensPair(tokensAllowance))
-      
+
     } catch (error) {
       console.log(error)
     }
@@ -263,6 +289,14 @@ class ApplicationExchangeHome extends Component {
         this.updateSelectedTradeTokensPair(tradeTokensPair)
       )
       this.connectToExchange(tradeTokensPair)
+      var tsYesterday = new Date((Math.floor(Date.now() / 1000) - 86400 * 7) * 1000).toISOString()
+      this.props.dispatch(this.getChartData(
+        this.props.exchange.relay.networkId,
+        baseToken.address,
+        ERC20_TOKENS[api._rb.network.name].WETH.address,
+        tsYesterday
+      )
+      )
     } catch (error) {
       console.log(error)
     }
@@ -338,17 +372,17 @@ class ApplicationExchangeHome extends Component {
       // const bidsOrderNormalizedFilled = [ ...Array(20 - bidsOrderNormalized.length).fill(null), ...bidsOrderNormalized ]
       // const asksOrderNormalizedFilled = [ ...Array(20 - asksOrderNormalized.length).fill(null), ...asksOrderNormalized]
       // console.log(this.props.transactionsDrago.manager.list)
-      const { prices } = this.props.exchange
+      const { prices, chartData } = this.props.exchange
       var currentPrice = "1"
       var previousPrice = "0"
       var priceVariation = "0.00"
-      if ( typeof prices[this.props.exchange.selectedTokensPair.baseToken.symbol].priceEth !== 'undefined') {
+      if (typeof prices[this.props.exchange.selectedTokensPair.baseToken.symbol].priceEth !== 'undefined') {
         currentPrice = new BigNumber(prices[this.props.exchange.selectedTokensPair.baseToken.symbol].priceEth)
       }
-      if ( typeof prices.previous[this.props.exchange.selectedTokensPair.baseToken.symbol] !== 'undefined') {
+      if (typeof prices.previous[this.props.exchange.selectedTokensPair.baseToken.symbol] !== 'undefined') {
         previousPrice = new BigNumber(prices.previous[this.props.exchange.selectedTokensPair.baseToken.symbol].priceEth)
       }
-      if ( priceVariation !== '0.00') {
+      if (priceVariation !== '0.00') {
         priceVariation = currentPrice.sub(previousPrice).div(previousPrice).mul(100).toFixed(2)
       }
       return (
@@ -363,9 +397,9 @@ class ApplicationExchangeHome extends Component {
                       onSelectFund={this.onSelectFund} />
                   </Col>
                   <Col xs={2}>
-                    <TokenLiquidity 
-                    liquidity={exchange.selectedFund.liquidity} 
-                    loading={exchange.loading.liquidity}/>
+                    <TokenLiquidity
+                      liquidity={exchange.selectedFund.liquidity}
+                      loading={exchange.loading.liquidity} />
                   </Col>
                   <Col xs={2}>
                     <TokenTradeSelector
@@ -382,9 +416,12 @@ class ApplicationExchangeHome extends Component {
                 </Row>
               </ Paper>
             </Col>
+            {/* <Col xs={12}>
+              <ChartBox data={this.state.chartData} />
+            </Col> */}
             <Col xs={12}>
               <Row>
-                <Col xs={6}>
+                <Col xs={3}>
                   <OrderBox />
                   {/* <Col xs={12}>
                     <FlatButton primary={true} label="Submit"
@@ -397,7 +434,23 @@ class ApplicationExchangeHome extends Component {
                     />
                   </Col> */}
                 </Col>
-                <Col xs={6}>
+                <Col xs={7}>
+                  <ChartBox 
+                  data={chartData}
+                  loading={exchange.loading.marketBox}
+                  />
+                  {/* <Col xs={12}>
+                    <FlatButton primary={true} label="Submit"
+                      labelStyle={{ fontWeight: 700, fontSize: '18px' }}
+                      onClick={this.onButtonTest}
+                    />
+                    <FlatButton primary={true} label="Submit2"
+                      labelStyle={{ fontWeight: 700, fontSize: '18px' }}
+                      onClick={this.onButtonTest2}
+                    />
+                  </Col> */}
+                </Col>
+                <Col xs={2}>
                   <OrderBook
                     bidsOrders={bidsOrderNormalized}
                     asksOrders={asksOrderNormalized}
@@ -465,7 +518,7 @@ class ApplicationExchangeHome extends Component {
   }
 
   onNewEventZeroExExchange = (error, event) => {
-    console.log(event)
+
   }
 
   connectToExchange = async (tradeTokensPair) => {
@@ -486,11 +539,13 @@ class ApplicationExchangeHome extends Component {
       aggregated: this.props.exchange.orderBook.aggregated
     }
     this.props.dispatch(this.relayGetOrders(filter))
-    this.props.dispatch({ type: RELAY_OPEN_WEBSOCKET, payload: { 
-      url: 'wss://api.ercdex.com',
-      baseTokenAddress: this.props.exchange.selectedTokensPair.baseToken.address,
-      quoteTokenAddress: this.props.exchange.selectedTokensPair.quoteToken.address
-    }})
+    this.props.dispatch({
+      type: RELAY_OPEN_WEBSOCKET, payload: {
+        url: 'wss://api.ercdex.com',
+        baseTokenAddress: this.props.exchange.selectedTokensPair.baseToken.address,
+        quoteTokenAddress: this.props.exchange.selectedTokensPair.quoteToken.address
+      }
+    })
   }
 
   // Getting last transactions
@@ -504,14 +559,14 @@ class ApplicationExchangeHome extends Component {
         return event.type !== 'BuyDrago' && event.type !== 'SellDrago'
       })
       results[1] = createdLogs
-      results[2].sort(function(a, b){
+      results[2].sort(function (a, b) {
         var keyA = a.symbol,
-            keyB = b.symbol;
+          keyB = b.symbol;
         // Compare the 2 dates
-        if(keyA < keyB) return -1;
-        if(keyA > keyB) return 1;
+        if (keyA < keyB) return -1;
+        if (keyA > keyB) return 1;
         return 0;
-    });
+      });
       this.props.dispatch(this.updateTransactionsDragoAction(results))
 
       // Setting default fund

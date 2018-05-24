@@ -49,6 +49,40 @@ export const getPricesFromRelayERCDex = () => {
   return rp(options)
 }
 
+export const getHistoricalFromERCDex = ( networkId, baseTokenAddress, quoteTokenAddress,  startDate) =>{
+  console.log(networkId, baseTokenAddress, quoteTokenAddress, startDate)
+  if (!networkId) {
+    throw new Error('networkId needs to be set')
+  }
+  if (!baseTokenAddress) {
+    throw new Error('baseTokenAddress needs to be set')
+  }
+  if (!quoteTokenAddress) {
+    throw new Error('quoteTokenAddress needs to be set')
+  }
+  if (!startDate) {
+    throw new Error('startDate needs to be set')
+  }
+  var options = {
+    method: 'POST',
+    url: `https://api.ercdex.com/api/reports/historical`,
+    body: {
+      networkId: networkId,
+      baseTokenAddress: baseTokenAddress, 
+      quoteTokenAddress: quoteTokenAddress,
+      startDate: startDate
+    },
+    json: true // Automatically stringifies the body to JSON
+  };
+  console.log(options)
+  return rp(options)
+  .then(historical => {
+    console.log(historical)
+    return historical
+    
+  })
+}
+
 export const getOrderBookFromRelayERCDex = (networkId, baseTokenAddress, quoteTokenAddress) => {
   console.log('Fetching orderbook from ERCDex')
   if (!networkId) {
@@ -74,9 +108,7 @@ export const getOrderBookFromRelayERCDex = (networkId, baseTokenAddress, quoteTo
   .then(orders => {
     console.log(orders)
     const bidsOrders = formatOrders(orders.bids, 'bids')
-    console.log(bidsOrders)
     const asksOrders = formatOrders(orders.asks, 'asks')
-    console.log(asksOrders)
     var spread = 0
     if (bidsOrders.length !== 0 && asksOrders.length !== 0) {
       spread = new BigNumber(asksOrders[asksOrders.length-1].orderPrice).minus(new BigNumber(bidsOrders[0].orderPrice)).toFixed(5)

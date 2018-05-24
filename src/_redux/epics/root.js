@@ -6,7 +6,8 @@ import {
   relayWebSocketEpic, 
   orderBookEpic,
   initOrderBookFromRelayERCDexEpic,
-  updateFundLiquidityEpic   
+  updateFundLiquidityEpic,
+  getHistoricalFromERCDexEpic
 } from './exchange'
 import { setTokenAllowanceEpic,
   getPricesERCdEXEpic
@@ -19,5 +20,6 @@ export const rootEpic = combineEpics (
   setTokenAllowanceEpic,
   initOrderBookFromRelayERCDexEpic,
   getPricesERCdEXEpic,
-  updateFundLiquidityEpic
+  updateFundLiquidityEpic,
+  getHistoricalFromERCDexEpic
 );

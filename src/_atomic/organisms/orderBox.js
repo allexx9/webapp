@@ -21,7 +21,8 @@ import {
   CANCEL_SELECTED_ORDER,
   UPDATE_TRADE_TOKENS_PAIR,
   UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
-  ADD_TRANSACTION
+  ADD_TRANSACTION,
+  UPDATE_FUND_LIQUIDITY
 } from '../../_utils/const'
 import {
   signOrder,
@@ -83,6 +84,16 @@ class OrderBox extends Component {
         }
     }
   }
+
+  updateSelectedFundLiquidity = (fundAddress, api) => {
+    return {
+      type: UPDATE_FUND_LIQUIDITY,
+      payload: {
+        fundAddress, 
+        api
+      }
+    }
+  };
 
   addTransactionToQueueAction = (transactionId, transactionDetails) => {
     return {

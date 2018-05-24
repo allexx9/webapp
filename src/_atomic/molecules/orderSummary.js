@@ -78,13 +78,13 @@ class OrderSummary extends Component {
                   <div>{amount()}</div>
                 </Col>
                 <Col xs={2}>
-                  <div>{order.selectedTokensPair.baseToken.symbol}</div>
+                  <div><small>{order.selectedTokensPair.baseToken.symbol}</small></div>
                 </Col>
                 <Col xs={8}>
                   <div>{(amount() * price()).toFixed(5)}</div>
                 </Col>
                 <Col xs={2}>
-                  <div>{order.selectedTokensPair.quoteToken.symbol}</div>
+                  <div><small>{order.selectedTokensPair.quoteToken.symbol}</small></div>
                 </Col>
               </Row>
             </Col>
@@ -112,7 +112,7 @@ class OrderSummary extends Component {
                   <div>{fee}</div>
                 </Col>
                 <Col xs={2}>
-                  <div>ZRX</div>
+                  <div><small>ZRX</small></div>
                 </Col>
               </Row>
             </Col>
@@ -133,7 +133,7 @@ class OrderSummary extends Component {
                   <div>{total}</div>
                 </Col>
                 <Col xs={2}>
-                  <div>{order.selectedTokensPair.quoteToken.symbol}</div>
+                  <div><small>{order.selectedTokensPair.quoteToken.symbol}</small></div>
                 </Col>
               </Row>
             </Col>

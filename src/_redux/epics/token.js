@@ -31,7 +31,6 @@ const setTokenAllowance$ = (tokenAddress, ownerAddress, spenderAddress, ZeroExCo
 export const setTokenAllowanceEpic = action$ => {
   return action$.ofType(SET_TOKEN_ALLOWANCE)
     .mergeMap((action) => {
-      console.log(action)
       return setTokenAllowance$(
         action.payload.tokenAddress,
         action.payload.ownerAddress,
@@ -73,10 +72,11 @@ const getPricesERCdEXWebsocket$ = () => {
     var websocket = new ReconnectingWebSocket('wss://api.ercdex.com')
     websocket.addEventListener('open', (msg) => {
       console.log('WebSocket open.')
-      console.log(websocket.retryCount)
+      console.log(msg)
       websocket.send(`sub:ticker`);
     });
     websocket.onmessage = (msg) => {
+      console.log('WebSocket message.');
       console.log(msg)
       const data = JSON.parse(msg.data)
       return observer.next(data.data.tickers);
@@ -87,8 +87,8 @@ const getPricesERCdEXWebsocket$ = () => {
       return msg.wasClean ? observer.complete() : null
     };
     websocket.onerror = (error) => {
-      console.log(error)
       console.log('WebSocket error.');
+      console.log(error)
       return observer.error(error)
     };
     return () => websocket.close();
@@ -102,7 +102,6 @@ const getPricesERCdEXREST$ = () => {
 export const getPricesERCdEXEpic = (action$) =>
   action$.ofType(TOKEN_PRICE_TICKER_OPEN_WEBSOCKET)
     .mergeMap((action) => {
-      console.log(action)
       // return getPricesERCdEXWebsocket$()
         // .retryWhen((err) => {
         //   console.log('Retry when error');
