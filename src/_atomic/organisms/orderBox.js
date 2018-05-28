@@ -26,7 +26,7 @@ import {
 } from '../../_utils/const'
 import {
   signOrder,
-  sendOrderToRelay,
+  sendOrderToRelayERCdEX,
   newMakerOrder,
   fillOrderToExchange,
   fillOrderToExchangeViaProxy,
@@ -200,7 +200,7 @@ class OrderBox extends Component {
       this.setState({
         orderRawDialogOpen: true
       })
-      sendOrderToRelay(signedOrder)
+      sendOrderToRelayERCdEX(signedOrder)
         .then((parsedBody) => {
           transactionDetails.status = 'executed'
           transactionDetails.timestamp = new Date ()

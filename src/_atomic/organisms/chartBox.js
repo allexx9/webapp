@@ -25,9 +25,9 @@ import {
 } from "../../_utils/interactiveutils";
 import { Row, Col } from 'react-flexbox-grid';
 import styles from './chartBox.module.css'
-import AppBar from 'material-ui/AppBar'
 import Paper from 'material-ui/Paper'
 import Loading from '../atoms/loading'
+import BoxTitle from '../atoms/boxTitle'
 
 const paperStyle = {
   // paddingLeft: "12px"
@@ -157,13 +157,7 @@ class ChartBox extends React.Component {
         <Col xs={12}>
           <Row className={styles.sectionTitle}>
             <Col xs={12}>
-
-              <AppBar
-                title='MARKET'
-                showMenuIconButton={false}
-                className={styles.appBar}
-                titleStyle={{ fontSize: 14 }}
-              />
+              <BoxTitle titleText={'MARKET'} />
               <Paper style={paperStyle} zDepth={1} >
                 <Row className={styles.marketBoxContainer}>
                     <Col xs={12}>
@@ -184,13 +178,7 @@ class ChartBox extends React.Component {
         <Col xs={12}>
           <Row className={styles.sectionTitle}>
             <Col xs={12}>
-
-              <AppBar
-                title='MARKET'
-                showMenuIconButton={false}
-                className={styles.appBar}
-                titleStyle={{ fontSize: 14 }}
-              />
+              <BoxTitle titleText={'MARKET'} />
               <Paper style={paperStyle} zDepth={1} >
                 <Row className={styles.marketBoxContainer}>
                   <Col xs={12}>
@@ -240,13 +228,13 @@ class ChartBox extends React.Component {
 
                         <OHLCTooltip origin={[-40, 0]} />
 
-                        <StandardDeviationChannel
+                        {/* <StandardDeviationChannel
                           ref={this.saveInteractiveNodes("StandardDeviationChannel", 1)}
                           enabled={this.state.enableInteractiveObject}
                           onStart={() => console.log("START")}
                           onComplete={this.onDrawComplete}
                           channels={channels_1}
-                        />
+                        /> */}
                       </Chart>
                       <Chart id={2} origin={(w, h) => [0, h - 50]} height={50} yExtents={d => d.volume}>
                         <XAxis axisAt="bottom" orient="bottom" />
@@ -254,14 +242,14 @@ class ChartBox extends React.Component {
                         <BarSeries yAccessor={d => d.volume} fill={(d) => d.close > d.open ? "#6BA583" : "red"} />
                       </Chart>
                       <CrossHairCursor />
-                      <DrawingObjectSelector
+                      {/* <DrawingObjectSelector
                         enabled={!this.state.enableInteractiveObject}
                         getInteractiveNodes={this.getInteractiveNodes}
                         drawingObjectMap={{
                           StandardDeviationChannel: "channels"
                         }}
                         onSelect={this.handleSelection}
-                      />
+                      /> */}
                     </ChartCanvas>
 
                   </Col>

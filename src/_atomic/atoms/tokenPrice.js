@@ -11,12 +11,13 @@ import classNames from 'classnames';
 export default class TokenPrice extends Component {
 
   static propTypes = {
+    selectedTradeTokensPair: PropTypes.object.isRequired,
     tokenPrice: PropTypes.string,
     priceVariation: PropTypes.string
   }
 
   static defaultProps = {
-    tokenPrice: '0.018000',
+    tokenPrice: '0.000000',
     priceVariation: "0"
   }
 
@@ -34,9 +35,14 @@ export default class TokenPrice extends Component {
   }
 
   render() {
-    const { tokenPrice, priceVariation } = this.props
+    const { tokenPrice, priceVariation, selectedTradeTokensPair } = this.props
     return (
       <Row end="xs">
+        <Col xs={12}>
+          <div className={classNames(styles.tokenPair)}>
+            <span className={styles.baseToken}>{selectedTradeTokensPair.baseToken.symbol}</span> <span className={styles.quoteToken}>/ {selectedTradeTokensPair.quoteToken.symbol}</span>
+          </div>
+        </Col>
         <Col xs={12}>
         <div className={classNames(styles.tokenPrice, this.checkPrice())}>
           {tokenPrice}

@@ -42,6 +42,11 @@ const initialState = {
       baseTokenAllowance: false,
       quoteTokenAllowance: false
     },
+    fundOrders: {
+      open: [],
+      cancelled: [],
+      executed: []
+    },
     selectedOrder: {
       details: {},
       orderAmountError: true,

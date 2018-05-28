@@ -15,7 +15,7 @@ function mapStateToProps(state) {
   return state
 }
 
-class TableOrderBook extends Component {
+class TableTranscationsHistory extends Component {
 
   static propTypes = {
     orders: PropTypes.array.isRequired,
@@ -48,7 +48,10 @@ class TableOrderBook extends Component {
   };
 
   onClickOrder = (id) =>{
-    this.props.dispatch(this.updateSelectedOrder(this.props.orders[id]))
+    console.log(id)
+    var order = this.props.orders[id]
+    console.log(order)
+    this.props.dispatch(this.updateSelectedOrder(order))
   }
 
   renderRows = (ordersSorted) =>{
@@ -142,4 +145,4 @@ class TableOrderBook extends Component {
   }
 }
 
-export default connect(mapStateToProps)(TableOrderBook)
+export default connect(mapStateToProps)(TableTranscationsHistory)

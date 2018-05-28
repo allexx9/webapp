@@ -12,11 +12,18 @@ import {
   SET_MAKER_ADDRESS,
   TOKEN_PRICE_TICKER_UPDATE,
   UPDATE_ELEMENT_LOADING,
-  UPDATE_MARKET_DATA
+  UPDATE_MARKET_DATA,
+  UPDATE_FUND_ORDERS
 } from '../../_utils/const'
 
 function transactionsReducer(state = initialState.exchange, action) {
   switch (action.type) {
+
+    case UPDATE_FUND_ORDERS:
+    return {
+      ...state,
+      fundOrders: { ...state.fundOrders, ...action.payload }
+    };
 
     case UPDATE_MARKET_DATA:
     return {

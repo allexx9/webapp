@@ -151,6 +151,61 @@ class DragoWeb3 {
       })
   }
 
+  cancelOrderOnZeroExExchange = (
+    managerAccount,
+    orderAddresses,
+    orderValues,
+    cancelTakerTokenAmount,
+    exchangeContractAddress
+  ) => {
+    if (!managerAccount) {
+      throw new Error('managerAccount needs to be provided')
+    }
+    if (!orderAddresses) {
+      throw new Error('orderAddresses needs to be provided')
+    }
+    if (!orderValues) {
+      throw new Error('orderValues needs to be provided')
+    }
+    if (!cancelTakerTokenAmount) {
+      throw new Error('cancelTakerTokenAmount needs to be provided')
+    }
+    if (!exchangeContractAddress) {
+      throw new Error('exchangeContractAddress need to be provided')
+    }
+    const instance = this._instance
+    const api = this._api
+    var options = {
+      from: managerAccount,
+    }
+    const contractMethod = abis.zeroExExchange.find(
+      method => method.name === 'cancelOrder'
+    );
+    const encodedABI = api.eth.abi.encodeFunctionCall(
+      contractMethod,
+      [orderAddresses, orderValues, cancelTakerTokenAmount])
+
+    // const encodedABI = '0xbc61394a00000000000000000000000040584e290e5c56114c8bcf72fa3d403d1166b3d700000000000000000000000000000000000000000000000000000000000000000000000000000000000000001dad4783cf3fe3085c1426157ab175a6119a04ba000000000000000000000000d0a1e359811322d97991e03f863a0c30c2cf029c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002386f26fc10000000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001638384d81aace3db94ad2d6f00aaa892a70c34850dcb894fde0f5eb1c50fd50b4320c16df400000000000000000000000000000000000000000000000000000000000003e80000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000001c969d3a50aab834aee8f7ee57a885746502933168c63071c6c270848ad502032b466238fa9e7bc9f9a5dd3e0ca738512b0ba16ecf770f12369d65a4cd293a6fac'
+
+    console.log(encodedABI)
+    console.log('orderAddresses ', orderAddresses)
+    console.log('orderValues ', orderValues)
+    console.log('cancelTakerTokenAmount ', cancelTakerTokenAmount)
+    console.log('exchangeContractAddress ', exchangeContractAddress)
+    return instance.methods
+      .operateOnExchangeDirectly(exchangeContractAddress, encodedABI)
+      .estimateGas(options)
+      .then(gasEstimate => {
+        console.log(gasEstimate)
+        options.gas = gasEstimate
+      })
+      .then(() => {
+        return instance.methods
+          .operateOnExchangeDirectly(exchangeContractAddress, encodedABI)
+          .send(options)
+      })
+  }
+
   setInfiniteAllowace = (accountAddress,spenderAddress, tokenAddress) => {
     if (!accountAddress) {
       throw new Error('accountAddress needs to be provided')

@@ -8,6 +8,7 @@ import 'rxjs/add/operator/mapTo';
 import 'rxjs/add/operator/bufferTime';
 import 'rxjs/add/operator/bufferCount';
 import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/reduce';
 import 'rxjs/add/operator/switchMap';
 import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/operator/takeUntil';
@@ -19,11 +20,16 @@ import 'rxjs/observable/timer';
 import 'rxjs/observable/fromEvent';
 import 'rxjs/add/observable/fromPromise';
 import { timer } from 'rxjs/observable/timer'
+import { forkJoin } from 'rxjs/observable/forkJoin';
+import { zip } from 'rxjs/observable/zip';
 // import rp from 'request-promise'
 import {
-  getOrderBookFromRelayERCDex,
-  getAggregatedOrdersFromRelayERCDex,
-  getHistoricalFromERCDex
+  getOrderBookFromRelayERCdEX,
+  getAggregatedOrdersFromRelayERCdEX,
+  getHistoricalFromERCdEX,
+  getTradeHistoryLogsFromRelayERCdEX,
+  getOrdersFromRelayERCdEX,
+  formatOrders
 } from '../../_utils/exchange'
 // import io from 'socket.io-client'
 // import ReconnectingWebSocket from 'reconnectingwebsocket'
@@ -42,25 +48,29 @@ import {
   UPDATE_SELECTED_FUND,
   UPDATE_ELEMENT_LOADING,
   UPDATE_MARKET_DATA,
-  FETCH_MARKET_DATA
+  FETCH_MARKET_DATA,
+  FETCH_HISTORY_TRANSACTION_LOGS,
+  UPDATE_HISTORY_TRANSACTION_LOGS,
+  FETCH_FUND_ORDERS,
+  UPDATE_FUND_ORDERS
 } from '../../_utils/const'
 
 
 //
-// GETTING ORDERS FROM RELAY ERCDex
+// GETTING ORDERS FROM RELAY ERCdEX
 //
 
 // Creating an observable from the promise
-const getOrderBookFromRelayERCDex$ = (networkId, baseTokenAddress, quoteTokenAddress, aggregated) =>
+const getOrderBookFromRelayERCdEX$ = (networkId, baseTokenAddress, quoteTokenAddress, aggregated) =>
   aggregated
-    ? Observable.fromPromise(getAggregatedOrdersFromRelayERCDex(networkId, baseTokenAddress, quoteTokenAddress))
-    : Observable.fromPromise(getOrderBookFromRelayERCDex(networkId, baseTokenAddress, quoteTokenAddress))
+    ? Observable.fromPromise(getAggregatedOrdersFromRelayERCdEX(networkId, baseTokenAddress, quoteTokenAddress))
+    : Observable.fromPromise(getOrderBookFromRelayERCdEX(networkId, baseTokenAddress, quoteTokenAddress))
 
 // Setting the epic
-export const initOrderBookFromRelayERCDexEpic = (action$) =>
+export const initOrderBookFromRelayERCdEXEpic = (action$) =>
   action$.ofType(RELAY_GET_ORDERS)
     .mergeMap((action) => {
-      return getOrderBookFromRelayERCDex$(
+      return getOrderBookFromRelayERCdEX$(
         action.payload.networkId,
         action.payload.baseTokenAddress,
         action.payload.quoteTokenAddress,
@@ -73,7 +83,7 @@ export const initOrderBookFromRelayERCDexEpic = (action$) =>
     });
 
 //
-// GETTING UPDATES FROM RELAY ERCDex
+// GETTING UPDATES FROM RELAY ERCdEX
 //
 
 export const webSocketReducer = (state = 0, action) => {
@@ -106,6 +116,10 @@ const reconnectingWebsocket$ = (baseTokenAddress, quoteTokenAddress) => {
       websocket.send(`sub:pair-order-change/${quoteTokenAddress}/${baseTokenAddress}`);
       return observer.next(msg.data);
     });
+    websocket.addEventListener('close', () => {
+      websocket._shouldReconnect && websocket._connect();
+      console.log('WebSocket reconnecting.');
+    })
     websocket.onmessage = (msg) => {
       console.log('WebSocket message.');
       console.log(msg)
@@ -114,7 +128,7 @@ const reconnectingWebsocket$ = (baseTokenAddress, quoteTokenAddress) => {
     websocket.onclose = (msg) => {
       // websocket.send(`unsub:ticker`);
       console.log(msg)
-      return msg.wasClean ? observer.complete() : null
+      // return msg.wasClean ? observer.complete() : null
     };
     websocket.onerror = (error) => {
       console.log(error)
@@ -179,30 +193,30 @@ export const orderBookEpic = (action$, store) => {
 
 const updateFundLiquidity$ = (fundAddress, api) =>
   Observable.fromPromise(utils.getDragoLiquidity(fundAddress, api))
-  .map(liquidity => {
-    const payload = {
-      liquidity: {
-        ETH: liquidity[0],
-        WETH: liquidity[1],
-        ZRX: liquidity[2]
+    .map(liquidity => {
+      const payload = {
+        liquidity: {
+          ETH: liquidity[0],
+          WETH: liquidity[1],
+          ZRX: liquidity[2]
+        }
       }
-    }
-    return {
-      type: UPDATE_SELECTED_FUND,
-      payload: payload
-    }
-  })
+      return {
+        type: UPDATE_SELECTED_FUND,
+        payload: payload
+      }
+    })
 
 export const updateFundLiquidityEpic = (action$) => {
   return action$.ofType(UPDATE_FUND_LIQUIDITY)
     .mergeMap((action) => {
       return Observable.concat(
-        Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { liquidity: true }}),
+        Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { liquidity: true } }),
         updateFundLiquidity$(
           action.payload.fundAddress,
           action.payload.api,
         ),
-        Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { liquidity: false }}),
+        Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { liquidity: false } }),
       )
     });
 }
@@ -211,38 +225,123 @@ export const updateFundLiquidityEpic = (action$) => {
 // FETCH HISTORICAL MARKET DATA
 //
 
-const getHistoricalFromERCDex$ = (networkId, baseTokenAddress, quoteTokenAddress, startDate) =>
-  Observable.fromPromise(getHistoricalFromERCDex(networkId, baseTokenAddress, quoteTokenAddress,  startDate))
+const getHistoricalFromERCdEX$ = (networkId, baseTokenAddress, quoteTokenAddress, startDate) =>
+  Observable.fromPromise(getHistoricalFromERCdEX(networkId, baseTokenAddress, quoteTokenAddress, startDate))
 
-export const getHistoricalFromERCDexEpic = (action$) => {
+export const getHistoricalFromERCdEXEpic = (action$) => {
   return action$.ofType(FETCH_MARKET_DATA)
     .mergeMap((action) => {
       return Observable.concat(
-        Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: true }}),
-        getHistoricalFromERCDex$( 
+        Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: true } }),
+        getHistoricalFromERCdEX$(
           action.payload.networkId,
           action.payload.baseTokenAddress,
           action.payload.quoteTokenAddress,
           action.payload.startDate
-         )
-        .map(historical => {
-          // const payload = historical.map(entry =>{
-          //   const date = new Date(entry.date)
-          //   entry.date = date
-          //   return entry
-          // })
-          // console.log(payload)
-          return {
-            type: UPDATE_MARKET_DATA,
-            payload: historical.map(entry =>{
-              const date = new Date(entry.date)
-              entry.date = date
-              return entry
-            })
-          }
-        })
+        )
+          .map(historical => {
+            // const payload = historical.map(entry =>{
+            //   const date = new Date(entry.date)
+            //   entry.date = date
+            //   return entry
+            // })
+            // console.log(payload)
+            return {
+              type: UPDATE_MARKET_DATA,
+              payload: historical.map(entry => {
+                const date = new Date(entry.date)
+                entry.date = date
+                return entry
+              })
+            }
+          })
         ,
-        Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: false }}),
+        Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: false } }),
+      )
+    });
+}
+
+//
+// FETCH HISTORICAL TRANSCATION LOGS DATA
+//
+
+const getTradeHistoryLogsFromRelayERCdEX$ = (networkId, baseTokenAddress, quoteTokenAddress) =>
+  Observable.fromPromise(getTradeHistoryLogsFromRelayERCdEX(networkId, baseTokenAddress, quoteTokenAddress))
+
+export const getTradeHistoryLogsFromRelayERCdEXEpic = (action$) => {
+  return action$.ofType(FETCH_HISTORY_TRANSACTION_LOGS)
+    .mergeMap((action) => {
+      return Observable.concat(
+        // Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: true }}),
+        getTradeHistoryLogsFromRelayERCdEX$(
+          action.payload.networkId,
+          action.payload.baseTokenAddress,
+          action.payload.quoteTokenAddress,
+        )
+          .map(logs => {
+            // const payload = historical.map(entry =>{
+            //   const date = new Date(entry.date)
+            //   entry.date = date
+            //   return entry
+            // })
+            // console.log(payload)
+            console.log(logs)
+            return {
+              type: UPDATE_HISTORY_TRANSACTION_LOGS,
+              payload: logs
+            }
+          })
+        ,
+        // Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: false }}),
+      )
+    });
+}
+
+//
+// FETCH OPEN ORDERS
+//
+
+const getOrdersFromRelayERCdEX$ = (networkId, maker, baseTokenAddress, quoteTokenAddress) =>
+  Observable.fromPromise(getOrdersFromRelayERCdEX(networkId, maker, baseTokenAddress, quoteTokenAddress))
+
+export const getOrdersFromRelayERCdEXEpic = (action$) => {
+  return action$.ofType(FETCH_FUND_ORDERS)
+    .mergeMap((action) => {
+      return Observable.concat(
+        // Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: true }}),
+        zip(
+          getOrdersFromRelayERCdEX$(
+            action.payload.networkId,
+            action.payload.maker,
+            action.payload.baseTokenAddress,
+            action.payload.quoteTokenAddress,
+          )
+            .map(orders => {
+              return formatOrders(orders, 'asks')
+            })
+          ,
+          getOrdersFromRelayERCdEX$(
+            action.payload.networkId,
+            action.payload.maker,
+            action.payload.quoteTokenAddress,
+            action.payload.baseTokenAddress,
+          )
+            .map(orders => {
+              return formatOrders(orders, 'bids')
+            })
+        )
+          
+          .map(orders => {
+            console.log(orders[0].concat(orders[1]))
+            return {
+              type: UPDATE_FUND_ORDERS,
+              payload: {
+                open: orders[0].concat(orders[1])
+              }
+            }
+          })
+        ,
+        // Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: false }}),
       )
     });
 }

@@ -9,7 +9,7 @@ import 'rxjs/add/operator/concat';
 import 'rxjs/add/operator/mergeMap';
 import { 
   setTokenAllowance,
-  getPricesFromRelayERCDex 
+  getPricesFromRelayERCdEX 
 } from '../../_utils/exchange'
 import 'rxjs/observable/timer'
 import { fromPromise } from 'rxjs/add/observable/fromPromise';
@@ -81,10 +81,16 @@ const getPricesERCdEXWebsocket$ = () => {
       const data = JSON.parse(msg.data)
       return observer.next(data.data.tickers);
     }
+    websocket.addEventListener('close', () => {
+      websocket._shouldReconnect && websocket._connect();
+      console.log('WebSocket reconnecting.');
+    })
     websocket.onclose = (msg) => {
       // websocket.send(`unsub:ticker`);
       console.log('WebSocket closed.');
-      return msg.wasClean ? observer.complete() : null
+      console.log(msg)
+      
+      // return msg.wasClean ? observer.complete() : null
     };
     websocket.onerror = (error) => {
       console.log('WebSocket error.');
@@ -96,7 +102,7 @@ const getPricesERCdEXWebsocket$ = () => {
 }
 
 const getPricesERCdEXREST$ = () => {
-  return Observable.fromPromise(getPricesFromRelayERCDex())
+  return Observable.fromPromise(getPricesFromRelayERCdEX())
 }
 
 export const getPricesERCdEXEpic = (action$) =>

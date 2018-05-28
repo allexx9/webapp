@@ -29,7 +29,9 @@ import {
   RELAY_CLOSE_WEBSOCKET,
   ORDERBOOK_AGGREGATE_ORDERS,
   UPDATE_FUND_LIQUIDITY,
-  FETCH_MARKET_DATA
+  FETCH_MARKET_DATA,
+  FETCH_HISTORY_TRANSACTION_LOGS,
+  FETCH_FUND_ORDERS
 } from '../_utils/const'
 import Paper from 'material-ui/Paper'
 import { connect } from 'react-redux';
@@ -40,12 +42,12 @@ import {
   getMarketTakerOrder,
   getAvailableAddresses,
   getTokenAllowance,
-  getHistoricalFromERCDex
 } from '../_utils/exchange'
 import FlatButton from 'material-ui/FlatButton'
 import PoolApi from '../PoolsApi/src';
 import BigNumber from 'bignumber.js';
 import ChartBox from '../_atomic/organisms/chartBox'
+import OrdersHistory from '../_atomic/organisms/ordersHistory'
 import { getData } from "../_utils/data"
 
 function mapStateToProps(state) {
@@ -154,9 +156,34 @@ class ApplicationExchangeHome extends Component {
       quoteTokenAddress,
       startDate
     }
-    console.log(payload)
     return {
       type: FETCH_MARKET_DATA,
+      payload: payload
+    }
+  }
+
+  getTradeHistoryLogs = (networkId, baseTokenAddress, quoteTokenAddress) => {
+    const payload = {
+      networkId,
+      baseTokenAddress,
+      quoteTokenAddress,
+    }
+    return {
+      type: FETCH_HISTORY_TRANSACTION_LOGS,
+      payload: payload
+    }
+  }
+
+  getFundOrders = (networkId, maker, baseTokenAddress, quoteTokenAddress) => {
+    const payload = {
+      networkId,
+      maker,
+      baseTokenAddress,
+      quoteTokenAddress,
+    }
+    console.log(payload)
+    return {
+      type: FETCH_FUND_ORDERS,
       payload: payload
     }
   }
@@ -191,6 +218,16 @@ class ApplicationExchangeHome extends Component {
       .then(adreesses => {
         this.props.dispatch({ type: 'SET_MAKER_ADDRESS', payload: adreesses[0] })
       })
+
+    // Getting history logs
+    this.props.dispatch(this.getTradeHistoryLogs(
+      this.props.exchange.relay.networkId,
+      this.props.exchange.selectedTokensPair.baseToken.address,
+      this.props.exchange.selectedTokensPair.quoteToken.address,
+    )
+    )
+
+    // Getting chart data
     var tsYesterday = new Date((Math.floor(Date.now() / 1000) - 86400 * 7) * 1000).toISOString()
     this.props.dispatch(this.getChartData(
       this.props.exchange.relay.networkId,
@@ -263,6 +300,14 @@ class ApplicationExchangeHome extends Component {
         quoteTokenAllowance: new BigNumber(allowanceQuoteToken).gt(0)
       }
       this.props.dispatch(this.updateSelectedTradeTokensPair(tokensAllowance))
+      // Getting fund orders
+      this.props.dispatch(this.getFundOrders(
+        this.props.exchange.relay.networkId,
+        fund.address.toLowerCase(),
+        this.props.exchange.selectedTokensPair.baseToken.address,
+        this.props.exchange.selectedTokensPair.quoteToken.address,
+      )
+      )
 
     } catch (error) {
       console.log(error)
@@ -271,7 +316,7 @@ class ApplicationExchangeHome extends Component {
 
   onSelectTokenTrade = async (token) => {
     const { api } = this.context
-    const { selectedTokensPair, selectedExchange, selectedFund } = this.props.exchange
+    const { selectedTokensPair, selectedExchange, selectedFund, fundOrders } = this.props.exchange
     try {
       const baseToken = ERC20_TOKENS[api._rb.network.name][token]
       const allowanceBaseToken = await getTokenAllowance(selectedTokensPair.baseToken.address, selectedFund.details.address, selectedExchange)
@@ -372,7 +417,7 @@ class ApplicationExchangeHome extends Component {
       // const bidsOrderNormalizedFilled = [ ...Array(20 - bidsOrderNormalized.length).fill(null), ...bidsOrderNormalized ]
       // const asksOrderNormalizedFilled = [ ...Array(20 - asksOrderNormalized.length).fill(null), ...asksOrderNormalized]
       // console.log(this.props.transactionsDrago.manager.list)
-      const { prices, chartData } = this.props.exchange
+      const { prices, chartData, fundOrders } = this.props.exchange
       var currentPrice = "1"
       var previousPrice = "0"
       var priceVariation = "0.00"
@@ -409,6 +454,7 @@ class ApplicationExchangeHome extends Component {
                   </Col>
                   <Col xs={4}>
                     <TokenPrice
+                      selectedTradeTokensPair={exchange.selectedTokensPair}
                       tokenPrice={currentPrice.toFixed(6)}
                       priceVariation={priceVariation}
                     />
@@ -422,44 +468,33 @@ class ApplicationExchangeHome extends Component {
             <Col xs={12}>
               <Row>
                 <Col xs={3}>
-                  <OrderBox />
-                  {/* <Col xs={12}>
-                    <FlatButton primary={true} label="Submit"
-                      labelStyle={{ fontWeight: 700, fontSize: '18px' }}
-                      onClick={this.onButtonTest}
-                    />
-                    <FlatButton primary={true} label="Submit2"
-                      labelStyle={{ fontWeight: 700, fontSize: '18px' }}
-                      onClick={this.onButtonTest2}
-                    />
-                  </Col> */}
+                <OrderBox />
                 </Col>
                 <Col xs={7}>
-                  <ChartBox 
-                  data={chartData}
-                  loading={exchange.loading.marketBox}
-                  />
-                  {/* <Col xs={12}>
-                    <FlatButton primary={true} label="Submit"
-                      labelStyle={{ fontWeight: 700, fontSize: '18px' }}
-                      onClick={this.onButtonTest}
+                  <Row>
+                    <Col xs={12}>
+                      <ChartBox
+                        data={chartData}
+                        loading={exchange.loading.marketBox}
+                      />
+                    </Col>
+                    <Col xs={12}>
+                    <OrdersHistory 
+                      fundOrders={fundOrders}
                     />
-                    <FlatButton primary={true} label="Submit2"
-                      labelStyle={{ fontWeight: 700, fontSize: '18px' }}
-                      onClick={this.onButtonTest2}
-                    />
-                  </Col> */}
+                    </Col>
+                  </Row>
                 </Col>
                 <Col xs={2}>
-                  <OrderBook
+                <OrderBook
                     bidsOrders={bidsOrderNormalized}
                     asksOrders={asksOrderNormalized}
                     spread={spread}
                     aggregated={aggregated}
                     onToggleAggregateOrders={this.onToggleAggregateOrders}
                   />
-                  {/* <ElementListBids list={this.state.bidsList} /> */}
                 </Col>
+
 
               </Row>
             </Col>
@@ -568,6 +603,15 @@ class ApplicationExchangeHome extends Component {
         return 0;
       });
       this.props.dispatch(this.updateTransactionsDragoAction(results))
+
+      // Getting fund orders
+      this.props.dispatch(this.getFundOrders(
+        this.props.exchange.relay.networkId,
+        results[2][0].address.toLowerCase(),
+        this.props.exchange.selectedTokensPair.baseToken.address,
+        this.props.exchange.selectedTokensPair.quoteToken.address,
+      )
+      )
 
       // Setting default fund
       results[2].length !== 0
