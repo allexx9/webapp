@@ -139,6 +139,7 @@ export class App extends Component {
             appLoading: false,
             isConnected: false,
           })
+          return
         })
     }
   };
@@ -165,6 +166,12 @@ export class App extends Component {
     })
     this.props.dispatch({type: TOKEN_PRICE_TICKER_OPEN_WEBSOCKET})
     this.props.dispatch(this.attachInterfaceAction())
+    setTimeout(() => { 
+      console.log('Time out')
+      this.setState({
+        appLoading: false,
+      })
+    }, 5000);
   }
 
   componentWillMount() {
@@ -405,6 +412,7 @@ export class App extends Component {
                     appLoading: false,
                     isConnected: false,
                   })
+                  return attachedInterface
                 });
             }
 
@@ -427,7 +435,14 @@ export class App extends Component {
               WsSecureUrl = this.props.endpoint.endpointInfo.wss[networkName].dev
             }
             // Subscribing to newBlockNumber event
-            const web3 = new Web3(WsSecureUrl)
+            var web3
+            try {
+              console.log(`${sourceLogClass}: Connectiong to Websocket ${WsSecureUrl}`);
+              web3 = new Web3(WsSecureUrl)
+            } catch (error) {
+              throw error
+            }
+            
             return Promise
               .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
               .then(result => {

@@ -32,6 +32,7 @@ import { ENDPOINTS, ERC20_TOKENS, PROD } from '../../_utils/const';
 import Web3 from 'web3';
 import {
   UPDATE_SELECTED_DRAGO_MANAGER,
+  FETCH_ASSET_PRICE_DATA
 } from '../../_utils/const'
 
 function mapStateToProps(state) {
@@ -82,7 +83,17 @@ class PageFundDetailsDragoTrader extends Component {
         type: UPDATE_SELECTED_DRAGO_MANAGER,
         payload: results
       }
-    };
+    }
+
+    getAssetPriceData = (assets) => {
+      const payload = {
+        assets
+      }
+      return {
+        type: FETCH_ASSET_PRICE_DATA,
+        payload: payload
+      }
+    }
   
 
     subTitle = (account) => {

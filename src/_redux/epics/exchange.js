@@ -48,11 +48,12 @@ import {
   UPDATE_SELECTED_FUND,
   UPDATE_ELEMENT_LOADING,
   UPDATE_MARKET_DATA,
-  FETCH_MARKET_DATA,
+  FETCH_MARKET_PRICE_DATA,
   FETCH_HISTORY_TRANSACTION_LOGS,
   UPDATE_HISTORY_TRANSACTION_LOGS,
   FETCH_FUND_ORDERS,
-  UPDATE_FUND_ORDERS
+  UPDATE_FUND_ORDERS,
+  FETCH_ASSET_PRICE_DATA
 } from '../../_utils/const'
 
 
@@ -229,7 +230,40 @@ const getHistoricalFromERCdEX$ = (networkId, baseTokenAddress, quoteTokenAddress
   Observable.fromPromise(getHistoricalFromERCdEX(networkId, baseTokenAddress, quoteTokenAddress, startDate))
 
 export const getHistoricalFromERCdEXEpic = (action$) => {
-  return action$.ofType(FETCH_MARKET_DATA)
+  return action$.ofType(FETCH_MARKET_PRICE_DATA)
+    .mergeMap((action) => {
+      return Observable.concat(
+        Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: true } }),
+        getHistoricalFromERCdEX$(
+          action.payload.networkId,
+          action.payload.baseTokenAddress,
+          action.payload.quoteTokenAddress,
+          action.payload.startDate
+        )
+          .map(historical => {
+            // const payload = historical.map(entry =>{
+            //   const date = new Date(entry.date)
+            //   entry.date = date
+            //   return entry
+            // })
+            // console.log(payload)
+            return {
+              type: UPDATE_MARKET_DATA,
+              payload: historical.map(entry => {
+                const date = new Date(entry.date)
+                entry.date = date
+                return entry
+              })
+            }
+          })
+        ,
+        Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: false } }),
+      )
+    });
+}
+
+export const getAssetFricesFromERCdEXEpic = (action$) => {
+  return action$.ofType(FETCH_ASSET_PRICE_DATA)
     .mergeMap((action) => {
       return Observable.concat(
         Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: true } }),

@@ -89,7 +89,8 @@ const initialState = {
     selectedDrago: {
       details: {},
       transactions: [],
-      assets: []
+      assets: [],
+      assetsCharts: {},
     }
   },
   transactionsVault: {

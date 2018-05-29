@@ -29,7 +29,7 @@ import {
   RELAY_CLOSE_WEBSOCKET,
   ORDERBOOK_AGGREGATE_ORDERS,
   UPDATE_FUND_LIQUIDITY,
-  FETCH_MARKET_DATA,
+  FETCH_MARKET_PRICE_DATA,
   FETCH_HISTORY_TRANSACTION_LOGS,
   FETCH_FUND_ORDERS
 } from '../_utils/const'
@@ -157,7 +157,7 @@ class ApplicationExchangeHome extends Component {
       startDate
     }
     return {
-      type: FETCH_MARKET_DATA,
+      type: FETCH_MARKET_PRICE_DATA,
       payload: payload
     }
   }
