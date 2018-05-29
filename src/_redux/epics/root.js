@@ -7,9 +7,10 @@ import {
   orderBookEpic,
   initOrderBookFromRelayERCdEXEpic,
   updateFundLiquidityEpic,
-  getHistoricalFromERCdEXEpic,
+  getHistoricalPricesDataFromERCdEXEpic,
   getTradeHistoryLogsFromRelayERCdEXEpic,
-  getOrdersFromRelayERCdEXEpic
+  getOrdersFromRelayERCdEXEpic,
+  getAssetsPricesDataFromERCdEXEpic
 } from './exchange'
 import { setTokenAllowanceEpic,
   getPricesERCdEXEpic
@@ -23,7 +24,8 @@ export const rootEpic = combineEpics (
   initOrderBookFromRelayERCdEXEpic,
   getPricesERCdEXEpic,
   updateFundLiquidityEpic,
-  getHistoricalFromERCdEXEpic,
+  getHistoricalPricesDataFromERCdEXEpic,
   getTradeHistoryLogsFromRelayERCdEXEpic,
-  getOrdersFromRelayERCdEXEpic
+  getOrdersFromRelayERCdEXEpic,
+  getAssetsPricesDataFromERCdEXEpic
 );

@@ -14,19 +14,20 @@ import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/operator/takeUntil';
 import 'rxjs/add/operator/retryWhen';
 import 'rxjs/add/operator/filter';
+import 'rxjs/add/operator/catch';
 import 'rxjs/add/observable/concat';
 import 'rxjs/add/observable/of';
 import 'rxjs/observable/timer';
 import 'rxjs/observable/fromEvent';
 import 'rxjs/add/observable/fromPromise';
 import { timer } from 'rxjs/observable/timer'
-import { forkJoin } from 'rxjs/observable/forkJoin';
+import 'rxjs/add/observable/forkJoin';
 import { zip } from 'rxjs/observable/zip';
 // import rp from 'request-promise'
 import {
   getOrderBookFromRelayERCdEX,
   getAggregatedOrdersFromRelayERCdEX,
-  getHistoricalFromERCdEX,
+  getHistoricalPricesDataFromERCdEX,
   getTradeHistoryLogsFromRelayERCdEX,
   getOrdersFromRelayERCdEX,
   formatOrders
@@ -53,7 +54,8 @@ import {
   UPDATE_HISTORY_TRANSACTION_LOGS,
   FETCH_FUND_ORDERS,
   UPDATE_FUND_ORDERS,
-  FETCH_ASSET_PRICE_DATA
+  FETCH_ASSETS_PRICE_DATA,
+  UPDATE_SELECTED_DRAGO_MANAGER
 } from '../../_utils/const'
 
 
@@ -223,51 +225,79 @@ export const updateFundLiquidityEpic = (action$) => {
 }
 
 //
+// FETCH ASSETS PRICES DATA
+//
+
+const getAssetsPricesDataFromERCdEX$ = (networkId, symbol,baseTokenAddress, quoteTokenAddress, startDate) =>
+  Observable
+    .fromPromise(getHistoricalPricesDataFromERCdEX(networkId, baseTokenAddress, quoteTokenAddress, startDate))
+    .map(result =>{
+      const data = {
+        symbol: symbol,
+        startDate,
+        data: result
+      }
+      return data
+    })
+    .catch(error => {
+      const data = {
+        symbol: symbol,
+        startDate,
+        data: [],
+        error
+      }
+      return Observable.of(data)
+    })
+
+export const getAssetsPricesDataFromERCdEXEpic = (action$) => {
+  return action$.ofType(FETCH_ASSETS_PRICE_DATA)
+    .mergeMap((action) => {
+      console.log(action.payload)
+      const observableArray = () => {
+        const observableArray = Array()
+        for (var property in action.payload.assets) {
+          if (action.payload.assets.hasOwnProperty(property)) {
+            // console.log(action.payload.assets[property])
+            observableArray.push(
+              getAssetsPricesDataFromERCdEX$(
+                action.payload.networkId,
+                action.payload.assets[property].symbol,
+                action.payload.assets[property].address,
+                action.payload.quoteToken,
+                new Date((Math.floor(Date.now() / 1000) - 86400 * 7) * 1000).toISOString()
+              )
+            )
+          }
+        }
+        return observableArray
+      }
+      return Observable.forkJoin(observableArray())
+        .map((result) => {
+          console.log(result)
+          return {
+            type: UPDATE_SELECTED_DRAGO_MANAGER,
+            payload: {
+              assetsCharts: result
+            }
+          }
+        }
+        )
+    });
+}
+
+//
 // FETCH HISTORICAL MARKET DATA
 //
 
-const getHistoricalFromERCdEX$ = (networkId, baseTokenAddress, quoteTokenAddress, startDate) =>
-  Observable.fromPromise(getHistoricalFromERCdEX(networkId, baseTokenAddress, quoteTokenAddress, startDate))
+const getHistoricalPricesDataFromERCdEX$ = (networkId, baseTokenAddress, quoteTokenAddress, startDate) =>
+  Observable.fromPromise(getHistoricalPricesDataFromERCdEX(networkId, baseTokenAddress, quoteTokenAddress, startDate))
 
-export const getHistoricalFromERCdEXEpic = (action$) => {
+export const getHistoricalPricesDataFromERCdEXEpic = (action$) => {
   return action$.ofType(FETCH_MARKET_PRICE_DATA)
     .mergeMap((action) => {
       return Observable.concat(
         Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: true } }),
-        getHistoricalFromERCdEX$(
-          action.payload.networkId,
-          action.payload.baseTokenAddress,
-          action.payload.quoteTokenAddress,
-          action.payload.startDate
-        )
-          .map(historical => {
-            // const payload = historical.map(entry =>{
-            //   const date = new Date(entry.date)
-            //   entry.date = date
-            //   return entry
-            // })
-            // console.log(payload)
-            return {
-              type: UPDATE_MARKET_DATA,
-              payload: historical.map(entry => {
-                const date = new Date(entry.date)
-                entry.date = date
-                return entry
-              })
-            }
-          })
-        ,
-        Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: false } }),
-      )
-    });
-}
-
-export const getAssetFricesFromERCdEXEpic = (action$) => {
-  return action$.ofType(FETCH_ASSET_PRICE_DATA)
-    .mergeMap((action) => {
-      return Observable.concat(
-        Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: true } }),
-        getHistoricalFromERCdEX$(
+        getHistoricalPricesDataFromERCdEX$(
           action.payload.networkId,
           action.payload.baseTokenAddress,
           action.payload.quoteTokenAddress,
@@ -364,7 +394,7 @@ export const getOrdersFromRelayERCdEXEpic = (action$) => {
               return formatOrders(orders, 'bids')
             })
         )
-          
+
           .map(orders => {
             console.log(orders[0].concat(orders[1]))
             return {

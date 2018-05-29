@@ -167,7 +167,6 @@ export class App extends Component {
     this.props.dispatch({type: TOKEN_PRICE_TICKER_OPEN_WEBSOCKET})
     this.props.dispatch(this.attachInterfaceAction())
     setTimeout(() => { 
-      console.log('Time out')
       this.setState({
         appLoading: false,
       })

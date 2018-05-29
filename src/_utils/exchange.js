@@ -103,7 +103,7 @@ export const getTradeHistoryLogsFromRelayERCdEX = ( networkId, baseTokenAddress,
   return rp(options)
 }
 
-export const getHistoricalFromERCdEX = ( networkId, baseTokenAddress, quoteTokenAddress,  startDate) =>{
+export const getHistoricalPricesDataFromERCdEX = ( networkId, baseTokenAddress, quoteTokenAddress,  startDate) =>{
   if (!networkId) {
     throw new Error('networkId needs to be set')
   }
@@ -131,7 +131,9 @@ export const getHistoricalFromERCdEX = ( networkId, baseTokenAddress, quoteToken
   return rp(options)
   .then(historical => {
     return historical
-    
+  })
+  .catch(error => {
+    return []
   })
 }
 

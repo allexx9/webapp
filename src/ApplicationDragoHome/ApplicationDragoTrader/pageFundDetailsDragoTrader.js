@@ -32,7 +32,7 @@ import { ENDPOINTS, ERC20_TOKENS, PROD } from '../../_utils/const';
 import Web3 from 'web3';
 import {
   UPDATE_SELECTED_DRAGO_MANAGER,
-  FETCH_ASSET_PRICE_DATA
+  FETCH_ASSETS_PRICE_DATA
 } from '../../_utils/const'
 
 function mapStateToProps(state) {
@@ -84,17 +84,20 @@ class PageFundDetailsDragoTrader extends Component {
         payload: results
       }
     }
-
-    getAssetPriceData = (assets) => {
-      const payload = {
-        assets
-      }
+  
+    getAssetsPriceData = (assets) => {
+      console.log(assets)
+      const { networkInfo } = this.props.endpoint
+      const quoteToken = ERC20_TOKENS[networkInfo.name].WETH.address
       return {
-        type: FETCH_ASSET_PRICE_DATA,
-        payload: payload
+        type: FETCH_ASSETS_PRICE_DATA,
+        payload: { 
+          assets,
+          networkId: networkInfo.id,
+          quoteToken 
       }
     }
-  
+  }
 
     subTitle = (account) => {
       return (
@@ -568,10 +571,12 @@ class PageFundDetailsDragoTrader extends Component {
               for (var token in dragoAssets) {
                 dragoAssets[token].balance = await poolApi.contract.drago.getTokenBalance(ERC20_TOKENS[api._rb.network.name][token].address)
               }
+              
               return dragoAssets
             }
 
             getTokensBalances().then(dragoAssets => {
+              this.props.dispatch(this.getAssetsPriceData(dragoAssets))
               this.props.dispatch(this.updateSelectedDragoAction({assets: Object.values(dragoAssets) }))
             })
 
@@ -674,7 +679,6 @@ class PageFundDetailsDragoTrader extends Component {
         return allLogs
       })
       .then((dragoTransactionsLog) => {
-        console.log(dragoTransactionsLog)
         // Creating an array of promises that will be executed to add timestamp to each entry
         // Doing so because for each entry we need to make an async call to the client
         // For additional refernce: https://stackoverflow.com/questions/39452083/using-promise-function-inside-javascript-array-map
