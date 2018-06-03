@@ -34,6 +34,7 @@ import styles from './pageFundDetailsDragoManager.module.css';
 
 import {
   UPDATE_SELECTED_DRAGO_MANAGER,
+  FETCH_ASSETS_PRICE_DATA
 } from '../../_utils/const'
 
 function mapStateToProps(state) {
@@ -78,6 +79,20 @@ class PageFundDetailsDragoManager extends Component {
       payload: results
     }
   };
+
+  getAssetsPriceData = (assets) => {
+    console.log(assets)
+    const { networkInfo } = this.props.endpoint
+    const quoteToken = ERC20_TOKENS[networkInfo.name].WETH.address
+    return {
+      type: FETCH_ASSETS_PRICE_DATA,
+      payload: { 
+        assets,
+        networkId: networkInfo.id,
+        quoteToken 
+    }
+  }
+}
 
   subTitle = (account) => {
     return (
@@ -210,6 +225,7 @@ class PageFundDetailsDragoManager extends Component {
     const { loading } = this.state
     const dragoTransactionsList = this.props.transactionsDrago.selectedDrago.transactions
     const dragoAssetsList = this.props.transactionsDrago.selectedDrago.assets
+    const assetsCharts = this.props.transactionsDrago.selectedDrago.assetsCharts
     const dragoDetails = this.props.transactionsDrago.selectedDrago.details
     const tabButtons = {
       inkBarStyle: {
@@ -335,6 +351,7 @@ class PageFundDetailsDragoManager extends Component {
                           dragoDetails={this.state.dragoDetails}
                           loading={loading}
                           assetPrices={this.props.exchange.prices}
+                          assetsChart={assetsCharts}
                         >
                           <ElementListAssets />
                         </ElementListWrapper>
@@ -429,8 +446,13 @@ class PageFundDetailsDragoManager extends Component {
         null
       ]
     }, (error, events) => {
-      const dragoId = this.props.match.params.dragoid
-      this.getDragoDetails(dragoId)
+      if (!error) {
+        const dragoId = this.props.match.params.dragoid
+        var sourceLogClass = this.constructor.name
+        console.log(`${sourceLogClass} -> New contract event.`);
+        console.log(events)
+        this.getDragoDetails(dragoId)
+      }
     })
     this.setState({
       contractSubscription: subscription
@@ -521,6 +543,7 @@ class PageFundDetailsDragoManager extends Component {
             }
 
             getTokensBalances().then(dragoAssets => {
+              this.props.dispatch(this.getAssetsPriceData(dragoAssets))
               this.props.dispatch(this.updateSelectedDragoAction({assets: Object.values(dragoAssets) }))
             })
 

@@ -30,6 +30,14 @@ class utilities {
     return timestamp.getFullYear() + '-' + month + '-' + day + ' ' + addZero(timestamp.getHours()) + ':' + addZero(timestamp.getMinutes()) + ':' + addZero(timestamp.getSeconds())
   }
 
+  dateFromTimeStampHuman = (timestamp) => {
+    const day = ("0" + timestamp.getDate()).slice(-2)
+    const locale = "en-us"
+    const year = timestamp.getFullYear()
+    const month = timestamp.toLocaleString(locale, { month: "long" });
+    return  day + ' ' + month + ' ' + year 
+  }
+
   // This funcions needs to be rewritten to work async.
   updateTransactionsQueue = (api, recentTransactions) => {
     var checkTransaction = true

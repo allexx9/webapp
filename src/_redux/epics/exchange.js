@@ -235,7 +235,12 @@ const getAssetsPricesDataFromERCdEX$ = (networkId, symbol,baseTokenAddress, quot
       const data = {
         symbol: symbol,
         startDate,
-        data: result
+        data: result.map(entry => {
+          const date = new Date(entry.date)
+          entry.date = date
+          return entry
+        }),
+        error: ''
       }
       return data
     })
@@ -273,15 +278,18 @@ export const getAssetsPricesDataFromERCdEXEpic = (action$) => {
       }
       return Observable.forkJoin(observableArray())
         .map((result) => {
-          console.log(result)
+          const arrayToObject = (arr, keyField) =>
+          Object.assign({}, ...arr.map(item => ({ [item[keyField]]: item })))
+          const assetsCharts = arrayToObject(result, 'symbol')
           return {
             type: UPDATE_SELECTED_DRAGO_MANAGER,
             payload: {
-              assetsCharts: result
+              assetsCharts
             }
           }
         }
         )
+
     });
 }
 

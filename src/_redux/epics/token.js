@@ -101,7 +101,12 @@ const getPricesERCdEXWebsocket$ = () => {
 }
 
 const getPricesERCdEXREST$ = () => {
-  return Observable.fromPromise(getPricesFromRelayERCdEX())
+  return Observable
+  .fromPromise(getPricesFromRelayERCdEX())
+  .catch((error) => {
+    console.log(error)
+    return Observable.of(Array(0))
+  })
 }
 
 export const getPricesERCdEXEpic = (action$) =>

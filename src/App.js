@@ -9,6 +9,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Web3 from 'web3'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import 'react-virtualized/styles.css'
 
 import ApplicationConfigPage from './Application/applicationConfig';
 import ApplicationDragoPage from './Application/applicationDrago';

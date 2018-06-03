@@ -9,7 +9,7 @@ import React, {PureComponent} from 'react';
 import utils from '../../_utils/utils'
 
 import styles from './elementListFunds.module.css';
-import 'react-virtualized/styles.css'
+
 
 class ElementListFunds extends PureComponent {
 

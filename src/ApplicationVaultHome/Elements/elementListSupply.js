@@ -5,7 +5,7 @@ import FlatButton from 'material-ui/FlatButton';
 import PropTypes from 'prop-types';
 import React, {PureComponent} from 'react';
 
-import 'react-virtualized/styles.css'
+
 
 import {DS} from '../../_utils/const.js'
 import utils from '../../_utils/utils'

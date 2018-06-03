@@ -5,6 +5,22 @@
   padding-top: 65px;
 }
 
+.myPositionBox {
+  padding-bottom: 10px;
+}
+
+.detailsSectionContainer {
+  padding-top: 15px;
+}
+
+.marketPriceText{
+  /* font-weight: 700; */
+}
+
+.myPositionTokenSymbol {
+  font-weight: 500 !important;
+}
+
 .tradeButton {
   text-align: center;
   padding: 20px;
@@ -13,7 +29,7 @@
 
 .paperContainer {
   margin-top: 10px;
-  display: 'inline-block';
+  padding-top: 10px;
 }
 
 .cardtitle {
@@ -61,8 +77,10 @@
 }
 
 .detailsContent {
-  padding: 10px;
-  padding-top: 35px;
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
 }
 
 .detailsTab {
@@ -70,6 +88,7 @@
   background-color: white !important;
   font-weight: 700 !important;
   font-size: 14px !important;
+  width: 200px !important;
 }
 
 
@@ -103,9 +122,27 @@
   /* width: 50% !important; */
 }
 
+.tabsRow {
+  background-color: #FFFFFF;
+  margin-left: 0px !important;
+  margin-right: 0px !important;
+  padding-left: 0px !important;
+  padding-right: 0px !important;
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 4px;
+}
+
 .holdings {
   padding-left: 5px;
-  padding-top: 20px;
-  font-size: 20px;
+  padding-top: 10px;
+  font-size: 22px;
+  padding-bottom: 10px;
+  width: 100%;
+  text-align: center;
+  font-weight: 700;
+  opacity: 0.8;
   /* color: #616161; */
+}
+
+.marketSectionContainer{
+  padding-top: 5px;
 }

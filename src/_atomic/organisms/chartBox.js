@@ -139,7 +139,6 @@ class ChartBox extends React.Component {
   render() {
     const { type, data: initialData, width, ratio } = this.props;
     const { channels_1 } = this.state;
-
     const xScaleProvider = discontinuousTimeScaleProvider.inputDateAccessor(
       d => d.date
     );

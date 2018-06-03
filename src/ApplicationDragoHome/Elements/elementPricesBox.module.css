@@ -3,16 +3,14 @@
   font-size: 20px;
   margin-top: 15px;
   margin-bottom: 10px;
+  font-weight: 700;
+  opacity: 0.8;
   /* text-align: right; */
   
 }
 
-.boxHeader {
-  
-}
-
-.actionButton {
-  
+.tokenSymbol {
+  font-weight: 500 !important;
 }
 
 .row {

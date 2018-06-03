@@ -8,7 +8,7 @@ import React, {PureComponent} from 'react';
 import utils from '../../_utils/utils'
 
 import styles from './elementListTransactions.module.css';
-import 'react-virtualized/styles.css'
+
 import  * as Colors from 'material-ui/styles/colors'
 import BigNumber from 'bignumber.js';
 

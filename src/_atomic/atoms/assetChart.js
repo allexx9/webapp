@@ -9,6 +9,8 @@ import { ChartCanvas, Chart } from "react-stockcharts";
 import { AreaSeries } from "react-stockcharts/lib/series";
 import { XAxis, YAxis } from "react-stockcharts/lib/axes";
 import { fitWidth } from "react-stockcharts/lib/helper";
+import { discontinuousTimeScaleProvider } from "react-stockcharts/lib/scale";
+import { last, toObject } from "react-stockcharts/lib/utils";
 import { createVerticalLinearGradient, hexToRGBA } from "react-stockcharts/lib/utils";
 
 const canvasGradient = createVerticalLinearGradient([
@@ -26,16 +28,38 @@ class AssetChart extends Component {
     type: PropTypes.oneOf(["svg", "hybrid"]).isRequired,
   };
 
+  static defaultProps = {
+    type: "svg",
+  };
+
 	render() {
-		const { data, type, width, ratio } = this.props;
+    const { type, data: initialData, width, ratio } = this.props;
+    const xScaleProvider = discontinuousTimeScaleProvider.inputDateAccessor(
+      d => d.date
+    );
+    const { data, xScale, xAccessor, displayXAccessor } = xScaleProvider(
+      initialData
+    );
+
+    const start = xAccessor(last(data));
+    const end = xAccessor(data[Math.max(0, data.length - 150)]);
+    const xExtents = [start, end];
 		return (
-			<ChartCanvas ratio={ratio} width={width} height={400}
-				margin={{ left: 50, right: 50, top: 10, bottom: 30 }}
+			<ChartCanvas ratio={ratio} width={300} height={40}
+				margin={{ left: 0, right: 0, top: 5, bottom: 0 }}
 				seriesName="MSFT"
-				data={data} type={type}
-				xAccessor={d => d.date}
-				xScale={scaleTime()}
-				xExtents={[new Date(2011, 0, 1), new Date(2013, 0, 2)]}
+        data={data} 
+        type={type}
+				// xAccessor={d => {
+        //   console.log(d)
+        //   return  d.date
+        // }}
+        xAccessor={xAccessor}
+        xScale={scaleTime()}
+        // xScale={xScale}
+        displayXAccessor={displayXAccessor}
+        // xExtents={[new Date(2011, 0, 1), new Date(2013, 0, 2)]}
+        xExtents={xExtents}
 			>
 				<Chart id={0} yExtents={d => d.close}>
 					<defs>
@@ -45,8 +69,8 @@ class AssetChart extends Component {
 							<stop offset="100%"  stopColor="#4286f4" stopOpacity={0.8} />
 						</linearGradient>
 					</defs>
-					<XAxis axisAt="bottom" orient="bottom" ticks={6}/>
-					<YAxis axisAt="left" orient="left" />
+					{/* <XAxis axisAt="bottom" orient="bottom" ticks={6}/>
+					<YAxis axisAt="left" orient="left" /> */}
 					<AreaSeries
 						yAccessor={d => d.close}
 						fill="url(#MyGradient)"

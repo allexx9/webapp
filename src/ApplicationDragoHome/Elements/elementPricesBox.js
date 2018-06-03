@@ -1,4 +1,4 @@
-import  * as Colors from 'material-ui/styles/colors'
+import * as Colors from 'material-ui/styles/colors'
 import AppBar from 'material-ui/AppBar';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -15,15 +15,15 @@ export default class ElementPriceBox extends Component {
     isManager: PropTypes.bool
   };
 
-  buttonBuyClick = () =>{
+  buttonBuyClick = () => {
     this.props.handleBuySellButtons('buy')
   }
-  
-  buttonSellClick = () =>{
+
+  buttonSellClick = () => {
     this.props.handleBuySellButtons('sell')
   }
-  
-  render () {
+
+  render() {
     const priceBoxHeader = {
       buy: {
         backgroundColor: Colors.green300
@@ -44,7 +44,7 @@ export default class ElementPriceBox extends Component {
       fontWeight: 500,
     }
 
-    const {dragoDetails, isManager} = this.props
+    const { dragoDetails, isManager } = this.props
 
     const buttonBuyStyle = {
       border: "1px solid",
@@ -58,30 +58,20 @@ export default class ElementPriceBox extends Component {
       // width: "140px"
     }
 
-    if(!isManager) {
+    if (!isManager) {
       return (
         <div>
-          <Row>
-            <Col xs={12} className={styles.boxHeader}>
-              <AppBar
-                title="TRADE"
-                showMenuIconButton={false}
-                style={priceBoxHeader.marketPrice}
-                titleStyle={priceBoxHeaderTitleStyle}
-              />
-            </Col>
-          </Row>
           <Row middle="xs" className={styles.row}>
 
             <Col xs={6}>
-              <div className={styles.price}>{dragoDetails.sellPrice} <small>ETH</small></div>
+              <div className={styles.price}>{dragoDetails.sellPrice} <small className={styles.tokenSymbol}>ETH</small></div>
             </Col>
             <Col xs={6}>
-              <div className={styles.price}>{dragoDetails.buyPrice} <small>ETH</small></div>
+              <div className={styles.price}>{dragoDetails.buyPrice} <small className={styles.tokenSymbol}>ETH</small></div>
             </Col>
           </Row>
           <Row middle="xs" className={styles.row}>
-          <Col xs={6}>
+            <Col xs={6}>
               <div className={styles.actionButton}><FlatButton primary={true} label="Sell"
                 labelStyle={{ fontWeight: 700, fontSize: '18px', color: Colors.red500 }}
                 onClick={this.buttonSellClick}
@@ -102,7 +92,7 @@ export default class ElementPriceBox extends Component {
       );
     }
 
-    if(isManager) {
+    if (isManager) {
       return (
         <div>
           <Row>
@@ -122,7 +112,7 @@ export default class ElementPriceBox extends Component {
               </div>
             </Col>
             <Col xs={7}>
-              <div className={styles.price}>{dragoDetails.buyPrice} <small>ETH</small></div>
+              <span className={styles.price}>{dragoDetails.buyPrice}</span> <small className={styles.tokenSymbol}>ETH</small>
             </Col>
           </Row>
           <Row middle="xs">
@@ -132,7 +122,7 @@ export default class ElementPriceBox extends Component {
               </div>
             </Col>
             <Col xs={7}>
-              <div className={styles.price}>{dragoDetails.sellPrice} <small>ETH</small></div>
+              <div className={styles.price}>{dragoDetails.sellPrice} <small className={styles.tokenSymbol}>ETH</small></div>
             </Col>
           </Row>
         </div>
