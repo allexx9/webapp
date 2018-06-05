@@ -36,8 +36,7 @@ export default class SectionTitle extends Component {
     }
 
     return (
-      <div>
-
+      <div className={styles.titleContainer}>
         <Divider style={{ backgroundColor: '#9E9E9E' }} />
         <div className={styles.title} style={this.props.textStyle}>
           { this.props.help ? renderHelp() : null }

@@ -42,7 +42,6 @@ class ElementFundActions extends React.Component {
 
   constructor(props) {
     super(props)
-    console.log(this.props.actionSelected.action)
     if (this.props.actionSelected.action == 'buy') {
       this.state = {
         open: props.actionSelected.open,

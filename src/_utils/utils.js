@@ -3,6 +3,13 @@ import { formatCoins, formatEth } from './format';
 import { APP, DS } from './const.js'
 import BigNumber from 'bignumber.js'
 import PoolApi from '../PoolsApi/src'
+import { toUnitAmount } from './format'
+import palette from './palete'
+import { 
+  ERC20_TOKENS, 
+} from './const'
+
+import { Actions } from '../_redux/actions/actions' 
 
 class utilities {
 
@@ -21,6 +28,35 @@ class utilities {
     });
   }
 
+  calculatePortfolioValue = (dragoAssetsList, assetsPrices) => {
+    const totalValue = dragoAssetsList.reduce((total, asset) => {
+      const value = new BigNumber(assetsPrices[asset.symbol].priceEth).mul(toUnitAmount(new BigNumber(asset.balance), asset.decimals).toFixed(5))
+      return total.plus(value)
+    }, new BigNumber(0))
+
+    return totalValue.toFixed(5)
+  }
+
+  calculatePieChartPortfolioValue = (dragoAssetsList, assetsPrices, dragoETHBalance) => {
+    var labels = Array(0)
+    const data = dragoAssetsList.map((asset) => {
+      const value = new BigNumber(assetsPrices[asset.symbol].priceEth).mul(toUnitAmount(new BigNumber(asset.balance), asset.decimals).toFixed(5))
+      labels.push(asset.symbol)
+      return value.toFixed(5)
+    })
+    data.push(new BigNumber(dragoETHBalance).toFixed(5))
+    labels.push('ETH')
+    return {
+      datasets: [{
+        data,
+        backgroundColor: palette('tol', data.length).map(function (hex) {
+          return '#' + hex;
+        }),
+      }],
+      labels
+    }
+  }
+
   dateFromTimeStamp = (timestamp) => {
     const day = ("0" + timestamp.getDate()).slice(-2)
     const month = ("0" + (timestamp.getMonth() + 1)).slice(-2)
@@ -35,7 +71,7 @@ class utilities {
     const locale = "en-us"
     const year = timestamp.getFullYear()
     const month = timestamp.toLocaleString(locale, { month: "long" });
-    return  day + ' ' + month + ' ' + year 
+    return day + ' ' + month + ' ' + year
   }
 
   // This funcions needs to be rewritten to work async.
@@ -859,6 +895,117 @@ class utilities {
           })
       })
 
+  }
+
+
+  getDragoDetailsFromId = async (dragoId, api) =>{  
+    console.log(Actions)
+    const poolApi = new PoolApi(api)
+    await poolApi.contract.dragoregistry.init()
+    const dragoDetails = await poolApi.contract.dragoregistry.fromId(dragoId)
+    return dragoDetails
+  }
+
+  getDragoDetails = async (dragoDetails, props, api ) => {
+  
+    const { accounts, dispatch, endpoint } = props
+  
+    //
+    // Initializing Drago API
+    // Passing Parity API
+    //      
+    const poolApi = new PoolApi(api)
+
+    const dragoAddress = dragoDetails[0][0]
+    //
+    // Getting last transactions
+    //
+    await poolApi.contract.dragoeventful.init()
+    // this.subscribeToEvents(poolApi.contract.dragoeventful)
+    // this.getTransactions(dragoAddress, poolApi.contract.dragoeventful, accounts)
+
+    //
+    // Initializing drago contract
+    //
+    await poolApi.contract.drago.init(dragoAddress)
+
+    //
+    // Getting Drago assets
+    //
+    const getTokensBalances = async () => {
+      var dragoAssets = ERC20_TOKENS[api._rb.network.name]
+      for (var token in dragoAssets) {
+        dragoAssets[token].balance = await poolApi.contract.drago.getTokenBalance(ERC20_TOKENS[api._rb.network.name][token].address)
+      }
+
+      return dragoAssets
+    }
+
+    getTokensBalances().then(dragoAssets => {
+      dispatch(Actions.drago.getAssetsPriceData(dragoAssets, endpoint.networkInfo.id, ERC20_TOKENS[endpoint.networkInfo.name].WETH.address))
+      dispatch(Actions.drago.updateSelectedDragoAction({ assets: Object.values(dragoAssets) }))
+    })
+
+    //
+    // Gettind drago data, creation date, supply, ETH balances
+    //
+
+    const getDragoCreationDate = async (dragoAddress, contract) => {
+      const hexDragoAddress = '0x' + dragoDetails[0][0].substr(2).padStart(64, '0')
+      const eventsFilterCreate = {
+        topics: [
+          [contract.hexSignature.DragoCreated],
+          [hexDragoAddress],
+          null,
+          null
+        ]
+      }
+      const dragoCreatedLog = await contract.getAllLogs(eventsFilterCreate)
+      const blockInfo = await api.eth.getBlockByNumber((dragoCreatedLog[0].blockNumber.toFixed(0)))
+      return this.dateFromTimeStampHuman(blockInfo.timestamp)
+    }
+
+    const dragoData = await poolApi.contract.drago.getData()
+    const dragoCreatedDate = await getDragoCreationDate(dragoAddress, poolApi.contract.dragoeventful)
+    const dragoTotalSupply = await poolApi.contract.drago.totalSupply()
+    const dragoETHBalance = await formatEth(await poolApi.contract.drago.getBalance(), 5, api)
+    const dragoWETHBalance = await formatEth(await poolApi.contract.drago.getBalanceWETH(), 5, api)
+
+    var details = {
+      address: dragoDetails[0][0],
+      name: dragoDetails[0][1].charAt(0).toUpperCase() + dragoDetails[0][1].slice(1),
+      symbol: dragoDetails[0][2],
+      dragoId: dragoDetails[0][3].c[0],
+      addresssOwner: dragoDetails[0][4],
+      addressGroup: dragoDetails[0][5],
+      sellPrice: api.util.fromWei(dragoData[2].toNumber(4)).toFormat(4),
+      buyPrice: api.util.fromWei(dragoData[3].toNumber(4)).toFormat(4),
+      created: dragoCreatedDate,
+      totalSupply: formatCoins(new BigNumber(dragoTotalSupply), 4, api),
+      dragoETHBalance,
+      dragoWETHBalance
+    }
+
+    dispatch(Actions.drago.updateSelectedDragoAction({
+      details
+    })
+    )
+
+    //
+    // Getting balance for each user account
+    //
+    var balanceDRG = new BigNumber(0)
+    await Promise.all(accounts.map(async (account) => {
+      const balance = await poolApi.contract.drago.balanceOf(account.address)
+      balanceDRG = balanceDRG.add(balance)
+    })
+    )
+    balanceDRG = formatCoins(balanceDRG, 5, api)
+    details = { ...details, balanceDRG }
+    dispatch(Actions.drago.updateSelectedDragoAction({
+      details
+    })
+    )
   }
 
 

@@ -127,12 +127,13 @@ export const getHistoricalPricesDataFromERCdEX = ( networkId, baseTokenAddress, 
     },
     json: true // Automatically stringifies the body to JSON
   };
-  console.log(options)
+  // console.log(options)
   return rp(options)
   .then(historical => {
     return historical
   })
   .catch(error => {
+    console.log(error)
     return []
   })
 }

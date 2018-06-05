@@ -1,29 +1,40 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
 import {
-  ATTACH_INTERFACE,
   UPDATE_INTERFACE,
-} from '../_utils/const'
+  UPDATE_SELECTED_DRAGO_DETAILS,
+  FETCH_ASSETS_PRICE_DATA
+} from './const'
 
 class actions {
 
-  attachInterfaceAction = () => {
-    return {
-      type: ATTACH_INTERFACE,
-      payload: new Promise(resolve => {
-        this.attachInterface().then(result =>{
-          resolve(result);
-    })
-    })
+  drago = {
+    updateSelectedDragoAction: (results) => {
+      return {
+        type: UPDATE_SELECTED_DRAGO_DETAILS,
+        payload: results
+      }
+    },
+    getAssetsPriceData: (assets, quoteToken, networkId) => {
+      return {
+        type: FETCH_ASSETS_PRICE_DATA,
+        payload: {
+          assets,
+          networkId,
+          quoteToken
+        }
+      }
     }
-  };
+  }
 
-  updateInterfaceAction = (endpoint) => {
-    return {
-      type: UPDATE_INTERFACE,
-      payload: endpoint
+  endpoint = {
+    updateInterfaceAction: (endpoint) => {
+      return {
+        type: UPDATE_INTERFACE,
+        payload: endpoint
+      }
     }
-  };
+  }
 
 }
 

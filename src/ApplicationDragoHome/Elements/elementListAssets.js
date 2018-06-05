@@ -28,7 +28,7 @@ class ElementListAssets extends PureComponent {
     renderCopyButton: PropTypes.func.isRequired,
     renderEtherscanButton: PropTypes.func.isRequired,
     dragoDetails: PropTypes.object.isRequired,
-    assetPrices: PropTypes.object.isRequired,
+    assetsPrices: PropTypes.object.isRequired,
     assetsChart: PropTypes.object.isRequired,
   };
 
@@ -286,8 +286,8 @@ class ElementListAssets extends PureComponent {
           <div className={styles.holdingTitleText}>Price</div>
         </Col>
         <Col xs={12}>
-          {(typeof this.props.assetPrices[token.symbol] !== 'undefined')
-            ? new BigNumber(this.props.assetPrices[token.symbol].priceEth).toFixed(5)
+          {(typeof this.props.assetsPrices[token.symbol] !== 'undefined')
+            ? new BigNumber(this.props.assetsPrices[token.symbol].priceEth).toFixed(5)
             : <small>N/A</small>} <small className={styles.symbolLegendText}>ETH</small>
         </Col>
           </Row>
@@ -309,9 +309,9 @@ class ElementListAssets extends PureComponent {
   }
 
   renderPrice(token) {
-    if (typeof this.props.assetPrices[token.symbol] !== 'undefined') {
+    if (typeof this.props.assetsPrices[token.symbol] !== 'undefined') {
       return (
-        <div>{new BigNumber(this.props.assetPrices[token.symbol].priceEth).toFixed(7)}</div>
+        <div>{new BigNumber(this.props.assetsPrices[token.symbol].priceEth).toFixed(7)}</div>
       )
     }
     return (
@@ -320,9 +320,9 @@ class ElementListAssets extends PureComponent {
   }
 
   renderValue(token) {
-    if (typeof this.props.assetPrices[token.symbol] !== 'undefined') {
+    if (typeof this.props.assetsPrices[token.symbol] !== 'undefined') {
       return (
-        <div className={styles.valueText}>{new BigNumber(this.props.assetPrices[token.symbol].priceEth).mul(toUnitAmount(new BigNumber(token.balance), token.decimals).toFixed(5)).toFixed(5)} <small className={styles.symbolLegendText}>ETH</small></div>
+        <div className={styles.valueText}>{new BigNumber(this.props.assetsPrices[token.symbol].priceEth).mul(toUnitAmount(new BigNumber(token.balance), token.decimals).toFixed(5)).toFixed(5)} <small className={styles.symbolLegendText}>ETH</small></div>
       )
     }
     return (

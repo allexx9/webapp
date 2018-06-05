@@ -6,7 +6,7 @@ import {
   UPDATE_TRANSACTIONS_DRAGO_MANAGER,
   UPDATE_TRANSACTIONS_VAULT_HOLDER,
   UPDATE_TRANSACTIONS_VAULT_MANAGER,
-  UPDATE_SELECTED_DRAGO_MANAGER
+  UPDATE_SELECTED_DRAGO_DETAILS
 } from '../../_utils/const'
 
 export function eventfulDragoReducer(state = initialState.transactionsDrago, action) {
@@ -28,7 +28,7 @@ export function eventfulDragoReducer(state = initialState.transactionsDrago, act
           portfolio: { ...state.manager.logs },          
         }
       };
-      case UPDATE_SELECTED_DRAGO_MANAGER:
+      case UPDATE_SELECTED_DRAGO_DETAILS:
       return {
         ...state,
         selectedDrago: { 

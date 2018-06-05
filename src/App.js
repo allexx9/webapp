@@ -45,7 +45,6 @@ import PoolsApi from './PoolsApi/src'
 import AppLoading from './Elements/elementAppLoading'
 // import NotConnected from './Elements/notConnected'
 import ReactGA from 'react-ga';
-// import Actions from './actions/actions'
 
 var appHashPath = true;
 var sourceLogClass = null

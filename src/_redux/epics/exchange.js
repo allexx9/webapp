@@ -55,7 +55,7 @@ import {
   FETCH_FUND_ORDERS,
   UPDATE_FUND_ORDERS,
   FETCH_ASSETS_PRICE_DATA,
-  UPDATE_SELECTED_DRAGO_MANAGER
+  UPDATE_SELECTED_DRAGO_DETAILS
 } from '../../_utils/const'
 
 
@@ -257,7 +257,6 @@ const getAssetsPricesDataFromERCdEX$ = (networkId, symbol,baseTokenAddress, quot
 export const getAssetsPricesDataFromERCdEXEpic = (action$) => {
   return action$.ofType(FETCH_ASSETS_PRICE_DATA)
     .mergeMap((action) => {
-      console.log(action.payload)
       const observableArray = () => {
         const observableArray = Array()
         for (var property in action.payload.assets) {
@@ -282,7 +281,7 @@ export const getAssetsPricesDataFromERCdEXEpic = (action$) => {
           Object.assign({}, ...arr.map(item => ({ [item[keyField]]: item })))
           const assetsCharts = arrayToObject(result, 'symbol')
           return {
-            type: UPDATE_SELECTED_DRAGO_MANAGER,
+            type: UPDATE_SELECTED_DRAGO_DETAILS,
             payload: {
               assetsCharts
             }

@@ -15,7 +15,7 @@ export default class SectionHeader extends Component {
   };
 
   static defaultProps = {
-    textStyle: {fontSize: '28px'},
+    textStyle: {fontSize: '24px'},
     help: false,
   };
 

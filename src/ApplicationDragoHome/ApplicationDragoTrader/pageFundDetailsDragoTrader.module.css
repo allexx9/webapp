@@ -5,16 +5,16 @@
   padding-top: 65px;
 }
 
+.pageContainer {
+  margin-top: 10px;
+}
+
 .myPositionBox {
   padding-bottom: 10px;
 }
 
-.detailsSectionContainer {
-  padding-top: 15px;
-}
-
-.marketPriceText{
-  /* font-weight: 700; */
+.sectionParagraph{
+ padding-bottom: 5px;
 }
 
 .myPositionTokenSymbol {
@@ -118,6 +118,23 @@
   font-size: 16px !important;
 }
 
+.detailsTableCellLiquidity {
+  width: 150px;
+  font-weight: 700 !important;
+  padding-left: 0px !important;
+  font-size: 16px !important;
+}
+
+.detailsTableCellLiquidity2 {
+  font-size: 16px !important;
+  text-align: right !important;
+}
+
+.detailsTableCellLiquidity3 {
+  width: 50px;
+  font-size: 16px !important;
+}
+
 .detailsTable {
   /* width: 50% !important; */
 }
@@ -143,6 +160,10 @@
   /* color: #616161; */
 }
 
-.marketSectionContainer{
+.detailsBoxContainer{
   padding-top: 5px;
+  padding-bottom: 5px;
+}
+.detailsSectionContainer{
+  padding-bottom: 5px;
 }

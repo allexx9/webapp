@@ -33,7 +33,7 @@ import ElementPriceBox from '../Elements/elementPricesBox';
 import styles from './pageFundDetailsDragoManager.module.css';
 
 import {
-  UPDATE_SELECTED_DRAGO_MANAGER,
+  UPDATE_SELECTED_DRAGO_DETAILS,
   FETCH_ASSETS_PRICE_DATA
 } from '../../_utils/const'
 
@@ -75,7 +75,7 @@ class PageFundDetailsDragoManager extends Component {
 
   updateSelectedDragoAction = (results) => {
     return {
-      type: UPDATE_SELECTED_DRAGO_MANAGER,
+      type: UPDATE_SELECTED_DRAGO_DETAILS,
       payload: results
     }
   };
@@ -344,7 +344,7 @@ class PageFundDetailsDragoManager extends Component {
                           <p>Drago asset porfolio.</p>
                         </div>
 
-                        <ElementListWrapper
+                        {/* <ElementListWrapper
                           list={dragoAssetsList}
                           renderCopyButton={this.renderCopyButton}
                           renderEtherscanButton={this.renderEtherscanButton}
@@ -354,7 +354,7 @@ class PageFundDetailsDragoManager extends Component {
                           assetsChart={assetsCharts}
                         >
                           <ElementListAssets />
-                        </ElementListWrapper>
+                        </ElementListWrapper> */}
                         {/* <ElementListTransactions accountsInfo={accountsInfo} list={dragoTransactionList} 
                         renderCopyButton={this.renderCopyButton}
                         renderEtherscanButton={this.renderEtherscanButton}/> */}
@@ -375,13 +375,13 @@ class PageFundDetailsDragoManager extends Component {
                           <p>Your last 20 transactions on this Drago.</p>
                         </div>
 
-                        <ElementListWrapper list={dragoTransactionsList}
+                        {/* <ElementListWrapper list={dragoTransactionsList}
                           renderCopyButton={this.renderCopyButton}
                           renderEtherscanButton={this.renderEtherscanButton}
                           loading={loading}
                         >
                           <ElementListTransactions />
-                        </ElementListWrapper>
+                        </ElementListWrapper> */}
                       </Paper>
                     </Col>
                   </Row>
