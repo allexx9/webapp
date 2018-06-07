@@ -255,7 +255,7 @@ class PageVaultDetailsVaultManager extends Component {
             </Toolbar>
             <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle} className={styles.test}>
               <Tab label="Info" className={styles.detailsTab}
-                icon={<ActionList color={Colors.blue500} />}>
+                icon={<ActionList color={'#054186'} />}>
                 <Grid fluid>
                   <Row>
                     <Col xs={6}>
@@ -322,7 +322,7 @@ class PageVaultDetailsVaultManager extends Component {
                 </Grid>
               </Tab>
               <Tab label="Stats" className={styles.detailsTab}
-                icon={<ActionAssessment color={Colors.blue500} />}>
+                icon={<ActionAssessment color={'#054186'} />}>
                 <Grid fluid>
                   <Row>
                     <Col xs={12} className={styles.detailsTabContent}>

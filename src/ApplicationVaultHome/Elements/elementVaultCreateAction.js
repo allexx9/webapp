@@ -19,9 +19,6 @@ const customContentStyle = {
 
 function mapStateToProps(state) {
   return state
-//   return {
-//     count: state.count
-//   };
 }
 
 class ElementVaultCreateAction extends React.Component {
@@ -246,6 +243,12 @@ class ElementVaultCreateAction extends React.Component {
         lineHeight: '20px',
         fontSize: 16
       }
+
+      const buttonAccountType = {
+        border: "1px solid",
+        borderColor: Colors.blueGrey500,
+        // width: "140px"
+      }
       const nameLabel = 'The name of your brand new vault';
       const symbolLabel = 'The symbol of your brand new vault';
 
@@ -270,10 +273,11 @@ class ElementVaultCreateAction extends React.Component {
       return (
         <div>
           <FlatButton label="Deploy" primary={true} onClick={this.handleOpen} 
-            labelStyle={labelStyle}
-            backgroundColor={Colors.blueGrey500}
-            hoverColor={Colors.blueGrey300}
-            icon={<Add color='#FFFFFF'/>}
+            labelStyle={{ color: Colors.blueGrey500, fontWeight: '700' }}
+            backgroundColor={'#ffffff'}
+            hoverColor={Colors.blueGrey50}
+            icon={<Add color={Colors.blueGrey500}/>}
+            style={buttonAccountType}
             />
             <Dialog
               title={this.renderHeader()}

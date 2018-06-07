@@ -1,5 +1,5 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
-
+import * as Colors from 'material-ui/styles/colors'
 import React, { Component } from 'react';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem'
@@ -111,13 +111,22 @@ export default class ElementFundActionsList extends Component {
     const accounts = this.props.accounts.filter((account) =>{
       return account.address == dragoDetails.addresssOwner
     })
+    const buttonActions = {
+      border: "1px solid",
+      borderColor: Colors.grey200,
+      backgroundColor:'#ffffff'
+      // width: "140px"
+    }
     return (
       <div>
         <RaisedButton
           onClick={this.handleOpenMenuActions}
-          label="Actions"
-          primary={true}
-          labelStyle={{fontWeight: 700}}
+          label="Manage"
+          labelStyle={{fontWeight: 700, color: '#000000'}}
+          buttonStyle={buttonActions}
+          // hoverColor={Colors.blue300}
+          backgroundColor='#ffffff'
+          // disabledBackgroundColor='#ffffff'
         />
         <Popover
           open={this.state.openMenuActions}

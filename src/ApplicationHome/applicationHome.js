@@ -66,7 +66,7 @@ class ApplicationHome extends Component {
     const { endpoint } = this.props
     const buttonTelegram = {
       border: "2px solid",
-      borderColor: Colors.blue400,
+      borderColor: '#054186',
       fontWeight: "600",
       height: "45px"
       // width: "140px"
@@ -86,14 +86,14 @@ class ApplicationHome extends Component {
               <Row>
                 <Col xs={12}>
                   
-                  <div className={styles.mainlogo}><img style={{height: "80px"}} src='/img/new_logo_full.png'/></div>
+                  <div className={styles.mainlogo}><img style={{height: "80px"}} src='/img/Logo-RigoblockRGB-OUT-01.png'/></div>
                   <h2 className={styles.headline}>Decentralized Pools of Digital Tokens</h2>
                   <p>&nbsp;</p>
                   <a href="https://t.me/rigoblockprotocol" target="_blank" rel="noopener noreferrer">
                     <FlatButton
                       labelPosition="before"
                       label="Join us on telegram!"
-                      labelStyle={{ color: Colors.blue400, fontWeight: "600", fontSize: "20px" }}
+                      labelStyle={{ color: '#054186', fontWeight: "600", fontSize: "20px" }}
                       style={buttonTelegram}
                       icon={<img src="/img/t_logo.png" height="30px" />}
                     // hoverColor={Colors.blue300}

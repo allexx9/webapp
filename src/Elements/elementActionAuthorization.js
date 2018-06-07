@@ -97,7 +97,7 @@ export default class ElementActionAuthorization extends Component {
             Please check your {account.source.charAt(0).toUpperCase() + account.source.slice(1)} wallet and authorize this transaction.
         </Col>
           <Col xs={12}>
-            Click on the {<NotificationWifi color={Colors.blue500} />} icon in the top bar to track the progress of your transaction.
+            Click on the {<NotificationWifi color={'#054186'} />} icon in the top bar to track the progress of your transaction.
         </Col>
           <Col xs={12}>
             Transactions can take up to 45 seconds to be mined into a new block.

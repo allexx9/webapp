@@ -20,7 +20,7 @@ import styles from './elementAccountBox.module.css'
 
 
 class ElementAccountBox extends Component {
-  
+
   static propTypes = {
     account: PropTypes.object.isRequired,
     etherscanUrl: PropTypes.string.isRequired,
@@ -78,7 +78,7 @@ class ElementAccountBox extends Component {
     )
   }
 
-  onTransferOpen =() =>{
+  onTransferOpen = () => {
     this.setState({
       transferOpen: !this.state.transferOpen
     });
@@ -87,67 +87,71 @@ class ElementAccountBox extends Component {
   render() {
     const { account } = this.props;
     return (
-      <Paper className={styles.paperContainer} zDepth={1}>
-        <Row>
-          <Col xs={12}>
-            <Row className={styles.accountTitleContainer}>
-              <Col xs={2} >
-                <div>
-                  <IdentityIcon address={account.address} />
-                </div>
-              </Col>
-              <Col xs={12} md={10}>
-                <Row>
-                  <Col xs={12}>
-                    {this.renderTitle()}
+      <Row>
+        <Col xs={12}>
+          <Paper className={styles.paperContainer} zDepth={1}>
+            <Row>
+              <Col xs={12}>
+                <Row className={styles.accountTitleContainer}>
+                  <Col xs={2} >
+                    <div>
+                      <IdentityIcon address={account.address} />
+                    </div>
                   </Col>
-                  <Col xs={12}>
-                    {this.renderSubTitle()}
+                  <Col xs={12} md={10}>
+                    <Row>
+                      <Col xs={12}>
+                        {this.renderTitle()}
+                      </Col>
+                      <Col xs={12}>
+                        {this.renderSubTitle()}
+                      </Col>
+                    </Row>
                   </Col>
                 </Row>
-              </Col>
-            </Row>
-            <Row className={styles.accountBodyContainer}>
-              <Col xs={12} md={10}>
-                <Row end="xs">
-                  <Col xs={12}>
-                    <div className={styles.accountChipTokenETH}>
-                      <ChipTokenETH account={account} />
-                    </div>
-                    <div className={styles.accountChipTokenGGG}>
-                      <ChipTokenGGG account={account} />
-                    </div>
+                <Row className={styles.accountBodyContainer}>
+                  <Col xs={12} md={10}>
+                    <Row end="xs">
+                      <Col xs={12}>
+                        <div className={styles.accountChipTokenETH}>
+                          <ChipTokenETH account={account} />
+                        </div>
+                        <div className={styles.accountChipTokenGGG}>
+                          <ChipTokenGGG account={account} />
+                        </div>
+                      </Col>
+                    </Row>
+
+                  </Col>
+                  <Col xs={2} >
+                    {account.source == 'MetaMask'
+                      ?
+                      <Avatar src="img/metamask.png" size={32} backgroundColor="#FFFFFF" alt="MetaMask" />
+                      :
+                      <Avatar src="img/parity.png" size={32} backgroundColor="#FFFFFF" />
+                    }
                   </Col>
                 </Row>
 
               </Col>
-              <Col xs={2} >
-                {account.source == 'MetaMask'
-                  ?
-                  <Avatar src="img/metamask.png" size={32} backgroundColor="#FFFFFF" alt="MetaMask" />
-                  :
-                  <Avatar src="img/parity.png" size={32} backgroundColor="#FFFFFF" />
-                }
-              </Col>
             </Row>
-            <Row className={styles.accountBodyContainer}>
-              <Col xs={12}>
-                <RaisedButton
-                  label="TRANSFER"
-                  // labelColor={Colors.blue500}
-                  labelStyle={{ fontWeight: 600 }}
-                  onClick={this.onTransferOpen}
-                />
-                <ElementAccountActionTransfer
-                  open={this.state.transferOpen}
-                  onTransferOpen={this.onTransferOpen}
-                  account={account}
-                  snackBar={this.props.snackBar} />
-              </Col>
-            </Row>
-          </Col>
-        </Row>
-      </Paper>
+          </Paper>
+        </Col>
+        <Col xs={12} className={styles.accountBodyContainer}>
+          <RaisedButton
+            label="TRANSFER"
+            // labelColor={'#054186'}
+            labelStyle={{ fontWeight: 600 }}
+            onClick={this.onTransferOpen}
+          />
+          <ElementAccountActionTransfer
+            open={this.state.transferOpen}
+            onTransferOpen={this.onTransferOpen}
+            account={account}
+            snackBar={this.props.snackBar} />
+        </Col>
+      </Row>
+
     )
 
   }

@@ -297,7 +297,7 @@ var palette = (function() {
         palettes_min = Math.min(palettes_min, len);
         palettes_max = Math.max(palettes_max, len);
         self.max = Math.max(self.max, len);
-        if (!opt_is_cbf && len != 1) {
+        if (!opt_is_cbf && len !== 1) {
           self.cbf_max = Math.min(self.cbf_max, len - 1);
         }
       }

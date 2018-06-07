@@ -160,7 +160,7 @@ class ElementVaultActions extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     console.log(nextProps)
-    if (this.props.actionSelected.action != nextProps.actionSelected.action) {
+    if (this.props.actionSelected.action !== nextProps.actionSelected.action) {
       nextProps.actionSelected.action == 'deposit' 
       ? this.handleBuyAction()
       : this.handleSellAction()

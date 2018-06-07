@@ -556,7 +556,7 @@ export class App extends Component {
           prevAccounts.map((account, index) => {
             // Checking ETH balance
             const newEthBalance = this._api.util.fromWei(ethBalances[index]).toFormat(3)
-            if ((account.ethBalance !== newEthBalance) && prevBlockNumber != 0) {
+            if ((account.ethBalance !== newEthBalance) && prevBlockNumber !== 0) {
               console.log(`${account.name} balance changed.`)
               let secondaryText = []
               let balDifference = account.ethBalance - newEthBalance
@@ -580,7 +580,7 @@ export class App extends Component {
             }
             // Checking GRG balance
             const newRigoTokenBalance = this._api.util.fromWei(rigoTokenBalances[index]).toFormat(3)
-            if ((account.rigoTokenBalance !== newRigoTokenBalance) && prevBlockNumber != 0) {
+            if ((account.rigoTokenBalance !== newRigoTokenBalance) && prevBlockNumber !== 0) {
               console.log(`${account.name} balance changed.`)
               let secondaryText = []
               let balDifference = account.rigoTokenBalance - newRigoTokenBalance

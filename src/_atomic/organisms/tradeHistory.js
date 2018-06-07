@@ -51,7 +51,7 @@ class TradeHistory extends Component {
       backgroundColor: '#bdbdbd',
     },
     thumbSwitched: {
-      backgroundColor: Colors.blue500,
+      backgroundColor: '#054186',
     },
     labelStyle: {
       fontSize: '12px',

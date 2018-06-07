@@ -27,13 +27,13 @@ export function generateRandomList() {
 
 const BADGE_COLORS = [
   '#f44336',
-  '#2196F3',
+  '#054186',
   '#4caf50',
   '#ff9800',
-  '#2196F3',
+  '#054186',
   '#374046',
   '#cddc39',
-  '#2196F3',
+  '#054186',
   '#9c27b0',
   '#ffc107',
   '#009688',

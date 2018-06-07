@@ -11,6 +11,12 @@
   margin: auto;
 }
 
+.logoImg {
+  width: 68px;
+  margin-left: -5px;
+  padding-bottom: 15px;
+}
+
 .divFullHeight {
   height:100vh;
   background-color: #F5F5F5; 

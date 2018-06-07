@@ -260,7 +260,7 @@ class ElementFundCreateAction extends React.Component {
           <div>
           <FlatButton label="Deploy" primary={true} onClick={this.handleOpen} 
             labelStyle={labelStyle}
-            backgroundColor={Colors.blue500}
+            backgroundColor={'#054186'}
             hoverColor={Colors.blue300}
             />
             <ElementFundActionAuthorization
@@ -276,7 +276,7 @@ class ElementFundCreateAction extends React.Component {
         <div>
           <FlatButton label="Deploy" primary={true} onClick={this.handleOpen} 
             labelStyle={labelStyle}
-            backgroundColor={Colors.blue500}
+            backgroundColor={'#054186'}
             hoverColor={Colors.blue300}
             />
             <Dialog

@@ -19,7 +19,7 @@ export default class Loading extends Component {
   render () {
     return (
       <div className={ styles.loading }>
-        <CircularProgress size={ this.props.size } color={Colors.blue500}/>
+        <CircularProgress size={ this.props.size } color={'#054186'}/>
       </div>
     );
   }

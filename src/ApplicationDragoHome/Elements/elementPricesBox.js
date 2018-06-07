@@ -32,7 +32,7 @@ export default class ElementPriceBox extends Component {
         backgroundColor: Colors.red300
       },
       marketPrice: {
-        backgroundColor: Colors.blue500,
+        backgroundColor: '#054186',
         fontWeight: 500
       },
     }
@@ -95,34 +95,24 @@ export default class ElementPriceBox extends Component {
     if (isManager) {
       return (
         <div>
-          <Row>
-            <Col xs={12} className={styles.boxHeader}>
-              <AppBar
-                title="MARKET"
-                showMenuIconButton={false}
-                style={priceBoxHeader.marketPrice}
-                titleStyle={priceBoxHeaderTitleStyle}
-              />
-            </Col>
-          </Row>
           <Row middle="xs">
-            <Col xs={4}>
-              <div className={styles.buyHeader}>
-                Ask
-              </div>
-            </Col>
-            <Col xs={7}>
-              <span className={styles.price}>{dragoDetails.buyPrice}</span> <small className={styles.tokenSymbol}>ETH</small>
-            </Col>
-          </Row>
-          <Row middle="xs">
-            <Col xs={4}>
+            <Col xs={6}>
               <div className={styles.sellHeader}>
-                Bid
+                BID
               </div>
             </Col>
-            <Col xs={7}>
+            <Col xs={6}>
+            <div className={styles.buyHeader}>
+                ASK
+              </div>
+            </Col>
+          </Row>
+          <Row middle="xs">
+            <Col xs={6}>
               <div className={styles.price}>{dragoDetails.sellPrice} <small className={styles.tokenSymbol}>ETH</small></div>
+            </Col>
+            <Col xs={6}>
+              <div className={styles.price}>{dragoDetails.buyPrice}<small className={styles.tokenSymbol}>ETH</small></div> 
             </Col>
           </Row>
         </div>

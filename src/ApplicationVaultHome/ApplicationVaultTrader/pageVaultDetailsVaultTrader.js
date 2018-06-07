@@ -1,35 +1,36 @@
-import  * as Colors from 'material-ui/styles/colors'
-import { Grid, Row, Col } from 'react-flexbox-grid'
-import { Link, withRouter } from 'react-router-dom'
-import {CopyToClipboard} from 'react-copy-to-clipboard'
-import {Tabs, Tab} from 'material-ui/Tabs'
-import {Toolbar, ToolbarGroup } from 'material-ui/Toolbar'
-import ActionAssessment from 'material-ui/svg-icons/action/assessment'
-import ActionList from 'material-ui/svg-icons/action/list'
-import CopyContent from 'material-ui/svg-icons/content/content-copy'
-import Paper from 'material-ui/Paper'
-import PropTypes from 'prop-types'
-import React, { Component } from 'react'
-import Search from 'material-ui/svg-icons/action/search'
-import Snackbar from 'material-ui/Snackbar'
-import { formatCoins, formatEth } from '../../_utils/format'
-import ElementListWrapper from '../../Elements/elementListWrapper'
+import * as Colors from 'material-ui/styles/colors'
 import BigNumber from 'bignumber.js';
-
-// import ElementFundActions from '../Elements/elementFundActions'
-import IdentityIcon from '../../_atomic/atoms/identityIcon'
-import InfoTable from '../../Elements/elementInfoTable'
-import Loading from '../../_atomic/atoms/loading'
-import PoolApi from '../../PoolsApi/src'
-import AppBar from 'material-ui/AppBar';
-import ElementListTransactions from '../Elements/elementListTransactions'
-import ElementFeesBox from '../Elements/elementFeesBox'
-import utils from '../../_utils/utils'
-import ElementFundNotFound from '../../Elements/elementFundNotFound'
-import ElementVaultActions from '../Elements/elementVaultActions'
-
-import styles from './pageVaultDetailsVaultTrader.module.css';
+import Paper from 'material-ui/Paper';
+import Snackbar from 'material-ui/Snackbar';
+import ActionAssessment from 'material-ui/svg-icons/action/assessment';
+import ActionList from 'material-ui/svg-icons/action/list';
+import Search from 'material-ui/svg-icons/action/search';
+import CopyContent from 'material-ui/svg-icons/content/content-copy';
+import ActionShowChart from 'material-ui/svg-icons/editor/show-chart';
+import { Tab, Tabs } from 'material-ui/Tabs';
+import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { Col, Grid, Row } from 'react-flexbox-grid';
 import { connect } from 'react-redux';
+import { Link, withRouter } from 'react-router-dom';
+import scrollToComponent from 'react-scroll-to-component';
+import Sticky from 'react-stickynode';
+import ElementFundNotFound from '../../Elements/elementFundNotFound';
+import InfoTable from '../../Elements/elementInfoTable';
+import ElementListWrapper from '../../Elements/elementListWrapper';
+import PoolApi from '../../PoolsApi/src'
+import Loading from '../../_atomic/atoms/loading';
+import SectionHeader from '../../_atomic/atoms/sectionHeader';
+import SectionTitle from '../../_atomic/atoms/sectionTitle';
+import { formatCoins, formatEth } from '../../_utils/format';
+import utils from '../../_utils/utils';
+import ElementFeesBox from '../Elements/elementFeesBox';
+import ElementListTransactions from '../Elements/elementListTransactions';
+import ElementVaultActions from '../Elements/elementVaultActions';
+import styles from './pageVaultDetailsVaultTrader.module.css';
+import FundHeader from '../../_atomic/atoms/fundHeader'
 
 function mapStateToProps(state) {
   return state
@@ -43,289 +44,306 @@ class PageFundDetailsVaultTrader extends Component {
   };
 
   static propTypes = {
-      location: PropTypes.object.isRequired,
-      endpoint: PropTypes.object.isRequired,
-      accounts: PropTypes.array.isRequired,
-      match: PropTypes.object.isRequired, 
-      user: PropTypes.object.isRequired
-    };
+    location: PropTypes.object.isRequired,
+    endpoint: PropTypes.object.isRequired,
+    accounts: PropTypes.array.isRequired,
+    match: PropTypes.object.isRequired,
+    user: PropTypes.object.isRequired
+  };
 
-    state = {
-      vaultDetails: {
-        address: null,
-        name: null,
-        symbol: null,
-        vaultId: null,
-        addresssOwner: null,
-        addressGroup: null,
-      },
-      vaultTransactionsLogs: [],
-      loading: true,
+  state = {
+    vaultDetails: {
+      address: null,
+      name: null,
+      symbol: null,
+      vaultId: null,
+      addresssOwner: null,
+      addressGroup: null,
+    },
+    vaultTransactionsLogs: [],
+    loading: true,
+    snackBar: false,
+    snackBarMsg: '',
+    openBuySellDialog: {
+      open: false,
+      action: 'deposit'
+    },
+    balanceDRG: new BigNumber(0).toFormat(4),
+  }
+
+  subTitle = (account) => {
+    return (
+      account.address
+    )
+  }
+
+  componentWillMount() {
+    // Getting dragoid from the url parameters passed by router and then
+    // the list of last transactions
+    const vaultId = this.props.match.params.dragoid
+    this.getVaultDetails(vaultId)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    // Updating the lists on each new block if the accounts balances have changed
+    // Doing this this to improve performances by avoiding useless re-rendering
+    console.log(this.props)
+    const vaultId = this.props.match.params.dragoid
+    const sourceLogClass = this.constructor.name
+    const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
+    const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
+    if (!currentBalance.eq(nextBalance)) {
+      this.getVaultDetails(vaultId)
+      console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
+    } else {
+      null
+    }
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    const sourceLogClass = this.constructor.name
+    var stateUpdate = true
+    var propsUpdate = true
+    const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
+    const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
+    stateUpdate = !utils.shallowEqual(this.state, nextState)
+    propsUpdate = !currentBalance.eq(nextBalance)
+    if (stateUpdate || propsUpdate) {
+      console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
+    }
+    return stateUpdate || propsUpdate
+  }
+
+  componentDidUpdate() {
+  }
+
+  renderAddress(vaultDetails) {
+    return <FundHeader
+      fundType='vault'
+      fundDetails={vaultDetails}
+    />
+  }
+
+  snackBar = (msg) => {
+    this.setState({
+      snackBar: true,
+      snackBarMsg: msg
+    })
+  }
+
+  renderCopyButton = (text) => {
+    if (!text) {
+      return null;
+    }
+
+    return (
+      <CopyToClipboard text={text} key={"address" + text}
+        onCopy={() => this.snackBar('Copied to clilpboard')}>
+        <Link to={'#'} key={"addresslink" + text}><CopyContent className={styles.copyAddress} /></Link>
+      </CopyToClipboard>
+    );
+  }
+
+  renderEtherscanButton = (type, text) => {
+    if (!text) {
+      return null;
+    }
+
+    return (
+      <a key={"addressether" + text} href={this.props.endpoint.networkInfo.etherscan + type + '/' + text} target='_blank'><Search className={styles.copyAddress} /></a>
+    );
+  }
+
+  handlesnackBarRequestClose = () => {
+    this.setState({
       snackBar: false,
-      snackBarMsg: '',
+      snackBarMsg: ''
+    })
+  }
+
+  handleBuySellButtons = (action) => {
+    console.log(action)
+    this.setState({
+      openBuySellDialog: {
+        open: !this.state.openBuySellDialog.open,
+        action: action
+      }
+    })
+  }
+
+  onTransactionSent = () => {
+    this.setState({
       openBuySellDialog: {
         open: false,
-        action: 'deposit'
+      }
+    })
+  }
+
+  render() {
+    const { accounts, user } = this.props
+    const { vaultDetails, loading } = this.state
+    const tabButtons = {
+      inkBarStyle: {
+        margin: 'auto',
+        width: 100,
+        backgroundColor: 'white'
       },
-      balanceDRG: new BigNumber(0).toFormat(4),
+      tabItemContainerStyle: {
+        margin: 'auto',
+        width: 200,
+      }
     }
+    const columnsStyle = [styles.detailsTableCell, styles.detailsTableCell2, styles.detailsTableCell3]
+    const tableButtonsVaultAddress = [this.renderCopyButton(vaultDetails.address), this.renderEtherscanButton('address', vaultDetails.address)]
+    const tableButtonsVaultOwner = [this.renderCopyButton(vaultDetails.addresssOwner), this.renderEtherscanButton('address', vaultDetails.addresssOwner)]
+    const tableInfo = [['Symbol', vaultDetails.symbol, ''],
+    ['Name', vaultDetails.name, ''],
+    ['Address', vaultDetails.address, tableButtonsVaultAddress],
+    ['Owner', vaultDetails.addresssOwner, tableButtonsVaultOwner]]
+    const paperStyle = {
+      marginTop: "10px"
+    };
+    var dragoTransactionList = this.state.vaultTransactionsLogs
+    // console.log(dragoTransactionList)
 
-    subTitle = (account) => {
+    // Waiting until getVaultDetails returns the drago details
+    if (loading) {
       return (
-        account.address
-      )     
-    }
-
-    componentWillMount () {
-      // Getting dragoid from the url parameters passed by router and then
-      // the list of last transactions
-      const vaultId = this.props.match.params.dragoid
-      this.getVaultDetails(vaultId)
-    }
-
-    componentWillReceiveProps(nextProps) {
-      // Updating the lists on each new block if the accounts balances have changed
-      // Doing this this to improve performances by avoiding useless re-rendering
-      console.log(this.props)
-      const vaultId = this.props.match.params.dragoid
-      const sourceLogClass = this.constructor.name
-      const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
-      const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
-      if (!currentBalance.eq(nextBalance)) {
-        this.getVaultDetails(vaultId)
-        console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
-      } else {
-        null
-      }
-    }
-
-    shouldComponentUpdate(nextProps, nextState){
-      const  sourceLogClass = this.constructor.name
-      var stateUpdate = true
-      var propsUpdate = true
-      const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
-      const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
-      stateUpdate = !utils.shallowEqual(this.state, nextState)
-      propsUpdate = !currentBalance.eq(nextBalance)
-      if (stateUpdate || propsUpdate) {
-        console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
-      }
-      return stateUpdate || propsUpdate
-    }
-
-    componentDidUpdate() {
-    }
-
-    renderAddress (vaultDetails) {
-      if (!vaultDetails.address ) {
-        return <p>empty</p>;
-      }
-  
-      return (
-        <Row className={styles.detailsToolbarGroup}>
-          <Col xs={12} md={1} className={styles.dragoTitle}>
-            <h2 ><IdentityIcon address={ vaultDetails.address } /></h2>
-          </Col>
-          <Col xs={12} md={11} className={styles.dragoTitle}>
-          <p>{vaultDetails.symbol} | {vaultDetails.name} </p>
-          <small>{vaultDetails.address}</small>
-          </Col>
-        </Row>
+        <Loading />
       );
     }
-
-    snackBar = (msg) =>{
-      this.setState({
-        snackBar: true,
-        snackBarMsg: msg
-      })
-    }
-
-    renderCopyButton = (text) =>{
-      if (!text ) {
-        return null;
-      }
-      
+    if (vaultDetails.address === '0x0000000000000000000000000000000000000000') {
       return (
-        <CopyToClipboard text={text} key={"address"+text}
-            onCopy={() => this.snackBar('Copied to clilpboard')}>
-            <Link to={'#'} key={"addresslink"+text}><CopyContent className={styles.copyAddress}/></Link>
-        </CopyToClipboard>
+        <ElementFundNotFound />
       );
     }
-
-    renderEtherscanButton = (type, text) =>{
-      if (!text ) {
-        return null;
-      }
-      
-      return (
-      <a key={"addressether"+text} href={this.props.endpoint.networkInfo.etherscan+type+'/' + text} target='_blank'><Search className={styles.copyAddress}/></a>
-      );
-    }
-
-    handlesnackBarRequestClose = () => {
-      this.setState({
-        snackBar: false,
-        snackBarMsg: ''
-      })
-    }
-
-    handleBuySellButtons = (action) =>{
-      console.log(action)
-      this.setState({
-        openBuySellDialog: {
-          open: !this.state.openBuySellDialog.open,
-          action: action
-        }
-      })
-    }
-
-    onTransactionSent = () =>{
-      this.setState({
-        openBuySellDialog: {
-          open: false,
-        }
-      })
-    }
-
-    render() {
-      const { accounts, user } = this.props
-      const { vaultDetails, loading } = this.state
-      const tabButtons = {
-        inkBarStyle: {
-          margin: 'auto',
-          width: 100,
-          backgroundColor: 'white'
-          },
-        tabItemContainerStyle: {
-          margin: 'auto',
-          width: 200,
-        }
-      }
-      const columnsStyle = [styles.detailsTableCell, styles.detailsTableCell2, styles.detailsTableCell3]
-      const tableButtonsVaultAddress = [this.renderCopyButton(vaultDetails.address), this.renderEtherscanButton('address', vaultDetails.address)]
-      const tableButtonsVaultOwner = [this.renderCopyButton(vaultDetails.addresssOwner), this.renderEtherscanButton('address', vaultDetails.addresssOwner)]
-      const tableInfo = [['Symbol', vaultDetails.symbol, ''], 
-        ['Name', vaultDetails.name, ''], 
-        ['Address', vaultDetails.address, tableButtonsVaultAddress],
-        ['Owner', vaultDetails.addresssOwner, tableButtonsVaultOwner]]
-      const paperStyle = {
-        marginTop: "10px"
-      };
-      var dragoTransactionList = this.state.vaultTransactionsLogs
-      // console.log(dragoTransactionList)
-
-      // Waiting until getVaultDetails returns the drago details
-      if (loading) {
-        return (
-          <Loading />
-        );
-      }
-      if (vaultDetails.address === '0x0000000000000000000000000000000000000000') {
-        return (
-          <ElementFundNotFound />
-        );
-      }
-      return (
+    return (
       <Row>
         <Col xs={12}>
-          <Paper className={styles.paperContainer} zDepth={1}>
-            <Toolbar className={styles.detailsToolbar}>
-              <ToolbarGroup className={styles.detailsToolbarGroup}>
+          <div className={styles.pageContainer} >
+            <Paper zDepth={1}>
+              <Sticky enabled={true} innerZ={1}>
                 {this.renderAddress(vaultDetails)}
-              </ToolbarGroup>
-              <ToolbarGroup>
-                {/* <ElementFundActions vaultDetails={vaultDetails} accounts={accounts} snackBar={this.snackBar}/> */}
-              </ToolbarGroup>
-            </Toolbar>
-            <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle} className={styles.test}>
-              <Tab label="Info" className={styles.detailsTab}
-                icon={<ActionList color={Colors.blue500} />}>
+                <Row className={styles.tabsRow}>
+                  <Col xs={12}>
+                    <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle}>
+                      <Tab label="SUMMARY" className={styles.detailsTab}
+                        onActive={() => scrollToComponent(this.Summary, { offset: -180, align: 'top', duration: 500 })}
+                        icon={<ActionList color={'#607D8B'} />}>
+                      </Tab>
+                      <Tab label="INSIGHT" className={styles.detailsTab}
+                        onActive={() => scrollToComponent(this.InSight, { offset: -180, align: 'top', duration: 500 })}
+                        icon={<ActionAssessment color={'#607D8B'} />}>
+                      </Tab>
+                      <Tab label="LOGS" className={styles.detailsTab}
+                        onActive={() => scrollToComponent(this.Logs, { offset: -180, align: 'top', duration: 500 })}
+                        icon={<ActionShowChart color={'#607D8B'} />}>
+                      </Tab>
+                    </Tabs>
+                  </Col>
+                </Row>
+              </Sticky>
+            </Paper>
+            <Paper className={styles.paperContainer} zDepth={1}>
+              <div className={styles.detailsBoxContainer}>
                 <Grid fluid>
                   <Row>
-                    <Col xs={6}>
-                      <div>
-                        <AppBar
-                          title={"MY HOLDING IN " + vaultDetails.symbol.toUpperCase()}
-                          showMenuIconButton={false}
-                          titleStyle={{ fontSize: 20 }}
-                        />
+                    <Col xs={12} >
+                      <span ref={(section) => { this.Summary = section; }}></span>
+                      <SectionHeader
+                        titleText='SUMMARY'
+                        textStyle={{ backgroundColor: Colors.blueGrey500 }}
+                      />
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col xs={12} md={6}>
+                      <SectionTitle titleText='DETAILS' />
+                      <div className={styles.detailsContent}>
+                        <div className={styles.sectionParagraph}>
+                          Total supply:
+                          </div>
                         <div className={styles.holdings}>
-                          <div>{this.state.balanceDRG} <small>UNITS</small><br /></div>
+                          <span>{vaultDetails.totalSupply}</span> <small className={styles.myPositionTokenSymbol}>{vaultDetails.symbol.toUpperCase()}</small><br />
                         </div>
+                        <InfoTable rows={tableInfo} columnsStyle={columnsStyle} />
                       </div>
                     </Col>
-                    <Col xs={6}>
-                      <Paper zDepth={1}>
-                        <ElementFeesBox 
-                        vaultDetails={vaultDetails} 
-                        accounts={accounts} 
-                        handleBuySellButtons={this.handleBuySellButtons} 
-                        isManager={user.isManager}
-                        />
-                        <ElementVaultActions 
-                          vaultDetails={vaultDetails} 
-                          accounts={accounts} 
-                          snackBar={this.snackBar} 
-                          actionSelected={this.state.openBuySellDialog}
-                          onTransactionSent={this.onTransactionSent}
-                          />
-                      </Paper>
+                    <Col xs={12} md={6}>
+                      <div className={styles.myPositionBox}>
+                        <Row>
+                          <Col xs={12}>
+                            <SectionTitle titleText='POSITION' help={true} />
+                            <div className={styles.detailsBoxContainer}>
+                              <div className={styles.sectionParagraph}>
+                                Your total holding:
+                              </div>
+                              <div className={styles.holdings}>
+                                <span>{this.state.balanceDRG}</span> <small className={styles.myPositionTokenSymbol}>{vaultDetails.symbol.toUpperCase()}</small><br />
+                              </div>
+                            </div>
+                          </Col>
+                          <Col xs={12}>
+                            <SectionTitle titleText='FEES' help={true} />
+                            <div className={styles.detailsBoxContainer}>
+                              <Row>
+                                <Col xs={12}>
+                                  <div className={styles.sectionParagraph} style={{ paddingTop: '5px' }}>
+                                    Manager set fees:
+                                </div>
+                                </Col>
+                              </Row>
+                              <ElementFeesBox
+                                vaultDetails={vaultDetails}
+                                accounts={accounts}
+                                handleBuySellButtons={this.handleBuySellButtons}
+                                isManager={user.isManager}
+                              />
+                              <ElementVaultActions
+                                vaultDetails={vaultDetails}
+                                accounts={accounts}
+                                snackBar={this.snackBar}
+                                actionSelected={this.state.openBuySellDialog}
+                                onTransactionSent={this.onTransactionSent}
+                              />
+                            </div>
+                          </Col>
+                        </Row>
+                      </div>
                     </Col>
                   </Row>
-                  <br />
-                  <Row>
-                      <Col xs={12}>
-                      <Paper zDepth={1}>
-                        <AppBar
-                          title="DETAILS"
-                          showMenuIconButton={false}
-                          titleStyle={{ fontSize: 20 }}
-                        />
-                        <div className={styles.detailsTabContent}>
-                        <InfoTable  rows={tableInfo} columnsStyle={columnsStyle}/>
-                        </div>
-                      </Paper>
-                      </Col>
-                    </Row>
-                  <Row>
-                    <Col xs={12} className={styles.detailsTabContent}>
-                      <Paper style={paperStyle} zDepth={1} >
-                        <AppBar
-                          title="TRANSACTIONS"
-                          showMenuIconButton={false}
-                          titleStyle={{ fontSize: 20 }}
-                        />
-                        <div className={styles.detailsTabContent}>
-                          <p>Your last 20 transactions on this fund.</p>
-                        </div>
-                        <ElementListWrapper list={dragoTransactionList}
-                          renderCopyButton={this.renderCopyButton}
-                          renderEtherscanButton={this.renderEtherscanButton}
-                          loading={loading}>
+                </Grid>
+              </div>
+            </Paper>
+            <Paper className={styles.paperContainer} zDepth={1}>
+              <Grid fluid>
+                <Row>
+                  <Col xs={12} >
+                    <span ref={(section) => { this.Logs = section; }}></span>
+                    <SectionHeader
+                      titleText='LOGS'
+                      textStyle={{ backgroundColor: Colors.blueGrey500 }}
+                    />
+                  </Col>
+                </Row>
+                <Row>
+                  <Col xs={12} className={styles.detailsTabContent}>
+                    <SectionTitle titleText='TRANSACTIONS' />
+                    <div className={styles.detailsTabContent}>
+                      <p>Your last 20 transactions on this Vault.</p>
+                    </div>
+                    <ElementListWrapper list={dragoTransactionList}
+                      renderCopyButton={this.renderCopyButton}
+                      renderEtherscanButton={this.renderEtherscanButton}
+                      loading={loading}>
 
-                          <ElementListTransactions />
-                        </ElementListWrapper>
-                      </Paper>
-                    </Col>
-                  </Row>
-                </Grid>
-              </Tab>
-              <Tab label="Stats" className={styles.detailsTab}
-                icon={<ActionAssessment color={Colors.blue500} />}>
-                <Grid fluid>
-                  <Row>
-                    <Col xs={12} className={styles.detailsTabContent}>
-                      <p>
-                        Coming soon
-                      </p>   
-                    </Col>
-                  </Row>
-                </Grid>
-              </Tab>
-            </Tabs>
-          </Paper>
+                      <ElementListTransactions />
+                    </ElementListWrapper>
+                  </Col>
+                </Row>
+              </Grid>
+            </Paper>
+          </div>
         </Col>
         <Snackbar
           open={this.state.snackBar}
@@ -348,8 +366,131 @@ class PageFundDetailsVaultTrader extends Component {
           }}
         />
       </Row>
-      )
-    }
+
+
+
+      // <Row>
+      //   <Col xs={12}>
+      //     <Paper className={styles.paperContainer} zDepth={1}>
+      //       <Toolbar className={styles.detailsToolbar}>
+      //         <ToolbarGroup className={styles.detailsToolbarGroup}>
+      //           {this.renderAddress(vaultDetails)}
+      //         </ToolbarGroup>
+      //         <ToolbarGroup>
+      //           {/* <ElementFundActions vaultDetails={vaultDetails} accounts={accounts} snackBar={this.snackBar}/> */}
+      //         </ToolbarGroup>
+      //       </Toolbar>
+      //       <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle} className={styles.test}>
+      //         <Tab label="Info" className={styles.detailsTab}
+      //           icon={<ActionList color={'#054186'} />}>
+      //           <Grid fluid>
+      //             <Row>
+      //               <Col xs={6}>
+      //                 <div>
+      //                   <AppBar
+      //                     title={"MY HOLDING IN " + vaultDetails.symbol.toUpperCase()}
+      //                     showMenuIconButton={false}
+      //                     titleStyle={{ fontSize: 20 }}
+      //                   />
+      //                   <div className={styles.holdings}>
+      //                     <div>{this.state.balanceDRG} <small>UNITS</small><br /></div>
+      //                   </div>
+      //                 </div>
+      //               </Col>
+      //               <Col xs={6}>
+      //                 <Paper zDepth={1}>
+      //                   <ElementFeesBox 
+      //                   vaultDetails={vaultDetails} 
+      //                   accounts={accounts} 
+      //                   handleBuySellButtons={this.handleBuySellButtons} 
+      //                   isManager={user.isManager}
+      //                   />
+      //                   <ElementVaultActions 
+      //                     vaultDetails={vaultDetails} 
+      //                     accounts={accounts} 
+      //                     snackBar={this.snackBar} 
+      //                     actionSelected={this.state.openBuySellDialog}
+      //                     onTransactionSent={this.onTransactionSent}
+      //                     />
+      //                 </Paper>
+      //               </Col>
+      //             </Row>
+      //             <br />
+      //             <Row>
+      //                 <Col xs={12}>
+      //                 <Paper zDepth={1}>
+      //                   <AppBar
+      //                     title="DETAILS"
+      //                     showMenuIconButton={false}
+      //                     titleStyle={{ fontSize: 20 }}
+      //                   />
+      //                   <div className={styles.detailsTabContent}>
+      //                   <InfoTable  rows={tableInfo} columnsStyle={columnsStyle}/>
+      //                   </div>
+      //                 </Paper>
+      //                 </Col>
+      //               </Row>
+      //             <Row>
+      //               <Col xs={12} className={styles.detailsTabContent}>
+      //                 <Paper style={paperStyle} zDepth={1} >
+      //                   <AppBar
+      //                     title="TRANSACTIONS"
+      //                     showMenuIconButton={false}
+      //                     titleStyle={{ fontSize: 20 }}
+      //                   />
+      //                   <div className={styles.detailsTabContent}>
+      //                     <p>Your last 20 transactions on this fund.</p>
+      //                   </div>
+      //                   <ElementListWrapper list={dragoTransactionList}
+      //                     renderCopyButton={this.renderCopyButton}
+      //                     renderEtherscanButton={this.renderEtherscanButton}
+      //                     loading={loading}>
+
+      //                     <ElementListTransactions />
+      //                   </ElementListWrapper>
+      //                 </Paper>
+      //               </Col>
+      //             </Row>
+      //           </Grid>
+      //         </Tab>
+      //         <Tab label="Stats" className={styles.detailsTab}
+      //           icon={<ActionAssessment color={'#054186'} />}>
+      //           <Grid fluid>
+      //             <Row>
+      //               <Col xs={12} className={styles.detailsTabContent}>
+      //                 <p>
+      //                   Coming soon
+      //                 </p>   
+      //               </Col>
+      //             </Row>
+      //           </Grid>
+      //         </Tab>
+      //       </Tabs>
+      //     </Paper>
+      //   </Col>
+      //   <Snackbar
+      //     open={this.state.snackBar}
+      //     message={this.state.snackBarMsg}
+      //     action="close"
+      //     onActionTouchTap={this.handlesnackBarRequestClose}
+      //     onRequestClose={this.handlesnackBarRequestClose}
+      //     bodyStyle={{
+      //       height: "auto",
+      //       flexGrow: 0,
+      //       paddingTop: "10px",
+      //       lineHeight: "20px",
+      //       borderRadius: "2px 2px 0px 0px",
+      //       backgroundColor: "#fafafa",
+      //       boxShadow: "#bdbdbd 0px 0px 5px 0px"
+      //     }}
+      //     contentStyle={{
+      //       color: "#000000 !important",
+      //       fontWeight: "600"
+      //     }}
+      //   />
+      // </Row>
+    )
+  }
 
   // Getting the vault details from vaultId
   getVaultDetails = (vaultId) => {
@@ -428,7 +569,7 @@ class PageFundDetailsVaultTrader extends Component {
               )
           })
       })
-  }  
+  }
 
   // Getting last transactions
   getTransactions = (vaultAddress, contract, accounts) => {
@@ -555,7 +696,7 @@ class PageFundDetailsVaultTrader extends Component {
           })
       })
   }
-    
-  }
 
-  export default withRouter(connect(mapStateToProps)(PageFundDetailsVaultTrader))
+}
+
+export default withRouter(connect(mapStateToProps)(PageFundDetailsVaultTrader))

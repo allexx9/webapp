@@ -183,7 +183,7 @@ class ElementFundActions extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     // console.log(nextProps)
-    if (this.props.actionSelected.action != nextProps.actionSelected.action) {
+    if (this.props.actionSelected.action !== nextProps.actionSelected.action) {
       nextProps.actionSelected.action == 'buy' 
       ? this.handleBuyAction()
       : this.handleSellAction()

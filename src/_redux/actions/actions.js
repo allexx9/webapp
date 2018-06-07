@@ -15,7 +15,7 @@ class actions {
         payload: results
       }
     },
-    getAssetsPriceData: (assets, quoteToken, networkId) => {
+    getAssetsPriceData: (assets, networkId, quoteToken) => {
       return {
         type: FETCH_ASSETS_PRICE_DATA,
         payload: {

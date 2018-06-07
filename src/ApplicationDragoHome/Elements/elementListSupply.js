@@ -99,6 +99,7 @@ class ElementListSupply extends PureComponent {
               {({ width }) => (
                 <Table
                   ref="Table"
+                  id={"fundSupply-table"}
                   disableHeader={disableHeader}
                   headerClassName={styles.headerColumn}
                   headerHeight={headerHeight}
@@ -137,7 +138,7 @@ class ElementListSupply extends PureComponent {
                   <Column
                     width={250}
                     disableSort
-                    label="Supply"
+                    label="SUPPLY"
                     cellDataGetter={({rowData}) => rowData.supply}
                     dataKey="drg"
                     className={styles.exampleColumn}
@@ -147,7 +148,7 @@ class ElementListSupply extends PureComponent {
                   <Column
                     width={210}
                     disableSort
-                    label="Actions"
+                    label="ACTIONS"
                     cellDataGetter={({rowData}) => rowData.symbol}
                     dataKey="actions"
                     className={styles.exampleColumn}

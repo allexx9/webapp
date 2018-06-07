@@ -474,7 +474,7 @@ class utilities {
                               )
                               // Filtering empty balances
                               balancesList = tokenBalances.filter((balance) => {
-                                return balance.balance != 0
+                                return balance.balance !== 0
                               })
                             }
                           })
@@ -874,7 +874,7 @@ class utilities {
                               )
                               // Filtering empty balances
                               balancesList = tokenBalances.filter((balance) => {
-                                return balance.balance != 0
+                                return balance.balance !== 0
                               })
                             }
                           })
@@ -908,7 +908,7 @@ class utilities {
 
   getDragoDetails = async (dragoDetails, props, api ) => {
   
-    const { accounts, dispatch, endpoint } = props
+    const { endpoint: { accounts: accounts }, dispatch, endpoint } = props
   
     //
     // Initializing Drago API

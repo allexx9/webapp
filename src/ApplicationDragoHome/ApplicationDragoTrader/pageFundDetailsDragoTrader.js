@@ -1,41 +1,41 @@
-import * as Colors from 'material-ui/styles/colors'
-import { Grid, Row, Col } from 'react-flexbox-grid'
-import { Link, withRouter } from 'react-router-dom'
-import { CopyToClipboard } from 'react-copy-to-clipboard'
-import { Tabs, Tab } from 'material-ui/Tabs'
-import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar'
-import ActionAssessment from 'material-ui/svg-icons/action/assessment'
-import ActionList from 'material-ui/svg-icons/action/list'
-import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
-import CopyContent from 'material-ui/svg-icons/content/content-copy'
-import Paper from 'material-ui/Paper'
-import PropTypes from 'prop-types'
-import React, { Component } from 'react'
-import Search from 'material-ui/svg-icons/action/search'
-import Snackbar from 'material-ui/Snackbar'
-import ElementListWrapper from '../../Elements/elementListWrapper'
-import AssetsPieChart from '../../_atomic/atoms/assetsPieChart'
 import BigNumber from 'bignumber.js';
-import { formatCoins, formatEth, } from '../../_utils/format'
-import ElementFundActions from '../Elements/elementFundActions'
-import IdentityIcon from '../../_atomic/atoms/identityIcon'
-import InfoTable from '../../Elements/elementInfoTable'
-import Loading from '../../_atomic/atoms/loading'
-import PoolApi from '../../PoolsApi/src'
-import ElementListTransactions from '../Elements/elementListTransactions'
-import Sticky from 'react-stickynode'
-import scrollToComponent from 'react-scroll-to-component'
-import SectionTitle from '../../_atomic/atoms/sectionTitle'
-import SectionHeader from '../../_atomic/atoms/sectionHeader'
-import styles from './pageFundDetailsDragoTrader.module.css';
-import ElementPriceBox from '../Elements/elementPricesBox'
-import utils from '../../_utils/utils'
-import ElementFundNotFound from '../../Elements/elementFundNotFound'
+import Paper from 'material-ui/Paper';
+import Snackbar from 'material-ui/Snackbar';
+import { Tab, Tabs } from 'material-ui/Tabs';
+import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
+import * as Colors from 'material-ui/styles/colors';
+import ActionAssessment from 'material-ui/svg-icons/action/assessment';
+import ActionList from 'material-ui/svg-icons/action/list';
+import Search from 'material-ui/svg-icons/action/search';
+import CopyContent from 'material-ui/svg-icons/content/content-copy';
+import ActionShowChart from 'material-ui/svg-icons/editor/show-chart';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { Col, Grid, Row } from 'react-flexbox-grid';
 import { connect } from 'react-redux';
-import ElementListAssets from '../Elements/elementListAssets';
-import { ENDPOINTS, ERC20_TOKENS, PROD } from '../../_utils/const';
+import { Link, withRouter } from 'react-router-dom';
+import scrollToComponent from 'react-scroll-to-component';
+import Sticky from 'react-stickynode';
 import Web3 from 'web3';
-import { Actions } from '../../_redux/actions/actions' 
+import ElementFundNotFound from '../../Elements/elementFundNotFound';
+import InfoTable from '../../Elements/elementInfoTable';
+import ElementListWrapper from '../../Elements/elementListWrapper';
+import PoolApi from '../../PoolsApi/src';
+import AssetsPieChart from '../../_atomic/atoms/assetsPieChart';
+import IdentityIcon from '../../_atomic/atoms/identityIcon';
+import Loading from '../../_atomic/atoms/loading';
+import SectionHeader from '../../_atomic/atoms/sectionHeader';
+import SectionTitle from '../../_atomic/atoms/sectionTitle';
+import { Actions } from '../../_redux/actions/actions';
+import { ENDPOINTS, PROD } from '../../_utils/const';
+import { formatCoins, formatEth } from '../../_utils/format';
+import utils from '../../_utils/utils';
+import ElementFundActions from '../Elements/elementFundActions';
+import ElementListAssets from '../Elements/elementListAssets';
+import ElementListTransactions from '../Elements/elementListTransactions';
+import ElementPriceBox from '../Elements/elementPricesBox';
+import styles from './pageFundDetailsDragoTrader.module.css';
 
 function mapStateToProps(state) {
   return state
@@ -51,7 +51,6 @@ class PageFundDetailsDragoTrader extends Component {
   static propTypes = {
     location: PropTypes.object.isRequired,
     endpoint: PropTypes.object.isRequired,
-    accounts: PropTypes.array.isRequired,
     user: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
@@ -76,8 +75,6 @@ class PageFundDetailsDragoTrader extends Component {
       open: false,
       action: 'buy'
     },
-    balanceETH: new BigNumber(0).toFormat(4),
-    balanceDRG: new BigNumber(0).toFormat(4),
   }
 
   subTitle = (account) => {
@@ -98,7 +95,7 @@ class PageFundDetailsDragoTrader extends Component {
     this.setState({
       loading: false
     })
-    await this.getTransactions(dragoDetails, this.context.api, this.props.accounts)
+    await this.getTransactions(dragoDetails, this.context.api, this.props.endpoint.accounts)
     await poolApi.contract.dragoeventful.init()
     this.subscribeToEvents(poolApi.contract.dragoeventful)
   }
@@ -227,7 +224,7 @@ class PageFundDetailsDragoTrader extends Component {
   }
 
   render() {
-    const { accounts, user } = this.props
+    const { endpoint: { accounts: accounts }, user } = this.props
     const { loading } = this.state
     const dragoAssetsList = this.props.transactionsDrago.selectedDrago.assets
     const assetsCharts = this.props.transactionsDrago.selectedDrago.assetsCharts
@@ -291,6 +288,17 @@ class PageFundDetailsDragoTrader extends Component {
         estimatedPrice = new BigNumber(portfolioValue).div(new BigNumber(dragoDetails.totalSupply)).toFixed(5)
       }
     }
+
+    // // Checking if the user is the account manager
+    // let metaMaskAccountIndex = endpoint.accounts.findIndex(account => {
+    //   return (account.address === dragoDetails.addresssOwner)
+    // });
+    // if (metaMaskAccountIndex === -1) {
+    //   return (
+    //     <ElementNoAdminAccess />
+    //   )
+    // }
+
     return (
       <Row>
         <Col xs={12}>
@@ -308,15 +316,15 @@ class PageFundDetailsDragoTrader extends Component {
                     <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle}>
                       <Tab label="SUMMARY" className={styles.detailsTab}
                         onActive={() => scrollToComponent(this.Summary, { offset: -180, align: 'top', duration: 500 })}
-                        icon={<ActionList color={Colors.blue500} />}>
+                        icon={<ActionList color={'#054186'} />}>
                       </Tab>
-                      <Tab label="IN SIGHT" className={styles.detailsTab}
+                      <Tab label="INSIGHT" className={styles.detailsTab}
                         onActive={() => scrollToComponent(this.InSight, { offset: -180, align: 'top', duration: 500 })}
-                        icon={<ActionAssessment color={Colors.blue500} />}>
+                        icon={<ActionAssessment color={'#054186'} />}>
                       </Tab>
                       <Tab label="LOGS" className={styles.detailsTab}
                         onActive={() => scrollToComponent(this.Logs, { offset: -180, align: 'top', duration: 500 })}
-                        icon={<ActionShowChart color={Colors.blue500} />}>
+                        icon={<ActionShowChart color={'#054186'} />}>
                       </Tab>
                     </Tabs>
                   </Col>
@@ -331,7 +339,7 @@ class PageFundDetailsDragoTrader extends Component {
                       <span ref={(section) => { this.Summary = section; }}></span>
                       <SectionHeader
                         titleText='SUMMARY'
-                        style={{ fontSize: '28px' }} />
+                         />
                     </Col>
                   </Row>
                   <Row>
@@ -409,8 +417,8 @@ class PageFundDetailsDragoTrader extends Component {
                   <Col xs={12} >
                     <span ref={(section) => { this.InSight = section; }}></span>
                     <SectionHeader
-                      titleText='IN SIGHT'
-                      style={{ fontSize: '28px' }} />
+                      titleText='INSIGHT'
+                       />
                   </Col>
                 </Row>
                 <Row>
@@ -434,7 +442,7 @@ class PageFundDetailsDragoTrader extends Component {
                       <SectionTitle titleText='PORTFOLIO' />
                       <div className={styles.sectionParagraph}>
                         Assets in porfolio:
-                    </div>
+                      </div>
                       <ElementListWrapper
                         list={dragoAssetsList}
                         renderCopyButton={this.renderCopyButton}
@@ -458,7 +466,7 @@ class PageFundDetailsDragoTrader extends Component {
                     <span ref={(section) => { this.Logs = section; }}></span>
                     <SectionHeader
                       titleText='LOGS'
-                      style={{ fontSize: '28px' }} />
+                       />
                   </Col>
                 </Row>
                 <Row>

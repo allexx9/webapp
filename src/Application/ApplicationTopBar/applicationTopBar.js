@@ -35,7 +35,7 @@ class ApplicationTopBar extends Component {
     return (
     <div>
       <input type="checkbox" id="menu-toggle" className={styles.menuToggle} />
-      <label id="trigger" htmlFor="menu-toggle" className={styles.trigger}> <img style={{ height: "32px"}} src='/img/new_logo_color.png' /></label>
+      <label id="trigger" htmlFor="menu-toggle" className={styles.trigger}> <img style={{ height: "38px", marginLeft: "-5px", marginTop: "-5px"}} src='/img/rb-logo-final.png' /></label>
       <div className={styles.menu}>
         <div className={styles.burgerContainer}>
           <ul id="menu" className={styles.linkItem} >

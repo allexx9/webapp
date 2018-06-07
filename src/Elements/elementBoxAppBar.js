@@ -15,7 +15,7 @@ export default class ElementBoxAppBar extends Component {
   render() {
     const priceBoxHeader = {
       marketPrice: {
-        backgroundColor: Colors.blue500,
+        backgroundColor: '#054186',
         fontWeight: 500
       },
     }

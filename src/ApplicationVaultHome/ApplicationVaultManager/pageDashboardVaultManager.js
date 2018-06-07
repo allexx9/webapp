@@ -1,5 +1,5 @@
 import  * as Colors from 'material-ui/styles/colors'
-import { Row, Col } from 'react-flexbox-grid'
+import { Row, Col, Grid } from 'react-flexbox-grid'
 import { Link, withRouter } from 'react-router-dom'
 import {CopyToClipboard} from 'react-copy-to-clipboard'
 import {Tabs, Tab} from 'material-ui/Tabs'
@@ -8,7 +8,6 @@ import ActionAssessment from 'material-ui/svg-icons/action/assessment'
 import ActionHome from 'material-ui/svg-icons/action/home'
 import ActionList from 'material-ui/svg-icons/action/list'
 import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
-import AppBar from 'material-ui/AppBar'
 import Avatar from 'material-ui/Avatar'
 import CopyContent from 'material-ui/svg-icons/content/content-copy'
 import Paper from 'material-ui/Paper'
@@ -29,6 +28,7 @@ import {
   UPDATE_TRANSACTIONS_VAULT_MANAGER,
 } from '../../_utils/const'
 import { connect } from 'react-redux';
+import SectionHeader from '../../_atomic/atoms/sectionHeader';
 
 import styles from './pageDashboardVaultManager.module.css'
 
@@ -175,91 +175,116 @@ class PageDashboardVaultManager extends Component {
       )
 
       return (
+
         <Row>
-          <Col xs={12}>
-            <Paper className={styles.paperContainer} zDepth={1}>
-              <Toolbar className={styles.detailsToolbar}>
-                <ToolbarGroup className={styles.detailsToolbarGroup}>
-                  <Row className={styles.detailsToolbarGroup}>
-                    <Col xs={12} md={1} className={styles.dragoTitle}>
-                      <h2><Avatar size={50} icon={<ActionHome />} /></h2>
-                    </Col>
-                    <Col xs={12} md={11} className={styles.dragoTitle}>
-                      <p>Wizard</p>
-                    </Col>
-                  </Row>
-                </ToolbarGroup>
-                <ToolbarGroup>
-                  <p>&nbsp;</p>
-                </ToolbarGroup>
-              </Toolbar>
-              <Sticky enabled={true} innerZ={1}>
-                <Row className={styles.tabsRow}>
-                  <Col xs={12}>
-                    <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle}>
-                      <Tab label="Accounts" className={styles.detailsTab}
-                        onActive={() => scrollToComponent(this.Accounts, { offset: -80, align: 'top', duration: 500 })}
-                        icon={<ActionList color={Colors.blueGrey500} />}>
-                      </Tab>
-                      <Tab label="Vaults" className={styles.detailsTab}
-                        onActive={() => scrollToComponent(this.Dragos, { offset: -80, align: 'top', duration: 500 })}
-                        icon={<ActionAssessment color={Colors.blueGrey500} />}>
-                      </Tab>
-                      <Tab label="Transactions" className={styles.detailsTab}
-                        onActive={() => scrollToComponent(this.Transactions, { offset: -80, align: 'top', duration: 500 })}
-                        icon={<ActionShowChart color={Colors.blueGrey500} />}>
-                      </Tab>
-                    </Tabs>
+        <Col xs={12}>
+          <Paper className={styles.paperContainer} zDepth={1}>
+            <Toolbar className={styles.detailsToolbar}>
+              <ToolbarGroup className={styles.detailsToolbarGroup}>
+                <Row className={styles.detailsToolbarGroup}>
+                  <Col xs={12} md={1} className={styles.dragoTitle}>
+                    <h2><Avatar size={50} icon={<ActionHome />} /></h2>
+                  </Col>
+                  <Col xs={12} md={11} className={styles.dragoTitle}>
+                    <p>Wizard</p>
                   </Col>
                 </Row>
-              </Sticky>
-              <Row className={styles.transactionsStyle}>
+              </ToolbarGroup>
+              <ToolbarGroup>
+                <p>&nbsp;</p>
+              </ToolbarGroup>
+            </Toolbar>
+            <Sticky enabled={true} innerZ={1}>
+              <Row className={styles.tabsRow}>
                 <Col xs={12}>
-                  <span ref={(section) => { this.Accounts = section; }}></span>
-                  <AppBar
-                    title='ACCOUNTS'
-                    showMenuIconButton={false}
-                    className={styles.appBar}
-                    titleStyle={{ fontSize: 20 }}
-                  />
-                  <Row>
-                    {listAccounts}
-                  </Row>
+                  <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle}>
+                    <Tab label="Accounts" className={styles.detailsTab}
+                      onActive={() => scrollToComponent(this.Accounts, { offset: -80, align: 'top', duration: 500 })}
+                      icon={<ActionList color={'#607D8B'} />}>
+                    </Tab>
+                    <Tab label="Holding" className={styles.detailsTab}
+                      onActive={() => scrollToComponent(this.Vaults, { offset: -80, align: 'top', duration: 500 })}
+                      icon={<ActionAssessment color={'#607D8B'} />}>
+                    </Tab>
+                    <Tab label="Transactions" className={styles.detailsTab}
+                      onActive={() => scrollToComponent(this.Transactions, { offset: -80, align: 'top', duration: 500 })}
+                      icon={<ActionShowChart color={'#607D8B'} />}>
+                    </Tab>
+                  </Tabs>
                 </Col>
               </Row>
-              <Row className={styles.transactionsStyle}>
-                <Col xs={12}>
-                  <span ref={(section) => { this.Dragos = section; }}></span>
-                  <AppBar className={styles.appBar}
-                    title='VAULTS'
-                    showMenuIconButton={false}
-                    iconElementRight={<ElementVaultCreateAction accounts={accounts} snackBar={this.snackBar} />}
-                       iconStyleRight={{ marginTop: 'auto', marginBottom: 'auto' }}
-                      titleStyle={{ fontSize: 20 }}
-                  />
-                  <Paper zDepth={1}>
+            </Sticky>
+          </Paper>
+          <Paper className={styles.paperContainer} zDepth={1}>
+            <div className={styles.detailsBoxContainer}>
+              <Grid fluid>
+                <Row>
+                  <Col xs={12} >
+                    <span ref={(section) => { this.Accounts = section; }}></span>
+                    <SectionHeader
+                      titleText='ACCOUNTS'
+                      textStyle={{backgroundColor: Colors.blueGrey500}}
+                    />
+                  </Col>
+                </Row>
+                <Row>
+                  <Col xs={12}>
                     <Row>
-                      <Col className={styles.transactionsStyle} xs={12}>
-                        <ElementListWrapper list={vaultList}>
+                      {listAccounts}
+                    </Row>
+
+                  </Col>
+                </Row>
+              </Grid>
+            </div>
+          </Paper>
+          <Paper className={styles.paperContainer} zDepth={1}>
+            <div className={styles.detailsBoxContainer}>
+              <Grid fluid>
+                <Row>
+                  <Col xs={12} >
+                    <span ref={(section) => { this.Dragos = section; }}></span>
+                    <SectionHeader
+                      titleText='VAULTS'
+                      textStyle={{backgroundColor: Colors.blueGrey500}}
+                    />
+                  </Col>
+                </Row>
+                <Row>
+                  <Col xs={12}>
+                    <div className={styles.deployButtonContainer}>
+                      <ElementVaultCreateAction accounts={accounts}/>
+                    </div>
+                    
+                    <div className={styles.sectionParagraph}>
+                      Your vaults:
+                    </div>
+                    <ElementListWrapper list={vaultList}>
                           <ElementListSupply />
                         </ElementListWrapper>
-                      </Col>
-                    </Row>
-                  </Paper>
+                  </Col>
+                </Row>
+              </Grid>
+            </div>
+          </Paper>
+          <Paper className={styles.paperContainer} zDepth={1}>
+            <div className={styles.detailsBoxContainer}>
+              <Grid fluid>
+                <Row>
+                  <Col xs={12} >
+                    <span ref={(section) => { this.Transactions = section; }}></span>
+                    <SectionHeader
+                      titleText='TRANSACTIONS'
+                      textStyle={{backgroundColor: Colors.blueGrey500}}
+                    />
+                  </Col>
+                </Row>
+                <Row>
+                  <Col xs={12}>
+                    <div className={styles.sectionParagraph}>
+                      Your last 20 transactions:
+                  </div>
 
-                </Col>
-              </Row>
-              <Row className={styles.transactionsStyle}>
-                <Col xs={12}>
-                  <span ref={(section) => { this.Transactions = section; }}></span>
-                  <AppBar className={styles.appBar}
-                    title='TRANSACTIONS'
-                    showMenuIconButton={false}
-                    titleStyle={{ fontSize: 20 }}
-                  />
-                  <Paper zDepth={1}>
-                    <Row style={{ outline: 'none' }}>
-                      <Col className={styles.transactionsStyle} xs={12}>
                         <ElementListWrapper
                           list={vaultTransactionsLogs}
                           renderCopyButton={this.renderCopyButton}
@@ -267,34 +292,33 @@ class PageDashboardVaultManager extends Component {
                         >
                           <ElementListTransactions />
                         </ElementListWrapper>
-                      </Col>
-                    </Row>
-                  </Paper>
-                </Col>
-              </Row>
-            </Paper>
-          </Col>
-          <Snackbar
-            open={this.state.snackBar}
-            message={this.state.snackBarMsg}
-            action="close"
-            onActionTouchTap={this.handlesnackBarRequestClose}
-            onRequestClose={this.handlesnackBarRequestClose}
-            bodyStyle={{
-              height: "auto",
-              flexGrow: 0,
-              paddingTop: "10px",
-              lineHeight: "20px",
-              borderRadius: "2px 2px 0px 0px",
-              backgroundColor: "#fafafa",
-              boxShadow: "#bdbdbd 0px 0px 5px 0px"
-            }}
-            contentStyle={{
-              color: "#000000 !important",
-              fontWeight: "600"
-            }}
-          />
-        </Row>  
+                  </Col>
+                </Row>
+              </Grid>
+            </div>
+          </Paper>
+        </Col>
+        <Snackbar
+          open={this.state.snackBar}
+          message={this.state.snackBarMsg}
+          action="close"
+          onActionTouchTap={this.handlesnackBarRequestClose}
+          onRequestClose={this.handlesnackBarRequestClose}
+          bodyStyle={{
+            height: "auto",
+            flexGrow: 0,
+            paddingTop: "10px",
+            lineHeight: "20px",
+            borderRadius: "2px 2px 0px 0px",
+            backgroundColor: "#fafafa",
+            boxShadow: "#bdbdbd 0px 0px 5px 0px"
+          }}
+          contentStyle={{
+            color: "#000000 !important",
+            fontWeight: "600"
+          }}
+        />
+      </Row>
       )
     }
 

@@ -42,7 +42,7 @@ var menuStyles = {
   },
   profileIcon: {
     open: {
-      color: "#2196F3"
+      color: "#054186"
     },
     closed: {
       color: "#ffffff"
@@ -127,13 +127,13 @@ class NavLinks extends Component {
 
   renderTopLinks = (links) => {
     const activeLink = this.activeSectionPath()
-    var backgroundColorActive = Colors.blue500
+    var backgroundColorActive = '#054186'
     const { location } = this.props
     return links.map((link) => {
-      link.to === activeLink ? backgroundColorActive = Colors.blue300 : backgroundColorActive = Colors.blue500
+      link.to === activeLink ? backgroundColorActive = '#1968C0' : backgroundColorActive = '#054186'
       return (
         <FlatButton key={link.label} label={link.label.toUpperCase()} containerElement={<Link to={DS + APP + DS + this.buildUrlPath(location) + DS + link.to} />} disableTouchRipple={true}
-          hoverColor={Colors.blue500} className={styles.topbarbuttons}
+          hoverColor={'#054186'} className={styles.topbarbuttons}
           icon={link.icon}
           labelStyle={{ fontWeight: 700 }}
           backgroundColor={backgroundColorActive}

@@ -18,7 +18,7 @@ import { connect } from 'react-redux';
 
 const muiTheme = getMuiTheme({
   palette: {
-    "primary1Color": Colors.blue500,
+    "primary1Color": '#054186', //#054186
 
   },
   appBar: {
@@ -88,7 +88,7 @@ class ApplicationDragoPage extends Component {
           </Row>
           <Row className={classNames(styles.content)}>
             <Col xs={12}>
-              {this.context.isConnected && !this.context.isSyncing ? (
+              {/* {this.context.isConnected && !this.context.isSyncing ? (
                 // {false ? (
                 <ApplicationDragoHome
           
@@ -98,7 +98,16 @@ class ApplicationDragoPage extends Component {
                 />
               ) : (
                   <NotConnected isSyncing={this.context.isSyncing} syncStatus={this.context.syncStatus} />
-                )}
+                )} */}
+
+
+                <ApplicationDragoHome
+          
+          location={location}
+          notificationsOpen={notificationsOpen}
+          handleToggleNotifications={this.handleToggleNotifications}
+        />
+
             </Col>
           </Row>
         </Grid>

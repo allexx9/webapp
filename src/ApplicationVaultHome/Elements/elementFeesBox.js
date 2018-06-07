@@ -34,7 +34,7 @@ export default class ElementFeesBox extends Component {
         backgroundColor: Colors.red300
       },
       marketPrice: {
-        // backgroundColor: Colors.blue500,
+        // backgroundColor: '#054186',
         fontWeight: 500
       },
     }
@@ -58,16 +58,6 @@ export default class ElementFeesBox extends Component {
     if (!isManager) {
       return (
         <div>
-          <Row>
-            <Col xs={12} className={styles.boxHeader}>
-              <AppBar
-                title="FEES"
-                showMenuIconButton={false}
-                style={priceBoxHeader.marketPrice}
-                titleStyle={priceBoxHeaderTitleStyle}
-              />
-            </Col>
-          </Row>
           <Row middle="xs">
             <Col xs={12}>
               <div className={styles.price}>{vaultDetails.price} %</div>
@@ -85,14 +75,9 @@ export default class ElementFeesBox extends Component {
             <Col xs={6}>
               <div className={styles.actionButton}><FlatButton primary={true} label="Deposit"
                 labelStyle={{ fontWeight: 700, fontSize: '18px' }}
-                // onClick={this.buttonBuyClick}
                 onClick={this.buttonBuyClick}
                 style={buttonStyle}
               /></div>
-              {/* <ElementVaultActionDeposit accounts={accounts} 
-                vaultDetails={vaultDetails} 
-                open={this.state.openDepositDialog}
-                snackBar={this.props.snackBar}/> */}
             </Col>
           </Row>
         </div>
@@ -102,16 +87,6 @@ export default class ElementFeesBox extends Component {
     if (isManager) {
       return (
         <div>
-          <Row>
-            <Col xs={12} className={styles.boxHeader}>
-              <AppBar
-                title="FEES"
-                showMenuIconButton={false}
-                style={priceBoxHeader.marketPrice}
-                titleStyle={priceBoxHeaderTitleStyle}
-              />
-            </Col>
-          </Row>
           <Row middle="xs">
             <Col xs={12}>
               <div className={styles.price}>{vaultDetails.price} %</div>

@@ -6,7 +6,7 @@
 }
 
 .detailsTab {
-  color: #2196F3 !important;
+  color: #054186 !important;
   background-color: white !important;
   font-weight: 700 !important;
   font-size: 14px !important;
@@ -39,6 +39,10 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.sectionParagraph{
+  padding-bottom: 5px;
+ }
 
 .detailsToolbarGroup {
   width: 100% !important;
@@ -88,4 +92,13 @@
 
 .appBar {
   z-index: 0 !important;
+}
+
+.detailsBoxContainer {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.detailsSectionContainer {
+  padding-bottom: 5px;
 }

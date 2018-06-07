@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import Divider from 'material-ui/Divider';
 import styles from './sectionHeader.module.css';
 
+
 export default class SectionHeader extends Component {
 
   static propTypes = {
@@ -12,21 +13,28 @@ export default class SectionHeader extends Component {
     help: PropTypes.bool,
     helpText: PropTypes.string,
     helpReadMoreLink: PropTypes.string,
+    actionButton: PropTypes.object,
   };
 
   static defaultProps = {
-    textStyle: {fontSize: '24px'},
     help: false,
+    textStyle: { backgroundColor: '#054186' }
   };
 
 
   render() {
     return (
-      <div className={styles.container}>
+      <div className={styles.container} 
+          >
+          <div className={styles.actionButtonContainer}>
+            {this.props.actionButton}
+          </div>
           <div className={styles.title} style={this.props.textStyle}>
             {this.props.titleText}
           </div>
-          <Divider style={{ backgroundColor: '#9E9E9E' }} />
+          <Divider style={{
+            backgroundColor: this.props.textStyle.backgroundColor
+          }} />
       </div>
     )
   }

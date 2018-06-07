@@ -10,30 +10,26 @@ class applicationDragoTrader extends Component {
 
     static propTypes = {
       location: PropTypes.object.isRequired,
-      accounts: PropTypes.array.isRequired,
       match: PropTypes.object.isRequired,
     };
 
 
     render() {
-      const { accounts, match } = this.props;
+      const { match } = this.props;
       return (
         <Switch>
           <Route exact path={match.path+"/dashboard"} 
               render={(props) => <PageDashboardDragoTrader {...props}               
-                accounts={accounts}
                  />
               } 
           />
           <Route exact path={match.path+"/pools"}
             render={(props) => <PageFundsDragoTrader {...props}               
-            accounts={accounts}
             />
           } 
           />
           <Route exact path={match.path+"/pools/:dragoid/:dragocode"}
             render={(props) => <PageFundDetailsDragoTrader {...props}               
-            accounts={accounts}
             />
           } 
           />

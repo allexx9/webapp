@@ -80,3 +80,17 @@
 .appBar {
   z-index: 0 !important;
 }
+
+
+.detailsBoxContainer {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.detailsSectionContainer {
+  padding-bottom: 5px;
+}
+
+.sectionParagraph{
+  padding-bottom: 5px;
+ }

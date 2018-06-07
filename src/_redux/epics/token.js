@@ -56,8 +56,8 @@ export const setTokenAllowanceEpic = action$ => {
 //         return blockChainActions.blockChainLogout()
 //       }
 
-//       // Using != to check if this.account is '' or null
-//       if (accounts[0] != this.account) {
+//       // Using !== to check if this.account is '' or null
+//       if (accounts[0] !== this.account) {
 //         this.account = accounts[0]
 //         return blockChainActions.blockChainLogIn(this.account)
 //       }

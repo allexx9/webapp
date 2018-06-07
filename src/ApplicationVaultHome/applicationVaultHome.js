@@ -57,7 +57,7 @@ class ApplicationVaultHome extends Component {
     // Saving the scroll position. Neede in componentDidUpdate in order to avoid the the page scroll to be
     // set top
     const element = this.node
-    if (element != null) {
+    if (element !== null) {
       this.scrollPosition = window.scrollY
     }
     return stateUpdate || propsUpdate 
@@ -83,13 +83,13 @@ class ApplicationVaultHome extends Component {
     console.log(`${this.sourceLogClass} -> componentDidUpdate`);
     // const element = ReactDOM.findDOMNode(this);
     const element = this.node
-    if (element != null) {
+    if (element !== null) {
       window.scrollTo(0, this.scrollPosition)
     }
     // Setting focus on the element active before component re-render
     if (this.activeElement.id !== "") {
       const activeElement = document.getElementById(this.activeElement.id);
-      if (activeElement != null) {
+      if (activeElement !== null) {
         activeElement.focus()
       }
     }

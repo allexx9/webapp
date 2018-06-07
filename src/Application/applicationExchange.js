@@ -18,7 +18,7 @@ import { connect } from 'react-redux';
 
 const muiTheme = getMuiTheme({
   palette: {
-    "primary1Color": Colors.blue500,
+    "primary1Color": '#054186',
 
   },
   appBar: {
@@ -29,7 +29,7 @@ const muiTheme = getMuiTheme({
 
 const muiThemeExchange = getMuiTheme({
   palette: {
-    "primary1Color": Colors.grey900,
+    "primary1Color": '#054186',
   },
   appBar: {
     height: 20,
