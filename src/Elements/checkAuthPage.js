@@ -53,7 +53,7 @@ class CheckAuthPage extends Component {
               {this.renderWarnMsg()}
               <Row>
                 <Col xs={12}>  
-                    <h1 className={styles.Branding} >RigoBlock</h1>
+                  <div className={styles.mainlogo}><img style={{height: "80px"}} src='/img/Logo-RigoblockRGB-OUT-01.png'/></div>
                 </Col>
               </Row>
               <Row>
@@ -74,7 +74,7 @@ class CheckAuthPage extends Component {
                     MetaMask
                   </ListItem>
                   <p>MetaMask is a Chrome and Firefox extension that enables you to navigate Ethereum compatible websites and access blockchain decentralized application.</p>
-                  <a href='https://metamask.io/' target='_blank' rel='noopener noreferrer'>Learn how to install MetaMask on their website</a>
+                  <a href='https://metamask.io/' target='_blank' rel='noopener noreferrer'>Learn how to install MetaMask</a>
                 </Col>
                 <Col xs={12} className={styles.walletBox}>
                 <ListItem className={styles.walletTitle}
@@ -88,7 +88,7 @@ class CheckAuthPage extends Component {
                   </ListItem>
                   <p>RigoBlock is also available as a Ðapp inside the Parity client</p>
                   <p>Parity comes with an extensive, easy-to-use, in-built Ethereum Wallet and Ðapp environment that can be accessed via your Web browser of choice.</p>
-                  <a href='https://www.parity.io/' target='_blank' rel='noopener noreferrer'>Learn how to install Parity on their website</a>
+                  <a href='https://www.parity.io/' target='_blank' rel='noopener noreferrer'>Learn how to install Parity</a>
                 </Col>
               </Row>
             </Paper>

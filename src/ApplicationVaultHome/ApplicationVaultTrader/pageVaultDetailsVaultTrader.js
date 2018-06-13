@@ -117,13 +117,6 @@ class PageFundDetailsVaultTrader extends Component {
   componentDidUpdate() {
   }
 
-  renderAddress(vaultDetails) {
-    return <FundHeader
-      fundType='vault'
-      fundDetails={vaultDetails}
-    />
-  }
-
   snackBar = (msg) => {
     this.setState({
       snackBar: true,
@@ -223,7 +216,10 @@ class PageFundDetailsVaultTrader extends Component {
           <div className={styles.pageContainer} >
             <Paper zDepth={1}>
               <Sticky enabled={true} innerZ={1}>
-                {this.renderAddress(vaultDetails)}
+                <FundHeader
+                  fundType='vault'
+                  fundDetails={vaultDetails}
+                />
                 <Row className={styles.tabsRow}>
                   <Col xs={12}>
                     <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle}>

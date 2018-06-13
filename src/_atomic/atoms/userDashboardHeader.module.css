@@ -1,23 +1,26 @@
-.detailsToolbarGroup {
-  width: 100% !important;
-}
 
 .identityIconContainer {
   position: absolute;
-  padding-top: 65px;
+  padding-top: 55px;
 }
 
-.dragoTitle {
+.avatar {
+  border-radius: 50%;
+  margin-right: 0.5em;
+  /* box-shadow: 0px 0px 2px 2px rgb(224, 224, 224); */
+}
+
+.userTitle {
   padding-left: 100px;
   padding-bottom: 20px;
 }
 
-.dragoTitle img {
+.userTitle img {
   width: 60px !important;
   height: 60px !important;
 }
 
-.dragoTitle p {
+.userTitle p {
   font-size: 1.5em !important;
   margin-bottom: 5px;
   white-space: nowrap;
@@ -34,5 +37,11 @@
 }
 
 .detailsToolbar {
-  height: 100% !important;
+  height: 90px !important;
+  border-top-right-radius: 2px !important;
+  border-top-left-radius: 2px !important;
+}
+
+.detailsToolbarGroup {
+  width: 100% !important;
 }

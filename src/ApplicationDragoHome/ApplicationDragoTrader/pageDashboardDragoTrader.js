@@ -3,12 +3,9 @@ import { Row, Col, Grid } from 'react-flexbox-grid'
 import { Link, withRouter } from 'react-router-dom'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 import { Tabs, Tab } from 'material-ui/Tabs'
-import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar'
 import ActionAssessment from 'material-ui/svg-icons/action/assessment'
-import ActionHome from 'material-ui/svg-icons/action/home'
 import ActionList from 'material-ui/svg-icons/action/list'
 import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
-import Avatar from 'material-ui/Avatar'
 import CopyContent from 'material-ui/svg-icons/content/content-copy'
 import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types';
@@ -21,6 +18,7 @@ import ElementListWrapper from '../../Elements/elementListWrapper'
 import ElementAccountBox from '../../Elements/elementAccountBox'
 import ElementListBalances from '../Elements/elementListBalances'
 import ElementListTransactions from '../Elements/elementListTransactions'
+import UserDashboardHeader from '../../_atomic/atoms/userDashboardHeader'
 import utils from '../../_utils/utils'
 import {
   UPDATE_TRANSACTIONS_DRAGO_HOLDER,
@@ -171,22 +169,10 @@ class PageDashboardDragoTrader extends Component {
       <Row>
         <Col xs={12}>
           <Paper className={styles.paperContainer} zDepth={1}>
-            <Toolbar className={styles.detailsToolbar}>
-              <ToolbarGroup className={styles.detailsToolbarGroup}>
-                <Row className={styles.detailsToolbarGroup}>
-                  <Col xs={12} md={1} className={styles.dragoTitle}>
-                    <h2><Avatar size={50} icon={<ActionHome />} /></h2>
-                  </Col>
-                  <Col xs={12} md={11} className={styles.dragoTitle}>
-                    <p>Holder</p>
-                  </Col>
-                </Row>
-              </ToolbarGroup>
-              <ToolbarGroup>
-                <p>&nbsp;</p>
-              </ToolbarGroup>
-            </Toolbar>
+
+            
             <Sticky enabled={true} innerZ={1}>
+              <UserDashboardHeader fundType='drago' userType='holder' />
               <Row className={styles.tabsRow}>
                 <Col xs={12}>
                   <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle}>

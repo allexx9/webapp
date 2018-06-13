@@ -149,6 +149,7 @@ class PageFundDetailsDragoManager extends Component {
     const { endpoint: { accounts: accounts } } = this.props
     return <FundHeader 
       fundDetails={dragoDetails} 
+      fundType='drago'
       actions={<ElementFundActionsList accounts={accounts} dragoDetails={dragoDetails} snackBar={this.snackBar} />}
     />  
   }
