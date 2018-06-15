@@ -91,7 +91,7 @@ const initialState = {
       transactions: [],
       assets: [],
       assetsCharts: {},
-    }
+    },
   },
   transactionsVault: {
     holder: {
@@ -101,6 +101,10 @@ const initialState = {
     manager: {
       list: [],
       logs: []
+    },
+    selectedVault: {
+      details: {},
+      transactions: [],
     }
   },
   endpoint: {

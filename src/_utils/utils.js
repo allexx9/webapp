@@ -1010,7 +1010,7 @@ class utilities {
 
   getVaultDetails = async (vaultDetails, props, api) => {
 
-    const { endpoint: { accounts: accounts }, dispatch, endpoint } = props
+    const { endpoint: { accounts: accounts }, dispatch } = props
   
     //
     // Initializing vault API
@@ -1028,33 +1028,16 @@ class utilities {
     // Initializing vault contract
     //
     await poolApi.contract.vault.init(vaultAddress)
-  
-    //
-    // Getting vault assets
-    //
-    const getTokensBalances = async () => {
-      var vaultAssets = ERC20_TOKENS[api._rb.network.name]
-      for (var token in vaultAssets) {
-        vaultAssets[token].balance = await poolApi.contract.vault.getTokenBalance(ERC20_TOKENS[api._rb.network.name][token].address)
-      }
-  
-      return vaultAssets
-    }
-  
-    getTokensBalances().then(vaultAssets => {
-      dispatch(Actions.vault.getAssetsPriceData(vaultAssets, endpoint.networkInfo.id, ERC20_TOKENS[endpoint.networkInfo.name].WETH.address))
-      dispatch(Actions.vault.updateSelectedvaultAction({ assets: Object.values(vaultAssets) }))
-    })
-  
+    
     //
     // Gettind vault data, creation date, supply, ETH balances
     //
   
     const getvaultCreationDate = async (vaultAddress, contract) => {
-      const hexVaultAddress = '0x' + vaultDetails[0][0].substr(2).padStart(64, '0')
+      const hexVaultAddress = '0x' + vaultAddress.substr(2).padStart(64, '0')
       const eventsFilterCreate = {
         topics: [
-          [contract.hexSignature.vaultCreated],
+          [contract.hexSignature.VaultCreated],
           [hexVaultAddress],
           null,
           null
@@ -1066,16 +1049,17 @@ class utilities {
     }
   
     const vaultData = await poolApi.contract.vault.getData()
+    const vaultAdminData = await poolApi.contract.vault.getAdminData()
     const vaultCreatedDate = await getvaultCreationDate(vaultAddress, poolApi.contract.vaulteventful)
     const vaultTotalSupply = await poolApi.contract.vault.totalSupply()
     const vaultETHBalance = await formatEth(await poolApi.contract.vault.getBalance(), 5, api)
-    const vaultWETHBalance = await formatEth(await poolApi.contract.vault.getBalanceWETH(), 5, api)
+    const fee = (new BigNumber(vaultAdminData[4]).div(100).toFixed(2))
   
     var details = {
       address: vaultDetails[0][0],
       name: vaultDetails[0][1].charAt(0).toUpperCase() + vaultDetails[0][1].slice(1),
       symbol: vaultDetails[0][2],
-      vaultId: vaultDetails[0][3].c[0],
+      vaultId: new BigNumber(vaultDetails[0][3]).toNumber(),
       addresssOwner: vaultDetails[0][4],
       addressGroup: vaultDetails[0][5],
       sellPrice: api.util.fromWei(vaultData[2].toNumber(4)).toFormat(4),
@@ -1083,10 +1067,10 @@ class utilities {
       created: vaultCreatedDate,
       totalSupply: formatCoins(new BigNumber(vaultTotalSupply), 4, api),
       vaultETHBalance,
-      vaultWETHBalance
+      fee
     }
   
-    dispatch(Actions.vault.updateSelectedvaultAction({
+    dispatch(Actions.vault.updateSelectedVaultAction({
       details
     })
     )
@@ -1100,9 +1084,9 @@ class utilities {
       balanceDRG = balanceDRG.add(balance)
     })
     )
-    balanceDRG = formatCoins(balanceDRG, 5, api)
+    balanceDRG = formatCoins(balanceDRG, 4, api)
     details = { ...details, balanceDRG }
-    dispatch(Actions.vault.updateSelectedvaultAction({
+    dispatch(Actions.vault.updateSelectedVaultAction({
       details
     })
     )

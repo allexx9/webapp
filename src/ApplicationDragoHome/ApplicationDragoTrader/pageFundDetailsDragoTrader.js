@@ -1,14 +1,14 @@
 import BigNumber from 'bignumber.js';
 import Paper from 'material-ui/Paper';
 import Snackbar from 'material-ui/Snackbar';
-import { Tab, Tabs } from 'material-ui/Tabs';
-import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 import * as Colors from 'material-ui/styles/colors';
 import ActionAssessment from 'material-ui/svg-icons/action/assessment';
 import ActionList from 'material-ui/svg-icons/action/list';
 import Search from 'material-ui/svg-icons/action/search';
 import CopyContent from 'material-ui/svg-icons/content/content-copy';
 import ActionShowChart from 'material-ui/svg-icons/editor/show-chart';
+import { Tab, Tabs } from 'material-ui/Tabs';
+import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
@@ -59,14 +59,6 @@ class PageFundDetailsDragoTrader extends Component {
   };
 
   state = {
-    dragoDetails: {
-      address: null,
-      name: null,
-      symbol: null,
-      dragoId: null,
-      addresssOwner: null,
-      addressGroup: null,
-    },
     dragoTransactionsLogs: [],
     loading: true,
     snackBar: false,

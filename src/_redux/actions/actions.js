@@ -3,7 +3,8 @@
 import {
   UPDATE_INTERFACE,
   UPDATE_SELECTED_DRAGO_DETAILS,
-  FETCH_ASSETS_PRICE_DATA
+  FETCH_ASSETS_PRICE_DATA,
+  UPDATE_SELECTED_VAULT_DETAILS
 } from './const'
 
 class actions {
@@ -25,6 +26,15 @@ class actions {
         }
       }
     }
+  }
+
+  vault = {
+    updateSelectedVaultAction: (results) => {
+      return {
+        type: UPDATE_SELECTED_VAULT_DETAILS,
+        payload: results
+      }
+    },
   }
 
   endpoint = {

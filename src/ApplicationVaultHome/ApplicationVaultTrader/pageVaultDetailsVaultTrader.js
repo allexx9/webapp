@@ -1,14 +1,13 @@
-import * as Colors from 'material-ui/styles/colors'
 import BigNumber from 'bignumber.js';
 import Paper from 'material-ui/Paper';
 import Snackbar from 'material-ui/Snackbar';
+import * as Colors from 'material-ui/styles/colors';
 import ActionAssessment from 'material-ui/svg-icons/action/assessment';
 import ActionList from 'material-ui/svg-icons/action/list';
 import Search from 'material-ui/svg-icons/action/search';
 import CopyContent from 'material-ui/svg-icons/content/content-copy';
 import ActionShowChart from 'material-ui/svg-icons/editor/show-chart';
 import { Tab, Tabs } from 'material-ui/Tabs';
-import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
@@ -17,20 +16,23 @@ import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
 import scrollToComponent from 'react-scroll-to-component';
 import Sticky from 'react-stickynode';
+import Web3 from 'web3';
 import ElementFundNotFound from '../../Elements/elementFundNotFound';
 import InfoTable from '../../Elements/elementInfoTable';
 import ElementListWrapper from '../../Elements/elementListWrapper';
-import PoolApi from '../../PoolsApi/src'
+import PoolApi from '../../PoolsApi/src';
+import FundHeader from '../../_atomic/atoms/fundHeader';
 import Loading from '../../_atomic/atoms/loading';
 import SectionHeader from '../../_atomic/atoms/sectionHeader';
 import SectionTitle from '../../_atomic/atoms/sectionTitle';
+import { ENDPOINTS, PROD } from '../../_utils/const';
 import { formatCoins, formatEth } from '../../_utils/format';
+import { Actions } from '../../_redux/actions/actions';
 import utils from '../../_utils/utils';
 import ElementFeesBox from '../Elements/elementFeesBox';
 import ElementListTransactions from '../Elements/elementListTransactions';
 import ElementVaultActions from '../Elements/elementVaultActions';
 import styles from './pageVaultDetailsVaultTrader.module.css';
-import FundHeader from '../../_atomic/atoms/fundHeader'
 
 function mapStateToProps(state) {
   return state
@@ -48,18 +50,12 @@ class PageFundDetailsVaultTrader extends Component {
     endpoint: PropTypes.object.isRequired,
     accounts: PropTypes.array.isRequired,
     match: PropTypes.object.isRequired,
-    user: PropTypes.object.isRequired
+    dispatch: PropTypes.func.isRequired,
+    user: PropTypes.object.isRequired,
+    transactionsVault: PropTypes.object.isRequired,
   };
 
   state = {
-    vaultDetails: {
-      address: null,
-      name: null,
-      symbol: null,
-      vaultId: null,
-      addresssOwner: null,
-      addressGroup: null,
-    },
     vaultTransactionsLogs: [],
     loading: true,
     snackBar: false,
@@ -84,27 +80,37 @@ class PageFundDetailsVaultTrader extends Component {
       loading: false
     })
     await this.getTransactions(vaultDetails, this.context.api, this.props.endpoint.accounts)
-    await poolApi.contract.dragoeventful.init()
-    this.subscribeToEvents(poolApi.contract.dragoeventful)
+    await poolApi.contract.vaulteventful.init()
+    this.subscribeToEvents(poolApi.contract.vaulteventful)
   }
 
-  componentWillMount() {
-    // Getting dragoid from the url parameters passed by router and then
-    // the list of last transactions
-    const vaultId = this.props.match.params.dragoid
-    this.getVaultDetails(vaultId)
+  componentWillUnmount() {
+    const { contractSubscription } = this.state
+    const sourceLogClass = this.constructor.name
+    // this.props.dispatch({type: TOKEN_PRICE_TICKER_CLOSE_WEBSOCKET})
+    try {
+      contractSubscription.unsubscribe(function (error, success) {
+        if (success) {
+          console.log(`${sourceLogClass}: Successfully unsubscribed from contract.`);
+        }
+        if (error) {
+          console.warn(`${sourceLogClass}: Unsubscribe error ${error}.`)
+        }
+      });
+    }
+    catch (error) {
+      console.warn(`${sourceLogClass}: Unsubscribe error ${error}.`)
+    }
   }
 
   componentWillReceiveProps(nextProps) {
     // Updating the lists on each new block if the accounts balances have changed
     // Doing this this to improve performances by avoiding useless re-rendering
-    console.log(this.props)
-    const vaultId = this.props.match.params.dragoid
     const sourceLogClass = this.constructor.name
     const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
     const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
     if (!currentBalance.eq(nextBalance)) {
-      this.getVaultDetails(vaultId)
+      this.initVault()
       console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
     } else {
       null
@@ -115,17 +121,14 @@ class PageFundDetailsVaultTrader extends Component {
     const sourceLogClass = this.constructor.name
     var stateUpdate = true
     var propsUpdate = true
-    const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
-    const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
+    // const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
+    // const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
     stateUpdate = !utils.shallowEqual(this.state, nextState)
-    propsUpdate = !currentBalance.eq(nextBalance)
+    propsUpdate = !utils.shallowEqual(this.props, nextProps)
     if (stateUpdate || propsUpdate) {
       console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
     }
     return stateUpdate || propsUpdate
-  }
-
-  componentDidUpdate() {
   }
 
   snackBar = (msg) => {
@@ -166,7 +169,6 @@ class PageFundDetailsVaultTrader extends Component {
   }
 
   handleBuySellButtons = (action) => {
-    console.log(action)
     this.setState({
       openBuySellDialog: {
         open: !this.state.openBuySellDialog.open,
@@ -185,7 +187,9 @@ class PageFundDetailsVaultTrader extends Component {
 
   render() {
     const { accounts, user } = this.props
-    const { vaultDetails, loading } = this.state
+    const { loading } = this.state
+    const vaultDetails = this.props.transactionsVault.selectedVault.details
+    const vaultTransactionsList = this.props.transactionsVault.selectedVault.transactions
     const tabButtons = {
       inkBarStyle: {
         margin: 'auto',
@@ -204,16 +208,15 @@ class PageFundDetailsVaultTrader extends Component {
     ['Name', vaultDetails.name, ''],
     ['Address', vaultDetails.address, tableButtonsVaultAddress],
     ['Owner', vaultDetails.addresssOwner, tableButtonsVaultOwner]]
-    const paperStyle = {
-      marginTop: "10px"
-    };
-    var dragoTransactionList = this.state.vaultTransactionsLogs
-    // console.log(dragoTransactionList)
+
+    // console.log(vaultTransactionList)
 
     // Waiting until getVaultDetails returns the drago details
-    if (loading) {
+    if (loading || Object.keys(vaultDetails).length === 0) {
       return (
-        <Loading />
+        <div style={{ paddingTop: '10px' }}>
+          <Loading />
+        </div>
       );
     }
     if (vaultDetails.address === '0x0000000000000000000000000000000000000000') {
@@ -286,7 +289,7 @@ class PageFundDetailsVaultTrader extends Component {
                                 Your total holding:
                               </div>
                               <div className={styles.holdings}>
-                                <span>{this.state.balanceDRG}</span> <small className={styles.myPositionTokenSymbol}>{vaultDetails.symbol.toUpperCase()}</small><br />
+                                <span>{vaultDetails.balanceDRG}</span> <small className={styles.myPositionTokenSymbol}>{vaultDetails.symbol.toUpperCase()}</small><br />
                               </div>
                             </div>
                           </Col>
@@ -339,7 +342,7 @@ class PageFundDetailsVaultTrader extends Component {
                     <div className={styles.detailsTabContent}>
                       <p>Your last 20 transactions on this Vault.</p>
                     </div>
-                    <ElementListWrapper list={dragoTransactionList}
+                    <ElementListWrapper list={vaultTransactionsList}
                       renderCopyButton={this.renderCopyButton}
                       renderEtherscanButton={this.renderEtherscanButton}
                       loading={loading}>
@@ -376,89 +379,45 @@ class PageFundDetailsVaultTrader extends Component {
     )
   }
 
-  // Getting the vault details from vaultId
-  getVaultDetails = (vaultId) => {
-    const { api } = this.context
-    const { accounts } = this.props
-    var balanceDRG = new BigNumber(0)
-    //
-    // Initializing Drago API
-    // Passing Parity API
-    //      
-    const poolApi = new PoolApi(api)
-    //
-    // Initializing registry contract
-    //
-    poolApi.contract.dragoregistry
-      .init()
-      .then(() => {
-        //
-        // Looking for drago from vaultId
-        //
-        poolApi.contract.dragoregistry
-          .fromId(vaultId)
-          .then((vaultDetails) => {
-            const vaultAddress = vaultDetails[0][0]
-            //
-            // Initializing vault contract
-            //
-            console.log(vaultDetails)
-            poolApi.contract.vault.init(vaultAddress)
-            //
-            // Calling getAdminData method
-            //
-            poolApi.contract.vault.getAdminData()
-              .then((data) => {
-                //
-                // Gettin balance for each account
-                //
-                accounts.map(account => {
-                  poolApi.contract.vault.balanceOf(account.address)
-                    .then(balance => {
-                      balanceDRG = balanceDRG.add(balance)
-                      console.log(balance)
-                      // console.log(api.util.fromWei(balance).toFormat(4))
-                    })
-                    .then(() => {
-                      // console.log(api.util.fromWei(balanceDRG.toNumber(4)).toFormat(4))
-                      // console.log(balanceDRG)
-                      var balanceETH = balanceDRG.times(formatCoins(balanceDRG, 6, api))
-                      // console.log(balanceETH)
-                      this.setState({
-                        balanceETH: formatEth(balanceETH, 6, api),
-                        balanceDRG: formatCoins(balanceDRG, 6, api)
-                      })
-                    })
-                })
-                const price = (new BigNumber(data[4]).div(100).toFixed(2))
-                this.setState({
-                  vaultDetails: {
-                    address: vaultDetails[0][0],
-                    name: vaultDetails[0][1].charAt(0).toUpperCase() + vaultDetails[0][1].slice(1),
-                    symbol: vaultDetails[0][2].toUpperCase(),
-                    vaultId: vaultDetails[0][3].c[0],
-                    addresssOwner: vaultDetails[0][4],
-                    addressGroup: vaultDetails[0][5],
-                    sellPrice: 1,
-                    buyPrice: 1,
-                    price: price,
-                  },
-                  loading: false
-                })
-              })
-            poolApi.contract.vaulteventful.init()
-              .then(() => {
-                this.getTransactions(vaultDetails[0][0], poolApi.contract.vaulteventful, accounts)
-              }
-              )
-          })
-      })
+  subscribeToEvents = (contract) => {
+    const networkName = this.props.endpoint.networkInfo.name
+    var WsSecureUrl = ''
+    const eventfullContracAddress = contract.contract.address[0]
+    if (PROD) {
+      WsSecureUrl = ENDPOINTS.rigoblock.wss[networkName].prod
+    } else {
+      WsSecureUrl = ENDPOINTS.rigoblock.wss[networkName].dev
+    }
+    const web3 = new Web3(WsSecureUrl)
+    const eventfullContract = new web3.eth.Contract(contract.abi, eventfullContracAddress)
+    const subscription = eventfullContract.events.allEvents({
+      fromBlock: 'latest',
+      topics: [
+        null,
+        null,
+        null,
+        null
+      ]
+    }, (error, events) => {
+      if (!error) {
+        var sourceLogClass = this.constructor.name
+        console.log(`${sourceLogClass} -> New contract event.`);
+        console.log(events)
+        this.initVault()
+      }
+    })
+    this.setState({
+      contractSubscription: subscription
+    })
   }
 
   // Getting last transactions
-  getTransactions = (vaultAddress, contract, accounts) => {
-    const { api } = this.context
+  getTransactions = async (vaultDetails, api, accounts) => {
+    const vaultAddress = vaultDetails[0][0]
     var sourceLogClass = this.constructor.name
+    const poolApi = new PoolApi(this.context.api)
+    await poolApi.contract.vaulteventful.init()
+    const contract = poolApi.contract.vaulteventful
     const logToEvent = (log) => {
       const key = api.util.sha3(JSON.stringify(log))
       const { blockNumber, logIndex, transactionHash, transactionIndex, params, type } = log
@@ -500,16 +459,15 @@ class PageFundDetailsVaultTrader extends Component {
     //
     //  https://github.com/RigoBlock/Books/blob/master/Solidity_01_Events.MD
 
-    const hexVaultAddress = vaultAddress
+    const hexVaultAddress = '0x' + vaultAddress.substr(2).padStart(64, '0')
     const hexAccounts = accounts.map((account) => {
-      const hexAccount = account.address
+      const hexAccount = '0x' + account.address.substr(2).padStart(64, '0')
       return hexAccount
     })
     // const options = {
     //   fromBlock: 0,
     //   toBlock: 'pending',
     // }
-    console.log(contract)
     const eventsFilterBuy = {
       topics: [
         [contract.hexSignature.BuyVault],
@@ -566,18 +524,14 @@ class PageFundDetailsVaultTrader extends Component {
               return log
             })
         })
-        Promise.all(promises).then((results) => {
+        Promise.all(promises)
+        .then((results) => {
+          this.props.dispatch(Actions.vault.updateSelectedVaultAction({ transactions: results }))
+          console.log(`${sourceLogClass} -> Transactions list loaded`);
           this.setState({
-            vaultTransactionsLogs: results,
             loading: false,
           })
         })
-          .then(() => {
-            console.log(`${sourceLogClass} -> Transactions list loaded`);
-            this.setState({
-              loading: false,
-            })
-          })
       })
   }
 

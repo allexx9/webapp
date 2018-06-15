@@ -1,6 +1,5 @@
 import * as Colors from 'material-ui/styles/colors'
 import { Row, Col } from 'react-flexbox-grid';
-import AppBar from 'material-ui/AppBar';
 import FlatButton from 'material-ui/FlatButton'
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -26,26 +25,6 @@ export default class ElementFeesBox extends Component {
 
   render() {
 
-    const priceBoxHeader = {
-      buy: {
-        backgroundColor: Colors.green300
-      },
-      sell: {
-        backgroundColor: Colors.red300
-      },
-      marketPrice: {
-        // backgroundColor: '#054186',
-        fontWeight: 500
-      },
-    }
-
-    const priceBoxHeaderTitleStyle = {
-      padding: 0,
-      textAlign: 'center',
-      fontSize: 20,
-      fontWeight: 500,
-    }
-
     const { vaultDetails, isManager } = this.props
 
     const buttonStyle = {
@@ -60,7 +39,7 @@ export default class ElementFeesBox extends Component {
         <div>
           <Row middle="xs">
             <Col xs={12}>
-              <div className={styles.price}>{vaultDetails.price} %</div>
+              <div className={styles.price}>{vaultDetails.fee} %</div>
             </Col>
           </Row>
           <Row middle="xs">
@@ -89,7 +68,7 @@ export default class ElementFeesBox extends Component {
         <div>
           <Row middle="xs">
             <Col xs={12}>
-              <div className={styles.price}>{vaultDetails.price} %</div>
+              <div className={styles.price}>{vaultDetails.fee} %</div>
             </Col>
           </Row>
           {/* <Row middle="xs">
