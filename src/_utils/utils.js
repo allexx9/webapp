@@ -951,7 +951,7 @@ class utilities {
     //
 
     const getDragoCreationDate = async (dragoAddress, contract) => {
-      const hexDragoAddress = '0x' + dragoDetails[0][0].substr(2).padStart(64, '0')
+      const hexDragoAddress = '0x' + dragoAddress.substr(2).padStart(64, '0')
       const eventsFilterCreate = {
         topics: [
           [contract.hexSignature.DragoCreated],
@@ -1003,6 +1003,106 @@ class utilities {
     balanceDRG = formatCoins(balanceDRG, 5, api)
     details = { ...details, balanceDRG }
     dispatch(Actions.drago.updateSelectedDragoAction({
+      details
+    })
+    )
+  }
+
+  getVaultDetails = async (vaultDetails, props, api) => {
+
+    const { endpoint: { accounts: accounts }, dispatch, endpoint } = props
+  
+    //
+    // Initializing vault API
+    // Passing Parity API
+    //      
+    const poolApi = new PoolApi(api)
+  
+    const vaultAddress = vaultDetails[0][0]
+    //
+    // Getting last transactions
+    //
+    await poolApi.contract.vaulteventful.init()
+  
+    //
+    // Initializing vault contract
+    //
+    await poolApi.contract.vault.init(vaultAddress)
+  
+    //
+    // Getting vault assets
+    //
+    const getTokensBalances = async () => {
+      var vaultAssets = ERC20_TOKENS[api._rb.network.name]
+      for (var token in vaultAssets) {
+        vaultAssets[token].balance = await poolApi.contract.vault.getTokenBalance(ERC20_TOKENS[api._rb.network.name][token].address)
+      }
+  
+      return vaultAssets
+    }
+  
+    getTokensBalances().then(vaultAssets => {
+      dispatch(Actions.vault.getAssetsPriceData(vaultAssets, endpoint.networkInfo.id, ERC20_TOKENS[endpoint.networkInfo.name].WETH.address))
+      dispatch(Actions.vault.updateSelectedvaultAction({ assets: Object.values(vaultAssets) }))
+    })
+  
+    //
+    // Gettind vault data, creation date, supply, ETH balances
+    //
+  
+    const getvaultCreationDate = async (vaultAddress, contract) => {
+      const hexVaultAddress = '0x' + vaultDetails[0][0].substr(2).padStart(64, '0')
+      const eventsFilterCreate = {
+        topics: [
+          [contract.hexSignature.vaultCreated],
+          [hexVaultAddress],
+          null,
+          null
+        ]
+      }
+      const vaultCreatedLog = await contract.getAllLogs(eventsFilterCreate)
+      const blockInfo = await api.eth.getBlockByNumber((vaultCreatedLog[0].blockNumber.toFixed(0)))
+      return this.dateFromTimeStampHuman(blockInfo.timestamp)
+    }
+  
+    const vaultData = await poolApi.contract.vault.getData()
+    const vaultCreatedDate = await getvaultCreationDate(vaultAddress, poolApi.contract.vaulteventful)
+    const vaultTotalSupply = await poolApi.contract.vault.totalSupply()
+    const vaultETHBalance = await formatEth(await poolApi.contract.vault.getBalance(), 5, api)
+    const vaultWETHBalance = await formatEth(await poolApi.contract.vault.getBalanceWETH(), 5, api)
+  
+    var details = {
+      address: vaultDetails[0][0],
+      name: vaultDetails[0][1].charAt(0).toUpperCase() + vaultDetails[0][1].slice(1),
+      symbol: vaultDetails[0][2],
+      vaultId: vaultDetails[0][3].c[0],
+      addresssOwner: vaultDetails[0][4],
+      addressGroup: vaultDetails[0][5],
+      sellPrice: api.util.fromWei(vaultData[2].toNumber(4)).toFormat(4),
+      buyPrice: api.util.fromWei(vaultData[3].toNumber(4)).toFormat(4),
+      created: vaultCreatedDate,
+      totalSupply: formatCoins(new BigNumber(vaultTotalSupply), 4, api),
+      vaultETHBalance,
+      vaultWETHBalance
+    }
+  
+    dispatch(Actions.vault.updateSelectedvaultAction({
+      details
+    })
+    )
+  
+    //
+    // Getting balance for each user account
+    //
+    var balanceDRG = new BigNumber(0)
+    await Promise.all(accounts.map(async (account) => {
+      const balance = await poolApi.contract.vault.balanceOf(account.address)
+      balanceDRG = balanceDRG.add(balance)
+    })
+    )
+    balanceDRG = formatCoins(balanceDRG, 5, api)
+    details = { ...details, balanceDRG }
+    dispatch(Actions.vault.updateSelectedvaultAction({
       details
     })
     )

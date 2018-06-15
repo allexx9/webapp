@@ -71,10 +71,21 @@ class PageFundDetailsVaultTrader extends Component {
     balanceDRG: new BigNumber(0).toFormat(4),
   }
 
-  subTitle = (account) => {
-    return (
-      account.address
-    )
+  componentDidMount() {
+    this.initVault()
+  }
+
+  initVault = async () => {
+    const poolApi = new PoolApi(this.context.api)
+    const dragoId = this.props.match.params.dragoid
+    const vaultDetails = await utils.getDragoDetailsFromId(dragoId, this.context.api)
+    await utils.getVaultDetails(vaultDetails, this.props, this.context.api)
+    this.setState({
+      loading: false
+    })
+    await this.getTransactions(vaultDetails, this.context.api, this.props.endpoint.accounts)
+    await poolApi.contract.dragoeventful.init()
+    this.subscribeToEvents(poolApi.contract.dragoeventful)
   }
 
   componentWillMount() {
@@ -362,129 +373,6 @@ class PageFundDetailsVaultTrader extends Component {
           }}
         />
       </Row>
-
-
-
-      // <Row>
-      //   <Col xs={12}>
-      //     <Paper className={styles.paperContainer} zDepth={1}>
-      //       <Toolbar className={styles.detailsToolbar}>
-      //         <ToolbarGroup className={styles.detailsToolbarGroup}>
-      //           {this.renderAddress(vaultDetails)}
-      //         </ToolbarGroup>
-      //         <ToolbarGroup>
-      //           {/* <ElementFundActions vaultDetails={vaultDetails} accounts={accounts} snackBar={this.snackBar}/> */}
-      //         </ToolbarGroup>
-      //       </Toolbar>
-      //       <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle} className={styles.test}>
-      //         <Tab label="Info" className={styles.detailsTab}
-      //           icon={<ActionList color={'#054186'} />}>
-      //           <Grid fluid>
-      //             <Row>
-      //               <Col xs={6}>
-      //                 <div>
-      //                   <AppBar
-      //                     title={"MY HOLDING IN " + vaultDetails.symbol.toUpperCase()}
-      //                     showMenuIconButton={false}
-      //                     titleStyle={{ fontSize: 20 }}
-      //                   />
-      //                   <div className={styles.holdings}>
-      //                     <div>{this.state.balanceDRG} <small>UNITS</small><br /></div>
-      //                   </div>
-      //                 </div>
-      //               </Col>
-      //               <Col xs={6}>
-      //                 <Paper zDepth={1}>
-      //                   <ElementFeesBox 
-      //                   vaultDetails={vaultDetails} 
-      //                   accounts={accounts} 
-      //                   handleBuySellButtons={this.handleBuySellButtons} 
-      //                   isManager={user.isManager}
-      //                   />
-      //                   <ElementVaultActions 
-      //                     vaultDetails={vaultDetails} 
-      //                     accounts={accounts} 
-      //                     snackBar={this.snackBar} 
-      //                     actionSelected={this.state.openBuySellDialog}
-      //                     onTransactionSent={this.onTransactionSent}
-      //                     />
-      //                 </Paper>
-      //               </Col>
-      //             </Row>
-      //             <br />
-      //             <Row>
-      //                 <Col xs={12}>
-      //                 <Paper zDepth={1}>
-      //                   <AppBar
-      //                     title="DETAILS"
-      //                     showMenuIconButton={false}
-      //                     titleStyle={{ fontSize: 20 }}
-      //                   />
-      //                   <div className={styles.detailsTabContent}>
-      //                   <InfoTable  rows={tableInfo} columnsStyle={columnsStyle}/>
-      //                   </div>
-      //                 </Paper>
-      //                 </Col>
-      //               </Row>
-      //             <Row>
-      //               <Col xs={12} className={styles.detailsTabContent}>
-      //                 <Paper style={paperStyle} zDepth={1} >
-      //                   <AppBar
-      //                     title="TRANSACTIONS"
-      //                     showMenuIconButton={false}
-      //                     titleStyle={{ fontSize: 20 }}
-      //                   />
-      //                   <div className={styles.detailsTabContent}>
-      //                     <p>Your last 20 transactions on this fund.</p>
-      //                   </div>
-      //                   <ElementListWrapper list={dragoTransactionList}
-      //                     renderCopyButton={this.renderCopyButton}
-      //                     renderEtherscanButton={this.renderEtherscanButton}
-      //                     loading={loading}>
-
-      //                     <ElementListTransactions />
-      //                   </ElementListWrapper>
-      //                 </Paper>
-      //               </Col>
-      //             </Row>
-      //           </Grid>
-      //         </Tab>
-      //         <Tab label="Stats" className={styles.detailsTab}
-      //           icon={<ActionAssessment color={'#054186'} />}>
-      //           <Grid fluid>
-      //             <Row>
-      //               <Col xs={12} className={styles.detailsTabContent}>
-      //                 <p>
-      //                   Coming soon
-      //                 </p>   
-      //               </Col>
-      //             </Row>
-      //           </Grid>
-      //         </Tab>
-      //       </Tabs>
-      //     </Paper>
-      //   </Col>
-      //   <Snackbar
-      //     open={this.state.snackBar}
-      //     message={this.state.snackBarMsg}
-      //     action="close"
-      //     onActionTouchTap={this.handlesnackBarRequestClose}
-      //     onRequestClose={this.handlesnackBarRequestClose}
-      //     bodyStyle={{
-      //       height: "auto",
-      //       flexGrow: 0,
-      //       paddingTop: "10px",
-      //       lineHeight: "20px",
-      //       borderRadius: "2px 2px 0px 0px",
-      //       backgroundColor: "#fafafa",
-      //       boxShadow: "#bdbdbd 0px 0px 5px 0px"
-      //     }}
-      //     contentStyle={{
-      //       color: "#000000 !important",
-      //       fontWeight: "600"
-      //     }}
-      //   />
-      // </Row>
     )
   }
 

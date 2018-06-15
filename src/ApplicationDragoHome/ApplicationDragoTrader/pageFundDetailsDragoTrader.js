@@ -77,12 +77,6 @@ class PageFundDetailsDragoTrader extends Component {
     },
   }
 
-  subTitle = (account) => {
-    return (
-      account.address
-    )
-  }
-
   componentDidMount() {
     this.initDrago()
   }
