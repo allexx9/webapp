@@ -3,7 +3,7 @@
 import React, { Component } from 'react';
 import ImgETH from '../atoms/imgETH'
 import ImgGRG from '../atoms/imgGRG'
-import {ETH, GRG} from '../../_utils/const'
+import { ETH, GRG } from '../../_utils/const'
 
 import styles from './selectTokenItem.module.css';
 
@@ -16,34 +16,37 @@ export default class SelectTokenItem extends Component {
     token: PropTypes.string.isRequired
   };
 
-  render () {
+  render() {
     const { account, token } = this.props;
 
     let balance;
     let tokenName;
-    switch(token) {
+    switch (token) {
       case ETH:
-      balance = account.ethBalance;
-      tokenName = 'Ethereum'
-      break;
+        balance = account.ethBalance;
+        tokenName = 'Ethereum'
+        break;
       case GRG:
-      balance = account.rigoTokenBalance;
-      tokenName = 'RigoBlock'
-      break;
+        balance = account.rigoTokenBalance;
+        tokenName = 'RigoBlock'
+        break;
+      default:
+        balance = account.ethBalance;
+        tokenName = 'Ethereum'
     }
 
     return (
-      <div className={ styles.logo }>
-        <div className={ styles.image }>
+      <div className={styles.logo}>
+        <div className={styles.image}>
           {/* <IdentityIcon address={ account.address } /> */}
-          {token === 'ETH' ? <ImgETH /> : <ImgGRG />} 
+          {token === 'ETH' ? <ImgETH /> : <ImgGRG />}
         </div>
-        <div className={ styles.details }>
-          <div className={ styles.name }>
-            { tokenName }
+        <div className={styles.details}>
+          <div className={styles.name}>
+            {tokenName}
           </div>
-          <div className={ styles.balance }>
-            { balance }<small> { token }</small>
+          <div className={styles.balance}>
+            {balance}<small> {token}</small>
           </div>
         </div>
       </div>

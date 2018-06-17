@@ -1,24 +1,21 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
-import  * as Colors from 'material-ui/styles/colors';
-import { Dialog, FlatButton, TextField } from 'material-ui';
-import { Row, Col } from 'react-flexbox-grid';
-import AppBar from 'material-ui/AppBar';
 import BigNumber from 'bignumber.js';
-import Paper from 'material-ui/Paper'
+import { Dialog, FlatButton, TextField } from 'material-ui';
+import AppBar from 'material-ui/AppBar';
+import Paper from 'material-ui/Paper';
+import * as Colors from 'material-ui/styles/colors';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-
-import { ERRORS, validateAccount, validatePositiveNumber } from '../../_utils/validation';
+import { Col, Row } from 'react-flexbox-grid';
 import AccountSelector from '../../Elements/elementAccountSelector';
-import PoolApi from '../../PoolsApi/src'
-import ElementDialogAddressTitle from '../../Elements/elementDialogAddressTitle'
-import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle'
-import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization'
-
+import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization';
+import ElementDialogAddressTitle from '../../Elements/elementDialogAddressTitle';
+import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle';
+import PoolApi from '../../PoolsApi/src';
+import { ERRORS, validateAccount, validatePositiveNumber } from '../../_utils/validation';
 import styles from './elementFundActionSetPrice.module.css';
 
-//TODO: add address exchange
 
 export default class ElementFundActionSetPrice extends Component {
 
@@ -259,7 +256,7 @@ export default class ElementFundActionSetPrice extends Component {
     const { sellPrice } = this.state;
     const error = validatePositiveNumber(buyPrice)
     console.log(buyPrice)
-    if (buyPrice == '') {
+    if (buyPrice === '') {
       this.setState({
         buyPrice: '',
         amountErrorBuy: error
@@ -299,7 +296,7 @@ export default class ElementFundActionSetPrice extends Component {
     const { buyPrice } = this.state;
     const error = validatePositiveNumber(sellPrice)
     console.log(sellPrice)
-    if (sellPrice == '') {
+    if (sellPrice === '') {
       this.setState({
         sellPrice: '',
         amountErrorSell: error
@@ -339,10 +336,6 @@ export default class ElementFundActionSetPrice extends Component {
     const { api } = this.context;
     const { dragoDetails } = this.props
     const { buyPrice, sellPrice } = this.state
-    // const { instance } = this.context;
-    const options = {
-      from: this.state.account.address
-    };
     var poolApi = null;
     var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
     this.setState({

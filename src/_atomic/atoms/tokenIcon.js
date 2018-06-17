@@ -18,7 +18,7 @@ export default class TokenIcon extends Component {
   }
   render () {
     return (
-      <img style={{verticalAlign: "middle"}} height={""+this.props.size+"px"} src={"/img/crypto-icons/color/"+this.props.symbol+"@2x.png"} />
+      <img style={{verticalAlign: "middle"}} height={""+this.props.size+"px"} alt="token-icon" src={"/img/crypto-icons/color/"+this.props.symbol+"@2x.png"} />
     );
   }
 }

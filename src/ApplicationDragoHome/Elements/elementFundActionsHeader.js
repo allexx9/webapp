@@ -1,15 +1,9 @@
-import  * as Colors from 'material-ui/styles/colors';
-import { Grid, Row, Col } from 'react-flexbox-grid';
-import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
-import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
+import * as Colors from 'material-ui/styles/colors';
 import PropTypes from 'prop-types';
-import RaisedButton from 'material-ui/RaisedButton';
 import React from 'react';
-
-import AccountSelector from '../../Elements/elementAccountSelector'
+import { Col, Row } from 'react-flexbox-grid';
 import IdentityIcon from '../../_atomic/atoms/identityIcon';
-
 import styles from './elementFundActionsHeader.module.css';
 
 export default class ElementFundActionsHeader extends React.Component {
@@ -17,8 +11,8 @@ export default class ElementFundActionsHeader extends React.Component {
   static propTypes = {
     dragoDetails: PropTypes.object.isRequired, 
     action: PropTypes.string.isRequired, 
-    // handlebuyAction: PropTypes.func.isRequired,
-    // handleSellAction: PropTypes.func.isRequired,
+    handlebuyAction: PropTypes.func,
+    handleSellAction: PropTypes.func,
   };
 
   headerButtonsStyle = {
@@ -44,7 +38,7 @@ export default class ElementFundActionsHeader extends React.Component {
   }
 
   setButtonStyle = (action) =>{
-    if (action == 'buy') {
+    if (action === 'buy') {
       return ({
         sellButtonStyleHover: this.headerButtonsStyle.hoverNotSelected,
         buyButtonStyleHover: this.headerButtonsStyle.hoverSelected,

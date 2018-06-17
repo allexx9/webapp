@@ -50,13 +50,12 @@ var appHashPath = true;
 var sourceLogClass = null
 const isConnectedTimeout = 4000
 const isMetaMaskUnlockedTimeout = 1000
-var subscriptionData = {}
 
 ReactGA.initialize('UA-117171641-1');
 ReactGA.pageview(window.location.pathname + window.location.search);
 
 // Detectiong if the app is running inside Parity client
-var pathArray = window.location.hash.split('/');
+// var pathArray = window.location.hash.split('/');
 // console.log(pathArray[2]);
 if (typeof window.parity !== 'undefined') {
   // Need to check if this works inside the Parity UI
@@ -353,7 +352,6 @@ export class App extends Component {
     const networkId = this.props.endpoint.networkInfo.id
     const networkName = this.props.endpoint.networkInfo.name
     var subscriptionData
-    var endpoint = {}
     var blockchain = new Interfaces(this._api, networkId)
     switch (selectedEndpoint) {
       case INFURA:
@@ -496,6 +494,8 @@ export class App extends Component {
           .catch(() => {
             // this.setState({...this.state, ...blockchain.error})
           })
+      default:
+      return
     }
 
   }
@@ -602,7 +602,7 @@ export class App extends Component {
                 });
               }
             }
-            return
+            return null
           })
           return [ethBalances, rigoTokenBalances]
         })

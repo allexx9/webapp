@@ -140,20 +140,8 @@ class ElementFundActionWrapETH extends Component {
   }
 
   renderActions () {
-    const { complete } = this.state;
-    // if (complete) {
-    //   return (
-    //     <FlatButton
-    //       label='Done'
-    //       primary
-    //       onClick={ this.props.onClose } 
-    //       />
-    //   );
-    // }
-
     const { amountError, sending } = this.state;
     const hasError = !!( amountError );
-    console.log(hasError)
 
     return ([
       <FlatButton
@@ -272,6 +260,8 @@ class ElementFundActionWrapETH extends Component {
       case "unwrap":
         this.onSendUnwrap()
         break
+      default:
+        return
     } 
   }
 

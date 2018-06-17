@@ -238,6 +238,8 @@ class ElementAccountActionTransfer extends Component {
       case GRG:
         this.onTransferGRG()
         break
+      default:
+      return
     } 
   }
 

@@ -1,24 +1,13 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
-import * as Colors from 'material-ui/styles/colors'
-import React, { Component } from 'react';
 import Menu from 'material-ui/Menu';
-import MenuItem from 'material-ui/MenuItem'
-import RaisedButton from 'material-ui/RaisedButton'
-import Subheader from 'material-ui/Subheader'
-import Popover, {PopoverAnimationVertical} from 'material-ui/Popover';
-
-// import styles from './elementAccountItem.module.css';
-
+import MenuItem from 'material-ui/MenuItem';
+import Popover, { PopoverAnimationVertical } from 'material-ui/Popover';
+import Subheader from 'material-ui/Subheader';
 import PropTypes from 'prop-types';
-import ElementFundActionWrapETH from '../Elements/elementFundActionWrapETH'
-import ElementFundActionDeposit from '../Elements/elementFundActionDeposit'
-import ElementFundActionWithdraw from '../Elements/elementFundActionWithdraw'
-import ElementFundActionPlaceOrder from '../Elements/elementFundActionPlaceOrder'
-import ElementFundActionCancelOrder from '../Elements/elementFundActionCancelOrder'
-import ElementFundActionFinalizeOrder from '../Elements/elementFundActionFinalizeOrder'
-import ElementFundActionSetPrice from '../Elements/elementFundActionSetPrice'
-import ButtonManage from '../../_atomic/atoms/buttonManage'
-
+import React, { Component } from 'react';
+import ButtonManage from '../../_atomic/atoms/buttonManage';
+import ElementFundActionSetPrice from '../Elements/elementFundActionSetPrice';
+import ElementFundActionWrapETH from '../Elements/elementFundActionWrapETH';
 
 export default class ElementFundActionsList extends Component {
   static propTypes = {
@@ -111,7 +100,7 @@ export default class ElementFundActionsList extends Component {
     const { dragoDetails } = this.props
     // Selectiong only the account which is the owner of the Drago
     const accounts = this.props.accounts.filter((account) =>{
-      return account.address == dragoDetails.addressOwner
+      return account.address === dragoDetails.addressOwner
     })
     return (
       <div>
@@ -131,47 +120,13 @@ export default class ElementFundActionsList extends Component {
           onChange={this.openActionForm}>
             <Subheader inset={false}>Drago</Subheader>
             <MenuItem value="setPrice" primaryText="Set Prices"/>
-            <MenuItem value="1" primaryText="Set Fee" disabled={true}/>
-            <MenuItem value="2" primaryText="Fee Account" disabled={true}/>
-            <MenuItem value="3" primaryText="Estimante NAV" disabled={true}/>
             <Subheader inset={false}>Exchange</Subheader>
             <MenuItem value="wrapETH" primaryText="Wrap ETH"/>
             <MenuItem value="withdraw" primaryText="Unwrap ETH" disabled={true}/>
-            <MenuItem value="placeOrder" primaryText="Place Order" disabled={true}/>
-            <MenuItem value="cancelOrder" primaryText="Cancel Order" disabled={true}/>
-            <MenuItem value="finalizeOrder" primaryText="Finalize" disabled={true}/>
           </Menu>
         </Popover>
         {this.state.showActionMenuItem.wrapETH ?
               <ElementFundActionWrapETH accounts={accounts} 
-                dragoDetails={dragoDetails} 
-                openActionForm={this.openActionForm}
-                snackBar={this.props.snackBar}/> :
-              null
-            }
-        {this.state.showActionMenuItem.withdraw ?
-              <ElementFundActionWithdraw accounts={accounts} 
-                dragoDetails={dragoDetails} 
-                openActionForm={this.openActionForm}
-                snackBar={this.props.snackBar}/> :
-              null
-            }
-        {this.state.showActionMenuItem.placeOrder ?
-              <ElementFundActionPlaceOrder accounts={accounts} 
-                dragoDetails={dragoDetails} 
-                openActionForm={this.openActionForm}
-                snackBar={this.props.snackBar}/> :
-              null
-            }
-        {this.state.showActionMenuItem.cancelOrder ?
-              <ElementFundActionCancelOrder accounts={accounts} 
-                dragoDetails={dragoDetails} 
-                openActionForm={this.openActionForm}
-                snackBar={this.props.snackBar}/> :
-              null
-            }
-        {this.state.showActionMenuItem.finalizeOrder ?
-              <ElementFundActionFinalizeOrder accounts={accounts} 
                 dragoDetails={dragoDetails} 
                 openActionForm={this.openActionForm}
                 snackBar={this.props.snackBar}/> :

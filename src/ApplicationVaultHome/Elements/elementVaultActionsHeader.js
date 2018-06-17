@@ -12,8 +12,8 @@ export default class ElementVaultActionsHeader extends React.Component {
   static propTypes = {
     vaultDetails: PropTypes.object.isRequired, 
     action: PropTypes.string.isRequired, 
-    // handlebuyAction: PropTypes.func.isRequired,
-    // handleSellAction: PropTypes.func.isRequired,
+    handlebuyAction: PropTypes.func,
+    handleSellAction: PropTypes.func,
   };
 
   headerButtonsStyle = {
@@ -39,7 +39,7 @@ export default class ElementVaultActionsHeader extends React.Component {
   }
 
   setButtonStyle = (action) =>{
-    if (action == 'deposit') {
+    if (action === 'deposit') {
       return ({
         sellButtonStyleHover: this.headerButtonsStyle.hoverNotSelected,
         buyButtonStyleHover: this.headerButtonsStyle.hoverSelected,

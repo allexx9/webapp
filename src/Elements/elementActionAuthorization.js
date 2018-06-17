@@ -1,6 +1,5 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
-import  * as Colors from 'material-ui/styles/colors';
 import { Dialog, FlatButton } from 'material-ui';
 import { Row, Col } from 'react-flexbox-grid';
 import PropTypes from 'prop-types';

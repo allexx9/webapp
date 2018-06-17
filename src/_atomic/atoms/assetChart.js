@@ -7,10 +7,10 @@ import { curveMonotoneX } from "d3-shape";
 
 import { ChartCanvas, Chart } from "react-stockcharts";
 import { AreaSeries } from "react-stockcharts/lib/series";
-import { XAxis, YAxis } from "react-stockcharts/lib/axes";
+// import { XAxis, YAxis } from "react-stockcharts/lib/axes";
 import { fitWidth } from "react-stockcharts/lib/helper";
 import { discontinuousTimeScaleProvider } from "react-stockcharts/lib/scale";
-import { last, toObject } from "react-stockcharts/lib/utils";
+import { last, /*toObject*/ } from "react-stockcharts/lib/utils";
 import { createVerticalLinearGradient, hexToRGBA } from "react-stockcharts/lib/utils";
 
 const canvasGradient = createVerticalLinearGradient([
@@ -33,11 +33,11 @@ class AssetChart extends Component {
   };
 
 	render() {
-    const { type, data: initialData, width, ratio } = this.props;
+    const { type, data: initialData, /*width,*/ ratio } = this.props;
     const xScaleProvider = discontinuousTimeScaleProvider.inputDateAccessor(
       d => d.date
     );
-    const { data, xScale, xAccessor, displayXAccessor } = xScaleProvider(
+    const { data, /*xScale,*/ xAccessor, displayXAccessor } = xScaleProvider(
       initialData
     );
 

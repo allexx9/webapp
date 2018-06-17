@@ -197,7 +197,7 @@ export default class ElementVaultActionSetFees extends Component {
                     titleStyle={priceBoxHeaderTitleStyle}
                   />
                   <div className={styles.currentPriceText}>
-                    {(isNaN(this.state.price) || this.state.price == '') ? '-' : this.state.price} %
+                    {(isNaN(this.state.price) || this.state.price === '') ? '-' : this.state.price} %
                   </div>
                 </Col>
                 <Col xs={8}>
@@ -263,14 +263,14 @@ export default class ElementVaultActionSetFees extends Component {
   }
 
   onChangeAmount = (event, fee) => {
-    if (fee == '') {
+    if (fee === '') {
       this.setState({
         price: '',
         amountErrorSell: ERRORS.invalidAmount
       });
       return
     }
-    if (fee == 0) {
+    if (fee === 0) {
       this.setState({
         price: fee,
       });
@@ -312,10 +312,6 @@ export default class ElementVaultActionSetFees extends Component {
     const { api } = this.context;
     const { vaultDetails } = this.props
     const price = this.state.price
-    // const { instance } = this.context;
-    const options = {
-      from: this.state.account.address
-    };
     var poolApi = null;
     var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
     this.setState({
