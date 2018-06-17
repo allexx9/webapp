@@ -24,25 +24,6 @@ export default class ElementPriceBox extends Component {
   }
 
   render() {
-    const priceBoxHeader = {
-      buy: {
-        backgroundColor: Colors.green300
-      },
-      sell: {
-        backgroundColor: Colors.red300
-      },
-      marketPrice: {
-        backgroundColor: '#054186',
-        fontWeight: 500
-      },
-    }
-
-    const priceBoxHeaderTitleStyle = {
-      padding: 0,
-      textAlign: 'center',
-      fontSize: 20,
-      fontWeight: 500,
-    }
 
     const { dragoDetails, isManager } = this.props
 
@@ -112,7 +93,7 @@ export default class ElementPriceBox extends Component {
               <div className={styles.price}>{dragoDetails.sellPrice} <small className={styles.tokenSymbol}>ETH</small></div>
             </Col>
             <Col xs={6}>
-              <div className={styles.price}>{dragoDetails.buyPrice}<small className={styles.tokenSymbol}>ETH</small></div> 
+              <div className={styles.price}>{dragoDetails.buyPrice} <small className={styles.tokenSymbol}>ETH</small></div> 
             </Col>
           </Row>
         </div>

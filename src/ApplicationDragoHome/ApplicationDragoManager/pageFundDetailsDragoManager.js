@@ -2,7 +2,6 @@ import BigNumber from 'bignumber.js';
 import Paper from 'material-ui/Paper';
 import Snackbar from 'material-ui/Snackbar';
 import { Tab, Tabs } from 'material-ui/Tabs';
-import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 import ActionAssessment from 'material-ui/svg-icons/action/assessment';
 import ActionList from 'material-ui/svg-icons/action/list';
 import Search from 'material-ui/svg-icons/action/search';
@@ -37,6 +36,7 @@ import ElementNoAdminAccess from '../../Elements/elementNoAdminAccess'
 import styles from './pageFundDetailsDragoManager.module.css';
 import FundHeader from '../../_atomic/atoms/fundHeader'
 
+
 function mapStateToProps(state) {
   return state
 }
@@ -64,7 +64,7 @@ class PageFundDetailsDragoManager extends Component {
       name: null,
       symbol: null,
       dragoId: null,
-      addresssOwner: null,
+      addressOwner: null,
       addressGroup: null,
       dragoETHBalance: null
     },
@@ -144,16 +144,6 @@ class PageFundDetailsDragoManager extends Component {
     return stateUpdate || propsUpdate
   }
 
-
-  renderAddress(dragoDetails) {
-    const { endpoint: { accounts: accounts } } = this.props
-    return <FundHeader 
-      fundDetails={dragoDetails} 
-      fundType='drago'
-      actions={<ElementFundActionsList accounts={accounts} dragoDetails={dragoDetails} snackBar={this.snackBar} />}
-    />  
-  }
-
   snackBar = (msg) => {
     this.setState({
       snackBar: true,
@@ -219,13 +209,13 @@ class PageFundDetailsDragoManager extends Component {
     const columnsStyle = [styles.detailsTableCell, styles.detailsTableCell2, styles.detailsTableCell3]
     const columnsStyleLiquidityTable = [styles.detailsTableCellLiquidity, styles.detailsTableCellLiquidity2, styles.detailsTableCellLiquidity3]
     const tableButtonsDragoAddress = [this.renderCopyButton(dragoDetails.address), this.renderEtherscanButton('address', dragoDetails.address)]
-    const tableButtonsDragoOwner = [this.renderCopyButton(dragoDetails.addresssOwner), this.renderEtherscanButton('address', dragoDetails.addresssOwner)]
+    const tableButtonsDragoOwner = [this.renderCopyButton(dragoDetails.addressOwner), this.renderEtherscanButton('address', dragoDetails.addressOwner)]
     const tableInfo = [
       ['Created', dragoDetails.created, ''],
       ['Symbol', dragoDetails.symbol, ''],
       ['Name', dragoDetails.name, ''],
       ['Address', dragoDetails.address, tableButtonsDragoAddress],
-      ['Manager', dragoDetails.addresssOwner, tableButtonsDragoOwner]
+      ['Manager', dragoDetails.addressOwner, tableButtonsDragoOwner]
     ]
     var portfolioValue = 'N/A'
     var totalValue = 'N/A'
@@ -266,7 +256,7 @@ class PageFundDetailsDragoManager extends Component {
 
     // Checking if the user is the account manager
     let metaMaskAccountIndex = accounts.findIndex(account => {
-      return (account.address === dragoDetails.addresssOwner)
+      return (account.address === dragoDetails.addressOwner)
     });
     if (metaMaskAccountIndex === -1) {
       return (
@@ -280,12 +270,11 @@ class PageFundDetailsDragoManager extends Component {
           <div className={styles.pageContainer} >
             <Paper zDepth={1}>
               <Sticky enabled={true} innerZ={1}>
-                <Toolbar className={styles.detailsToolbar}>
-                  <ToolbarGroup className={styles.detailsToolbarGroup}>
-                    {this.renderAddress(dragoDetails)}
-                  </ToolbarGroup>
-                </Toolbar>
-
+              <FundHeader 
+                fundDetails={dragoDetails} 
+                fundType='drago'
+                actions={<ElementFundActionsList accounts={accounts} dragoDetails={dragoDetails} snackBar={this.snackBar} />}
+              />
                 <Row className={styles.tabsRow}>
                   <Col xs={12}>
                     <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle}>
@@ -335,17 +324,6 @@ class PageFundDetailsDragoManager extends Component {
                     <Col xs={12} md={6}>
                       <div className={styles.myPositionBox}>
                         <Row>
-                          <Col xs={12}>
-                            <SectionTitle titleText='POSITION' help={true} />
-                            <div className={styles.detailsBoxContainer}>
-                              <div className={styles.sectionParagraph}>
-                                Your total holding:
-                              </div>
-                              <div className={styles.holdings}>
-                                <span>{dragoDetails.balanceDRG}</span> <small className={styles.myPositionTokenSymbol}>{dragoDetails.symbol.toUpperCase()}</small><br />
-                              </div>
-                            </div>
-                          </Col>
                           <Col xs={12}>
                             <SectionTitle titleText='MARKET' help={true} />
                             <div className={styles.detailsBoxContainer}>

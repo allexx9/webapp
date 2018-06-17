@@ -64,7 +64,6 @@ class PageFundDetailsVaultTrader extends Component {
       open: false,
       action: 'deposit'
     },
-    balanceDRG: new BigNumber(0).toFormat(4),
   }
 
   componentDidMount() {
@@ -203,13 +202,11 @@ class PageFundDetailsVaultTrader extends Component {
     }
     const columnsStyle = [styles.detailsTableCell, styles.detailsTableCell2, styles.detailsTableCell3]
     const tableButtonsVaultAddress = [this.renderCopyButton(vaultDetails.address), this.renderEtherscanButton('address', vaultDetails.address)]
-    const tableButtonsVaultOwner = [this.renderCopyButton(vaultDetails.addresssOwner), this.renderEtherscanButton('address', vaultDetails.addresssOwner)]
+    const tableButtonsVaultOwner = [this.renderCopyButton(vaultDetails.addressOwner), this.renderEtherscanButton('address', vaultDetails.addressOwner)]
     const tableInfo = [['Symbol', vaultDetails.symbol, ''],
     ['Name', vaultDetails.name, ''],
     ['Address', vaultDetails.address, tableButtonsVaultAddress],
-    ['Owner', vaultDetails.addresssOwner, tableButtonsVaultOwner]]
-
-    // console.log(vaultTransactionList)
+    ['Owner', vaultDetails.addressOwner, tableButtonsVaultOwner]]
 
     // Waiting until getVaultDetails returns the drago details
     if (loading || Object.keys(vaultDetails).length === 0) {
@@ -219,6 +216,7 @@ class PageFundDetailsVaultTrader extends Component {
         </div>
       );
     }
+
     if (vaultDetails.address === '0x0000000000000000000000000000000000000000') {
       return (
         <ElementFundNotFound />
@@ -241,10 +239,10 @@ class PageFundDetailsVaultTrader extends Component {
                         onActive={() => scrollToComponent(this.Summary, { offset: -180, align: 'top', duration: 500 })}
                         icon={<ActionList color={'#607D8B'} />}>
                       </Tab>
-                      <Tab label="INSIGHT" className={styles.detailsTab}
+                      {/* <Tab label="INSIGHT" className={styles.detailsTab}
                         onActive={() => scrollToComponent(this.InSight, { offset: -180, align: 'top', duration: 500 })}
                         icon={<ActionAssessment color={'#607D8B'} />}>
-                      </Tab>
+                      </Tab> */}
                       <Tab label="LOGS" className={styles.detailsTab}
                         onActive={() => scrollToComponent(this.Logs, { offset: -180, align: 'top', duration: 500 })}
                         icon={<ActionShowChart color={'#607D8B'} />}>

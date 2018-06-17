@@ -24,11 +24,24 @@ export default class FundHeader extends Component {
       drago: {
         toolBar:
         {
+          backgroundColor: '#054186'
         },
-        titleText: {
+        titleSymbol: {
           color: '#ffffff',
           letterSpacing: '1px',
-          opacity: '1'
+          opacity: '1',
+          fontSize: '26px',
+          fontWeight: 700,
+          height: '28px',
+          marginTop: 'auto'
+        },
+        titleName: {
+          color: '#ffffff',
+          letterSpacing: '1px',
+          opacity: '0.9',
+          fontSize: '24px',
+          width: '100%',
+          marginTop: 'auto'
         },
         subTitleText: {
           color: '#ffffff',
@@ -40,10 +53,22 @@ export default class FundHeader extends Component {
         {
           backgroundColor: '#607D8B'
         },
-        titleText: {
+        titleSymbol: {
           color: '#ffffff',
           letterSpacing: '1px',
-          opacity: '1'
+          opacity: '1',
+          fontSize: '26px',
+          fontWeight: 700,
+          height: '28px',
+          marginTop: 'auto'
+        },
+        titleName: {
+          color: '#ffffff',
+          letterSpacing: '1px',
+          opacity: '0.9',
+          fontSize: '24px',
+          width: '100%',
+          marginTop: 'auto'
         },
         subTitleText: {
           color: '#ffffff',
@@ -57,11 +82,11 @@ export default class FundHeader extends Component {
       return <p>empty</p>;
     } return (
       <Toolbar className={styles.detailsToolbar} style={headerStyle[this.props.fundType].toolBar}>
-              {actions
-              ? <div className={styles.managerButtonContainer}>
-                {actions}
-              </div>
-              : null}
+        {actions
+          ? <div className={styles.managerButtonContainer}>
+            {actions}
+          </div>
+          : null}
         <ToolbarGroup className={styles.detailsToolbarGroup}>
 
           <Row className={styles.detailsToolbarGroup} >
@@ -74,7 +99,18 @@ export default class FundHeader extends Component {
             </div>
 
             <Col xs={12} className={styles.dragoTitle}>
-              <p style={headerStyle[this.props.fundType].titleText}>{fundDetails.symbol} | {fundDetails.name} </p>
+
+              <div style={{ width: '100%', display: 'flex' }}>
+                <div style={headerStyle[this.props.fundType].titleSymbol}>
+                  {fundDetails.symbol}
+                </div>
+                <div className={styles.dragoTitleDivider}></div>
+                <div style={headerStyle[this.props.fundType].titleName}>
+                  {fundDetails.name}
+                </div>
+
+              </div>
+              {/* <p style={headerStyle[this.props.fundType].titleText}>{fundDetails.symbol} | {fundDetails.name} </p> */}
               <small style={headerStyle[this.props.fundType].subTitleText}>{fundDetails.address}</small>
             </Col>
 

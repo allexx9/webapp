@@ -4,12 +4,13 @@
 
 .identityIconContainer {
   position: absolute;
-  padding-top: 65px;
+  padding-top: 50px;
 }
 
 .dragoTitle {
   padding-left: 100px;
-  padding-bottom: 20px;
+  padding-bottom: 18px;
+  padding-top: 18px;
 }
 
 .dragoTitle img {
@@ -27,10 +28,22 @@
   opacity: 0.75;
 }
 
+.dragoTitleDivider {
+  height: 18px;
+  border-left-color: #ffffff;
+  border-left-style: solid;
+  border-left-width: 1px;
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-left: 16px;
+  padding-right: 16px;
+  opacity: 0.5;
+}
+
 .managerButtonContainer {
   position: absolute;
-  padding-top: 75px;
-  right: 0;
+  padding-top: 64px;
+  right: 16px;
 }
 
 .detailsToolbar {

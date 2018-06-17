@@ -1,14 +1,12 @@
 import BigNumber from 'bignumber.js';
 import Paper from 'material-ui/Paper';
 import Snackbar from 'material-ui/Snackbar';
-import * as Colors from 'material-ui/styles/colors';
 import ActionAssessment from 'material-ui/svg-icons/action/assessment';
 import ActionList from 'material-ui/svg-icons/action/list';
 import Search from 'material-ui/svg-icons/action/search';
 import CopyContent from 'material-ui/svg-icons/content/content-copy';
 import ActionShowChart from 'material-ui/svg-icons/editor/show-chart';
 import { Tab, Tabs } from 'material-ui/Tabs';
-import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
@@ -23,7 +21,6 @@ import InfoTable from '../../Elements/elementInfoTable';
 import ElementListWrapper from '../../Elements/elementListWrapper';
 import PoolApi from '../../PoolsApi/src';
 import AssetsPieChart from '../../_atomic/atoms/assetsPieChart';
-import IdentityIcon from '../../_atomic/atoms/identityIcon';
 import Loading from '../../_atomic/atoms/loading';
 import SectionHeader from '../../_atomic/atoms/sectionHeader';
 import SectionTitle from '../../_atomic/atoms/sectionTitle';
@@ -36,6 +33,7 @@ import ElementListAssets from '../Elements/elementListAssets';
 import ElementListTransactions from '../Elements/elementListTransactions';
 import ElementPriceBox from '../Elements/elementPricesBox';
 import styles from './pageFundDetailsDragoTrader.module.css';
+import FundHeader from '../../_atomic/atoms/fundHeader';
 
 function mapStateToProps(state) {
   return state
@@ -133,28 +131,6 @@ class PageFundDetailsDragoTrader extends Component {
     return stateUpdate || propsUpdate
   }
 
-  renderAddress(dragoDetails) {
-    if (!dragoDetails.address) {
-      return <p>empty</p>;
-    }
-
-    return (
-      <Row className={styles.detailsToolbarGroup}>
-        <div className={styles.identityIconContainer}>
-          <IdentityIcon
-            address={dragoDetails.address}
-            size={'60px'}
-            customStyle={{ borderStyle: 'solid', borderColor: Colors.grey400 }}
-          />
-        </div>
-        <Col xs={12} className={styles.dragoTitle}>
-          <p>{dragoDetails.symbol} | {dragoDetails.name} </p>
-          <small>{dragoDetails.address}</small>
-        </Col>
-      </Row>
-    );
-  }
-
   snackBar = (msg) => {
     this.setState({
       snackBar: true,
@@ -230,13 +206,13 @@ class PageFundDetailsDragoTrader extends Component {
     const columnsStyle = [styles.detailsTableCell, styles.detailsTableCell2, styles.detailsTableCell3]
     const columnsStyleLiquidityTable = [styles.detailsTableCellLiquidity, styles.detailsTableCellLiquidity2, styles.detailsTableCellLiquidity3]
     const tableButtonsDragoAddress = [this.renderCopyButton(dragoDetails.address), this.renderEtherscanButton('address', dragoDetails.address)]
-    const tableButtonsDragoOwner = [this.renderCopyButton(dragoDetails.addresssOwner), this.renderEtherscanButton('address', dragoDetails.addresssOwner)]
+    const tableButtonsDragoOwner = [this.renderCopyButton(dragoDetails.addressOwner), this.renderEtherscanButton('address', dragoDetails.addressOwner)]
     const tableInfo = [
       ['Created', dragoDetails.created, ''],
       ['Symbol', dragoDetails.symbol, ''],
       ['Name', dragoDetails.name, ''],
       ['Address', dragoDetails.address, tableButtonsDragoAddress],
-      ['Manager', dragoDetails.addresssOwner, tableButtonsDragoOwner]
+      ['Manager', dragoDetails.addressOwner, tableButtonsDragoOwner]
     ]
     var portfolioValue = 'N/A'
     var totalValue = 'N/A'
@@ -275,28 +251,16 @@ class PageFundDetailsDragoTrader extends Component {
       }
     }
 
-    // // Checking if the user is the account manager
-    // let metaMaskAccountIndex = endpoint.accounts.findIndex(account => {
-    //   return (account.address === dragoDetails.addresssOwner)
-    // });
-    // if (metaMaskAccountIndex === -1) {
-    //   return (
-    //     <ElementNoAdminAccess />
-    //   )
-    // }
-
     return (
       <Row>
         <Col xs={12}>
           <div className={styles.pageContainer} >
             <Paper zDepth={1}>
               <Sticky enabled={true} innerZ={1}>
-                <Toolbar className={styles.detailsToolbar}>
-                  <ToolbarGroup className={styles.detailsToolbarGroup}>
-                    {this.renderAddress(dragoDetails)}
-                  </ToolbarGroup>
-                </Toolbar>
-
+              <FundHeader
+                  fundType='drago'
+                  fundDetails={dragoDetails}
+                />
                 <Row className={styles.tabsRow}>
                   <Col xs={12}>
                     <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle}>

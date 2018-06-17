@@ -1,43 +1,43 @@
-import * as Colors from 'material-ui/styles/colors'
-import { Grid, Row, Col } from 'react-flexbox-grid'
-import { Link, withRouter } from 'react-router-dom'
-import { CopyToClipboard } from 'react-copy-to-clipboard'
-import { Tabs, Tab } from 'material-ui/Tabs'
-import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar'
-import ActionAssessment from 'material-ui/svg-icons/action/assessment'
-import ActionList from 'material-ui/svg-icons/action/list'
-import AppBar from 'material-ui/AppBar';
-import CopyContent from 'material-ui/svg-icons/content/content-copy'
-import Paper from 'material-ui/Paper'
-import PropTypes from 'prop-types'
-import React, { Component } from 'react'
-import Search from 'material-ui/svg-icons/action/search'
-import Snackbar from 'material-ui/Snackbar'
-import { formatCoins, formatEth } from '../../_utils/format'
-import PoolApi from '../../PoolsApi/src'
-import ElementVaultActionsList from '../Elements/elementVaultActionsList'
-import ElementListTransactions from '../Elements/elementListTransactions'
-import ElementListWrapper from '../../Elements/elementListWrapper'
-import ElementFeesBox from '../Elements/elementFeesBox'
-import IdentityIcon from '../../_atomic/atoms/identityIcon'
-import InfoTable from '../../Elements/elementInfoTable'
-import Loading from '../../_atomic/atoms/loading'
-import utils from '../../_utils/utils'
-import styles from './pageVaultDetailsVaultManager.module.css';
-import ElementFundNotFound from '../../Elements/elementFundNotFound'
-import ElementNoAdminAccess from '../../Elements/elementNoAdminAccess'
 import BigNumber from 'bignumber.js';
+import Paper from 'material-ui/Paper';
+import Snackbar from 'material-ui/Snackbar';
+import * as Colors from 'material-ui/styles/colors';
+import ActionAssessment from 'material-ui/svg-icons/action/assessment';
+import ActionList from 'material-ui/svg-icons/action/list';
+import Search from 'material-ui/svg-icons/action/search';
+import CopyContent from 'material-ui/svg-icons/content/content-copy';
+import ActionShowChart from 'material-ui/svg-icons/editor/show-chart';
+import { Tab, Tabs } from 'material-ui/Tabs';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { Col, Grid, Row } from 'react-flexbox-grid';
 import { connect } from 'react-redux';
-import {
-  PROD,
-  ENDPOINTS,
-} from '../../_utils/const'
+import { Link, withRouter } from 'react-router-dom';
+import scrollToComponent from 'react-scroll-to-component';
+import Sticky from 'react-stickynode';
 import Web3 from 'web3';
+import ElementFundNotFound from '../../Elements/elementFundNotFound';
+import InfoTable from '../../Elements/elementInfoTable';
+import ElementListWrapper from '../../Elements/elementListWrapper';
+import ElementNoAdminAccess from '../../Elements/elementNoAdminAccess';
+import PoolApi from '../../PoolsApi/src';
+import FundHeader from '../../_atomic/atoms/fundHeader';
+import Loading from '../../_atomic/atoms/loading';
+import SectionHeader from '../../_atomic/atoms/sectionHeader';
+import SectionTitle from '../../_atomic/atoms/sectionTitle';
+import { ENDPOINTS, PROD } from '../../_utils/const';
+import { formatCoins, formatEth } from '../../_utils/format';
+import { Actions } from '../../_redux/actions/actions';
+import utils from '../../_utils/utils';
+import ElementFeesBox from '../Elements/elementFeesBox';
+import ElementListTransactions from '../Elements/elementListTransactions';
+import ElementVaultActionsList from '../Elements/elementVaultActionsList';
+import styles from './pageVaultDetailsVaultManager.module.css';
 
 function mapStateToProps(state) {
   return state
 }
-
 
 class PageVaultDetailsVaultManager extends Component {
 
@@ -51,35 +51,33 @@ class PageVaultDetailsVaultManager extends Component {
     endpoint: PropTypes.object.isRequired,
     accounts: PropTypes.array.isRequired,
     match: PropTypes.object.isRequired,
-    user: PropTypes.object.isRequired
+    dispatch: PropTypes.func.isRequired,
+    user: PropTypes.object.isRequired,
+    transactionsVault: PropTypes.object.isRequired,
   };
 
   state = {
-    vaultDetails: {
-      address: null,
-      name: null,
-      symbol: null,
-      dragoId: null,
-      addresssOwner: null,
-      addressGroup: null,
-    },
     vaultTransactionsLogs: [],
     loading: true,
     snackBar: false,
     snackBarMsg: '',
   }
 
-  subTitle = (account) => {
-    return (
-      account.address
-    )
+  componentDidMount() {
+    this.initVault()
   }
 
-  componentWillMount() {
-    // Getting dragoid from the url parameters passed by router and then
-    // the list of last transactions
+  initVault = async () => {
+    const poolApi = new PoolApi(this.context.api)
     const dragoId = this.props.match.params.dragoid
-    this.getVaultDetails(dragoId)
+    const vaultDetails = await utils.getDragoDetailsFromId(dragoId, this.context.api)
+    await utils.getVaultDetails(vaultDetails, this.props, this.context.api)
+    this.setState({
+      loading: false
+    })
+    await this.getTransactions(vaultDetails, this.context.api, this.props.endpoint.accounts)
+    await poolApi.contract.vaulteventful.init()
+    this.subscribeToEvents(poolApi.contract.vaulteventful)
   }
 
   componentWillUnmount() {
@@ -104,13 +102,11 @@ class PageVaultDetailsVaultManager extends Component {
   componentWillReceiveProps(nextProps) {
     // Updating the lists on each new block if the accounts balances have changed
     // Doing this this to improve performances by avoiding useless re-rendering
-    const dragoId = this.props.match.params.dragoid
     const sourceLogClass = this.constructor.name
-    // console.log(nextProps)
     const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
     const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
     if (!currentBalance.eq(nextBalance)) {
-      this.getVaultDetails(dragoId)
+      this.initVault()
       console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
     } else {
       null
@@ -121,34 +117,14 @@ class PageVaultDetailsVaultManager extends Component {
     const sourceLogClass = this.constructor.name
     var stateUpdate = true
     var propsUpdate = true
-    console.log(this.props)
-    const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
-    const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
+    // const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
+    // const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
     stateUpdate = !utils.shallowEqual(this.state, nextState)
-    propsUpdate = !currentBalance.eq(nextBalance)
+    propsUpdate = !utils.shallowEqual(this.props, nextProps)
     if (stateUpdate || propsUpdate) {
       console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
     }
     return stateUpdate || propsUpdate
-  }
-
-
-  renderAddress(vaultDetails) {
-    if (!vaultDetails.address) {
-      return <p>empty</p>;
-    }
-
-    return (
-      <Row className={styles.detailsToolbarGroup}>
-        <Col xs={12} md={1} className={styles.dragoTitle}>
-          <h2 ><IdentityIcon address={vaultDetails.address} /></h2>
-        </Col>
-        <Col xs={12} md={11} className={styles.dragoTitle}>
-          <p>{vaultDetails.symbol} | {vaultDetails.name} </p>
-          <small>{vaultDetails.address}</small>
-        </Col>
-      </Row>
-    );
   }
 
   snackBar = (msg) => {
@@ -192,7 +168,9 @@ class PageVaultDetailsVaultManager extends Component {
 
   render() {
     const { accounts, user, endpoint } = this.props
-    const { vaultDetails, loading } = this.state
+    const { loading } = this.state
+    const vaultDetails = this.props.transactionsVault.selectedVault.details
+    const vaultTransactionsList = this.props.transactionsVault.selectedVault.transactions
     const tabButtons = {
       inkBarStyle: {
         margin: 'auto',
@@ -207,24 +185,23 @@ class PageVaultDetailsVaultManager extends Component {
 
     const columnsStyle = [styles.detailsTableCell, styles.detailsTableCell2, styles.detailsTableCell3]
     const tableButtonsVaultAddress = [this.renderCopyButton(vaultDetails.address), this.renderEtherscanButton('address', vaultDetails.address)]
-    const tableButtonsVaultOwner = [this.renderCopyButton(vaultDetails.addresssOwner), this.renderEtherscanButton('address', vaultDetails.addresssOwner)]
+    const tableButtonsVaultOwner = [this.renderCopyButton(vaultDetails.addressOwner), this.renderEtherscanButton('address', vaultDetails.addressOwner)]
     const tableInfo = [['Symbol', vaultDetails.symbol, ''],
     ['Name', vaultDetails.name, ''],
     ['Address', vaultDetails.address, tableButtonsVaultAddress],
-    ['Owner', vaultDetails.addresssOwner, tableButtonsVaultOwner]]
+    ['Owner', vaultDetails.addressOwner, tableButtonsVaultOwner]]
 
-    const paperStyle = {
 
-    };
-    var vaultTransactionList = this.state.vaultTransactionsLogs
-    // console.log(vaultTransactionList)
-
+    console.log(vaultDetails)
     // Waiting until getVaultDetails returns the drago details
-    if (loading) {
+    if (loading || Object.keys(vaultDetails).length === 0) {
       return (
-        <Loading />
+        <div style={{ paddingTop: '10px' }}>
+          <Loading />
+        </div>
       );
     }
+
     if (vaultDetails.address === '0x0000000000000000000000000000000000000000') {
       return (
         <ElementFundNotFound />
@@ -233,7 +210,7 @@ class PageVaultDetailsVaultManager extends Component {
 
     // Checking if the user is the account manager
     let metaMaskAccountIndex = endpoint.accounts.findIndex(account => {
-      return (account.address === vaultDetails.addresssOwner)
+      return (account.address === vaultDetails.addressOwner)
     });
     if (metaMaskAccountIndex === -1) {
       return (
@@ -244,97 +221,116 @@ class PageVaultDetailsVaultManager extends Component {
     return (
       <Row>
         <Col xs={12}>
-          <Paper className={styles.paperContainer} zDepth={1}>
-            <Toolbar className={styles.detailsToolbar}>
-              <ToolbarGroup className={styles.detailsToolbarGroup}>
-                {this.renderAddress(vaultDetails)}
-              </ToolbarGroup>
-              <ToolbarGroup>
-                <ElementVaultActionsList accounts={accounts} vaultDetails={vaultDetails} snackBar={this.snackBar} />
-              </ToolbarGroup>
-            </Toolbar>
-            <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle} className={styles.test}>
-              <Tab label="Info" className={styles.detailsTab}
-                icon={<ActionList color={'#054186'} />}>
+          <div className={styles.pageContainer} >
+            <Paper zDepth={1}>
+              <Sticky enabled={true} innerZ={1}>
+                <FundHeader
+                  fundType='vault'
+                  fundDetails={vaultDetails}
+                  actions={<ElementVaultActionsList accounts={accounts} vaultDetails={vaultDetails} snackBar={this.snackBar} />}
+                />
+                <Row className={styles.tabsRow}>
+                  <Col xs={12}>
+                    <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle}>
+                      <Tab label="SUMMARY" className={styles.detailsTab}
+                        onActive={() => scrollToComponent(this.Summary, { offset: -180, align: 'top', duration: 500 })}
+                        icon={<ActionList color={'#607D8B'} />}>
+                      </Tab>
+                      {/* <Tab label="INSIGHT" className={styles.detailsTab}
+                        onActive={() => scrollToComponent(this.InSight, { offset: -180, align: 'top', duration: 500 })}
+                        icon={<ActionAssessment color={'#607D8B'} />}>
+                      </Tab> */}
+                      <Tab label="LOGS" className={styles.detailsTab}
+                        onActive={() => scrollToComponent(this.Logs, { offset: -180, align: 'top', duration: 500 })}
+                        icon={<ActionShowChart color={'#607D8B'} />}>
+                      </Tab>
+                    </Tabs>
+                  </Col>
+                </Row>
+              </Sticky>
+            </Paper>
+            <Paper className={styles.paperContainer} zDepth={1}>
+              <div className={styles.detailsBoxContainer}>
                 <Grid fluid>
                   <Row>
-                    <Col xs={6}>
-                      <Paper zDepth={1} >
-                        <AppBar
-                          title={"ETH LIQUIDITY"}
-                          showMenuIconButton={false}
-                          titleStyle={{ fontSize: 20 }}
-                        />
-                        <div className={styles.ETHliquidity}>
-                          <div>{this.state.vaultDetails.vaultBalance} <small>ETH</small><br /></div>
-                        </div>
-                      </Paper>
-                    </Col>
-                    <Col xs={6}>
-                      <Paper zDepth={1}>
-                        <ElementFeesBox
-                          accounts={accounts}
-                          isManager={user.isManager}
-                          vaultDetails={vaultDetails} />
-                      </Paper>
-                    </Col>
-                  </Row>
-                  <br />
-                  <Row>
-                    <Col xs={12}>
-                      <Paper zDepth={1}>
-                        <AppBar
-                          title="DETAILS"
-                          showMenuIconButton={false}
-                          titleStyle={{ fontSize: 20 }}
-                        />
-                        <div className={styles.detailsTabContent}>
-                          <InfoTable rows={tableInfo} columnsStyle={columnsStyle} />
-                        </div>
-                      </Paper>
+                    <Col xs={12} >
+                      <span ref={(section) => { this.Summary = section; }}></span>
+                      <SectionHeader
+                        titleText='SUMMARY'
+                        textStyle={{ backgroundColor: Colors.blueGrey500 }}
+                      />
                     </Col>
                   </Row>
                   <Row>
-                    <Col xs={12} className={styles.detailsTabContent}>
-                      <Paper style={paperStyle} zDepth={1} >
-                        <AppBar
-                          title="LAST TRANSACTIONS"
-                          showMenuIconButton={false}
-                          titleStyle={{ fontSize: 20 }}
-                        />
+                    <Col xs={12} md={6}>
+                      <SectionTitle titleText='DETAILS' />
+                      <div className={styles.detailsContent}>
+                        <div className={styles.sectionParagraph}>
+                          Total supply:
+                          </div>
+                        <div className={styles.holdings}>
+                          <span>{vaultDetails.totalSupply}</span> <small className={styles.myPositionTokenSymbol}>{vaultDetails.symbol.toUpperCase()}</small><br />
+                        </div>
+                        <InfoTable rows={tableInfo} columnsStyle={columnsStyle} />
+                      </div>
+                    </Col>
+                    <Col xs={12} md={6}>
+                      <div className={styles.myPositionBox}>
+                        <Row>
+                          <Col xs={12}>
+                            <SectionTitle titleText='FEES' help={true} />
+                            <div className={styles.detailsBoxContainer}>
+                              <Row>
+                                <Col xs={12}>
+                                  <div className={styles.sectionParagraph} style={{ paddingTop: '5px' }}>
+                                    Manager set fees:
+                                </div>
+                                </Col>
+                              </Row>
+                              <ElementFeesBox
+                                vaultDetails={vaultDetails}
+                                accounts={accounts}
+                                handleBuySellButtons={this.handleBuySellButtons}
+                                isManager={user.isManager}
+                              />
+                            </div>
+                          </Col>
+                        </Row>
+                      </div>
+                    </Col>
+                  </Row>
+                </Grid>
+              </div>
+            </Paper>
+            <Paper className={styles.paperContainer} zDepth={1}>
+              <Grid fluid>
+                <Row>
+                  <Col xs={12} >
+                    <span ref={(section) => { this.Logs = section; }}></span>
+                    <SectionHeader
+                      titleText='LOGS'
+                      textStyle={{ backgroundColor: Colors.blueGrey500 }}
+                    />
+                  </Col>
+                </Row>
+                <Row>
+                  <Col xs={12} className={styles.detailsTabContent}>
+                    <SectionTitle titleText='TRANSACTIONS' />
+                    <div className={styles.detailsTabContent}>
+                      <p>Your last 20 transactions on this Vault.</p>
+                    </div>
+                    <ElementListWrapper list={vaultTransactionsList}
+                      renderCopyButton={this.renderCopyButton}
+                      renderEtherscanButton={this.renderEtherscanButton}
+                      loading={loading}>
 
-                        <div className={styles.detailsTabContent}>
-                          <p>Your last 20 transactions on this Drago.</p>
-                        </div>
-                        <ElementListWrapper list={vaultTransactionList}
-                          renderCopyButton={this.renderCopyButton}
-                          renderEtherscanButton={this.renderEtherscanButton}
-                          loading={loading}
-                        >
-                          <ElementListTransactions />
-                        </ElementListWrapper>
-                        {/* <ElementListTransactions accountsInfo={accountsInfo} list={vaultTransactionList} 
-                        renderCopyButton={this.renderCopyButton}
-                        renderEtherscanButton={this.renderEtherscanButton}/> */}
-                      </Paper>
-                    </Col>
-                  </Row>
-                </Grid>
-              </Tab>
-              <Tab label="Stats" className={styles.detailsTab}
-                icon={<ActionAssessment color={'#054186'} />}>
-                <Grid fluid>
-                  <Row>
-                    <Col xs={12} className={styles.detailsTabContent}>
-                      <p>
-                        Stats
-                      </p>
-                    </Col>
-                  </Row>
-                </Grid>
-              </Tab>
-            </Tabs>
-          </Paper>
+                      <ElementListTransactions />
+                    </ElementListWrapper>
+                  </Col>
+                </Row>
+              </Grid>
+            </Paper>
+          </div>
         </Col>
         <Snackbar
           open={this.state.snackBar}
@@ -357,6 +353,122 @@ class PageVaultDetailsVaultManager extends Component {
           }}
         />
       </Row>
+
+
+
+
+      // <Row>
+      //   <Col xs={12}>
+      //     <Paper className={styles.paperContainer} zDepth={1}>
+      //     <FundHeader 
+      //           fundDetails={vaultDetails} 
+      //           fundType='vault'
+      //           actions={<ElementVaultActionsList accounts={accounts} dragoDetails={vaultDetails} snackBar={this.snackBar} />}
+      //         />
+      //       <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle} className={styles.test}>
+      //         <Tab label="Info" className={styles.detailsTab}
+      //           icon={<ActionList color={'#054186'} />}>
+      //           <Grid fluid>
+      //             <Row>
+      //               <Col xs={6}>
+      //                 <Paper zDepth={1} >
+      //                   <AppBar
+      //                     title={"ETH LIQUIDITY"}
+      //                     showMenuIconButton={false}
+      //                     titleStyle={{ fontSize: 20 }}
+      //                   />
+      //                   <div className={styles.ETHliquidity}>
+      //                     <div>{this.state.vaultDetails.vaultBalance} <small>ETH</small><br /></div>
+      //                   </div>
+      //                 </Paper>
+      //               </Col>
+      //               <Col xs={6}>
+      //                 <Paper zDepth={1}>
+      //                   <ElementFeesBox
+      //                     accounts={accounts}
+      //                     isManager={user.isManager}
+      //                     vaultDetails={vaultDetails} />
+      //                 </Paper>
+      //               </Col>
+      //             </Row>
+      //             <br />
+      //             <Row>
+      //               <Col xs={12}>
+      //                 <Paper zDepth={1}>
+      //                   <AppBar
+      //                     title="DETAILS"
+      //                     showMenuIconButton={false}
+      //                     titleStyle={{ fontSize: 20 }}
+      //                   />
+      //                   <div className={styles.detailsTabContent}>
+      //                     <InfoTable rows={tableInfo} columnsStyle={columnsStyle} />
+      //                   </div>
+      //                 </Paper>
+      //               </Col>
+      //             </Row>
+      //             <Row>
+      //               <Col xs={12} className={styles.detailsTabContent}>
+      //                 <Paper style={paperStyle} zDepth={1} >
+      //                   <AppBar
+      //                     title="LAST TRANSACTIONS"
+      //                     showMenuIconButton={false}
+      //                     titleStyle={{ fontSize: 20 }}
+      //                   />
+
+      //                   <div className={styles.detailsTabContent}>
+      //                     <p>Your last 20 transactions on this Drago.</p>
+      //                   </div>
+      //                   <ElementListWrapper list={vaultTransactionList}
+      //                     renderCopyButton={this.renderCopyButton}
+      //                     renderEtherscanButton={this.renderEtherscanButton}
+      //                     loading={loading}
+      //                   >
+      //                     <ElementListTransactions />
+      //                   </ElementListWrapper>
+      //                   {/* <ElementListTransactions accountsInfo={accountsInfo} list={vaultTransactionList} 
+      //                   renderCopyButton={this.renderCopyButton}
+      //                   renderEtherscanButton={this.renderEtherscanButton}/> */}
+      //                 </Paper>
+      //               </Col>
+      //             </Row>
+      //           </Grid>
+      //         </Tab>
+      //         <Tab label="Stats" className={styles.detailsTab}
+      //           icon={<ActionAssessment color={'#054186'} />}>
+      //           <Grid fluid>
+      //             <Row>
+      //               <Col xs={12} className={styles.detailsTabContent}>
+      //                 <p>
+      //                   Stats
+      //                 </p>
+      //               </Col>
+      //             </Row>
+      //           </Grid>
+      //         </Tab>
+      //       </Tabs>
+      //     </Paper>
+      //   </Col>
+      //   <Snackbar
+      //     open={this.state.snackBar}
+      //     message={this.state.snackBarMsg}
+      //     action="close"
+      //     onActionTouchTap={this.handlesnackBarRequestClose}
+      //     onRequestClose={this.handlesnackBarRequestClose}
+      //     bodyStyle={{
+      //       height: "auto",
+      //       flexGrow: 0,
+      //       paddingTop: "10px",
+      //       lineHeight: "20px",
+      //       borderRadius: "2px 2px 0px 0px",
+      //       backgroundColor: "#fafafa",
+      //       boxShadow: "#bdbdbd 0px 0px 5px 0px"
+      //     }}
+      //     contentStyle={{
+      //       color: "#000000 !important",
+      //       fontWeight: "600"
+      //     }}
+      //   />
+      // </Row>
     )
   }
 
@@ -380,105 +492,23 @@ class PageVaultDetailsVaultManager extends Component {
         null
       ]
     }, (error, events) => {
-      const dragoId = this.props.match.params.dragoid
-      this.getDragoDetails(dragoId)
+      var sourceLogClass = this.constructor.name
+      console.log(`${sourceLogClass} -> New contract event.`);
+      console.log(events)
+      this.initVault()
     })
     this.setState({
       contractSubscription: subscription
     })
   }
 
-  // Getting the vault details from vaultId
-  getVaultDetails = (vaultId) => {
-    const { api } = this.context
-    const { accounts } = this.props
-    //
-    // Initializing Drago API
-    // Passing Parity API
-    //      
-    const poolApi = new PoolApi(api)
-    //
-    // Initializing registry contract
-    //
-    poolApi.contract.dragoregistry
-      .init()
-      .then(() => {
-        //
-        // Looking for drago from vaultId
-        //
-        poolApi.contract.dragoregistry
-          .fromId(vaultId)
-          .then((vaultDetails) => {
-            const vaultAddress = vaultDetails[0][0]
-            //
-            // Initializing vault contract
-            //
-            poolApi.contract.vault.init(vaultAddress)
-
-            //
-            // Getting Vault details and ETH balance
-            //
-
-            Promise
-              .all([poolApi.contract.vault.getAdminData(), poolApi.contract.vault.getBalance()])
-              .then(result => {
-                console.log(result)
-                const data = result[0]
-                const vaultBalance = result[1]
-                const price = (new BigNumber(data[4]).div(100).toFixed(2))
-
-                this.setState({
-                  vaultDetails: {
-                    address: vaultDetails[0][0],
-                    name: vaultDetails[0][1].charAt(0).toUpperCase() + vaultDetails[0][1].slice(1),
-                    symbol: vaultDetails[0][2].toUpperCase(),
-                    vaultId: vaultDetails[0][3].c[0],
-                    addresssOwner: vaultDetails[0][4],
-                    addressGroup: vaultDetails[0][5],
-                    sellPrice: 1,
-                    buyPrice: 1,
-                    price: price,
-                    vaultBalance: formatEth(vaultBalance, 4, api)
-                  },
-                  loading: false
-                })
-              })
-
-            // poolApi.contract.vault.getAdminData()
-            //   .then((data) => {
-            //     const price = (new BigNumber(data[4]).div(100).toFixed(2))
-            //     this.setState({
-            //       vaultDetails: {
-            //         address: vaultDetails[0][0],
-            //         name: vaultDetails[0][1].charAt(0).toUpperCase() + vaultDetails[0][1].slice(1),
-            //         symbol: vaultDetails[0][2].toUpperCase(),
-            //         vaultId: vaultDetails[0][3].c[0],
-            //         addresssOwner: vaultDetails[0][4],
-            //         addressGroup: vaultDetails[0][5],
-            //         sellPrice: 1,
-            //         buyPrice: 1,
-            //         price: price,
-            //       },
-            //       loading: false
-            //     })
-            //   })
-            poolApi.contract.vaulteventful.init()
-              .then(() => {
-                this.subscribeToEvents(poolApi.contract.vaulteventful)
-                this.getTransactions(vaultDetails[0][0], poolApi.contract.vaulteventful, accounts)
-              }
-              )
-            // this.getTransactions (vaultDetails[0][0], contract, accounts)
-          })
-      })
-
-  }
-
   // Getting last transactions
-  getTransactions = (vaultAddress, contract, accounts) => {
-    const { api } = this.context
+  getTransactions = async (vaultDetails, api) => {
+    const vaultAddress = vaultDetails[0][0]
     var sourceLogClass = this.constructor.name
-    console.log(vaultAddress)
+    const poolApi = new PoolApi(this.context.api)
+    await poolApi.contract.vaulteventful.init()
+    const contract = poolApi.contract.vaulteventful
     const logToEvent = (log) => {
       const key = api.util.sha3(JSON.stringify(log))
       const { blockNumber, logIndex, transactionHash, transactionIndex, params, type } = log
@@ -520,21 +550,18 @@ class PageVaultDetailsVaultManager extends Component {
     //
     //  https://github.com/RigoBlock/Books/blob/master/Solidity_01_Events.MD
 
-    const hexVaultAddress = vaultAddress
-    const hexAccounts = accounts.map((account) => {
-      const hexAccount = account.address
-      return hexAccount
-    })
+    const hexVaultAddress = '0x' + vaultAddress.substr(2).padStart(64, '0')
+
     // const options = {
     //   fromBlock: 0,
     //   toBlock: 'pending',
     // }
-    console.log(contract)
+
     const eventsFilterBuy = {
       topics: [
         [contract.hexSignature.BuyVault],
         [hexVaultAddress],
-        hexAccounts,
+        null,
         null
       ]
     }
@@ -542,14 +569,13 @@ class PageVaultDetailsVaultManager extends Component {
       topics: [
         [contract.hexSignature.SellVault],
         [hexVaultAddress],
-        hexAccounts,
+        null,
         null
       ]
     }
     const buyVaultEvents = contract
       .getAllLogs(eventsFilterBuy)
       .then((vaultTransactionsLog) => {
-        console.log(vaultTransactionsLog)
         const buyLogs = vaultTransactionsLog.map(logToEvent)
         return buyLogs
       }
@@ -586,18 +612,14 @@ class PageVaultDetailsVaultManager extends Component {
               return log
             })
         })
-        Promise.all(promises).then((results) => {
+        Promise.all(promises)
+        .then((results) => {
+          this.props.dispatch(Actions.vault.updateSelectedVaultAction({ transactions: results }))
+          console.log(`${sourceLogClass} -> Transactions list loaded`);
           this.setState({
-            vaultTransactionsLogs: results,
             loading: false,
           })
         })
-          .then(() => {
-            console.log(`${sourceLogClass} -> Transactions list loaded`);
-            this.setState({
-              loading: false,
-            })
-          })
       })
   }
 

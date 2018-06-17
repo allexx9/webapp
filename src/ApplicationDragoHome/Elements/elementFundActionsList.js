@@ -17,6 +17,8 @@ import ElementFundActionPlaceOrder from '../Elements/elementFundActionPlaceOrder
 import ElementFundActionCancelOrder from '../Elements/elementFundActionCancelOrder'
 import ElementFundActionFinalizeOrder from '../Elements/elementFundActionFinalizeOrder'
 import ElementFundActionSetPrice from '../Elements/elementFundActionSetPrice'
+import ButtonManage from '../../_atomic/atoms/buttonManage'
+
 
 export default class ElementFundActionsList extends Component {
   static propTypes = {
@@ -109,24 +111,12 @@ export default class ElementFundActionsList extends Component {
     const { dragoDetails } = this.props
     // Selectiong only the account which is the owner of the Drago
     const accounts = this.props.accounts.filter((account) =>{
-      return account.address == dragoDetails.addresssOwner
+      return account.address == dragoDetails.addressOwner
     })
-    const buttonActions = {
-      border: "1px solid",
-      borderColor: Colors.grey200,
-      backgroundColor:'#ffffff'
-      // width: "140px"
-    }
     return (
       <div>
-        <RaisedButton
-          onClick={this.handleOpenMenuActions}
-          label="Manage"
-          labelStyle={{fontWeight: 700, color: '#000000'}}
-          buttonStyle={buttonActions}
-          // hoverColor={Colors.blue300}
-          backgroundColor='#ffffff'
-          // disabledBackgroundColor='#ffffff'
+        <ButtonManage
+          handleOpenMenuActions={this.handleOpenMenuActions}
         />
         <Popover
           open={this.state.openMenuActions}

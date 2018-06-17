@@ -38,26 +38,6 @@
 
 }
 
-.dragoTitle {
-  padding-left: 100px;
-  padding-bottom: 20px;
-}
-
-.dragoTitle img {
-  width: 60px !important;
-  height: 60px !important;
-}
-
-.dragoTitle p {
-  font-size: 1.5em !important;
-  margin-bottom: 5px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-weight: 700;
-  opacity: 0.75;
-}
-
 .copyAddress {
   height: 16px !important;
   width: 16px !important;
@@ -67,10 +47,6 @@
   height: 100% !important;
 }
 
-
-.detailsToolbarGroup {
-  width: 100% !important;
-}
 
 .detailsTabContent {
   padding: 10px;

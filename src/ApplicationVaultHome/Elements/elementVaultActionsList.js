@@ -3,7 +3,7 @@
 import React, { Component } from 'react';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem'
-import RaisedButton from 'material-ui/RaisedButton'
+import ButtonManage from '../../_atomic/atoms/buttonManage'
 import Subheader from 'material-ui/Subheader'
 import Popover, {PopoverAnimationVertical} from 'material-ui/Popover';
 // import styles from './elementAccountItem.module.css';
@@ -101,18 +101,13 @@ export default class ElementVaultActionsList extends Component {
   render () {
     const { vaultDetails } = this.props
     // Selectiong only the account which is the owner of the Drago
-    console.log(vaultDetails.addresssOwner)
     const accounts = this.props.accounts.filter((account) =>{
-      return account.address == vaultDetails.addresssOwner
+      return account.address == vaultDetails.addressOwner
     })
-    console.log(accounts)
     return (
       <div>
-        <RaisedButton
-          onClick={this.handleOpenMenuActions}
-          label="Actions"
-          primary={true}
-          labelStyle={{fontWeight: 700}}
+        <ButtonManage
+          handleOpenMenuActions={this.handleOpenMenuActions}
         />
         <Popover
           open={this.state.openMenuActions}
