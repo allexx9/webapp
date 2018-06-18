@@ -10,8 +10,8 @@ import React, { Component } from 'react';
 import { Col, Row } from 'react-flexbox-grid';
 import AccountSelector from '../../Elements/elementAccountSelector';
 import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization';
-import ElementDialogAddressTitle from '../../Elements/elementDialogAddressTitle';
-import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle';
+import ElementDialogAddressTitle from '../../_atomic/atoms/elementDialogAddressTitle';
+import ElementDialogHeadTitle from '../../_atomic/atoms/elementDialogHeadTitle';
 import PoolApi from '../../PoolsApi/src';
 import { ERRORS, validateAccount, validatePositiveNumber } from '../../_utils/validation';
 import styles from './elementFundActionSetPrice.module.css';
@@ -102,7 +102,7 @@ export default class ElementFundActionSetPrice extends Component {
     const { dragoDetails } = this.props
     return (
       <div key='dialogHeader'>
-          <ElementDialogHeadTitle primaryText='Set Price' />
+          <ElementDialogHeadTitle primaryText='Set Price' fundType='drago'/>
           <ElementDialogAddressTitle tokenDetails={dragoDetails} />
       </div>
     )

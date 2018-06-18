@@ -9,7 +9,7 @@ import TextField from 'material-ui/TextField';
 import { ERRORS, validateAccount, validateNewName, validateNewSymbol } from '../../_utils/validation';
 import AccountSelector from '../../Elements/elementAccountSelector'
 import PoolApi from '../../PoolsApi/src'
-import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle'
+import ElementDialogHeadTitle from '../../_atomic/atoms/elementDialogHeadTitle'
 import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization'
 import { connect } from 'react-redux';
 
@@ -31,7 +31,8 @@ class ElementVaultCreateAction extends React.Component {
   static propTypes = {
     // vaultDetails: PropTypes.object.isRequired, 
     accounts: PropTypes.array.isRequired,
-    dispatch: PropTypes.func.isRequired
+    dispatch: PropTypes.func.isRequired,
+    snackBar: PropTypes.func
   };
   
   state = {
@@ -127,7 +128,6 @@ class ElementVaultCreateAction extends React.Component {
         name: vaultName,
         symbol: vaultSymbol
       }
-      const values = [vaultName, vaultSymbol, this.state.account.address]
       // Setting variables depending on account source
       var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
       var poolApi = null;

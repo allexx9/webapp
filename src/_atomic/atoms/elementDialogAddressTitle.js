@@ -4,7 +4,7 @@ import { Row, Col } from 'react-flexbox-grid';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import styles from './elementDialogAddressTitle.module.css';
-import IdentityIcon from '../_atomic/atoms/identityIcon';
+import IdentityIcon from './identityIcon';
 
 
 export default class ElementDialogAddressTitle extends Component {

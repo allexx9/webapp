@@ -11,8 +11,8 @@ import React, { Component } from 'react';
 import { ERRORS, validateAccount, validatePositiveNumber } from '../../_utils/validation';
 import AccountSelector from '../../Elements/elementAccountSelector';
 import PoolApi from '../../PoolsApi/src'
-import ElementDialogAddressTitle from '../../Elements/elementDialogAddressTitle'
-import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle'
+import ElementDialogAddressTitle from '../../_atomic/atoms/elementDialogAddressTitle'
+import ElementDialogHeadTitle from '../../_atomic/atoms/elementDialogHeadTitle'
 import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization'
 
 import styles from './elementVaultActionSetFees.module.css';

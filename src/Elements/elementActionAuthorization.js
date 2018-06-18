@@ -4,8 +4,8 @@ import { Dialog, FlatButton } from 'material-ui';
 import { Row, Col } from 'react-flexbox-grid';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import ElementDialogAddressTitle from './elementDialogAddressTitle'
-import ElementDialogHeadTitle from './elementDialogHeadTitle'
+import ElementDialogAddressTitle from '../_atomic/atoms/elementDialogAddressTitle'
+import ElementDialogHeadTitle from '../_atomic/atoms/elementDialogHeadTitle'
 import NotificationWifi from 'material-ui/svg-icons/notification/wifi';
 
 import styles from './elementActionAuthorization.module.css';

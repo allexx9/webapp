@@ -6,8 +6,8 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { ERRORS, validatePositiveNumber, validateAddress } from '../_utils/validation';
 import TokenSelector from '../_atomic/molecules/tokenSelector';
-import ElementDialogHeadTitle from './elementDialogHeadTitle'
-import ElementDialogAddressTitle from './elementDialogAddressTitle'
+import ElementDialogHeadTitle from '../_atomic/atoms/elementDialogHeadTitle'
+import ElementDialogAddressTitle from '../_atomic/atoms/elementDialogAddressTitle'
 import PoolsApi from '../PoolsApi/src'
 import { connect } from 'react-redux';
 import {ETH, GRG} from '../_utils/const'

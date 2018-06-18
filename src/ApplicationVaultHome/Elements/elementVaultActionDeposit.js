@@ -6,8 +6,8 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { ERRORS, validateAccount, validatePositiveNumber } from '../../_utils/validation';
 import AccountSelector from '../../Elements/elementAccountSelector';
-import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle'
-import ElementDialogAddressTitle from '../../Elements/elementDialogAddressTitle'
+import ElementDialogHeadTitle from '../../_atomic/atoms/elementDialogHeadTitle'
+import ElementDialogAddressTitle from '../../_atomic/atoms/elementDialogAddressTitle'
 import PoolApi from '../../PoolsApi/src'
 
 const NAME_ID = ' ';

@@ -122,7 +122,6 @@ export default class ElementFundActionsList extends Component {
             <MenuItem value="setPrice" primaryText="Set Prices"/>
             <Subheader inset={false}>Exchange</Subheader>
             <MenuItem value="wrapETH" primaryText="Wrap ETH"/>
-            <MenuItem value="withdraw" primaryText="Unwrap ETH" disabled={true}/>
           </Menu>
         </Popover>
         {this.state.showActionMenuItem.wrapETH ?

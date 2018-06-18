@@ -8,7 +8,7 @@ import TextField from 'material-ui/TextField';
 import { ERRORS, validateAccount, validateNewName, validateNewSymbol } from '../../_utils/validation';
 import AccountSelector from '../../Elements/elementAccountSelector'
 import PoolApi from '../../PoolsApi/src'
-import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle'
+import ElementDialogHeadTitle from '../../_atomic/atoms/elementDialogHeadTitle'
 import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization'
 import { connect } from 'react-redux';
 
