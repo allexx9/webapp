@@ -12,7 +12,7 @@ import {
   getPricesFromRelayERCdEX 
 } from '../../_utils/exchange'
 import 'rxjs/observable/timer'
-import { fromPromise } from 'rxjs/add/observable/fromPromise';
+// import { fromPromise } from 'rxjs/add/observable/fromPromise';
 import {
   SET_TOKEN_ALLOWANCE,
   UPDATE_TRADE_TOKENS_PAIR,
@@ -20,7 +20,8 @@ import {
   TOKEN_PRICE_TICKER_CLOSE_WEBSOCKET,
   TOKEN_PRICE_TICKER_UPDATE
 } from '../../_utils/const'
-import ReconnectingWebSocket from 'reconnecting-websocket/dist/reconnecting-websocket-cjs'
+import ReconnectingWebSocket from 'reconnecting-websocket'
+// import ReconnectingWebSocket from 'reconnecting-websocket/dist/reconnecting-websocket-cjs'
 
 // Setting allowance for a token
 const setTokenAllowance$ = (tokenAddress, ownerAddress, spenderAddress, ZeroExConfig) =>
@@ -80,10 +81,10 @@ const getPricesERCdEXWebsocket$ = () => {
       const data = JSON.parse(msg.data)
       return observer.next(data.data.tickers);
     }
-    websocket.addEventListener('close', () => {
-      websocket._shouldReconnect && websocket._connect();
-      console.log('WebSocket reconnecting.');
-    })
+    // websocket.addEventListener('close', () => {
+    //   websocket._shouldReconnect && websocket._connect();
+    //   console.log('WebSocket reconnecting.');
+    // })
     websocket.onclose = (msg) => {
       // websocket.send(`unsub:ticker`);
       console.log('WebSocket closed.');

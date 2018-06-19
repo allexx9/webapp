@@ -20,7 +20,7 @@ import 'rxjs/add/observable/of';
 import 'rxjs/observable/timer';
 import 'rxjs/observable/fromEvent';
 import 'rxjs/add/observable/fromPromise';
-import { timer } from 'rxjs/observable/timer'
+// import { timer } from 'rxjs/observable/timer'
 import 'rxjs/add/observable/forkJoin';
 import { zip } from 'rxjs/observable/zip';
 // import rp from 'request-promise'
@@ -33,8 +33,8 @@ import {
   formatOrders
 } from '../../_utils/exchange'
 // import io from 'socket.io-client'
-// import ReconnectingWebSocket from 'reconnectingwebsocket'
-import ReconnectingWebSocket from 'reconnecting-websocket/dist/reconnecting-websocket-cjs'
+import ReconnectingWebSocket from 'reconnecting-websocket'
+//import ReconnectingWebSocket from 'reconnecting-websocket/dist/reconnecting-websocket-cjs'
 import utils from '../../_utils/utils'
 
 import {
@@ -119,10 +119,10 @@ const reconnectingWebsocket$ = (baseTokenAddress, quoteTokenAddress) => {
       websocket.send(`sub:pair-order-change/${quoteTokenAddress}/${baseTokenAddress}`);
       return observer.next(msg.data);
     });
-    websocket.addEventListener('close', () => {
-      websocket._shouldReconnect && websocket._connect();
-      console.log('WebSocket reconnecting.');
-    })
+    // websocket.addEventListener('close', () => {
+    //   websocket._shouldReconnect && websocket._connect();
+    //   console.log('WebSocket reconnecting.');
+    // })
     websocket.onmessage = (msg) => {
       console.log('WebSocket message.');
       console.log(msg)
