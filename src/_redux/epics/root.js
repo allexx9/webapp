@@ -5,15 +5,27 @@ import { combineEpics } from 'redux-observable';
 import { 
   relayWebSocketEpic, 
   orderBookEpic,
-  initOrderBookFromRelayERCDexEpic   
+  initOrderBookFromRelayERCdEXEpic,
+  updateFundLiquidityEpic,
+  getHistoricalPricesDataFromERCdEXEpic,
+  getTradeHistoryLogsFromRelayERCdEXEpic,
+  getOrdersFromRelayERCdEXEpic,
+  getAssetsPricesDataFromERCdEXEpic
 } from './exchange'
-
-import { setTokenAllowanceEpic} from './token'
+import { setTokenAllowanceEpic,
+  getPricesERCdEXEpic
+} from './token'
 
 export const rootEpic = combineEpics (
   // pingEpic,
   relayWebSocketEpic,
   orderBookEpic,
   setTokenAllowanceEpic,
-  initOrderBookFromRelayERCDexEpic
+  initOrderBookFromRelayERCdEXEpic,
+  getPricesERCdEXEpic,
+  updateFundLiquidityEpic,
+  getHistoricalPricesDataFromERCdEXEpic,
+  getTradeHistoryLogsFromRelayERCdEXEpic,
+  getOrdersFromRelayERCdEXEpic,
+  getAssetsPricesDataFromERCdEXEpic
 );

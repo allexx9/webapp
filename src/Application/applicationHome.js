@@ -1,7 +1,6 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
 import React, { Component } from 'react';
-import  * as Colors from 'material-ui/styles/colors';
 import PropTypes from 'prop-types';
 import ApplicationHome from '../ApplicationHome';
 import ApplicationTopBar from './ApplicationTopBar';
@@ -18,12 +17,13 @@ import { connect } from 'react-redux';
 
 const muiTheme = getMuiTheme({
   palette: {
-    "primary1Color": Colors.blue500,
+    "primary1Color": '#054186',
 
   },
   appBar: {
     height: 45,
-    fontSize: "20px !important"
+    fontSize: "20px !important",
+    backgroundColor: "#054186"
   },
 });
 
@@ -81,7 +81,6 @@ class ApplicationHomePage extends Component {
             <Col xs={12}>
               <ApplicationTopBar
                 handleTopBarSelectAccountType={this.handleTopBarSelectAccountType}
-                isManager={this.state.isManager}
                 handleToggleNotifications={this.handleToggleNotifications}
               />
             </Col>

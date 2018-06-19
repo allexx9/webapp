@@ -5,7 +5,12 @@
   color: #616161;
   width: 100%;
   text-align: right;
-  padding-right: 15px;
+  border-top-color: #E0E0E0;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-bottom-color: #E0E0E0;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
 }
 
 .sectionHeaderOrderTable {

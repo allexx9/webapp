@@ -13,14 +13,25 @@ import {
 import BigNumber from 'bignumber.js';
 
 const initialState = {
+  notifications: {
+    engine: ''
+  },
   exchange: {
+    loading: {
+      liquidity: true,
+      orderSummary: true,
+      orderBox: true,
+      marketBox: true,
+    },
+    chartData: [],
     selectedFund: {
       details: {},
       liquidity: {
         ETH: new BigNumber(0),
         WETH: new BigNumber(0),
         ZRX: new BigNumber(0),
-      }
+      },
+      managerAccount: '',
     },
     makerAddress: '',
     selectedExchange: EXCHANGES.zeroEx[DEFAULT_NETWORK_NAME],
@@ -30,6 +41,11 @@ const initialState = {
       quoteToken: ERC20_TOKENS[DEFAULT_NETWORK_NAME].WETH,
       baseTokenAllowance: false,
       quoteTokenAllowance: false
+    },
+    fundOrders: {
+      open: [],
+      cancelled: [],
+      executed: []
     },
     selectedOrder: {
       details: {},
@@ -54,8 +70,8 @@ const initialState = {
     relay: {
       url: 'https://api.ercdex.com/api/standard',
       networkId: '42'
-    }
-
+    },
+    prices: {}
   },
   transactions: {
     queue: new Map(),
@@ -69,7 +85,13 @@ const initialState = {
     manager: {
       list: [],
       logs: []
-    }
+    },
+    selectedDrago: {
+      details: {},
+      transactions: [],
+      assets: [],
+      assetsCharts: {},
+    },
   },
   transactionsVault: {
     holder: {
@@ -79,6 +101,10 @@ const initialState = {
     manager: {
       list: [],
       logs: []
+    },
+    selectedVault: {
+      details: {},
+      transactions: [],
     }
   },
   endpoint: {

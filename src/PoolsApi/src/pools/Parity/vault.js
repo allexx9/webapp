@@ -3,6 +3,7 @@
 
 import * as abis from '../../contracts/abi'
 import Registry from '../registry'
+import { WETH_ADDRESSES } from '../../utils/const'
 
 class VaultParity {
   constructor(api) {
@@ -46,6 +47,13 @@ class VaultParity {
     return api.eth.getBalance(instance.address)
   }
 
+  getBalanceWETH = () => {
+    const api = this._api
+    const instance = this._instance
+    const wethInstance = api.newContract(abis.weth, WETH_ADDRESSES[api._rb.network.id]).instance
+    return wethInstance.balanceOf.call({}, [instance.address])
+  }
+
   getData = () => {
     const instance = this._instance
     return instance.getData.call({})
@@ -83,6 +91,13 @@ class VaultParity {
   getAdminData = () => {
     const instance = this._instance
     return instance.getAdminData.call({})
+  }
+
+  getTokenBalance = ( tokenAddress ) =>{
+    const api = this._api
+    const instance = this._instance
+    const erc20Instance = api.newContract(abis.erc20, tokenAddress).instance
+    return erc20Instance.balanceOf.call({}, [instance.address])
   }
 
   sellVault = (accountAddress, amount) => {

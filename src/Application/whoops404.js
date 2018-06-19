@@ -17,7 +17,7 @@ import { connect } from 'react-redux';
 
 const muiTheme = getMuiTheme({
   palette: {
-    "primary1Color": Colors.blue500,
+    "primary1Color": '#054186',
 
   },
   appBar: {
@@ -80,7 +80,6 @@ class Whoops404 extends Component {
             <Col xs={12}>
               <ApplicationTopBar
                 handleTopBarSelectAccountType={this.handleTopBarSelectAccountType}
-                isManager={this.state.isManager}
                 handleToggleNotifications={this.handleToggleNotifications}
               />
             </Col>

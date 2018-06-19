@@ -32,3 +32,9 @@
   line-height: 1;
   text-align: center;
 }
+
+.mainlogo {
+  padding-top: 10px;
+  margin-bottom: -10px;
+  text-align: center;
+}

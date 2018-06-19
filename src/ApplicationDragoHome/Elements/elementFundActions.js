@@ -17,6 +17,9 @@ import {
   TableRow,
   TableRowColumn,
 } from 'material-ui/Table';
+import {
+  ADD_TRANSACTION
+} from '../../_utils/const'
 
 import { ERRORS, validateAccount, validatePositiveNumber } from '../../_utils/validation';
 import { formatCoins } from '../../_utils/format';
@@ -39,7 +42,6 @@ class ElementFundActions extends React.Component {
 
   constructor(props) {
     super(props)
-    console.log(this.props.actionSelected.action)
     if (this.props.actionSelected.action == 'buy') {
       this.state = {
         open: props.actionSelected.open,
@@ -170,7 +172,7 @@ class ElementFundActions extends React.Component {
 
   addTransactionToQueueAction = (transactionId, transactionDetails) => {
     return {
-      type: 'ADD_TRANSACTION',
+      type: ADD_TRANSACTION,
       transaction: { transactionId, transactionDetails }
     }
   };
@@ -181,7 +183,7 @@ class ElementFundActions extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     // console.log(nextProps)
-    if (this.props.actionSelected.action != nextProps.actionSelected.action) {
+    if (this.props.actionSelected.action !== nextProps.actionSelected.action) {
       nextProps.actionSelected.action == 'buy' 
       ? this.handleBuyAction()
       : this.handleSellAction()

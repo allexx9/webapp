@@ -9,7 +9,7 @@ import React, {PureComponent} from 'react';
 import utils from '../../_utils/utils'
 
 import styles from './elementListVaults.module.css';
-import 'react-virtualized/styles.css'
+
 
 
 class ElementListVaults extends PureComponent {

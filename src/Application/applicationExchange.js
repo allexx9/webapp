@@ -18,7 +18,7 @@ import { connect } from 'react-redux';
 
 const muiTheme = getMuiTheme({
   palette: {
-    "primary1Color": Colors.blue500,
+    "primary1Color": '#054186',
 
   },
   appBar: {
@@ -29,7 +29,7 @@ const muiTheme = getMuiTheme({
 
 const muiThemeExchange = getMuiTheme({
   palette: {
-    "primary1Color": Colors.grey900,
+    "primary1Color": '#054186',
   },
   appBar: {
     height: 20,
@@ -92,7 +92,6 @@ class ApplicationExchangePage extends Component {
             <Col xs={12}>
               <ApplicationTopBar
                 handleTopBarSelectAccountType={this.handleTopBarSelectAccountType}
-                isManager={this.state.isManager}
                 handleToggleNotifications={this.handleToggleNotifications}
               />
             </Col>
@@ -103,7 +102,6 @@ class ApplicationExchangePage extends Component {
                 {this.context.isConnected && !this.context.isSyncing ? (
                   // {false ? (
                   <ApplicationExchangeHome
-                    isManager={this.state.isManager}
                     location={location}
                     notificationsOpen={notificationsOpen}
                     handleToggleNotifications={this.handleToggleNotifications}

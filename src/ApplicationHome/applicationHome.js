@@ -66,7 +66,7 @@ class ApplicationHome extends Component {
     const { endpoint } = this.props
     const buttonTelegram = {
       border: "2px solid",
-      borderColor: Colors.blue400,
+      borderColor: '#054186',
       fontWeight: "600",
       height: "45px"
       // width: "140px"
@@ -85,30 +85,34 @@ class ApplicationHome extends Component {
             <div className={styles.shadow}>
               <Row>
                 <Col xs={12}>
-                  
-                  <div className={styles.mainlogo}><img style={{height: "80px"}} src='/img/new_logo_full.png'/></div>
+                  <div className={styles.mainlogo}><img style={{ height: "80px" }} src='/img/Logo-RigoblockRGB-OUT-01.png' /></div>
                   <h2 className={styles.headline}>Decentralized Pools of Digital Tokens</h2>
-                  <p>&nbsp;</p>
-                  <a href="https://t.me/rigoblockprotocol" target="_blank" rel="noopener noreferrer">
-                    <FlatButton
-                      labelPosition="before"
-                      label="Join us on telegram!"
-                      labelStyle={{ color: Colors.blue400, fontWeight: "600", fontSize: "20px" }}
-                      style={buttonTelegram}
-                      icon={<img src="/img/t_logo.png" height="30px" />}
-                    // hoverColor={Colors.blue300}
-                    />
-                  </a>
-                  <p>&nbsp;</p>
+                  <div className={styles.telegramButtonContainer}>
+                    <a href="https://t.me/rigoblockprotocol" target="_blank" rel="noopener noreferrer">
+
+                      <FlatButton
+                        labelPosition="before"
+                        label="Join us on telegram!"
+                        labelStyle={{ color: '#054186', fontWeight: "600", fontSize: "20px" }}
+                        style={buttonTelegram}
+                        icon={<img src="/img/social/telegram.svg" height="30px" />}
+                      // hoverColor={Colors.blue300}
+                      />
+                    </a>
+                  </div>
+
+                  <p className={styles.subHeadline}>We aim to create a new generation of traders and a new level of asset management system.
+                  Simple, transparent, meritocratic and democratic.</p>
+                  
                 </Col>
               </Row>
               <Row className={styles.cards}>
                 <Col xs={6}>
                   <Card className={styles.column}>
-                    <CardTitle title="Vault" className={styles.cardtitle} titleColor="white" />
+                    <CardTitle title="VAULT" className={styles.cardtitle} titleColor="white" />
                     <CardText>
-                      Pools of ether and proof-of-stake mining
-                </CardText>
+                      <p className={styles.subHeadline}>Pools of ether and proof-of-stake mining</p>
+                    </CardText>
                     <CardActions>
                       <Link to="/vault">
                         <RaisedButton label="New Vault" className={styles.exchangebutton} labelColor="white" />
@@ -118,10 +122,10 @@ class ApplicationHome extends Component {
                 </Col>
                 <Col xs={6}>
                   <Card className={styles.column}>
-                    <CardTitle title="Drago" className={styles.cardtitle} titleColor="white" />
+                    <CardTitle title="DRAGO" className={styles.cardtitle} titleColor="white" />
                     <CardText>
-                      Pools of ether and trading on decentralized exchanges
-                </CardText>
+                      <p className={styles.subHeadline}>Pools of ether and trading on decentralized exchanges</p>
+                    </CardText>
                     <CardActions >
                       {/* <ApplicationDragoFactory /> */}
                       <Link to="/drago">
@@ -137,7 +141,7 @@ class ApplicationHome extends Component {
                 </Col>
               </Row>
               <Row>
-                <Col xs={12}>
+                {/* <Col xs={12}>
                   <Paper zDepth={1}>
                     <p>&nbsp;</p>
                     <p>
@@ -147,16 +151,23 @@ class ApplicationHome extends Component {
                     </p>
                     <p>&nbsp;</p>
                   </Paper>
+                </Col> */}
+                <Col xs={12} className={styles.socialsContainer}>
+                  <a href="https://t.me/rigoblockprotocol" target="_blank" rel="noopener noreferrer"><img src="/img/social/telegram.svg" height="32px" /></a>
+                  <a href="https://discordapp.com/channels/rigoblock" target="_blank" rel="noopener noreferrer"><img src="/img/social/discord.svg" height="32px" /></a>
+                  <a href="https://www.facebook.com/RigoBlocks" target="_blank" rel="noopener noreferrer"><img src="/img/social/facebook.svg" height="32px" /></a>
+                  <a href="https://twitter.com/rigoblock" target="_blank" rel="noopener noreferrer"><img src="/img/social/twitter.svg" height="32px" /></a>
                 </Col>
               </Row>
             </div>
           </Col>
+
           <Col xs={12}>
-          <ElementBottomStatusBar 
-          blockNumber={endpoint.prevBlockNumber}
-          networkName={endpoint.networkInfo.name}
-          networkError={endpoint.networkError}
-          networkStatus={endpoint.networkStatus} />
+            <ElementBottomStatusBar
+              blockNumber={endpoint.prevBlockNumber}
+              networkName={endpoint.networkInfo.name}
+              networkError={endpoint.networkError}
+              networkStatus={endpoint.networkStatus} />
           </Col>
         </Row>
       </div>

@@ -8,7 +8,7 @@ import styles from './applicationExchangeHome.module.css';
 import {
   ERC20_TOKENS
 } from '../_utils/const'
-import { Row, Col, Grid } from 'react-flexbox-grid';
+import { Row, Col } from 'react-flexbox-grid';
 import PropTypes from 'prop-types';
 import utils from '../_utils/utils'
 import ElementNotificationsDrawer from '../Elements/elementNotificationsDrawer'
@@ -18,6 +18,7 @@ import FundSelector from '../_atomic/molecules/fundSelector'
 import TokenTradeSelector from '../_atomic/molecules/tokenTradeSelector'
 // import DragoComingSoon from '../Elements/elementDragoComingSoon'
 import TokenLiquidity from '../_atomic/atoms/tokenLiquidity'
+import TokenPrice from '../_atomic/atoms/tokenPrice'
 import {
   UPDATE_SELECTED_FUND,
   UPDATE_TRANSACTIONS_DRAGO_MANAGER,
@@ -25,15 +26,29 @@ import {
   CANCEL_SELECTED_ORDER,
   RELAY_OPEN_WEBSOCKET,
   RELAY_GET_ORDERS,
-  ORDERBOOK_AGGREGATE_ORDERS
+  RELAY_CLOSE_WEBSOCKET,
+  ORDERBOOK_AGGREGATE_ORDERS,
+  UPDATE_FUND_LIQUIDITY,
+  FETCH_MARKET_PRICE_DATA,
+  FETCH_HISTORY_TRANSACTION_LOGS,
+  FETCH_FUND_ORDERS
 } from '../_utils/const'
 import Paper from 'material-ui/Paper'
 import { connect } from 'react-redux';
 import OrderBook from '../_atomic/organisms/orderBook';
 import OrderBox from '../_atomic/organisms/orderBox'
 import Exchange from '../_utils/exchange'
-import { getMarketTakerOrder, getAvailableAddresses } from '../_utils/exchange'
-import FlatButton from 'material-ui/FlatButton'
+import {
+  getMarketTakerOrder,
+  getAvailableAddresses,
+  getTokenAllowance,
+} from '../_utils/exchange'
+// import FlatButton from 'material-ui/FlatButton'
+import PoolApi from '../PoolsApi/src';
+import BigNumber from 'bignumber.js';
+import ChartBox from '../_atomic/organisms/chartBox'
+import OrdersHistory from '../_atomic/organisms/ordersHistory'
+// import { getData } from "../_utils/data"
 
 function mapStateToProps(state) {
   return state
@@ -55,7 +70,6 @@ class ApplicationExchangeHome extends Component {
     exchangeUtils: PropTypes.object
   };
 
-
   getChildContext() {
     return {
       exchangeUtils: this.state.exchangeUtils,
@@ -75,10 +89,8 @@ class ApplicationExchangeHome extends Component {
 
   state = {
     exchangeUtils: {},
-    orders: {
-      bidsOrders: [],
-      asksOrders: [],
-    }
+    chartData: [],
+    managerHasNoFunds: false
   }
 
   scrollPosition = 0
@@ -91,18 +103,29 @@ class ApplicationExchangeHome extends Component {
     }
   };
 
-  updateSelectedFundDetails = (liquidity, fund) => {
+  updateSelectedFundDetails = (fund, managerAccount) => {
     const payload = {
       details: fund,
-      liquidity: {
-        ETH: liquidity[0],
-        WETH: liquidity[1],
-        ZRX: liquidity[2]
-      }
+      // liquidity: {
+      //   ETH: liquidity[0],
+      //   WETH: liquidity[1],
+      //   ZRX: liquidity[2]
+      // },
+      managerAccount
     }
     return {
       type: UPDATE_SELECTED_FUND,
       payload: payload
+    }
+  };
+
+  updateSelectedFundLiquidity = (fundAddress, api) => {
+    return {
+      type: UPDATE_FUND_LIQUIDITY,
+      payload: {
+        fundAddress,
+        api
+      }
     }
   };
 
@@ -127,6 +150,45 @@ class ApplicationExchangeHome extends Component {
     }
   };
 
+  getChartData = (networkId, baseTokenAddress, quoteTokenAddress, startDate) => {
+    const payload = {
+      networkId,
+      baseTokenAddress,
+      quoteTokenAddress,
+      startDate
+    }
+    return {
+      type: FETCH_MARKET_PRICE_DATA,
+      payload: payload
+    }
+  }
+
+  getTradeHistoryLogs = (networkId, baseTokenAddress, quoteTokenAddress) => {
+    const payload = {
+      networkId,
+      baseTokenAddress,
+      quoteTokenAddress,
+    }
+    return {
+      type: FETCH_HISTORY_TRANSACTION_LOGS,
+      payload: payload
+    }
+  }
+
+  getFundOrders = (networkId, maker, baseTokenAddress, quoteTokenAddress) => {
+    const payload = {
+      networkId,
+      maker,
+      baseTokenAddress,
+      quoteTokenAddress,
+    }
+    console.log(payload)
+    return {
+      type: FETCH_FUND_ORDERS,
+      payload: payload
+    }
+  }
+
 
   shouldComponentUpdate(nextProps, nextState) {
     var stateUpdate = true
@@ -138,7 +200,7 @@ class ApplicationExchangeHome extends Component {
     // Saving the scroll position. Neede in componentDidUpdate in order to avoid the the page scroll to be
     // set top
     const element = this.node
-    if (element != null) {
+    if (element !== null) {
       this.scrollPosition = window.scrollY
     }
     return stateUpdate || propsUpdate
@@ -149,17 +211,36 @@ class ApplicationExchangeHome extends Component {
 
   componentDidMount() {
     const { accounts } = this.props.endpoint
-    const { selectedTokensPair, selectedExchange  } = this.props.exchange
-    this.getTransactions(null, accounts)
+    const { selectedTokensPair, selectedExchange } = this.props.exchange
+    this.getSelectedFundDetails(null, accounts)
     // this.connectToRadarRelay()
     this.connectToExchange(selectedTokensPair)
     getAvailableAddresses(selectedExchange)
-    .then (adreesses => {
-      this.props.dispatch({ type: 'SET_MAKER_ADDRESS', payload: adreesses[0] })
-    })
+      .then(adreesses => {
+        this.props.dispatch({ type: 'SET_MAKER_ADDRESS', payload: adreesses[0] })
+      })
+
+    // Getting history logs
+    this.props.dispatch(this.getTradeHistoryLogs(
+      this.props.exchange.relay.networkId,
+      this.props.exchange.selectedTokensPair.baseToken.address,
+      this.props.exchange.selectedTokensPair.quoteToken.address,
+    )
+    )
+
+    // Getting chart data
+    var tsYesterday = new Date((Math.floor(Date.now() / 1000) - 86400 * 7) * 1000).toISOString()
+    this.props.dispatch(this.getChartData(
+      this.props.exchange.relay.networkId,
+      this.props.exchange.selectedTokensPair.baseToken.address,
+      this.props.exchange.selectedTokensPair.quoteToken.address,
+      tsYesterday
+    )
+    )
   }
 
   componentWillUnmount() {
+    this.props.dispatch({ type: RELAY_CLOSE_WEBSOCKET })
   }
 
   componentWillUpdate() {
@@ -169,13 +250,13 @@ class ApplicationExchangeHome extends Component {
 
   componentDidUpdate() {
     const element = this.node
-    if (element != null) {
+    if (element !== null) {
       window.scrollTo(0, this.scrollPosition)
     }
     // Setting focus on the element active before component re-render
     if (this.activeElement.id !== "") {
       const activeElement = document.getElementById(this.activeElement.id);
-      if (activeElement != null) {
+      if (activeElement !== null) {
         activeElement.focus()
       }
     }
@@ -192,32 +273,79 @@ class ApplicationExchangeHome extends Component {
     this.props.dispatch(this.relayGetOrders(filter))
   }
 
-  onSelectFund = (fund) => {
+  onSelectFund = async (fund) => {
     const { api } = this.context
-    utils.getDragoLiquidity(fund.address, api)
-      .then(liquidity => {
-        this.props.dispatch(this.updateSelectedFundDetails(liquidity, fund))
-      })
-  }
+    const { selectedTokensPair, selectedExchange } = this.props.exchange
 
-  onSelectTokenTrade = (token) => {
-    const { ws } = this.state
-    const { api } = this.context
-    const baseToken = ERC20_TOKENS[api._rb.network.name][token]
-    const tradeTokensPair = {
-      baseToken: baseToken,
-      quoteToken: {
-        symbol: 'WETH',
-        address: '0xd0a1e359811322d97991e03f863a0c30c2cf029c',
-        decimals: 18
-      }
-    }
+    // Resetting current order
     this.props.dispatch({
       type: CANCEL_SELECTED_ORDER,
     })
-    this.props.dispatch(this.updateSelectedTradeTokensPair(tradeTokensPair))
-    ws.close()
-    this.connectToExchange(tradeTokensPair)
+
+    try {
+      const poolApi = new PoolApi(api)
+      poolApi.contract.drago.init(fund.address)
+
+      // Getting drago details
+      const dragoDetails = await poolApi.contract.drago.getAdminData()
+      this.props.dispatch(this.updateSelectedFundDetails(fund, dragoDetails[0].toLowerCase()))
+
+      // Getting drago liquidity
+      this.props.dispatch(this.updateSelectedFundLiquidity(fund.address, api))
+
+      // Getting allowances
+      const allowanceBaseToken = await getTokenAllowance(selectedTokensPair.baseToken.address, fund.address, selectedExchange)
+      const allowanceQuoteToken = await getTokenAllowance(selectedTokensPair.quoteToken.address, fund.address, selectedExchange)
+      const tokensAllowance = {
+        baseTokenAllowance: new BigNumber(allowanceBaseToken).gt(0),
+        quoteTokenAllowance: new BigNumber(allowanceQuoteToken).gt(0)
+      }
+      this.props.dispatch(this.updateSelectedTradeTokensPair(tokensAllowance))
+      // Getting fund orders
+      this.props.dispatch(this.getFundOrders(
+        this.props.exchange.relay.networkId,
+        fund.address.toLowerCase(),
+        this.props.exchange.selectedTokensPair.baseToken.address,
+        this.props.exchange.selectedTokensPair.quoteToken.address,
+      )
+      )
+
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  onSelectTokenTrade = async (token) => {
+    const { api } = this.context
+    const { selectedTokensPair, selectedExchange, selectedFund, fundOrders } = this.props.exchange
+    try {
+      const baseToken = ERC20_TOKENS[api._rb.network.name][token]
+      const allowanceBaseToken = await getTokenAllowance(selectedTokensPair.baseToken.address, selectedFund.details.address, selectedExchange)
+      const allowanceQuoteToken = await getTokenAllowance(selectedTokensPair.quoteToken.address, selectedFund.details.address, selectedExchange)
+      const tradeTokensPair = {
+        baseToken: baseToken,
+        quoteToken: ERC20_TOKENS[api._rb.network.name].WETH,
+        baseTokenAllowance: new BigNumber(allowanceBaseToken).gt(0),
+        quoteTokenAllowance: new BigNumber(allowanceQuoteToken).gt(0)
+      }
+      this.props.dispatch({
+        type: CANCEL_SELECTED_ORDER,
+      })
+      this.props.dispatch(
+        this.updateSelectedTradeTokensPair(tradeTokensPair)
+      )
+      this.connectToExchange(tradeTokensPair)
+      var tsYesterday = new Date((Math.floor(Date.now() / 1000) - 86400 * 7) * 1000).toISOString()
+      this.props.dispatch(this.getChartData(
+        this.props.exchange.relay.networkId,
+        baseToken.address,
+        ERC20_TOKENS[api._rb.network.name].WETH.address,
+        tsYesterday
+      )
+      )
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   onButtonTest = () => {
@@ -281,6 +409,39 @@ class ApplicationExchangeHome extends Component {
         </span>
       )
     }
+    console.log(this.state.managerHasNoFunds)
+    if (this.state.managerHasNoFunds) {
+      return (
+        <div ref={node => this.node = node}>
+          <Row className={styles.maincontainer}>
+            <Col xs={12}>
+              <Paper className={styles.paperTopBarContainer} zDepth={1}>
+                <div style={{paddingTop: '16px', paddingBottom: '16px'}}>
+                  You need to own a fund in order to trade on this exchange.
+                </div>
+              </Paper>
+            </Col>
+          </Row>
+          <Row>
+            <Col xs={12}>
+              {notificationsOpen ? (
+                <ElementNotificationsDrawer
+                  handleToggleNotifications={handleToggleNotifications}
+                  notificationsOpen={notificationsOpen}
+                />
+              ) : (
+                  null
+                )}
+            </Col>
+          </Row>
+          <ElementBottomStatusBar
+            blockNumber={endpoint.prevBlockNumber}
+            networkName={endpoint.networkInfo.name}
+            networkError={endpoint.networkError}
+            networkStatus={endpoint.networkStatus} />
+        </div>
+      );
+    }
 
     if (user.isManager) {
       const { bids, asks, spread, aggregated } = this.props.exchange.orderBook
@@ -289,8 +450,21 @@ class ApplicationExchangeHome extends Component {
       // console.log(this.props.exchange.selectedExchange)
       // const bidsOrderNormalizedFilled = [ ...Array(20 - bidsOrderNormalized.length).fill(null), ...bidsOrderNormalized ]
       // const asksOrderNormalizedFilled = [ ...Array(20 - asksOrderNormalized.length).fill(null), ...asksOrderNormalized]
-      const selectedOrder = { ...exchange.selectedOrder }
-      console.log(aggregated)
+      // console.log(this.props.transactionsDrago.manager.list)
+      const { prices, chartData, fundOrders } = this.props.exchange
+      var currentPrice = "1"
+      var previousPrice = "0"
+      var priceVariation = "0.00"
+      if (typeof prices[this.props.exchange.selectedTokensPair.baseToken.symbol].priceEth !== 'undefined') {
+        currentPrice = new BigNumber(prices[this.props.exchange.selectedTokensPair.baseToken.symbol].priceEth)
+      }
+      if (typeof prices.previous[this.props.exchange.selectedTokensPair.baseToken.symbol] !== 'undefined') {
+        previousPrice = new BigNumber(prices.previous[this.props.exchange.selectedTokensPair.baseToken.symbol].priceEth)
+      }
+      if (priceVariation !== '0.00') {
+        priceVariation = currentPrice.sub(previousPrice).div(previousPrice).mul(100).toFixed(2)
+      }
+
       return (
         <div ref={node => this.node = node}>
           <Row className={styles.maincontainer}>
@@ -303,33 +477,50 @@ class ApplicationExchangeHome extends Component {
                       onSelectFund={this.onSelectFund} />
                   </Col>
                   <Col xs={2}>
-                    <TokenLiquidity liquidity={exchange.selectedFund.liquidity} />
+                    <TokenLiquidity
+                      liquidity={exchange.selectedFund.liquidity}
+                      loading={exchange.loading.liquidity} />
                   </Col>
-                  <Col xs={4}>
+                  <Col xs={2}>
                     <TokenTradeSelector
                       selectedTradeTokensPair={exchange.selectedTokensPair}
                       onSelectTokenTrade={this.onSelectTokenTrade}
                     />
                   </Col>
+                  <Col xs={4}>
+                    <TokenPrice
+                      selectedTradeTokensPair={exchange.selectedTokensPair}
+                      tokenPrice={currentPrice.toFixed(6)}
+                      priceVariation={priceVariation}
+                    />
+                  </Col>
                 </Row>
               </ Paper>
             </Col>
+            {/* <Col xs={12}>
+              <ChartBox data={this.state.chartData} />
+            </Col> */}
             <Col xs={12}>
               <Row>
-                <Col xs={6}>
+                <Col xs={3}>
                   <OrderBox />
-                  <Col xs={12}>
-                    <FlatButton primary={true} label="Submit"
-                      labelStyle={{ fontWeight: 700, fontSize: '18px' }}
-                      onClick={this.onButtonTest}
-                    />
-                    <FlatButton primary={true} label="Submit2"
-                      labelStyle={{ fontWeight: 700, fontSize: '18px' }}
-                      onClick={this.onButtonTest2}
-                    />
-                  </Col>
                 </Col>
-                <Col xs={6}>
+                <Col xs={7}>
+                  <Row>
+                    <Col xs={12}>
+                      <ChartBox
+                        data={chartData}
+                        loading={exchange.loading.marketBox}
+                      />
+                    </Col>
+                    <Col xs={12}>
+                      <OrdersHistory
+                        fundOrders={fundOrders}
+                      />
+                    </Col>
+                  </Row>
+                </Col>
+                <Col xs={2}>
                   <OrderBook
                     bidsOrders={bidsOrderNormalized}
                     asksOrders={asksOrderNormalized}
@@ -337,8 +528,8 @@ class ApplicationExchangeHome extends Component {
                     aggregated={aggregated}
                     onToggleAggregateOrders={this.onToggleAggregateOrders}
                   />
-                  {/* <ElementListBids list={this.state.bidsList} /> */}
                 </Col>
+
 
               </Row>
             </Col>
@@ -397,7 +588,7 @@ class ApplicationExchangeHome extends Component {
   }
 
   onNewEventZeroExExchange = (error, event) => {
-    console.log(event)
+
   }
 
   connectToExchange = async (tradeTokensPair) => {
@@ -411,37 +602,63 @@ class ApplicationExchangeHome extends Component {
       fromBlock: 0,
       toBlock: 'latest'
     }, this.onNewEventZeroExExchange)
-    exchangeUtils.tradeTokensPair = tradeTokensPair
-
-    this.setState({
-      exchangeUtils: exchangeUtils,
-      // orders: {
-      //   bidsOrders: bidsOrders, 
-      //   asksOrders: asksOrders
-      // },
-      // ws: ws
+    var filter = {
+      networkId: this.props.exchange.relay.networkId,
+      baseTokenAddress: this.props.exchange.selectedTokensPair.baseToken.address,
+      quoteTokenAddress: this.props.exchange.selectedTokensPair.quoteToken.address,
+      aggregated: this.props.exchange.orderBook.aggregated
+    }
+    this.props.dispatch(this.relayGetOrders(filter))
+    this.props.dispatch({
+      type: RELAY_OPEN_WEBSOCKET, payload: {
+        url: 'wss://api.ercdex.com',
+        baseTokenAddress: this.props.exchange.selectedTokensPair.baseToken.address,
+        quoteTokenAddress: this.props.exchange.selectedTokensPair.quoteToken.address
+      }
     })
   }
 
   // Getting last transactions
-  getTransactions = (dragoAddress, accounts) => {
+  async getSelectedFundDetails(dragoAddress, accounts) {
     const { api } = this.context
     // const options = {balance: false, supply: true}
     const options = { balance: false, supply: true, limit: 10, trader: false }
-    utils.getTransactionsDragoOptV2(api, dragoAddress, accounts, options)
-      .then(results => {
-        const createdLogs = results[1].filter(event => {
-          return event.type !== 'BuyDrago' && event.type !== 'SellDrago'
-        })
-        results[1] = createdLogs
-        this.props.dispatch(this.updateTransactionsDragoAction(results))
+    try {
+      const results = await utils.getTransactionsDragoOptV2(api, dragoAddress, accounts, options)
+      const createdLogs = results[1].filter(event => {
+        return event.type !== 'BuyDrago' && event.type !== 'SellDrago'
+      })
+      console.log(results)
+      results[1] = createdLogs
+      results[2].sort(function (a, b) {
+        var keyA = a.symbol,
+          keyB = b.symbol;
+        // Compare the 2 dates
+        if (keyA < keyB) return -1;
+        if (keyA > keyB) return 1;
+        return 0;
+      });
+      this.props.dispatch(this.updateTransactionsDragoAction(results))
+
+      if (results[2].length !== 0) {
+        // Getting fund orders
+        this.props.dispatch(this.getFundOrders(
+          this.props.exchange.relay.networkId,
+          results[2][0].address.toLowerCase(),
+          this.props.exchange.selectedTokensPair.baseToken.address,
+          this.props.exchange.selectedTokensPair.quoteToken.address,
+        )
+        )
+        this.onSelectFund(results[2][0])
+      } else {
         this.setState({
-          loading: false,
+          managerHasNoFunds: true,
         });
-      })
-      .catch((error) => {
-        console.warn(error)
-      })
+      }
+
+    } catch (error) {
+      console.warn(error)
+    }
   }
 
 }

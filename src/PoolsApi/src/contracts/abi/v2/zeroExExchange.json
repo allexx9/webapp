@@ -362,7 +362,7 @@
         "inputs": [
             {
                 "name": "orderAddresses",
-                "type": "address[]"
+                "type": "address[5]"
             },
             {
                 "name": "orderValues",

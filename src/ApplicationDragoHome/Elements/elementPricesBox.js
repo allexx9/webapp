@@ -1,4 +1,4 @@
-import  * as Colors from 'material-ui/styles/colors'
+import * as Colors from 'material-ui/styles/colors'
 import AppBar from 'material-ui/AppBar';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -15,36 +15,17 @@ export default class ElementPriceBox extends Component {
     isManager: PropTypes.bool
   };
 
-  buttonBuyClick = () =>{
+  buttonBuyClick = () => {
     this.props.handleBuySellButtons('buy')
   }
-  
-  buttonSellClick = () =>{
+
+  buttonSellClick = () => {
     this.props.handleBuySellButtons('sell')
   }
-  
-  render () {
-    const priceBoxHeader = {
-      buy: {
-        backgroundColor: Colors.green300
-      },
-      sell: {
-        backgroundColor: Colors.red300
-      },
-      marketPrice: {
-        backgroundColor: Colors.blue500,
-        fontWeight: 500
-      },
-    }
 
-    const priceBoxHeaderTitleStyle = {
-      padding: 0,
-      textAlign: 'center',
-      fontSize: 20,
-      fontWeight: 500,
-    }
+  render() {
 
-    const {dragoDetails, isManager} = this.props
+    const { dragoDetails, isManager } = this.props
 
     const buttonBuyStyle = {
       border: "1px solid",
@@ -58,30 +39,20 @@ export default class ElementPriceBox extends Component {
       // width: "140px"
     }
 
-    if(!isManager) {
+    if (!isManager) {
       return (
         <div>
-          <Row>
-            <Col xs={12} className={styles.boxHeader}>
-              <AppBar
-                title="TRADE"
-                showMenuIconButton={false}
-                style={priceBoxHeader.marketPrice}
-                titleStyle={priceBoxHeaderTitleStyle}
-              />
-            </Col>
-          </Row>
           <Row middle="xs" className={styles.row}>
 
             <Col xs={6}>
-              <div className={styles.price}>{dragoDetails.sellPrice} <small>ETH</small></div>
+              <div className={styles.price}>{dragoDetails.sellPrice} <small className={styles.tokenSymbol}>ETH</small></div>
             </Col>
             <Col xs={6}>
-              <div className={styles.price}>{dragoDetails.buyPrice} <small>ETH</small></div>
+              <div className={styles.price}>{dragoDetails.buyPrice} <small className={styles.tokenSymbol}>ETH</small></div>
             </Col>
           </Row>
           <Row middle="xs" className={styles.row}>
-          <Col xs={6}>
+            <Col xs={6}>
               <div className={styles.actionButton}><FlatButton primary={true} label="Sell"
                 labelStyle={{ fontWeight: 700, fontSize: '18px', color: Colors.red500 }}
                 onClick={this.buttonSellClick}
@@ -102,37 +73,27 @@ export default class ElementPriceBox extends Component {
       );
     }
 
-    if(isManager) {
+    if (isManager) {
       return (
         <div>
-          <Row>
-            <Col xs={12} className={styles.boxHeader}>
-              <AppBar
-                title="MARKET"
-                showMenuIconButton={false}
-                style={priceBoxHeader.marketPrice}
-                titleStyle={priceBoxHeaderTitleStyle}
-              />
-            </Col>
-          </Row>
           <Row middle="xs">
-            <Col xs={4}>
-              <div className={styles.buyHeader}>
-                Ask
-              </div>
-            </Col>
-            <Col xs={7}>
-              <div className={styles.price}>{dragoDetails.buyPrice} ETH</div>
-            </Col>
-          </Row>
-          <Row middle="xs">
-            <Col xs={4}>
+            <Col xs={6}>
               <div className={styles.sellHeader}>
-                Bid
+                BID
               </div>
             </Col>
-            <Col xs={7}>
-              <div className={styles.price}>{dragoDetails.sellPrice} ETH</div>
+            <Col xs={6}>
+            <div className={styles.buyHeader}>
+                ASK
+              </div>
+            </Col>
+          </Row>
+          <Row middle="xs">
+            <Col xs={6}>
+              <div className={styles.price}>{dragoDetails.sellPrice} <small className={styles.tokenSymbol}>ETH</small></div>
+            </Col>
+            <Col xs={6}>
+              <div className={styles.price}>{dragoDetails.buyPrice} <small className={styles.tokenSymbol}>ETH</small></div> 
             </Col>
           </Row>
         </div>

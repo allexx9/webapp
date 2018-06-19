@@ -9,6 +9,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Web3 from 'web3'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import 'react-virtualized/styles.css'
 
 import ApplicationConfigPage from './Application/applicationConfig';
 import ApplicationDragoPage from './Application/applicationDrago';
@@ -33,6 +34,8 @@ import {
 import {
   ATTACH_INTERFACE,
   UPDATE_INTERFACE,
+  INIT_NOTIFICATION,
+  TOKEN_PRICE_TICKER_OPEN_WEBSOCKET
 } from './_utils/const'
 import utils from './_utils/utils'
 import { Interfaces } from './_utils/interfaces'
@@ -42,19 +45,17 @@ import PoolsApi from './PoolsApi/src'
 import AppLoading from './Elements/elementAppLoading'
 // import NotConnected from './Elements/notConnected'
 import ReactGA from 'react-ga';
-// import Actions from './actions/actions'
 
 var appHashPath = true;
 var sourceLogClass = null
 const isConnectedTimeout = 4000
 const isMetaMaskUnlockedTimeout = 1000
-var subscriptionData = {}
 
 ReactGA.initialize('UA-117171641-1');
 ReactGA.pageview(window.location.pathname + window.location.search);
 
 // Detectiong if the app is running inside Parity client
-var pathArray = window.location.hash.split('/');
+// var pathArray = window.location.hash.split('/');
 // console.log(pathArray[2]);
 if (typeof window.parity !== 'undefined') {
   // Need to check if this works inside the Parity UI
@@ -93,7 +94,7 @@ export class App extends Component {
   scrollPosition = 0
   tdIsConnected = null
   tdIsMetaMaskUnlocked = null
-  
+
   // Defining the properties of the context variables passed down to children
   static childContextTypes = {
     api: PropTypes.object,
@@ -127,17 +128,18 @@ export class App extends Component {
           resolve(result);
         })
       })
-      .catch(error => {
-        console.log(error)
-        var newEndpoint = { ...this.props.endpoint }
-        newEndpoint.networkStatus = MSG_NETWORK_STATUS_ERROR
-        newEndpoint.networkError = NETWORK_WARNING
-        this.props.dispatch(this.updateInterfaceAction(newEndpoint))
-        this.setState({
-          appLoading: false,
-          isConnected: false,
+        .catch(error => {
+          console.log(error)
+          var newEndpoint = { ...this.props.endpoint }
+          newEndpoint.networkStatus = MSG_NETWORK_STATUS_ERROR
+          newEndpoint.networkError = NETWORK_WARNING
+          this.props.dispatch(this.updateInterfaceAction(newEndpoint))
+          this.setState({
+            appLoading: false,
+            isConnected: false,
+          })
+          return
         })
-      })
     }
   };
 
@@ -149,23 +151,33 @@ export class App extends Component {
   };
 
   shouldComponentUpdate(nextProps, nextState) {
+    // console.log(this.props.user.isManager)
     const propsUpdate = (!utils.shallowEqual(this.props, nextProps))
     const stateUpdate = (!utils.shallowEqual(this.state, nextState))
     // console.log(`${sourceLogClass} -> propsUpdate: %c${propsUpdate}.%c stateUpdate: %c${stateUpdate}`, `color: ${propsUpdate ? 'green' : 'red'}; font-weight: bold;`,'',`color: ${stateUpdate ? 'green' : 'red'}; font-weight: bold;`)
-    return stateUpdate || propsUpdate 
+    return stateUpdate || propsUpdate
   }
 
   componentDidMount() {
-    this._notificationSystem = this.refs.notificationSystem
+    this.props.dispatch({
+      type: INIT_NOTIFICATION,
+      payload: this._notificationSystem
+    })
+    this.props.dispatch({type: TOKEN_PRICE_TICKER_OPEN_WEBSOCKET})
     this.props.dispatch(this.attachInterfaceAction())
+    setTimeout(() => { 
+      this.setState({
+        appLoading: false,
+      })
+    }, 5000);
   }
 
   componentWillMount() {
     // Starting connection checking. this is not necessary runnin inside Parity UI
     // because the checki is done by Parity and a messagge will be displayed by the client
     if (this.props.endpoint.endpointInfo.name !== 'local') {
-      this.tdIsConnected = setTimeout(this.checkConnectionToNode,1000)
-      this.tdIsMetaMaskUnlocked = setTimeout(this.checkMetaMaskUnlocked,isMetaMaskUnlockedTimeout)
+      this.tdIsConnected = setTimeout(this.checkConnectionToNode, 1000)
+      this.tdIsMetaMaskUnlocked = setTimeout(this.checkMetaMaskUnlocked, isMetaMaskUnlockedTimeout)
     }
   }
 
@@ -180,7 +192,7 @@ export class App extends Component {
 
   componentWillUpdate() {
   }
-  
+
 
   // This function is passed down with context and used as a call back function to show a warning page
   // if the connection with the node drops
@@ -190,7 +202,7 @@ export class App extends Component {
     })
   }
 
-  checkConnectionToNode = () =>{
+  checkConnectionToNode = () => {
     if (this._api.isConnected) {
       if (!this.state.isConnected) {
         this.props.dispatch(this.attachInterfaceAction())
@@ -199,21 +211,21 @@ export class App extends Component {
         isConnected: true
       })
       this._api.eth.syncing()
-      .then(result => {
-        if(result !== false) {
-          this.setState({
-            isSyncing: true,
-            syncStatus: result
-          })
-        }
-      })
-      this.tdIsConnected = setTimeout(this.checkConnectionToNode,isConnectedTimeout)
+        .then(result => {
+          if (result !== false) {
+            this.setState({
+              isSyncing: true,
+              syncStatus: result
+            })
+          }
+        })
+      this.tdIsConnected = setTimeout(this.checkConnectionToNode, isConnectedTimeout)
     } else {
       this.setState({
         isConnected: false
-      })  
-      this.tdIsMetaMaskUnlocked = setTimeout(this.checkConnectionToNode,isConnectedTimeout)
-    }    
+      })
+      this.tdIsMetaMaskUnlocked = setTimeout(this.checkConnectionToNode, isConnectedTimeout)
+    }
   }
 
   checkMetaMaskUnlocked = () => {
@@ -223,36 +235,36 @@ export class App extends Component {
       var newEndpoint = { ...endpoint }
       var newAccounts = [].concat(endpoint.accounts)
       web3.eth.getAccounts()
-      .then((accountsMetaMask) => {
-        // If MetaMask is unlocked then remove from accounts list.
-        if (accountsMetaMask.length === 0) {
-          // Checking if MetaMask was already locked in order to avoid unnecessary update of the state
-          let metaMaskAccountIndex = endpoint.accounts.findIndex(account => {
-            return (account.source === 'MetaMask')
-          });
-          if (metaMaskAccountIndex !== -1) {
-            newAccounts.splice(metaMaskAccountIndex, 1)
-            newEndpoint.accounts = newAccounts
-            this.props.dispatch(this.updateInterfaceAction(newEndpoint))
-          }
-        } else {
-          // Checking if the MetaMask account is already in accounts list.
-          let metaMaskAccountIndex = endpoint.accounts.findIndex(account => {
-            return (account.address === accountsMetaMask[0])
-          });
-          // If it is NOT then add it to the accounts list.
-          if (metaMaskAccountIndex < 0) {
-            const networkId = this.props.endpoint.networkInfo.id
-            const blockchain = new Interfaces(this._api, networkId)
-            return blockchain.attachInterfaceInfuraV2()
-              .then((result) => {
-                if (result.accounts.length !== 0) {
-                  newAccounts.push(result.accounts[0]) 
-                } 
-                newEndpoint.accounts = newAccounts
-                this.props.dispatch(this.updateInterfaceAction(newEndpoint))
-                return result
-              })
+        .then((accountsMetaMask) => {
+          // If MetaMask is unlocked then remove from accounts list.
+          if (accountsMetaMask.length === 0) {
+            // Checking if MetaMask was already locked in order to avoid unnecessary update of the state
+            let metaMaskAccountIndex = endpoint.accounts.findIndex(account => {
+              return (account.source === 'MetaMask')
+            });
+            if (metaMaskAccountIndex !== -1) {
+              newAccounts.splice(metaMaskAccountIndex, 1)
+              newEndpoint.accounts = newAccounts
+              this.props.dispatch(this.updateInterfaceAction(newEndpoint))
+            }
+          } else {
+            // Checking if the MetaMask account is already in accounts list.
+            let metaMaskAccountIndex = endpoint.accounts.findIndex(account => {
+              return (account.address === accountsMetaMask[0])
+            });
+            // If it is NOT then add it to the accounts list.
+            if (metaMaskAccountIndex < 0) {
+              const networkId = this.props.endpoint.networkInfo.id
+              const blockchain = new Interfaces(this._api, networkId)
+              return blockchain.attachInterfaceInfuraV2()
+                .then((result) => {
+                  if (result.accounts.length !== 0) {
+                    newAccounts.push(result.accounts[0])
+                  }
+                  newEndpoint.accounts = newAccounts
+                  this.props.dispatch(this.updateInterfaceAction(newEndpoint))
+                  return result
+                })
             }
           }
           return endpoint.accounts
@@ -261,7 +273,7 @@ export class App extends Component {
         .then(() => {
           this.tdIsConnected = setTimeout(this.checkMetaMaskUnlocked, isMetaMaskUnlockedTimeout)
         })
-        .catch(() =>{
+        .catch(() => {
           let metaMaskAccountIndex = endpoint.accounts.findIndex(account => {
             return (account.source === 'MetaMask')
           });
@@ -290,18 +302,22 @@ export class App extends Component {
     return (
       <div>
         {this.state.appLoading
-          ? <Router history={history}>
-            <AppLoading ></AppLoading>
-          </Router>
+          ?
+          <div>
+            <NotificationSystem ref={n => this._notificationSystem = n} style={notificationStyle} />
+            <Router history={history}>
+              <AppLoading ></AppLoading>
+            </Router>
+          </div>
           : <div><NotificationSystem ref={n => this._notificationSystem = n} style={notificationStyle} />
             <Router history={history}>
               <Switch>
                 <Route exact path={"/app/" + appHashPath + "/home"} component={ApplicationHomePage} />
                 <Route path={"/app/" + appHashPath + "/vault"} component={ApplicationVaultPage} />
                 <Route path={"/app/" + appHashPath + "/drago"} component={ApplicationDragoPage} />
-                {/* <Route path={"/app/" + appHashPath + "/exchange"} component={ApplicationExchangePage} /> */}
+                <Route path={"/app/" + appHashPath + "/exchange"} component={ApplicationExchangePage} />
                 <Route path={"/app/" + appHashPath + "/config"} component={ApplicationConfigPage} />
-                {/* <Redirect from="/exchange/" to={"/app/" + appHashPath + "/exchange"} /> */}
+                <Redirect from="/exchange/" to={"/app/" + appHashPath + "/exchange"} />
                 <Redirect from="/vault/" to={"/app/" + appHashPath + "/vault"} />
                 <Redirect from="/drago" to={"/app/" + appHashPath + "/drago"} />
                 <Redirect from="/" to={"/app/" + appHashPath + "/home"} />
@@ -336,24 +352,23 @@ export class App extends Component {
     const networkId = this.props.endpoint.networkInfo.id
     const networkName = this.props.endpoint.networkInfo.name
     var subscriptionData
-    var endpoint = {}
     var blockchain = new Interfaces(this._api, networkId)
-      switch (selectedEndpoint) {
-        case INFURA:
-          console.log(`${sourceLogClass} -> ${INFURA}`)
-          return blockchain.attachInterfaceInfuraV2(this._api, networkId)
-            .then((attachedInterface) => {
-              // this.setState({...this.state, ...blockchain.success})
-              // Subscribing to newBlockNumber event
-              // Setting connection to node
-              if (PROD) {
-                WsSecureUrl = this.props.endpoint.endpointInfo.wss[networkName].prod
-              } else {
-                WsSecureUrl = this.props.endpoint.endpointInfo.wss[networkName].dev
-              }
-              // Infura does not support WebSocket for Kovan yet.
-              if (networkName === KOVAN) {
-                return this._api.subscribe('eth_blockNumber', this.onNewBlockNumber)
+    switch (selectedEndpoint) {
+      case INFURA:
+        console.log(`${sourceLogClass} -> ${INFURA}`)
+        return blockchain.attachInterfaceInfuraV2(this._api, networkId)
+          .then((attachedInterface) => {
+            // this.setState({...this.state, ...blockchain.success})
+            // Subscribing to newBlockNumber event
+            // Setting connection to node
+            if (PROD) {
+              WsSecureUrl = this.props.endpoint.endpointInfo.wss[networkName].prod
+            } else {
+              WsSecureUrl = this.props.endpoint.endpointInfo.wss[networkName].dev
+            }
+            // Infura does not support WebSocket for Kovan yet.
+            if (networkName === KOVAN) {
+              return this._api.subscribe('eth_blockNumber', this.onNewBlockNumber)
                 .then((subscriptionID) => {
                   console.log(`${sourceLogClass}: Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);
                   subscriptionData = subscriptionID
@@ -372,7 +387,7 @@ export class App extends Component {
                   })
                   // this.props.dispatch(this.updateInterfaceAction(newEndpoint))
                 });
-              } else {
+            } else {
               // Subscribing to newBlockNumber event
               const web3 = new Web3(WsSecureUrl)
               return Promise
@@ -386,96 +401,106 @@ export class App extends Component {
                   this.setState({
                     appLoading: false
                   })
-                  return attachedInterface
-                })  
-                .catch((error) => {
-                  console.warn('error subscription', error)
-                  this.setState({
-                    appLoading: false,
-                    isConnected: false,
-                  })
-                });
-              }
-
-            })
-            .catch(()=>{
-              // this.setState({...this.state, ...blockchain.error})
-              this.setState({
-                appLoading: false,
-                isConnected: false,
-              })
-            })
-        case RIGOBLOCK:
-          console.log(`${sourceLogClass} -> ${RIGOBLOCK}`)
-          return blockchain.attachInterfaceRigoBlockV2(this._api, networkId)
-            .then((attachedInterface) => {
-              // Setting connection to node
-              if (PROD) {
-                WsSecureUrl = this.props.endpoint.endpointInfo.wss[networkName].prod
-              } else {
-                WsSecureUrl = this.props.endpoint.endpointInfo.wss[networkName].dev
-              }
-              // Subscribing to newBlockNumber event
-              const web3 = new Web3(WsSecureUrl)
-              return Promise
-                .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
-                .then(result => {
-                  var subscription = result[0]
-                  console.log(`${sourceLogClass}: Subscribed to eth_blockNumber`);
-                  subscriptionData = subscription
-                  attachedInterface.subscriptionData = subscriptionData
-                  attachedInterface.prevBlockNumber = "0"
-                  this.setState({
-                    appLoading: false
-                  })
-                  return attachedInterface
-                })  
-                .catch((error) => {
-                  console.warn('error subscription', error)
-                  this.setState({
-                    appLoading: false,
-                    isConnected: false,
-                  })
-                });
-            })
-            .catch(()=>{
-              this.setState(...this.state, ...blockchain.error)
-              this.setState({
-                appLoading: false,
-                isConnected: false,
-              })
-            })
-        case LOCAL:
-          console.log(`${sourceLogClass} -> ${LOCAL}`)
-          return blockchain.attachInterfaceRigoBlockV2(this._api, networkId)
-            .then((attachedInterface) => {
-              // Setting connection to node
-              if (PROD) {
-                WsSecureUrl = EP_RIGOBLOCK_KV_PROD_WS
-              } else {
-                WsSecureUrl = EP_RIGOBLOCK_KV_DEV_WS
-              }
-              // Subscribing to newBlockNumber event
-              const web3 = new Web3(WsSecureUrl)
-              return Promise
-                .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
-                .then(result => {
-                  var subscription = result[0]
-                  console.log(`${sourceLogClass}: Subscribed to eth_blockNumber`);
-                  subscriptionData = subscription
-                  attachedInterface.subscriptionData = subscriptionData
-                  attachedInterface.prevBlockNumber = "0"
                   return attachedInterface
                 })
+                .catch((error) => {
+                  console.warn('error subscription', error)
+                  this.setState({
+                    appLoading: false,
+                    isConnected: false,
+                  })
+                  return attachedInterface
+                });
+            }
+
+          })
+          .catch(() => {
+            // this.setState({...this.state, ...blockchain.error})
+            this.setState({
+              appLoading: false,
+              isConnected: false,
             })
-            .catch(()=>{
-              // this.setState({...this.state, ...blockchain.error})
+          })
+      case RIGOBLOCK:
+        console.log(`${sourceLogClass} -> ${RIGOBLOCK}`)
+        return blockchain.attachInterfaceRigoBlockV2(this._api, networkId)
+          .then((attachedInterface) => {
+            // Setting connection to node
+            if (PROD) {
+              WsSecureUrl = this.props.endpoint.endpointInfo.wss[networkName].prod
+            } else {
+              WsSecureUrl = this.props.endpoint.endpointInfo.wss[networkName].dev
+            }
+            // Subscribing to newBlockNumber event
+            var web3
+            try {
+              console.log(`${sourceLogClass}: Connectiong to Websocket ${WsSecureUrl}`);
+              web3 = new Web3(WsSecureUrl)
+            } catch (error) {
+              throw error
+            }
+            
+            return Promise
+              .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
+              .then(result => {
+                var subscription = result[0]
+                console.log(`${sourceLogClass}: Subscribed to eth_blockNumber`);
+                subscriptionData = subscription
+                attachedInterface.subscriptionData = subscriptionData
+                attachedInterface.prevBlockNumber = "0"
+                this.setState({
+                  appLoading: false
+                })
+                return attachedInterface
+              })
+              .catch((error) => {
+                console.warn('error subscription', error)
+                this.setState({
+                  appLoading: false,
+                  isConnected: false,
+                })
+              });
+          })
+          .catch(() => {
+            this.setState(...this.state, ...blockchain.error)
+            this.setState({
+              appLoading: false,
+              isConnected: false,
             })
-      }
+          })
+      case LOCAL:
+        console.log(`${sourceLogClass} -> ${LOCAL}`)
+        return blockchain.attachInterfaceRigoBlockV2(this._api, networkId)
+          .then((attachedInterface) => {
+            // Setting connection to node
+            if (PROD) {
+              WsSecureUrl = EP_RIGOBLOCK_KV_PROD_WS
+            } else {
+              WsSecureUrl = EP_RIGOBLOCK_KV_DEV_WS
+            }
+            // Subscribing to newBlockNumber event
+            const web3 = new Web3(WsSecureUrl)
+            return Promise
+              .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
+              .then(result => {
+                var subscription = result[0]
+                console.log(`${sourceLogClass}: Subscribed to eth_blockNumber`);
+                subscriptionData = subscription
+                attachedInterface.subscriptionData = subscriptionData
+                attachedInterface.prevBlockNumber = "0"
+                return attachedInterface
+              })
+          })
+          .catch(() => {
+            // this.setState({...this.state, ...blockchain.error})
+          })
+      default:
+      return
+    }
 
   }
 
-  onNewBlockNumber = (_error, blockNumber ) => {
+  onNewBlockNumber = (_error, blockNumber) => {
     utils.logger.disable()
     if (_error) {
       console.error('onNewBlockNumber', _error)
@@ -531,7 +556,7 @@ export class App extends Component {
           prevAccounts.map((account, index) => {
             // Checking ETH balance
             const newEthBalance = this._api.util.fromWei(ethBalances[index]).toFormat(3)
-            if ((account.ethBalance !== newEthBalance) && prevBlockNumber != 0) {
+            if ((account.ethBalance !== newEthBalance) && prevBlockNumber !== 0) {
               console.log(`${account.name} balance changed.`)
               let secondaryText = []
               let balDifference = account.ethBalance - newEthBalance
@@ -555,7 +580,7 @@ export class App extends Component {
             }
             // Checking GRG balance
             const newRigoTokenBalance = this._api.util.fromWei(rigoTokenBalances[index]).toFormat(3)
-            if ((account.rigoTokenBalance !== newRigoTokenBalance) && prevBlockNumber != 0) {
+            if ((account.rigoTokenBalance !== newRigoTokenBalance) && prevBlockNumber !== 0) {
               console.log(`${account.name} balance changed.`)
               let secondaryText = []
               let balDifference = account.rigoTokenBalance - newRigoTokenBalance
@@ -577,7 +602,7 @@ export class App extends Component {
                 });
               }
             }
-            return
+            return null
           })
           return [ethBalances, rigoTokenBalances]
         })
@@ -627,17 +652,17 @@ export class App extends Component {
         });
     }
     else {
-      const newEndpoint = {...endpoint}
+      const newEndpoint = { ...endpoint }
       newEndpoint.prevBlockNumber = newBlockNumber.toFixed()
-      this.props.dispatch(this.updateInterfaceAction(newEndpoint))  
+      this.props.dispatch(this.updateInterfaceAction(newEndpoint))
     }
     utils.logger.enable()
   }
 
   detachInterface = () => {
     const { subscriptionData } = this.state
-    Interfaces.detachInterface(this._api,subscriptionData)
-  } 
+    Interfaces.detachInterface(this._api, subscriptionData)
+  }
 }
 
 export default connect(mapStateToProps)(App)

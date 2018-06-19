@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import styles from './notConnected.module.css'
 import {APP, DS} from '../_utils/const.js'
 import FlatButton from 'material-ui/FlatButton';
+import SectionHeader from '../_atomic/atoms/sectionHeader';
 
 
 // Workaround:
@@ -55,7 +56,7 @@ class NetworkAlert extends Component {
         <Col xs={12}>
           <Row className={styles.modalHeaderActions} middle="xs" center="xs">
             <Col xs>
-              <img src="img/rb_black.png" alt="logo" />
+              <img src="img/Logo-RigoblockRGB-OUT-01.png" alt="logo" />
             </Col>
           </Row>
         </Col>
@@ -83,17 +84,23 @@ class NetworkAlert extends Component {
         style={ style.dialogRoot }
         repositionOnUpdate={ false }
       >
-        <Row>
-          <Col xs={12}>
+        <div className={styles.detailsBoxContainer}>
+          <Grid fluid>
+            <Row>
+              <Col xs={12} >
+                <SectionHeader
+                  titleText='NETWORK ERROR'
+                />
+              </Col>
+            </Row>
             <Row>
               <Col xs={12}>
-                <h3 className={styles.warningText}>NETWORK ERROR</h3>
-                <p>We have detected that your MetaMask is not connected to the correct network.</p>
+              <p>We have detected that your MetaMask is not connected to the correct network.</p>
                 <p>Please verify that the network selected in the {<Link to={DS + APP + DS + this.buildUrlPath() + DS + "config"}>config</Link>} page matches with your MetaMask settings.</p>
               </Col>
             </Row>
-          </Col>
-        </Row>
+          </Grid>
+        </div>
       </Dialog>
     )
   }

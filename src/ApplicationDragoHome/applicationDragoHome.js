@@ -5,10 +5,6 @@ import ApplicationDragoManager from './ApplicationDragoManager'
 import ApplicationDragoTrader from './ApplicationDragoTrader'
 import Loading from '../_atomic/atoms/loading';
 import styles from './applicationDragoHome.module.css';
-
-import {
-  DEFAULT_NETWORK_NAME,
-} from '../_utils/const'
 import { Row, Col } from 'react-flexbox-grid';
 import LeftSideDrawerFunds from '../Elements/leftSideDrawerFunds';
 import PropTypes from 'prop-types';
@@ -16,8 +12,6 @@ import utils from '../_utils/utils'
 import ElementNotificationsDrawer from '../Elements/elementNotificationsDrawer'
 import CheckAuthPage from '../Elements/checkAuthPage'
 import ElementBottomStatusBar from '../Elements/elementBottomStatusBar'
-import DragoComingSoon from '../Elements/elementDragoComingSoon'
-
 
 import { connect } from 'react-redux';
 
@@ -62,7 +56,7 @@ class ApplicationDragoHome extends Component {
     // Saving the scroll position. Neede in componentDidUpdate in order to avoid the the page scroll to be
     // set top
     const element = this.node
-    if (element != null) {
+    if (element !== null) {
       this.scrollPosition = window.scrollY
     }
     return stateUpdate || propsUpdate 
@@ -88,13 +82,13 @@ class ApplicationDragoHome extends Component {
     console.log(`${this.sourceLogClass} -> componentDidUpdate`);
     // const element = ReactDOM.findDOMNode(this);
     const element = this.node
-    if (element != null) {
+    if (element !== null) {
       window.scrollTo(0, this.scrollPosition)
     }
     // Setting focus on the element active before component re-render
     if (this.activeElement.id !== "") {
       const activeElement = document.getElementById(this.activeElement.id);
-      if (activeElement != null) {
+      if (activeElement !== null) {
         activeElement.focus()
       }
     }
@@ -215,7 +209,6 @@ class ApplicationDragoHome extends Component {
             <Col xs={10}>
               <ApplicationDragoTrader
                 blockNumber={blockNumber}
-                accounts={endpoint.accounts}
                 ethBalance={endpoint.ethBalance}
                 accountsInfo={endpoint.accountsInfo}
                 isManager={user.isManager}

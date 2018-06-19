@@ -13,12 +13,133 @@ import * as abis from '../PoolsApi/src/contracts/abi'
 import { ZeroEx } from '0x.js';
 import { BigNumber } from '@0xproject/utils';
 // import ReconnectingWebSocket from 'reconnectingwebsocket'
-import { HttpClient } from '@0xproject/connect';
 import rp from 'request-promise'
-import { Aqueduct, MarketOrder } from 'aqueduct';
+import PoolApi from '../PoolsApi/src'
 
-export const getOrderBookFromRelayERCDex = (networkId, baseTokenAddress, quoteTokenAddress) => {
-  console.log('Fetching orderbook from ERCDex')
+
+export const  setAllowaceOnExchangeThroughDrago = (selectedFund, token, selectedExchange, amount) => {
+  // var provider = account.source === 'MetaMask' ? window.web3 : api
+  var poolApi = null;
+  poolApi = new PoolApi(window.web3)
+  poolApi.contract.drago.init(selectedFund.details.address)
+  console.log('selectedFund.details.address ', selectedFund.details.address)
+  console.log('tokenTransferProxyAddress ', selectedExchange.tokenTransferProxyAddress)
+  console.log('token.address ', token.address)
+  console.log('selectedFund.managerAccount ', selectedFund.managerAccount)
+  console.log('amount ', amount)
+  return poolApi.contract.drago.setInfiniteAllowaceOnExchange(
+    selectedFund.managerAccount,
+    token.address,
+    selectedFund.details.address,
+    selectedExchange.tokenTransferProxyAddress,
+    amount
+  )
+}
+
+export const getPricesFromRelayERCdEX = () => {
+  console.log('Fetching tokens prices from ERCdEX')
+  var options = {
+    method: 'GET',
+    url: `https://api.ercdex.com/api/reports/ticker`,
+    qs: {},
+    json: true // Automatically stringifies the body to JSON
+  };
+  console.log(options)
+  return rp(options)
+}
+
+export const getOrdersFromRelayERCdEX = ( networkId, maker, baseTokenAddress, quoteTokenAddress) => {
+  console.log('Fetching open orders from ERCdEX')
+  if (!networkId) {
+    throw new Error('networkId needs to be set')
+  }
+  if (!maker) {
+    throw new Error('maker needs to be set')
+  }
+  if (!baseTokenAddress) {
+    throw new Error('baseTokenAddress needs to be set')
+  }
+  if (!quoteTokenAddress) {
+    throw new Error('quoteTokenAddress needs to be set')
+  }
+  var options = {
+    method: 'GET',
+    url: `https://api.ercdex.com/api/standard/${networkId}/v0/orders`,
+    qs: {
+      maker: maker,
+      // tokenAddress: baseTokenAddress,
+      makerTokenAddress: baseTokenAddress,
+      takerTokenAddress: quoteTokenAddress,
+    },
+    json: true // Automatically stringifies the body to JSON
+  };
+  console.log(options)
+  return rp(options)
+}
+
+export const getTradeHistoryLogsFromRelayERCdEX = ( networkId, baseTokenAddress, quoteTokenAddress) => {
+  console.log('Fetching transactions log from ERCdEX')
+  if (!networkId) {
+    throw new Error('networkId needs to be set')
+  }
+  if (!baseTokenAddress) {
+    throw new Error('baseTokenAddress needs to be set')
+  }
+  if (!quoteTokenAddress) {
+    throw new Error('quoteTokenAddress needs to be set')
+  }
+  var options = {
+    method: 'GET',
+    url: `https://api.ercdex.com/api/trade_history_logs`,
+    qs: {
+      networkId: networkId,
+      token_address: baseTokenAddress,
+      taker_token_address: quoteTokenAddress,
+      maker_token_address: quoteTokenAddress
+    },
+    json: true // Automatically stringifies the body to JSON
+  };
+  console.log(options)
+  return rp(options)
+}
+
+export const getHistoricalPricesDataFromERCdEX = ( networkId, baseTokenAddress, quoteTokenAddress,  startDate) =>{
+  if (!networkId) {
+    throw new Error('networkId needs to be set')
+  }
+  if (!baseTokenAddress) {
+    throw new Error('baseTokenAddress needs to be set')
+  }
+  if (!quoteTokenAddress) {
+    throw new Error('quoteTokenAddress needs to be set')
+  }
+  if (!startDate) {
+    throw new Error('startDate needs to be set')
+  }
+  var options = {
+    method: 'POST',
+    url: `https://api.ercdex.com/api/reports/historical`,
+    body: {
+      networkId: networkId,
+      baseTokenAddress: baseTokenAddress, 
+      quoteTokenAddress: quoteTokenAddress,
+      startDate: startDate
+    },
+    json: true // Automatically stringifies the body to JSON
+  };
+  // console.log(options)
+  return rp(options)
+  .then(historical => {
+    return historical
+  })
+  .catch(error => {
+    console.log(error)
+    return []
+  })
+}
+
+export const getOrderBookFromRelayERCdEX = (networkId, baseTokenAddress, quoteTokenAddress) => {
+  console.log('Fetching orderbook from ERCdEX')
   if (!networkId) {
     throw new Error('networkId needs to be set')
   }
@@ -42,9 +163,7 @@ export const getOrderBookFromRelayERCDex = (networkId, baseTokenAddress, quoteTo
   .then(orders => {
     console.log(orders)
     const bidsOrders = formatOrders(orders.bids, 'bids')
-    console.log(bidsOrders)
     const asksOrders = formatOrders(orders.asks, 'asks')
-    console.log(asksOrders)
     var spread = 0
     if (bidsOrders.length !== 0 && asksOrders.length !== 0) {
       spread = new BigNumber(asksOrders[asksOrders.length-1].orderPrice).minus(new BigNumber(bidsOrders[0].orderPrice)).toFixed(5)
@@ -59,8 +178,8 @@ export const getOrderBookFromRelayERCDex = (networkId, baseTokenAddress, quoteTo
   })
 }
 
-export const getAggregatedOrdersFromRelayERCDex = (networkId, baseTokenAddress, quoteTokenAddress) => {
-  console.log('Fetching aggregated orders from ERCDex')
+export const getAggregatedOrdersFromRelayERCdEX = (networkId, baseTokenAddress, quoteTokenAddress) => {
+  console.log('Fetching aggregated orders from ERCdEX')
   if (!networkId) {
     throw new Error('networkId needs to be set')
   }
@@ -191,7 +310,7 @@ export const signOrder = async (order, ZeroExConfig) => {
   return signedOrder
 }
 
-export const sendOrderToRelay = async (signedOrder) => {
+export const sendOrderToRelayERCdEX = async (signedOrder) => {
   console.log(signedOrder)
   const ZeroExConfig = {
     networkId: 42,
@@ -205,6 +324,28 @@ export const sendOrderToRelay = async (signedOrder) => {
     method: 'POST',
     uri: relayerApiUrl,
     body: signedOrder,
+    json: true // Automatically stringifies the body to JSON
+  };
+
+  return rp(options)
+}
+
+export const softCancelOrderFromRelayERCdEX = async (signedOrder) => {
+  console.log(signedOrder)
+  const relayerApiUrl = `https://api.ercdex.com/api/orders/soft-cancel`
+  // const relayerClient = new HttpClient(relayerApiUrl);
+  // const response = await relayerClient.submitOrderAsync(signedOrder);
+  // console.log(response)
+  
+  const signature = JSON.stringify(signedOrder.order.ecSignature)
+  const oderHash = ZeroEx.getOrderHashHex(signedOrder.order);
+  var options = {
+    method: 'POST',
+    uri: relayerApiUrl,
+    body: {
+      orderHash: oderHash,
+      signature: signature,
+    },
     json: true // Automatically stringifies the body to JSON
   };
 
@@ -230,6 +371,38 @@ export const getFees = async (order, networkId) => {
   };
   console.log(options.qs)
   return rp(options)
+}
+
+// tokenPricesTickerBitfinex = () =>{
+//   const relayerApiUrl = `https://api.bitfinex.com/v1/pubticker/btcusd`
+
+//   var options = {
+//     method: 'GET',
+//     uri: relayerApiUrl,
+//     qs: {
+//       makerTokenAddress,
+//       takerTokenAddress,
+//       baseTokenAddress,
+//       quantity,
+//       networkId,
+//       takerAddress,
+//     },
+//     json: true // Automatically stringifies the body to JSON
+//   };
+//   console.log(options.qs)
+//   return rp(options)
+// }
+
+export const getTokenAllowance = async (
+  tokenAddress,
+  ownerAddress,
+  ZeroExConfig,
+) => {
+  const zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig)
+  return zeroEx.token.getProxyAllowanceAsync(
+    tokenAddress,
+    ownerAddress
+    )
 }
 
 export const setTokenAllowance = async (
@@ -281,23 +454,23 @@ export const getMarketTakerOrder = async (
   return rp(options)
 }
 
-export const newMakerOrder = async (orderType, baseTokenAddress, quoteTokenAddress, ZeroExConfig) => {
+export const newMakerOrder = async (orderType, baseTokenAddress, quoteTokenAddress, ZeroExConfig, selectedFund) => {
   const zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig);
-  const EXCHANGE_ADDRESS = zeroEx.exchange.getContractAddress();
+  // const EXCHANGE_ADDRESS = zeroEx.exchange.getContractAddress();
+  const EXCHANGE_ADDRESS = '0xf307de6528fa16473d8f6509b7b1d8851320dba5'
   const accounts = await zeroEx.getAvailableAddressesAsync();
   const makerAddress = accounts[0]
   const makerTokenAddress = (orderType === 'asks') ? baseTokenAddress : quoteTokenAddress
   const takerTokenAddress = (orderType === 'asks') ? quoteTokenAddress : baseTokenAddress
 
   const order = {
-    // maker: "0x456c3C14aAe3A2d361E6B2879Bfc0Bae15E30c38".toLowerCase(),
-    maker: makerAddress,
+    maker: selectedFund.details.address.toLowerCase(),
+    // maker: makerAddress,
     // dragoAddress: "0x57072759Ba54479669CAdF1A25528a472Af95cEF".toLowerCase(),
     taker: ZeroEx.NULL_ADDRESS,
     feeRecipient: ZeroEx.NULL_ADDRESS,
     makerTokenAddress: makerTokenAddress,
     takerTokenAddress: takerTokenAddress,
-    // exchangeContractAddress: '0xf307de6528fa16473d8f6509b7b1d8851320dba5',
     exchangeContractAddress: EXCHANGE_ADDRESS,
     salt: ZeroEx.generatePseudoRandomSalt(),
     makerFee: '0',
@@ -330,6 +503,100 @@ export const fillOrderToExchange = async (signedOrder, amount, ZeroExConfig) =>{
   );
   const txReceipt = await zeroEx.awaitTransactionMinedAsync(txHash);
   console.log('FillOrder transaction receipt: ', txReceipt);
+}
+
+export const fillOrderToExchangeViaProxy = async (selectedFund, signedOrder, amount, ZeroExConfig) =>{
+  // const zeroEx = this._zeroEx
+  const DECIMALS = 18;
+
+  const order = signedOrder
+
+  console.log(JSON.stringify(signedOrder))
+
+  const orderAddresses = [
+      order.maker,
+      order.taker,
+      order.makerTokenAddress,
+      order.takerTokenAddress,
+      order.feeRecipient,
+    ]
+    const orderValues = [
+      order.makerTokenAmount,
+      order.takerTokenAmount,
+      order.makerFee,
+      order.takerFee,
+      order.expirationUnixTimestampSec,
+      order.salt
+    ]
+    const v = order.ecSignature.v
+    const r = order.ecSignature.r
+    const s = order.ecSignature.s
+    const shouldThrowOnInsufficientBalanceOrAllowance = true;
+    console.log(
+      orderAddresses,
+      orderValues,
+      ZeroEx.toBaseUnitAmount(new BigNumber(amount), DECIMALS).toString(),
+      shouldThrowOnInsufficientBalanceOrAllowance,
+      v,
+      r,
+      s
+    )
+
+    var poolApi = null;
+    poolApi = new PoolApi(window.web3)
+    poolApi.contract.drago.init(selectedFund.details.address)
+    return poolApi.contract.drago.fillOrderOnZeroExExchange(
+      selectedFund.managerAccount,
+      orderAddresses,
+      orderValues,
+      ZeroEx.toBaseUnitAmount(new BigNumber(amount), DECIMALS).toString(),
+      shouldThrowOnInsufficientBalanceOrAllowance,
+      v,
+      r,
+      s,
+      ZeroExConfig
+    )
+}
+
+export const cancelOrderOnExchangeViaProxy = async (selectedFund, signedOrder, cancelTakerTokenAmount) =>{
+  // const zeroEx = this._zeroEx
+  const DECIMALS = 18;
+
+  const order = signedOrder
+
+  console.log(JSON.stringify(signedOrder))
+
+  const orderAddresses = [
+      order.maker,
+      order.taker,
+      order.makerTokenAddress,
+      order.takerTokenAddress,
+      order.feeRecipient,
+    ]
+    const orderValues = [
+      order.makerTokenAmount,
+      order.takerTokenAmount,
+      order.makerFee,
+      order.takerFee,
+      order.expirationUnixTimestampSec,
+      order.salt
+    ]
+    console.log(
+      orderAddresses,
+      orderValues,
+      ZeroEx.toBaseUnitAmount(new BigNumber(cancelTakerTokenAmount), DECIMALS).toString(),
+    )
+
+    var poolApi = null;
+    poolApi = new PoolApi(window.web3)
+    poolApi.contract.drago.init(selectedFund.details.address)
+    return poolApi.contract.drago.cancelOrderOnZeroExExchange(
+      selectedFund.managerAccount,
+      orderAddresses,
+      orderValues,
+      ZeroEx.toBaseUnitAmount(new BigNumber(cancelTakerTokenAmount), DECIMALS).toString(),
+      signedOrder.exchangeContractAddress
+    )
 }
 
 class Exchange {
@@ -457,8 +724,8 @@ class Exchange {
   //   return ws
   // }
 
-  // getOrderBookFromRelayERCDex = (relay = 'https://api.ercdex.com/api/standard') => {
-  //   console.log('Fetching from ERCDex')
+  // getOrderBookFromRelayERCdEX = (relay = 'https://api.ercdex.com/api/standard') => {
+  //   console.log('Fetching from ERCdEX')
   //   if (!this._baseTokenAddress) {
   //     throw new Error('baseTokenAddress needs to be set')
   //   }
@@ -476,7 +743,7 @@ class Exchange {
   //   };
   //   console.log(options)
   //   return rp(options)
-  //     .then((ordersERCDex) => {
+  //     .then((ordersERCdEX) => {
   //       var ws = new ReconnectingWebSocket('wss://api.ercdex.com');
   //       ws.onopen = () => {
   //         console.log(`Connected to wss://api.ercdex.com`);
@@ -497,8 +764,8 @@ class Exchange {
   //         console.log(event)
   //         console.log('Connection closed')
   //       }
-  //       ordersERCDex.ws = ws
-  //       return ordersERCDex
+  //       ordersERCdEX.ws = ws
+  //       return ordersERCdEX
   //       // POST succeeded...
   //     })
   //     .catch(function (err) {
@@ -627,7 +894,7 @@ class Exchange {
   //   // }
   // }
 
-  sendOrderToRelay = async (signedOrder) => {
+  sendOrderToRelayERCdEX = async (signedOrder) => {
     console.log(signedOrder)
     const relayerApiUrl = 'https://api.kovan.radarrelay.com/0x/v0/order'
     // const relayerClient = new HttpClient(relayerApiUrl);

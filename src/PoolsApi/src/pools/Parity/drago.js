@@ -38,6 +38,11 @@ class DragoParity {
     return instance.getData.call({})
   }
 
+  getAdminData = () => {
+    const instance = this._instance
+    return instance.getAdminData.call({})
+  }
+
   balanceOf = accountAddress => {
     if (!accountAddress) {
       throw new Error('accountAddress needs to be provided')

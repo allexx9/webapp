@@ -1,32 +1,39 @@
-import  * as Colors from 'material-ui/styles/colors'
-import { Grid, Row, Col } from 'react-flexbox-grid'
-import { Link, withRouter } from 'react-router-dom'
-import {CopyToClipboard} from 'react-copy-to-clipboard'
-import {Tabs, Tab} from 'material-ui/Tabs'
-import {Toolbar, ToolbarGroup } from 'material-ui/Toolbar'
-import ActionAssessment from 'material-ui/svg-icons/action/assessment'
-import ActionList from 'material-ui/svg-icons/action/list'
-import CopyContent from 'material-ui/svg-icons/content/content-copy'
-import Paper from 'material-ui/Paper'
-import PropTypes from 'prop-types'
-import React, { Component } from 'react'
-import Search from 'material-ui/svg-icons/action/search'
-import Snackbar from 'material-ui/Snackbar'
-import ElementListWrapper from '../../Elements/elementListWrapper'
 import BigNumber from 'bignumber.js';
-import { formatCoins, formatEth, } from '../../_utils/format'
-import ElementFundActions from '../Elements/elementFundActions'
-import IdentityIcon from '../../_atomic/atoms/identityIcon'
-import InfoTable from '../../Elements/elementInfoTable'
-import Loading from '../../_atomic/atoms/loading'
-import PoolApi from '../../PoolsApi/src'
-import AppBar from 'material-ui/AppBar';
-import ElementListTransactions from '../Elements/elementListTransactions'
-import styles from './pageFundDetailsDragoTrader.module.css';
-import ElementPriceBox from '../Elements/elementPricesBox'
-import utils from '../../_utils/utils'
-import ElementFundNotFound from '../../Elements/elementFundNotFound'
+import Paper from 'material-ui/Paper';
+import Snackbar from 'material-ui/Snackbar';
+import ActionAssessment from 'material-ui/svg-icons/action/assessment';
+import ActionList from 'material-ui/svg-icons/action/list';
+import Search from 'material-ui/svg-icons/action/search';
+import CopyContent from 'material-ui/svg-icons/content/content-copy';
+import ActionShowChart from 'material-ui/svg-icons/editor/show-chart';
+import { Tab, Tabs } from 'material-ui/Tabs';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { Col, Grid, Row } from 'react-flexbox-grid';
 import { connect } from 'react-redux';
+import { Link, withRouter } from 'react-router-dom';
+import scrollToComponent from 'react-scroll-to-component';
+import Sticky from 'react-stickynode';
+import Web3 from 'web3';
+import ElementFundNotFound from '../../Elements/elementFundNotFound';
+import InfoTable from '../../Elements/elementInfoTable';
+import ElementListWrapper from '../../Elements/elementListWrapper';
+import PoolApi from '../../PoolsApi/src';
+import AssetsPieChart from '../../_atomic/atoms/assetsPieChart';
+import Loading from '../../_atomic/atoms/loading';
+import SectionHeader from '../../_atomic/atoms/sectionHeader';
+import SectionTitle from '../../_atomic/atoms/sectionTitle';
+import { Actions } from '../../_redux/actions/actions';
+import { ENDPOINTS, PROD } from '../../_utils/const';
+import { formatCoins, formatEth } from '../../_utils/format';
+import utils from '../../_utils/utils';
+import ElementFundActions from '../Elements/elementFundActions';
+import ElementListAssets from '../Elements/elementListAssets';
+import ElementListTransactions from '../Elements/elementListTransactions';
+import ElementPriceBox from '../Elements/elementPricesBox';
+import styles from './pageFundDetailsDragoTrader.module.css';
+import FundHeader from '../../_atomic/molecules/fundHeader';
 
 function mapStateToProps(state) {
   return state
@@ -40,411 +47,464 @@ class PageFundDetailsDragoTrader extends Component {
   };
 
   static propTypes = {
-      location: PropTypes.object.isRequired,
-      endpoint: PropTypes.object.isRequired,
-      accounts: PropTypes.array.isRequired,
-      isManager: PropTypes.bool.isRequired,
-      match: PropTypes.object.isRequired,
-    };
+    location: PropTypes.object.isRequired,
+    endpoint: PropTypes.object.isRequired,
+    user: PropTypes.object.isRequired,
+    match: PropTypes.object.isRequired,
+    dispatch: PropTypes.func.isRequired,
+    exchange: PropTypes.object.isRequired,
+    transactionsDrago: PropTypes.object.isRequired,
+  };
 
-    state = {
-      dragoDetails: {
-        address: null,
-        name: null,
-        symbol: null,
-        dragoId: null,
-        addresssOwner: null,
-        addressGroup: null,
-      },
-      dragoTransactionsLogs: [],
-      loading: true,
+  state = {
+    dragoTransactionsLogs: [],
+    loading: true,
+    snackBar: false,
+    snackBarMsg: '',
+    openBuySellDialog: {
+      open: false,
+      action: 'buy'
+    },
+  }
+
+  componentDidMount() {
+    this.initDrago()
+  }
+
+  initDrago = async () => {
+    const poolApi = new PoolApi(this.context.api)
+    const dragoId = this.props.match.params.dragoid
+    const dragoDetails = await utils.getDragoDetailsFromId(dragoId, this.context.api)
+    await utils.getDragoDetails(dragoDetails, this.props, this.context.api)
+    this.setState({
+      loading: false
+    })
+    await this.getTransactions(dragoDetails, this.context.api, this.props.endpoint.accounts)
+    await poolApi.contract.dragoeventful.init()
+    this.subscribeToEvents(poolApi.contract.dragoeventful)
+  }
+
+  componentWillUnmount() {
+    const { contractSubscription } = this.state
+    const sourceLogClass = this.constructor.name
+    // this.props.dispatch({type: TOKEN_PRICE_TICKER_CLOSE_WEBSOCKET})
+    try {
+      contractSubscription.unsubscribe(function (error, success) {
+        if (success) {
+          console.log(`${sourceLogClass}: Successfully unsubscribed from contract.`);
+        }
+        if (error) {
+          console.warn(`${sourceLogClass}: Unsubscribe error ${error}.`)
+        }
+      });
+    }
+    catch (error) {
+      console.warn(`${sourceLogClass}: Unsubscribe error ${error}.`)
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    // Updating the lists on each new block if the accounts balances have changed
+    // Doing this this to improve performances by avoiding useless re-rendering
+    const sourceLogClass = this.constructor.name
+    const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
+    const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
+    if (!currentBalance.eq(nextBalance)) {
+      this.initDrago()
+      console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
+    } else {
+      null
+    }
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    const sourceLogClass = this.constructor.name
+    var stateUpdate = true
+    var propsUpdate = true
+    // const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
+    // const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
+    stateUpdate = !utils.shallowEqual(this.state, nextState)
+    propsUpdate = !utils.shallowEqual(this.props, nextProps)
+    if (stateUpdate || propsUpdate) {
+      console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
+    }
+    return stateUpdate || propsUpdate
+  }
+
+  snackBar = (msg) => {
+    this.setState({
+      snackBar: true,
+      snackBarMsg: msg
+    })
+  }
+
+  renderCopyButton = (text) => {
+    if (!text) {
+      return null;
+    }
+
+    return (
+      <CopyToClipboard text={text} key={"address" + text}
+        onCopy={() => this.snackBar('Copied to clilpboard')}>
+        <Link to={'#'} key={"addresslink" + text}><CopyContent className={styles.copyAddress} /></Link>
+      </CopyToClipboard>
+    );
+  }
+
+  renderEtherscanButton = (type, text) => {
+    if (!text) {
+      return null;
+    }
+
+    return (
+      <a key={"addressether" + text} href={this.props.endpoint.networkInfo.etherscan + type + '/' + text} target='_blank'><Search className={styles.copyAddress} /></a>
+    );
+  }
+
+  handlesnackBarRequestClose = () => {
+    this.setState({
       snackBar: false,
-      snackBarMsg: '',
+      snackBarMsg: ''
+    })
+  }
+
+  handleBuySellButtons = (action) => {
+    this.setState({
+      openBuySellDialog: {
+        open: !this.state.openBuySellDialog.open,
+        action: action
+      }
+    })
+  }
+
+  onTransactionSent = () => {
+    this.setState({
       openBuySellDialog: {
         open: false,
-        action: 'buy'
+      }
+    })
+  }
+
+  render() {
+    const { endpoint: { accounts: accounts }, user } = this.props
+    const { loading } = this.state
+    const dragoAssetsList = this.props.transactionsDrago.selectedDrago.assets
+    const assetsCharts = this.props.transactionsDrago.selectedDrago.assetsCharts
+    const dragoDetails = this.props.transactionsDrago.selectedDrago.details
+    const dragoTransactionsList = this.props.transactionsDrago.selectedDrago.transactions
+    const tabButtons = {
+      inkBarStyle: {
+        margin: 'auto',
+        width: 100,
+        backgroundColor: 'white'
       },
-      balanceETH: new BigNumber(0).toFormat(4),
-      balanceDRG: new BigNumber(0).toFormat(4),
+      tabItemContainerStyle: {
+        margin: 'auto',
+        width: 300,
+      }
     }
+    const columnsStyle = [styles.detailsTableCell, styles.detailsTableCell2, styles.detailsTableCell3]
+    const columnsStyleLiquidityTable = [styles.detailsTableCellLiquidity, styles.detailsTableCellLiquidity2, styles.detailsTableCellLiquidity3]
+    const tableButtonsDragoAddress = [this.renderCopyButton(dragoDetails.address), this.renderEtherscanButton('address', dragoDetails.address)]
+    const tableButtonsDragoOwner = [this.renderCopyButton(dragoDetails.addressOwner), this.renderEtherscanButton('address', dragoDetails.addressOwner)]
+    const tableInfo = [
+      ['Created', dragoDetails.created, ''],
+      ['Symbol', dragoDetails.symbol, ''],
+      ['Name', dragoDetails.name, ''],
+      ['Address', dragoDetails.address, tableButtonsDragoAddress],
+      ['Manager', dragoDetails.addressOwner, tableButtonsDragoOwner]
+    ]
+    var portfolioValue = 'N/A'
+    var totalValue = 'N/A'
+    var assetsValues = {}
+    var tableLiquidity = [
+      ['Liquidity', 'N/A', ''],
+      ['Porfolio value', 'N/A', ''],
+      ['Total', 'N/A', ''],
+    ]
+    var estimatedPrice = 'N/A'
 
-
-
-    subTitle = (account) => {
+    // Waiting until getDragoDetails returns the drago details
+    if (loading || Object.keys(dragoDetails).length === 0) {
       return (
-        account.address
-      )     
-    }
-
-    componentWillMount () {
-      // Getting dragoid from the url parameters passed by router and then
-      // the list of last transactions
-      const dragoId = this.props.match.params.dragoid
-      this.getDragoDetails(dragoId)
-    }
-
-    componentWillReceiveProps(nextProps) {
-      // Updating the lists on each new block if the accounts balances have changed
-      // Doing this this to improve performances by avoiding useless re-rendering
-      const dragoId = this.props.match.params.dragoid
-      const sourceLogClass = this.constructor.name
-      const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
-      const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
-      if (!currentBalance.eq(nextBalance)) {
-        this.getDragoDetails(dragoId)
-        console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
-      } else {
-        null
-      }
-    }
-
-    shouldComponentUpdate(nextProps, nextState){
-      const  sourceLogClass = this.constructor.name
-      var stateUpdate = true
-      var propsUpdate = true
-      const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
-      const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
-      stateUpdate = !utils.shallowEqual(this.state, nextState)
-      propsUpdate = !currentBalance.eq(nextBalance)
-      if (stateUpdate || propsUpdate) {
-        console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
-      }
-      return stateUpdate || propsUpdate
-    }
-
-    componentDidUpdate() {
-    }
-
-    renderAddress (dragoDetails) {
-      if (!dragoDetails.address ) {
-        return <p>empty</p>;
-      }
-  
-      return (
-        <Row className={styles.detailsToolbarGroup}>
-          <Col xs={12} md={1} className={styles.dragoTitle}>
-            <h2 ><IdentityIcon address={ dragoDetails.address } /></h2>
-          </Col>
-          <Col xs={12} md={11} className={styles.dragoTitle}>
-          <p>{dragoDetails.symbol} | {dragoDetails.name} </p>
-          <small>{dragoDetails.address}</small>
-          </Col>
-        </Row>
-      );
-    }
-
-    snackBar = (msg) =>{
-      this.setState({
-        snackBar: true,
-        snackBarMsg: msg
-      })
-    }
-
-    renderCopyButton = (text) =>{
-      if (!text ) {
-        return null;
-      }
-      
-      return (
-        <CopyToClipboard text={text} key={"address"+text}
-            onCopy={() => this.snackBar('Copied to clilpboard')}>
-            <Link to={'#'} key={"addresslink"+text}><CopyContent className={styles.copyAddress}/></Link>
-        </CopyToClipboard>
-      );
-    }
-
-    renderEtherscanButton = (type, text) =>{
-      if (!text ) {
-        return null;
-      }
-      
-      return (
-      <a key={"addressether"+text} href={this.props.endpoint.networkInfo.etherscan+type+'/' + text} target='_blank'><Search className={styles.copyAddress}/></a>
-      );
-    }
-
-    handlesnackBarRequestClose = () => {
-      this.setState({
-        snackBar: false,
-        snackBarMsg: ''
-      })
-    }
-
-    handleBuySellButtons = (action) =>{
-      console.log(action)
-      this.setState({
-        openBuySellDialog: {
-          open: !this.state.openBuySellDialog.open,
-          action: action
-        }
-      })
-    }
-
-    onTransactionSent = () =>{
-      this.setState({
-        openBuySellDialog: {
-          open: false,
-        }
-      })
-    }
-
-    render() {
-      const { accounts, isManager } = this.props
-      const { dragoDetails, loading } = this.state
-      const tabButtons = {
-        inkBarStyle: {
-          margin: 'auto',
-          width: 100,
-          backgroundColor: 'white'
-          },
-        tabItemContainerStyle: {
-          margin: 'auto',
-          width: 200,
-        }
-      }
-      const columnsStyle = [styles.detailsTableCell, styles.detailsTableCell2, styles.detailsTableCell3]
-      const tableButtonsDragoAddress = [this.renderCopyButton(dragoDetails.address), this.renderEtherscanButton('address', dragoDetails.address)]
-      const tableButtonsDragoOwner = [this.renderCopyButton(dragoDetails.addresssOwner), this.renderEtherscanButton('address', dragoDetails.addresssOwner)]
-      const tableInfo = [['Symbol', dragoDetails.symbol, ''], 
-        ['Name', dragoDetails.name, ''], 
-        ['Address', dragoDetails.address, tableButtonsDragoAddress],
-        ['Manager', dragoDetails.addresssOwner, tableButtonsDragoOwner]]        
-      const paperStyle = {
-        marginTop: "10px"
-      };
-      
-      var dragoTransactionList = this.state.dragoTransactionsLogs
-      // console.log(dragoTransactionList)
-      // Waiting until getDragoDetails returns the drago details
-      if (loading) {
-        return (
+        <div style={{ paddingTop: '10px' }}>
           <Loading />
-        );
-      }
-      if (dragoDetails.address === '0x0000000000000000000000000000000000000000') {
-        return (
-          <ElementFundNotFound />
-        );
-      }
+        </div>
+      );
+    }
+    if (dragoDetails.address === '0x0000000000000000000000000000000000000000') {
       return (
-        <Row>
-          <Col xs={12}>
-            <Paper className={styles.paperContainer} zDepth={1}>
-              <Toolbar className={styles.detailsToolbar}>
-                <ToolbarGroup className={styles.detailsToolbarGroup}>
-                  {this.renderAddress(dragoDetails)}
-                </ToolbarGroup>
-              </Toolbar>
-              <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle} className={styles.test}>
-                <Tab label="Info" className={styles.detailsTab}
-                  icon={<ActionList color={Colors.blue500} />}>
-                  <Grid fluid>
-                    <Row>
-                      <Col xs={6}>
-                        <Paper zDepth={1} style={{height: "100%"}}> 
-                          <AppBar
-                            title={"MY HOLDING IN " + dragoDetails.symbol.toUpperCase()}
-                            showMenuIconButton={false}
-                            titleStyle={{ fontSize: 20 }}
-                          />
-                          <div className={styles.holdings}>
-                            <div>{this.state.balanceDRG} <small>UNITS</small><br /></div>
-                          </div>
-                        </Paper>
-                      </Col>
-                      <Col xs={6}>
-                        <Paper zDepth={1} style={{height: "100%"}}> 
-                            <ElementPriceBox
-                              dragoDetails={dragoDetails}
-                              accounts={accounts}
-                              handleBuySellButtons={this.handleBuySellButtons}
-                              isManager={isManager}
-                            />
-                            <ElementFundActions
-                              dragoDetails={dragoDetails}
-                              accounts={accounts}
-                              snackBar={this.snackBar}
-                              actionSelected={this.state.openBuySellDialog}
-                              onTransactionSent={this.onTransactionSent}
-                            />
-                        </Paper>
-                      </Col>
-                    </Row>
-                    <br />
-                    <Row>
-                      <Col xs={12}>
-                        <Paper zDepth={1}>
-                          <AppBar
-                            title="DETAILS"
-                            showMenuIconButton={false}
-                            titleStyle={{ fontSize: 20 }}
-                          />
-                          <div className={styles.detailsTabContent}>
-                            <InfoTable rows={tableInfo} columnsStyle={columnsStyle} />
-                          </div>
-                        </Paper>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col xs={12} className={styles.detailsTabContent}>
-                        <Paper style={paperStyle} zDepth={1} >
-                          <AppBar
-                            title="TRANSACTIONS"
-                            showMenuIconButton={false}
-                            titleStyle={{ fontSize: 20 }}
-                          />
-                          <div className={styles.detailsTabContent}>
-                            <p>Your last 20 transactions on this fund.</p>
-                          </div>
-                          <ElementListWrapper list={dragoTransactionList}
-                            renderCopyButton={this.renderCopyButton}
-                            renderEtherscanButton={this.renderEtherscanButton}
-                            loading={loading}>
-
-                            <ElementListTransactions />
-                          </ElementListWrapper>
-                        </Paper>
-                      </Col>
-                    </Row>
-                  </Grid>
-                </Tab>
-                <Tab label="Stats" className={styles.detailsTab}
-                  icon={<ActionAssessment color={Colors.blue500} />}>
-                  <Grid fluid>
-                    <Row>
-                      <Col xs={12} className={styles.detailsTabContent}>
-                        <p>
-                          Coming soon
-                      </p>
-                      </Col>
-                    </Row>
-                  </Grid>
-                </Tab>
-              </Tabs>
-            </Paper>
-          </Col>
-          <Snackbar
-            open={this.state.snackBar}
-            message={this.state.snackBarMsg}
-            action="close"
-            onActionTouchTap={this.handlesnackBarRequestClose}
-            onRequestClose={this.handlesnackBarRequestClose}
-            bodyStyle={{
-              height: "auto",
-              flexGrow: 0,
-              paddingTop: "10px",
-              lineHeight: "20px",
-              borderRadius: "2px 2px 0px 0px",
-              backgroundColor: "#fafafa",
-              boxShadow: "#bdbdbd 0px 0px 5px 0px"
-            }}
-            contentStyle={{
-              color: "#000000 !important",
-              fontWeight: "600"
-            }}
-          />
-        </Row>
-      )
+        <ElementFundNotFound />
+      );
+    }
+    if (dragoAssetsList.length !== 0 && Object.keys(this.props.exchange.prices).length !== 0) {
+      if (typeof dragoDetails.dragoETHBalance !== 'undefined') {
+        portfolioValue = utils.calculatePortfolioValue(dragoAssetsList, this.props.exchange.prices)
+        totalValue = new BigNumber(dragoDetails.dragoETHBalance).plus(portfolioValue).toFixed(5)
+        assetsValues = utils.calculatePieChartPortfolioValue(dragoAssetsList, this.props.exchange.prices, dragoDetails.dragoETHBalance)
+        tableLiquidity = [
+          ['Liquidity', dragoDetails.dragoETHBalance, [(<small key='dragoLiqEth'>ETH</small>)]],
+          ['Porfolio value', portfolioValue, [(<small key='dragoPortEth'>ETH</small>)]],
+          ['Total', totalValue, [(<small key='dragoPortTotEth'>ETH</small>)]],
+        ]
+        estimatedPrice = new BigNumber(portfolioValue).div(new BigNumber(dragoDetails.totalSupply)).toFixed(5)
+      }
     }
 
-    // Getting the drago details from dragoId
-  getDragoDetails = (dragoId) => {
-    const { api } = this.context
-    const { accounts } = this.props
-    var balanceDRG = new BigNumber(0)
-    //
-    // Initializing Drago API
-    // Passing Parity API
-    //      
-    const poolApi = new PoolApi(api)
-    //
-    // Initializing registry contract
-    //
-    poolApi.contract.dragoregistry
-      .init()
-      .then(() => {
-        //
-        // Looking for drago from dragoId
-        //
-        poolApi.contract.dragoregistry
-          .fromId(dragoId)
-          .then((dragoDetails) => {
-            const dragoAddress = dragoDetails[0][0]
+    return (
+      <Row>
+        <Col xs={12}>
+          <div className={styles.pageContainer} >
+            <Paper zDepth={1}>
+              <Sticky enabled={true} innerZ={1}>
+              <FundHeader
+                  fundType='drago'
+                  fundDetails={dragoDetails}
+                />
+                <Row className={styles.tabsRow}>
+                  <Col xs={12}>
+                    <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle}>
+                      <Tab label="SUMMARY" className={styles.detailsTab}
+                        onActive={() => scrollToComponent(this.Summary, { offset: -180, align: 'top', duration: 500 })}
+                        icon={<ActionList color={'#054186'} />}>
+                      </Tab>
+                      <Tab label="INSIGHT" className={styles.detailsTab}
+                        onActive={() => scrollToComponent(this.InSight, { offset: -180, align: 'top', duration: 500 })}
+                        icon={<ActionAssessment color={'#054186'} />}>
+                      </Tab>
+                      <Tab label="LOGS" className={styles.detailsTab}
+                        onActive={() => scrollToComponent(this.Logs, { offset: -180, align: 'top', duration: 500 })}
+                        icon={<ActionShowChart color={'#054186'} />}>
+                      </Tab>
+                    </Tabs>
+                  </Col>
+                </Row>
+              </Sticky>
+            </Paper>
+            <Paper className={styles.paperContainer} zDepth={1}>
+              <div className={styles.detailsBoxContainer}>
+                <Grid fluid>
+                  <Row>
+                    <Col xs={12} >
+                      <span ref={(section) => { this.Summary = section; }}></span>
+                      <SectionHeader
+                        titleText='SUMMARY'
+                         />
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col xs={12} md={6}>
+                      <SectionTitle titleText='DETAILS' />
+                      <div className={styles.detailsContent}>
+                        <div className={styles.sectionParagraph}>
+                          Total supply:
+                          </div>
+                        <div className={styles.holdings}>
+                          <span>{dragoDetails.totalSupply}</span> <small className={styles.myPositionTokenSymbol}>{dragoDetails.symbol.toUpperCase()}</small><br />
+                        </div>
+                        <InfoTable rows={tableInfo} columnsStyle={columnsStyle} />
+                      </div>
+                    </Col>
+                    <Col xs={12} md={6}>
+                      <div className={styles.myPositionBox}>
+                        <Row>
+                          <Col xs={12}>
+                            <SectionTitle titleText='POSITION' help={true} />
+                            <div className={styles.detailsBoxContainer}>
+                              <div className={styles.sectionParagraph}>
+                                Your total holding:
+                              </div>
+                              <div className={styles.holdings}>
+                                <span>{dragoDetails.balanceDRG}</span> <small className={styles.myPositionTokenSymbol}>{dragoDetails.symbol.toUpperCase()}</small><br />
+                              </div>
+                            </div>
+                          </Col>
+                          <Col xs={12}>
+                            <SectionTitle titleText='MARKET' help={true} />
+                            <div className={styles.detailsBoxContainer}>
+                              <Row>
+                                <Col xs={6}>
+                                  <div className={styles.sectionParagraph}>
+                                    Estimated price:
+                                  </div>
+                                </Col>
+                                <Col xs={6} style={{ textAlign: 'center' }}>
+                                  {estimatedPrice} <small>ETH</small>
+                                </Col>
+                              </Row>
+                              <Row>
+                                <Col xs={12}>
+                                  <div className={styles.sectionParagraph} style={{ paddingTop: '5px' }}>
+                                    Manager set price:
+                                </div>
+                                </Col>
+                              </Row>
+                              <ElementPriceBox
+                                dragoDetails={dragoDetails}
+                                accounts={accounts}
+                                handleBuySellButtons={this.handleBuySellButtons}
+                                isManager={user.isManager}
+                              />
+                              <ElementFundActions
+                                dragoDetails={dragoDetails}
+                                accounts={accounts}
+                                snackBar={this.snackBar}
+                                actionSelected={this.state.openBuySellDialog}
+                                onTransactionSent={this.onTransactionSent}
+                              />
+                            </div>
+                          </Col>
+                        </Row>
+                      </div>
+                    </Col>
+                  </Row>
+                </Grid>
+              </div>
+            </Paper>
+            <Paper className={styles.paperContainer} zDepth={1}>
+              <Grid fluid>
+                <Row>
+                  <Col xs={12} >
+                    <span ref={(section) => { this.InSight = section; }}></span>
+                    <SectionHeader
+                      titleText='INSIGHT'
+                       />
+                  </Col>
+                </Row>
+                <Row>
+                  <Col xs={12}>
+                    <div className={styles.detailsBoxContainer}>
+                      <div className={styles.detailsSectionContainer}>
+                        <SectionTitle titleText='ASSETS' />
+                        <Row>
+                          <Col xs={12}>
+                            <Row>
+                              <Col xs={6}>
+                                <InfoTable rows={tableLiquidity} columnsStyle={columnsStyleLiquidityTable} />
+                              </Col>
+                              <Col xs={6}>
+                                <AssetsPieChart data={assetsValues} />
+                              </Col>
+                            </Row>
+                          </Col>
+                        </Row>
+                      </div>
+                      <SectionTitle titleText='PORTFOLIO' />
+                      <div className={styles.sectionParagraph}>
+                        Assets in porfolio:
+                      </div>
+                      <ElementListWrapper
+                        list={dragoAssetsList}
+                        renderCopyButton={this.renderCopyButton}
+                        renderEtherscanButton={this.renderEtherscanButton}
+                        dragoDetails={dragoDetails}
+                        loading={loading}
+                        assetsPrices={this.props.exchange.prices}
+                        assetsChart={assetsCharts}
+                      >
+                        <ElementListAssets />
+                      </ElementListWrapper>
+                    </div>
+                  </Col>
+                </Row>
+              </Grid>
+            </Paper>
+            <Paper className={styles.paperContainer} zDepth={1}>
+              <Grid fluid>
+                <Row>
+                  <Col xs={12} >
+                    <span ref={(section) => { this.Logs = section; }}></span>
+                    <SectionHeader
+                      titleText='LOGS'
+                       />
+                  </Col>
+                </Row>
+                <Row>
+                  <Col xs={12} className={styles.detailsTabContent}>
+                    <SectionTitle titleText='TRANSACTIONS' />
+                    <div className={styles.detailsTabContent}>
+                      <p>Your last 20 transactions on this fund.</p>
+                    </div>
+                    <ElementListWrapper list={dragoTransactionsList}
+                      renderCopyButton={this.renderCopyButton}
+                      renderEtherscanButton={this.renderEtherscanButton}
+                      loading={loading}>
+                      <ElementListTransactions />
+                    </ElementListWrapper>
+                  </Col>
+                </Row>
+              </Grid>
+            </Paper>
+          </div>
+        </Col>
+        <Snackbar
+          open={this.state.snackBar}
+          message={this.state.snackBarMsg}
+          action="close"
+          onActionTouchTap={this.handlesnackBarRequestClose}
+          onRequestClose={this.handlesnackBarRequestClose}
+          bodyStyle={{
+            height: "auto",
+            flexGrow: 0,
+            paddingTop: "10px",
+            lineHeight: "20px",
+            borderRadius: "2px 2px 0px 0px",
+            backgroundColor: "#fafafa",
+            boxShadow: "#bdbdbd 0px 0px 5px 0px"
+          }}
+          contentStyle={{
+            color: "#000000 !important",
+            fontWeight: "600"
+          }}
+        />
+      </Row>
+    )
+  }
 
-            //
-            // Initializing drago contract
-            //
-            poolApi.contract.drago.init(dragoAddress)
-
-            //
-            // Calling getData method
-            //
-            poolApi.contract.drago.getData()
-              .then((data) => {
-                //
-                // Gettin balance for each account
-                //
-                accounts.map(account => {
-                  poolApi.contract.drago.balanceOf(account.address)
-                    .then(balance => {
-                      balanceDRG = balanceDRG.add(balance)
-                      console.log(balance)
-                      // console.log(api.util.fromWei(balance).toFormat(4))
-                    })
-                    .then(() => {
-                      // console.log(api.util.fromWei(balanceDRG.toNumber(4)).toFormat(4))
-                      // console.log(balanceDRG)
-                      var balanceETH = balanceDRG.times(formatCoins(balanceDRG, 4, api))
-                      // console.log(balanceETH)
-                      this.setState({
-                        balanceETH: formatEth(balanceETH, 4, api),
-                        balanceDRG: formatCoins(balanceDRG, 4, api)
-                      })
-                    })
-                })
-
-                this.setState({
-                  dragoDetails: {
-                    address: dragoDetails[0][0],
-                    name: dragoDetails[0][1].charAt(0).toUpperCase() + dragoDetails[0][1].slice(1),
-                    symbol: dragoDetails[0][2],
-                    dragoId: dragoDetails[0][3].c[0],
-                    addresssOwner: dragoDetails[0][4],
-                    addressGroup: dragoDetails[0][5],
-                    sellPrice: api.util.fromWei(data[2].toNumber(4)).toFormat(4),
-                    buyPrice: api.util.fromWei(data[3].toNumber(4)).toFormat(4),
-                  },
-                  loading: false
-                })
-              })
-            poolApi.contract.dragoeventful.init()
-              .then(() => {
-                this.getTransactions(dragoDetails[0][0], poolApi.contract.dragoeventful, accounts)
-              }
-              )
-          })
-      })
-  }  
+  subscribeToEvents = (contract) => {
+    const networkName = this.props.endpoint.networkInfo.name
+    var WsSecureUrl = ''
+    const eventfullContracAddress = contract.contract.address[0]
+    if (PROD) {
+      WsSecureUrl = ENDPOINTS.rigoblock.wss[networkName].prod
+    } else {
+      WsSecureUrl = ENDPOINTS.rigoblock.wss[networkName].dev
+    }
+    const web3 = new Web3(WsSecureUrl)
+    const eventfullContract = new web3.eth.Contract(contract.abi, eventfullContracAddress)
+    const subscription = eventfullContract.events.allEvents({
+      fromBlock: 'latest',
+      topics: [
+        null,
+        null,
+        null,
+        null
+      ]
+    }, (error, events) => {
+      if (!error) {
+        var sourceLogClass = this.constructor.name
+        console.log(`${sourceLogClass} -> New contract event.`);
+        console.log(events)
+        this.initDrago()
+      }
+    })
+    this.setState({
+      contractSubscription: subscription
+    })
+  }
 
   // Getting last transactions
-  getTransactions = (dragoAddress, contract, accounts) => {
-    const { api } = this.context
-    var sourceLogClass = this.constructor.name
+  getTransactions = async (dragoDetails, api, accounts) => {
+    const dragoAddress = dragoDetails[0][0]
+    const sourceLogClass = this.constructor.name
+    const poolApi = new PoolApi(this.context.api)
+    await poolApi.contract.dragoeventful.init()
+    const contract = poolApi.contract.dragoeventful
     const logToEvent = (log) => {
       const key = api.util.sha3(JSON.stringify(log))
       const { blockNumber, logIndex, transactionHash, transactionIndex, params, type } = log
-      var ethvalue = (log.event === 'BuyDrago') ? formatEth(params.amount.value, null, api) : formatEth(params.revenue.value, null, api);
-      var drgvalue = (log.event === 'SellDrago') ? formatCoins(params.amount.value, null, api) : formatCoins(params.revenue.value, null, api);
-      // let ethvalue = null
-      // let drgvalue = null     
-      // if ((log.event === 'BuyDrago')) {
-      //   ethvalue = formatEth(params.amount.value,null,api)
-      //   drgvalue = formatCoins(params.revenue.value,null,api)     
-      // }
-      // if ((log.event === 'SellDrago')) {
-      //   ethvalue = formatEth(params.revenue.value,null,api)
-      //   drgvalue = formatCoins(params.amount.value,null,api)     
-      // }
+      const ethvalue = (log.event === 'BuyDrago') ? formatEth(params.amount.value, null, api) : formatEth(params.revenue.value, null, api);
+      const drgvalue = (log.event === 'SellDrago') ? formatCoins(params.amount.value, null, api) : formatCoins(params.revenue.value, null, api);
       return {
         type: log.event,
         state: type,
@@ -515,7 +575,6 @@ class PageFundDetailsDragoTrader extends Component {
         return allLogs
       })
       .then((dragoTransactionsLog) => {
-        console.log(dragoTransactionsLog)
         // Creating an array of promises that will be executed to add timestamp to each entry
         // Doing so because for each entry we need to make an async call to the client
         // For additional refernce: https://stackoverflow.com/questions/39452083/using-promise-function-inside-javascript-array-map
@@ -535,19 +594,14 @@ class PageFundDetailsDragoTrader extends Component {
             })
         })
         Promise.all(promises).then((results) => {
+          this.props.dispatch(Actions.drago.updateSelectedDragoAction({ transactions: results }))
+          console.log(`${sourceLogClass} -> Transactions list loaded`);
           this.setState({
-            dragoTransactionsLogs: results,
             loading: false,
           })
         })
-          .then(() => {
-            console.log(`${sourceLogClass} -> Transactions list loaded`);
-            this.setState({
-              loading: false,
-            })
-          })
       })
   }
-    
-  }
-  export default withRouter(connect(mapStateToProps)(PageFundDetailsDragoTrader))
+
+}
+export default withRouter(connect(mapStateToProps)(PageFundDetailsDragoTrader))

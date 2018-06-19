@@ -1,17 +1,21 @@
 import { Row, Col } from 'react-flexbox-grid';
-import { Link, withRouter} from 'react-router-dom'
-import { Column, Table, AutoSizer, SortDirection, SortIndicator} from 'react-virtualized';
+import { Link, withRouter } from 'react-router-dom'
+import { Column, Table, AutoSizer, SortDirection, SortIndicator } from 'react-virtualized';
 import FlatButton from 'material-ui/FlatButton';
 import PropTypes from 'prop-types';
-import React, {PureComponent} from 'react';
+import React, { PureComponent } from 'react';
 
 import utils from '../../_utils/utils'
 import { toUnitAmount } from '../../_utils/format'
 
-import styles from './elementListTransactions.module.css';
-import 'react-virtualized/styles.css'
-import  * as Colors from 'material-ui/styles/colors'
+import styles from './elementListAssets.module.css';
+
+import * as Colors from 'material-ui/styles/colors'
 import BigNumber from 'bignumber.js';
+import TokenIcon from '../../_atomic/atoms/tokenIcon'
+import AssetChart from '../../_atomic/atoms/assetChart'
+
+// import ChartBox from '../../_atomic/organisms/chartBox'
 
 // const list = Immutable.List(generateRandomList());
 
@@ -23,28 +27,28 @@ class ElementListAssets extends PureComponent {
     match: PropTypes.object.isRequired,
     renderCopyButton: PropTypes.func.isRequired,
     renderEtherscanButton: PropTypes.func.isRequired,
-    dragoDetails: PropTypes.object.isRequired
+    dragoDetails: PropTypes.object.isRequired,
+    assetsPrices: PropTypes.object.isRequired,
+    assetsChart: PropTypes.object.isRequired,
   };
-
-  
 
   constructor(props, context) {
     super(props, context);
     const { list } = this.props
     const sortDirection = SortDirection.DESC;
     const sortedList = list.sortBy(item => item.symbol)
-                      .update(
-                        list => (sortDirection === SortDirection.DESC ? list : list.reverse()),
-                      );
+      .update(
+        list => (sortDirection === SortDirection.DESC ? list : list.reverse()),
+    );
     const rowCount = list.size
     this.state = {
       disableHeader: false,
       headerHeight: 30,
-      height: 200,
+      height: 370,
       width: 600,
       hideIndexRow: false,
       overscanRowCount: 10,
-      rowHeight: 40,
+      rowHeight: 82,
       rowCount: rowCount,
       scrollToIndex: undefined,
       sortDirection,
@@ -61,13 +65,13 @@ class ElementListAssets extends PureComponent {
     this._sort = this._sort.bind(this);
   }
 
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     const { list } = nextProps
     const sortDirection = SortDirection.DESC;
     const sortedList = list.sortBy(item => item.symbol)
-                      .update(
-                        list => (sortDirection === SortDirection.DESC ? list : list.reverse()),
-                      );
+      .update(
+        list => (sortDirection === SortDirection.DESC ? list : list.reverse()),
+    );
     const rowCount = list.size
     this.setState({
       sortedList: sortedList,
@@ -94,13 +98,13 @@ class ElementListAssets extends PureComponent {
       list
     } = this.state;
 
-    const rowGetter = ({index}) => this._getDatum(sortedList, index);
-    
+    const rowGetter = ({ index }) => this._getDatum(sortedList, index);
+
     return (
 
       <Row>
         <Col xs={12}>
-        <div style={{ flex: '1 1 auto' }}>
+          <div style={{ flex: '1 1 auto' }}>
             <AutoSizer disableHeight>
               {({ width }) => (
                 <Table
@@ -121,77 +125,174 @@ class ElementListAssets extends PureComponent {
                   sortBy={sortBy}
                   sortDirection={sortDirection}
                   width={width}
-                  >
+                >
                   <Column
-                    width={200}
+                    width={45}
                     disableSort
-                    label="SYMBOL"
-                    cellDataGetter={({rowData}) => rowData.symbol}
+                    label=""
+                    cellDataGetter={({ rowData }) => rowData.symbol}
                     dataKey="symbol"
                     className={styles.exampleColumn}
-                    cellRenderer={({cellData}) => this.renderSymbol(cellData)}
+                    cellRenderer={({ cellData }) => this.renderSymbol(cellData)}
                     flexShrink={1}
                   />
                   <Column
                     width={200}
                     disableSort
                     label="NAME"
-                    cellDataGetter={({rowData}) => rowData.name}
-                    dataKey="date"
+                    cellDataGetter={({ rowData }) => rowData.name}
+                    dataKey="name"
                     className={styles.exampleColumn}
-                    cellRenderer={({cellData}) => this.renderName(cellData)}
+                    cellRenderer={({ rowData }) => this.renderName(rowData)}
                     flexShrink={1}
                   />
                   <Column
-                    width={100}
+                    width={150}
                     disableSort
-                    label="AMOUNT"
-                    cellDataGetter={({rowData}) => rowData}
-                    dataKey="amount"
+                    label="HOLDING"
+                    cellDataGetter={({ rowData }) => rowData}
+                    dataKey="holding"
                     className={styles.exampleColumn}
-                    cellRenderer={({rowData}) => this.renderBalance(rowData)}
+                    cellRenderer={({ rowData }) => this.renderHolding(rowData)}
                     flexShrink={1}
                   />
-                  <Column
-                    width={100}
+                  {/* <Column
+                    width={30}
                     disableSort
                     label="TX"
-                    cellDataGetter={({rowData}) => rowData}
+                    cellDataGetter={({ rowData }) => rowData}
                     dataKey="tx"
                     className={styles.exampleColumn}
-                    cellRenderer={({rowData}) => this.renderTx(rowData)}
+                    cellRenderer={({ rowData }) => this.renderTx(rowData)}
                     flexShrink={1}
+                  /> */}
+                  {/* <Column
+                    width={100}
+                    disableSort
+                    label="PRICE ETH"
+                    cellDataGetter={({ rowData }) => rowData}
+                    dataKey="prices"
+                    className={styles.exampleColumn}
+                    cellRenderer={({ rowData }) => this.renderPrice(rowData)}
+                    flexGrow={1}
+                  /> */}
+                  <Column
+                    width={150}
+                    disableSort
+                    label="VALUE"
+                    cellDataGetter={({ rowData }) => rowData}
+                    dataKey="values"
+                    className={styles.exampleColumn}
+                    cellRenderer={({ rowData }) => this.renderValue(rowData)}
+                    flexGrow={1}
+                  />
+                  <Column
+                    width={350}
+                    disableSort
+                    label="CHART 24H"
+                    cellDataGetter={({ rowData }) => rowData}
+                    dataKey="stats"
+                    className={styles.exampleColumn}
+                    cellRenderer={({ rowData }) => this.renderChart(rowData)}
+                    flexGrow={1}
                   />
                 </Table>
-               )} 
-              </AutoSizer>
-              </div>
+              )}
+            </AutoSizer>
+          </div>
         </Col>
       </Row>
     );
   }
 
+  renderChart(token) {
+    // const data = this.props.assetsChart[token.symbol].data
+
+    if (typeof this.props.assetsChart[token.symbol] !== 'undefined') {
+      const data = this.props.assetsChart[token.symbol].data
+      if (data.length !== 0) {
+        // console.log(this.props.assetsChart[token.symbol])
+        // console.log(data)
+        return (
+          //   <ChartBox
+          //   data={data}
+          //   loading={false}
+          // />
+          <AssetChart data={data} />
+        )
+      } else {
+        return (
+          <div className={styles.noDataChart}>No data</div>
+        )
+      }
+    }
+
+
+  }
+
   actionButton(cellData, rowData) {
-    const { match} = this.props;
-    const url =  rowData.params.dragoId.value.c + "/" + utils.dragoISIN(cellData, rowData.params.dragoId.value.c)
-    return <FlatButton label="View" primary={true} containerElement={<Link to={match.path+"/"+url} />} />
+    const { match } = this.props;
+    const url = rowData.params.dragoId.value.c + "/" + utils.dragoISIN(cellData, rowData.params.dragoId.value.c)
+    return <FlatButton label="View" primary={true} containerElement={<Link to={match.path + "/" + url} />} />
   }
 
   renderSymbol(input) {
     return (
-      <div>{input.toUpperCase()}</div>
+      <div>
+        <TokenIcon size={40} symbol={input.toLowerCase()} />
+      </div>
     )
   }
 
-  renderName(input) {
+  renderName(token) {
     return (
-      <div>{input}</div>
+      <Row>
+        <Col xs={12} className={styles.symbolText} >
+          <div className={styles.txIcon}>
+            {this.renderTx(token)}
+          </div>
+          {token.symbol.toUpperCase()}
+        </Col>
+        <Col xs={12} className={styles.nameText}>
+          {token.name}
+        </Col>
+      </Row>
     )
   }
 
   renderEthValue(ethValue) {
     return (
       <div>{new BigNumber(ethValue).toFixed(4)} <small>ETH</small></div>
+    )
+  }
+
+  renderHolding(token) {
+    return (
+      <Row>
+        <Col xs={12}>
+          <Row>
+          <Col xs={12} >
+          <div className={styles.holdingTitleText}>Amount</div>
+        </Col>
+        <Col xs={12}>
+          {toUnitAmount(new BigNumber(token.balance), token.decimals).toFixed(5)} <small className={styles.symbolLegendText}>{token.symbol.toUpperCase()}</small>
+        </Col>
+          </Row>
+        </Col>
+
+        <Col xs={12}>
+          <Row>
+          <Col xs={12}>
+          <div className={styles.holdingTitleText}>Price</div>
+        </Col>
+        <Col xs={12}>
+          {(typeof this.props.assetsPrices[token.symbol] !== 'undefined')
+            ? new BigNumber(this.props.assetsPrices[token.symbol].priceEth).toFixed(5)
+            : <small>N/A</small>} <small className={styles.symbolLegendText}>ETH</small>
+        </Col>
+          </Row>
+        </Col>
+      </Row>
     )
   }
 
@@ -207,15 +308,38 @@ class ElementListAssets extends PureComponent {
     )
   }
 
+  renderPrice(token) {
+    if (typeof this.props.assetsPrices[token.symbol] !== 'undefined') {
+      return (
+        <div>{new BigNumber(this.props.assetsPrices[token.symbol].priceEth).toFixed(7)}</div>
+      )
+    }
+    return (
+      <div><small>N/A</small></div>
+    )
+  }
+
+  renderValue(token) {
+    if (typeof this.props.assetsPrices[token.symbol] !== 'undefined') {
+      return (
+        <div className={styles.valueText}>{new BigNumber(this.props.assetsPrices[token.symbol].priceEth).mul(toUnitAmount(new BigNumber(token.balance), token.decimals).toFixed(5)).toFixed(5)} <small className={styles.symbolLegendText}>ETH</small></div>
+      )
+    }
+    return (
+      <div className={styles.valueText}><small>N/A</small></div>
+    )
+
+  }
+
   renderAction(action) {
-    switch(action) {
+    switch (action) {
       case "BuyDrago":
-        return <span style={{color: Colors.green300, fontWeight: 600}}>BUY</span>
+        return <span style={{ color: Colors.green300, fontWeight: 600 }}>BUY</span>
       case "SellDrago":
-        return <span style={{color: Colors.red300, fontWeight: 600}}>SELL</span>
+        return <span style={{ color: Colors.red300, fontWeight: 600 }}>SELL</span>
       case "DragoCreated":
-        return <span style={{color: Colors.blue300, fontWeight: 600}}>CREATED</span>
-    } 
+        return <span style={{ color: Colors.blue300, fontWeight: 600 }}>CREATED</span>
+    }
   }
 
   renderTime(timestamp) {
@@ -235,13 +359,13 @@ class ElementListAssets extends PureComponent {
     return list.get(index % list.size);
   }
 
-  _getRowHeight({index}) {
-    const {list} = this.state;
+  _getRowHeight({ index }) {
+    const { list } = this.state;
 
     return this._getDatum(list, index).size;
   }
 
-  _headerRenderer({dataKey, sortBy, sortDirection}) {
+  _headerRenderer({ dataKey, sortBy, sortDirection }) {
     return (
       <div>
         Full Name
@@ -251,8 +375,8 @@ class ElementListAssets extends PureComponent {
   }
 
   _isSortEnabled() {
-    const {list} = this.props;
-    const {rowCount} = this.state;
+    const { list } = this.props;
+    const { rowCount } = this.state;
 
     return rowCount <= list.size;
   }
@@ -264,11 +388,11 @@ class ElementListAssets extends PureComponent {
   _onRowCountChange(event) {
     const rowCount = parseInt(event.target.value, 10) || 0;
 
-    this.setState({rowCount});
+    this.setState({ rowCount });
   }
 
   _onScrollToRowChange(event) {
-    const {rowCount} = this.state;
+    const { rowCount } = this.state;
     let scrollToIndex = Math.min(
       rowCount - 1,
       parseInt(event.target.value, 10),
@@ -278,10 +402,10 @@ class ElementListAssets extends PureComponent {
       scrollToIndex = undefined;
     }
 
-    this.setState({scrollToIndex});
+    this.setState({ scrollToIndex });
   }
 
-  _rowClassName({index}) {
+  _rowClassName({ index }) {
     if (index < 0) {
       return styles.headerRow;
     } else {
@@ -289,19 +413,19 @@ class ElementListAssets extends PureComponent {
     }
   }
 
-  _sort({sortBy, sortDirection}) {
-    const sortedList = this._sortList({sortBy, sortDirection});
+  _sort({ sortBy, sortDirection }) {
+    const sortedList = this._sortList({ sortBy, sortDirection });
 
-    this.setState({sortBy, sortDirection, sortedList});
+    this.setState({ sortBy, sortDirection, sortedList });
   }
 
-  _sortList({sortBy, sortDirection}) {
-    const {list} = this.props;
+  _sortList({ sortBy, sortDirection }) {
+    const { list } = this.props;
     return list
       .sortBy(item => item.timestamp)
       .update(
         list => (sortDirection === SortDirection.DESC ? list : list.reverse()),
-      );
+    );
   }
 
   _updateUseDynamicRowHeight(value) {

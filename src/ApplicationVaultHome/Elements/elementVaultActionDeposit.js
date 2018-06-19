@@ -6,8 +6,6 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { ERRORS, validateAccount, validatePositiveNumber } from '../../_utils/validation';
 import AccountSelector from '../../Elements/elementAccountSelector';
-import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle'
-import ElementDialogAddressTitle from '../../Elements/elementDialogAddressTitle'
 import PoolApi from '../../PoolsApi/src'
 
 const NAME_ID = ' ';
@@ -74,11 +72,11 @@ export default class ElementVaultActionDeposit extends Component {
   renderHeader = () => {
     const { vaultDetails } = this.props
     return (
-      <div>
-          <ElementDialogHeadTitle primaryText='Deposit to vault' />
-          <ElementDialogAddressTitle tokenDetails={vaultDetails} />
-      </div>
-
+      <ActionsDialogHeader
+      primaryText='Deposit to vault'
+      fundType='vault'
+      tokenDetails={vaultDetails}
+    />
     )
   }
 

@@ -1,24 +1,18 @@
-import  * as Colors from 'material-ui/styles/colors';
-import { Grid, Row, Col } from 'react-flexbox-grid';
-import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
-import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import PropTypes from 'prop-types';
-import RaisedButton from 'material-ui/RaisedButton';
 import React from 'react';
-
-import AccountSelector from '../../Elements/elementAccountSelector'
+import { Col, Row } from 'react-flexbox-grid';
 import IdentityIcon from '../../_atomic/atoms/identityIcon';
-
 import styles from './elementFundActionsHeader.module.css';
+import FundHeaderNameSymbol from '../../_atomic/atoms/fundHeaderNameSymbol'
 
 export default class ElementFundActionsHeader extends React.Component {
 
   static propTypes = {
-    dragoDetails: PropTypes.object.isRequired, 
-    action: PropTypes.string.isRequired, 
-    // handlebuyAction: PropTypes.func.isRequired,
-    // handleSellAction: PropTypes.func.isRequired,
+    dragoDetails: PropTypes.object.isRequired,
+    action: PropTypes.string.isRequired,
+    handlebuyAction: PropTypes.func,
+    handleSellAction: PropTypes.func,
   };
 
   headerButtonsStyle = {
@@ -31,10 +25,10 @@ export default class ElementFundActionsHeader extends React.Component {
       fontWeight: 700,
       fontSize: 20
     },
-    bgSelected:  Colors.blue300,
-    bGNotSelected: Colors.blue500,
-    hoverSelected: Colors.blue300,
-    hoverNotSelected: Colors.blue500,
+    bgSelected: '#1968c0',
+    bGNotSelected: '#054186',
+    hoverSelected: '#1968c0',
+    hoverNotSelected: '#054186',
   }
 
   buttonsStyle = {
@@ -43,8 +37,8 @@ export default class ElementFundActionsHeader extends React.Component {
     color: 'white',
   }
 
-  setButtonStyle = (action) =>{
-    if (action == 'buy') {
+  setButtonStyle = (action) => {
+    if (action === 'buy') {
       return ({
         sellButtonStyleHover: this.headerButtonsStyle.hoverNotSelected,
         buyButtonStyleHover: this.headerButtonsStyle.hoverSelected,
@@ -54,7 +48,7 @@ export default class ElementFundActionsHeader extends React.Component {
         buyButtonStyle: this.headerButtonsStyle.selected
       })
     } else {
-      return ({        
+      return ({
         sellButtonStyleHover: this.headerButtonsStyle.hoverSelected,
         buyButtonStyleHover: this.headerButtonsStyle.hoverNotSelected,
         sellButtonStyleBg: this.headerButtonsStyle.bgSelected,
@@ -71,28 +65,35 @@ export default class ElementFundActionsHeader extends React.Component {
       <Row className={styles.modalHeader}>
         <Col xs={12}>
           <Row className={styles.modalHeaderActions}>
-            <Col xsOffset={4} xs={2}><FlatButton label="Sell" style={this.buttonsStyle} 
+            <Col xsOffset={4} xs={2}><FlatButton label="Sell" style={this.buttonsStyle}
               backgroundColor={this.setButtonStyle(action).sellButtonStyleBg}
               labelStyle={this.setButtonStyle(action).sellButtonStyle}
-              hoverColor={Colors.blue300}
-              fullWidth={true}  
-              onClick={handleSellAction}/>
+              hoverColor='#1968c0'
+              fullWidth={true}
+              onClick={handleSellAction} />
             </Col>
-            <Col xs={2}><FlatButton label="Buy" style={this.buttonsStyle} 
+            <Col xs={2}><FlatButton label="Buy" style={this.buttonsStyle}
               backgroundColor={this.setButtonStyle(action).buyButtonStyleBg}
               labelStyle={this.setButtonStyle(action).buyButtonStyle}
-              hoverColor={Colors.blue300}
-              fullWidth={true}  
-              onClick={handleBuyAction}/>
+              hoverColor='#1968c0'
+              fullWidth={true}
+              onClick={handleBuyAction} />
             </Col>
           </Row>
           <Row className={styles.modalTitle}>
             <Col xs={12} md={1} className={styles.dragoTitle}>
-              <h2><IdentityIcon address={ dragoDetails.address } /></h2>
+              <h2><IdentityIcon address={dragoDetails.address} /></h2>
             </Col>
-            <Col xs={12} md={11} className={styles.dragoTitle}>
-            <p>{dragoDetails.symbol} | {dragoDetails.name} </p>
-            <small>{dragoDetails.address}</small>
+            <Col xs={12} md={11}>
+              <div className={styles.dragoTitleContainer}>
+                <FundHeaderNameSymbol
+                  text
+                  fundDetails={dragoDetails}
+                  fundType='drago'
+                  textColor=''
+                />
+              </div>
+
             </Col>
           </Row>
         </Col>

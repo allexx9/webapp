@@ -1,15 +1,13 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
-import  * as Colors from 'material-ui/styles/colors';
 import { Dialog, FlatButton } from 'material-ui';
-import { Row, Col } from 'react-flexbox-grid';
+import NotificationWifi from 'material-ui/svg-icons/notification/wifi';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import ElementDialogAddressTitle from './elementDialogAddressTitle'
-import ElementDialogHeadTitle from './elementDialogHeadTitle'
-import NotificationWifi from 'material-ui/svg-icons/notification/wifi';
-
+import { Col, Row } from 'react-flexbox-grid';
+import ActionsDialogHeader from '../_atomic/molecules/actionsDialogHeader';
 import styles from './elementActionAuthorization.module.css';
+
 
 export default class ElementActionAuthorization extends Component {
 
@@ -52,19 +50,15 @@ export default class ElementActionAuthorization extends Component {
   renderHeader = () => {
     const { tokenDetails } = this.props
     return (
-      <div>
-          <ElementDialogHeadTitle primaryText='Authorize action' />
-          {typeof tokenDetails !=='undefined'
-          ?
-          <ElementDialogAddressTitle tokenDetails={tokenDetails} />
-          : null
-          }
-      </div>
-
+      <ActionsDialogHeader
+        primaryText='Authorize action'
+        fundType='drago'
+        tokenDetails={tokenDetails}
+      />
     )
   }
 
-  render () {
+  render() {
     const { authMsg, account } = this.props
     const titleStyle = {
       padding: 0,
@@ -97,7 +91,7 @@ export default class ElementActionAuthorization extends Component {
             Please check your {account.source.charAt(0).toUpperCase() + account.source.slice(1)} wallet and authorize this transaction.
         </Col>
           <Col xs={12}>
-            Click on the {<NotificationWifi color={Colors.blue500} />} icon in the top bar to track the progress of your transaction.
+            Click on the {<NotificationWifi color={'#054186'} />} icon in the top bar to track the progress of your transaction.
         </Col>
           <Col xs={12}>
             Transactions can take up to 45 seconds to be mined into a new block.

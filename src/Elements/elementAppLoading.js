@@ -16,7 +16,7 @@ var td = null
 
 const muiTheme = getMuiTheme({
   palette: {
-    "primary1Color": Colors.blue500,
+    "primary1Color": '#054186',
 
   },
   appBar: {
@@ -75,9 +75,7 @@ class AppLoading extends Component {
             <Col xs={12}>
               <Row>
                 <Col xs={12} style={{textAlign: "center"}}>
-                  <img src="/img/GGG.png" width="60px"/>
-                  <br />
-                  <br />
+                  <img src="/img/rb-logo-final.png" className={styles.logoImg}/>
                   {/* <p>Unable to connect to the network.</p>
                   <p>Trying to establish a new connection in {this.state.counter} seconds... </p>
                   <p>Please contact our support or {<Link to={DS + APP + DS + this.buildUrlPath() + DS + "config"}>select</Link>} a different network.</p> */}

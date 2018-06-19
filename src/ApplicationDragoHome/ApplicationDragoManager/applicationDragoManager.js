@@ -14,7 +14,6 @@ class applicationDragoManager extends Component {
     static propTypes = {
       location: PropTypes.object.isRequired,
       match: PropTypes.object.isRequired,
-      isManager: PropTypes.bool.isRequired
     };
 
     render() {

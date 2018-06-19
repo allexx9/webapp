@@ -36,7 +36,7 @@ const reducer = compose(
   )(Reducers.rootReducer);
 
 const storage = compose(
-    filter(['user.isManager', 'endpoint'])
+    filter(['user', 'endpoint'])
   )(adapter(window.localStorage));
 
 const enhancer = compose(

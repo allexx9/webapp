@@ -1,21 +1,20 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
-import  * as Colors from 'material-ui/styles/colors';
-import { Dialog, FlatButton, TextField } from 'material-ui';
-import { Row, Col } from 'react-flexbox-grid';
-import AppBar from 'material-ui/AppBar';
 import BigNumber from 'bignumber.js';
-import Paper from 'material-ui/Paper'
+import { Dialog, FlatButton, TextField } from 'material-ui';
+import AppBar from 'material-ui/AppBar';
+import Paper from 'material-ui/Paper';
+import * as Colors from 'material-ui/styles/colors';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { ERRORS, validateAccount, validatePositiveNumber } from '../../_utils/validation';
+import { Col, Row } from 'react-flexbox-grid';
 import AccountSelector from '../../Elements/elementAccountSelector';
-import PoolApi from '../../PoolsApi/src'
-import ElementDialogAddressTitle from '../../Elements/elementDialogAddressTitle'
-import ElementDialogHeadTitle from '../../Elements/elementDialogHeadTitle'
-import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization'
-
+import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization';
+import PoolApi from '../../PoolsApi/src';
+import ActionsDialogHeader from '../../_atomic/molecules/actionsDialogHeader';
+import { ERRORS, validateAccount, validatePositiveNumber } from '../../_utils/validation';
 import styles from './elementVaultActionSetFees.module.css';
+
 
 
 //TODO: add address exchange
@@ -101,8 +100,11 @@ export default class ElementVaultActionSetFees extends Component {
     const { vaultDetails } = this.props
     return (
       <div key='dialogHeader'>
-          <ElementDialogHeadTitle primaryText='Set Fees' />
-          <ElementDialogAddressTitle tokenDetails={vaultDetails} />
+        <ActionsDialogHeader
+          primaryText='Set Fees'
+          fundType='vault'
+          tokenDetails={vaultDetails}
+        />
       </div>
     )
   }
@@ -197,7 +199,7 @@ export default class ElementVaultActionSetFees extends Component {
                     titleStyle={priceBoxHeaderTitleStyle}
                   />
                   <div className={styles.currentPriceText}>
-                    {(isNaN(this.state.price) || this.state.price == '') ? '-' : this.state.price} %
+                    {(isNaN(this.state.price) || this.state.price === '') ? '-' : this.state.price} %
                   </div>
                 </Col>
                 <Col xs={8}>
@@ -263,14 +265,14 @@ export default class ElementVaultActionSetFees extends Component {
   }
 
   onChangeAmount = (event, fee) => {
-    if (fee == '') {
+    if (fee === '') {
       this.setState({
         price: '',
         amountErrorSell: ERRORS.invalidAmount
       });
       return
     }
-    if (fee == 0) {
+    if (fee === 0) {
       this.setState({
         price: fee,
       });
@@ -312,10 +314,6 @@ export default class ElementVaultActionSetFees extends Component {
     const { api } = this.context;
     const { vaultDetails } = this.props
     const price = this.state.price
-    // const { instance } = this.context;
-    const options = {
-      from: this.state.account.address
-    };
     var poolApi = null;
     var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
     this.setState({

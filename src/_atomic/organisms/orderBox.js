@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Row, Col } from 'react-flexbox-grid';
-import  * as Colors from 'material-ui/styles/colors'
+import * as Colors from 'material-ui/styles/colors'
 import styles from './orderBox.module.css'
 import AppBar from 'material-ui/AppBar'
 import Paper from 'material-ui/Paper'
@@ -14,14 +14,28 @@ import ButtonOrderCancel from '../atoms/buttonOrderCancel'
 import OrderSummary from '../molecules/orderSummary'
 import OrderRawDialog from '../molecules/orderRawDialog'
 import OrderTypeSelector from '../atoms/orderTypeSelector'
-import Toggle from 'material-ui/Toggle';
+import ToggleSwitch from '../atoms/toggleSwitch'
 import { connect } from 'react-redux';
 import {
   UPDATE_SELECTED_ORDER,
   CANCEL_SELECTED_ORDER,
-  SET_TOKEN_ALLOWANCE
+  UPDATE_TRADE_TOKENS_PAIR,
+  UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
+  ADD_TRANSACTION,
+  UPDATE_FUND_LIQUIDITY
 } from '../../_utils/const'
-import { signOrder, sendOrderToRelay, newMakerOrder, fillOrderToExchange } from '../../_utils/exchange'
+import {
+  signOrder,
+  sendOrderToRelayERCdEX,
+  newMakerOrder,
+  fillOrderToExchange,
+  fillOrderToExchangeViaProxy,
+  setAllowaceOnExchangeThroughDrago
+} from '../../_utils/exchange'
+import PoolApi from '../../PoolsApi/src'
+import utils from '../../_utils/utils.js'
+import serializeError from 'serialize-error';
+import { sha3_512 } from 'js-sha3';
 
 
 function mapStateToProps(state) {
@@ -37,6 +51,7 @@ class OrderBox extends Component {
   static propTypes = {
     exchange: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
+    notifications: PropTypes.object.isRequired,
   };
 
   state = {
@@ -48,6 +63,43 @@ class OrderBox extends Component {
 
   static contextTypes = {
     exchangeUtils: PropTypes.object.isRequired,
+    api: PropTypes.object.isRequired,
+  };
+
+  updateSelectedTradeTokensPair = (token, allowance) => {
+    switch (token) {
+      case 'base':
+        return {
+          type: UPDATE_TRADE_TOKENS_PAIR,
+          payload: {
+            baseTokenAllowance: allowance
+          }
+        }
+      case 'quote':
+        return {
+          type: UPDATE_TRADE_TOKENS_PAIR,
+          payload: {
+            quoteTokenAllowance: allowance
+          }
+        }
+    }
+  }
+
+  updateSelectedFundLiquidity = (fundAddress, api) => {
+    return {
+      type: UPDATE_FUND_LIQUIDITY,
+      payload: {
+        fundAddress, 
+        api
+      }
+    }
+  };
+
+  addTransactionToQueueAction = (transactionId, transactionDetails) => {
+    return {
+      type: ADD_TRANSACTION,
+      transaction: { transactionId, transactionDetails }
+    }
   };
 
   onCloseOrderRawDialog = (open) => {
@@ -86,12 +138,59 @@ class OrderBox extends Component {
   }
 
   onSubmitOrder = async () => {
-    const { selectedOrder, selectedExchange } = this.props.exchange
+    const { selectedOrder, selectedExchange, selectedFund } = this.props.exchange
+
+    const transactionId = sha3_512(new Date() + selectedFund.managerAccount)
+    var transactionDetails = {
+      status: 'pending',
+      hash: '',
+      parityId: null,
+      timestamp: new Date(),
+      account: selectedFund.details.address,
+      error: false,
+      action: selectedOrder.orderType === 'asks' ? 'BuyToken' : 'SellToken',
+      symbol: selectedOrder.selectedTokensPair.baseToken.symbol.toUpperCase(),
+      amount: selectedOrder.orderFillAmount
+    }
+    this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+
     if (selectedOrder.takerOrder) {
-      fillOrderToExchange(selectedOrder.details.order, selectedOrder.orderFillAmount, selectedExchange)
+      // fillOrderToExchange(selectedOrder.details.order, selectedOrder.orderFillAmount, selectedExchange)
+      try {
+        const receipt = await fillOrderToExchangeViaProxy(selectedFund, selectedOrder.details.order, selectedOrder.orderFillAmount, selectedExchange)
+        console.log(receipt)
+        transactionDetails.status = 'executed'
+        transactionDetails.receipt = receipt
+        transactionDetails.hash = receipt.transactionHash
+        transactionDetails.timestamp = new Date ()
+        this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+        
+        // Updating drago liquidity
+        this.props.dispatch(this.updateSelectedFundLiquidity(selectedFund.details.address, this.context.api))
+      }
+      catch (error) {
+        console.log(serializeError(error))
+        const errorArray = serializeError(error).message.split(/\r?\n/)
+        transactionDetails.status = 'error'
+        transactionDetails.error = errorArray[0]
+        this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+        utils.notificationError(this.props.notifications.engine, serializeError(error).message)
+      }
     }
     else {
       console.log(selectedOrder)
+      const transactionId = sha3_512(new Date() + selectedFund.managerAccount)
+      var transactionDetails = {
+        status: 'pending',
+        hash: '',
+        parityId: null,
+        timestamp: new Date(),
+        account: selectedFund.details.address,
+        error: false,
+        action: selectedOrder.orderType === 'asks' ? 'BuyToken' : 'SellToken',
+        symbol: selectedOrder.selectedTokensPair.baseToken.symbol.toUpperCase(),
+        amount: selectedOrder.orderFillAmount
+      }
       var signedOrder = await signOrder(selectedOrder, selectedExchange)
       console.log(signedOrder)
       const payload = {
@@ -101,41 +200,81 @@ class OrderBox extends Component {
       this.setState({
         orderRawDialogOpen: true
       })
-      sendOrderToRelay(signedOrder)
-        .then(function (parsedBody) {
+      sendOrderToRelayERCdEX(signedOrder)
+        .then((parsedBody) => {
+          transactionDetails.status = 'executed'
+          transactionDetails.timestamp = new Date ()
+          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
           console.log(parsedBody)
         })
-        .catch(function (err) {
-          console.log(err)
+        .catch ((error) => {
+          const errorArray = serializeError(error).message.split(/\r?\n/)
+          transactionDetails.status = 'error'
+          transactionDetails.error = errorArray[0]
+          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+          console.log(error)
+          utils.notificationError(this.props.notifications.engine, serializeError(error).message)
         });
     }
   }
 
   onCancelOrder = () => {
     this.props.dispatch(this.cancelSelectedOrder())
+    
+    // this.props.dispatch(this.addNotification('test'))
   }
 
   onSelectOrderType = () => {
 
   }
 
-  onToggleActivateTokenTrade = () => {
-    const { selectedTokensPair, selectedExchange, makerAddress } = this.props.exchange
-    const payload = {
-        type: SET_TOKEN_ALLOWANCE,
-        payload: {
-          tokenAddress: selectedTokensPair.baseToken.address,
-          ownerAddress: makerAddress,
-          spenderAddress: selectedExchange.tokenTransferProxyAddress,
-          ZeroExConfig: selectedExchange
-        }
+  onToggleAllowQuoteTokenTrade = async (event, isInputChecked) => {
+    const { selectedFund, selectedTokensPair, selectedExchange } = this.props.exchange
+    var amount
+    isInputChecked ? amount = UNLIMITED_ALLOWANCE_IN_BASE_UNITS : amount = '0'
+    try {
+      const result = await setAllowaceOnExchangeThroughDrago(selectedFund, selectedTokensPair.quoteToken, selectedExchange, amount)
+      console.log(result)
+      this.props.dispatch(this.updateSelectedTradeTokensPair('quote', isInputChecked))
+    } catch (error) {
+      console.log(error)
+      utils.notificationError(this.props.notifications.engine, serializeError(error).message)
     }
-    this.props.dispatch(payload)
+  }
+
+  onToggleAllowanceBaseTokenTrade = async ( event, isInputChecked ) => {
+    // const { selectedFund, selectedTokensPair } = this.props.exchange
+    // try {
+    //   // var provider = account.source === 'MetaMask' ? window.web3 : api
+    //   var poolApi = null;
+    //   poolApi = new PoolApi(window.web3)
+    //   poolApi.contract.drago.init(selectedFund.details.address)
+    //   const result = await poolApi.contract.drago.setInfiniteAllowace(
+    //     selectedFund.managerAccount,
+    //     this.props.exchange.selectedExchange.tokenTransferProxyAddress,
+    //     selectedTokensPair.baseToken.address,
+    //   )
+    //   console.log(result)
+    //   this.props.dispatch(this.updateSelectedTradeTokensPair('base', true))
+    // } catch (error) {
+    //   console.log(error)
+    // }
+
+    const { selectedFund, selectedTokensPair, selectedExchange } = this.props.exchange
+    var amount
+    isInputChecked ? amount = UNLIMITED_ALLOWANCE_IN_BASE_UNITS : amount = '0'
+    try {
+      const result = await setAllowaceOnExchangeThroughDrago(selectedFund, selectedTokensPair.baseToken, selectedExchange, amount)
+      console.log(result)
+      this.props.dispatch(this.updateSelectedTradeTokensPair('base', isInputChecked))
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   onBuySell = async (orderType) => {
-    const { selectedTokensPair, selectedExchange } = this.props.exchange
-    const order = await newMakerOrder(orderType, selectedTokensPair.baseToken.address, selectedTokensPair.quoteToken.address, selectedExchange)
+    const { selectedTokensPair, selectedExchange, selectedFund } = this.props.exchange
+    const order = await newMakerOrder(orderType, selectedTokensPair.baseToken.address, selectedTokensPair.quoteToken.address, selectedExchange, selectedFund)
     const payload = {
       details: {
         order: order,
@@ -152,7 +291,6 @@ class OrderBox extends Component {
       takerOrder: false,
       selectedTokensPair: selectedTokensPair,
     }
-
     this.props.dispatch(this.updateSelectedOrder(payload))
   }
 
@@ -165,26 +303,6 @@ class OrderBox extends Component {
       buySelected = (selectedOrder.orderType === 'asks')
       sellSelected = (selectedOrder.orderType === 'bids')
     }
-
-    const aggregatedTogglestyles = {
-      block: {
-        maxWidth: 250,
-      },
-      toggle: {
-        // paddingRight: '5px',
-      },
-      trackSwitched: {
-        backgroundColor: '#bdbdbd',
-      },
-      thumbSwitched: {
-        backgroundColor: Colors.blue500,
-      },
-      labelStyle: {
-        fontSize: '12px',
-        opacity: '0.5',
-        textAlign: 'right'
-      },
-    };
 
     return (
       <Row>
@@ -221,27 +339,28 @@ class OrderBox extends Component {
                     <div className={styles.tokenSymbol}>{selectedTokensPair.baseToken.symbol}</div>
                     <div className={styles.tokenName}>{selectedTokensPair.baseToken.name}</div>
                     <div>
-                    <Toggle
-                          label="ACTIVATE"
-                          style={aggregatedTogglestyles.toggle}
-                          // thumbStyle={aggregatedTogglestyles.thumbOff}
-                          trackStyle={aggregatedTogglestyles.trackOff}
-                          thumbSwitchedStyle={aggregatedTogglestyles.thumbSwitched}
-                          trackSwitchedStyle={aggregatedTogglestyles.trackSwitched}
-                          labelStyle={aggregatedTogglestyles.labelStyle}
-                          onToggle={this.onToggleActivateTokenTrade}
-                          toggled={selectedTokensPair.baseTokenAllowance}
-                        />
+                      <ToggleSwitch
+                        label={"ACTIVATE " + selectedTokensPair.baseToken.symbol}
+                        onToggle={this.onToggleAllowanceBaseTokenTrade}
+                        toggled={selectedTokensPair.baseTokenAllowance}
+                        toolTip={"Activate " + selectedTokensPair.baseToken.symbol + " trading"}
+                      />
+                      <ToggleSwitch
+                        label={"ACTIVATE " + selectedTokensPair.quoteToken.symbol}
+                        onToggle={this.onToggleAllowQuoteTokenTrade}
+                        toggled={selectedTokensPair.quoteTokenAllowance}
+                        toolTip={"Activate " + selectedTokensPair.quoteToken.symbol + " trading"}
+                      />
                     </div>
                   </Col>
 
-                  <Col xs={12}>
+                  {/* <Col xs={12}>
                     <OrderTypeSelector
                       orderTypes={['Market', 'Limit']}
                       onSelectOrderType={this.onSelectOrderType}
                     />
 
-                  </Col>
+                  </Col> */}
 
                   <Col xs={12}>
                     <OrderAmount

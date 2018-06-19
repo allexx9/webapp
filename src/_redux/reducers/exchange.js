@@ -9,16 +9,40 @@ import {
   ORDERBOOK_UPDATE,
   ORDERBOOK_INIT,
   ORDERBOOK_AGGREGATE_ORDERS,
-  SET_MAKER_ADDRESS
+  SET_MAKER_ADDRESS,
+  TOKEN_PRICE_TICKER_UPDATE,
+  UPDATE_ELEMENT_LOADING,
+  UPDATE_MARKET_DATA,
+  UPDATE_FUND_ORDERS
 } from '../../_utils/const'
 
 function transactionsReducer(state = initialState.exchange, action) {
   switch (action.type) {
+
+    case UPDATE_FUND_ORDERS:
+    return {
+      ...state,
+      fundOrders: { ...state.fundOrders, ...action.payload }
+    };
+
+    case UPDATE_MARKET_DATA:
+    return {
+      ...state,
+      chartData: action.payload
+    };
+
+    case UPDATE_ELEMENT_LOADING:
+    var elementLoading = action.payload
+    return {
+      ...state,
+      loading: { ...state.loading, ...elementLoading }
+    };
+
     case UPDATE_SELECTED_FUND:
       var fundDetails = action.payload
       return {
         ...state,
-        selectedFund: fundDetails
+        selectedFund: { ...state.selectedFund, ...fundDetails }
       };
 
     case UPDATE_SELECTED_ORDER:
@@ -56,26 +80,21 @@ function transactionsReducer(state = initialState.exchange, action) {
       };
 
     case ORDERBOOK_INIT:
-      console.log(action)
-      console.log(ORDERBOOK_INIT)
       newOrderBook = { ...state.orderBook, ...action.payload }
-      // return {
-      //   ...state,
-      //   selectedOrder: initialState.exchange.selectedOrder
-      // };
       return {
         ...state,
         orderBook: newOrderBook
       }
 
     case ORDERBOOK_UPDATE:
-      console.log(action)
-      console.log(ORDERBOOK_UPDATE)
-      // return {
-      //   ...state,
-      //   selectedOrder: initialState.exchange.selectedOrder
-      // };
       return { ...state, webSocket: { ...action.payload } }
+
+    case TOKEN_PRICE_TICKER_UPDATE:
+      var prices = {
+        ...action.payload ,
+        previous: { ...state.prices }
+      }
+      return { ...state, prices  }
 
     default: return state;
   }

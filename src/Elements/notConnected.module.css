@@ -1,11 +1,32 @@
+.logoImg {
+
+}
+
 .warningText {
   text-align: center;
   vertical-align: middle;
   /* padding-top: 5px;
   padding-bottom: 5px; */
   color: #000000;
-  
 }
+
+.paperContainer {
+  margin-top: 10px;
+  display: 'inline-block';
+}
+
+.detailsBoxContainer {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.detailsSectionContainer {
+  padding-bottom: 5px;
+}
+
+.sectionParagraph{
+  padding-bottom: 5px;
+ }
 
 .titleRBModal {
   /* float: left; */
@@ -49,5 +70,7 @@
 }
 
 .modalHeader img {
-  width: 100%;
+  width: 460px;
+  padding-top: 22px;
+  padding-bottom: 12px;
 }

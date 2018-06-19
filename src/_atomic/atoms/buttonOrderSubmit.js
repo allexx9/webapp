@@ -35,7 +35,7 @@ class ButtonOrderSubmit extends Component {
           onClick={this.props.onSubmitOrder}
           style={buttonOrderSubmitStyle}
           hoverColor={Colors.blue400}
-          backgroundColor={Colors.blue500}
+          backgroundColor={'#054186'}
           disabled={this.props.disabled}
         />
       </div>

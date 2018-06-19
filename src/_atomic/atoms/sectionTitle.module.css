@@ -1,0 +1,17 @@
+
+.title {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  position: relative;
+}
+
+.help {
+  position: absolute;
+  right: 0;
+  top: 4px;
+  opacity: 0.8;
+}
+
+.titleContainer {
+  padding-bottom: 5px;
+}

@@ -48,9 +48,7 @@ class TableOrderBook extends Component {
   };
 
   onClickOrder = (id) =>{
-    console.log(id)
-    var order = this.props.orders[id]
-    this.props.dispatch(this.updateSelectedOrder(order))
+    this.props.dispatch(this.updateSelectedOrder(this.props.orders[id]))
   }
 
   renderRows = (ordersSorted) =>{

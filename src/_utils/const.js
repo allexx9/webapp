@@ -1,5 +1,8 @@
+import BigNumber from 'bignumber.js';
+
 import { ERC20_TOKENS } from './tokens'
 export { ERC20_TOKENS }
+export const UNLIMITED_ALLOWANCE_IN_BASE_UNITS = new BigNumber(2).pow(256).minus(1)
 
 export const APP = "app";
 export const APP_VERSION = "v0.2.1-beta180517"
@@ -232,6 +235,32 @@ export const EXCHANGES = {
   }
 }
 
+export const defaultDragoDetails = {
+  address: '0x0',
+  name: 'Null',
+  symbol: 'Null',
+  dragoId: 'Null',
+  addressOwner: '0x0',
+  addressGroup: '0x0',
+  sellPrice: '0.0000',
+  buyPrice: '0.0000',
+  fee: '0.0000',
+  created: '0000-00-00',
+  totalSupply: '0.0000',
+  dragoETHBalance: '0.0000',
+  dragoWETHBalance: '0.0000',
+}
+
+export const poolStyle = {
+  drago: {
+    color: "#054186"
+  },
+  vault: {
+    color: "#607D8B"
+  },
+  
+}
+
 // Default messages
 export const MSG_NO_SUPPORTED_NETWORK = "We have detected that MetaMask is not connected to the correct network."
 export const MSG_NETWORK_STATUS_OK = "Service is operating normally."
@@ -257,8 +286,27 @@ export const UPDATE_TRANSACTIONS_DRAGO_HOLDER = 'UPDATE_TRANSACTIONS_DRAGO_HOLDE
 export const UPDATE_TRANSACTIONS_DRAGO_MANAGER = 'UPDATE_TRANSACTIONS_DRAGO_MANAGER'
 export const UPDATE_TRANSACTIONS_VAULT_HOLDER = 'UPDATE_TRANSACTIONS_VAULT_HOLDER'
 export const UPDATE_TRANSACTIONS_VAULT_MANAGER = 'UPDATE_TRANSACTIONS_VAULT_MANAGER'
+export const UPDATE_SELECTED_DRAGO_DETAILS = 'UPDATE_SELECTED_DRAGO_DETAILS'
+
+// Notification
+export const INIT_NOTIFICATION = 'INIT_NOTIFICATION'
 
 // EXCHANGE
+
+// User oders
+export const FETCH_FUND_ORDERS = 'FETCH_FUND_ORDERS'
+export const UPDATE_FUND_ORDERS = 'UPDATE_FUND_ORDERS'
+
+// Market
+export const UPDATE_MARKET_DATA = 'UPDATE_MARKET_DATA'
+export const FETCH_MARKET_PRICE_DATA = 'FETCH_MARKET_PRICE_DATA'
+export const FETCH_HISTORY_TRANSACTION_LOGS = 'FETCH_HISTORY_TRANSACTION_LOGS'
+export const UPDATE_HISTORY_TRANSACTION_LOGS = 'UPDATE_HISTORY_TRANSACTION_LOGS'
+export const FETCH_ASSETS_PRICE_DATA = 'FETCH_ASSETS_PRICE_DATA'
+
+
+// UI Elements
+export const UPDATE_ELEMENT_LOADING = 'UPDATE_ELEMENT_LOADING'
 
 // Account
 export const SET_MAKER_ADDRESS = 'SET_MAKER_ADDRESS'
@@ -280,10 +328,12 @@ export const RELAY_OPEN_WEBSOCKET = 'RELAY_OPEN_WEBSOCKET'
 export const RELAY_MSG_FROM_WEBSOCKET = 'RELAY_MSG_FROM_WEBSOCKET'
 export const RELAY_CLOSE_WEBSOCKET = 'RELAY_CLOSE_WEBSOCKET'
 export const RELAY_GET_ORDERS = 'RELAY_GET_ORDERS'
+export const RELAY_UPDATE_ORDERS = 'RELAY_UPDATE_ORDERS'
 
 // Tokens
 export const SET_TOKEN_ALLOWANCE = 'SET_TOKEN_ALLOWANCE'
-
-
-
-
+export const GET_PRICES_BITFINEXE = 'GET_PRICES_BITFINEX'
+export const TOKEN_PRICE_TICKER_OPEN_WEBSOCKET = "TOKEN_PRICE_TICKER_OPEN_WEBSOCKET"
+export const TOKEN_PRICE_TICKER_UPDATE = "TOKEN_PRICE_TICKER_UPDATE"
+export const TOKEN_PRICE_TICKER_CLOSE_WEBSOCKET = "TOKEN_PRICE_TICKER_CLOSE_WEBSOCKET"
+export const UPDATE_FUND_LIQUIDITY = "UPDATE_FUND_LIQUIDITY"
