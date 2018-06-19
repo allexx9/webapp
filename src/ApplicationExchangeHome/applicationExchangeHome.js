@@ -8,7 +8,7 @@ import styles from './applicationExchangeHome.module.css';
 import {
   ERC20_TOKENS
 } from '../_utils/const'
-import { Row, Col, Grid } from 'react-flexbox-grid';
+import { Row, Col } from 'react-flexbox-grid';
 import PropTypes from 'prop-types';
 import utils from '../_utils/utils'
 import ElementNotificationsDrawer from '../Elements/elementNotificationsDrawer'
@@ -43,12 +43,12 @@ import {
   getAvailableAddresses,
   getTokenAllowance,
 } from '../_utils/exchange'
-import FlatButton from 'material-ui/FlatButton'
+// import FlatButton from 'material-ui/FlatButton'
 import PoolApi from '../PoolsApi/src';
 import BigNumber from 'bignumber.js';
 import ChartBox from '../_atomic/organisms/chartBox'
 import OrdersHistory from '../_atomic/organisms/ordersHistory'
-import { getData } from "../_utils/data"
+// import { getData } from "../_utils/data"
 
 function mapStateToProps(state) {
   return state
@@ -90,6 +90,7 @@ class ApplicationExchangeHome extends Component {
   state = {
     exchangeUtils: {},
     chartData: [],
+    managerHasNoFunds: false
   }
 
   scrollPosition = 0
@@ -408,6 +409,39 @@ class ApplicationExchangeHome extends Component {
         </span>
       )
     }
+    console.log(this.state.managerHasNoFunds)
+    if (this.state.managerHasNoFunds) {
+      return (
+        <div ref={node => this.node = node}>
+          <Row className={styles.maincontainer}>
+            <Col xs={12}>
+              <Paper className={styles.paperTopBarContainer} zDepth={1}>
+                <div style={{paddingTop: '16px', paddingBottom: '16px'}}>
+                  You need to own a fund in order to trade on this exchange.
+                </div>
+              </Paper>
+            </Col>
+          </Row>
+          <Row>
+            <Col xs={12}>
+              {notificationsOpen ? (
+                <ElementNotificationsDrawer
+                  handleToggleNotifications={handleToggleNotifications}
+                  notificationsOpen={notificationsOpen}
+                />
+              ) : (
+                  null
+                )}
+            </Col>
+          </Row>
+          <ElementBottomStatusBar
+            blockNumber={endpoint.prevBlockNumber}
+            networkName={endpoint.networkInfo.name}
+            networkError={endpoint.networkError}
+            networkStatus={endpoint.networkStatus} />
+        </div>
+      );
+    }
 
     if (user.isManager) {
       const { bids, asks, spread, aggregated } = this.props.exchange.orderBook
@@ -430,6 +464,7 @@ class ApplicationExchangeHome extends Component {
       if (priceVariation !== '0.00') {
         priceVariation = currentPrice.sub(previousPrice).div(previousPrice).mul(100).toFixed(2)
       }
+
       return (
         <div ref={node => this.node = node}>
           <Row className={styles.maincontainer}>
@@ -468,7 +503,7 @@ class ApplicationExchangeHome extends Component {
             <Col xs={12}>
               <Row>
                 <Col xs={3}>
-                <OrderBox />
+                  <OrderBox />
                 </Col>
                 <Col xs={7}>
                   <Row>
@@ -479,14 +514,14 @@ class ApplicationExchangeHome extends Component {
                       />
                     </Col>
                     <Col xs={12}>
-                    <OrdersHistory 
-                      fundOrders={fundOrders}
-                    />
+                      <OrdersHistory
+                        fundOrders={fundOrders}
+                      />
                     </Col>
                   </Row>
                 </Col>
                 <Col xs={2}>
-                <OrderBook
+                  <OrderBook
                     bidsOrders={bidsOrderNormalized}
                     asksOrders={asksOrderNormalized}
                     spread={spread}
@@ -593,6 +628,7 @@ class ApplicationExchangeHome extends Component {
       const createdLogs = results[1].filter(event => {
         return event.type !== 'BuyDrago' && event.type !== 'SellDrago'
       })
+      console.log(results)
       results[1] = createdLogs
       results[2].sort(function (a, b) {
         var keyA = a.symbol,
@@ -604,22 +640,22 @@ class ApplicationExchangeHome extends Component {
       });
       this.props.dispatch(this.updateTransactionsDragoAction(results))
 
-      // Getting fund orders
-      this.props.dispatch(this.getFundOrders(
-        this.props.exchange.relay.networkId,
-        results[2][0].address.toLowerCase(),
-        this.props.exchange.selectedTokensPair.baseToken.address,
-        this.props.exchange.selectedTokensPair.quoteToken.address,
-      )
-      )
+      if (results[2].length !== 0) {
+        // Getting fund orders
+        this.props.dispatch(this.getFundOrders(
+          this.props.exchange.relay.networkId,
+          results[2][0].address.toLowerCase(),
+          this.props.exchange.selectedTokensPair.baseToken.address,
+          this.props.exchange.selectedTokensPair.quoteToken.address,
+        )
+        )
+        this.onSelectFund(results[2][0])
+      } else {
+        this.setState({
+          managerHasNoFunds: true,
+        });
+      }
 
-      // Setting default fund
-      results[2].length !== 0
-        ? this.onSelectFund(results[2][0])
-        : null
-      this.setState({
-        loading: false,
-      });
     } catch (error) {
       console.warn(error)
     }
