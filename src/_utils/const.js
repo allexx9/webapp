@@ -5,7 +5,7 @@ export { ERC20_TOKENS }
 export const UNLIMITED_ALLOWANCE_IN_BASE_UNITS = new BigNumber(2).pow(256).minus(1)
 
 export const APP = "app";
-export const APP_VERSION = "v0.2.1-beta180517"
+export const APP_VERSION = "v0.3.0-alpha180619"
 export const DS = "/";
 export const DRG_ISIN = "DR";
 export const LOGGER = true;
