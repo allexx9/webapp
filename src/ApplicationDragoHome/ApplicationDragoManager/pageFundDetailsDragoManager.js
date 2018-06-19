@@ -34,7 +34,7 @@ import ElementPriceBox from '../Elements/elementPricesBox';
 import ElementFundActionsList from '../Elements/elementFundActionsList'
 import ElementNoAdminAccess from '../../Elements/elementNoAdminAccess'
 import styles from './pageFundDetailsDragoManager.module.css';
-import FundHeader from '../../_atomic/atoms/fundHeader'
+import FundHeader from '../../_atomic/molecules/fundHeader'
 
 
 function mapStateToProps(state) {

@@ -33,7 +33,7 @@ import ElementListAssets from '../Elements/elementListAssets';
 import ElementListTransactions from '../Elements/elementListTransactions';
 import ElementPriceBox from '../Elements/elementPricesBox';
 import styles from './pageFundDetailsDragoTrader.module.css';
-import FundHeader from '../../_atomic/atoms/fundHeader';
+import FundHeader from '../../_atomic/molecules/fundHeader';
 
 function mapStateToProps(state) {
   return state

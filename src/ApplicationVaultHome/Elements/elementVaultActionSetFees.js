@@ -1,21 +1,20 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
-import  * as Colors from 'material-ui/styles/colors';
-import { Dialog, FlatButton, TextField } from 'material-ui';
-import { Row, Col } from 'react-flexbox-grid';
-import AppBar from 'material-ui/AppBar';
 import BigNumber from 'bignumber.js';
-import Paper from 'material-ui/Paper'
+import { Dialog, FlatButton, TextField } from 'material-ui';
+import AppBar from 'material-ui/AppBar';
+import Paper from 'material-ui/Paper';
+import * as Colors from 'material-ui/styles/colors';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { ERRORS, validateAccount, validatePositiveNumber } from '../../_utils/validation';
+import { Col, Row } from 'react-flexbox-grid';
 import AccountSelector from '../../Elements/elementAccountSelector';
-import PoolApi from '../../PoolsApi/src'
-import ElementDialogAddressTitle from '../../_atomic/atoms/elementDialogAddressTitle'
-import ElementDialogHeadTitle from '../../_atomic/atoms/elementDialogHeadTitle'
-import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization'
-
+import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization';
+import PoolApi from '../../PoolsApi/src';
+import ActionsDialogHeader from '../../_atomic/molecules/actionsDialogHeader';
+import { ERRORS, validateAccount, validatePositiveNumber } from '../../_utils/validation';
 import styles from './elementVaultActionSetFees.module.css';
+
 
 
 //TODO: add address exchange
@@ -101,8 +100,11 @@ export default class ElementVaultActionSetFees extends Component {
     const { vaultDetails } = this.props
     return (
       <div key='dialogHeader'>
-          <ElementDialogHeadTitle primaryText='Set Fees' />
-          <ElementDialogAddressTitle tokenDetails={vaultDetails} />
+        <ActionsDialogHeader
+          primaryText='Set Fees'
+          fundType='vault'
+          tokenDetails={vaultDetails}
+        />
       </div>
     )
   }

@@ -1,17 +1,16 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
-import { Dialog, FlatButton, TextField } from 'material-ui';
 import BigNumber from 'bignumber.js';
+import { Dialog, FlatButton, TextField } from 'material-ui';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { ERRORS, validatePositiveNumber, validateAddress } from '../_utils/validation';
-import TokenSelector from '../_atomic/molecules/tokenSelector';
-import ElementDialogHeadTitle from '../_atomic/atoms/elementDialogHeadTitle'
-import ElementDialogAddressTitle from '../_atomic/atoms/elementDialogAddressTitle'
-import PoolsApi from '../PoolsApi/src'
 import { connect } from 'react-redux';
-import {ETH, GRG} from '../_utils/const'
-import ElementFundActionAuthorization from '../Elements/elementActionAuthorization'
+import ActionsDialogHeader from '../_atomic/molecules/actionsDialogHeader';
+import ElementFundActionAuthorization from '../Elements/elementActionAuthorization';
+import PoolsApi from '../PoolsApi/src';
+import TokenSelector from '../_atomic/molecules/tokenSelector';
+import { ETH, GRG } from '../_utils/const';
+import { ERRORS, validateAddress, validatePositiveNumber } from '../_utils/validation';
 
 const NAME_ID = ' ';
 
@@ -30,7 +29,8 @@ class ElementAccountActionTransfer extends Component {
     open: PropTypes.bool.isRequired,
     snackBar: PropTypes.func,
     dispatch: PropTypes.func,
-    onTransferOpen: PropTypes.func.isRequired
+    onTransferOpen: PropTypes.func.isRequired,
+    fundType: PropTypes.string
   }
 
   state = {
@@ -111,8 +111,11 @@ class ElementAccountActionTransfer extends Component {
   renderHeader = () => {
     return (
       <div>
-          <ElementDialogHeadTitle primaryText='Transfer tokens' />
-          <ElementDialogAddressTitle tokenDetails={this.props.account} />
+        <ActionsDialogHeader
+          primaryText='Transfer tokens'
+          fundType={this.props.fundType}
+          tokenDetails={this.props.account}
+        />
       </div>
 
     )

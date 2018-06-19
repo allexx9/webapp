@@ -162,7 +162,9 @@ class PageDashboardVaultTrader extends Component {
             account={account}
             key={account.name}
             snackBar={this.snackBar}
-            etherscanUrl={this.props.endpoint.networkInfo.etherscan} />
+            etherscanUrl={this.props.endpoint.networkInfo.etherscan} 
+            fundType='vault'
+            />
         </Col>
       )
     }
@@ -308,7 +310,6 @@ class PageDashboardVaultTrader extends Component {
         // const buySellLogs = results[1].filter(event =>{
         //   return event.type !== 'DragoCreated'
         // })
-        console.log(results)
         this.props.dispatch(this.updateTransactionsVault(results))
       })
       .catch((error) => {

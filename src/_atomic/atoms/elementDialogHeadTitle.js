@@ -10,13 +10,28 @@ export default class ElementDialogHeadTitle extends Component {
 
   static propTypes = {
     primaryText: PropTypes.string.isRequired,
+    fundType: PropTypes.string
+  }
+
+  static defaultProps = {
+    fundType: 'drago',
   }
 
   render = () => {
+
+    const style = {
+      drago: {
+        backgroundColor: '#054186'
+      },
+      vault: {
+        backgroundColor: '#607D8B'
+      }
+    }
+    // console.log(this.props)
     return (
       <Row className={styles.modalHeader}>
         <Col xs={12}>
-          <Row className={styles.modalHeaderActions} middle="xs" center="xs">
+          <Row className={styles.modalHeaderActions} middle="xs" center="xs" style={style[this.props.fundType]}>
             <Col xs>
               {this.props.primaryText}
             </Col>

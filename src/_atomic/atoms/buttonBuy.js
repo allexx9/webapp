@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import  * as Colors from 'material-ui/styles/colors'
-import styles from './buyButton.module.css'
 import FlatButton from 'material-ui/FlatButton'
 import PropTypes from 'prop-types';
 

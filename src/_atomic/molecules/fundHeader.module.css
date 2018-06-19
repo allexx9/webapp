@@ -28,18 +28,6 @@
   opacity: 0.75;
 }
 
-.dragoTitleDivider {
-  height: 18px;
-  border-left-color: #ffffff;
-  border-left-style: solid;
-  border-left-width: 1px;
-  margin-top: auto;
-  margin-bottom: auto;
-  margin-left: 16px;
-  padding-right: 16px;
-  opacity: 0.5;
-}
-
 .managerButtonContainer {
   position: absolute;
   padding-top: 64px;

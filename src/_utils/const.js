@@ -235,6 +235,32 @@ export const EXCHANGES = {
   }
 }
 
+export const defaultDragoDetails = {
+  address: '0x0',
+  name: 'Null',
+  symbol: 'Null',
+  dragoId: 'Null',
+  addressOwner: '0x0',
+  addressGroup: '0x0',
+  sellPrice: '0.0000',
+  buyPrice: '0.0000',
+  fee: '0.0000',
+  created: '0000-00-00',
+  totalSupply: '0.0000',
+  dragoETHBalance: '0.0000',
+  dragoWETHBalance: '0.0000',
+}
+
+export const poolStyle = {
+  drago: {
+    color: "#054186"
+  },
+  vault: {
+    color: "#607D8B"
+  },
+  
+}
+
 // Default messages
 export const MSG_NO_SUPPORTED_NETWORK = "We have detected that MetaMask is not connected to the correct network."
 export const MSG_NETWORK_STATUS_OK = "Service is operating normally."

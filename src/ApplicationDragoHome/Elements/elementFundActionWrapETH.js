@@ -4,19 +4,17 @@ import BigNumber from 'bignumber.js';
 import { Dialog, FlatButton, TextField } from 'material-ui';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
+import RaisedButton from 'material-ui/RaisedButton';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Col, Row } from 'react-flexbox-grid';
-import ElementDialogAddressTitle from '../../_atomic/atoms/elementDialogAddressTitle';
-// import AccountSelector from '../../Elements/elementAccountSelector';
-import ElementDialogHeadTitle from '../../_atomic/atoms/elementDialogHeadTitle';
+import { connect } from 'react-redux';
+import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization';
 import PoolApi from '../../PoolsApi/src';
+import ImgETH from '../../_atomic/atoms/imgETH';
+import ActionsDialogHeader from '../../_atomic/molecules/actionsDialogHeader';
 import { ERC20_TOKENS } from '../../_utils/const';
 import { ERRORS, validateAccount, validatePositiveNumber } from '../../_utils/validation';
-import ImgETH from '../../_atomic/atoms/imgETH';
-import RaisedButton from 'material-ui/RaisedButton';
-import { connect } from 'react-redux';
-import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization'
 
 
 const NAME_ID = ' ';
@@ -119,8 +117,11 @@ class ElementFundActionWrapETH extends Component {
     const { dragoDetails } = this.props
     return (
       <div>
-          <ElementDialogHeadTitle primaryText='ETH Wrapper' />
-          <ElementDialogAddressTitle tokenDetails={dragoDetails} />
+        <ActionsDialogHeader
+          primaryText='ETH Wrapper'
+          fundType='drago'
+          tokenDetails={dragoDetails}
+        />
       </div>
     )
   }

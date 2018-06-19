@@ -1,8 +1,8 @@
-import  * as Colors from 'material-ui/styles/colors'
+import * as Colors from 'material-ui/styles/colors'
 import { Row, Col, Grid } from 'react-flexbox-grid'
 import { Link, withRouter } from 'react-router-dom'
-import {CopyToClipboard} from 'react-copy-to-clipboard'
-import {Tabs, Tab} from 'material-ui/Tabs'
+import { CopyToClipboard } from 'react-copy-to-clipboard'
+import { Tabs, Tab } from 'material-ui/Tabs'
 import ActionAssessment from 'material-ui/svg-icons/action/assessment'
 import ActionList from 'material-ui/svg-icons/action/list'
 import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
@@ -42,139 +42,141 @@ class PageDashboardVaultManager extends Component {
   };
 
   static propTypes = {
-      location: PropTypes.object.isRequired,
-      endpoint: PropTypes.object.isRequired,
-      accounts: PropTypes.array.isRequired,
-      dispatch: PropTypes.func.isRequired,
-      transactionsVault: PropTypes.object.isRequired,
-    };
+    location: PropTypes.object.isRequired,
+    endpoint: PropTypes.object.isRequired,
+    accounts: PropTypes.array.isRequired,
+    dispatch: PropTypes.func.isRequired,
+    transactionsVault: PropTypes.object.isRequired,
+  };
 
-    state = {
+  state = {
+    snackBar: false,
+    snackBarMsg: ''
+  }
+
+  updateTransactionsVault = (results) => {
+    return {
+      type: UPDATE_TRANSACTIONS_VAULT_MANAGER,
+      payload: results
+    }
+  };
+
+  componentDidMount() {
+    const { accounts } = this.props
+    this.getTransactions(null, accounts)
+  }
+
+  componentWillMount() {
+
+  }
+
+  componentWillReceiveProps(nextProps) {
+    // Updating the lists on each new block if the accounts balances have changed
+    // Doing this this to improve performances by avoiding useless re-rendering
+    const { accounts } = this.props
+    const sourceLogClass = this.constructor.name
+    console.log(`${sourceLogClass} -> componentWillReceiveProps-> nextProps received.`);
+    // Updating the transaction list if there have been a change in total accounts balance and the previous balance is
+    // different from 0 (balances are set to 0 on app loading)
+    const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
+    const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
+    if (!currentBalance.eq(nextProps.endpoint.ethBalance) && !nextBalance.eq(0)) {
+      this.getTransactions(null, accounts)
+      console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
+    }
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    const sourceLogClass = this.constructor.name
+    var stateUpdate = true
+    var propsUpdate = true
+    propsUpdate = !utils.shallowEqual(this.props, nextProps)
+    stateUpdate = !utils.shallowEqual(this.state, nextState)
+    if (stateUpdate || propsUpdate) {
+      console.log('State updated ', stateUpdate)
+      console.log('Props updated ', propsUpdate)
+      console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
+    }
+    return stateUpdate || propsUpdate
+  }
+
+  componentDidUpdate() {
+  }
+
+  snackBar = (msg) => {
+    this.setState({
+      snackBar: true,
+      snackBarMsg: msg
+    })
+  }
+
+  handlesnackBarRequestClose = () => {
+    this.setState({
       snackBar: false,
       snackBarMsg: ''
+    })
+  }
+
+  renderCopyButton = (text) => {
+    if (!text) {
+      return null;
     }
 
-    updateTransactionsVault = (results) => {
-      return {
-        type: UPDATE_TRANSACTIONS_VAULT_MANAGER,
-        payload: results
+    return (
+      <CopyToClipboard text={text}
+        onCopy={() => this.snackBar('Copied to clipboard')}>
+        <Link to={'#'} ><CopyContent className={styles.copyAddress} /></Link>
+      </CopyToClipboard>
+    );
+  }
+
+  renderEtherscanButton = (type, text) => {
+    if (!text) {
+      return null;
+    }
+
+    return (
+      <a href={this.props.endpoint.networkInfo.etherscan + type + '/' + text} target='_blank'><Search className={styles.copyAddress} /></a>
+    );
+  }
+
+  render() {
+    const { accounts } = this.props
+    const vaultTransactionsLogs = this.props.transactionsVault.manager.logs
+    const vaultList = this.props.transactionsVault.manager.list
+
+    const tabButtons = {
+      inkBarStyle: {
+        margin: 'auto',
+        width: 100,
+        backgroundColor: 'white'
+      },
+      tabItemContainerStyle: {
+        margin: 'auto',
+        width: 300,
+        backgroundColor: '#FFFFFF',
+        zIndex: 1000
       }
-    };
-
-    componentDidMount() {
-      const {accounts } = this.props
-      this.getTransactions (null, accounts)
     }
 
-    componentWillMount() {
-
-    }
-
-    componentWillReceiveProps(nextProps) {
-      // Updating the lists on each new block if the accounts balances have changed
-      // Doing this this to improve performances by avoiding useless re-rendering
-      const {accounts } = this.props
-      const sourceLogClass = this.constructor.name
-      console.log(`${sourceLogClass} -> componentWillReceiveProps-> nextProps received.`);
-      // Updating the transaction list if there have been a change in total accounts balance and the previous balance is
-      // different from 0 (balances are set to 0 on app loading)
-      const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
-      const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
-      if (!currentBalance.eq(nextProps.endpoint.ethBalance) && !nextBalance.eq(0)) {
-        this.getTransactions (null, accounts)
-        console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
-      }
-    }
-
-    shouldComponentUpdate(nextProps, nextState){
-      const  sourceLogClass = this.constructor.name
-      var stateUpdate = true
-      var propsUpdate = true
-      propsUpdate = !utils.shallowEqual(this.props, nextProps)
-      stateUpdate = !utils.shallowEqual(this.state, nextState)
-      if (stateUpdate || propsUpdate) {
-        console.log('State updated ', stateUpdate)
-        console.log('Props updated ', propsUpdate)
-        console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
-      }
-      return stateUpdate || propsUpdate
-    }
-
-    componentDidUpdate() {
-    }
-
-    snackBar = (msg) =>{
-      this.setState({
-        snackBar: true,
-        snackBarMsg: msg
-      })
-    }
-
-    handlesnackBarRequestClose = () => {
-      this.setState({
-        snackBar: false,
-        snackBarMsg: ''
-      })
-    }
-
-    renderCopyButton = (text) =>{
-      if (!text ) {
-        return null;
-      }
-      
+    const listAccounts = accounts.map((account) => {
       return (
-        <CopyToClipboard text={text}
-            onCopy={() => this.snackBar('Copied to clipboard')}>
-            <Link to={'#'} ><CopyContent className={styles.copyAddress}/></Link>
-        </CopyToClipboard>
-      );
-    }
-
-    renderEtherscanButton = (type, text) =>{
-      if (!text ) {
-        return null;
-      }
-      
-      return (
-      <a href={this.props.endpoint.networkInfo.etherscan+type+'/' + text} target='_blank'><Search className={styles.copyAddress}/></a>
-      );
-    }
-
-    render() {
-      const { accounts } = this.props
-      const vaultTransactionsLogs = this.props.transactionsVault.manager.logs
-      const vaultList  = this.props.transactionsVault.manager.list
-
-      const tabButtons = {
-        inkBarStyle: {
-          margin: 'auto',
-          width: 100,
-          backgroundColor: 'white'
-          },
-        tabItemContainerStyle: {
-          margin: 'auto',
-          width: 300,
-          backgroundColor: '#FFFFFF',
-          zIndex: 1000
-        }
-      }
-
-      const listAccounts = accounts.map((account) => {
-        return (
-          <Col xs={6} key={account.name}>
-            <ElementAccountBox 
-              account={account} 
-              key={account.name} 
-              snackBar={this.snackBar} 
-              etherscanUrl={this.props.endpoint.networkInfo.etherscan}/>
-          </Col>
-          )
-        }
+        <Col xs={6} key={account.name}>
+          <ElementAccountBox
+            account={account}
+            key={account.name}
+            snackBar={this.snackBar}
+            etherscanUrl={this.props.endpoint.networkInfo.etherscan}
+            fundType='vault'
+          />
+        </Col>
       )
+    }
+    )
 
-      return (
+    return (
 
-        <Row>
+      <Row>
         <Col xs={12}>
           <Paper className={styles.paperContainer} zDepth={1}>
             <Sticky enabled={true} innerZ={1}>
@@ -207,7 +209,7 @@ class PageDashboardVaultManager extends Component {
                     <span ref={(section) => { this.Accounts = section; }}></span>
                     <SectionHeader
                       titleText='ACCOUNTS'
-                      textStyle={{backgroundColor: Colors.blueGrey500}}
+                      textStyle={{ backgroundColor: Colors.blueGrey500 }}
                     />
                   </Col>
                 </Row>
@@ -230,22 +232,22 @@ class PageDashboardVaultManager extends Component {
                     <span ref={(section) => { this.Dragos = section; }}></span>
                     <SectionHeader
                       titleText='VAULTS'
-                      textStyle={{backgroundColor: Colors.blueGrey500}}
+                      textStyle={{ backgroundColor: Colors.blueGrey500 }}
                     />
                   </Col>
                 </Row>
                 <Row>
                   <Col xs={12}>
                     <div className={styles.deployButtonContainer}>
-                      <ElementVaultCreateAction accounts={accounts}/>
+                      <ElementVaultCreateAction accounts={accounts} />
                     </div>
-                    
+
                     <div className={styles.sectionParagraph}>
                       Your vaults:
                     </div>
                     <ElementListWrapper list={vaultList}>
-                          <ElementListSupply />
-                        </ElementListWrapper>
+                      <ElementListSupply />
+                    </ElementListWrapper>
                   </Col>
                 </Row>
               </Grid>
@@ -259,7 +261,7 @@ class PageDashboardVaultManager extends Component {
                     <span ref={(section) => { this.Transactions = section; }}></span>
                     <SectionHeader
                       titleText='TRANSACTIONS'
-                      textStyle={{backgroundColor: Colors.blueGrey500}}
+                      textStyle={{ backgroundColor: Colors.blueGrey500 }}
                     />
                   </Col>
                 </Row>
@@ -269,13 +271,13 @@ class PageDashboardVaultManager extends Component {
                       Your last 20 transactions:
                   </div>
 
-                        <ElementListWrapper
-                          list={vaultTransactionsLogs}
-                          renderCopyButton={this.renderCopyButton}
-                          renderEtherscanButton={this.renderEtherscanButton}
-                        >
-                          <ElementListTransactions />
-                        </ElementListWrapper>
+                    <ElementListWrapper
+                      list={vaultTransactionsLogs}
+                      renderCopyButton={this.renderCopyButton}
+                      renderEtherscanButton={this.renderEtherscanButton}
+                    >
+                      <ElementListTransactions />
+                    </ElementListWrapper>
                   </Col>
                 </Row>
               </Grid>
@@ -303,19 +305,19 @@ class PageDashboardVaultManager extends Component {
           }}
         />
       </Row>
-      )
-    }
+    )
+  }
 
-    // Getting last transactions
-    getTransactions = (dragoAddress, accounts) =>{
-      const { api } = this.context
-      // const options = {balance: false, supply: true}
-      const options = {balance: false, supply: true, limit: 10, trader: false}
-      var sourceLogClass = this.constructor.name
-      utils.getTransactionsVaultOptV2(api, dragoAddress, accounts, options)
-      .then(results =>{
+  // Getting last transactions
+  getTransactions = (dragoAddress, accounts) => {
+    const { api } = this.context
+    // const options = {balance: false, supply: true}
+    const options = { balance: false, supply: true, limit: 10, trader: false }
+    var sourceLogClass = this.constructor.name
+    utils.getTransactionsVaultOptV2(api, dragoAddress, accounts, options)
+      .then(results => {
         console.log(`${sourceLogClass} -> Transactions list loaded`)
-        const createdLogs = results[1].filter(event =>{
+        const createdLogs = results[1].filter(event => {
           return event.type !== 'BuyVault' && event.type !== 'SellVault'
         })
         results[1] = createdLogs
@@ -324,9 +326,9 @@ class PageDashboardVaultManager extends Component {
       .catch((error) => {
         console.warn(error)
       })
-    }
-
-    
   }
 
-  export default withRouter(connect(mapStateToProps)(PageDashboardVaultManager))
+
+}
+
+export default withRouter(connect(mapStateToProps)(PageDashboardVaultManager))

@@ -170,13 +170,13 @@ class PageDashboardDragoManager extends Component {
       )
     }
     )
-
+    
     return (
       <Row>
         <Col xs={12}>
           <Paper className={styles.paperContainer} zDepth={1}>
             <Sticky enabled={true} innerZ={1}>
-             <UserDashboardHeader fundType='drago' userType='wizard' />
+              <UserDashboardHeader fundType='drago' userType='wizard' />
               <Row className={styles.tabsRow}>
                 <Col xs={12}>
                   <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle}>
@@ -231,6 +231,11 @@ class PageDashboardDragoManager extends Component {
                 </Row>
                 <Row>
                   <Col xs={12}>
+
+                    <div className={styles.deployButtonContainer}>
+                      <ElementFundCreateAction accounts={accounts} />
+                    </div>
+
                     <div className={styles.sectionParagraph}>
                       Your funds:
                     </div>

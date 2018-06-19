@@ -102,3 +102,7 @@
 .detailsSectionContainer {
   padding-bottom: 5px;
 }
+
+.deployButtonContainer{
+  text-align: right;
+}

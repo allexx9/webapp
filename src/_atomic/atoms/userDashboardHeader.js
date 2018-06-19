@@ -14,7 +14,7 @@ export default class UserDashboardHeader extends Component {
     userType: PropTypes.string.isRequired
   };
 
-  static defaulProps = {
+  static defaultProps = {
     fundType: 'drago',
     userType: 'holder'
   }

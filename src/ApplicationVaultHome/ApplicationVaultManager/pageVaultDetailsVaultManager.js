@@ -22,7 +22,7 @@ import InfoTable from '../../Elements/elementInfoTable';
 import ElementListWrapper from '../../Elements/elementListWrapper';
 import ElementNoAdminAccess from '../../Elements/elementNoAdminAccess';
 import PoolApi from '../../PoolsApi/src';
-import FundHeader from '../../_atomic/atoms/fundHeader';
+import FundHeader from '../../_atomic/molecules/fundHeader';
 import Loading from '../../_atomic/atoms/loading';
 import SectionHeader from '../../_atomic/atoms/sectionHeader';
 import SectionTitle from '../../_atomic/atoms/sectionTitle';

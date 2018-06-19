@@ -1,7 +1,6 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
 import React, { Component } from 'react';
-import  * as Colors from 'material-ui/styles/colors';
 import PropTypes from 'prop-types';
 import ApplicationDragoHome from '../ApplicationDragoHome';
 import ApplicationTopBar from './ApplicationTopBar';
@@ -12,9 +11,7 @@ import { Grid, Row, Col } from 'react-flexbox-grid';
 import styles from './application.module.css';
 import classNames from 'classnames';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import NotConnected from '../Elements/notConnected'
 import { connect } from 'react-redux';
-
 
 const muiTheme = getMuiTheme({
   palette: {

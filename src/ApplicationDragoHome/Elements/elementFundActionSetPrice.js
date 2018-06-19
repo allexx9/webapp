@@ -10,8 +10,7 @@ import React, { Component } from 'react';
 import { Col, Row } from 'react-flexbox-grid';
 import AccountSelector from '../../Elements/elementAccountSelector';
 import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization';
-import ElementDialogAddressTitle from '../../_atomic/atoms/elementDialogAddressTitle';
-import ElementDialogHeadTitle from '../../_atomic/atoms/elementDialogHeadTitle';
+import ActionsDialogHeader from '../../_atomic/molecules/actionsDialogHeader'
 import PoolApi from '../../PoolsApi/src';
 import { ERRORS, validateAccount, validatePositiveNumber } from '../../_utils/validation';
 import styles from './elementFundActionSetPrice.module.css';
@@ -51,15 +50,15 @@ export default class ElementFundActionSetPrice extends Component {
     color: 'white',
   }
 
-  componentDidMount () {
+  componentDidMount() {
     const { api } = this.context
     console.log(api)
   }
 
-  render () {
-    
+  render() {
+
     const { complete, openAuth, authMsg, authAccount } = this.state;
-    const {dragoDetails} = this.props
+    const { dragoDetails } = this.props
 
     if (complete) {
       return null;
@@ -86,14 +85,14 @@ export default class ElementFundActionSetPrice extends Component {
 
     return (
       <div key='setPriceDialoDiv'>
-      <Dialog key='setPriceDialog'
-        title={this.renderHeader()}
-        titleStyle={titleStyle}
-        modal 
-        open={true}
-        actions={ this.renderActions() }>
-        { this.renderFields() }
-      </Dialog>
+        <Dialog key='setPriceDialog'
+          title={this.renderHeader()}
+          titleStyle={titleStyle}
+          modal
+          open={true}
+          actions={this.renderActions()}>
+          {this.renderFields()}
+        </Dialog>
       </div>
     );
   }
@@ -102,17 +101,20 @@ export default class ElementFundActionSetPrice extends Component {
     const { dragoDetails } = this.props
     return (
       <div key='dialogHeader'>
-          <ElementDialogHeadTitle primaryText='Set Price' fundType='drago'/>
-          <ElementDialogAddressTitle tokenDetails={dragoDetails} />
+        <ActionsDialogHeader
+          primaryText='Set Price'
+          fundType='drago'
+          tokenDetails={dragoDetails}
+        />
       </div>
     )
   }
 
-  
 
-  onClose =(event) =>{
+
+  onClose = (event) => {
     // Calling callback function passed by parent in order to show/hide this dialog
-    this.props.openActionForm(event,'setPrice')
+    this.props.openActionForm(event, 'setPrice')
   }
 
   renderActions = () => {
@@ -123,12 +125,12 @@ export default class ElementFundActionSetPrice extends Component {
         <FlatButton key='dialoButton1'
           label='Done'
           primary
-          onClick={ this.props.onClose } />
+          onClick={this.props.onClose} />
       );
     }
 
     const { accountError, amountErrorBuy, amountErrorSell, sending } = this.state;
-    const hasError = !!(amountErrorBuy || amountErrorSell || accountError );
+    const hasError = !!(amountErrorBuy || amountErrorSell || accountError);
 
     return ([
       <FlatButton
@@ -136,13 +138,13 @@ export default class ElementFundActionSetPrice extends Component {
         label='Cancel'
         name='setPrice'
         primary
-        onClick={ this.onClose} />,
+        onClick={this.onClose} />,
       <FlatButton
         key='dialoButton2'
         label='Save'
         primary
-        disabled={ hasError || sending }
-        onClick={ this.onSend } />
+        disabled={hasError || sending}
+        onClick={this.onSend} />
     ]);
   }
 
@@ -164,7 +166,7 @@ export default class ElementFundActionSetPrice extends Component {
       fontWeight: 600,
     }
 
-    
+
     return (
       <div key='inputFields'>
         <AccountSelector
@@ -278,7 +280,7 @@ export default class ElementFundActionSetPrice extends Component {
         return
       }
       // Checking if buyPrice >= sellPrice
-      if(new BigNumber(buyPrice).gte(sellPrice)) {
+      if (new BigNumber(buyPrice).gte(sellPrice)) {
         this.setState({
           buyPrice: buyPrice,
           amountErrorBuy: error
@@ -318,7 +320,7 @@ export default class ElementFundActionSetPrice extends Component {
         return
       }
       // Checking if buyPrice >= sellPrice
-      if(new BigNumber(buyPrice).gte(sellPrice)) {
+      if (new BigNumber(buyPrice).gte(sellPrice)) {
         this.setState({
           sellPrice: sellPrice,
           amountErrorSell: error
@@ -341,26 +343,26 @@ export default class ElementFundActionSetPrice extends Component {
     this.setState({
       sending: true
     });
-    
+
     poolApi = new PoolApi(provider)
     poolApi.contract.drago.init(dragoDetails.address)
     poolApi.contract.drago.setPrices(this.state.account.address, buyPrice, sellPrice)
-    .then ((result) =>{
-      console.log(result)
-      this.setState({
-        sending: false
-      });
-    })
-    .catch((error) => {
-      console.error('error', error)
-      this.setState({
-        sending: false
+      .then((result) => {
+        console.log(result)
+        this.setState({
+          sending: false
+        });
       })
-    })
+      .catch((error) => {
+        console.error('error', error)
+        this.setState({
+          sending: false
+        })
+      })
     this.setState({
       openAuth: true,
       authMsg: "BUY price set to " + buyPrice + " ETH. SELL price set to " + sellPrice + " ETH",
-      authAccount: {...this.state.account}
+      authAccount: { ...this.state.account }
     })
     // this.onClose()
     // this.props.snackBar('Instruction awaiting for authorization')

@@ -1,16 +1,17 @@
-import  * as Colors from 'material-ui/styles/colors';
-import { Row, Col } from 'react-flexbox-grid';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
+import * as Colors from 'material-ui/styles/colors';
+import TextField from 'material-ui/TextField';
 import PropTypes from 'prop-types';
 import React from 'react';
-import TextField from 'material-ui/TextField';
-import { ERRORS, validateAccount, validateNewName, validateNewSymbol } from '../../_utils/validation';
-import AccountSelector from '../../Elements/elementAccountSelector'
-import PoolApi from '../../PoolsApi/src'
-import ElementDialogHeadTitle from '../../_atomic/atoms/elementDialogHeadTitle'
-import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization'
+import { Col, Row } from 'react-flexbox-grid';
 import { connect } from 'react-redux';
+import AccountSelector from '../../Elements/elementAccountSelector';
+import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization';
+import PoolApi from '../../PoolsApi/src';
+import ButtonDeployPool from '../../_atomic/atoms/buttonDeployPool';
+import ActionsDialogHeader from '../../_atomic/molecules/actionsDialogHeader';
+import { ERRORS, validateAccount, validateNewName, validateNewSymbol } from '../../_utils/validation';
 
 const customContentStyle = {
   minHeight: '500px',
@@ -202,10 +203,10 @@ class ElementFundCreateAction extends React.Component {
 
     renderHeader = () => {
       return (
-        <div>
-            <ElementDialogHeadTitle primaryText='Deploy new Drago' />
-        </div>
-  
+        <ActionsDialogHeader
+        primaryText='Deploy new Drago'
+        fundType='drago'
+        />  
       )
     }
 
@@ -274,10 +275,9 @@ class ElementFundCreateAction extends React.Component {
 
       return (
         <div>
-          <FlatButton label="Deploy" primary={true} onClick={this.handleOpen} 
-            labelStyle={labelStyle}
-            backgroundColor={'#054186'}
-            hoverColor={Colors.blue300}
+            <ButtonDeployPool 
+              handleOpen={this.handleOpen}
+              fundType='drago'
             />
             <Dialog
               title={this.renderHeader()}

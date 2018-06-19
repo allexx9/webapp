@@ -24,7 +24,8 @@ class ElementAccountBox extends Component {
   static propTypes = {
     account: PropTypes.object.isRequired,
     etherscanUrl: PropTypes.string.isRequired,
-    snackBar: PropTypes.func
+    snackBar: PropTypes.func,
+    fundType: PropTypes.string
   };
 
   state = {
@@ -148,7 +149,9 @@ class ElementAccountBox extends Component {
             open={this.state.transferOpen}
             onTransferOpen={this.onTransferOpen}
             account={account}
-            snackBar={this.props.snackBar} />
+            snackBar={this.props.snackBar} 
+            fundType={this.props.fundType}
+            />
         </Col>
       </Row>
 
