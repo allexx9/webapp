@@ -1,11 +1,7 @@
 import * as Colors from 'material-ui/styles/colors'
 import { Link, withRouter } from 'react-router-dom'
-import { ToolbarGroup, ToolbarSeparator } from 'material-ui/Toolbar'
+import { Toolbar, ToolbarGroup, ToolbarSeparator } from 'material-ui/Toolbar'
 import AccountIcon from 'material-ui/svg-icons/action/account-circle'
-import ActionAccountBalance from 'material-ui/svg-icons/action/account-balance'
-import ActionHome from 'material-ui/svg-icons/action/home'
-import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
-import ActionPolymer from 'material-ui/svg-icons/action/polymer'
 import Settings from 'material-ui/svg-icons/action/settings'
 import Help from 'material-ui/svg-icons/action/help'
 import FlatButton from 'material-ui/FlatButton'
@@ -73,6 +69,7 @@ class NavLinks extends Component {
     user: PropTypes.object.isRequired,
     handleToggleNotifications: PropTypes.func.isRequired,
     transactions: PropTypes.object.isRequired,
+    match: PropTypes.object.isRequired,
   };
 
   state = {
@@ -87,7 +84,6 @@ class NavLinks extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    const sourceLogClass = this.constructor.name
     var stateUpdate = true
     var propsUpdate = true
     propsUpdate = !utils.shallowEqual(this.props, nextProps)
@@ -120,26 +116,9 @@ class NavLinks extends Component {
   }
 
   activeSectionPath = () => {
-    const { location, match } = this.props
+    const { match } = this.props
     var path = match.path.split('/')
     return path[3]
-  }
-
-  renderTopLinks = (links) => {
-    const activeLink = this.activeSectionPath()
-    var backgroundColorActive = '#054186'
-    const { location } = this.props
-    return links.map((link) => {
-      link.to === activeLink ? backgroundColorActive = '#1968C0' : backgroundColorActive = '#054186'
-      return (
-        <FlatButton key={link.label} label={link.label.toUpperCase()} containerElement={<Link to={DS + APP + DS + this.buildUrlPath(location) + DS + link.to} />} disableTouchRipple={true}
-          hoverColor={'#054186'} className={styles.topbarbuttons}
-          icon={link.icon}
-          labelStyle={{ fontWeight: 700 }}
-          backgroundColor={backgroundColorActive}
-        />
-      )
-    })
   }
 
   buildUrlPath = (location) => {
@@ -166,7 +145,6 @@ class NavLinks extends Component {
 
   handleToggleNotifications = () => {
     var transactionsDrawerNetworkButtonStyle, transactionsDrawerNetworkButtonIconStyle
-    console.log(this.state.transactionsDrawerOpen)
     !this.state.transactionsDrawerOpen
       ? transactionsDrawerNetworkButtonStyle = styles.networkIconOpen
       : transactionsDrawerNetworkButtonStyle = styles.networkIconClosed
@@ -186,12 +164,6 @@ class NavLinks extends Component {
     const { transactions } = this.props
     var userTypeDisabled = false;
     var userTypeLabel = 'HOLDER'
-    const links = [
-      { label: 'home', to: 'home', icon: <ActionHome color="white" /> },
-      { label: 'vault', to: 'vault', icon: <ActionAccountBalance color="white" /> },
-      { label: 'drago', to: 'drago', icon: <ActionShowChart color="white" /> },
-      { label: 'exchange', to: 'exchange', icon: <ActionPolymer color="white" /> }
-    ]
     const buttonAccountType = {
       border: "1px solid",
       borderColor: '#FFFFFF',
@@ -207,100 +179,99 @@ class NavLinks extends Component {
       menuStyles = { ...menuStyles, ...enabledUserType };
     }
     return (
-      <ToolbarGroup>
-        <ToolbarGroup>
-          {this.renderTopLinks(links)}
-        </ToolbarGroup>
-        <ToolbarSeparator style={menuStyles.separator} />
-        <ToolbarGroup>
-          <FlatButton
-            onClick={this.handleClick}
-            labelPosition="before"
-            label={userTypeLabel}
-            labelStyle={{ color: '#FFFFFF' }}
-            style={buttonAccountType}
-            icon={<ArrowDropDown color='#FFFFFF' />}
-            hoverColor={Colors.blue300}
-          />
-          <Popover
-            open={this.state.open}
-            anchorEl={this.state.anchorEl}
-            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-            targetOrigin={{ horizontal: 'right', vertical: 'top' }}
-            onRequestClose={this.handleRequestClose}
-            style={{ marginTop: "5px" }}
+      <Toolbar style={{backgroundColor: '#054186'}}>
+        <ToolbarGroup >
+          <ToolbarSeparator style={menuStyles.separator} />
+          <ToolbarGroup>
+            <FlatButton
+              onClick={this.handleClick}
+              labelPosition="before"
+              label={userTypeLabel}
+              labelStyle={{ color: '#FFFFFF' }}
+              style={buttonAccountType}
+              icon={<ArrowDropDown color='#FFFFFF' />}
+              hoverColor={Colors.blue300}
+            />
+            <Popover
+              open={this.state.open}
+              anchorEl={this.state.anchorEl}
+              anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+              targetOrigin={{ horizontal: 'right', vertical: 'top' }}
+              onRequestClose={this.handleRequestClose}
+              style={{ marginTop: "5px" }}
 
-          >
-            <Menu value={user.isManager}
-              onChange={this.handleTopBarSelectAccountType}
-              desktop={true}
-              className={styles.menuAccountType}
             >
-              <MenuItem
-                value={false}
-                primaryText={
-                  <div>
-                    <div className={styles.menuItemPrimaryText}>HOLDER</div>
-                    <div><small>Invest in funds</small></div>
-                  </div>
-                }
-              />
-              <MenuItem
-                value={true}
-                primaryText={
-                  <div>
-                    <div className={styles.menuItemPrimaryText}>WIZARD</div>
-                    <div><small>Manage your funds</small></div>
-                  </div>
-                }
-              />
-            </Menu>
-          </Popover>
-          <IconMenu
-            iconButtonElement={<IconButton><AccountIcon /></IconButton>}
-            iconStyle={menuStyles.profileIcon.closed}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'left', }}
-            desktop={true}
-          >
-            <MenuItem leftIcon={<Settings />} value="config" primaryText="Config"
-              containerElement={<Link to={DS + APP + DS + this.buildUrlPath(location) + DS + "config"} />} />
-            <MenuItem leftIcon={<Help />} value="help" primaryText="Help" />
-          </IconMenu>
-          {transactions.pending > 0
-            ?
-            <div className={this.state.transactionsDrawerNetworkButtonStyle}>
-              <Badge
-                badgeContent={transactions.pending}
-                secondary={true}
-                style={{ padding: "0px !important" }}
-                badgeStyle={{ top: 0, right: 0, fontSize: "10px", width: "20px", height: "20px" }}
+              <Menu value={user.isManager}
+                onChange={this.handleTopBarSelectAccountType}
+                desktop={true}
+                className={styles.menuAccountType}
               >
-                <IconButton
-                  tooltip="Network"
+                <MenuItem
+                  value={false}
+                  primaryText={
+                    <div>
+                      <div className={styles.menuItemPrimaryText}>HOLDER</div>
+                      <div><small>Invest in funds</small></div>
+                    </div>
+                  }
+                />
+                <MenuItem
+                  value={true}
+                  primaryText={
+                    <div>
+                      <div className={styles.menuItemPrimaryText}>WIZARD</div>
+                      <div><small>Manage your funds</small></div>
+                    </div>
+                  }
+                />
+              </Menu>
+            </Popover>
+            <IconMenu
+              iconButtonElement={<IconButton><AccountIcon /></IconButton>}
+              iconStyle={menuStyles.profileIcon.closed}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'left', }}
+              desktop={true}
+            >
+              <MenuItem leftIcon={<Settings />} value="config" primaryText="Config"
+                containerElement={<Link to={DS + APP + DS + this.buildUrlPath(location) + DS + "config"} />} />
+              <MenuItem leftIcon={<Help />} value="help" primaryText="Help" />
+            </IconMenu>
+            {transactions.pending > 0
+              ?
+              <div className={this.state.transactionsDrawerNetworkButtonStyle}>
+                <Badge
+                  badgeContent={transactions.pending}
+                  secondary={true}
+                  style={{ padding: "0px !important" }}
+                  badgeStyle={{ top: 0, right: 0, fontSize: "10px", width: "20px", height: "20px" }}
+                >
+                  <IconButton
+                    tooltip="Network"
+                    onClick={this.handleToggleNotifications}
+                    iconStyle={this.state.transactionsDrawerNetworkButtonIconStyle}>
+                    <NotificationWifi />
+                  </IconButton>
+                </Badge>
+              </div>
+              :
+              <div className={this.state.transactionsDrawerNetworkButtonStyle}>
+                <IconButton tooltip="Network"
                   onClick={this.handleToggleNotifications}
-                  iconStyle={this.state.transactionsDrawerNetworkButtonIconStyle}>
+                  iconStyle={this.state.transactionsDrawerNetworkButtonIconStyle}
+                // style={{
+                //   marginTop: "-5px",
+                //   marginBottom: "-5px"
+                // }
+                // }
+                >
                   <NotificationWifi />
                 </IconButton>
-              </Badge>
-            </div>
-            :
-            <div className={this.state.transactionsDrawerNetworkButtonStyle}>
-              <IconButton tooltip="Network"
-                onClick={this.handleToggleNotifications}
-                iconStyle={this.state.transactionsDrawerNetworkButtonIconStyle}
-              // style={{
-              //   marginTop: "-5px",
-              //   marginBottom: "-5px"
-              // }
-              // }
-              >
-                <NotificationWifi />
-              </IconButton>
-            </div>
-          }
+              </div>
+            }
 
+          </ToolbarGroup>
         </ToolbarGroup>
-      </ToolbarGroup>
+      </Toolbar>
     )
   }
 }

@@ -1,7 +1,6 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
 import React, { Component } from 'react';
-import  * as Colors from 'material-ui/styles/colors';
 import PropTypes from 'prop-types';
 import ApplicationHome from '../ApplicationHome';
 import ApplicationTopBar from './ApplicationTopBar';
@@ -23,7 +22,8 @@ const muiTheme = getMuiTheme({
   },
   appBar: {
     height: 45,
-    fontSize: "20px !important"
+    fontSize: "20px !important",
+    backgroundColor: "#054186"
   },
 });
 

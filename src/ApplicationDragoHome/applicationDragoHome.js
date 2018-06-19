@@ -5,10 +5,6 @@ import ApplicationDragoManager from './ApplicationDragoManager'
 import ApplicationDragoTrader from './ApplicationDragoTrader'
 import Loading from '../_atomic/atoms/loading';
 import styles from './applicationDragoHome.module.css';
-
-import {
-  DEFAULT_NETWORK_NAME,
-} from '../_utils/const'
 import { Row, Col } from 'react-flexbox-grid';
 import LeftSideDrawerFunds from '../Elements/leftSideDrawerFunds';
 import PropTypes from 'prop-types';
@@ -16,8 +12,6 @@ import utils from '../_utils/utils'
 import ElementNotificationsDrawer from '../Elements/elementNotificationsDrawer'
 import CheckAuthPage from '../Elements/checkAuthPage'
 import ElementBottomStatusBar from '../Elements/elementBottomStatusBar'
-import DragoComingSoon from '../Elements/elementDragoComingSoon'
-
 
 import { connect } from 'react-redux';
 

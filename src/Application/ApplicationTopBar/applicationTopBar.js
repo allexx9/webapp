@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom'
 import AppBar from 'material-ui/AppBar';
-import NavLinks from '../../Elements/topBarMenuLinks';
+import NavLinksRight from '../../Elements/topBarMenuLinksRight';
+import NavLinksLeft from '../../Elements/topBarMenuLinksLeft';
 import styles from './applicationTopBar.module.css';
-import classNames from 'classnames';
 
 class ApplicationTopBar extends Component {
   constructor(props) {
@@ -47,7 +47,6 @@ class ApplicationTopBar extends Component {
           </ul>
         </div>
       </div>
-
     </div>
     )
   }
@@ -56,13 +55,16 @@ class ApplicationTopBar extends Component {
     const { location, handleTopBarSelectAccountType, handleToggleNotifications } = this.props
     return (
       <div>
-        <div>{this.renderBurgerMenu()}</div>
+        <div>
+          {this.renderBurgerMenu()}
+        </div>
         
         <AppBar
-          title={'R'}
+          title={<NavLinksLeft location={location} />}
           showMenuIconButton={false}
-          iconElementRight={<NavLinks handleToggleNotifications={handleToggleNotifications}
-            location={location} handleTopBarSelectAccountType={handleTopBarSelectAccountType} />}
+          iconElementLeft={<NavLinksLeft location={location} />}
+          iconElementRight={<NavLinksRight handleToggleNotifications={handleToggleNotifications}
+          location={location} handleTopBarSelectAccountType={handleTopBarSelectAccountType} />}
         />
 
       </div>

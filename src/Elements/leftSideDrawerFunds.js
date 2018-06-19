@@ -8,7 +8,7 @@ import MenuItem from 'material-ui/MenuItem';
 import Menu from 'material-ui/Menu';
 import ActionAssessment from 'material-ui/svg-icons/action/assessment';
 import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
-import { Hidden } from 'react-grid-system'
+import { Hidden, Visible } from 'react-grid-system'
 
 var drawerStyle = {
   activeLink: {
@@ -49,19 +49,31 @@ class LeftSideDrawerFunds extends Component {
     return (
       <Drawer open={true}
       containerClassName={styles.containerleftDrawer} className={styles.leftDrawer}>
-      <Hidden xs sm>
-        <Menu
-          selectedMenuItemStyle={ drawerStyle.activeLink }
-          value={this.setSelectedLink(location)}        
-          >
-          <MenuItem checked={true} primaryText="Dashboard" leftIcon={<ActionAssessment />} 
-            containerElement={<Link to={DS+APP+DS+this.buildUrlPath(location)+DS+"drago"+DS+"dashboard"} />}
-            value='dashboard'/>
-          <MenuItem primaryText="Funds" leftIcon={<ActionShowChart />} 
-            containerElement={<Link to={DS+APP+DS+this.buildUrlPath(location)+DS+"drago"+DS+"pools"} />}
-            value='pools' />
-        </Menu>
-      </Hidden>
+        <Hidden xs sm md>
+          <Menu
+            selectedMenuItemStyle={ drawerStyle.activeLink }
+            value={this.setSelectedLink(location)}        
+            >
+            <MenuItem checked={true} primaryText="Dashboard" leftIcon={<ActionAssessment />} 
+              containerElement={<Link to={DS+APP+DS+this.buildUrlPath(location)+DS+"drago"+DS+"dashboard"} />}
+              value='dashboard'/>
+            <MenuItem primaryText="Funds" leftIcon={<ActionShowChart />} 
+              containerElement={<Link to={DS+APP+DS+this.buildUrlPath(location)+DS+"drago"+DS+"pools"} />}
+              value='pools' />
+          </Menu>
+        </Hidden>
+
+        <Visible xs sm md>
+          <Menu
+            selectedMenuItemStyle={ drawerStyle.activeLink }
+            value={this.setSelectedLink(location)}        
+            >
+            <MenuItem checked={true} primaryText="" leftIcon={<ActionAssessment />} 
+              value='dashboard'/>
+            <MenuItem primaryText="" leftIcon={<ActionShowChart />} 
+              value='pools' />
+          </Menu>
+        </Visible>
       </Drawer>
     )
   }
