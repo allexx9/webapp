@@ -1,6 +1,4 @@
-import Immutable from 'immutable'
-import React, { Component } from 'react';
-import ReactDOM from 'react-dom'
+import React, { Component } from 'react';s
 import TextField from 'material-ui/TextField';
 import PropTypes from 'prop-types';
 
