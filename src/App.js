@@ -125,6 +125,7 @@ export class App extends Component {
       type: ATTACH_INTERFACE,
       payload: new Promise((resolve) => {
         this.attachInterface().then(result => {
+          console.log('resolved')
           resolve(result);
         })
       })
@@ -155,11 +156,11 @@ export class App extends Component {
     this.props.dispatch(Actions.notifications.initNotificationsSystemAction(this._notificationSystem))
     this.props.dispatch(Actions.tokens.priceTickerOpenWsAction())
     this.props.dispatch(this.attachInterfaceAction())
-    setTimeout(() => { 
-      this.setState({
-        appLoading: false,
-      })
-    }, 5000);
+    // setTimeout(() => { 
+    //   this.setState({
+    //     appLoading: false,
+    //   })
+    // }, 10000);
   }
 
   UNSAFE_componentWillMount() {
@@ -346,6 +347,7 @@ export class App extends Component {
     switch (selectedEndpoint) {
       case INFURA:
         console.log(`${sourceLogClass} -> ${INFURA}`)
+        console.log(this._api, networkId)
         return blockchain.attachInterfaceInfuraV2(this._api, networkId)
           .then((attachedInterface) => {
             // this.setState({...this.state, ...blockchain.success})
@@ -357,6 +359,7 @@ export class App extends Component {
               WsSecureUrl = this.props.endpoint.endpointInfo.wss[networkName].dev
             }
             // Infura does not support WebSocket for Kovan yet.
+            console.log(attachedInterface)
             if (networkName === KOVAN) {
               return this._api.subscribe('eth_blockNumber', this.onNewBlockNumber)
                 .then((subscriptionID) => {
@@ -492,6 +495,7 @@ export class App extends Component {
 
   onNewBlockNumber = (_error, blockNumber) => {
     utils.logger.disable()
+    console.log('new block')
     if (_error) {
       console.error('onNewBlockNumber', _error)
       return
@@ -514,7 +518,7 @@ export class App extends Component {
       const endpoint = {
         prevBlockNumber: newBlockNumber.toFixed()
       }
-      this.updateInterfaceAction(endpoint)
+      Actions.endpoint.updateInterfaceAction(endpoint)
       return null
     }
     const accounts = [].concat(endpoint.accounts);
@@ -616,7 +620,7 @@ export class App extends Component {
             })
             )
           }
-          this.props.dispatch(this.updateInterfaceAction(endpoint))
+          this.props.dispatch(Actions.endpoint.updateInterfaceAction(endpoint))
           return endpoint
         })
         .catch((error) => {
@@ -637,14 +641,14 @@ export class App extends Component {
             })
             )
           }
-          this.props.dispatch(this.updateInterfaceAction(endpoint))
+          this.props.dispatch(Actions.endpoint.updateInterfaceAction(endpoint))
           return endpoint
         });
     }
     else {
       const newEndpoint = { ...endpoint }
       newEndpoint.prevBlockNumber = newBlockNumber.toFixed()
-      this.props.dispatch(this.updateInterfaceAction(newEndpoint))
+      this.props.dispatch(Actions.endpoint.updateInterfaceAction(newEndpoint))
     }
     utils.logger.enable()
   }
