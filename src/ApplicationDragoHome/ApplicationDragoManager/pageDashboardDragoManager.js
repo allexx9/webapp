@@ -9,7 +9,7 @@ import CopyContent from 'material-ui/svg-icons/content/content-copy'
 import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
-import scrollToComponent from 'react-scroll-to-component-ssr'
+import scrollToElement from 'scroll-to-element'
 import Search from 'material-ui/svg-icons/action/search'
 import Snackbar from 'material-ui/Snackbar'
 import Sticky from 'react-stickynode'
@@ -21,13 +21,11 @@ import ElementListTransactions from '../Elements/elementListTransactions'
 import UserDashboardHeader from '../../_atomic/atoms/userDashboardHeader'
 import BigNumber from 'bignumber.js';
 import utils from '../../_utils/utils'
-import {
-  UPDATE_TRANSACTIONS_DRAGO_MANAGER,
-} from '../../_utils/const'
 import { connect } from 'react-redux';
 import SectionHeader from '../../_atomic/atoms/sectionHeader';
 
 import styles from './pageDashboardDragoManager.module.css'
+import { Actions } from '../../_redux/actions/actions' 
 
 function mapStateToProps(state) {
   return state
@@ -52,13 +50,6 @@ class PageDashboardDragoManager extends Component {
     snackBar: false,
     snackBarMsg: ''
   }
-
-  updateTransactionsDragoAction = (results) => {
-    return {
-      type: UPDATE_TRANSACTIONS_DRAGO_MANAGER,
-      payload: results
-    }
-  };
 
   componentDidMount() {
     const { endpoint } = this.props
@@ -135,7 +126,7 @@ class PageDashboardDragoManager extends Component {
       return null;
     }
     return (
-      <a href={this.props.endpoint.networkInfo.etherscan + type + '/' + text} target='_blank'><Search className={styles.copyAddress} /></a>
+      <a href={this.props.endpoint.networkInfo.etherscan + type + '/' + text} target='_blank' rel="noopener noreferrer"><Search className={styles.copyAddress} /></a>
     );
   }
 
@@ -181,15 +172,15 @@ class PageDashboardDragoManager extends Component {
                 <Col xs={12}>
                   <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle}>
                     <Tab label="Accounts" className={styles.detailsTab}
-                      onActive={() => scrollToComponent(this.Accounts, { offset: -80, align: 'top', duration: 500 })}
+                      onActive={() => scrollToElement('#accounts-section', {offset: -165})}
                       icon={<ActionList color={'#054186'} />}>
                     </Tab>
                     <Tab label="Funds" className={styles.detailsTab}
-                      onActive={() => scrollToComponent(this.Dragos, { offset: -80, align: 'top', duration: 500 })}
+                      onActive={() => scrollToElement('#funds-section', {offset: -165})}
                       icon={<ActionAssessment color={'#054186'} />}>
                     </Tab>
                     <Tab label="Transactions" className={styles.detailsTab}
-                      onActive={() => scrollToComponent(this.Transactions, { offset: -80, align: 'top', duration: 500 })}
+                      onActive={() => scrollToElement('#transactions-section', {offset: -165})}
                       icon={<ActionShowChart color={'#054186'} />}>
                     </Tab>
                   </Tabs>
@@ -202,7 +193,7 @@ class PageDashboardDragoManager extends Component {
               <Grid fluid>
                 <Row>
                   <Col xs={12} >
-                    <span ref={(section) => { this.Accounts = section; }}></span>
+                    <span id='accounts-section' ref={(section) => { this.Accounts = section; }}></span>
                     <SectionHeader
                       titleText='ACCOUNTS'
                     />
@@ -223,7 +214,7 @@ class PageDashboardDragoManager extends Component {
               <Grid fluid>
                 <Row>
                   <Col xs={12} >
-                    <span ref={(section) => { this.Dragos = section; }}></span>
+                    <span  id='funds-section' ref={(section) => { this.Dragos = section; }}></span>
                     <SectionHeader
                       titleText='FUNDS'
                     />
@@ -252,7 +243,7 @@ class PageDashboardDragoManager extends Component {
               <Grid fluid>
                 <Row>
                   <Col xs={12} >
-                    <span ref={(section) => { this.Transactions = section; }}></span>
+                    <span id='transactions-section' ref={(section) => { this.Transactions = section; }}></span>
                     <SectionHeader
                       titleText='TRANSACTIONS'
                     />
@@ -313,7 +304,7 @@ class PageDashboardDragoManager extends Component {
           return event.type !== 'BuyDrago' && event.type !== 'SellDrago'
         })
         results[1] = createdLogs
-        this.props.dispatch(this.updateTransactionsDragoAction(results))
+        this.props.dispatch(Actions.drago.updateTransactionsDragoManagerAction(results))
         this.setState({
           loading: false,
         });

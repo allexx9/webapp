@@ -1,5 +1,5 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
-
+import "babel-polyfill";
 import Endpoint from './_utils/endpoint';
 import { Switch, Redirect, Router, Route } from 'react-router-dom'
 import createHashHistory from 'history/createHashHistory';
@@ -33,7 +33,6 @@ import {
 } from './_utils/const'
 import {
   ATTACH_INTERFACE,
-  UPDATE_INTERFACE,
   INIT_NOTIFICATION,
   TOKEN_PRICE_TICKER_OPEN_WEBSOCKET
 } from './_utils/const'
@@ -45,6 +44,7 @@ import PoolsApi from './PoolsApi/src'
 import AppLoading from './Elements/elementAppLoading'
 // import NotConnected from './Elements/notConnected'
 import ReactGA from 'react-ga';
+import { Actions } from './_redux/actions/actions'
 
 var appHashPath = true;
 var sourceLogClass = null
@@ -133,7 +133,7 @@ export class App extends Component {
           var newEndpoint = { ...this.props.endpoint }
           newEndpoint.networkStatus = MSG_NETWORK_STATUS_ERROR
           newEndpoint.networkError = NETWORK_WARNING
-          this.props.dispatch(this.updateInterfaceAction(newEndpoint))
+          this.props.dispatch(Actions.endpoint.updateInterfaceAction(newEndpoint))
           this.setState({
             appLoading: false,
             isConnected: false,
@@ -141,14 +141,7 @@ export class App extends Component {
           return
         })
     }
-  };
-
-  updateInterfaceAction = (endpoint) => {
-    return {
-      type: UPDATE_INTERFACE,
-      payload: endpoint
-    }
-  };
+  }
 
   shouldComponentUpdate(nextProps, nextState) {
     // console.log(this.props.user.isManager)
@@ -159,11 +152,8 @@ export class App extends Component {
   }
 
   componentDidMount() {
-    this.props.dispatch({
-      type: INIT_NOTIFICATION,
-      payload: this._notificationSystem
-    })
-    this.props.dispatch({type: TOKEN_PRICE_TICKER_OPEN_WEBSOCKET})
+    this.props.dispatch(Actions.notifications.initNotificationsSystemAction(this._notificationSystem))
+    this.props.dispatch(Actions.tokens.priceTickerOpenWsAction())
     this.props.dispatch(this.attachInterfaceAction())
     setTimeout(() => { 
       this.setState({

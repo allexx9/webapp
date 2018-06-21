@@ -7,9 +7,7 @@ import LeftSideDrawerConfig from '../Elements/leftSideDrawerConfig';
 import ElementBottomStatusBar from '../Elements/elementBottomStatusBar'
 import styles from './applicationConfigHome.module.css'
 import { connect } from 'react-redux';
-import {
-  DEFAULT_NETWORK_NAME,
-} from '../_utils/const'
+
 
 function mapStateToProps(state) {
   return state

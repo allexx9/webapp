@@ -2,7 +2,6 @@ import BigNumber from 'bignumber.js';
 import Paper from 'material-ui/Paper';
 import Snackbar from 'material-ui/Snackbar';
 import * as Colors from 'material-ui/styles/colors';
-import ActionAssessment from 'material-ui/svg-icons/action/assessment';
 import ActionList from 'material-ui/svg-icons/action/list';
 import Search from 'material-ui/svg-icons/action/search';
 import CopyContent from 'material-ui/svg-icons/content/content-copy';
@@ -14,7 +13,7 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { Col, Grid, Row } from 'react-flexbox-grid';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
-import scrollToComponent from 'react-scroll-to-component-ssr';
+import scrollToElement from 'scroll-to-element';
 import Sticky from 'react-stickynode';
 import Web3 from 'web3';
 import ElementFundNotFound from '../../Elements/elementFundNotFound';
@@ -233,7 +232,7 @@ class PageVaultDetailsVaultManager extends Component {
                   <Col xs={12}>
                     <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle}>
                       <Tab label="SUMMARY" className={styles.detailsTab}
-                        onActive={() => scrollToComponent(this.Summary, { offset: -180, align: 'top', duration: 500 })}
+                        onActive={() => scrollToElement('#summary-section', {offset: -165})}
                         icon={<ActionList color={'#607D8B'} />}>
                       </Tab>
                       {/* <Tab label="INSIGHT" className={styles.detailsTab}
@@ -241,7 +240,7 @@ class PageVaultDetailsVaultManager extends Component {
                         icon={<ActionAssessment color={'#607D8B'} />}>
                       </Tab> */}
                       <Tab label="LOGS" className={styles.detailsTab}
-                        onActive={() => scrollToComponent(this.Logs, { offset: -180, align: 'top', duration: 500 })}
+                        onActive={() => scrollToElement('#transactions-section', {offset: -165})}
                         icon={<ActionShowChart color={'#607D8B'} />}>
                       </Tab>
                     </Tabs>
@@ -254,7 +253,7 @@ class PageVaultDetailsVaultManager extends Component {
                 <Grid fluid>
                   <Row>
                     <Col xs={12} >
-                      <span ref={(section) => { this.Summary = section; }}></span>
+                      <span id='summary-section' ref={(section) => { this.Summary = section; }}></span>
                       <SectionHeader
                         titleText='SUMMARY'
                         textStyle={{ backgroundColor: Colors.blueGrey500 }}
@@ -306,7 +305,7 @@ class PageVaultDetailsVaultManager extends Component {
               <Grid fluid>
                 <Row>
                   <Col xs={12} >
-                    <span ref={(section) => { this.Logs = section; }}></span>
+                    <span id='transactions-section' ref={(section) => { this.Logs = section; }}></span>
                     <SectionHeader
                       titleText='LOGS'
                       textStyle={{ backgroundColor: Colors.blueGrey500 }}

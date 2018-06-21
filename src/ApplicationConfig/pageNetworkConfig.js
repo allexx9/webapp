@@ -7,7 +7,6 @@ import ElementBoxHeadTitle from '../Elements/elementBoxHeadTitle'
 import RaisedButton from 'material-ui/RaisedButton';
 import { 
   LOCAL,
-  UPDATE_INTERFACE,
   KOVAN,
   ROPSTEN,
   MAINNET,

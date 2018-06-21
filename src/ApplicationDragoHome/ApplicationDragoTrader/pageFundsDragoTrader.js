@@ -34,7 +34,6 @@ class PageFundsDragoTrader extends Component {
   static propTypes = {
     location: PropTypes.object.isRequired,
     endpoint: PropTypes.object.isRequired,
-    accounts: PropTypes.array.isRequired
   };
 
     state = {

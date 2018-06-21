@@ -13,7 +13,7 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { Col, Grid, Row } from 'react-flexbox-grid';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
-import scrollToComponent from 'react-scroll-to-component-ssr';
+import scrollToElement from 'scroll-to-element';
 import Sticky from 'react-stickynode';
 import Web3 from 'web3';
 import ElementFundNotFound from '../../Elements/elementFundNotFound';
@@ -279,15 +279,15 @@ class PageFundDetailsDragoManager extends Component {
                   <Col xs={12}>
                     <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle}>
                       <Tab label="SUMMARY" className={styles.detailsTab}
-                        onActive={() => scrollToComponent(this.Summary, { offset: -180, align: 'top', duration: 500 })}
+                        onActive={() => scrollToElement('#summary-section', {offset: -165})}
                         icon={<ActionList color={'#054186'} />}>
                       </Tab>
                       <Tab label="INSIGHT" className={styles.detailsTab}
-                        onActive={() => scrollToComponent(this.InSight, { offset: -180, align: 'top', duration: 500 })}
+                        onActive={() => scrollToElement('#insight-section', {offset: -165})}
                         icon={<ActionAssessment color={'#054186'} />}>
                       </Tab>
                       <Tab label="LOGS" className={styles.detailsTab}
-                        onActive={() => scrollToComponent(this.Logs, { offset: -180, align: 'top', duration: 500 })}
+                        onActive={() => scrollToElement('#transactions-section', {offset: -165})}
                         icon={<ActionShowChart color={'#054186'} />}>
                       </Tab>
                     </Tabs>
@@ -300,7 +300,7 @@ class PageFundDetailsDragoManager extends Component {
                 <Grid fluid>
                   <Row>
                     <Col xs={12} >
-                      <span ref={(section) => { this.Summary = section; }}></span>
+                      <span id='summary-section' ref={(section) => { this.Summary = section; }}></span>
                       <SectionHeader
                         titleText='SUMMARY'
                         style={{ fontSize: '28px' }} 
@@ -370,7 +370,7 @@ class PageFundDetailsDragoManager extends Component {
               <Grid fluid>
                 <Row>
                   <Col xs={12} >
-                    <span ref={(section) => { this.InSight = section; }}></span>
+                    <span id='insight-section' ref={(section) => { this.InSight = section; }}></span>
                     <SectionHeader
                       titleText='INSIGHT'
                       style={{ fontSize: '28px' }} />
@@ -418,7 +418,7 @@ class PageFundDetailsDragoManager extends Component {
               <Grid fluid>
                 <Row>
                   <Col xs={12} >
-                    <span ref={(section) => { this.Logs = section; }}></span>
+                    <span id='transactions-section' ref={(section) => { this.Logs = section; }}></span>
                     <SectionHeader
                       titleText='LOGS'
                       style={{ fontSize: '28px' }} />
