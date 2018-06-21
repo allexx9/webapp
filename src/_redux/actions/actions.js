@@ -13,39 +13,11 @@ import {
   INIT_NOTIFICATION,
   TOKEN_PRICE_TICKER_OPEN_WEBSOCKET
 } from './const'
+import drago from './drago'
 
 class actions {
 
-  drago = {
-    updateSelectedDragoAction: (results) => {
-      return {
-        type: UPDATE_SELECTED_DRAGO_DETAILS,
-        payload: results
-      }
-    },
-    getAssetsPriceDataAction: (assets, networkId, quoteToken) => {
-      return {
-        type: FETCH_ASSETS_PRICE_DATA,
-        payload: {
-          assets,
-          networkId,
-          quoteToken
-        }
-      }
-    },
-    updateTransactionsDragoHolderAction: (results) => {
-      return {
-        type: UPDATE_TRANSACTIONS_DRAGO_HOLDER,
-        payload: results
-      }
-    },
-    updateTransactionsDragoManagerAction: (results) => {
-      return {
-        type: UPDATE_TRANSACTIONS_DRAGO_MANAGER,
-        payload: results
-      }
-    }
-  }
+  drago = drago
 
   vault = {
     updateSelectedVaultAction: (results) => {

@@ -236,7 +236,7 @@ export class App extends Component {
             if (metaMaskAccountIndex !== -1) {
               newAccounts.splice(metaMaskAccountIndex, 1)
               newEndpoint.accounts = newAccounts
-              this.props.dispatch(this.updateInterfaceAction(newEndpoint))
+              this.props.dispatch(Actions.endpoint.updateInterfaceAction(newEndpoint))
             }
           } else {
             // Checking if the MetaMask account is already in accounts list.
@@ -253,7 +253,7 @@ export class App extends Component {
                     newAccounts.push(result.accounts[0])
                   }
                   newEndpoint.accounts = newAccounts
-                  this.props.dispatch(this.updateInterfaceAction(newEndpoint))
+                  this.props.dispatch(Actions.endpoint.updateInterfaceAction(newEndpoint))
                   return result
                 })
             }
@@ -271,7 +271,7 @@ export class App extends Component {
           if (metaMaskAccountIndex !== -1) {
             newAccounts.splice(metaMaskAccountIndex, 1)
             newEndpoint.accounts = newAccounts
-            this.props.dispatch(this.updateInterfaceAction(newEndpoint))
+            this.props.dispatch(Actions.endpoint.updateInterfaceAction(newEndpoint))
           }
           this.tdIsConnected = setTimeout(this.checkMetaMaskUnlocked, isMetaMaskUnlockedTimeout)
         })
