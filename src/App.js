@@ -172,7 +172,7 @@ export class App extends Component {
     }, 5000);
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     // Starting connection checking. this is not necessary runnin inside Parity UI
     // because the checki is done by Parity and a messagge will be displayed by the client
     if (this.props.endpoint.endpointInfo.name !== 'local') {
@@ -190,7 +190,7 @@ export class App extends Component {
     this.detachInterface();
   }
 
-  componentWillUpdate() {
+  UNSAFE_componentWillUpdate() {
   }
 
 

@@ -59,7 +59,7 @@ class ApplicationHomePage extends Component {
     ethereumNetworkName: PropTypes.string.isRequired,
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
   }
 
   componentWillUnmount() {

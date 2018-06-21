@@ -14,7 +14,7 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { Col, Grid, Row } from 'react-flexbox-grid';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
-import scrollToComponent from 'react-scroll-to-component';
+import scrollToComponent from 'react-scroll-to-component-ssr';
 import Sticky from 'react-stickynode';
 import Web3 from 'web3';
 import ElementFundNotFound from '../../Elements/elementFundNotFound';
@@ -99,7 +99,7 @@ class PageVaultDetailsVaultManager extends Component {
   }
 
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     // Updating the lists on each new block if the accounts balances have changed
     // Doing this this to improve performances by avoiding useless re-rendering
     const sourceLogClass = this.constructor.name
@@ -107,7 +107,7 @@ class PageVaultDetailsVaultManager extends Component {
     const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
     if (!currentBalance.eq(nextBalance)) {
       this.initVault()
-      console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
+      console.log(`${sourceLogClass} -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`);
     } else {
       null
     }

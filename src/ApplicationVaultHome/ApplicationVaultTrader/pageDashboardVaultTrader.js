@@ -10,7 +10,7 @@ import CopyContent from 'material-ui/svg-icons/content/content-copy'
 import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types';
 import React, { Component } from 'react'
-import scrollToComponent from 'react-scroll-to-component'
+import scrollToComponent from 'react-scroll-to-component-ssr'
 import Search from 'material-ui/svg-icons/action/search'
 import Snackbar from 'material-ui/Snackbar'
 import Sticky from 'react-stickynode'
@@ -63,24 +63,24 @@ class PageDashboardVaultTrader extends Component {
   componentDidMount() {
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const { accounts } = this.props
     this.getTransactions(null, accounts)
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     // Updating the lists on each new block if the accounts balances have changed
     // Doing this this to improve performances by avoiding useless re-rendering
     const { accounts } = this.props
     const sourceLogClass = this.constructor.name
-    console.log(`${sourceLogClass} -> componentWillReceiveProps-> nextProps received.`);
+    console.log(`${sourceLogClass} -> UNSAFE_componentWillReceiveProps-> nextProps received.`);
     // Updating the transaction list if there have been a change in total accounts balance and the previous balance is
     // different from 0 (balances are set to 0 on app loading)
     const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
     const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
     if (!currentBalance.eq(nextProps.endpoint.ethBalance) && !nextBalance.eq(0)) {
       this.getTransactions(null, accounts)
-      console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
+      console.log(`${sourceLogClass} -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`);
     }
   }
 

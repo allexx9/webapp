@@ -55,7 +55,7 @@ class ApplicationDragoPage extends Component {
     syncStatus: PropTypes.object.isRequired,
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
   }
 
   componentWillUnmount() {

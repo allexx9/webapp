@@ -54,7 +54,7 @@ class ApplicationConfigPage extends Component {
     syncStatus: PropTypes.object.isRequired,
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
   }
 
   componentWillUnmount() {

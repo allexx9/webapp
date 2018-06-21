@@ -58,7 +58,7 @@ class ElementListTransactions extends PureComponent {
     this._sort = this._sort.bind(this);
   }
 
-  componentWillReceiveProps (nextProps) {
+  UNSAFE_componentWillReceiveProps (nextProps) {
     const { list } = nextProps
     const sortDirection = SortDirection.ASC;
     const sortedList = list.sortBy(item => item.timestamp)
@@ -71,7 +71,7 @@ class ElementListTransactions extends PureComponent {
       rowCount: rowCount,
     })
     const sourceLogClass = this.constructor.name
-    // console.log(`${sourceLogClass} -> componentWillReceiveProps`);
+    // console.log(`${sourceLogClass} -> UNSAFE_componentWillReceiveProps`);
   }
 
   render() {

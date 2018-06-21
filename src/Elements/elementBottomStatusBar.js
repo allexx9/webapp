@@ -40,7 +40,7 @@ export default class ElementBottomStatusBar extends Component {
   }
 
 
-  componentWillReceiveProps (nextProps) {
+  UNSAFE_componentWillReceiveProps (nextProps) {
     // console.log(this.props.blockNumber)
     // console.log(nextProps.blockNumber)
      if(this.props.blockNumber == 0 && nextProps.blockNumber !=0) {

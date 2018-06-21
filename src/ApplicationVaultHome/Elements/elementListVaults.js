@@ -62,7 +62,7 @@ class ElementListVaults extends PureComponent {
     this._sort = this._sort.bind(this);
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     // Updating the list
     const rowCount = nextProps.list.size
     const {list, sortDirection, sortBy} = nextProps

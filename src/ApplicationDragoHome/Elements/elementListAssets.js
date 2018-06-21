@@ -65,7 +65,7 @@ class ElementListAssets extends PureComponent {
     this._sort = this._sort.bind(this);
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     const { list } = nextProps
     const sortDirection = SortDirection.DESC;
     const sortedList = list.sortBy(item => item.symbol)
@@ -78,7 +78,7 @@ class ElementListAssets extends PureComponent {
       rowCount: rowCount,
     })
     const sourceLogClass = this.constructor.name
-    // console.log(`${sourceLogClass} -> componentWillReceiveProps`);
+    // console.log(`${sourceLogClass} -> UNSAFE_componentWillReceiveProps`);
   }
 
   render() {

@@ -206,7 +206,7 @@ class ApplicationExchangeHome extends Component {
     return stateUpdate || propsUpdate
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
   }
 
   componentDidMount() {
@@ -243,7 +243,7 @@ class ApplicationExchangeHome extends Component {
     this.props.dispatch({ type: RELAY_CLOSE_WEBSOCKET })
   }
 
-  componentWillUpdate() {
+  UNSAFE_componentWillUpdate() {
     // Storing the active document, so we can preserve focus in forms.
     this.activeElement = document.activeElement
   }
