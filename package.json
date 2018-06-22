@@ -1,7 +1,6 @@
 {
   "name": "rigoblock-david",
   "version": "0.1.0",
-  "private": true,
   "homepage": "./",
   "dependencies": {
     "0x.js": "^0.36.3",
