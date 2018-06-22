@@ -9,7 +9,7 @@ import {
   ERC20_TOKENS, 
 } from './const'
 
-import { Actions } from '../_redux/actions/actions' 
+import { Actions } from '../_redux/actions' 
 
 class utilities {
 

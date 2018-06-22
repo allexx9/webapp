@@ -25,7 +25,7 @@ import { connect } from 'react-redux';
 import SectionHeader from '../../_atomic/atoms/sectionHeader';
 
 import styles from './pageDashboardDragoManager.module.css'
-import { Actions } from '../../_redux/actions/actions' 
+import { Actions } from '../../_redux/actions' 
 
 function mapStateToProps(state) {
   return state

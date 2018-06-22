@@ -24,7 +24,7 @@ import AssetsPieChart from '../../_atomic/atoms/assetsPieChart';
 import Loading from '../../_atomic/atoms/loading';
 import SectionHeader from '../../_atomic/atoms/sectionHeader';
 import SectionTitle from '../../_atomic/atoms/sectionTitle';
-import { Actions } from '../../_redux/actions/actions';
+import { Actions } from '../../_redux/actions';
 import { ENDPOINTS, PROD } from '../../_utils/const';
 import { formatCoins, formatEth } from '../../_utils/format';
 import utils from '../../_utils/utils';

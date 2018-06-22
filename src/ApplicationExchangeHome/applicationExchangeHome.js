@@ -47,7 +47,7 @@ import PoolApi from '../PoolsApi/src';
 import BigNumber from 'bignumber.js';
 import ChartBox from '../_atomic/organisms/chartBox'
 import OrdersHistory from '../_atomic/organisms/ordersHistory'
-import { Actions } from '../_redux/actions/actions' 
+import { Actions } from '../_redux/actions' 
 // import { getData } from "../_utils/data"
 
 function mapStateToProps(state) {

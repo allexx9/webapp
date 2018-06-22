@@ -25,7 +25,7 @@ import SectionHeader from '../../_atomic/atoms/sectionHeader';
 // import SectionTitle from '../../_atomic/atoms/sectionTitle';
 
 import styles from './pageDashboardDragoTrader.module.css'
-import { Actions } from '../../_redux/actions/actions' 
+import { Actions } from '../../_redux/actions' 
 
 function mapStateToProps(state) {
   return state

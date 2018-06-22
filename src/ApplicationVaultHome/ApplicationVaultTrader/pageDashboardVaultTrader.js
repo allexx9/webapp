@@ -23,7 +23,7 @@ import utils from '../../_utils/utils'
 import BigNumber from 'bignumber.js';
 import { connect } from 'react-redux';
 import SectionHeader from '../../_atomic/atoms/sectionHeader';
-import { Actions } from '../../_redux/actions/actions' 
+import { Actions } from '../../_redux/actions' 
 
 import styles from './pageDashboardVaultTrader.module.css'
 

@@ -44,7 +44,7 @@ import PoolsApi from './PoolsApi/src'
 import AppLoading from './Elements/elementAppLoading'
 // import NotConnected from './Elements/notConnected'
 import ReactGA from 'react-ga';
-import { Actions } from './_redux/actions/actions'
+import { Actions } from './_redux/actions'
 
 var appHashPath = true;
 var sourceLogClass = null

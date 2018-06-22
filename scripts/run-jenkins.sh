@@ -5,5 +5,7 @@ docker run \
   -p 8080:8080 \
   -v jenkins-data:/var/jenkins_home \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  -v "$HOME/Development":/home \
+  -v "$HOME"/Development:/home \
+  --name jenkins \
   jenkinsci/blueocean
+  echo "Jenkins docker started at https://localhost:8080"

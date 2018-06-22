@@ -20,7 +20,7 @@ import { connect } from 'react-redux';
 import styles from './elements.module.css'
 import utils from '../_utils/utils'
 import Badge from 'material-ui/Badge';
-import { Actions } from '../_redux/actions/actions' 
+import { Actions } from '../_redux/actions' 
 
 
 function mapStateToProps(state) {

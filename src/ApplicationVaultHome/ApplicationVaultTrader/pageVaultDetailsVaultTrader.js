@@ -26,7 +26,7 @@ import SectionHeader from '../../_atomic/atoms/sectionHeader';
 import SectionTitle from '../../_atomic/atoms/sectionTitle';
 import { ENDPOINTS, PROD } from '../../_utils/const';
 import { formatCoins, formatEth } from '../../_utils/format';
-import { Actions } from '../../_redux/actions/actions';
+import { Actions } from '../../_redux/actions';
 import utils from '../../_utils/utils';
 import ElementFeesBox from '../Elements/elementFeesBox';
 import ElementListTransactions from '../Elements/elementListTransactions';
