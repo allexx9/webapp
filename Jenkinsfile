@@ -9,7 +9,7 @@ pipeline {
         CI = 'true' 
     }
     stages {
-        stage('Build') { 
+        stage('Init') { 
             steps {
                 echo "PATH=$PATH"
                 sh 'npm install' 
@@ -18,6 +18,11 @@ pipeline {
         stage('Test') { 
             steps {
                 sh './scripts/jenkins/test.sh' 
+            }
+        }
+        stage('Build') { 
+            steps {
+                sh './scripts/build-beta-dev.sh' 
             }
         }
     }
