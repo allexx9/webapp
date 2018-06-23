@@ -34,11 +34,10 @@ pipeline {
                 }
             }
             steps {
-                sh './scripts/build-beta-dev.sh' 
-
+                sh './scripts/build-beta-dev.sh'
             }
         }
-        stage('Build') { 
+        stage('Deploy') { 
             agent {
             dockerfile {
                 filename 'Dockerfile'
@@ -46,6 +45,7 @@ pipeline {
             }
 }
             steps {
+                // sh './scripts/build-beta-dev.sh' 
                 sh 'pwd'
                 sh 'ls -al'
             }
