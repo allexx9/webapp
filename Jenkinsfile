@@ -8,7 +8,7 @@ pipeline {
             agent {
                 docker {
                     image 'node:6' 
-                    args '-p 3000:3000' 
+                    // args '-p 3000:3000' 
                 }
             }
             steps {
@@ -19,11 +19,23 @@ pipeline {
             agent {
                 docker {
                     image 'node:6' 
-                    args '-p 3000:3000' 
+                    // args '-p 3000:3000' 
                 }
             }
             steps {
                 sh './scripts/jenkins/test.sh' 
+            }
+        }
+        stage('Build') { 
+            agent {
+                docker {
+                    image 'node:6' 
+                    // args '-p 3000:3000' 
+                }
+            }
+            steps {
+                sh './scripts/build-beta-dev.sh' 
+
             }
         }
         stage('Build') { 
@@ -34,7 +46,6 @@ pipeline {
             }
 }
             steps {
-                // sh './scripts/build-beta-dev.sh' 
                 sh 'pwd'
                 sh 'ls -al'
             }
