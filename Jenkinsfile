@@ -21,8 +21,16 @@ pipeline {
             }
         }
         stage('Build') { 
+            agent {
+            dockerfile {
+                filename 'Dockerfile'
+                dir 'scripts/containers/'
+            }
+}
             steps {
-                sh './scripts/build-beta-dev.sh' 
+                // sh './scripts/build-beta-dev.sh' 
+                sh 'pwd'
+                sh 'ls -al'
             }
         }
     }
