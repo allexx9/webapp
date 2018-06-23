@@ -11,7 +11,6 @@ pipeline {
     stages {
         stage('Init') { 
             steps {
-                echo "PATH=$PATH"
                 sh 'npm install' 
             }
         }
@@ -24,7 +23,7 @@ pipeline {
             agent {
             dockerfile {
                 filename 'Dockerfile'
-                dir 'scripts/containers/'
+                dir 'scripts/containers/beta-dev'
             }
 }
             steps {
