@@ -7,6 +7,6 @@ RUN apt-get update && \
     htpasswd -b -c /etc/nginx/.htpasswd rigoblock-dev rdev2018_ && \
     rm -rf /var/www/html/index.nginx-debian.html
 COPY ./build/ /var/www/html/
-COPY ./scripts/containers/beta/nginx.default /etc/nginx/sites-enabled/default
+COPY ./scripts/containers/beta-dev/nginx.default /etc/nginx/sites-enabled/default
 ENTRYPOINT /usr/sbin/nginx -g "daemon off;"
 EXPOSE 80
