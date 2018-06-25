@@ -1,4 +1,5 @@
 #!/bin/bash
+echo "Jenkins docker started at http://localhost:8080"
 docker run \
   --rm \
   -u root \
@@ -8,4 +9,4 @@ docker run \
   -v "$HOME":/home \
   --name jenkins \
   jenkinsci/blueocean
-  echo "Jenkins docker started at https://localhost:8080"
+  
