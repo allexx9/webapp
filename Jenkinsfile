@@ -50,6 +50,11 @@ pipeline {
                 sh 'docker -v'
                 sh './scripts/deploy-webapp-docker.sh'
                 sh 'docker image list'
+                script {
+                    docker.withRegistry('https://docker-register.endpoint.network:443', 'rb-docker-login') {
+                        docker.image('rb-app').push('latest')
+                    }
+                }
             }
         }
     }
