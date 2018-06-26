@@ -43,11 +43,6 @@ pipeline {
         stage('Deploy') { 
             agent { label 'master' }
             steps {
-                // sh './scripts/build-beta-dev.sh' 
-                sh 'pwd'
-                sh 'ls -al'
-                sh 'ls build/'
-                sh 'docker -v'
                 sh './scripts/deploy-webapp-docker.sh'
                 sh 'docker image list'
                 script {
@@ -56,6 +51,24 @@ pipeline {
                     }
                 }
             }
+        }
+    }
+    post {
+        always {
+            echo 'One way or another, I have finished'
+        }
+        success {
+            echo 'I succeeeded!'
+        }
+        unstable {
+            echo 'I am unstable :/'
+        }
+        failure {
+            echo 'I failed :('
+            sh 'docker rmi $(docker images | grep "^<none>" | awk '{print $3}')'
+        }
+        changed {
+            echo 'Things were different before...'
         }
     }
 }
