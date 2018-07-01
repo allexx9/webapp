@@ -1,0 +1,14 @@
+server {
+  listen 443;
+  server_name rb-jenkins.endpoint.network;
+
+  # SSL Server
+  ssl on;
+  ssl_certificate /etc/nginx/ssl/STAR_endpoint_network.crt;
+  ssl_certificate_key /etc/nginx/ssl/star.endpoint.network.key;
+  ssl_prefer_server_ciphers on;   
+   
+  location / {  
+    proxy_pass http://127.0.0.1;
+  } 
+}

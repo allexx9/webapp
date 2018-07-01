@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker stop registry && docker rm registry
+sudo docker stop docker-registry && docker rm docker-registry
