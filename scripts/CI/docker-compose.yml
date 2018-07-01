@@ -1,0 +1,61 @@
+version: '3'
+services:
+  rb-nginx-proxy:
+    build: ./rb-nginx-proxy
+    container_name: rb-nginx-proxy
+    ports:
+      - "443:443"
+    volumes:
+      - "/etc/ssl/private/star.endpoint.network:/etc/nginx/ssl/"
+    networks: 
+      front:
+        ipv4_address: 172.18.1.2
+  rb-jenkins:
+    container_name: rb-jenkins
+    image: jenkinsci/blueocean
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - "./data/rb-jenkins:/var/jenkins_home"
+      - "./data/GitHub:/home"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks: 
+      front:
+        ipv4_address: 172.18.1.3
+  rb-registry:
+    container_name: rb-docker-registry
+    image: registry:2
+    ports:
+      - "127.0.0.1:5000:5000"
+    volumes:
+      - "./data/rb-docker-registry:/var/lib/registry"
+      - "./data/auth:/auth"
+      - "/etc/ssl/private/star.endpoint.network:/certs"
+    environment:
+      - REGISTRY_AUTH=htpasswd
+      - REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm
+      - REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd
+      - REGISTRY_HTTP_ADDR=0.0.0.0:5000
+      - REGISTRY_HTTP_HOST=rb-registry.endpoint.network
+      - REGISTRY_HTTP_TLS_CERTIFICATE=/certs/STAR_endpoint_network_plus_ca-bundle.crt
+      - REGISTRY_HTTP_TLS_KEY=/certs/star.endpoint.network.key
+    networks: 
+      front:
+        ipv4_address: 172.18.1.4
+  rb-verdacio:
+    container_name: rb-verdaccio
+    image: verdaccio/verdaccio
+    ports:
+      - "127.0.0.1:4873:4873"
+    volumes:
+      - "./data/rb-verdaccio:/verdaccio/"
+    networks: 
+      front:
+        ipv4_address: 172.18.1.5
+networks:
+    front:
+      driver: bridge
+      ipam:
+        driver: default
+        config:
+          - subnet: 172.18.1.0/24

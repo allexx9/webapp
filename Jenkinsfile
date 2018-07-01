@@ -4,17 +4,17 @@ pipeline {
         CI = 'false' 
     }
     stages {
-        // stage('Init') { 
-        //     agent {
-        //         docker {
-        //             image 'node:6' 
-        //             args '-p 3000:3000' 
-        //         }
-        //     }
-        //     steps {
-        //         sh 'npm install' 
-        //     }
-        // }
+        stage('Init') { 
+            agent {
+                docker {
+                    image 'node:6' 
+                    args '-p 3000:3000' 
+                }
+            }
+            steps {
+                sh 'npm install' 
+            }
+        }
         // stage('Test') { 
         //     agent {
         //         docker {
@@ -53,22 +53,22 @@ pipeline {
             }
         }
     }
-    post {
-        always {
-            echo 'One way or another, I have finished'
-        }
-        success {
-            echo 'I succeeeded!'
-        }
-        unstable {
-            echo 'I am unstable :/'
-        }
-        failure {
-            echo 'I failed :('
-            sh 'docker rmi $(docker images | grep "^<none>" | awk '{print $3}')'
-        }
-        changed {
-            echo 'Things were different before...'
-        }
-    }
+    // post {
+    //     always {
+    //         echo 'One way or another, I have finished'
+    //     }
+    //     success {
+    //         echo 'I succeeeded!'
+    //     }
+    //     unstable {
+    //         echo 'I am unstable :/'
+    //     }
+    //     failure {
+    //         echo 'I failed :('
+    //         sh 'docker rmi $(docker images | grep "^<none>" | awk '{print $3}')'
+    //     }
+    //     changed {
+    //         echo 'Things were different before...'
+    //     }
+    // }
 }
