@@ -1,18 +1,22 @@
 version: '3'
 services:
   rb-nginx-proxy:
-    build: ./rb-nginx-proxy
+    build: ./install/rb-nginx-proxy
     container_name: rb-nginx-proxy
     ports:
       - "443:443"
     volumes:
       - "/etc/ssl/private/star.endpoint.network:/etc/nginx/ssl/"
+      - "./config/nginx/sites-enabled/:/etc/nginx/sites-enabled/"
     networks: 
       front:
         ipv4_address: 172.18.1.2
   rb-jenkins:
     container_name: rb-jenkins
     image: jenkinsci/blueocean
+    user: root
+    depends_on:
+      - rb-nginx-proxy
     ports:
       - "127.0.0.1:8080:8080"
     volumes:
@@ -25,6 +29,8 @@ services:
   rb-registry:
     container_name: rb-docker-registry
     image: registry:2
+    depends_on:
+      - rb-nginx-proxy
     ports:
       - "127.0.0.1:5000:5000"
     volumes:
@@ -45,6 +51,8 @@ services:
   rb-verdacio:
     container_name: rb-verdaccio
     image: verdaccio/verdaccio
+    depends_on:
+      - rb-nginx-proxy
     ports:
       - "127.0.0.1:4873:4873"
     volumes:
