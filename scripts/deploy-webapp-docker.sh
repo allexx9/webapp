@@ -1,6 +1,6 @@
 #!/bin/bash
 # printenv
-# NUMBER=$(cat BUILD_NUMBER) && export NUMBER
+NUMBER=$(cat BUILD_NUMBER) && export NUMBER
 # echo $NUMBER
 docker build --no-cache -t webapp-v1 -f scripts/containers/beta-dev/Dockerfile .
 docker login https://rb-registry.endpoint.network/ -u wnz99 -p $JENKINS_PASSWORD
