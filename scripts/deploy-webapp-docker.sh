@@ -1,12 +1,12 @@
 #!/bin/bash
-printenv
-NUMBER=$(cat BUILD_NUMBER) && export NUMBER
-echo $NUMBER
+# printenv
+# NUMBER=$(cat BUILD_NUMBER) && export NUMBER
+# echo $NUMBER
 docker build --no-cache -t webapp-v1 -f scripts/containers/beta-dev/Dockerfile .
 docker login https://rb-registry.endpoint.network/ -u wnz99 -p $JENKINS_PASSWORD
 docker tag webapp-v1 rb-registry.endpoint.network:webapp-v1-$NUMBER
-docker push rb-registry.endpoint.network:webapp-v1-$NUMBER
-printenv
+docker push rb-registry.endpoint.network/webapp-v1-$NUMBER
+# printenv
 curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
 chmod +x ./kubectl
 mv ./kubectl /usr/local/bin/kubectl
