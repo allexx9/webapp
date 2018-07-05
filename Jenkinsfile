@@ -3,6 +3,7 @@ pipeline {
     environment {
         CI = 'false' 
         RANCHER_TOKEN = credentials('rancher-bearer-token') 
+        JENKINS_PASSWORD = credentials('wnz99-jenkins-user-password') 
     }
     stages {
         // stage('Init') { 
@@ -43,20 +44,23 @@ pipeline {
         stage('Deploy') { 
             agent { label 'master' }
             steps {
-                // sh './scripts/deploy-webapp-docker.sh'
+                // sh 'printenv'
+                // sh 'NUMBER=$(cat BUILD_NUMBER) && export NUMBER'
+                // sh 'echo $NUMBER'
+                sh './scripts/deploy-webapp-docker.sh'
                 // script {
                 //     docker.withRegistry('https://rb-registry.endpoint.network', 'rb-docker-registry') {
                 //         docker.image('rb-app').push('latest')
                 //     }
                 // }
-                sh 'printenv'
-                sh 'curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl'
-                sh 'chmod +x ./kubectl'
-                sh 'mv ./kubectl /usr/local/bin/kubectl'
-                sh 'wget https://github.com/rancher/cli/releases/download/v2.0.3-rc1/rancher-linux-amd64-v2.0.3-rc1.tar.gz -O rancher-linux-amd64-v2.0.3-rc1.tar.gz'
-                sh 'tar xzvf rancher-linux-amd64-v2.0.3-rc1.tar.gz && cd rancher-v2.0.3-rc1/ && chmod +x rancher'
-                sh 'echo "1" | rancher-v2.0.3-rc1/rancher login https://dev-03.endpoint.network --token $RANCHER_TOKEN'
-                sh 'rancher-v2.0.3-rc1/rancher kubectl set image deployment/webapp-v1-staging webapp-v1-staging=rb-registry.endpoint.network/rb-app'
+                // sh 'printenv'
+                // sh 'curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl'
+                // sh 'chmod +x ./kubectl'
+                // sh 'mv ./kubectl /usr/local/bin/kubectl'
+                // sh 'wget https://github.com/rancher/cli/releases/download/v2.0.3-rc1/rancher-linux-amd64-v2.0.3-rc1.tar.gz -O rancher-linux-amd64-v2.0.3-rc1.tar.gz'
+                // sh 'tar xzvf rancher-linux-amd64-v2.0.3-rc1.tar.gz && cd rancher-v2.0.3-rc1/ && chmod +x rancher'
+                // sh 'echo "1" | rancher-v2.0.3-rc1/rancher login https://dev-03.endpoint.network --token $RANCHER_TOKEN'
+                // sh 'rancher-v2.0.3-rc1/rancher kubectl set image deployment/webapp-v1-staging webapp-v1-staging=rb-registry.endpoint.network/rb-app'
 
             }
         }
