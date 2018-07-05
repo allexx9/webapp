@@ -12,6 +12,6 @@ chmod +x ./kubectl
 mv ./kubectl /usr/local/bin/kubectl
 wget https://github.com/rancher/cli/releases/download/v2.0.3-rc1/rancher-linux-amd64-v2.0.3-rc1.tar.gz -O rancher-linux-amd64-v2.0.3-rc1.tar.gz
 tar xzvf rancher-linux-amd64-v2.0.3-rc1.tar.gz && cd rancher-v2.0.3-rc1/ && chmod +x rancher
-echo "1" | rancher-v2.0.3-rc1/rancher login https://dev-03.endpoint.network --token $RANCHER_TOKEN
-rancher-v2.0.3-rc1/rancher kubectl set image deployment/webapp-v1-staging webapp-v1-staging=rb-registry.endpoint.network/webapp-v1-$NUMBER
+echo "1" | ./rancher login https://dev-03.endpoint.network --token $RANCHER_TOKEN
+./rancher kubectl set image deployment/webapp-v1-staging webapp-v1-staging=rb-registry.endpoint.network/webapp-v1-$NUMBER
 
