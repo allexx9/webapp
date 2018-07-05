@@ -64,7 +64,7 @@ pipeline {
             agent { label 'master' }
             steps {
                 sh 'rm -rf rancher-v2.0.3-rc1/'
-                sh 'echo done'
+                sh 'echo donet'
             }
         }
     }
