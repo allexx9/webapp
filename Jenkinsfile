@@ -35,7 +35,7 @@ pipeline {
                 }
             }
             steps {
-                sh './scripts/build-beta-dev.sh' 
+                sh './scripts/build-beta-dev-jenkins.sh' 
             }
         }
         stage('Deploy') { 
@@ -53,7 +53,6 @@ pipeline {
             agent { label 'master' }
             steps {
                 sh 'rm -rf rancher-v2.0.3-rc1/'
-                sh 'echo donet'
             }
         }
     }

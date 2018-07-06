@@ -1,5 +1,4 @@
 #!/bin/bash
-printenv
 BRANCH=$(git branch | grep \* | cut -d ' ' -f2)
 NUMBER=$(git log $BRANCH --pretty=oneline | wc -l)
 DATE=$(date +%Y%m%d)
