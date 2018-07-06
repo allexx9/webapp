@@ -1,7 +1,7 @@
 #!/bin/bash
 printenv
 BRANCH=${GIT_BRANCH#*/}
-NUMBER=$(git log $BRANCH --pretty=oneline | wc -l)
+NUMBER=$(git log --pretty=oneline | wc -l)
 DATE=$(date +%Y%m%d)
 TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
 HASH=$(git rev-parse --short HEAD)
