@@ -1,8 +1,8 @@
 import BigNumber from 'bignumber.js';
 import { APP_VERSION } from './version.js'
-export { APP_VERSION  }
-
 import { ERC20_TOKENS } from './tokens'
+
+export { APP_VERSION  }
 export { ERC20_TOKENS }
 export const UNLIMITED_ALLOWANCE_IN_BASE_UNITS = new BigNumber(2).pow(256).minus(1)
 

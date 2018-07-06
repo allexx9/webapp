@@ -36,9 +36,6 @@ pipeline {
             }
             steps {
                 sh './scripts/build-beta-dev.sh' 
-                sh 'pwd'
-                sh 'ls -al'
-                sh 'ls build/'
             }
         }
         stage('Deploy') { 
