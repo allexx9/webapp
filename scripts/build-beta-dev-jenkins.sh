@@ -1,5 +1,4 @@
 #!/bin/bash
-printenv
 BRANCH=${GIT_BRANCH#*/}
 NUMBER=$(git log --pretty=oneline | wc -l)
 DATE=$(date +%Y%m%d)

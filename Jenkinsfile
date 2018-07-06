@@ -6,28 +6,28 @@ pipeline {
         JENKINS_PASSWORD = credentials('wnz99-jenkins-user-password') 
     }
     stages {
-        // stage('Init') { 
-        //     agent {
-        //         docker {
-        //             image 'node:6' 
-        //             args '-p 3000:3000' 
-        //         }
-        //     }
-        //     steps {
-        //         sh 'yarn install' 
-        //     }
-        // }
-        // stage('Test') { 
-        //     agent {
-        //         docker {
-        //             image 'node:6' 
-        //             args '-p 3000:3000' 
-        //         }
-        //     }
-        //     steps {
-        //         sh 'yarn test' 
-        //     }
-        // }
+        stage('Init') { 
+            agent {
+                docker {
+                    image 'node:6' 
+                    args '-p 3000:3000' 
+                }
+            }
+            steps {
+                sh 'yarn install' 
+            }
+        }
+        stage('Test') { 
+            agent {
+                docker {
+                    image 'node:6' 
+                    args '-p 3000:3000' 
+                }
+            }
+            steps {
+                sh 'yarn test' 
+            }
+        }
         stage('Build') { 
             agent {
                 docker {
@@ -38,23 +38,23 @@ pipeline {
                 sh './scripts/build-beta-dev-jenkins.sh' 
             }
         }
-        // stage('Deploy') { 
-        //     agent { label 'master' }
-        //     steps {
-        //         sh './scripts/deploy-webapp-docker.sh'
-        //         // script {
-        //         //     docker.withRegistry('https://rb-registry.endpoint.network', 'rb-docker-registry') {
-        //         //         docker.image('rb-app').push('latest')
-        //         //     }
-        //         // }
-        //     }
-        // }
-        // stage('Clean Up') { 
-        //     agent { label 'master' }
-        //     steps {
-        //         sh 'rm -rf rancher-v2.0.3-rc1/'
-        //     }
-        // }
+        stage('Deploy') { 
+            agent { label 'master' }
+            steps {
+                sh './scripts/deploy-webapp-docker.sh'
+                // script {
+                //     docker.withRegistry('https://rb-registry.endpoint.network', 'rb-docker-registry') {
+                //         docker.image('rb-app').push('latest')
+                //     }
+                // }
+            }
+        }
+        stage('Clean Up') { 
+            agent { label 'master' }
+            steps {
+                sh 'rm -rf rancher-v2.0.3-rc1/'
+            }
+        }
     }
     // post {
     //     always {
