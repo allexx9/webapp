@@ -41,12 +41,7 @@ pipeline {
         stage('Deploy') { 
             agent { label 'master' }
             steps {
-                sh './scripts/deploy-webapp-docker.sh'
-                // script {
-                //     docker.withRegistry('https://rb-registry.endpoint.network', 'rb-docker-registry') {
-                //         docker.image('rb-app').push('latest')
-                //     }
-                // }
+                sh './scripts/deploy-webapp-docker-jenkins.sh'
             }
         }
         stage('Clean Up') { 
