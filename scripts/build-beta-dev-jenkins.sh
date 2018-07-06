@@ -10,5 +10,6 @@ echo "export const APP_VERSION = '$TAG-$BRANCH-$HASH-$DATE-$NUMBER'" > src/_util
 echo "Removing debug logs..."
 # find ./src -type f | xargs sed -i -E 's/^\s*console.(log|debug|info|)\((.*)\);?//gm'
 echo "Building app..."
+yarn build-beta
 # npm run-script build-beta
 echo "Done."
