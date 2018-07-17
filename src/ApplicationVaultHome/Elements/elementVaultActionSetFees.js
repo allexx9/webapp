@@ -218,38 +218,6 @@ export default class ElementVaultActionSetFees extends Component {
                 </Col>
               </Row>
             </Paper>
-            {/* <Paper zDepth={1}>
-              <Row>
-
-                <Col xs={4}>
-                  <AppBar
-                    title="SELL"
-                    showMenuIconButton={false}
-                    style={priceBoxHeader.sell}
-                    titleStyle={priceBoxHeaderTitleStyle}
-                  />
-                  <div className={styles.currentPriceText}>
-                    {this.state.sellPrice} ETH
-                  </div>
-
-                </Col>
-                <Col xs={8}>
-                  <TextField
-                    key='setFundSellPriceField'
-                    autoComplete='off'
-                    floatingLabelFixed
-                    floatingLabelText='The SELL price for this Drago'
-                    fullWidth
-                    hintText={amountLabel}
-                    errorText={this.state.amountErrorSell}
-                    name='setFundSellPriceField'
-                    id='setFundSellPriceField'
-                    value={this.state.sellPrice}
-                    onChange={this.onChangeSellPrice} />
-                </Col>
-
-              </Row>
-            </Paper> */}
           </Col>
         </Row>
       </div>
@@ -305,6 +273,11 @@ export default class ElementVaultActionSetFees extends Component {
     if (!bn.gte(0.01)) {
       this.setState({
         amountError: ERRORS.invalidAmountFeeTooLow
+      });
+    }
+    if (bn.gte(1.00)) {
+      this.setState({
+        amountError: ERRORS.invalidAmountFeeTooHigh
       });
     }
   }
