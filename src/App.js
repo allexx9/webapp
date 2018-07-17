@@ -42,7 +42,7 @@ import { connect } from 'react-redux';
 import ElementNotification from './Elements/elementNotification'
 import PoolsApi from './PoolsApi/src'
 import AppLoading from './Elements/elementAppLoading'
-// import NotConnected from './Elements/notConnected'
+// import ElementNotConnected from './Elements/elementNotConnected'
 import ReactGA from 'react-ga';
 import { Actions } from './_redux/actions'
 

@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Row, Col, Grid } from 'react-flexbox-grid';
 import Dialog from 'material-ui/Dialog';
 import { Link } from 'react-router-dom'
-import styles from './notConnected.module.css'
+import styles from './elementNotConnected.module.css'
 import {APP, DS} from '../_utils/const.js'
 import FlatButton from 'material-ui/FlatButton';
 import SectionHeader from '../_atomic/atoms/sectionHeader';
