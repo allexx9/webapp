@@ -1,4 +1,4 @@
-[Build Status](https://rb-jenkins.endpoint.network/buildStatus/icon?job=webapp-beta)
+![Build Status](https://rb-jenkins.endpoint.network/buildStatus/icon?job=webapp-beta)
 
 ## Cloning this repository
 
