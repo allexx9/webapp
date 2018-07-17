@@ -11,7 +11,10 @@ import ElementFundActionAuthorization from '../../Elements/elementActionAuthoriz
 import PoolApi from '../../PoolsApi/src';
 import ButtonDeployPool from '../../_atomic/atoms/buttonDeployPool';
 import ActionsDialogHeader from '../../_atomic/molecules/actionsDialogHeader';
+import { Actions } from '../../_redux/actions';
 import { ERRORS, validateAccount, validateNewName, validateNewSymbol } from '../../_utils/validation';
+
+
 
 const customContentStyle = {
   minHeight: '500px',
@@ -52,13 +55,6 @@ class ElementFundCreateAction extends React.Component {
     complete: false,
     dragoDetails: ''
   }
-
-  addTransactionToQueueAction = (transactionId, transactionDetails) => {
-    return {
-      type: 'ADD_TRANSACTION',
-      transaction: { transactionId, transactionDetails }
-    }
-  };
 
   handleOpen = () => {
     console.log('open')
@@ -150,7 +146,7 @@ class ElementFundCreateAction extends React.Component {
       }
 
 
-      this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+      this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
       const {account} = this.state
 
 
@@ -169,10 +165,10 @@ class ElementFundCreateAction extends React.Component {
             transactionDetails.receipt = receipt
             transactionDetails.hash = receipt.transactionHash
             transactionDetails.timestamp = new Date ()
-            this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+            this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
           } else {
             transactionDetails.parityId = receipt
-            this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+            this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
           }
           this.setState({
             sending: false,
@@ -186,7 +182,7 @@ class ElementFundCreateAction extends React.Component {
           transactionDetails.status = 'error'
           transactionDetails.error = errorArray[0]
           console.log(error)
-          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+          this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
           this.setState({
             sending: false
           })

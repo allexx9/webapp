@@ -10,10 +10,13 @@ import {
   TOKEN_PRICE_TICKER_OPEN_WEBSOCKET
 } from './const'
 import drago from './drago'
+import transactions from './transactions'
 
 class actions {
 
   drago = drago
+
+  transactions = transactions
 
   vault = {
     updateSelectedVaultAction: (results) => {

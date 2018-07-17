@@ -38,13 +38,6 @@ class OrdersHistory extends Component {
   static defaultProps = {
   };
 
-  addTransactionToQueueAction = (transactionId, transactionDetails) => {
-    return {
-      type: ADD_TRANSACTION,
-      transaction: { transactionId, transactionDetails }
-    }
-  };
-
   onCancelOrder  = async (order) => {
     const { selectedFund, selectedTokensPair } = this.props.exchange
 
@@ -60,7 +53,7 @@ class OrdersHistory extends Component {
       symbol: selectedTokensPair.baseToken.symbol.toUpperCase(),
       amount: order.orderAmount
     }
-    // this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+    // this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
 
       try {
 
@@ -70,7 +63,7 @@ class OrdersHistory extends Component {
         transactionDetails.receipt = receipt
         transactionDetails.hash = receipt.transactionHash
         transactionDetails.timestamp = new Date ()
-        // this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+        // this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
         
         // const result = await softCancelOrderFromRelayERCdEX(order)
         // console.log(result)
@@ -83,7 +76,7 @@ class OrdersHistory extends Component {
         const errorArray = serializeError(error).message.split(/\r?\n/)
         transactionDetails.status = 'error'
         transactionDetails.error = errorArray[0]
-        // this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+        // this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
         // utils.notificationError(this.props.notifications.engine, serializeError(error).message)
       }
     

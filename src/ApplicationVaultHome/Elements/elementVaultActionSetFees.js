@@ -14,12 +14,12 @@ import PoolApi from '../../PoolsApi/src';
 import ActionsDialogHeader from '../../_atomic/molecules/actionsDialogHeader';
 import { ERRORS, validateAccount, validatePositiveNumber } from '../../_utils/validation';
 import styles from './elementVaultActionSetFees.module.css';
-
-
+import { connect } from 'react-redux';
+import { Actions } from '../../_redux/actions';
 
 //TODO: add address exchange
 
-export default class ElementVaultActionSetFees extends Component {
+class ElementVaultActionSetFees extends Component {
 
   static contextTypes = {
     api: PropTypes.object.isRequired,
@@ -29,7 +29,8 @@ export default class ElementVaultActionSetFees extends Component {
     accounts: PropTypes.array.isRequired,
     vaultDetails: PropTypes.object.isRequired,
     openActionForm: PropTypes.func.isRequired,
-    snackBar: PropTypes.func
+    snackBar: PropTypes.func,
+    dispatch: PropTypes.func.isRequired
   }
 
   state = {
@@ -124,7 +125,7 @@ export default class ElementVaultActionSetFees extends Component {
         <FlatButton key='dialogButton1'
           label='Done'
           primary
-          onClick={ this.props.onClose } />
+          onClick={ this.onClose } />
       );
     }
 
@@ -148,7 +149,7 @@ export default class ElementVaultActionSetFees extends Component {
   }
 
   renderFields = () => {
-    const amountLabel = 'Please enter a value';
+    // const amountLabel = 'Please enter a value';
     const priceBoxHeader = {
       buy: {
         backgroundColor: Colors.green300
@@ -287,29 +288,57 @@ export default class ElementVaultActionSetFees extends Component {
     const { api } = this.context;
     const { vaultDetails } = this.props
     const price = this.state.price
+    const accountAddress = this.state.account.address
     var poolApi = null;
     var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
     this.setState({
       sending: true
     });
-    
+    const transactionId = api.util.sha3(new Date() + accountAddress)
+    var transactionDetails = {
+      status: this.state.account.source === 'MetaMask' ? 'pending' : 'authorization',
+      hash: '',
+      parityId: null,
+      timestamp: new Date(),
+      account: this.state.account,
+      error: false,
+      action: 'SetFeeVault',
+      symbol: vaultDetails.symbol.toUpperCase(),
+      amount: ''
+    }
+    this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
+    const {account} = this.state
+
     // price must be in basis points. Mimimum fee = 0.01%, equal to price = 1
     poolApi = new PoolApi(provider)
     poolApi.contract.vault.init(vaultDetails.address)
     poolApi.contract.vault.setTransactionFee(this.state.account.address, price)
-    .then ((result) =>{
-      console.log(result)
-      this.setState({
-        sending: false
-      });
+    .then ((receipt) =>{
+      console.log(receipt)
+      if (account.source === 'MetaMask') {
+        transactionDetails.status = 'executed'
+        transactionDetails.receipt = receipt
+        transactionDetails.hash = receipt.transactionHash
+        transactionDetails.timestamp = new Date ()
+        this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
+      } else {
+        transactionDetails.parityId = receipt
+        this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
+      }
     })
     .catch((error) => {
-      console.error('error', error)
+      const errorArray = error.message.split(/\r?\n/)
+      this.props.snackBar(errorArray[0])
+      transactionDetails.status = 'error'
+      transactionDetails.error = errorArray[0]
+      console.log(error)
+      this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
       this.setState({
         sending: false
       })
     })
     this.setState({
+      sending: false,
       openAuth: true,
       authMsg: "Fees set to " + price + " %",
       authAccount: {...this.state.account}
@@ -318,3 +347,5 @@ export default class ElementVaultActionSetFees extends Component {
     // this.props.snackBar('Instruction awaiting for authorization')
   }
 }
+
+export default connect()(ElementVaultActionSetFees)

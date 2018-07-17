@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Row, Col } from 'react-flexbox-grid';
-import * as Colors from 'material-ui/styles/colors'
+// import * as Colors from 'material-ui/styles/colors'
 import styles from './orderBox.module.css'
 import AppBar from 'material-ui/AppBar'
 import Paper from 'material-ui/Paper'
@@ -21,21 +21,19 @@ import {
   CANCEL_SELECTED_ORDER,
   UPDATE_TRADE_TOKENS_PAIR,
   UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
-  ADD_TRANSACTION,
   UPDATE_FUND_LIQUIDITY
 } from '../../_utils/const'
 import {
   signOrder,
   sendOrderToRelayERCdEX,
   newMakerOrder,
-  fillOrderToExchange,
   fillOrderToExchangeViaProxy,
   setAllowaceOnExchangeThroughDrago
 } from '../../_utils/exchange'
-import PoolApi from '../../PoolsApi/src'
 import utils from '../../_utils/utils.js'
 import serializeError from 'serialize-error';
 import { sha3_512 } from 'js-sha3';
+import { Actions } from '../../_redux/actions';
 
 
 function mapStateToProps(state) {
@@ -95,13 +93,6 @@ class OrderBox extends Component {
     }
   };
 
-  addTransactionToQueueAction = (transactionId, transactionDetails) => {
-    return {
-      type: ADD_TRANSACTION,
-      transaction: { transactionId, transactionDetails }
-    }
-  };
-
   onCloseOrderRawDialog = (open) => {
     this.setState({
       orderRawDialogOpen: open
@@ -152,7 +143,7 @@ class OrderBox extends Component {
       symbol: selectedOrder.selectedTokensPair.baseToken.symbol.toUpperCase(),
       amount: selectedOrder.orderFillAmount
     }
-    this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+    this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
 
     if (selectedOrder.takerOrder) {
       // fillOrderToExchange(selectedOrder.details.order, selectedOrder.orderFillAmount, selectedExchange)
@@ -163,7 +154,7 @@ class OrderBox extends Component {
         transactionDetails.receipt = receipt
         transactionDetails.hash = receipt.transactionHash
         transactionDetails.timestamp = new Date ()
-        this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+        this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
         
         // Updating drago liquidity
         this.props.dispatch(this.updateSelectedFundLiquidity(selectedFund.details.address, this.context.api))
@@ -173,14 +164,14 @@ class OrderBox extends Component {
         const errorArray = serializeError(error).message.split(/\r?\n/)
         transactionDetails.status = 'error'
         transactionDetails.error = errorArray[0]
-        this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+        this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
         utils.notificationError(this.props.notifications.engine, serializeError(error).message)
       }
     }
     else {
       console.log(selectedOrder)
       const transactionId = sha3_512(new Date() + selectedFund.managerAccount)
-      var transactionDetails = {
+      transactionDetails = {
         status: 'pending',
         hash: '',
         parityId: null,
@@ -204,14 +195,14 @@ class OrderBox extends Component {
         .then((parsedBody) => {
           transactionDetails.status = 'executed'
           transactionDetails.timestamp = new Date ()
-          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+          this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
           console.log(parsedBody)
         })
         .catch ((error) => {
           const errorArray = serializeError(error).message.split(/\r?\n/)
           transactionDetails.status = 'error'
           transactionDetails.error = errorArray[0]
-          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+          this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
           console.log(error)
           utils.notificationError(this.props.notifications.engine, serializeError(error).message)
         });

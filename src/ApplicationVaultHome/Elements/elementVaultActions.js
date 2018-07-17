@@ -26,6 +26,7 @@ import ElementFundActionAuthorization from '../../Elements/elementActionAuthoriz
 
 import styles from './elementVaultActions.module.css';
 import { connect } from 'react-redux';
+import { Actions } from '../../_redux/actions';
 
 const customContentStyle = {
   minHeight: '500px',
@@ -35,16 +36,12 @@ const zeroAmount = new BigNumber(0).toFormat(4)
 
 function mapStateToProps(state) {
   return state
-//   return {
-//     count: state.count
-//   };
 }
 
 class ElementVaultActions extends React.Component {
 
   constructor(props) {
     super(props)
-    console.log(this.props.actionSelected.action)
     if (this.props.actionSelected.action == 'deposit') {
       this.state = {
         open: props.actionSelected.open,
@@ -146,13 +143,6 @@ class ElementVaultActions extends React.Component {
   actionSellStyle = {
     color: Colors.red300,
   }
-
-  addTransactionToQueueAction = (transactionId, transactionDetails) => {
-    return {
-      type: 'ADD_TRANSACTION',
-      transaction: { transactionId, transactionDetails }
-    }
-  };
 
   UNSAFE_componentWillMount() {
 
@@ -433,7 +423,7 @@ class ElementVaultActions extends React.Component {
       symbol: vaultDetails.symbol.toUpperCase(),
       amount: this.state.amountSummary
     }
-    this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+    this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
     const {account} = this.state
 
     // Sending the transaction
@@ -450,10 +440,10 @@ class ElementVaultActions extends React.Component {
           transactionDetails.receipt = receipt
           transactionDetails.hash = receipt.transactionHash
           transactionDetails.timestamp = new Date ()
-          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+          this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
         } else {
           transactionDetails.parityId = receipt
-          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+          this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
         }
       })
       .catch((error) => {
@@ -462,7 +452,7 @@ class ElementVaultActions extends React.Component {
         transactionDetails.status = 'error'
         transactionDetails.error = errorArray[0]
         console.log(error)
-        this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+        this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
         this.setState({
           sending: false
         })
@@ -499,7 +489,7 @@ class ElementVaultActions extends React.Component {
       amount: this.state.amountSummary
     }
 
-    this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+    this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
     const {account} = this.state
     
     // Sending the transaction
@@ -516,10 +506,10 @@ class ElementVaultActions extends React.Component {
           transactionDetails.receipt = receipt
           transactionDetails.hash = receipt.transactionHash
           transactionDetails.timestamp = new Date ()
-          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+          this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
         } else {
           transactionDetails.parityId = receipt
-          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+          this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
         }
       })
       .catch((error) => {
@@ -528,7 +518,7 @@ class ElementVaultActions extends React.Component {
         transactionDetails.status = 'error'
         transactionDetails.error = errorArray[0]
         console.log(error)
-        this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+        this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
         this.setState({
           sending: false
         })
@@ -694,7 +684,6 @@ class ElementVaultActions extends React.Component {
         key='CancelButton'
         label="Cancel"
         primary={true}
-        onClick={this.handleCancel}
         onClick={this.handleCancel}
       />,
       <FlatButton

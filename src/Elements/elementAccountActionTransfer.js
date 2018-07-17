@@ -11,6 +11,7 @@ import PoolsApi from '../PoolsApi/src';
 import TokenSelector from '../_atomic/molecules/tokenSelector';
 import { ETH, GRG } from '../_utils/const';
 import { ERRORS, validateAddress, validatePositiveNumber } from '../_utils/validation';
+import { Actions } from '../_redux/actions';
 
 const NAME_ID = ' ';
 
@@ -52,13 +53,6 @@ class ElementAccountActionTransfer extends Component {
     marginBottom: 12,
     color: 'white',
   }
-
-  addTransactionToQueueAction = (transactionId, transactionDetails) => {
-    return {
-      type: 'ADD_TRANSACTION',
-      transaction: { transactionId, transactionDetails }
-    }
-  };
 
   handleCloseAuth = () => {
     this.setState(
@@ -274,7 +268,7 @@ class ElementAccountActionTransfer extends Component {
       symbol: token,
       amount: this.state.amount
     }
-    this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+    this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
     // Sending the transaction
     poolApi = new PoolsApi(provider)
     poolApi.contract.ether.transfer(account.address, toAddress, amount)
@@ -287,10 +281,10 @@ class ElementAccountActionTransfer extends Component {
           transactionDetails.receipt = receipt
           transactionDetails.hash = receipt.transactionHash
           transactionDetails.timestamp = new Date ()
-          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+          this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
         } else {
           transactionDetails.parityId = receipt
-          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+          this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
         }
       })
       .catch((error) => {
@@ -299,7 +293,7 @@ class ElementAccountActionTransfer extends Component {
         transactionDetails.status = 'error'
         transactionDetails.error = errorArray[0]
         console.log(error)
-        this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+        this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
       })
     this.setState({
       authMsg: authMsg,
@@ -329,7 +323,7 @@ class ElementAccountActionTransfer extends Component {
       symbol: token,
       amount: this.state.amount
     }
-    this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+    this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
     // Sending the transaction
     poolApi = new PoolsApi(provider)
     poolApi.contract.rigotoken.init()
@@ -343,10 +337,10 @@ class ElementAccountActionTransfer extends Component {
           transactionDetails.receipt = receipt
           transactionDetails.hash = receipt.transactionHash
           transactionDetails.timestamp = new Date ()
-          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+          this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
         } else {
           transactionDetails.parityId = receipt
-          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+          this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
         }
       })
       .catch((error) => {
@@ -355,7 +349,7 @@ class ElementAccountActionTransfer extends Component {
         transactionDetails.status = 'error'
         transactionDetails.error = errorArray[0]
         console.log(error)
-        this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+        this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
       })
     this.setState({
       authMsg: authMsg,

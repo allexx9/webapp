@@ -15,7 +15,7 @@ import ImgETH from '../../_atomic/atoms/imgETH';
 import ActionsDialogHeader from '../../_atomic/molecules/actionsDialogHeader';
 import { ERC20_TOKENS } from '../../_utils/const';
 import { ERRORS, validateAccount, validatePositiveNumber } from '../../_utils/validation';
-
+import { Actions } from '../../_redux/actions';
 
 const NAME_ID = ' ';
 
@@ -64,13 +64,6 @@ class ElementFundActionWrapETH extends Component {
       { openAuth: true }
     );
   }
-
-  addTransactionToQueueAction = (transactionId, transactionDetails) => {
-    return {
-      type: 'ADD_TRANSACTION',
-      transaction: { transactionId, transactionDetails }
-    }
-  };
 
   render () {
     const { complete } = this.state;
@@ -292,7 +285,7 @@ class ElementFundActionWrapETH extends Component {
       symbol: 'ETH',
       amount: this.state.amount
     }
-    this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+    this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
     
     poolApi = new PoolApi(provider)
     poolApi.contract.drago.init(dragoDetails.address)
@@ -307,10 +300,10 @@ class ElementFundActionWrapETH extends Component {
           transactionDetails.receipt = receipt
           transactionDetails.hash = receipt.transactionHash
           transactionDetails.timestamp = new Date ()
-          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+          this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
         } else {
           transactionDetails.parityId = receipt
-          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+          this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
         }
       })
       .catch((error) => {
@@ -319,7 +312,7 @@ class ElementFundActionWrapETH extends Component {
         this.props.snackBar(errorArray[0])
         transactionDetails.status = 'error'
         transactionDetails.error = errorArray[0]
-        this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+        this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
         this.setState({
           sending: false
         })
@@ -397,7 +390,7 @@ class ElementFundActionWrapETH extends Component {
       symbol: 'ETH',
       amount: this.state.amount
     }
-    this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+    this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
 
     poolApi = new PoolApi(provider)
     poolApi.contract.drago.init(dragoDetails.address)
@@ -412,10 +405,10 @@ class ElementFundActionWrapETH extends Component {
           transactionDetails.receipt = receipt
           transactionDetails.hash = receipt.transactionHash
           transactionDetails.timestamp = new Date ()
-          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+          this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
         } else {
           transactionDetails.parityId = receipt
-          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+          this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
         }
       })
       .catch((error) => {
@@ -424,7 +417,7 @@ class ElementFundActionWrapETH extends Component {
         this.props.snackBar(errorArray[0])
         transactionDetails.status = 'error'
         transactionDetails.error = errorArray[0]
-        this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+        this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
         this.setState({
           sending: false
         })
