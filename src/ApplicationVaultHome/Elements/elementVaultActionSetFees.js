@@ -204,16 +204,16 @@ export default class ElementVaultActionSetFees extends Component {
                 </Col>
                 <Col xs={8}>
                   <TextField
-                    key='setFundPriceField'
+                    key='setFundFeeField'
                     autoComplete='off'
                     floatingLabelFixed
                     floatingLabelText='The fee for this Vault'
                     fullWidth
-                    hintText={amountLabel}
+                    // hintText={amountLabel}
                     errorText={this.state.amountError}
                     name='setVaultPriceField'
                     id='setVaultPriceField'
-                    value={this.state.price}
+                    value={this.props.vaultDetails.price}
                     onChange={this.onChangeAmount} />
                 </Col>
               </Row>
