@@ -33,8 +33,6 @@ import {
 } from './_utils/const'
 import {
   ATTACH_INTERFACE,
-  INIT_NOTIFICATION,
-  TOKEN_PRICE_TICKER_OPEN_WEBSOCKET
 } from './_utils/const'
 import utils from './_utils/utils'
 import { Interfaces } from './_utils/interfaces'
@@ -83,8 +81,9 @@ export class App extends Component {
     // Connecting to blockchain client
     var endpoint = new Endpoint(this.props.endpoint.endpointInfo, this.props.endpoint.networkInfo)
     this._api = endpoint.connect()
+    console.log(this._api)
     this.state = {
-      isConnected: true,
+      isConnected: false,
       isSyncing: false,
       syncStatus: {},
       appLoading: true
@@ -125,7 +124,10 @@ export class App extends Component {
       type: ATTACH_INTERFACE,
       payload: new Promise((resolve) => {
         this.attachInterface().then(result => {
-          console.log('resolved')
+          this.setState({
+            appLoading: false,
+            isConnected: true,
+          })
           resolve(result);
         })
       })
@@ -156,11 +158,11 @@ export class App extends Component {
     this.props.dispatch(Actions.notifications.initNotificationsSystemAction(this._notificationSystem))
     this.props.dispatch(Actions.tokens.priceTickerOpenWsAction())
     this.props.dispatch(this.attachInterfaceAction())
-    // setTimeout(() => { 
-    //   this.setState({
-    //     appLoading: false,
-    //   })
-    // }, 10000);
+    setTimeout(() => { 
+      this.setState({
+        appLoading: false,
+      })
+    }, 7000);
   }
 
   UNSAFE_componentWillMount() {
