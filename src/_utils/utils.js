@@ -9,7 +9,7 @@ import {
   ERC20_TOKENS, 
 } from './const'
 
-import { Actions } from '../_redux/actions/actions' 
+import { Actions } from '../_redux/actions' 
 
 class utilities {
 
@@ -942,7 +942,7 @@ class utilities {
     }
 
     getTokensBalances().then(dragoAssets => {
-      dispatch(Actions.drago.getAssetsPriceData(dragoAssets, endpoint.networkInfo.id, ERC20_TOKENS[endpoint.networkInfo.name].WETH.address))
+      dispatch(Actions.drago.getAssetsPriceDataAction(dragoAssets, endpoint.networkInfo.id, ERC20_TOKENS[endpoint.networkInfo.name].WETH.address))
       dispatch(Actions.drago.updateSelectedDragoAction({ assets: Object.values(dragoAssets) }))
     })
 

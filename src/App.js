@@ -1,5 +1,5 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
-
+import "babel-polyfill";
 import Endpoint from './_utils/endpoint';
 import { Switch, Redirect, Router, Route } from 'react-router-dom'
 import createHashHistory from 'history/createHashHistory';
@@ -33,7 +33,6 @@ import {
 } from './_utils/const'
 import {
   ATTACH_INTERFACE,
-  UPDATE_INTERFACE,
   INIT_NOTIFICATION,
   TOKEN_PRICE_TICKER_OPEN_WEBSOCKET
 } from './_utils/const'
@@ -45,6 +44,7 @@ import PoolsApi from './PoolsApi/src'
 import AppLoading from './Elements/elementAppLoading'
 // import NotConnected from './Elements/notConnected'
 import ReactGA from 'react-ga';
+import { Actions } from './_redux/actions'
 
 var appHashPath = true;
 var sourceLogClass = null
@@ -125,6 +125,7 @@ export class App extends Component {
       type: ATTACH_INTERFACE,
       payload: new Promise((resolve) => {
         this.attachInterface().then(result => {
+          console.log('resolved')
           resolve(result);
         })
       })
@@ -133,7 +134,7 @@ export class App extends Component {
           var newEndpoint = { ...this.props.endpoint }
           newEndpoint.networkStatus = MSG_NETWORK_STATUS_ERROR
           newEndpoint.networkError = NETWORK_WARNING
-          this.props.dispatch(this.updateInterfaceAction(newEndpoint))
+          this.props.dispatch(Actions.endpoint.updateInterfaceAction(newEndpoint))
           this.setState({
             appLoading: false,
             isConnected: false,
@@ -141,14 +142,7 @@ export class App extends Component {
           return
         })
     }
-  };
-
-  updateInterfaceAction = (endpoint) => {
-    return {
-      type: UPDATE_INTERFACE,
-      payload: endpoint
-    }
-  };
+  }
 
   shouldComponentUpdate(nextProps, nextState) {
     // console.log(this.props.user.isManager)
@@ -159,20 +153,17 @@ export class App extends Component {
   }
 
   componentDidMount() {
-    this.props.dispatch({
-      type: INIT_NOTIFICATION,
-      payload: this._notificationSystem
-    })
-    this.props.dispatch({type: TOKEN_PRICE_TICKER_OPEN_WEBSOCKET})
+    this.props.dispatch(Actions.notifications.initNotificationsSystemAction(this._notificationSystem))
+    this.props.dispatch(Actions.tokens.priceTickerOpenWsAction())
     this.props.dispatch(this.attachInterfaceAction())
-    setTimeout(() => { 
-      this.setState({
-        appLoading: false,
-      })
-    }, 5000);
+    // setTimeout(() => { 
+    //   this.setState({
+    //     appLoading: false,
+    //   })
+    // }, 10000);
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     // Starting connection checking. this is not necessary runnin inside Parity UI
     // because the checki is done by Parity and a messagge will be displayed by the client
     if (this.props.endpoint.endpointInfo.name !== 'local') {
@@ -190,7 +181,7 @@ export class App extends Component {
     this.detachInterface();
   }
 
-  componentWillUpdate() {
+  UNSAFE_componentWillUpdate() {
   }
 
 
@@ -245,7 +236,7 @@ export class App extends Component {
             if (metaMaskAccountIndex !== -1) {
               newAccounts.splice(metaMaskAccountIndex, 1)
               newEndpoint.accounts = newAccounts
-              this.props.dispatch(this.updateInterfaceAction(newEndpoint))
+              this.props.dispatch(Actions.endpoint.updateInterfaceAction(newEndpoint))
             }
           } else {
             // Checking if the MetaMask account is already in accounts list.
@@ -262,7 +253,7 @@ export class App extends Component {
                     newAccounts.push(result.accounts[0])
                   }
                   newEndpoint.accounts = newAccounts
-                  this.props.dispatch(this.updateInterfaceAction(newEndpoint))
+                  this.props.dispatch(Actions.endpoint.updateInterfaceAction(newEndpoint))
                   return result
                 })
             }
@@ -280,7 +271,7 @@ export class App extends Component {
           if (metaMaskAccountIndex !== -1) {
             newAccounts.splice(metaMaskAccountIndex, 1)
             newEndpoint.accounts = newAccounts
-            this.props.dispatch(this.updateInterfaceAction(newEndpoint))
+            this.props.dispatch(Actions.endpoint.updateInterfaceAction(newEndpoint))
           }
           this.tdIsConnected = setTimeout(this.checkMetaMaskUnlocked, isMetaMaskUnlockedTimeout)
         })
@@ -356,6 +347,7 @@ export class App extends Component {
     switch (selectedEndpoint) {
       case INFURA:
         console.log(`${sourceLogClass} -> ${INFURA}`)
+        console.log(this._api, networkId)
         return blockchain.attachInterfaceInfuraV2(this._api, networkId)
           .then((attachedInterface) => {
             // this.setState({...this.state, ...blockchain.success})
@@ -367,6 +359,7 @@ export class App extends Component {
               WsSecureUrl = this.props.endpoint.endpointInfo.wss[networkName].dev
             }
             // Infura does not support WebSocket for Kovan yet.
+            console.log(attachedInterface)
             if (networkName === KOVAN) {
               return this._api.subscribe('eth_blockNumber', this.onNewBlockNumber)
                 .then((subscriptionID) => {
@@ -502,6 +495,7 @@ export class App extends Component {
 
   onNewBlockNumber = (_error, blockNumber) => {
     utils.logger.disable()
+    console.log('new block')
     if (_error) {
       console.error('onNewBlockNumber', _error)
       return
@@ -524,7 +518,7 @@ export class App extends Component {
       const endpoint = {
         prevBlockNumber: newBlockNumber.toFixed()
       }
-      this.updateInterfaceAction(endpoint)
+      Actions.endpoint.updateInterfaceAction(endpoint)
       return null
     }
     const accounts = [].concat(endpoint.accounts);
@@ -626,7 +620,7 @@ export class App extends Component {
             })
             )
           }
-          this.props.dispatch(this.updateInterfaceAction(endpoint))
+          this.props.dispatch(Actions.endpoint.updateInterfaceAction(endpoint))
           return endpoint
         })
         .catch((error) => {
@@ -647,14 +641,14 @@ export class App extends Component {
             })
             )
           }
-          this.props.dispatch(this.updateInterfaceAction(endpoint))
+          this.props.dispatch(Actions.endpoint.updateInterfaceAction(endpoint))
           return endpoint
         });
     }
     else {
       const newEndpoint = { ...endpoint }
       newEndpoint.prevBlockNumber = newBlockNumber.toFixed()
-      this.props.dispatch(this.updateInterfaceAction(newEndpoint))
+      this.props.dispatch(Actions.endpoint.updateInterfaceAction(newEndpoint))
     }
     utils.logger.enable()
   }

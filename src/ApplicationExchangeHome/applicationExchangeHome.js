@@ -21,7 +21,6 @@ import TokenLiquidity from '../_atomic/atoms/tokenLiquidity'
 import TokenPrice from '../_atomic/atoms/tokenPrice'
 import {
   UPDATE_SELECTED_FUND,
-  UPDATE_TRANSACTIONS_DRAGO_MANAGER,
   UPDATE_TRADE_TOKENS_PAIR,
   CANCEL_SELECTED_ORDER,
   RELAY_OPEN_WEBSOCKET,
@@ -48,6 +47,7 @@ import PoolApi from '../PoolsApi/src';
 import BigNumber from 'bignumber.js';
 import ChartBox from '../_atomic/organisms/chartBox'
 import OrdersHistory from '../_atomic/organisms/ordersHistory'
+import { Actions } from '../_redux/actions' 
 // import { getData } from "../_utils/data"
 
 function mapStateToProps(state) {
@@ -95,13 +95,6 @@ class ApplicationExchangeHome extends Component {
 
   scrollPosition = 0
   activeElement = null
-
-  updateTransactionsDragoAction = (results) => {
-    return {
-      type: UPDATE_TRANSACTIONS_DRAGO_MANAGER,
-      payload: results
-    }
-  };
 
   updateSelectedFundDetails = (fund, managerAccount) => {
     const payload = {
@@ -206,7 +199,7 @@ class ApplicationExchangeHome extends Component {
     return stateUpdate || propsUpdate
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
   }
 
   componentDidMount() {
@@ -243,7 +236,7 @@ class ApplicationExchangeHome extends Component {
     this.props.dispatch({ type: RELAY_CLOSE_WEBSOCKET })
   }
 
-  componentWillUpdate() {
+  UNSAFE_componentWillUpdate() {
     // Storing the active document, so we can preserve focus in forms.
     this.activeElement = document.activeElement
   }
@@ -379,7 +372,6 @@ class ApplicationExchangeHome extends Component {
       .then(results => {
         console.log(results)
       })
-    // this.props.dispatch({ type: 'PING', payload: 'resttter' })
     // this.props.dispatch({ type: 'RELAY_OPEN_WEBSOCKET', payload: { url: 'wss://api.ercdex.com'}})
     // this.props.dispatch({ type: 'RELAY_SUBSCRIBE_WEBSOCKET', payload: { sub: 'sub:ticker' }})
     // this.props.dispatch({ type: 'RELAY_SUBSCRIBE_WEBSOCKET', payload: { sub: 'sub:ticker2' }})
@@ -638,7 +630,7 @@ class ApplicationExchangeHome extends Component {
         if (keyA > keyB) return 1;
         return 0;
       });
-      this.props.dispatch(this.updateTransactionsDragoAction(results))
+      this.props.dispatch(Actions.drago.updateTransactionsDragoManagerAction(results))
 
       if (results[2].length !== 0) {
         // Getting fund orders

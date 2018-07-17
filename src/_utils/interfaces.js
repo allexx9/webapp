@@ -331,23 +331,33 @@ class Interfaces {
   detachInterface = (api, subscriptionData) => {
     var sourceLogClass = this.constructor.name
     if (typeof subscriptionData === 'object') {
-      subscriptionData.unsubscribe(function (error, success) {
-        if (success) {
-          console.log(`${sourceLogClass}: Successfully unsubscribed from eth_blockNumber.`);
-        }
-        if (error) {
-          console.warn(`${sourceLogClass}: Unsubscribe error ${error}.`)
-        }
-      });
+      console.log(subscriptionData)
+      try {
+        subscriptionData.unsubscribe(function (error, success) {
+          if (success) {
+            console.log(`${sourceLogClass}: Successfully unsubscribed from eth_blockNumber.`);
+          }
+          if (error) {
+            console.warn(`${sourceLogClass}: Unsubscribe error ${error}.`)
+          }
+        });
+      } catch (error) {
+        console.log(error)
+      }
+
     } else {
-      api.unsubscribe(subscriptionData)
-      .then((result) => {
-        console.log(result)
-        console.log(`${sourceLogClass}: Successfully unsubscribed from eth_blockNumber -> Subscription ID: ${subscriptionData}.`);
-      })
-      .catch((error) => {
-        console.warn(`${sourceLogClass}: Unsubscribe error ${error}.`)
-      });
+      try {
+        api.unsubscribe(subscriptionData)
+        .then((result) => {
+          console.log(result)
+          console.log(`${sourceLogClass}: Successfully unsubscribed from eth_blockNumber -> Subscription ID: ${subscriptionData}.`);
+        })
+        .catch((error) => {
+          console.warn(`${sourceLogClass}: Unsubscribe error ${error}.`)
+        });
+      } catch (error) {
+        console.log(error)
+      }
     }
   } 
 }

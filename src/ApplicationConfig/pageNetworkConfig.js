@@ -7,7 +7,6 @@ import ElementBoxHeadTitle from '../Elements/elementBoxHeadTitle'
 import RaisedButton from 'material-ui/RaisedButton';
 import { 
   LOCAL,
-  UPDATE_INTERFACE,
   KOVAN,
   ROPSTEN,
   MAINNET,
@@ -20,7 +19,7 @@ import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
 import { Interfaces } from '../_utils/interfaces'
 import { connect } from 'react-redux';
-import { Actions } from '../_redux/actions/actions' 
+import { Actions } from '../_redux/actions' 
 
 function mapStateToProps(state) {
   return state

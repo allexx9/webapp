@@ -10,7 +10,7 @@ import CopyContent from 'material-ui/svg-icons/content/content-copy'
 import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types';
 import React, { Component } from 'react'
-import scrollToComponent from 'react-scroll-to-component'
+import scrollToElement from 'scroll-to-element'
 import Search from 'material-ui/svg-icons/action/search'
 import Snackbar from 'material-ui/Snackbar'
 import Sticky from 'react-stickynode'
@@ -20,14 +20,12 @@ import ElementListBalances from '../Elements/elementListBalances'
 import ElementListTransactions from '../Elements/elementListTransactions'
 import UserDashboardHeader from '../../_atomic/atoms/userDashboardHeader'
 import utils from '../../_utils/utils'
-import {
-  UPDATE_TRANSACTIONS_DRAGO_HOLDER,
-} from '../../_utils/const'
 import { connect } from 'react-redux';
 import SectionHeader from '../../_atomic/atoms/sectionHeader';
 // import SectionTitle from '../../_atomic/atoms/sectionTitle';
 
 import styles from './pageDashboardDragoTrader.module.css'
+import { Actions } from '../../_redux/actions' 
 
 function mapStateToProps(state) {
   return state
@@ -53,32 +51,25 @@ class PageDashboardDragoTrader extends Component {
     snackBarMsg: ''
   }
 
-  updateTransactionsDrago = (results) => {
-    return {
-      type: UPDATE_TRANSACTIONS_DRAGO_HOLDER,
-      payload: results
-    }
-  };
-
   componentDidMount() {
     const { accounts } = this.props.endpoint
     console.log('componentDidMount')
     this.getTransactions(null, accounts)
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     // Updating the lists on each new block if the accounts balances have changed
     // Doing this this to improve performances by avoiding useless re-rendering
     const { accounts } = this.props.endpoint
     const sourceLogClass = this.constructor.name
-    console.log(`${sourceLogClass} -> componentWillReceiveProps-> nextProps received.`);
+    console.log(`${sourceLogClass} -> UNSAFE_componentWillReceiveProps-> nextProps received.`);
     // Updating the transaction list if there have been a change in total accounts balance and the previous balance is
     // different from 0 (balances are set to 0 on app loading)
     const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
     const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
     if (!currentBalance.eq(nextBalance) && !currentBalance.eq(0)) {
       this.getTransactions(null, accounts)
-      console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
+      console.log(`${sourceLogClass} -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`);
     }
   }
 
@@ -132,7 +123,7 @@ class PageDashboardDragoTrader extends Component {
     }
 
     return (
-      <a href={this.props.endpoint.networkInfo.etherscan + type + '/' + text} target='_blank'><Search className={styles.copyAddress} /></a>
+      <a href={this.props.endpoint.networkInfo.etherscan + type + '/' + text} target='_blank' rel="noopener noreferrer"><Search className={styles.copyAddress} /></a>
     );
   }
 
@@ -169,23 +160,21 @@ class PageDashboardDragoTrader extends Component {
       <Row>
         <Col xs={12}>
           <Paper className={styles.paperContainer} zDepth={1}>
-
-            
             <Sticky enabled={true} innerZ={1}>
               <UserDashboardHeader fundType='drago' userType='holder' />
               <Row className={styles.tabsRow}>
                 <Col xs={12}>
                   <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle}>
                     <Tab label="Accounts" className={styles.detailsTab}
-                      onActive={() => scrollToComponent(this.Accounts, { offset: -80, align: 'top', duration: 500 })}
+                      onActive={() => scrollToElement('#accounts-section', {offset: -165})}
                       icon={<ActionList color={'#054186'} />}>
                     </Tab>
                     <Tab label="Holding" className={styles.detailsTab}
-                      onActive={() => scrollToComponent(this.Dragos, { offset: -80, align: 'top', duration: 500 })}
+                      onActive={() => scrollToElement('#holding-section', {offset: -165})}
                       icon={<ActionAssessment color={'#054186'} />}>
                     </Tab>
                     <Tab label="Transactions" className={styles.detailsTab}
-                      onActive={() => scrollToComponent(this.Transactions, { offset: -80, align: 'top', duration: 500 })}
+                      onActive={() => scrollToElement('#transactions-section', {offset: -165})}
                       icon={<ActionShowChart color={'#054186'} />}>
                     </Tab>
                   </Tabs>
@@ -198,7 +187,7 @@ class PageDashboardDragoTrader extends Component {
               <Grid fluid>
                 <Row>
                   <Col xs={12} >
-                    <span ref={(section) => { this.Accounts = section; }}></span>
+                    <span id='accounts-section' ref={(section) => { this.Accounts = section; }}></span>
                     <SectionHeader
                       titleText='ACCOUNTS'
                     />
@@ -220,7 +209,7 @@ class PageDashboardDragoTrader extends Component {
               <Grid fluid>
                 <Row>
                   <Col xs={12} >
-                    <span ref={(section) => { this.Dragos = section; }}></span>
+                    <span id='holding-section' ref={(section) => { this.Dragos = section; }}></span>
                     <SectionHeader
                       titleText='HOLDING'
                     />
@@ -244,7 +233,7 @@ class PageDashboardDragoTrader extends Component {
               <Grid fluid>
                 <Row>
                   <Col xs={12} >
-                    <span ref={(section) => { this.Transactions = section; }}></span>
+                    <span id='transactions-section' ref={(section) => { this.Transactions = section; }}></span>
                     <SectionHeader
                       titleText='TRANSACTIONS'
                     />
@@ -306,7 +295,7 @@ class PageDashboardDragoTrader extends Component {
         //   return event.type !== 'DragoCreated'
         // })
         console.log(results)
-        this.props.dispatch(this.updateTransactionsDrago(results))
+        this.props.dispatch(Actions.drago.updateTransactionsDragoHolderAction(results))
         this.setState({
           loading: false,
         });

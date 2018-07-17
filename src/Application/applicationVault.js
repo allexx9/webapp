@@ -72,7 +72,7 @@ class ApplicationDragoPage extends Component {
     location: PropTypes.object
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
   }
 
   componentWillUnmount() {

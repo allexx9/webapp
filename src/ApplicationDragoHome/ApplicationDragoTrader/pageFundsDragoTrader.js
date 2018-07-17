@@ -34,7 +34,6 @@ class PageFundsDragoTrader extends Component {
   static propTypes = {
     location: PropTypes.object.isRequired,
     endpoint: PropTypes.object.isRequired,
-    accounts: PropTypes.array.isRequired
   };
 
     state = {
@@ -48,7 +47,7 @@ class PageFundsDragoTrader extends Component {
       this.getDragos();
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
       // Updating the lists on each new block if the accounts balances have changed
       // Doing this this to improve performances by avoiding useless re-rendering
       const sourceLogClass = this.constructor.name
@@ -56,7 +55,7 @@ class PageFundsDragoTrader extends Component {
       const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
       if (!currentBalance.eq(nextBalance)) {
         this.getDragos()
-        console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
+        console.log(`${sourceLogClass} -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`);
       } else {
         null
       }

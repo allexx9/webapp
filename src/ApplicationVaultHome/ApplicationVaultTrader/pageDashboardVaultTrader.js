@@ -10,7 +10,7 @@ import CopyContent from 'material-ui/svg-icons/content/content-copy'
 import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types';
 import React, { Component } from 'react'
-import scrollToComponent from 'react-scroll-to-component'
+import scrollToElement from 'scroll-to-element'
 import Search from 'material-ui/svg-icons/action/search'
 import Snackbar from 'material-ui/Snackbar'
 import Sticky from 'react-stickynode'
@@ -21,11 +21,9 @@ import ElementListTransactions from '../Elements/elementListTransactions'
 import UserDashboardHeader from '../../_atomic/atoms/userDashboardHeader'
 import utils from '../../_utils/utils'
 import BigNumber from 'bignumber.js';
-import {
-  UPDATE_TRANSACTIONS_VAULT_HOLDER,
-} from '../../_utils/const'
 import { connect } from 'react-redux';
 import SectionHeader from '../../_atomic/atoms/sectionHeader';
+import { Actions } from '../../_redux/actions' 
 
 import styles from './pageDashboardVaultTrader.module.css'
 
@@ -53,34 +51,27 @@ class PageDashboardVaultTrader extends Component {
     snackBarMsg: ''
   }
 
-  updateTransactionsVault = (results) => {
-    return {
-      type: UPDATE_TRANSACTIONS_VAULT_HOLDER,
-      payload: results
-    }
-  };
-
   componentDidMount() {
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const { accounts } = this.props
     this.getTransactions(null, accounts)
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     // Updating the lists on each new block if the accounts balances have changed
     // Doing this this to improve performances by avoiding useless re-rendering
     const { accounts } = this.props
     const sourceLogClass = this.constructor.name
-    console.log(`${sourceLogClass} -> componentWillReceiveProps-> nextProps received.`);
+    console.log(`${sourceLogClass} -> UNSAFE_componentWillReceiveProps-> nextProps received.`);
     // Updating the transaction list if there have been a change in total accounts balance and the previous balance is
     // different from 0 (balances are set to 0 on app loading)
     const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
     const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
     if (!currentBalance.eq(nextProps.endpoint.ethBalance) && !nextBalance.eq(0)) {
       this.getTransactions(null, accounts)
-      console.log(`${sourceLogClass} -> componentWillReceiveProps -> Accounts have changed.`);
+      console.log(`${sourceLogClass} -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`);
     }
   }
 
@@ -181,15 +172,15 @@ class PageDashboardVaultTrader extends Component {
                 <Col xs={12}>
                   <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle}>
                     <Tab label="Accounts" className={styles.detailsTab}
-                      onActive={() => scrollToComponent(this.Accounts, { offset: -80, align: 'top', duration: 500 })}
+                      onActive={() => scrollToElement('#accounts-section', {offset: -165})}
                       icon={<ActionList color={'#607D8B'} />}>
                     </Tab>
                     <Tab label="Holding" className={styles.detailsTab}
-                      onActive={() => scrollToComponent(this.Vaults, { offset: -80, align: 'top', duration: 500 })}
+                      onActive={() => scrollToElement('#holding-section', {offset: -165})}
                       icon={<ActionAssessment color={'#607D8B'} />}>
                     </Tab>
                     <Tab label="Transactions" className={styles.detailsTab}
-                      onActive={() => scrollToComponent(this.Transactions, { offset: -80, align: 'top', duration: 500 })}
+                      onActive={() => scrollToElement('#transactions-section', {offset: -165})}
                       icon={<ActionShowChart color={'#607D8B'} />}>
                     </Tab>
                   </Tabs>
@@ -202,7 +193,7 @@ class PageDashboardVaultTrader extends Component {
               <Grid fluid>
                 <Row>
                   <Col xs={12} >
-                    <span ref={(section) => { this.Accounts = section; }}></span>
+                    <span id='accounts-section' ref={(section) => { this.Accounts = section; }}></span>
                     <SectionHeader
                       titleText='ACCOUNTS'
                       textStyle={{ backgroundColor: Colors.blueGrey500 }}
@@ -225,7 +216,7 @@ class PageDashboardVaultTrader extends Component {
               <Grid fluid>
                 <Row>
                   <Col xs={12} >
-                    <span ref={(section) => { this.Dragos = section; }}></span>
+                    <span id='holding-section' ref={(section) => { this.Dragos = section; }}></span>
                     <SectionHeader
                       titleText='VAULTS'
                       textStyle={{ backgroundColor: Colors.blueGrey500 }}
@@ -250,7 +241,7 @@ class PageDashboardVaultTrader extends Component {
               <Grid fluid>
                 <Row>
                   <Col xs={12} >
-                    <span ref={(section) => { this.Transactions = section; }}></span>
+                    <span id='transactions-section' ref={(section) => { this.Transactions = section; }}></span>
                     <SectionHeader
                       titleText='TRANSACTIONS'
                       textStyle={{ backgroundColor: Colors.blueGrey500 }}
@@ -310,7 +301,7 @@ class PageDashboardVaultTrader extends Component {
         // const buySellLogs = results[1].filter(event =>{
         //   return event.type !== 'DragoCreated'
         // })
-        this.props.dispatch(this.updateTransactionsVault(results))
+        this.props.dispatch(Actions.vault.updateTransactionsVaultHolderAction(results))
       })
       .catch((error) => {
         console.warn(error)

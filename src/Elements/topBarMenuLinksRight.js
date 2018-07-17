@@ -17,10 +17,10 @@ import ArrowDropDown from 'material-ui/svg-icons/navigation/arrow-drop-down'
 import { APP, DS } from '../_utils/const.js'
 import { connect } from 'react-redux';
 // import ElementNotificationsDrawer from '.Elements/elementNotificationsDrawer'
-import { IS_MANAGER } from '../_utils/const'
 import styles from './elements.module.css'
 import utils from '../_utils/utils'
 import Badge from 'material-ui/Badge';
+import { Actions } from '../_redux/actions' 
 
 
 function mapStateToProps(state) {
@@ -94,13 +94,6 @@ class NavLinks extends Component {
     return stateUpdate || propsUpdate
   }
 
-  isManagerAction = (isManager) => {
-    return {
-      type: IS_MANAGER,
-      payload: isManager
-    }
-  };
-
   // value = 1 = Trader
   // value = 2 = Manager
   handleTopBarSelectAccountType = (event, value) => {
@@ -108,7 +101,7 @@ class NavLinks extends Component {
       false: false,
       true: true
     }
-    this.props.dispatch(this.isManagerAction(accountType[value]))
+    this.props.dispatch(Actions.users.isManagerAction(accountType[value]))
   };
 
   componentDidMount() {
