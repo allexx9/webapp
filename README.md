@@ -1,31 +1,4 @@
-This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
-
-## Development environment
-
-**Parity dev server:**  
-
-[https://srv03.endpoint.network/](https://srv03.endpoint.network/)
-
-Please contact the administrator for username and password.
-
-**Webserver:**  
-
-[https://appdev.endpoint.network/](https://appdev.endpoint.network/)
-
-Please contact the administrator for username and password.
-
-**FTP server:**
-
-[ftp://srv03.endpoint.network/](ftp://srv03.endpoint.network/)
-
-The FTP server accepts TLS over TLS only.
-
-Please contact the administrator for username and password.
-
-**SSH**
-
-Login to `srv03.endpoint.network` on port 5555.
-
+[Build Status](https://rb-jenkins.endpoint.network/buildStatus/icon?job=webapp-beta)
 
 ## Cloning this repository
 
