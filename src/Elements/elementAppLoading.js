@@ -38,6 +38,7 @@ class AppLoading extends Component {
               <Col xs={12} style={{ textAlign: "center" }}>
                 <img src="/img/rb-logo-final.png" className={styles.logoImg} />
                 <LinearProgress mode="indeterminate" color={Colors.blueGrey900} />
+                
               </Col>
             </Row>
           </Col>
