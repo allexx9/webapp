@@ -1,6 +1,6 @@
 #!/bin/bash
 NUMBER=$(git log --pretty=oneline | wc -l)
-DATE=$(date +%Y%m%d)
+DATE=$(date +%Y.%m.%d)
 TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
 HASH=$(git rev-parse --short HEAD)
 BRANCH=${GIT_BRANCH#*/}
@@ -9,7 +9,7 @@ BRANCH=${GIT_BRANCH#*/}
 docker build --quiet --no-cache -t webapp-v1 -f scripts/containers/beta-dev/Dockerfile .
 docker login https://rb-registry.endpoint.network/ -u wnz99 -p $JENKINS_PASSWORD
 docker tag webapp-v1 rb-registry.endpoint.network/webapp-v1:latest
-docker tag webapp-v1 rb-registry.endpoint.network/webapp-v1:$TAG-$BRANCH-$HASH-$DATE-$NUMBER
+docker tag webapp-v1 rb-registry.endpoint.network/webapp-v1:$TAG-$BRANCH-$DATE+commit-$HASH-$NUMBER
 docker push rb-registry.endpoint.network/webapp-v1
 
 # Installing kubectl
