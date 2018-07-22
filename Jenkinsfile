@@ -14,7 +14,7 @@ pipeline {
                 }
             }
             steps {
-                sh 'yarn install --frozen-lockfile' 
+                sh 'yarn install' 
             }
         }
         stage('Test') { 
