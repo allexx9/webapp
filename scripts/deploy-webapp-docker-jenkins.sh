@@ -5,6 +5,7 @@ TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
 HASH=$(git rev-parse --short HEAD)
 BRANCH=${GIT_BRANCH#*/}
 
+
 # Building the Docker image
 docker build --quiet --no-cache -t webapp-v1 -f scripts/containers/beta-dev/Dockerfile .
 docker login https://rb-registry.endpoint.network/ -u wnz99 -p $JENKINS_PASSWORD
