@@ -9,7 +9,7 @@ BRANCH=${GIT_BRANCH#*/}
 docker build --quiet --no-cache -t webapp-v1 -f scripts/containers/beta-dev/Dockerfile .
 docker login https://rb-registry.endpoint.network/ -u wnz99 -p $JENKINS_PASSWORD
 docker tag webapp-v1 rb-registry.endpoint.network/webapp-v1:latest
-docker tag webapp-v1 rb-registry.endpoint.network/webapp-v1:$TAG-$BRANCH-$DATE+commit-$HASH-$NUMBER
+docker tag webapp-v1 rb-registry.endpoint.network/webapp-v1:$TAG-$BRANCH-$DATE-commit-$HASH-$NUMBER
 docker push rb-registry.endpoint.network/webapp-v1
 
 # Installing kubectl
@@ -24,4 +24,4 @@ wget https://github.com/rancher/cli/releases/download/v2.0.3-rc1/rancher-linux-a
   && chmod +x rancher \
   && mv ./rancher /usr/local/bin/rancher \
   && echo "1" | rancher login https://rb-rancher.endpoint.network/v3 --token $RANCHER_TOKEN \
-  && rancher kubectl set image deployment/webapp-v1-staging webapp-v1-staging=rb-registry.endpoint.network/webapp-v1:$TAG-$BRANCH-$HASH-$DATE-$NUMBER
+  && rancher kubectl set image deployment/webapp-v1-staging webapp-v1-staging=rb-registry.endpoint.network/webapp-v1:$TAG-$BRANCH-$DATE-commit-$HASH-$NUMBER
