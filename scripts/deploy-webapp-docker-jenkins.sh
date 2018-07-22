@@ -5,7 +5,7 @@ TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
 HASH=$(git rev-parse --short HEAD)
 BRANCH=${GIT_BRANCH#*/}
 VERSION=$TAG-$BRANCH-$DATE-commit-$HASH-$NUMBER
-echo 'rb-registry.endpoint.network/webapp-v1:$VERSION'
+echo rb-registry.endpoint.network/webapp-v1:$VERSION
 
 # Building the Docker image
 docker build --quiet --no-cache -t webapp-v1 -f scripts/containers/beta-dev/Dockerfile .
