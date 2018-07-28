@@ -1,4 +1,4 @@
-// Copyright 2016-2017 Rigo Investment Sarl.
+// Copyright 2016-2017 Rigo Investment Sagl.
 
 import transactionsReducer from './transactions'
 import usersReducer from './users'

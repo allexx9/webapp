@@ -1,4 +1,4 @@
-// Copyright 2016-2017 Rigo Investment Sarl.
+// Copyright 2016-2017 Rigo Investment Sagl.
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import Popover, { PopoverAnimationVertical } from 'material-ui/Popover';

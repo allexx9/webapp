@@ -1,4 +1,4 @@
-// Copyright 2016-2017 Rigo Investment Sarl.
+// Copyright 2016-2017 Rigo Investment Sagl.
 
 import React, { Component } from 'react';
 import  * as Colors from 'material-ui/styles/colors';

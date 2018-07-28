@@ -1,4 +1,4 @@
-// Copyright 2016-2017 Rigo Investment Sarl.
+// Copyright 2016-2017 Rigo Investment Sagl.
 
 import SelectTokenItem from '../molecules/selectTokenItem.js';
 import React, { Component } from 'react';

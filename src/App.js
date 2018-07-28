@@ -1,4 +1,4 @@
-// Copyright 2016-2017 Rigo Investment Sarl.
+// Copyright 2016-2017 Rigo Investment Sagl.
 import "babel-polyfill";
 import Endpoint from './_utils/endpoint';
 import { Switch, Redirect, Router, Route } from 'react-router-dom'

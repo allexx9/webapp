@@ -1,4 +1,4 @@
-// Copyright 2017 Rigo Investment Sarl.
+// Copyright 2017 Rigo Investment Sagl.
 // This file is part of RigoBlock.
 
 // kovan register address 0xfAb104398BBefbd47752E7702D9fE23047E1Bca3

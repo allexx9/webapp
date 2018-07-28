@@ -1,4 +1,4 @@
-// Copyright 2016-2017 Rigo Investment Sarl.
+// Copyright 2016-2017 Rigo Investment Sagl.
 
 import initialState from './initialState'
 import {IS_MANAGER} from '../../_utils/const'

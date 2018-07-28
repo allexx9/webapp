@@ -1,4 +1,4 @@
-// Copyright 2016-2017 Rigo Investment Sarl.
+// Copyright 2016-2017 Rigo Investment Sagl.
 
 import styles from './orderTypeSelector.module.css';
 import React, { Component } from 'react';

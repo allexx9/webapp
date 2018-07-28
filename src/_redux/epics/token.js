@@ -1,4 +1,4 @@
-// Copyright 2016-2017 Rigo Investment Sarl.
+// Copyright 2016-2017 Rigo Investment Sagl.
 import { Observable } from 'rxjs/Observable'
 import 'rxjs/add/operator/delay';
 import 'rxjs/add/operator/mapTo';
