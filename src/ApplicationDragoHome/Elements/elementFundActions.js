@@ -17,9 +17,7 @@ import {
   TableRow,
   TableRowColumn,
 } from 'material-ui/Table';
-import {
-  ADD_TRANSACTION
-} from '../../_utils/const'
+import { Actions } from '../../_redux/actions';
 
 import { ERRORS, validateAccount, validatePositiveNumber } from '../../_utils/validation';
 import { formatCoins } from '../../_utils/format';
@@ -169,13 +167,6 @@ class ElementFundActions extends React.Component {
   actionSellStyle = {
     color: Colors.red300,
   }
-
-  addTransactionToQueueAction = (transactionId, transactionDetails) => {
-    return {
-      type: ADD_TRANSACTION,
-      transaction: { transactionId, transactionDetails }
-    }
-  };
 
   UNSAFE_componentWillMount() {
 
@@ -448,7 +439,7 @@ class ElementFundActions extends React.Component {
       symbol: dragoDetails.symbol.toUpperCase(),
       amount: this.state.amountSummary
     }
-    this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+    this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
     
     // Sending the transaction
     poolApi = new PoolApi(provider)
@@ -464,10 +455,10 @@ class ElementFundActions extends React.Component {
           transactionDetails.receipt = receipt
           transactionDetails.hash = receipt.transactionHash
           transactionDetails.timestamp = new Date ()
-          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+          this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
         } else {
           transactionDetails.parityId = receipt
-          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+          this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
         }
       })
       .catch((error) => {
@@ -476,7 +467,7 @@ class ElementFundActions extends React.Component {
         transactionDetails.status = 'error'
         transactionDetails.error = errorArray[0]
         console.log(error)
-        this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+        this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
         this.setState({
           sending: false
         })
@@ -515,7 +506,7 @@ class ElementFundActions extends React.Component {
       symbol: dragoDetails.symbol.toUpperCase(),
       amount: this.state.amountSummary
     }
-    this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+    this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
     
     poolApi = new PoolApi(provider)
     poolApi.contract.drago.init(dragoDetails.address)
@@ -530,10 +521,10 @@ class ElementFundActions extends React.Component {
           transactionDetails.receipt = receipt
           transactionDetails.hash = receipt.transactionHash
           transactionDetails.timestamp = new Date ()
-          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+          this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
         } else {
           transactionDetails.parityId = receipt
-          this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+          this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
         }
       })
       .catch((error) => {
@@ -542,7 +533,7 @@ class ElementFundActions extends React.Component {
         transactionDetails.status = 'error'
         transactionDetails.error = errorArray[0]
         console.log(error)
-        this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+        this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
         this.setState({
           sending: false
         })

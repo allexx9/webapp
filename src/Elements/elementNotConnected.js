@@ -4,10 +4,12 @@ import BigNumber from 'bignumber.js';
 import Dialog from 'material-ui/Dialog';
 import { Link } from 'react-router-dom'
 
-import styles from './notConnected.module.css'
+import styles from './elementNotConnected.module.css'
 import PropTypes from 'prop-types';
 import { APP, DS } from '../_utils/const.js'
 import SectionHeader from '../_atomic/atoms/sectionHeader';
+import SyncStatusCurrentBlock from '../_atomic/atoms/syncStatusCurrentBlock'
+import SyncStatusWarpChunksProcessed from '../_atomic/atoms/syncStatusWarpChunksProcessed'
 
 
 var td = null
@@ -29,7 +31,7 @@ const style = {
   }
 };
 
-class NotConnected extends Component {
+class ElementNotConnected extends Component {
 
   state = {
     counter: 15
@@ -73,7 +75,6 @@ class NotConnected extends Component {
   }
 
   renderSyncing = () => {
-    const progressBlocks = new BigNumber(this.context.syncStatus.currentBlock).div(new BigNumber(this.context.syncStatus.highestBlock)).mul(100).toFixed(2)
     const progressWarp = new BigNumber(this.context.syncStatus.warpChunksProcessed).div(new BigNumber(this.context.syncStatus.warpChunksAmount)).mul(100).toFixed(2)
     return (
       <Dialog
@@ -99,8 +100,8 @@ class NotConnected extends Component {
                 <p>Your node is syncing with Ethereum blockchain.</p>
                 <p>Please wait until fully synced before accessing RigoBlock.</p>
                 <p>Syncing progress:</p>
-                <p>Block sync {new BigNumber(this.context.syncStatus.currentBlock).toFormat()} of {new BigNumber(this.context.syncStatus.highestBlock).toFormat()} ({progressBlocks}%)</p>
-                <p>Warp sync {new BigNumber(this.context.syncStatus.warpChunksProcessed).toFormat()} of {new BigNumber(this.context.syncStatus.warpChunksAmount).toFormat()} ({progressWarp}%)</p>
+                <p><SyncStatusCurrentBlock syncStatus={this.context.syncStatus} /></p>
+                <p><SyncStatusWarpChunksProcessed syncStatus={this.context.syncStatus}/></p>
                 <p>Please contact our support or {<Link to={DS + APP + DS + this.buildUrlPath() + DS + "config"}>select</Link>} a different endpoint.</p>
               </Col>
             </Row>
@@ -165,4 +166,4 @@ class NotConnected extends Component {
   }
 }
 
-export default NotConnected
+export default ElementNotConnected

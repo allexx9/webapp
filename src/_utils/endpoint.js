@@ -76,7 +76,7 @@ class Endpoint {
       var api
       try {
         console.log("Network: ", this._network.name)
-        console.log("Connecting to: ", this._wss)
+        console.log("Connecting to WebSocket: ", this._wss)
         const transport = new Api.Provider.WsSecure(this._wss)
         api = new Api(transport)
         api._rb = {}
@@ -89,7 +89,7 @@ class Endpoint {
     } else {
       try {
         console.log("Network: ", this._network.name)
-        console.log("Connecting to: ", this._https)
+        console.log("Connecting to HTTPS: ", this._https)
         const transport = new Api.Provider.Http(this._https, this._timeout)
         api = new Api(transport)
         api._rb = {}

@@ -8,6 +8,7 @@ export const ERRORS = {
   invalidAddress: 'The address is not in the correct format',
   invalidAmount: 'Please enter a positive number > 0',
   invalidAmountFeeTooLow: 'Fee must be equal or greater than 0.01%',
+  invalidAmountFeeTooHigh: 'Fee cannot be higher than 1.00%',
   invalidAmountFractionBasisPoint: 'Fee cannot be a fraction of basis point.',
   invalidTotal: 'The amount is greater than the availale balance',
   invalidName: 'Please enter a valid name',

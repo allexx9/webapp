@@ -12,7 +12,7 @@ import { Grid, Row, Col } from 'react-flexbox-grid';
 import styles from './application.module.css';
 import classNames from 'classnames';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import NotConnected from '../Elements/notConnected'
+import ElementNotConnected from '../Elements/elementNotConnected'
 import { connect } from 'react-redux';
 
 
@@ -107,7 +107,7 @@ class ApplicationExchangePage extends Component {
                     handleToggleNotifications={this.handleToggleNotifications}
                   />
                 ) : (
-                    <NotConnected isSyncing={this.context.isSyncing} syncStatus={this.context.syncStatus} />
+                    <ElementNotConnected isSyncing={this.context.isSyncing} syncStatus={this.context.syncStatus} />
                   )}
               </Col>
             </Row>

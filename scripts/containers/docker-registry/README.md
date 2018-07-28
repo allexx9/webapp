@@ -27,4 +27,4 @@ Start the container:
 
 Strop and remove the container:
 
-    ./rb-registry-stop.sh
+    ./rb-registry-stop.sh 
