@@ -12,6 +12,7 @@ import PoolApi from '../../PoolsApi/src';
 import ButtonDeployPool from '../../_atomic/atoms/buttonDeployPool';
 import ActionsDialogHeader from '../../_atomic/molecules/actionsDialogHeader';
 import { ERRORS, validateAccount, validateNewName, validateNewSymbol } from '../../_utils/validation';
+import { Actions } from '../../_redux/actions';
 
 const customContentStyle = {
   minHeight: '500px',
@@ -49,13 +50,6 @@ class ElementVaultCreateAction extends React.Component {
     complete: false,
     vaultDetails: ''
   }
-
-  addTransactionToQueueAction = (transactionId, transactionDetails) => {
-    return {
-      type: 'ADD_TRANSACTION',
-      transaction: { transactionId, transactionDetails }
-    }
-  };
 
   handleOpen = () => {
     console.log('open')
@@ -145,7 +139,7 @@ class ElementVaultCreateAction extends React.Component {
       symbol: vaultSymbol,
       amount: ''
     }
-    this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+    this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
     const { account } = this.state
     this.setState({
       sending: true
@@ -162,10 +156,10 @@ class ElementVaultCreateAction extends React.Component {
               transactionDetails.receipt = receipt
               transactionDetails.hash = receipt.transactionHash
               transactionDetails.timestamp = new Date()
-              this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+              this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
             } else {
               transactionDetails.parityId = receipt
-              this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+              this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
             }
             this.setState({
               sending: false,
@@ -178,7 +172,7 @@ class ElementVaultCreateAction extends React.Component {
             transactionDetails.status = 'error'
             transactionDetails.error = errorArray[0]
             console.log(error)
-            this.props.dispatch(this.addTransactionToQueueAction(transactionId, transactionDetails))
+            this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
             this.setState({
               sending: false
             })

@@ -47,7 +47,7 @@ import PoolApi from '../PoolsApi/src';
 import BigNumber from 'bignumber.js';
 import ChartBox from '../_atomic/organisms/chartBox'
 import OrdersHistory from '../_atomic/organisms/ordersHistory'
-import { Actions } from '../_redux/actions' 
+import { Actions } from '../_redux/actions'
 // import { getData } from "../_utils/data"
 
 function mapStateToProps(state) {
@@ -203,33 +203,35 @@ class ApplicationExchangeHome extends Component {
   }
 
   componentDidMount() {
-    const { accounts } = this.props.endpoint
-    const { selectedTokensPair, selectedExchange } = this.props.exchange
-    this.getSelectedFundDetails(null, accounts)
-    // this.connectToRadarRelay()
-    this.connectToExchange(selectedTokensPair)
-    getAvailableAddresses(selectedExchange)
-      .then(adreesses => {
-        this.props.dispatch({ type: 'SET_MAKER_ADDRESS', payload: adreesses[0] })
-      })
+    if (this.props.endpoint.networkInfo.name === 'kovan') {
+      const { accounts } = this.props.endpoint
+      const { selectedTokensPair, selectedExchange } = this.props.exchange
+      this.getSelectedFundDetails(null, accounts)
+      // this.connectToRadarRelay()
+      this.connectToExchange(selectedTokensPair)
+      getAvailableAddresses(selectedExchange)
+        .then(adreesses => {
+          this.props.dispatch({ type: 'SET_MAKER_ADDRESS', payload: adreesses[0] })
+        })
 
-    // Getting history logs
-    this.props.dispatch(this.getTradeHistoryLogs(
-      this.props.exchange.relay.networkId,
-      this.props.exchange.selectedTokensPair.baseToken.address,
-      this.props.exchange.selectedTokensPair.quoteToken.address,
-    )
-    )
+      // Getting history logs
+      this.props.dispatch(this.getTradeHistoryLogs(
+        this.props.exchange.relay.networkId,
+        this.props.exchange.selectedTokensPair.baseToken.address,
+        this.props.exchange.selectedTokensPair.quoteToken.address,
+      )
+      )
 
-    // Getting chart data
-    var tsYesterday = new Date((Math.floor(Date.now() / 1000) - 86400 * 7) * 1000).toISOString()
-    this.props.dispatch(this.getChartData(
-      this.props.exchange.relay.networkId,
-      this.props.exchange.selectedTokensPair.baseToken.address,
-      this.props.exchange.selectedTokensPair.quoteToken.address,
-      tsYesterday
-    )
-    )
+      // Getting chart data
+      var tsYesterday = new Date((Math.floor(Date.now() / 1000) - 86400 * 7) * 1000).toISOString()
+      this.props.dispatch(this.getChartData(
+        this.props.exchange.relay.networkId,
+        this.props.exchange.selectedTokensPair.baseToken.address,
+        this.props.exchange.selectedTokensPair.quoteToken.address,
+        tsYesterday
+      )
+      )
+    }
   }
 
   componentWillUnmount() {
@@ -360,7 +362,7 @@ class ApplicationExchangeHome extends Component {
   }
 
   onButtonTest2 = () => {
-    console.log('subcribe')
+    console.log('subscribe')
     getMarketTakerOrder(
       this.props.exchange.selectedTokensPair.baseToken.address,
       this.props.exchange.selectedTokensPair.quoteToken.address,
@@ -389,6 +391,41 @@ class ApplicationExchangeHome extends Component {
     if (endpoint.loading) {
       return <Loading></Loading>
     }
+    console.log(endpoint.networkInfo.name)
+
+    if (endpoint.networkInfo.name !== 'kovan') {
+      return (
+        <div ref={node => this.node = node}>
+          <Row className={styles.maincontainer}>
+            <Col xs={12}>
+              <Paper className={styles.paperTopBarContainer} zDepth={1}>
+                <div style={{ paddingTop: '16px', paddingBottom: '16px' }}>
+                  The exchange is only available on Ethereum Kovan network.
+              </div>
+              </Paper>
+            </Col>
+          </Row>
+          <Row>
+            <Col xs={12}>
+              {notificationsOpen ? (
+                <ElementNotificationsDrawer
+                  handleToggleNotifications={handleToggleNotifications}
+                  notificationsOpen={notificationsOpen}
+                />
+              ) : (
+                  null
+                )}
+            </Col>
+          </Row>
+          <ElementBottomStatusBar
+            blockNumber={endpoint.prevBlockNumber}
+            networkName={endpoint.networkInfo.name}
+            networkError={endpoint.networkError}
+            networkStatus={endpoint.networkStatus} />
+        </div>
+      )
+    }
+
     if ((endpoint.accounts.length === 0 || !endpoint.networkCorrect)) {
       return (
         <span>
@@ -401,14 +438,14 @@ class ApplicationExchangeHome extends Component {
         </span>
       )
     }
-    console.log(this.state.managerHasNoFunds)
+
     if (this.state.managerHasNoFunds) {
       return (
         <div ref={node => this.node = node}>
           <Row className={styles.maincontainer}>
             <Col xs={12}>
               <Paper className={styles.paperTopBarContainer} zDepth={1}>
-                <div style={{paddingTop: '16px', paddingBottom: '16px'}}>
+                <div style={{ paddingTop: '16px', paddingBottom: '16px' }}>
                   You need to own a fund in order to trade on this exchange.
                 </div>
               </Paper>
