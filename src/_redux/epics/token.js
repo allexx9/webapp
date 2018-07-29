@@ -10,7 +10,6 @@ import 'rxjs/add/operator/concat';
 import 'rxjs/add/operator/mergeMap';
 import { 
   setTokenAllowance,
-  getPricesFromRelayERCdEX 
 } from '../../_utils/exchange'
 import 'rxjs/observable/timer'
 // import { fromPromise } from 'rxjs/add/observable/fromPromise';
@@ -103,7 +102,7 @@ const getPricesERCdEXWebsocket$ = () => {
   })
 }
 
-// const getPricesERCdEXREST$ = () => {
+// const getTickers$ = () => {
 //   return Observable
 //   .fromPromise(getPricesFromRelayERCdEX())
 //   .catch((error) => {
@@ -112,10 +111,10 @@ const getPricesERCdEXWebsocket$ = () => {
 //   })
 // }
 
-const getPricesERCdEXREST$ = () => {
-  const exchange2 = new Exchange('Ethfinex', '1')
-  console.log(exchange2.getTickers())
-  const exchange = new Exchange('ERCdEX', '1')
+const getTickers$ = () => {
+  const exchange = new Exchange('Ethfinex', '1')
+  // console.log(exchange2.getTickers())
+  // const exchange = new Exchange('ERCdEX', '1')
   return Observable
   .fromPromise(exchange.getTickers())
   .catch((error) => {
@@ -133,7 +132,7 @@ export const getPricesERCdEXEpic = (action$) =>
         //   console.log(err)
         //   return window.navigator.onLine ? timer(1000) : Observable.fromEvent(window, 'online')
         // })
-        return getPricesERCdEXREST$().concat(getPricesERCdEXWebsocket$())
+        return getTickers$().concat(getPricesERCdEXWebsocket$())
         // .do({ error: (err) => console.log(err) })
         .takeUntil(
           action$.ofType(TOKEN_PRICE_TICKER_CLOSE_WEBSOCKET)

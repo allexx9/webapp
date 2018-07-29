@@ -36,17 +36,17 @@ export const  setAllowaceOnExchangeThroughDrago = (selectedFund, token, selected
   )
 }
 
-export const getPricesFromRelayERCdEX = () => {
-  console.log('Fetching tokens prices from ERCdEX')
-  var options = {
-    method: 'GET',
-    url: `https://api.ercdex.com/api/reports/ticker`,
-    qs: {},
-    json: true // Automatically stringifies the body to JSON
-  };
-  console.log(options)
-  return rp(options)
-}
+// export const getPricesFromRelayERCdEX = () => {
+//   console.log('Fetching tokens prices from ERCdEX')
+//   var options = {
+//     method: 'GET',
+//     url: `https://api.ercdex.com/api/reports/ticker`,
+//     qs: {},
+//     json: true // Automatically stringifies the body to JSON
+//   };
+//   console.log(options)
+//   return rp(options)
+// }
 
 export const getOrdersFromRelayERCdEX = ( networkId, maker, baseTokenAddress, quoteTokenAddress) => {
   console.log('Fetching open orders from ERCdEX')
