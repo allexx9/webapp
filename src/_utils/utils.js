@@ -1,6 +1,6 @@
 import { DRG_ISIN } from './const';
 import { formatCoins, formatEth } from './format';
-import { APP, DS } from './const.js'
+import { APP, DS } from './const'
 import BigNumber from 'bignumber.js'
 import PoolApi from '../PoolsApi/src'
 import { toUnitAmount } from './format'
@@ -30,6 +30,7 @@ class utilities {
 
   calculatePortfolioValue = (dragoAssetsList, assetsPrices) => {
     const totalValue = dragoAssetsList.reduce((total, asset) => {
+      console.log(asset.symbol)
       const value = new BigNumber(assetsPrices[asset.symbol].priceEth).mul(toUnitAmount(new BigNumber(asset.balance), asset.decimals).toFixed(5))
       return total.plus(value)
     }, new BigNumber(0))

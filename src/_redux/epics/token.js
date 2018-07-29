@@ -1,4 +1,5 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
+
 import { Observable } from 'rxjs/Observable'
 import 'rxjs/add/operator/delay';
 import 'rxjs/add/operator/mapTo';
@@ -20,6 +21,7 @@ import {
   TOKEN_PRICE_TICKER_CLOSE_WEBSOCKET,
   TOKEN_PRICE_TICKER_UPDATE
 } from '../../_utils/const'
+import Exchange from '../../_utils/exchange/index'
 import ReconnectingWebSocket from 'reconnecting-websocket'
 // import ReconnectingWebSocket from 'reconnecting-websocket/dist/reconnecting-websocket-cjs'
 
@@ -101,9 +103,21 @@ const getPricesERCdEXWebsocket$ = () => {
   })
 }
 
+// const getPricesERCdEXREST$ = () => {
+//   return Observable
+//   .fromPromise(getPricesFromRelayERCdEX())
+//   .catch((error) => {
+//     console.log(error)
+//     return Observable.of(Array(0))
+//   })
+// }
+
 const getPricesERCdEXREST$ = () => {
+  const exchange2 = new Exchange('Ethfinex', '1')
+  console.log(exchange2.getTickers())
+  const exchange = new Exchange('ERCdEX', '1')
   return Observable
-  .fromPromise(getPricesFromRelayERCdEX())
+  .fromPromise(exchange.getTickers())
   .catch((error) => {
     console.log(error)
     return Observable.of(Array(0))
