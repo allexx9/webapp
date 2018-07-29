@@ -14,7 +14,7 @@ class Exchange {
     if (!SupportedExchanges[exchange].supportedNetworks.includes(network)) {
       throw new Error('Network not supported on this exchange: ' + network)
     }
-    console.log(exchange, network)
+    // console.log(exchange, network)
     this._exchange = exchange
     this._network = network
     this._exchangeProperties = SupportedExchanges[exchange]
@@ -23,7 +23,7 @@ class Exchange {
   returnResults = (query, formatFunction = (input) => { return input}) => {
     return rp(query)
     .then(results => {
-      console.log(results)
+      // console.log(results)
       // console.log(formatFunction(results))
       return formatFunction(results)
     })
@@ -33,8 +33,8 @@ class Exchange {
   }
 
   getTickers = () => {
-    console.log(`Fetching tokens prices from ${this._exchange}`)
-    console.log(SupportedExchanges.Ethfinex.tickersTokenPairs.toString())
+    // console.log(`Fetching tokens prices from ${this._exchange}`)
+    // console.log(SupportedExchanges.Ethfinex.tickersTokenPairs.toString())
     return this.returnResults(getTickers[this._exchange](this._network, this._exchangeProperties.tickersTokenPairs), formatTickers[this._exchange])
   }
 }

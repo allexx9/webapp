@@ -21,7 +21,7 @@ import {
   TOKEN_PRICE_TICKER_CLOSE_WEBSOCKET,
   TOKEN_PRICE_TICKER_UPDATE
 } from '../../_utils/const'
-import Exchange from '../../_utils/exchange/index'
+import Exchange from '../../_utils/exchange/src/index'
 import ReconnectingWebSocket from 'reconnecting-websocket'
 // import ReconnectingWebSocket from 'reconnecting-websocket/dist/reconnecting-websocket-cjs'
 
