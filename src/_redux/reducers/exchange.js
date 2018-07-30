@@ -13,36 +13,46 @@ import {
   TOKEN_PRICE_TICKER_UPDATE,
   UPDATE_ELEMENT_LOADING,
   UPDATE_MARKET_DATA,
-  UPDATE_FUND_ORDERS
-} from '../../_utils/const'
+  UPDATE_FUND_ORDERS,
+  UPDATE_SELECTED_RELAY
+} from '../actions/const'
 
-function transactionsReducer(state = initialState.exchange, action) {
+
+
+function exchangeReducer(state = initialState.exchange, action) {
   switch (action.type) {
 
     case UPDATE_FUND_ORDERS:
-    return {
-      ...state,
-      fundOrders: { ...state.fundOrders, ...action.payload }
-    };
+      return {
+        ...state,
+        fundOrders: { ...state.fundOrders, ...action.payload }
+      };
 
     case UPDATE_MARKET_DATA:
-    return {
-      ...state,
-      chartData: action.payload
-    };
+      return {
+        ...state,
+        chartData: action.payload
+      };
 
     case UPDATE_ELEMENT_LOADING:
-    var elementLoading = action.payload
-    return {
-      ...state,
-      loading: { ...state.loading, ...elementLoading }
-    };
+      const elementLoading = action.payload
+      return {
+        ...state,
+        loading: { ...state.loading, ...elementLoading }
+      };
 
     case UPDATE_SELECTED_FUND:
-      var fundDetails = action.payload
+      const fundDetails = action.payload
       return {
         ...state,
         selectedFund: { ...state.selectedFund, ...fundDetails }
+      };
+
+    case UPDATE_SELECTED_RELAY:
+      const relayDetails = action.payload
+      return {
+        ...state,
+        selectedRelay: { ...state.selectedRelay, ...relayDetails }
       };
 
     case UPDATE_SELECTED_ORDER:
@@ -91,13 +101,13 @@ function transactionsReducer(state = initialState.exchange, action) {
 
     case TOKEN_PRICE_TICKER_UPDATE:
       var prices = {
-        ...action.payload ,
+        ...action.payload,
         previous: { ...state.prices }
       }
-      return { ...state, prices  }
+      return { ...state, prices }
 
     default: return state;
   }
 }
 
-export default transactionsReducer
+export default exchangeReducer

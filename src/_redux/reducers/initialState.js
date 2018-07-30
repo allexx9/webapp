@@ -8,7 +8,9 @@ import {
   ENDPOINTS,
   NETWORKS,
   ERC20_TOKENS,
-  EXCHANGES
+  EXCHANGES,
+  RELAYS,
+  ERCdEX
 } from '../../_utils/const'
 import BigNumber from 'bignumber.js';
 
@@ -35,6 +37,7 @@ const initialState = {
     },
     makerAddress: '',
     selectedExchange: EXCHANGES.zeroEx[DEFAULT_NETWORK_NAME],
+    selectedRelay: RELAYS[ERCdEX],
     // selectedExchange: EXCHANGES.rigoBlock[DEFAULT_NETWORK_NAME],
     selectedTokensPair: {
       baseToken: ERC20_TOKENS[DEFAULT_NETWORK_NAME].ZRX,
