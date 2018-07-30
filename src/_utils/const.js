@@ -29,12 +29,14 @@ export const RELAYS = {
   ERCdEX: {
     name: ERCdEX,
     icon: 'ercdex.png',
-    supported: true
+    supported: true,
+    onlyAggregateOrderbook: false
   },
   Ethfinex: {
     name: Ethfinex,
     icon: 'ethfinex.png',
-    supported: true
+    supported: true,
+    onlyAggregateOrderbook: true
   }
 }
 

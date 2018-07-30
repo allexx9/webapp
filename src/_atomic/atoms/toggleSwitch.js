@@ -12,7 +12,8 @@ export default class ToggleSwitch extends Component {
     label: PropTypes.string.isRequired,
     onToggle: PropTypes.func.isRequired,
     toggled: PropTypes.bool.isRequired,
-    toolTip: PropTypes.string
+    toolTip: PropTypes.string,
+    disabled: PropTypes.bool
   }
 
   static defaultProps = {
@@ -53,6 +54,7 @@ export default class ToggleSwitch extends Component {
             labelStyle={aggregatedTogglestyles.labelStyle}
             onToggle={this.props.onToggle}
             toggled={this.props.toggled}
+            disabled={this.props.disabled}
           />
           <ReactTooltip effect="solid" place="top" />
         </div>

@@ -57,7 +57,8 @@ import {
   UPDATE_FUND_ORDERS,
   FETCH_ASSETS_PRICE_DATA,
   UPDATE_SELECTED_DRAGO_DETAILS,
-  ERCdEX
+  ERCdEX,
+  Ethfinex
 } from '../../_utils/const'
 
 
@@ -73,14 +74,14 @@ import {
 
 
 // Creating an observable from the promise
-const getOrderBookFromRelayERCdEX$ = (networkId, baseTokenAddress, quoteTokenAddress, aggregated) => {
+const getOrderBookFromRelay$ = (relay, networkId, baseToken, quoteToken, aggregated) => {
+  console.log(baseToken)
   if (aggregated) {
-    const exchange = new Exchange(ERCdEX, '42')
-    // exchange.getAggregatedOrders(baseTokenAddress, quoteTokenAddress)
-    return Observable.fromPromise(exchange.getAggregatedOrders(baseTokenAddress, quoteTokenAddress))
+    const exchange = new Exchange(relay.name, '42')
+    return Observable.fromPromise(exchange.getAggregatedOrders(baseToken, quoteToken))
     // Observable.fromPromise(exchange.getAggregatedOrders(baseTokenAddress, quoteTokenAddress))
   } else {
-    return Observable.fromPromise(getOrderBookFromRelayERCdEX(networkId, baseTokenAddress, quoteTokenAddress))
+    return Observable.fromPromise(getOrderBookFromRelayERCdEX(networkId, baseToken.address, quoteToken.address))
   }
 }
 
@@ -88,10 +89,11 @@ const getOrderBookFromRelayERCdEX$ = (networkId, baseTokenAddress, quoteTokenAdd
 export const initOrderBookFromRelayERCdEXEpic = (action$) =>
   action$.ofType(RELAY_GET_ORDERS)
     .mergeMap((action) => {
-      return getOrderBookFromRelayERCdEX$(
+      return getOrderBookFromRelay$(
+        action.payload.relay,
         action.payload.networkId,
-        action.payload.baseTokenAddress,
-        action.payload.quoteTokenAddress,
+        action.payload.baseToken,
+        action.payload.quoteToken,
         action.payload.aggregated
       )
         .map(payload => {
@@ -104,22 +106,22 @@ export const initOrderBookFromRelayERCdEXEpic = (action$) =>
 // GETTING UPDATES FROM RELAY ERCdEX
 //
 
-export const webSocketReducer = (state = 0, action) => {
-  switch (action.type) {
-    case RELAY_OPEN_WEBSOCKET:
-      return {};
-    case ORDERBOOK_UPDATE:
-      return {};
-    case RELAY_CLOSE_WEBSOCKET:
-      return {};
-    case RELAY_MSG_FROM_WEBSOCKET:
-      return {};
-    case RELAY_UPDATE_ORDERS:
-      return {};
-    default:
-      return state;
-  }
-};
+// export const webSocketReducer = (state = 0, action) => {
+//   switch (action.type) {
+//     case RELAY_OPEN_WEBSOCKET:
+//       return {};
+//     case ORDERBOOK_UPDATE:
+//       return {};
+//     case RELAY_CLOSE_WEBSOCKET:
+//       return {};
+//     case RELAY_MSG_FROM_WEBSOCKET:
+//       return {};
+//     case RELAY_UPDATE_ORDERS:
+//       return {};
+//     default:
+//       return state;
+//   }
+// };
 
 
 // https://github.com/ReactiveX/rxjs/issues/2048
@@ -181,10 +183,12 @@ export const relayWebSocketEpic = (action$) =>
 
 export const orderBookEpic = (action$, store) => {
   const state = store.getState()
+  const relay = state.exchange.selectedRelay
   const networkId = state.exchange.relay.networkId
-  const baseTokenAddress = state.exchange.selectedTokensPair.baseToken.address
-  const quoteTokenAddress = state.exchange.selectedTokensPair.quoteToken.address
+  const baseToken = state.exchange.selectedTokensPair.baseToken
+  const quoteToken = state.exchange.selectedTokensPair.quoteToken
   const aggregated = state.exchange.orderBook.aggregated
+  console.log(baseToken)
   return action$.ofType(RELAY_MSG_FROM_WEBSOCKET)
     .map(action => action.payload)
     .bufferTime(2000)
@@ -197,9 +201,10 @@ export const orderBookEpic = (action$, store) => {
     .map(() => ({
       type: RELAY_GET_ORDERS,
       payload: {
+        relay,
         networkId,
-        baseTokenAddress,
-        quoteTokenAddress,
+        baseToken,
+        quoteToken,
         aggregated
       }
     }))

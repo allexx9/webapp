@@ -456,7 +456,7 @@ class ApplicationExchangeHome extends Component {
     if (user.isManager) {
       const { bids, asks, spread, aggregated } = this.props.exchange.orderBook
       const asksOrderNormalized = asks.slice(asks.length - 20, asks.length)
-      const bidsOrderNormalized = bids.slice(bids.length - 20, bids.length)
+      const bidsOrderNormalized = bids.slice(0, 20)
       // console.log(this.props.exchange.selectedExchange)
       // const bidsOrderNormalizedFilled = [ ...Array(20 - bidsOrderNormalized.length).fill(null), ...bidsOrderNormalized ]
       // const asksOrderNormalizedFilled = [ ...Array(20 - asksOrderNormalized.length).fill(null), ...asksOrderNormalized]
@@ -544,6 +544,7 @@ class ApplicationExchangeHome extends Component {
                     spread={spread}
                     aggregated={aggregated}
                     onToggleAggregateOrders={this.onToggleAggregateOrders}
+                    onlyAggregated={this.props.exchange.selectedRelay.onlyAggregateOrderbook}
                   />
                 </Col>
 
@@ -620,9 +621,10 @@ class ApplicationExchangeHome extends Component {
       toBlock: 'latest'
     }, this.onNewEventZeroExExchange)
     var filter = {
+      relay: this.props.exchange.selectedRelay,
       networkId: this.props.exchange.relay.networkId,
-      baseTokenAddress: this.props.exchange.selectedTokensPair.baseToken.address,
-      quoteTokenAddress: this.props.exchange.selectedTokensPair.quoteToken.address,
+      baseToken: this.props.exchange.selectedTokensPair.baseToken,
+      quoteToken: this.props.exchange.selectedTokensPair.quoteToken,
       aggregated: this.props.exchange.orderBook.aggregated
     }
     this.props.dispatch(this.relayGetOrders(filter))

@@ -23,6 +23,7 @@ class OrderBook extends Component {
     aggregated: PropTypes.bool.isRequired,
     dispatch: PropTypes.func.isRequired,
     onToggleAggregateOrders: PropTypes.func.isRequired,
+    onlyAggregated: PropTypes.bool.isRequired,
   };
 
   static defaultProps = {
@@ -83,6 +84,7 @@ class OrderBook extends Component {
                           onToggle={this.onToggleAggregateOrders}
                           toggled={this.props.aggregated}
                           toolTip={"Aggregate orders"}
+                          disabled={this.props.onlyAggregated}
                         />
                         </div>
                       </Col>
