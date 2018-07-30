@@ -1,6 +1,6 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-import SelectFundItem from '../molecules/selectFundItem.js';
+import SelectFundItem from './selectFundItem.js';
 import styles from './fundSelector.module.css';
 import React, { Component } from 'react';
 import { MenuItem, SelectField } from 'material-ui';

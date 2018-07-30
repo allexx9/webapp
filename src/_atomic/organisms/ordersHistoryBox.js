@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Row, Col } from 'react-flexbox-grid';
-import styles from './ordersHistory.module.css'
+import styles from './ordersHistoryBox.module.css'
 import Paper from 'material-ui/Paper'
 import BoxTitle from '../atoms/boxTitle'
 import TableOpenOrders from '../molecules/tableOpenOrders'
@@ -15,7 +15,7 @@ import {
   ADD_TRANSACTION,
 } from '../../_utils/const'
 import serializeError from 'serialize-error';
-import utils from '../../_utils/utils.js'
+import utils from '../../_utils/utils'
 
 
 const paperStyle = {
@@ -26,7 +26,7 @@ function mapStateToProps(state) {
   return state
 }
 
-class OrdersHistory extends Component {
+class OrdersHistoryBox extends Component {
 
   static propTypes = {
     fundOrders: PropTypes.object.isRequired,
@@ -110,4 +110,4 @@ class OrdersHistory extends Component {
   }
 }
 
-export default connect(mapStateToProps)(OrdersHistory)
+export default connect(mapStateToProps)(OrdersHistoryBox)

@@ -1,4 +1,4 @@
-import HelpIcon from '../../_atomic/atoms/helpIcon'
+import HelpIcon from './helpIcon'
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Divider from 'material-ui/Divider';

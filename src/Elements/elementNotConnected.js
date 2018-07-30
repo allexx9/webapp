@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 
 import styles from './elementNotConnected.module.css'
 import PropTypes from 'prop-types';
-import { APP, DS } from '../_utils/const.js'
+import { APP, DS } from '../_utils/const'
 import SectionHeader from '../_atomic/atoms/sectionHeader';
 import SyncStatusCurrentBlock from '../_atomic/atoms/syncStatusCurrentBlock'
 import SyncStatusWarpChunksProcessed from '../_atomic/atoms/syncStatusWarpChunksProcessed'

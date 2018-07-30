@@ -30,7 +30,7 @@ import {
   fillOrderToExchangeViaProxy,
   setAllowaceOnExchangeThroughDrago
 } from '../../_utils/exchange'
-import utils from '../../_utils/utils.js'
+import utils from '../../_utils/utils'
 import serializeError from 'serialize-error';
 import { sha3_512 } from 'js-sha3';
 import { Actions } from '../../_redux/actions';

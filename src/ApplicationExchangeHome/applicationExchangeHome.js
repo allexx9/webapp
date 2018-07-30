@@ -1,53 +1,34 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
+import BigNumber from 'bignumber.js';
+import Paper from 'material-ui/Paper';
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { Col, Row } from 'react-flexbox-grid';
+import { connect } from 'react-redux';
+import CheckAuthPage from '../Elements/checkAuthPage';
+import ElementBottomStatusBar from '../Elements/elementBottomStatusBar';
+import ElementNotificationsDrawer from '../Elements/elementNotificationsDrawer';
+// import FlatButton from 'material-ui/FlatButton'
+import PoolApi from '../PoolsApi/src';
 // import ApplicationDragoManager from './ApplicationDragoManager'
 // import ApplicationDragoTrader from './ApplicationDragoTrader'
 import Loading from '../_atomic/atoms/loading';
-import styles from './applicationExchangeHome.module.css';
-import {
-  ERC20_TOKENS
-} from '../_utils/const'
-import { Row, Col } from 'react-flexbox-grid';
-import PropTypes from 'prop-types';
-import utils from '../_utils/utils'
-import ElementNotificationsDrawer from '../Elements/elementNotificationsDrawer'
-import CheckAuthPage from '../Elements/checkAuthPage'
-import ElementBottomStatusBar from '../Elements/elementBottomStatusBar'
-import FundSelector from '../_atomic/molecules/fundSelector'
-import TokenTradeSelector from '../_atomic/molecules/tokenTradeSelector'
 // import DragoComingSoon from '../Elements/elementDragoComingSoon'
-import TokenLiquidity from '../_atomic/atoms/tokenLiquidity'
-import TokenPrice from '../_atomic/atoms/tokenPrice'
-import {
-  UPDATE_SELECTED_FUND,
-  UPDATE_TRADE_TOKENS_PAIR,
-  CANCEL_SELECTED_ORDER,
-  RELAY_OPEN_WEBSOCKET,
-  RELAY_GET_ORDERS,
-  RELAY_CLOSE_WEBSOCKET,
-  ORDERBOOK_AGGREGATE_ORDERS,
-  UPDATE_FUND_LIQUIDITY,
-  FETCH_MARKET_PRICE_DATA,
-  FETCH_HISTORY_TRANSACTION_LOGS,
-  FETCH_FUND_ORDERS
-} from '../_utils/const'
-import Paper from 'material-ui/Paper'
-import { connect } from 'react-redux';
+import TokenLiquidity from '../_atomic/atoms/tokenLiquidity';
+import TokenPrice from '../_atomic/atoms/tokenPrice';
+import FundSelector from '../_atomic/molecules/fundSelector';
+import TokenTradeSelector from '../_atomic/molecules/tokenTradeSelector';
+import ChartBox from '../_atomic/organisms/chartBox';
 import OrderBook from '../_atomic/organisms/orderBook';
-import OrderBox from '../_atomic/organisms/orderBox'
-import Exchange from '../_utils/exchange'
-import {
-  getMarketTakerOrder,
-  getAvailableAddresses,
-  getTokenAllowance,
-} from '../_utils/exchange'
-// import FlatButton from 'material-ui/FlatButton'
-import PoolApi from '../PoolsApi/src';
-import BigNumber from 'bignumber.js';
-import ChartBox from '../_atomic/organisms/chartBox'
-import OrdersHistory from '../_atomic/organisms/ordersHistory'
-import { Actions } from '../_redux/actions'
+import OrderBox from '../_atomic/organisms/orderBox';
+import OrdersHistoryBox from '../_atomic/organisms/ordersHistoryBox';
+import { Actions } from '../_redux/actions';
+import { CANCEL_SELECTED_ORDER, ERC20_TOKENS, FETCH_FUND_ORDERS, FETCH_HISTORY_TRANSACTION_LOGS, FETCH_MARKET_PRICE_DATA, ORDERBOOK_AGGREGATE_ORDERS, RELAY_CLOSE_WEBSOCKET, RELAY_GET_ORDERS, RELAY_OPEN_WEBSOCKET, UPDATE_FUND_LIQUIDITY, UPDATE_SELECTED_FUND, UPDATE_TRADE_TOKENS_PAIR } from '../_utils/const';
+import Exchange, { getAvailableAddresses, getMarketTakerOrder, getTokenAllowance } from '../_utils/exchange';
+import utils from '../_utils/utils';
+import styles from './applicationExchangeHome.module.css';
+import ExchangeBox from '../_atomic/organisms/exchangeBox';
 // import { getData } from "../_utils/data"
 
 function mapStateToProps(state) {
@@ -532,7 +513,14 @@ class ApplicationExchangeHome extends Component {
             <Col xs={12}>
               <Row>
                 <Col xs={3}>
-                  <OrderBox />
+                  <Row>
+                    <Col xs={12}>
+                      <ExchangeBox />
+                    </Col>
+                    <Col xs={12}>
+                      <OrderBox />
+                    </Col>
+                  </Row>
                 </Col>
                 <Col xs={7}>
                   <Row>
@@ -543,7 +531,7 @@ class ApplicationExchangeHome extends Component {
                       />
                     </Col>
                     <Col xs={12}>
-                      <OrdersHistory
+                      <OrdersHistoryBox
                         fundOrders={fundOrders}
                       />
                     </Col>

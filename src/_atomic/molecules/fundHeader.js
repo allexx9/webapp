@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import React, { Component } from "react";
 import { Col, Row } from 'react-flexbox-grid';
-import IdentityIcon from '../../_atomic/atoms/identityIcon';
+import IdentityIcon from '../atoms/identityIcon';
 import styles from './fundHeader.module.css';
 import * as Colors from 'material-ui/styles/colors';
 import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';

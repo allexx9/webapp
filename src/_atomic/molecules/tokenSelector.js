@@ -1,6 +1,6 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-import SelectTokenItem from '../molecules/selectTokenItem.js';
+import SelectTokenItem from './selectTokenItem.js';
 import React, { Component } from 'react';
 import { MenuItem, SelectField } from 'material-ui';
 import PropTypes from 'prop-types';

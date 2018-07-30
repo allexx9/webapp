@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { APP_VERSION } from './version.js'
+import { APP_VERSION } from './version'
 import { ERC20_TOKENS } from './tokens'
 
 export { APP_VERSION  }
