@@ -391,7 +391,7 @@ class ApplicationExchangeHome extends Component {
     if (endpoint.loading) {
       return <Loading></Loading>
     }
-    console.log(endpoint.networkInfo.name)
+    // console.log(endpoint.networkInfo.name)
 
     if (endpoint.networkInfo.name !== 'kovan') {
       return (

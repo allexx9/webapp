@@ -102,15 +102,6 @@ const getPricesERCdEXWebsocket$ = () => {
   })
 }
 
-// const getTickers$ = () => {
-//   return Observable
-//   .fromPromise(getPricesFromRelayERCdEX())
-//   .catch((error) => {
-//     console.log(error)
-//     return Observable.of(Array(0))
-//   })
-// }
-
 const getTickers$ = () => {
   const exchange = new Exchange('Ethfinex', '1')
   // console.log(exchange2.getTickers())

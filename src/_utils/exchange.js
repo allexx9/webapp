@@ -217,7 +217,8 @@ export const getAggregatedOrdersFromRelayERCdEX = (networkId, baseTokenAddress, 
     return {
       bids: bidsOrders,
       asks: asksOrders, 
-      spread
+      spread,
+      aggregated: true
     }
   })
 }

@@ -35,6 +35,7 @@ import {
 // import io from 'socket.io-client'
 import ReconnectingWebSocket from 'reconnecting-websocket'
 //import ReconnectingWebSocket from 'reconnecting-websocket/dist/reconnecting-websocket-cjs'
+import Exchange from '../../_utils/exchange/src/index'
 import utils from '../../_utils/utils'
 
 import {
@@ -55,19 +56,33 @@ import {
   FETCH_FUND_ORDERS,
   UPDATE_FUND_ORDERS,
   FETCH_ASSETS_PRICE_DATA,
-  UPDATE_SELECTED_DRAGO_DETAILS
+  UPDATE_SELECTED_DRAGO_DETAILS,
+  ERCdEX
 } from '../../_utils/const'
 
 
 //
-// GETTING ORDERS FROM RELAY ERCdEX
+// GETTING ORDERS FROM RELAY
 //
 
 // Creating an observable from the promise
-const getOrderBookFromRelayERCdEX$ = (networkId, baseTokenAddress, quoteTokenAddress, aggregated) =>
-  aggregated
-    ? Observable.fromPromise(getAggregatedOrdersFromRelayERCdEX(networkId, baseTokenAddress, quoteTokenAddress))
-    : Observable.fromPromise(getOrderBookFromRelayERCdEX(networkId, baseTokenAddress, quoteTokenAddress))
+// const getOrderBookFromRelayERCdEX$ = (networkId, baseTokenAddress, quoteTokenAddress, aggregated) =>
+//   aggregated
+//     ? Observable.fromPromise(getAggregatedOrdersFromRelayERCdEX(networkId, baseTokenAddress, quoteTokenAddress))
+//     : Observable.fromPromise(getOrderBookFromRelayERCdEX(networkId, baseTokenAddress, quoteTokenAddress))
+
+
+// Creating an observable from the promise
+const getOrderBookFromRelayERCdEX$ = (networkId, baseTokenAddress, quoteTokenAddress, aggregated) => {
+  if (aggregated) {
+    const exchange = new Exchange(ERCdEX, '42')
+    // exchange.getAggregatedOrders(baseTokenAddress, quoteTokenAddress)
+    return Observable.fromPromise(exchange.getAggregatedOrders(baseTokenAddress, quoteTokenAddress))
+    // Observable.fromPromise(exchange.getAggregatedOrders(baseTokenAddress, quoteTokenAddress))
+  } else {
+    return Observable.fromPromise(getOrderBookFromRelayERCdEX(networkId, baseTokenAddress, quoteTokenAddress))
+  }
+}
 
 // Setting the epic
 export const initOrderBookFromRelayERCdEXEpic = (action$) =>

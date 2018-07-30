@@ -62,7 +62,7 @@ const initialState = {
       },
     },
     orderBook: {
-      aggregated: false,
+      aggregated: true,
       asks: [],
       bids: [],
       spread: '0'
