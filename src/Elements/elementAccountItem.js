@@ -1,11 +1,8 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
 import React, { Component } from 'react';
-
 import IdentityIcon from '../_atomic/atoms/identityIcon';
-
 import styles from './elementAccountItem.module.css';
-
 import PropTypes from 'prop-types';
 
 export default class AccountItem extends Component {

@@ -5,46 +5,44 @@ import React, { Component } from 'react';
 import { MenuItem, SelectField } from 'material-ui';
 import PropTypes from 'prop-types';
 import { Row, Col } from 'react-flexbox-grid';
+import { 
+  RELAYS
+ } from '../../_utils/const'
+import ExchangeItem from '../atoms/exchangeSelectItem'
 
 export default class ExchangeSelector extends Component {
+
   static propTypes = {
-    selectedTradeTokensPair: PropTypes.object.isRequired,
-    onSelectTokenTrade: PropTypes.func.isRequired
+    selectedRelayer: PropTypes.string.isRequired,
+    onSelectExchange: PropTypes.func.isRequired
   }
 
   onSelectExchange = (event, key, payload) => {
-    this.props.onSelectTokenTrade(payload)
+    console.log(payload)
+    this.props.onSelectExchange(payload)
   }
 
-  renderExchange = () =>{
-    var menu =[]
-    for (var baseToken in tradableTokens) {
-      Object.keys(tradableTokens[baseToken]).forEach(function (key) {
-        let quoteToken = tradableTokens[baseToken][key];
-        menu.push(
-          <MenuItem key={quoteToken} 
-            value={quoteToken} 
-            primaryText={quoteToken+"/"+baseToken} 
-          />  
-        )
-      });
-    }
+  renderExchange = () => {
+    var menu = []
+    Object.keys(RELAYS).forEach(function (key) {
+      menu.push(
+        <MenuItem key={RELAYS[key].name}
+          value={key}
+          primaryText={<ExchangeItem exchange={RELAYS[key]}/>} 
+        />
+      )
+    });
     return menu
   }
 
-  render () {
+  render() {
     return (
       <Row>
         <Col xs={12}>
-          <div className={styles.sectionTitle}>
-            Trading pairs
-        </div>
-        </Col>
-        <Col xs={12}>
           <SelectField
             fullWidth
-            value={this.props.selectedTradeTokensPair.baseToken.symbol}
-            onChange={this.onSelectTokenTrade}
+            value={this.props.selectedRelayer}
+            onChange={this.onSelectExchange}
           // style={{height: 90}}
           >
             {this.renderExchange()}

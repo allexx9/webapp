@@ -23,6 +23,20 @@ export const GRG = "GRG"
 export const ETH = "ETH"
 
 export const ERCdEX = 'ERCdEX'
+export const Ethfinex = 'Ethfinex'
+
+export const RELAYS = {
+  ERCdEX: {
+    name: ERCdEX,
+    icon: 'ercdex.png',
+    supported: true
+  },
+  Ethfinex: {
+    name: Ethfinex,
+    icon: 'ethfinex.png',
+    supported: true
+  }
+}
 
 // Blockchain endpoint
 export const EP_INFURA_KV = "https://kovan.infura.io/metamask"
