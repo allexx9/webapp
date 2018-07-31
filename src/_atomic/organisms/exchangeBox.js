@@ -39,7 +39,7 @@ class ExchangeBox extends Component {
 
   render() {
     // console.log(this.props.fundOrders)
-    console.log(this.props.exchange)
+    // console.log(this.props.exchange)
     return (
       <Row>
         <Col xs={12}>
