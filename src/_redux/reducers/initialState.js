@@ -11,7 +11,8 @@ import {
   EXCHANGES,
   RELAYS,
   ERCdEX,
-  Ethfinex
+  Ethfinex,
+  TRADE_TOKENS_PAIRS
 } from '../../_utils/const'
 import BigNumber from 'bignumber.js';
 
@@ -46,6 +47,7 @@ const initialState = {
       baseTokenAllowance: false,
       quoteTokenAllowance: false
     },
+    availableTradeTokensPairs: TRADE_TOKENS_PAIRS,
     fundOrders: {
       open: [],
       cancelled: [],

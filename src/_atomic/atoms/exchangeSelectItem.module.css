@@ -1,5 +1,5 @@
 .account {
-  padding: 4px 0 !important;
+  /* padding: 4px 0 !important; */
   display: inline-block;
 }
 
@@ -19,5 +19,8 @@
 
 .image img {
   height: 25px;
-  margin: 0 1em -11px 0;
+  margin-top: 0px;
+  margin-right: 1em;
+  margin-left: 0px;
+  vertical-align: middle;
 }

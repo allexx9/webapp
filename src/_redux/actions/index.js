@@ -11,10 +11,13 @@ import {
 } from './const'
 import drago from './drago'
 import transactions from './transactions'
+import exchange from './exchange'
 
 class actions {
 
   drago = drago
+
+  exchange = exchange
 
   transactions = transactions
 

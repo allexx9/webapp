@@ -24,11 +24,29 @@ import OrderBook from '../_atomic/organisms/orderBook';
 import OrderBox from '../_atomic/organisms/orderBox';
 import OrdersHistoryBox from '../_atomic/organisms/ordersHistoryBox';
 import { Actions } from '../_redux/actions';
-import { CANCEL_SELECTED_ORDER, ERC20_TOKENS, FETCH_FUND_ORDERS, FETCH_HISTORY_TRANSACTION_LOGS, FETCH_MARKET_PRICE_DATA, ORDERBOOK_AGGREGATE_ORDERS, RELAY_CLOSE_WEBSOCKET, RELAY_GET_ORDERS, RELAY_OPEN_WEBSOCKET, UPDATE_FUND_LIQUIDITY, UPDATE_SELECTED_FUND, UPDATE_TRADE_TOKENS_PAIR } from '../_utils/const';
+import {
+  ERC20_TOKENS,
+  TRADE_TOKENS_PAIRS,
+} from '../_utils/const';
+import {
+  CANCEL_SELECTED_ORDER,
+  FETCH_FUND_ORDERS,
+  FETCH_HISTORY_TRANSACTION_LOGS,
+  FETCH_MARKET_PRICE_DATA,
+  ORDERBOOK_AGGREGATE_ORDERS,
+  RELAY_CLOSE_WEBSOCKET,
+  RELAY_GET_ORDERS,
+  RELAY_OPEN_WEBSOCKET,
+  UPDATE_FUND_LIQUIDITY,
+  UPDATE_SELECTED_FUND,
+  UPDATE_TRADE_TOKENS_PAIR
+} from '../_redux/actions/const';
 import Exchange, { getAvailableAddresses, getMarketTakerOrder, getTokenAllowance } from '../_utils/exchange';
 import utils from '../_utils/utils';
 import styles from './applicationExchangeHome.module.css';
 import ExchangeBox from '../_atomic/organisms/exchangeBox';
+
+
 // import { getData } from "../_utils/data"
 
 function mapStateToProps(state) {
@@ -194,6 +212,20 @@ class ApplicationExchangeHome extends Component {
         .then(adreesses => {
           this.props.dispatch({ type: 'SET_MAKER_ADDRESS', payload: adreesses[0] })
         })
+
+      // Set available trade tokens pairs
+      this.props.dispatch(Actions.exchange.updateAvailableTradeTokensPairs(
+        utils.availableTradeTokensPair(TRADE_TOKENS_PAIRS, this.props.exchange.selectedRelay.name))
+      )
+
+
+      // Getting history logs
+      this.props.dispatch(this.getTradeHistoryLogs(
+        this.props.exchange.relay.networkId,
+        this.props.exchange.selectedTokensPair.baseToken.address,
+        this.props.exchange.selectedTokensPair.quoteToken.address,
+      )
+      )
 
       // Getting history logs
       this.props.dispatch(this.getTradeHistoryLogs(
@@ -493,11 +525,12 @@ class ApplicationExchangeHome extends Component {
                   </Col>
                   <Col xs={2}>
                     <TokenTradeSelector
+                      tradableTokens={exchange.availableTradeTokensPairs}
                       selectedTradeTokensPair={exchange.selectedTokensPair}
                       onSelectTokenTrade={this.onSelectTokenTrade}
                     />
                   </Col>
-                  <Col xs={4}>
+                  <Col xs={4} className={styles.tokenPriceContainer}>
                     <TokenPrice
                       selectedTradeTokensPair={exchange.selectedTokensPair}
                       tokenPrice={currentPrice.toFixed(6)}

@@ -28,9 +28,9 @@ class Exchange {
   returnResults = (query, formatFunction = (input) => { return input }) => {
     return rp(query())
       .then(results => {
-        console.log(results)
-        console.log(formatFunction)
-        console.log(formatFunction(results))
+        // console.log(results)
+        // console.log(formatFunction)
+        // console.log(formatFunction(results))
         return formatFunction(results)
       })
       .catch(err => {

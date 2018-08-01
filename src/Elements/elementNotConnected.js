@@ -160,8 +160,8 @@ class ElementNotConnected extends Component {
 
   render() {
     const { isSyncing, syncStatus } = this.context
-    console.log('Sync Status: ', syncStatus)
-    console.log('Syncing: ', isSyncing)
+    // console.log('Sync Status: ', syncStatus)
+    // console.log('Syncing: ', isSyncing)
     return isSyncing ? this.renderSyncing() : this.renderNotConnected()
   }
 }

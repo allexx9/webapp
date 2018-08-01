@@ -28,6 +28,22 @@ class utilities {
     });
   }
 
+  availableTradeTokensPair = (tradeTokensPairs, selectedRelayName) =>{
+    var availableTokens = {}
+    for (var baseToken in tradeTokensPairs) {
+      Object.keys(tradeTokensPairs[baseToken]).forEach((key) => {
+        let quoteToken = tradeTokensPairs[baseToken][key];
+        if (quoteToken.exchanges.includes(selectedRelayName)) {
+          if (typeof availableTokens[baseToken] === 'undefined') {
+            availableTokens[baseToken] = {}
+          }
+          availableTokens[baseToken][key] = tradeTokensPairs[baseToken][key]
+        }
+      });    
+    }
+    return availableTokens
+  }
+
   calculatePortfolioValue = (dragoAssetsList, assetsPrices) => {
     const totalValue = dragoAssetsList.reduce((total, asset) => {
       console.log(asset.symbol)

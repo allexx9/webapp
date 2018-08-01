@@ -14,7 +14,8 @@ import {
   UPDATE_ELEMENT_LOADING,
   UPDATE_MARKET_DATA,
   UPDATE_FUND_ORDERS,
-  UPDATE_SELECTED_RELAY
+  UPDATE_SELECTED_RELAY,
+  UPDATE_AVAILABLE_TRADE_TOKENS_PAIRS
 } from '../actions/const'
 
 
@@ -67,6 +68,12 @@ function exchangeReducer(state = initialState.exchange, action) {
       return {
         ...state,
         selectedTokensPair: { ...state.selectedTokensPair, ...action.payload }
+      };
+
+      case UPDATE_AVAILABLE_TRADE_TOKENS_PAIRS:
+      return {
+        ...state,
+        availableTradeTokensPairs: { ...action.payload }
       };
 
     case SET_MAKER_ADDRESS:

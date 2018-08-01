@@ -201,11 +201,22 @@ export const ENDPOINTS = {
 
 export const TRADE_TOKENS_PAIRS = {
   WETH: {
-    GNT: "GNT",
-    ZRX: "ZRX"
+    GNT: {
+      name: "GNT",
+      exchanges: [ERCdEX]
+    },
+    ZRX: {
+      name: "ZRX",
+      exchanges: [ERCdEX]
+    }
+  },
+  USDT: {
+    ETH: {
+      name: "ETH",
+      exchanges: [Ethfinex]
+    }
   }
 }
-
 
 
 export const NETWORKS = {

@@ -91,9 +91,9 @@ export const aggregatedOrders = {
       (order[2] > 0) ? bids.push(order) : asks.push(order)
     })
     const bidsOrders = formatOrdersFromAggregateEthfinex(bids, 'bids')
-    console.log(bidsOrders)
     const asksOrders = formatOrdersFromAggregateEthfinex(asks.reverse(), 'asks')
-    console.log(asksOrders)
+    // console.log(bidsOrders)
+    // console.log(asksOrders)
     const spread = calculateSpread(asksOrders, bidsOrders)
     return {
       bids: bidsOrders,

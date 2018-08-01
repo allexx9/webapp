@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import { BigNumber } from 'bignumber.js';
 import classNames from 'classnames';
 
+import TokenIcon from './tokenIcon'
 
 export default class TokenPrice extends Component {
 
@@ -37,23 +38,38 @@ export default class TokenPrice extends Component {
   render() {
     const { tokenPrice, priceVariation, selectedTradeTokensPair } = this.props
     return (
-      <Row end="xs">
-        <Col xs={12}>
-          <div className={classNames(styles.tokenPair)}>
-            <span className={styles.baseToken}>{selectedTradeTokensPair.baseToken.symbol}</span> <span className={styles.quoteToken}>/ {selectedTradeTokensPair.quoteToken.symbol}</span>
+
+      <div className={styles.symbol}>
+        <div className={styles.image}>
+          <div>
+            <TokenIcon size={40} symbol={selectedTradeTokensPair.baseToken.symbol} />
           </div>
-        </Col>
-        <Col xs={12}>
-        <div className={classNames(styles.tokenPrice, this.checkPrice())}>
-          {tokenPrice}
         </div>
-        </Col>
-        <Col xs={12}>
-          <div className={classNames(styles.priceVariation, this.checkPrice())}>
-            {priceVariation + "%"}
+        <div className={styles.details}>
+          <div className={styles.name}>
+            <Row>
+              <Col xs={12}>
+                <div className={classNames(styles.tokenPair)}>
+                  <span className={styles.baseToken}>{selectedTradeTokensPair.baseToken.symbol}</span> <span className={styles.quoteToken}>/ {selectedTradeTokensPair.quoteToken.symbol}</span>
+                </div>
+              </Col>
+              <Col xs={12}>
+                <div className={classNames(styles.tokenPrice, this.checkPrice())}>
+                  {tokenPrice}
+                </div>
+              </Col>
+              <Col xs={12}>
+                <div className={classNames(styles.priceVariation, this.checkPrice())}>
+                  {priceVariation + "%"}
+                </div>
+              </Col>
+            </Row>
           </div>
-        </Col>
-      </Row>
+        </div>
+      </div>
+
+
+
     );
   }
 }

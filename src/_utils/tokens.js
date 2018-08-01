@@ -51,4 +51,34 @@ export const ERC20_TOKENS = {
       name: 'MakerDAO'
     }
   }, 
+  ropsten: {
+    ETHW: {
+      symbol: 'WETH',
+      address: '0xc778417E063141139Fce010982780140Aa0cD5Ab',
+      decimals: 18,
+      name: 'Wrapped Ether',
+      wrappers: {
+        Ethfinex: {
+          symbol: 'ETHW',
+          decimals: 18,
+          address: "0x965808e7F815CfffD4c018ef2Ba4C5A65EBa087e",
+          name: 'ETHWrapper',
+        }
+      }
+    },
+    USDT: {
+      symbol: 'USDT',
+      address: '0x0736d0c130b2eAD47476cC262dbed90D7C4eeABD',
+      decimals: 18,
+      name: 'Tether USD',
+      wrappers: {
+        Ethfinex: {
+          symbol: 'USDT',
+          decimals: 18,
+          address: "0x83E42e6d1ac009285376340ef64BaC1C7d106C89",
+          name: 'USDTWrapper',
+        }
+      }
+    }
+  }, 
 }

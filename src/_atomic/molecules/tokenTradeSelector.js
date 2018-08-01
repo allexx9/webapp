@@ -5,46 +5,45 @@ import React, { Component } from 'react';
 import { MenuItem, SelectField } from 'material-ui';
 import PropTypes from 'prop-types';
 import { Row, Col } from 'react-flexbox-grid';
-import { TRADE_TOKENS_PAIRS } from '../../_utils/const'
+import ExchangeTokenSelectItem from '../atoms/exchangeTokenSelectItem'
 
 // const tradableTokens = ["WETH / ZRX", "WETH / GRG"]
 
-const tradableTokens = TRADE_TOKENS_PAIRS
 
 export default class TokenTradeSelector extends Component {
   static propTypes = {
+    tradableTokens: PropTypes.object.isRequired,
     selectedTradeTokensPair: PropTypes.object.isRequired,
     onSelectTokenTrade: PropTypes.func.isRequired
   }
 
-  // state = {
-  //   value: "ZRX",
-  // };
-
   onSelectTokenTrade = (event, key, payload) => {
-    // this.setState({
-    //   value: payload
-    // })
+    // console.log(payload)
     this.props.onSelectTokenTrade(payload)
   }
 
-  renderTokens = () =>{
-    var menu =[]
-    for (var baseToken in tradableTokens) {
-      Object.keys(tradableTokens[baseToken]).forEach(function (key) {
-        let quoteToken = tradableTokens[baseToken][key];
+  renderTokens = () => {
+    var menu = []
+    for (var baseToken in this.props.tradableTokens) {
+      Object.keys(this.props.tradableTokens[baseToken]).forEach((key) => {
+        let quoteToken = this.props.tradableTokens[baseToken][key];
         menu.push(
-          <MenuItem key={quoteToken} 
-            value={quoteToken} 
-            primaryText={quoteToken+"/"+baseToken} 
-          />  
+          <MenuItem key={quoteToken.name}
+            value={quoteToken.symbol}
+            // primaryText={quoteToken.name + "/" + baseToken}
+            primaryText={<ExchangeTokenSelectItem
+              quoteTokenName={quoteToken.name}
+              baseTokenName={baseToken}
+            />
+            }
+          />
         )
       });
     }
     return menu
   }
 
-  render () {
+  render() {
     return (
       <Row>
         <Col xs={12}>
@@ -55,7 +54,7 @@ export default class TokenTradeSelector extends Component {
         <Col xs={12}>
           <SelectField
             fullWidth
-            value={this.props.selectedTradeTokensPair.baseToken.symbol}
+            value={this.props.selectedTradeTokensPair.baseToken.name}
             onChange={this.onSelectTokenTrade}
           // style={{height: 90}}
           >

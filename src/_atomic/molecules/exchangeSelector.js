@@ -1,6 +1,5 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-import styles from './tokenTradeSelector.module.css';
 import React, { Component } from 'react';
 import { MenuItem, SelectField } from 'material-ui';
 import PropTypes from 'prop-types';
@@ -13,7 +12,7 @@ import ExchangeItem from '../atoms/exchangeSelectItem'
 export default class ExchangeSelector extends Component {
 
   static propTypes = {
-    selectedRelayer: PropTypes.string.isRequired,
+    selectedRelay: PropTypes.string.isRequired,
     onSelectExchange: PropTypes.func.isRequired
   }
 
@@ -41,7 +40,7 @@ export default class ExchangeSelector extends Component {
         <Col xs={12}>
           <SelectField
             fullWidth
-            value={this.props.selectedRelayer}
+            value={this.props.selectedRelay}
             onChange={this.onSelectExchange}
           // style={{height: 90}}
           >
