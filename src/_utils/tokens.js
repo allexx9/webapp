@@ -1,25 +1,40 @@
+export const ERCdEX = 'ERCdEX'
+export const Ethfinex = 'Ethfinex'
+
 export const ERC20_TOKENS = {
   kovan: {
     WETH: {
       symbol: 'WETH',
+      symbolTicker: {
+        Ethfinex: 'ETH'
+      },
       address: '0xd0a1e359811322d97991e03f863a0c30c2cf029c',
       decimals: 18,
       name: 'Wrapped Ether'
     },
     ZRX: {
       symbol: 'ZRX',
+      symbolTicker: {
+        Ethfinex: 'ZRX'
+      },
       address: '0x6ff6c0ff1d68b964901f986d4c9fa3ac68346570',
       decimals: 18,
       name: '0x Protocol Token'
     },
     GNT: {
       symbol: 'GNT',
+      symbolTicker: {
+        [Ethfinex]: 'GNT'
+      },
       address: '0xef7fff64389b814a946f3e92105513705ca6b990',
       decimals: 18,
       name: 'Golem Network Token'
     },
     MKR: {
       symbol: 'MKR',
+      symbolTicker: {
+        Ethfinex: 'MKR'
+      },
       address: '0x1dad4783cf3fe3085c1426157ab175a6119a04ba',
       decimals: 18,
       name: 'MakerDAO'
@@ -28,29 +43,41 @@ export const ERC20_TOKENS = {
   mainnet: {
     WETH: {
       symbol: 'WETH',
+      symbolTicker: {
+        [Ethfinex]: 'ETH'
+      },
       address: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
       decimals: 18,
       name: 'Wrapped Ether'
     },
     ZRX: {
       symbol: 'ZRX',
+      symbolTicker: {
+        Ethfinex: 'ZRX'
+      },
       address: '0xe41d2489571d322189246dafa5ebde1f4699f498',
       decimals: 18,
       name: '0x Protocol Token'
     },
     GNT: {
       symbol: 'GNT',
+      symbolTicker: {
+        Ethfinex: 'GNT'
+      },
       address: '0xa74476443119A942dE498590Fe1f2454d7D4aC0d',
       decimals: 18,
       name: 'Golem Network Token'
     },
     MKR: {
       symbol: 'MKR',
+      symbolTicker: {
+        Ethfinex: 'MKR'
+      },
       address: '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2',
       decimals: 18,
       name: 'MakerDAO'
     }
-  }, 
+  },
   ropsten: {
     ETHW: {
       symbol: 'WETH',
@@ -66,8 +93,28 @@ export const ERC20_TOKENS = {
         }
       }
     },
+    ETH: {
+      symbol: 'ETH',
+      symbolTicker: {
+        Ethfinex: 'ETH'
+      },
+      address: '0x',
+      decimals: 18,
+      name: 'Ether',
+      wrappers: {
+        Ethfinex: {
+          symbol: 'ETHW',
+          decimals: 18,
+          address: "0x965808e7F815CfffD4c018ef2Ba4C5A65EBa087e",
+          name: 'ETHWrapper',
+        }
+      }
+    },
     USDT: {
       symbol: 'USDT',
+      symbolTicker: {
+        Ethfinex: 'USD'
+      },
       address: '0x0736d0c130b2eAD47476cC262dbed90D7C4eeABD',
       decimals: 18,
       name: 'Tether USD',
@@ -80,5 +127,28 @@ export const ERC20_TOKENS = {
         }
       }
     }
-  }, 
+  },
+}
+
+
+// Supported tokens for trading in the form of base tokens for each quote tokens. 
+// USDT and WETH are quote tokens, meaning the tokens in which the price are expressed.
+
+export const TRADE_TOKENS_PAIRS = {
+  WETH: {
+    GNT: {
+      symbol: "GNT",
+      exchanges: [ERCdEX]
+    },
+    ZRX: {
+      symbol: "ZRX",
+      exchanges: [ERCdEX]
+    }
+  },
+  USDT: {
+    ETH: {
+      symbol: "ETH",
+      exchanges: [Ethfinex]
+    }
+  }
 }

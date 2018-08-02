@@ -24,16 +24,18 @@ export default class TokenTradeSelector extends Component {
 
   renderTokens = () => {
     var menu = []
-    for (var baseToken in this.props.tradableTokens) {
-      Object.keys(this.props.tradableTokens[baseToken]).forEach((key) => {
-        let quoteToken = this.props.tradableTokens[baseToken][key];
+    for (var quoteToken in this.props.tradableTokens) {
+      Object.keys(this.props.tradableTokens[quoteToken]).forEach((baseToken) => {
+        let baseTokenSymbol = this.props.tradableTokens[quoteToken][baseToken].symbol;
+        let quoteTokenSymbol = quoteToken;
+        console.log(baseTokenSymbol)
         menu.push(
-          <MenuItem key={quoteToken.name}
-            value={quoteToken.symbol}
+          <MenuItem key={baseTokenSymbol}
+            value={baseTokenSymbol}
             // primaryText={quoteToken.name + "/" + baseToken}
             primaryText={<ExchangeTokenSelectItem
-              quoteTokenName={quoteToken.name}
-              baseTokenName={baseToken}
+              baseTokenSymbol={baseTokenSymbol}
+              quoteTokenSymbol={quoteTokenSymbol}
             />
             }
           />
@@ -44,6 +46,7 @@ export default class TokenTradeSelector extends Component {
   }
 
   render() {
+    console.log(this.props.selectedTradeTokensPair.baseToken.symbol)
     return (
       <Row>
         <Col xs={12}>
@@ -54,7 +57,7 @@ export default class TokenTradeSelector extends Component {
         <Col xs={12}>
           <SelectField
             fullWidth
-            value={this.props.selectedTradeTokensPair.baseToken.name}
+            value={this.props.selectedTradeTokensPair.baseToken.symbol}
             onChange={this.onSelectTokenTrade}
           // style={{height: 90}}
           >

@@ -46,19 +46,21 @@ const calculateSpread = (asksOrders, bidsOrders) => {
 
 export const tickers = {
   [ERCdEX]: (tickers) => {
-    return tickers.map(ticker => {
+    var tickersList = tickers.map(ticker => {
       return {
         priceEth: ticker.priceEth,
         priceUsd: ticker.usdPrice,
         symbol: ticker.symbol,
       }
-    })
+    }
+    )
+    return tickersList
   },
   [Ethfinex]: (tickers) => {
     var tickersList = tickers.map(ticker => {
       return {
         priceEth: ticker[7].toString(),
-        priceUsd: '',
+        priceUsd: '1',
         symbol: ticker[0].substr(1, 3),
       }
     }
@@ -67,6 +69,11 @@ export const tickers = {
       priceEth: '1',
       priceUsd: '',
       symbol: 'WETH'
+    })
+    tickersList.push({
+      priceEth: '1',
+      priceUsd: '',
+      symbol: 'ETH'
     })
     return tickersList
   }

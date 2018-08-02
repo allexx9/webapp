@@ -1,9 +1,7 @@
 import BigNumber from 'bignumber.js';
 import { APP_VERSION } from './version'
-import { ERC20_TOKENS } from './tokens'
 
 export { APP_VERSION  }
-export { ERC20_TOKENS }
 export const UNLIMITED_ALLOWANCE_IN_BASE_UNITS = new BigNumber(2).pow(256).minus(1)
 
 export const APP = "app";
@@ -24,6 +22,8 @@ export const ETH = "ETH"
 
 export const ERCdEX = 'ERCdEX'
 export const Ethfinex = 'Ethfinex'
+
+export * from './tokens';
 
 export const RELAYS = {
   ERCdEX: {
@@ -89,6 +89,8 @@ export const DEFAULT_ENDPOINT = 'rigoblock';
 export const DEFAULT_NETWORK_NAME = 'kovan';
 export const DEFAULT_NETWORK_ID = 42;
 export const DEFAULT_ETHERSCAN = "https://kovan.etherscan.io/"
+
+
 export const NETWORK_OK = "networkOk"
 export const NETWORK_WARNING = "networkWarning"
 
@@ -199,32 +201,12 @@ export const ENDPOINTS = {
   }, 
 }
 
-export const TRADE_TOKENS_PAIRS = {
-  WETH: {
-    GNT: {
-      name: "GNT",
-      exchanges: [ERCdEX]
-    },
-    ZRX: {
-      name: "ZRX",
-      exchanges: [ERCdEX]
-    }
-  },
-  USDT: {
-    ETH: {
-      name: "ETH",
-      exchanges: [Ethfinex]
-    }
-  }
-}
-
 
 export const NETWORKS = {
   kovan: {
     id: 42,
     name: "kovan",
     etherscan: "https://kovan.etherscan.io/",
-    fundProxyContractAddress: "0x9fd942f59118460d7cd424ffcda39142af424245",
     zeroExExchangeContractAddress: "0x90fe2af704b34e0224bf2299c838e04d4dcf1364"
   },
   ropsten: {
@@ -237,7 +219,6 @@ export const NETWORKS = {
     id: 1,
     name: "mainnet",
     etherscan: "https://etherscan.io",
-    fundProxyContractAddress: "",
     zeroExExchangeContractAddress: "0x12459c951127e0c374ff9105dda097662a027093"
   }, 
 }
@@ -248,6 +229,11 @@ export const EXCHANGES = {
       tokenTransferProxyAddress: "0x087eed4bc1ee3de49befbd66c662b434b15d49d4",
       exchangeContractAddress: "0x90fe2af704b34e0224bf2299c838e04d4dcf1364", 
       networkId: 42
+    },
+    ropsten :{
+      tokenTransferProxyAddress: "0x4e9aad8184de8833365fea970cd9149372fdf1e6",
+      exchangeContractAddress: "0x479cc461fecd078f766ecc58533d6f69580cf3ac", 
+      networkId: 3
     },
     mainnet:{
 
@@ -367,3 +353,7 @@ export const TOKEN_PRICE_TICKER_OPEN_WEBSOCKET = "TOKEN_PRICE_TICKER_OPEN_WEBSOC
 export const TOKEN_PRICE_TICKER_UPDATE = "TOKEN_PRICE_TICKER_UPDATE"
 export const TOKEN_PRICE_TICKER_CLOSE_WEBSOCKET = "TOKEN_PRICE_TICKER_CLOSE_WEBSOCKET"
 export const UPDATE_FUND_LIQUIDITY = "UPDATE_FUND_LIQUIDITY"
+
+
+
+

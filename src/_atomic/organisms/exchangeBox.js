@@ -8,11 +8,8 @@ import ExchangeSelector from '../molecules/exchangeSelector';
 import styles from './exchangeBox.module.css';
 import exchange from './../../_redux/actions/exchange'
 import {
-  ERCdEX,
   RELAYS,
-  TRADE_TOKENS_PAIRS
 } from '../../_utils/const'
-import availableTradeTokensPair from '../../_utils/utils'
 
 const paperStyle = {
   padding: "10px"
@@ -42,21 +39,6 @@ class ExchangeBox extends Component {
   render() {
     // console.log(this.props.fundOrders)
     // console.log(this.props.exchange)
-    const availableTokens = () => {
-      var availableTokens = {}
-      for (var baseToken in TRADE_TOKENS_PAIRS) {
-        Object.keys(TRADE_TOKENS_PAIRS[baseToken]).forEach((key) => {
-          let quoteToken = TRADE_TOKENS_PAIRS[baseToken][key];
-          if (quoteToken.exchanges.includes(this.props.exchange.selectedRelay.name)) {
-            if (typeof availableTokens[baseToken] === 'undefined') {
-              availableTokens[baseToken] = {}
-            }
-            availableTokens[baseToken][key] = TRADE_TOKENS_PAIRS[baseToken][key]
-          }
-        });    
-      }
-      return availableTokens
-    }
 
     return (
       <Row>

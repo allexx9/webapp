@@ -26,8 +26,12 @@ import OrdersHistoryBox from '../_atomic/organisms/ordersHistoryBox';
 import { Actions } from '../_redux/actions';
 import {
   ERC20_TOKENS,
-  TRADE_TOKENS_PAIRS,
 } from '../_utils/const';
+import {
+  TRADE_TOKENS_PAIRS
+} from '../_utils/tokens';
+
+
 import {
   CANCEL_SELECTED_ORDER,
   FETCH_FUND_ORDERS,
@@ -310,13 +314,13 @@ class ApplicationExchangeHome extends Component {
       }
       this.props.dispatch(this.updateSelectedTradeTokensPair(tokensAllowance))
       // Getting fund orders
-      this.props.dispatch(this.getFundOrders(
-        this.props.exchange.relay.networkId,
-        fund.address.toLowerCase(),
-        this.props.exchange.selectedTokensPair.baseToken.address,
-        this.props.exchange.selectedTokensPair.quoteToken.address,
-      )
-      )
+      // this.props.dispatch(this.getFundOrders(
+      //   this.props.exchange.relay.networkId,
+      //   fund.address.toLowerCase(),
+      //   this.props.exchange.selectedTokensPair.baseToken.address,
+      //   this.props.exchange.selectedTokensPair.quoteToken.address,
+      // )
+      // )
 
     } catch (error) {
       console.log(error)
@@ -497,6 +501,8 @@ class ApplicationExchangeHome extends Component {
       var currentPrice = "1"
       var previousPrice = "0"
       var priceVariation = "0.00"
+
+      console.log(this.props.exchange.selectedTokensPair)
       if (typeof prices[this.props.exchange.selectedTokensPair.baseToken.symbol].priceEth !== 'undefined') {
         currentPrice = new BigNumber(prices[this.props.exchange.selectedTokensPair.baseToken.symbol].priceEth)
       }
@@ -694,13 +700,13 @@ class ApplicationExchangeHome extends Component {
 
       if (results[2].length !== 0) {
         // Getting fund orders
-        this.props.dispatch(this.getFundOrders(
-          this.props.exchange.relay.networkId,
-          results[2][0].address.toLowerCase(),
-          this.props.exchange.selectedTokensPair.baseToken.address,
-          this.props.exchange.selectedTokensPair.quoteToken.address,
-        )
-        )
+        // this.props.dispatch(this.getFundOrders(
+        //   this.props.exchange.relay.networkId,
+        //   results[2][0].address.toLowerCase(),
+        //   this.props.exchange.selectedTokensPair.baseToken.address,
+        //   this.props.exchange.selectedTokensPair.quoteToken.address,
+        // )
+        // )
         this.onSelectFund(results[2][0])
       } else {
         this.setState({

@@ -39,6 +39,11 @@ import Exchange from '../../_utils/exchange/src/index'
 import utils from '../../_utils/utils'
 
 import {
+  ERCdEX,
+  Ethfinex
+} from '../../_utils/const'
+
+import {
   ORDERBOOK_UPDATE,
   RELAY_OPEN_WEBSOCKET,
   RELAY_MSG_FROM_WEBSOCKET,
@@ -57,9 +62,8 @@ import {
   UPDATE_FUND_ORDERS,
   FETCH_ASSETS_PRICE_DATA,
   UPDATE_SELECTED_DRAGO_DETAILS,
-  ERCdEX,
-  Ethfinex
-} from '../../_utils/const'
+
+} from '../../_redux/actions/const'
 
 
 //
@@ -77,9 +81,12 @@ import {
 const getOrderBookFromRelay$ = (relay, networkId, baseToken, quoteToken, aggregated) => {
   console.log(baseToken)
   if (aggregated) {
-    const exchange = new Exchange(relay.name, '42')
-    return Observable.fromPromise(exchange.getAggregatedOrders(baseToken, quoteToken))
-    // Observable.fromPromise(exchange.getAggregatedOrders(baseTokenAddress, quoteTokenAddress))
+    const exchange = new Exchange(relay.name, '1')
+    return Observable.fromPromise(exchange.getAggregatedOrders(
+      utils.getTockenSymbolForRelay(relay.name, baseToken),
+      utils.getTockenSymbolForRelay(relay.name, quoteToken)
+    )
+    )
   } else {
     return Observable.fromPromise(getOrderBookFromRelayERCdEX(networkId, baseToken.address, quoteToken.address))
   }
@@ -125,6 +132,40 @@ export const initOrderBookFromRelayERCdEXEpic = (action$) =>
 
 
 // https://github.com/ReactiveX/rxjs/issues/2048
+
+// const reconnectingWebsocket$ = (baseTokenAddress, quoteTokenAddress) => {
+//   return Observable.create(observer => {
+//     var websocket = new ReconnectingWebSocket('wss://api.ercdex.com')
+//     websocket.addEventListener('open', (msg) => {
+//       console.log('WebSocket open.')
+//       // websocket.send(`sub:ticker`);
+//       websocket.send(`sub:pair-order-change/${baseTokenAddress}/${quoteTokenAddress}`);
+//       websocket.send(`sub:pair-order-change/${quoteTokenAddress}/${baseTokenAddress}`);
+//       return observer.next(msg.data);
+//     });
+//     // websocket.addEventListener('close', () => {
+//     //   websocket._shouldReconnect && websocket._connect();
+//     //   console.log('WebSocket reconnecting.');
+//     // })
+//     websocket.onmessage = (msg) => {
+//       console.log('WebSocket message.');
+//       console.log(msg)
+//       return observer.next(msg.data);
+//     }
+//     websocket.onclose = (msg) => {
+//       // websocket.send(`unsub:ticker`);
+//       console.log(msg)
+//       // return msg.wasClean ? observer.complete() : null
+//     };
+//     websocket.onerror = (error) => {
+//       console.log(error)
+//       console.log('WebSocket error.');
+//       // return observer.error(error)
+//     };
+//     return () => websocket.close();
+//   })
+// }
+
 
 const reconnectingWebsocket$ = (baseTokenAddress, quoteTokenAddress) => {
   return Observable.create(observer => {

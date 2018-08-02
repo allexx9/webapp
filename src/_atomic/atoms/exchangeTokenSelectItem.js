@@ -8,8 +8,9 @@ import TokenIcon from '../atoms/tokenIcon'
 
 export default class ExchangeTokenSelectItem extends Component {
   static propTypes = {
-    quoteTokenName: PropTypes.string.isRequired,
-    baseTokenName: PropTypes.string.isRequired,
+    baseTokenSymbol: PropTypes.string.isRequired,
+    quoteTokenSymbol: PropTypes.string.isRequired,
+
   };
 
   render () {
@@ -19,13 +20,13 @@ export default class ExchangeTokenSelectItem extends Component {
       <div className={ styles.account }>
         <div className={ styles.image }>
         <div>
-        <TokenIcon size={40} symbol={this.props.quoteTokenName} />
+        <TokenIcon size={40} symbol={this.props.baseTokenSymbol} />
         </div>
 
         </div>
         <div className={ styles.details }>
           <div className={ styles.name }>
-            { this.props.quoteTokenName +"/"+ this.props.baseTokenName  }
+            { this.props.baseTokenSymbol +"/"+ this.props.quoteTokenSymbol  }
           </div>
         </div>
       </div>

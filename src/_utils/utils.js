@@ -7,6 +7,8 @@ import { toUnitAmount } from './format'
 import palette from './palete'
 import { 
   ERC20_TOKENS, 
+  ERCdEX,
+  Ethfinex
 } from './const'
 
 import { Actions } from '../_redux/actions' 
@@ -15,6 +17,17 @@ class utilities {
 
   constructor() {
     var oldConsoleLog = null;
+  }
+
+  getTockenSymbolForRelay = (relayName, token) =>{
+    switch (relayName) {
+      case ERCdEX:
+        return token.address
+      case Ethfinex:
+        return token.symbolTicker[Ethfinex]
+      default:
+        throw new Error('Relay unknown')
+    }
   }
 
   notificationError = (notificationEngine, message) => {
@@ -29,6 +42,7 @@ class utilities {
   }
 
   availableTradeTokensPair = (tradeTokensPairs, selectedRelayName) =>{
+    console.log(tradeTokensPairs, selectedRelayName)
     var availableTokens = {}
     for (var baseToken in tradeTokensPairs) {
       Object.keys(tradeTokensPairs[baseToken]).forEach((key) => {
@@ -41,6 +55,7 @@ class utilities {
         }
       });    
     }
+    console.log(availableTokens)
     return availableTokens
   }
 

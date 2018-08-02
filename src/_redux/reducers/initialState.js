@@ -12,9 +12,21 @@ import {
   RELAYS,
   ERCdEX,
   Ethfinex,
-  TRADE_TOKENS_PAIRS
 } from '../../_utils/const'
+
+import {
+  TRADE_TOKENS_PAIRS
+} from '../../_utils/const';
+
 import BigNumber from 'bignumber.js';
+
+const NETWORK_NAME = DEFAULT_NETWORK_NAME
+// const NETWORK_NAME = 'ropsten'
+// const BASE_TOKEN = ERC20_TOKENS[NETWORK_NAME].ETH
+// const QUOTE_TOKEN = ERC20_TOKENS[NETWORK_NAME].USDT
+
+const BASE_TOKEN = ERC20_TOKENS[NETWORK_NAME].ZRX
+const QUOTE_TOKEN = ERC20_TOKENS[NETWORK_NAME].WETH
 
 const initialState = {
   notifications: {
@@ -38,12 +50,12 @@ const initialState = {
       managerAccount: '',
     },
     makerAddress: '',
-    selectedExchange: EXCHANGES.zeroEx[DEFAULT_NETWORK_NAME],
-    selectedRelay: RELAYS[Ethfinex],
+    selectedExchange: EXCHANGES.zeroEx[NETWORK_NAME],
+    selectedRelay: RELAYS[ERCdEX],
     // selectedExchange: EXCHANGES.rigoBlock[DEFAULT_NETWORK_NAME],
     selectedTokensPair: {
-      baseToken: ERC20_TOKENS[DEFAULT_NETWORK_NAME].ZRX,
-      quoteToken: ERC20_TOKENS[DEFAULT_NETWORK_NAME].WETH,
+      baseToken: BASE_TOKEN,
+      quoteToken: QUOTE_TOKEN,
       baseTokenAllowance: false,
       quoteTokenAllowance: false
     },
@@ -63,8 +75,8 @@ const initialState = {
       orderType: 'asks',
       takerOrder: false,
       selectedTokensPair: {
-        baseToken: ERC20_TOKENS[DEFAULT_NETWORK_NAME].ZRX,
-        quoteToken: ERC20_TOKENS[DEFAULT_NETWORK_NAME].WETH
+        baseToken: BASE_TOKEN,
+        quoteToken: QUOTE_TOKEN
       },
     },
     orderBook: {

@@ -178,65 +178,65 @@ export const getOrderBookFromRelayERCdEX = (networkId, baseTokenAddress, quoteTo
   })
 }
 
-export const getAggregatedOrdersFromRelayERCdEX = (networkId, baseTokenAddress, quoteTokenAddress) => {
-  console.log('Fetching aggregated orders from ERCdEX')
-  if (!networkId) {
-    throw new Error('networkId needs to be set')
-  }
-  if (!baseTokenAddress) {
-    throw new Error('baseTokenAddress needs to be set')
-  }
-  if (!quoteTokenAddress) {
-    throw new Error('quoteTokenAddress needs to be set')
-  }
-  var options = {
-    method: 'GET',
-    uri: `https://api.ercdex.com/api/aggregated_orders`,
-    qs: {
-      networkId: networkId,
-      baseTokenAddress: baseTokenAddress, 
-      quoteTokenAddress: quoteTokenAddress
-    },
-    json: true // Automatically stringifies the body to JSON
-  };
-  console.log(options)
-  return rp(options)
-  .then(orders => {
-    console.log(orders)
-    const bidsOrders = formatOrdersFromAggregate(orders.buys.priceLevels, 'bids')
-    console.log(bidsOrders)
-    const asksOrders = formatOrdersFromAggregate(orders.sells.priceLevels, 'asks')
-    console.log(asksOrders)
-    var spread = 0
-    console.log(asksOrders.length)
-    if (bidsOrders.length !== 0 && asksOrders.length !== 0) {
-      spread = new BigNumber(asksOrders[asksOrders.length-1].orderPrice).minus(new BigNumber(bidsOrders[0].orderPrice)).toFixed(5)
-    } else {
-      spread = new BigNumber(0).toFixed(5)
-    }
-    return {
-      bids: bidsOrders,
-      asks: asksOrders, 
-      spread,
-      aggregated: true
-    }
-  })
-}
+// export const getAggregatedOrdersFromRelayERCdEX = (networkId, baseTokenAddress, quoteTokenAddress) => {
+//   console.log('Fetching aggregated orders from ERCdEX')
+//   if (!networkId) {
+//     throw new Error('networkId needs to be set')
+//   }
+//   if (!baseTokenAddress) {
+//     throw new Error('baseTokenAddress needs to be set')
+//   }
+//   if (!quoteTokenAddress) {
+//     throw new Error('quoteTokenAddress needs to be set')
+//   }
+//   var options = {
+//     method: 'GET',
+//     uri: `https://api.ercdex.com/api/aggregated_orders`,
+//     qs: {
+//       networkId: networkId,
+//       baseTokenAddress: baseTokenAddress, 
+//       quoteTokenAddress: quoteTokenAddress
+//     },
+//     json: true // Automatically stringifies the body to JSON
+//   };
+//   console.log(options)
+//   return rp(options)
+//   .then(orders => {
+//     console.log(orders)
+//     const bidsOrders = formatOrdersFromAggregate(orders.buys.priceLevels, 'bids')
+//     console.log(bidsOrders)
+//     const asksOrders = formatOrdersFromAggregate(orders.sells.priceLevels, 'asks')
+//     console.log(asksOrders)
+//     var spread = 0
+//     console.log(asksOrders.length)
+//     if (bidsOrders.length !== 0 && asksOrders.length !== 0) {
+//       spread = new BigNumber(asksOrders[asksOrders.length-1].orderPrice).minus(new BigNumber(bidsOrders[0].orderPrice)).toFixed(5)
+//     } else {
+//       spread = new BigNumber(0).toFixed(5)
+//     }
+//     return {
+//       bids: bidsOrders,
+//       asks: asksOrders, 
+//       spread,
+//       aggregated: true
+//     }
+//   })
+// }
 
-export const formatOrdersFromAggregate = (orders) =>{
-  var orderPrice, orderAmount
-  let web3 = new Web3(Web3.currentProvider)
-  var formattedOrders = orders.map((order) => {
-    orderPrice = new BigNumber(order.price).toFixed(7)
-    orderAmount = new BigNumber(web3.utils.fromWei(order.volume)).toFixed(5)
-    var orderObject = {
-      orderAmount,
-      orderPrice,
-    }
-    return orderObject
-  })
-  return formattedOrders
-}
+// export const formatOrdersFromAggregate = (orders) =>{
+//   var orderPrice, orderAmount
+//   let web3 = new Web3(Web3.currentProvider)
+//   var formattedOrders = orders.map((order) => {
+//     orderPrice = new BigNumber(order.price).toFixed(7)
+//     orderAmount = new BigNumber(web3.utils.fromWei(order.volume)).toFixed(5)
+//     var orderObject = {
+//       orderAmount,
+//       orderPrice,
+//     }
+//     return orderObject
+//   })
+//   return formattedOrders
+// }
 
 export const formatOrders = (orders, orderType) =>{
   var orderPrice, orderAmount
