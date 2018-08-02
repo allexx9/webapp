@@ -8,13 +8,15 @@ import {
 import { SupportedExchanges } from './const'
 import {
   ERCdEX,
-  Ethfinex
+  Ethfinex,
+  NETWORKS_ID
 } from './const' 
 
 describe("get tickers from exchange REST API", () => {
   var networks = new Array()
   networks[1] = 'Mainnet'
   networks[42] = 'Kovan'
+  networks[3] = 'Ropsten'
   networks.map((network, key) => {
     it(`ERCdEX get tickers for ${network} success`, () => {
       const networkId = key.toString()
@@ -23,7 +25,7 @@ describe("get tickers from exchange REST API", () => {
       .toEqual(
         {
           method: 'GET',
-          url: `${SupportedExchanges.ERCdEX.http}/reports/ticker?networkId=${networkId}`,
+          url: `${SupportedExchanges.ERCdEX.http[NETWORKS_ID[networkId]]}/reports/ticker?networkId=${networkId}`,
           qs: {},
           json: true 
         }
@@ -37,7 +39,7 @@ describe("get tickers from exchange REST API", () => {
       .toEqual(
         {
           method: 'GET',
-          url: `${SupportedExchanges.Ethfinex.http}/tickers?symbols=${symbols}`,
+          url: `${SupportedExchanges.Ethfinex.http[NETWORKS_ID[networkId]]}/tickers?symbols=${symbols}`,
           qs: {},
           json: true 
         }
@@ -50,6 +52,7 @@ describe("get aggregate orders from exchange REST API", () => {
   var networks = new Array()
   networks[1] = 'Mainnet'
   networks[42] = 'Kovan'
+  networks[3] = 'Ropsten'
   const baseTokenAddress = "x01"
   const quoteTokenAddress = "x02"
   networks.map((network, key) => {
@@ -60,7 +63,7 @@ describe("get aggregate orders from exchange REST API", () => {
       .toEqual(
         {
           method: 'GET',
-          uri: `${SupportedExchanges.ERCdEX.http}/aggregated_orders`,
+          uri: `${SupportedExchanges.ERCdEX.http[NETWORKS_ID[networkId]]}/aggregated_orders`,
           qs: {
             networkId: networkId,
             baseTokenAddress: baseTokenAddress,
@@ -79,7 +82,7 @@ describe("get aggregate orders from exchange REST API", () => {
       .toEqual(
         {
           method: 'GET',
-          url: `${SupportedExchanges.Ethfinex.http}/book/t${baseToken}${quoteToken}/P0`,
+          url: `${SupportedExchanges.Ethfinex.http[NETWORKS_ID[networkId]]}/book/t${baseToken}${quoteToken}/P0`,
           qs: {},
           json: true
         }

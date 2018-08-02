@@ -10,7 +10,7 @@ export const getTickers = {
   ERCdEX: (networkId = 1) => {
     const options = {
       method: 'GET',
-      url: `${SupportedExchanges.ERCdEX.http}/reports/ticker?networkId=${networkId}`,
+      url: `${SupportedExchanges.ERCdEX.http[NETWORKS_ID[networkId]]}/reports/ticker?networkId=${networkId}`,
       qs: {},
       json: true
     }
@@ -32,7 +32,7 @@ export const getAggregatedOrders = {
   ERCdEX: (networkId = 1, baseTokenAddress, quoteTokenAddress) => {
     const options = {
       method: 'GET',
-      uri: `${SupportedExchanges.ERCdEX.http}/aggregated_orders`,
+      uri: `${SupportedExchanges.ERCdEX.http[NETWORKS_ID[networkId]]}/aggregated_orders`,
       qs: {
         networkId: networkId,
         baseTokenAddress: baseTokenAddress,

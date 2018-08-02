@@ -9,7 +9,6 @@ import ExchangeTokenSelectItem from '../atoms/exchangeTokenSelectItem'
 
 // const tradableTokens = ["WETH / ZRX", "WETH / GRG"]
 
-
 export default class TokenTradeSelector extends Component {
   static propTypes = {
     tradableTokens: PropTypes.object.isRequired,
@@ -28,11 +27,9 @@ export default class TokenTradeSelector extends Component {
       Object.keys(this.props.tradableTokens[quoteToken]).forEach((baseToken) => {
         let baseTokenSymbol = this.props.tradableTokens[quoteToken][baseToken].symbol;
         let quoteTokenSymbol = quoteToken;
-        console.log(baseTokenSymbol)
         menu.push(
           <MenuItem key={baseTokenSymbol}
             value={baseTokenSymbol}
-            // primaryText={quoteToken.name + "/" + baseToken}
             primaryText={<ExchangeTokenSelectItem
               baseTokenSymbol={baseTokenSymbol}
               quoteTokenSymbol={quoteTokenSymbol}
@@ -46,7 +43,6 @@ export default class TokenTradeSelector extends Component {
   }
 
   render() {
-    console.log(this.props.selectedTradeTokensPair.baseToken.symbol)
     return (
       <Row>
         <Col xs={12}>
@@ -59,7 +55,6 @@ export default class TokenTradeSelector extends Component {
             fullWidth
             value={this.props.selectedTradeTokensPair.baseToken.symbol}
             onChange={this.onSelectTokenTrade}
-          // style={{height: 90}}
           >
             {this.renderTokens()}
           </SelectField>

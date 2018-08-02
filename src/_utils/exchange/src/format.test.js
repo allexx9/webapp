@@ -97,12 +97,12 @@ describe("format exchange tickers output", () => {
         {
           priceEth: '1',
           priceUsd: '',
-          symbol: 'ETH'
+          symbol: 'WETH'
         },
         {
           priceEth: '1',
           priceUsd: '',
-          symbol: 'WETH'
+          symbol: 'ETH'
         }
       ]
     )

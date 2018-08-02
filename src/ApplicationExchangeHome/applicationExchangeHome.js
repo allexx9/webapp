@@ -502,7 +502,7 @@ class ApplicationExchangeHome extends Component {
       var previousPrice = "0"
       var priceVariation = "0.00"
 
-      console.log(this.props.exchange.selectedTokensPair)
+      // console.log(this.props.exchange.selectedTokensPair)
       if (typeof prices[this.props.exchange.selectedTokensPair.baseToken.symbol].priceEth !== 'undefined') {
         currentPrice = new BigNumber(prices[this.props.exchange.selectedTokensPair.baseToken.symbol].priceEth)
       }
@@ -670,8 +670,8 @@ class ApplicationExchangeHome extends Component {
     this.props.dispatch({
       type: RELAY_OPEN_WEBSOCKET, payload: {
         url: 'wss://api.ercdex.com',
-        baseTokenAddress: this.props.exchange.selectedTokensPair.baseToken.address,
-        quoteTokenAddress: this.props.exchange.selectedTokensPair.quoteToken.address
+        baseToken: this.props.exchange.selectedTokensPair.baseToken,
+        quoteToken: this.props.exchange.selectedTokensPair.quoteToken
       }
     })
   }

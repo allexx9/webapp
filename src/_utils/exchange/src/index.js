@@ -29,7 +29,7 @@ class Exchange {
   returnResults = (query, formatFunction = (input) => { return input }) => {
     switch (this._transport) {
       case 'ws':
-        return query
+        return query()
       case 'http':
         return rp(query())
           .then(results => {
@@ -70,6 +70,7 @@ class Exchange {
   }
 
   getTicker = (baseToken, quoteToken) => {
+    
     if (!baseToken) {
       throw new Error('baseToken needs to be set')
     }
@@ -79,9 +80,10 @@ class Exchange {
     return this.returnResults(() => {
       switch (this._exchange) {
         case ERCdEX:
+          console.log(`Connecting to WS ${this._exchange}`)
           return this._call[this._transport].getTicker[this._exchange](this._network, baseToken, quoteToken)
-        case Ethfinex:
-          return this._call[this._transport].getTicker[this._exchange](this._network, baseToken, quoteToken)
+        // case Ethfinex:
+        //   return this._call[this._transport].getTicker[this._exchange](this._network, baseToken, quoteToken)
         default:
           throw new Error('Relay unknown')
       }
@@ -91,6 +93,12 @@ class Exchange {
 
   getTickers = () => {
     console.log(`Fetching tokens prices from ${this._exchange}`)
+    // I have only added Ethfinex so far, because this function return every tokens price
+    // and we use the data to calcuate the funds assets value. 
+    // Ethfinex will be our source of truth for the moment.
+    // On the exchange, for now, we only need the price of the selected token.
+    // Anyway, it's a mock.
+
     return this.returnResults(
       () => {
         return this._call[this._transport].getTickers[this._exchange](this._network, this._exchangeProperties.tickersTokenPairs)

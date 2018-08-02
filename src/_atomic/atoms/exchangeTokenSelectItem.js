@@ -10,23 +10,19 @@ export default class ExchangeTokenSelectItem extends Component {
   static propTypes = {
     baseTokenSymbol: PropTypes.string.isRequired,
     quoteTokenSymbol: PropTypes.string.isRequired,
-
   };
 
-  render () {
-    const { exchange } = this.props;
-
+  render() {
     return (
-      <div className={ styles.account }>
-        <div className={ styles.image }>
-        <div>
-        <TokenIcon size={40} symbol={this.props.baseTokenSymbol} />
+      <div className={styles.account}>
+        <div className={styles.image}>
+          <div>
+            <TokenIcon size={40} symbol={this.props.baseTokenSymbol} />
+          </div>
         </div>
-
-        </div>
-        <div className={ styles.details }>
-          <div className={ styles.name }>
-            { this.props.baseTokenSymbol +"/"+ this.props.quoteTokenSymbol  }
+        <div className={styles.details}>
+          <div className={styles.name}>
+            {this.props.baseTokenSymbol + "/" + this.props.quoteTokenSymbol}
           </div>
         </div>
       </div>

@@ -60,7 +60,7 @@ export const tickers = {
     var tickersList = tickers.map(ticker => {
       return {
         priceEth: ticker[7].toString(),
-        priceUsd: '1',
+        priceUsd: '',
         symbol: ticker[0].substr(1, 3),
       }
     }

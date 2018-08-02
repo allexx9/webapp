@@ -113,24 +113,6 @@ export const initOrderBookFromRelayERCdEXEpic = (action$) =>
 // GETTING UPDATES FROM RELAY ERCdEX
 //
 
-// export const webSocketReducer = (state = 0, action) => {
-//   switch (action.type) {
-//     case RELAY_OPEN_WEBSOCKET:
-//       return {};
-//     case ORDERBOOK_UPDATE:
-//       return {};
-//     case RELAY_CLOSE_WEBSOCKET:
-//       return {};
-//     case RELAY_MSG_FROM_WEBSOCKET:
-//       return {};
-//     case RELAY_UPDATE_ORDERS:
-//       return {};
-//     default:
-//       return state;
-//   }
-// };
-
-
 // https://github.com/ReactiveX/rxjs/issues/2048
 
 // const reconnectingWebsocket$ = (baseTokenAddress, quoteTokenAddress) => {
@@ -167,20 +149,16 @@ export const initOrderBookFromRelayERCdEXEpic = (action$) =>
 // }
 
 
-const reconnectingWebsocket$ = (baseTokenAddress, quoteTokenAddress) => {
+const reconnectingWebsocket$ = (baseToken, quoteToken) => {
   return Observable.create(observer => {
-    var websocket = new ReconnectingWebSocket('wss://api.ercdex.com')
-    websocket.addEventListener('open', (msg) => {
-      console.log('WebSocket open.')
-      // websocket.send(`sub:ticker`);
-      websocket.send(`sub:pair-order-change/${baseTokenAddress}/${quoteTokenAddress}`);
-      websocket.send(`sub:pair-order-change/${quoteTokenAddress}/${baseTokenAddress}`);
-      return observer.next(msg.data);
-    });
-    // websocket.addEventListener('close', () => {
-    //   websocket._shouldReconnect && websocket._connect();
-    //   console.log('WebSocket reconnecting.');
-    // })
+    const relay = {
+      name: 'ERCdEX'
+    }
+    const exchange = new Exchange(relay.name, '1', 'ws')
+    const websocket = exchange.getTicker(
+      utils.getTockenSymbolForRelay(relay.name, baseToken),
+      utils.getTockenSymbolForRelay(relay.name, quoteToken)
+    )
     websocket.onmessage = (msg) => {
       console.log('WebSocket message.');
       console.log(msg)
@@ -206,8 +184,8 @@ export const relayWebSocketEpic = (action$) =>
   action$.ofType(RELAY_OPEN_WEBSOCKET)
     .mergeMap((action) => {
       return reconnectingWebsocket$(
-        action.payload.baseTokenAddress,
-        action.payload.quoteTokenAddress
+        action.payload.baseToken,
+        action.payload.quoteToken
       )
         // .retryWhen((err) => {
         //   console.log('Retry when error');
