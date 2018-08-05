@@ -16,6 +16,7 @@ import filter from 'redux-localstorage-filter';
 import logger from 'redux-logger'
 import { createEpicMiddleware } from 'redux-observable';
 import { rootEpic } from './_redux/epics/root';
+import { composeWithDevTools } from 'redux-devtools-extension';
 
 import './index.module.css';
 
@@ -39,7 +40,9 @@ const storage = compose(
     filter(['user', 'endpoint'])
   )(adapter(window.localStorage));
 
-const enhancer = compose(
+  const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
+
+const enhancer = composeEnhancers(
     applyMiddleware(...middlewares),
     persistState(storage, 'rigoblock')
   );

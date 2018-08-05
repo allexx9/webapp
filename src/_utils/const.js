@@ -20,25 +20,25 @@ export const REGISTRY_KOVAN = '0xfAb104398BBefbd47752E7702D9fE23047E1Bca3';
 export const GRG = "GRG"
 export const ETH = "ETH"
 
-export const ERCdEX = 'ERCdEX'
-export const Ethfinex = 'Ethfinex'
-
 export * from './tokens';
 
 export const RELAYS = {
   ERCdEX: {
-    name: ERCdEX,
+    name: 'ERCdEX',
     icon: 'ercdex.png',
     supported: true,
     onlyAggregateOrderbook: false
   },
   Ethfinex: {
-    name: Ethfinex,
+    name: 'Ethfinex',
     icon: 'ethfinex.png',
     supported: true,
     onlyAggregateOrderbook: true
   }
 }
+
+// export const ERCdEX = "ERCdEX"
+// export const Ethfinex = "Ethfinex"
 
 // Blockchain endpoint
 export const EP_INFURA_KV = "https://kovan.infura.io/metamask"
@@ -337,7 +337,7 @@ export const CANCEL_SELECTED_ORDER = 'CANCEL_SELECTED_ORDER'
 // Orderbook
 export const ORDERBOOK_UPDATE = 'ORDERBOOK_UPDATE'
 export const ORDERBOOK_INIT = 'ORDERBOOK_INIT'
-export const ORDERBOOK_AGGREGATE_ORDERS = 'ORDERBOOK_AGGREGATE_ORDERS'
+export const SET_ORDERBOOK_AGGREGATE_ORDERS = 'SET_ORDERBOOK_AGGREGATE_ORDERS'
 
 // Websocket
 export const RELAY_OPEN_WEBSOCKET = 'RELAY_OPEN_WEBSOCKET'
@@ -350,7 +350,7 @@ export const RELAY_UPDATE_ORDERS = 'RELAY_UPDATE_ORDERS'
 export const SET_TOKEN_ALLOWANCE = 'SET_TOKEN_ALLOWANCE'
 export const GET_PRICES_BITFINEXE = 'GET_PRICES_BITFINEX'
 export const TOKEN_PRICE_TICKER_OPEN_WEBSOCKET = "TOKEN_PRICE_TICKER_OPEN_WEBSOCKET"
-export const TOKEN_PRICE_TICKER_UPDATE = "TOKEN_PRICE_TICKER_UPDATE"
+export const TOKENS_TICKERS_UPDATE = "TOKENS_TICKERS_UPDATE"
 export const TOKEN_PRICE_TICKER_CLOSE_WEBSOCKET = "TOKEN_PRICE_TICKER_CLOSE_WEBSOCKET"
 export const UPDATE_FUND_LIQUIDITY = "UPDATE_FUND_LIQUIDITY"
 

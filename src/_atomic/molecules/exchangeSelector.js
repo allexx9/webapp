@@ -17,15 +17,17 @@ export default class ExchangeSelector extends Component {
   }
 
   onSelectExchange = (event, key, payload) => {
-    console.log(payload)
     this.props.onSelectExchange(payload)
   }
 
   renderExchange = () => {
     var menu = []
-    Object.keys(RELAYS).forEach(function (key) {
+    // console.log(RELAYS)
+    Object.keys(RELAYS).forEach((key) => {
+      // console.log(key)
+      // console.log(RELAYS[key])
       menu.push(
-        <MenuItem key={RELAYS[key].name}
+        <MenuItem key={key}
           value={key}
           primaryText={<ExchangeItem exchange={RELAYS[key]}/>} 
         />
@@ -35,6 +37,7 @@ export default class ExchangeSelector extends Component {
   }
 
   render() {
+    // console.log(this.props.selectedRelay)
     return (
       <Row>
         <Col xs={12}>

@@ -10,13 +10,10 @@ import {
   ERC20_TOKENS,
   EXCHANGES,
   RELAYS,
+  TRADE_TOKENS_PAIRS,
   ERCdEX,
-  Ethfinex,
+  Ethfinex
 } from '../../_utils/const'
-
-import {
-  TRADE_TOKENS_PAIRS
-} from '../../_utils/const';
 
 import BigNumber from 'bignumber.js';
 
@@ -27,6 +24,9 @@ const NETWORK_NAME = DEFAULT_NETWORK_NAME
 
 const BASE_TOKEN = ERC20_TOKENS[NETWORK_NAME].ZRX
 const QUOTE_TOKEN = ERC20_TOKENS[NETWORK_NAME].WETH
+
+// const ERCdEX = 'ERCdEX'
+// const Ethfinex = 'Ethfinex'
 
 const initialState = {
   notifications: {
@@ -57,7 +57,16 @@ const initialState = {
       baseToken: BASE_TOKEN,
       quoteToken: QUOTE_TOKEN,
       baseTokenAllowance: false,
-      quoteTokenAllowance: false
+      quoteTokenAllowance: false,
+      ticker: {
+        current: {
+          price: '0'
+        },
+        previous: {
+          price: '0'
+        },
+        variation: 0
+      }
     },
     availableTradeTokensPairs: TRADE_TOKENS_PAIRS,
     fundOrders: {
@@ -79,8 +88,8 @@ const initialState = {
         quoteToken: QUOTE_TOKEN
       },
     },
+    orderBookAggregated: RELAYS[ERCdEX].onlyAggregateOrderbook,
     orderBook: {
-      aggregated: true,
       asks: [],
       bids: [],
       spread: '0'

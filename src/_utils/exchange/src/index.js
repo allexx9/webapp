@@ -69,6 +69,76 @@ class Exchange {
     )
   }
 
+  submbitOrder = (signedOrder) => {
+    console.log(`Submitting orderr to ${this._exchange}`)
+    if (!signedOrder) {
+      throw new Error('signedOrder needs to be set')
+    }
+    return this.returnResults(
+      () => {
+        switch (this._exchange) {
+          case ERCdEX:
+            return this._call[this._transport].getOrders[this._exchange](signedOrder)
+          // case Ethfinex:
+          //   return this._call[this._transport].getOrders[this._exchange](signedOrder)
+          default:
+            throw new Error('Relay unknown')
+        }
+      },
+      // FORMAT.orders[this._exchange]
+    )
+  }
+
+  getOrders = (baseToken, quoteToken) => {
+    console.log(`Fetching orders from ${this._exchange}`)
+    if (!baseToken) {
+      throw new Error('baseToken needs to be set')
+    }
+    if (!quoteToken) {
+      throw new Error('quoteToken needs to be set')
+    }
+    return this.returnResults(
+      () => {
+        switch (this._exchange) {
+          case ERCdEX:
+            return this._call[this._transport].getOrders[this._exchange](this._network, baseToken, quoteToken)
+          case Ethfinex:
+            return this._call[this._transport].getOrders[this._exchange](this._network, baseToken, quoteToken)
+          default:
+            throw new Error('Relay unknown')
+        }
+      },
+      FORMAT.orders[this._exchange]
+    )
+  }
+
+  getHistoricalPricesData = (baseToken, quoteToken, startDate) => {
+    console.log(`Fetching historical prices from ${this._exchange}`)
+    if (!baseToken) {
+      throw new Error('baseToken needs to be set')
+    }
+    if (!quoteToken) {
+      throw new Error('quoteToken needs to be set')
+    }
+    if (!startDate) {
+      throw new Error('startDate needs to be set')
+    }
+    return this.returnResults(
+      () => {
+        switch (this._exchange) {
+          case ERCdEX:
+            return this._call[this._transport].getHistoricalPricesData[this._exchange](this._network, baseToken, quoteToken, startDate)
+          case Ethfinex:
+            return this._call[this._transport].getHistoricalPricesData[this._exchange](this._network, baseToken, quoteToken, startDate)
+          default:
+            throw new Error('Relay unknown')
+        }
+      },
+      FORMAT.historicalPricesData[this._exchange]
+    )
+  }
+
+
   getTicker = (baseToken, quoteToken) => {
     
     if (!baseToken) {
@@ -82,8 +152,8 @@ class Exchange {
         case ERCdEX:
           console.log(`Connecting to WS ${this._exchange}`)
           return this._call[this._transport].getTicker[this._exchange](this._network, baseToken, quoteToken)
-        // case Ethfinex:
-        //   return this._call[this._transport].getTicker[this._exchange](this._network, baseToken, quoteToken)
+        case Ethfinex:
+          return this._call[this._transport].getTicker[this._exchange](this._network, baseToken, quoteToken)
         default:
           throw new Error('Relay unknown')
       }

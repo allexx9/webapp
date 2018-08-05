@@ -52,7 +52,7 @@ class DragoRegistryParity {
   fromAddress = dragoAddress => {
     if (!dragoAddress) {
       throw new Error(
-        `dragoAddress needs to be provided to ${arguments.callee.toString()}`
+        `dragoAddress needs to be provided to drago`
       )
     }
     const instance = this._instance

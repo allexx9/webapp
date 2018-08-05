@@ -54,7 +54,7 @@ export default class TokenPrice extends Component {
                 </div>
               </Col>
               <Col xs={12}>
-                <div className={classNames(styles.tokenPrice, this.checkPrice())}>
+                <div className={classNames(styles.tokenPrice)}>
                   {tokenPrice}
                 </div>
               </Col>

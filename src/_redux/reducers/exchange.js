@@ -1,6 +1,7 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
 import initialState from './initialState'
+import BigNumber from 'bignumber.js';
 import {
   UPDATE_SELECTED_FUND,
   UPDATE_SELECTED_ORDER,
@@ -8,14 +9,15 @@ import {
   CANCEL_SELECTED_ORDER,
   ORDERBOOK_UPDATE,
   ORDERBOOK_INIT,
-  ORDERBOOK_AGGREGATE_ORDERS,
+  SET_ORDERBOOK_AGGREGATE_ORDERS,
   SET_MAKER_ADDRESS,
-  TOKEN_PRICE_TICKER_UPDATE,
+  TOKENS_TICKERS_UPDATE,
   UPDATE_ELEMENT_LOADING,
   UPDATE_MARKET_DATA,
   UPDATE_FUND_ORDERS,
   UPDATE_SELECTED_RELAY,
-  UPDATE_AVAILABLE_TRADE_TOKENS_PAIRS
+  UPDATE_AVAILABLE_TRADE_TOKENS_PAIRS,
+  UPDATE_CURRENT_TOKEN_PRICE
 } from '../actions/const'
 
 
@@ -43,17 +45,15 @@ function exchangeReducer(state = initialState.exchange, action) {
       };
 
     case UPDATE_SELECTED_FUND:
-      const fundDetails = action.payload
       return {
         ...state,
-        selectedFund: { ...state.selectedFund, ...fundDetails }
+        selectedFund: { ...state.selectedFund, ...action.payload }
       };
 
     case UPDATE_SELECTED_RELAY:
-      const relayDetails = action.payload
       return {
         ...state,
-        selectedRelay: { ...state.selectedRelay, ...relayDetails }
+        selectedRelay: { ...state.selectedRelay, ...action.payload }
       };
 
     case UPDATE_SELECTED_ORDER:
@@ -70,7 +70,7 @@ function exchangeReducer(state = initialState.exchange, action) {
         selectedTokensPair: { ...state.selectedTokensPair, ...action.payload }
       };
 
-      case UPDATE_AVAILABLE_TRADE_TOKENS_PAIRS:
+    case UPDATE_AVAILABLE_TRADE_TOKENS_PAIRS:
       return {
         ...state,
         availableTradeTokensPairs: { ...action.payload }
@@ -89,15 +89,15 @@ function exchangeReducer(state = initialState.exchange, action) {
         selectedOrder: initialState.exchange.selectedOrder
       };
 
-    case ORDERBOOK_AGGREGATE_ORDERS:
-      var newOrderBook = { ...state.orderBook, ...{ aggregated: action.payload } }
+    case SET_ORDERBOOK_AGGREGATE_ORDERS:
+      console.log(action.payload)
       return {
         ...state,
-        orderBook: newOrderBook
+        orderBookAggregated: action.payload
       };
 
     case ORDERBOOK_INIT:
-      newOrderBook = { ...state.orderBook, ...action.payload }
+      const newOrderBook = { ...state.orderBook, ...action.payload }
       return {
         ...state,
         orderBook: newOrderBook
@@ -106,15 +106,46 @@ function exchangeReducer(state = initialState.exchange, action) {
     case ORDERBOOK_UPDATE:
       return { ...state, webSocket: { ...action.payload } }
 
-    case TOKEN_PRICE_TICKER_UPDATE:
+    case TOKENS_TICKERS_UPDATE:
       var prices = {
         ...action.payload,
         previous: { ...state.prices }
       }
       return { ...state, prices }
 
+    case UPDATE_CURRENT_TOKEN_PRICE:
+      var ticker
+      if (typeof action.payload.current !== 'undefined') {
+        var ticker = {
+          current: action.payload.current,
+          previous: { ...state.selectedTokensPair.ticker.current }
+        }
+        var currentPrice = new BigNumber(ticker.current.price)
+        var previousPrice = new BigNumber(ticker.previous.price)
+        if (!previousPrice.eq(0)) {
+          ticker.variation = currentPrice.sub(previousPrice).div(previousPrice).mul(100).toFixed(4)
+        } else {
+          ticker.variation = 0
+
+        }
+      }
+      else {
+        var ticker = {
+          current: { ...state.selectedTokensPair.ticker.current },
+          previous: { ...state.selectedTokensPair.ticker.current },
+          variation: state.selectedTokensPair.ticker.variation 
+        }
+      }
+      return {
+        ...state,
+        selectedTokensPair: { ...state.selectedTokensPair, ticker: {...ticker} }
+      };
+
     default: return state;
   }
+
+
+
 }
 
 export default exchangeReducer

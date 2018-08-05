@@ -6,9 +6,12 @@ import { connect } from 'react-redux';
 import BoxTitle from '../atoms/boxTitle';
 import ExchangeSelector from '../molecules/exchangeSelector';
 import styles from './exchangeBox.module.css';
-import exchange from './../../_redux/actions/exchange'
+import { Actions } from '../../_redux/actions';
+import utils from '../../_utils/utils';
+
 import {
   RELAYS,
+  TRADE_TOKENS_PAIRS
 } from '../../_utils/const'
 
 const paperStyle = {
@@ -31,9 +34,14 @@ class ExchangeBox extends Component {
   };
 
   onSelectExchange = (relay) => {
+    console.log(relay)
     const payload = RELAYS[relay]
     console.log(payload)
-    this.props.dispatch(exchange.updateSelectedRelayAction(payload))
+    this.props.dispatch(
+      Actions.exchange.updateSelectedRelayAction(payload))
+    this.props.dispatch(
+      Actions.exchange.updateAvailableTradeTokensPairs(utils.availableTradeTokensPair(TRADE_TOKENS_PAIRS, RELAYS[relay].name))
+    )
   }
 
   render() {

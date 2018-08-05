@@ -18,7 +18,7 @@ import {
   UPDATE_TRADE_TOKENS_PAIR,
   TOKEN_PRICE_TICKER_OPEN_WEBSOCKET,
   TOKEN_PRICE_TICKER_CLOSE_WEBSOCKET,
-  TOKEN_PRICE_TICKER_UPDATE
+  TOKENS_TICKERS_UPDATE
 } from '../../_utils/const'
 import Exchange from '../../_utils/exchange/src/index'
 import ReconnectingWebSocket from 'reconnecting-websocket'
@@ -73,7 +73,7 @@ const getPricesERCdEXWebsocket$ = () => {
     var websocket = new ReconnectingWebSocket('wss://api.ercdex.com')
     websocket.addEventListener('open', (msg) => {
       console.log('WebSocket open.')
-      console.log(msg)
+      // console.log(msg)
       websocket.send(`sub:ticker`);
     });
     websocket.onmessage = (msg) => {
@@ -89,13 +89,13 @@ const getPricesERCdEXWebsocket$ = () => {
     websocket.onclose = (msg) => {
       // websocket.send(`unsub:ticker`);
       console.log('WebSocket closed.');
-      console.log(msg)
+      // console.log(msg)
       
       // return msg.wasClean ? observer.complete() : null
     };
     websocket.onerror = (error) => {
       console.log('WebSocket error.');
-      console.log(error)
+      // console.log(error)
       return observer.error(error)
     };
     return () => websocket.close();
@@ -140,5 +140,5 @@ export const getPricesERCdEXEpic = (action$) =>
           const tokenList = arrayToObject(message[0], 'symbol')
           return tokenList
         })
-        .map(payload => ({ type: TOKEN_PRICE_TICKER_UPDATE, payload }))
+        .map(payload => ({ type: TOKENS_TICKERS_UPDATE, payload }))
     });

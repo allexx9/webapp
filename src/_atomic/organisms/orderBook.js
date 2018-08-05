@@ -6,7 +6,7 @@ import styles from './orderBook.module.css'
 import AppBar from 'material-ui/AppBar'
 import Paper from 'material-ui/Paper'
 import Toggle from 'material-ui/Toggle';
-import  * as Colors from 'material-ui/styles/colors'
+import * as Colors from 'material-ui/styles/colors'
 import { connect } from 'react-redux';
 import ToggleSwitch from '../atoms/toggleSwitch'
 
@@ -21,7 +21,6 @@ class OrderBook extends Component {
     asksOrders: PropTypes.array.isRequired,
     spread: PropTypes.string.isRequired,
     aggregated: PropTypes.bool.isRequired,
-    dispatch: PropTypes.func.isRequired,
     onToggleAggregateOrders: PropTypes.func.isRequired,
     onlyAggregated: PropTypes.bool.isRequired,
   };
@@ -33,7 +32,7 @@ class OrderBook extends Component {
   };
 
 
-  onToggleAggregateOrders = (event, isInputChecked) =>{
+  onToggleAggregateOrders = (event, isInputChecked) => {
     this.props.onToggleAggregateOrders(isInputChecked)
   }
 
@@ -41,26 +40,26 @@ class OrderBook extends Component {
     const ordersAsksSorted = [].concat(this.props.asksOrders)
     const ordersBidsSorted = [].concat(this.props.bidsOrders)
     const spread = this.props.spread
-    
-  const aggregatedTogglestyles = {
-    block: {
-      maxWidth: 250,
-    },
-    toggle: {
-      // paddingRight: '5px',
-    },
-    trackSwitched: {
-      backgroundColor: '#bdbdbd',
-    },
-    thumbSwitched: {
-      backgroundColor: '#054186',
-    },
-    labelStyle: {
-      fontSize: '12px',
-      opacity: '0.5',
-      textAlign: 'right'
-    },
-  };
+
+    // const aggregatedTogglestyles = {
+    //   block: {
+    //     maxWidth: 250,
+    //   },
+    //   toggle: {
+    //     // paddingRight: '5px',
+    //   },
+    //   trackSwitched: {
+    //     backgroundColor: '#bdbdbd',
+    //   },
+    //   thumbSwitched: {
+    //     backgroundColor: '#054186',
+    //   },
+    //   labelStyle: {
+    //     fontSize: '12px',
+    //     opacity: '0.5',
+    //     textAlign: 'right'
+    //   },
+    // };
     return (
       <Row>
         <Col xs={12}>
@@ -78,14 +77,14 @@ class OrderBook extends Component {
                   <Col xs={12}>
                     <Row center="xs">
                       <Col xs={12} >
-                      <div style={{marginRight: '5px'}}>
-                        <ToggleSwitch
-                          label={"AGGREGATE"}
-                          onToggle={this.onToggleAggregateOrders}
-                          toggled={this.props.aggregated}
-                          toolTip={"Aggregate orders"}
-                          disabled={this.props.onlyAggregated}
-                        />
+                        <div style={{ marginRight: '5px' }}>
+                          <ToggleSwitch
+                            label={"AGGREGATE"}
+                            onToggle={this.onToggleAggregateOrders}
+                            toggled={this.props.aggregated}
+                            toolTip={"Aggregate orders"}
+                            disabled={this.props.onlyAggregated}
+                          />
                         </div>
                       </Col>
                     </Row>
@@ -117,8 +116,8 @@ class OrderBook extends Component {
                     <Row center="xs">
                       <Col xs={12} >
                         {spread === 0
-                          ? <div className={styles.spread}><div style={{paddingRight: '5px'}}>-</div></div>
-                          : <div className={styles.spread}><div style={{paddingRight: '5px'}}>{spread}</div></div>
+                          ? <div className={styles.spread}><div style={{ paddingRight: '5px' }}>-</div></div>
+                          : <div className={styles.spread}><div style={{ paddingRight: '5px' }}>{spread}</div></div>
                         }
                       </Col>
                     </Row>
@@ -147,4 +146,4 @@ class OrderBook extends Component {
   }
 }
 
-export default connect()(OrderBook)
+export default OrderBook

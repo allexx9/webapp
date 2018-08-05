@@ -29,7 +29,7 @@ export default class TokenTradeSelector extends Component {
         let quoteTokenSymbol = quoteToken;
         menu.push(
           <MenuItem key={baseTokenSymbol}
-            value={baseTokenSymbol}
+            value={baseTokenSymbol + '-' + quoteTokenSymbol}
             primaryText={<ExchangeTokenSelectItem
               baseTokenSymbol={baseTokenSymbol}
               quoteTokenSymbol={quoteTokenSymbol}
@@ -43,6 +43,7 @@ export default class TokenTradeSelector extends Component {
   }
 
   render() {
+    console.log(this.props.selectedTradeTokensPair)
     return (
       <Row>
         <Col xs={12}>
@@ -53,7 +54,7 @@ export default class TokenTradeSelector extends Component {
         <Col xs={12}>
           <SelectField
             fullWidth
-            value={this.props.selectedTradeTokensPair.baseToken.symbol}
+            value={this.props.selectedTradeTokensPair.baseToken.symbol + '-' + this.props.selectedTradeTokensPair.quoteToken.symbol}
             onChange={this.onSelectTokenTrade}
           >
             {this.renderTokens()}

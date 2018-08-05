@@ -311,7 +311,7 @@ export const signOrder = async (order, ZeroExConfig) => {
   return signedOrder
 }
 
-export const sendOrderToRelayERCdEX = async (signedOrder) => {
+export const submitOrderToRelay = async (signedOrder) => {
   console.log(signedOrder)
   const ZeroExConfig = {
     networkId: 42,
@@ -373,26 +373,6 @@ export const getFees = async (order, networkId) => {
   console.log(options.qs)
   return rp(options)
 }
-
-// tokenPricesTickerBitfinex = () =>{
-//   const relayerApiUrl = `https://api.bitfinex.com/v1/pubticker/btcusd`
-
-//   var options = {
-//     method: 'GET',
-//     uri: relayerApiUrl,
-//     qs: {
-//       makerTokenAddress,
-//       takerTokenAddress,
-//       baseTokenAddress,
-//       quantity,
-//       networkId,
-//       takerAddress,
-//     },
-//     json: true // Automatically stringifies the body to JSON
-//   };
-//   console.log(options.qs)
-//   return rp(options)
-// }
 
 export const getTokenAllowance = async (
   tokenAddress,
@@ -895,7 +875,7 @@ class Exchange {
   //   // }
   // }
 
-  sendOrderToRelayERCdEX = async (signedOrder) => {
+  submitOrderToRelay = async (signedOrder) => {
     console.log(signedOrder)
     const relayerApiUrl = 'https://api.kovan.radarrelay.com/0x/v0/order'
     // const relayerClient = new HttpClient(relayerApiUrl);

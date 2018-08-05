@@ -1,11 +1,9 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
 import { combineEpics } from 'redux-observable';
-// import pingEpic from './ping';
 import { 
-  relayWebSocketEpic, 
-  orderBookEpic,
-  initOrderBookFromRelayERCdEXEpic,
+  // relayWebSocketEpic, 
+  getOrderBookFromRelayEpic,
   updateFundLiquidityEpic,
   getHistoricalPricesDataFromERCdEXEpic,
   getTradeHistoryLogsFromRelayERCdEXEpic,
@@ -16,12 +14,14 @@ import { setTokenAllowanceEpic,
   getPricesERCdEXEpic
 } from './token'
 
+import { Ethfinex, ERCdEX } from './exchanges'
+
 export const rootEpic = combineEpics (
-  // pingEpic,
-  relayWebSocketEpic,
-  orderBookEpic,
+  // relayWebSocketEpic,
+  ERCdEX.initRelayWebSocketEpic,
+  ERCdEX.orderBookEpic,
   setTokenAllowanceEpic,
-  initOrderBookFromRelayERCdEXEpic,
+  getOrderBookFromRelayEpic,
   getPricesERCdEXEpic,
   updateFundLiquidityEpic,
   getHistoricalPricesDataFromERCdEXEpic,

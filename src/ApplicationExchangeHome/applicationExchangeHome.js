@@ -26,29 +26,24 @@ import OrdersHistoryBox from '../_atomic/organisms/ordersHistoryBox';
 import { Actions } from '../_redux/actions';
 import {
   ERC20_TOKENS,
+  TRADE_TOKENS_PAIRS,
 } from '../_utils/const';
-import {
-  TRADE_TOKENS_PAIRS
-} from '../_utils/tokens';
-
 
 import {
   CANCEL_SELECTED_ORDER,
   FETCH_FUND_ORDERS,
-  FETCH_HISTORY_TRANSACTION_LOGS,
-  FETCH_MARKET_PRICE_DATA,
-  ORDERBOOK_AGGREGATE_ORDERS,
+
   RELAY_CLOSE_WEBSOCKET,
-  RELAY_GET_ORDERS,
   RELAY_OPEN_WEBSOCKET,
   UPDATE_FUND_LIQUIDITY,
   UPDATE_SELECTED_FUND,
   UPDATE_TRADE_TOKENS_PAIR
 } from '../_redux/actions/const';
-import Exchange, { getAvailableAddresses, getMarketTakerOrder, getTokenAllowance } from '../_utils/exchange';
+import { getAvailableAddresses, getTokenAllowance } from '../_utils/exchange';
 import utils from '../_utils/utils';
 import styles from './applicationExchangeHome.module.css';
 import ExchangeBox from '../_atomic/organisms/exchangeBox';
+import { Action } from '../../node_modules/rxjs/internal/scheduler/Action';
 
 
 // import { getData } from "../_utils/data"
@@ -125,52 +120,6 @@ class ApplicationExchangeHome extends Component {
     }
   };
 
-  updateSelectedTradeTokensPair = (tradeTokensPair) => {
-    return {
-      type: UPDATE_TRADE_TOKENS_PAIR,
-      payload: tradeTokensPair
-    }
-  };
-
-  setAggregateOrders = (isInputChecked) => {
-    return {
-      type: ORDERBOOK_AGGREGATE_ORDERS,
-      payload: isInputChecked
-    }
-  };
-
-  relayGetOrders = (filter) => {
-    return {
-      type: RELAY_GET_ORDERS,
-      payload: filter
-    }
-  };
-
-  getChartData = (networkId, baseTokenAddress, quoteTokenAddress, startDate) => {
-    const payload = {
-      networkId,
-      baseTokenAddress,
-      quoteTokenAddress,
-      startDate
-    }
-    return {
-      type: FETCH_MARKET_PRICE_DATA,
-      payload: payload
-    }
-  }
-
-  getTradeHistoryLogs = (networkId, baseTokenAddress, quoteTokenAddress) => {
-    const payload = {
-      networkId,
-      baseTokenAddress,
-      quoteTokenAddress,
-    }
-    return {
-      type: FETCH_HISTORY_TRANSACTION_LOGS,
-      payload: payload
-    }
-  }
-
   getFundOrders = (networkId, maker, baseTokenAddress, quoteTokenAddress) => {
     const payload = {
       networkId,
@@ -213,8 +162,8 @@ class ApplicationExchangeHome extends Component {
       // this.connectToRadarRelay()
       this.connectToExchange(selectedTokensPair)
       getAvailableAddresses(selectedExchange)
-        .then(adreesses => {
-          this.props.dispatch({ type: 'SET_MAKER_ADDRESS', payload: adreesses[0] })
+        .then(addresses => {
+          this.props.dispatch({ type: 'SET_MAKER_ADDRESS', payload: addresses[0] })
         })
 
       // Set available trade tokens pairs
@@ -223,28 +172,29 @@ class ApplicationExchangeHome extends Component {
       )
 
 
-      // Getting history logs
-      this.props.dispatch(this.getTradeHistoryLogs(
+      // Getting trade history logs
+      this.props.dispatch(Actions.exchange.getTradeHistoryLogs(
         this.props.exchange.relay.networkId,
         this.props.exchange.selectedTokensPair.baseToken.address,
         this.props.exchange.selectedTokensPair.quoteToken.address,
       )
       )
 
-      // Getting history logs
-      this.props.dispatch(this.getTradeHistoryLogs(
-        this.props.exchange.relay.networkId,
-        this.props.exchange.selectedTokensPair.baseToken.address,
-        this.props.exchange.selectedTokensPair.quoteToken.address,
-      )
-      )
+      // // Getting history logs
+      // this.props.dispatch(this.getTradeHistoryLogs(
+      //   this.props.exchange.relay.networkId,
+      //   this.props.exchange.selectedTokensPair.baseToken.address,
+      //   this.props.exchange.selectedTokensPair.quoteToken.address,
+      // )
+      // )
 
       // Getting chart data
       var tsYesterday = new Date((Math.floor(Date.now() / 1000) - 86400 * 7) * 1000).toISOString()
-      this.props.dispatch(this.getChartData(
+      this.props.dispatch(Actions.exchange.getChartData(
+        this.props.exchange.selectedRelay,
         this.props.exchange.relay.networkId,
-        this.props.exchange.selectedTokensPair.baseToken.address,
-        this.props.exchange.selectedTokensPair.quoteToken.address,
+        this.props.exchange.selectedTokensPair.baseToken,
+        this.props.exchange.selectedTokensPair.quoteToken,
         tsYesterday
       )
       )
@@ -275,14 +225,17 @@ class ApplicationExchangeHome extends Component {
   }
 
   onToggleAggregateOrders = (isInputChecked) => {
-    this.props.dispatch(this.setAggregateOrders(isInputChecked))
-    const filter = {
+    console.log(isInputChecked)
+    this.props.dispatch(Actions.exchange.setAggregateOrders(isInputChecked))
+
+    var filter = {
+      relay: this.props.exchange.selectedRelay,
       networkId: this.props.exchange.relay.networkId,
-      baseTokenAddress: this.props.exchange.selectedTokensPair.baseToken.address,
-      quoteTokenAddress: this.props.exchange.selectedTokensPair.quoteToken.address,
+      baseToken: this.props.exchange.selectedTokensPair.baseToken,
+      quoteToken: this.props.exchange.selectedTokensPair.quoteToken,
       aggregated: isInputChecked
     }
-    this.props.dispatch(this.relayGetOrders(filter))
+    this.props.dispatch(Actions.exchange.relayGetOrders(filter))
   }
 
   onSelectFund = async (fund) => {
@@ -312,7 +265,7 @@ class ApplicationExchangeHome extends Component {
         baseTokenAllowance: new BigNumber(allowanceBaseToken).gt(0),
         quoteTokenAllowance: new BigNumber(allowanceQuoteToken).gt(0)
       }
-      this.props.dispatch(this.updateSelectedTradeTokensPair(tokensAllowance))
+      this.props.dispatch(Actions.exchange.updateSelectedTradeTokensPair(tokensAllowance))
       // Getting fund orders
       // this.props.dispatch(this.getFundOrders(
       //   this.props.exchange.relay.networkId,
@@ -327,74 +280,92 @@ class ApplicationExchangeHome extends Component {
     }
   }
 
-  onSelectTokenTrade = async (token) => {
+  onSelectTokenTrade = async (pair) => {
     const { api } = this.context
-    const { selectedTokensPair, selectedExchange, selectedFund, fundOrders } = this.props.exchange
+    const { selectedTokensPair, selectedExchange, selectedFund } = this.props.exchange
+    console.log(pair)
+    const selectedTokens = pair.split("-");
     try {
-      const baseToken = ERC20_TOKENS[api._rb.network.name][token]
+      const baseToken = ERC20_TOKENS[api._rb.network.name][selectedTokens[0]]
+      const quoteToken = ERC20_TOKENS[api._rb.network.name][selectedTokens[1]]
       const allowanceBaseToken = await getTokenAllowance(selectedTokensPair.baseToken.address, selectedFund.details.address, selectedExchange)
       const allowanceQuoteToken = await getTokenAllowance(selectedTokensPair.quoteToken.address, selectedFund.details.address, selectedExchange)
       const tradeTokensPair = {
         baseToken: baseToken,
-        quoteToken: ERC20_TOKENS[api._rb.network.name].WETH,
+        quoteToken: quoteToken,
         baseTokenAllowance: new BigNumber(allowanceBaseToken).gt(0),
-        quoteTokenAllowance: new BigNumber(allowanceQuoteToken).gt(0)
+        quoteTokenAllowance: new BigNumber(allowanceQuoteToken).gt(0),
+        ticker: {
+          current: {
+            price: '0'
+          },
+          previous: {
+            price: '0'
+          },
+          variation: 0
+        }
       }
+
+      // Resetting current order
       this.props.dispatch({
         type: CANCEL_SELECTED_ORDER,
       })
+
+      // Updating selected tokens pair
       this.props.dispatch(
-        this.updateSelectedTradeTokensPair(tradeTokensPair)
+        Actions.exchange.updateSelectedTradeTokensPair(tradeTokensPair)
       )
+
+      // Terminating connection to the exchange
+      this.props.dispatch({
+        type: RELAY_CLOSE_WEBSOCKET,
+      })
+
+      // Reconnecting to the exchange
       this.connectToExchange(tradeTokensPair)
+
+      // Getting chart data
       var tsYesterday = new Date((Math.floor(Date.now() / 1000) - 86400 * 7) * 1000).toISOString()
-      this.props.dispatch(this.getChartData(
+      this.props.dispatch(Actions.exchange.getChartData(
+        this.props.exchange.selectedRelay,
         this.props.exchange.relay.networkId,
-        baseToken.address,
-        ERC20_TOKENS[api._rb.network.name].WETH.address,
+        this.props.exchange.selectedTokensPair.baseToken,
+        this.props.exchange.selectedTokensPair.quoteToken,
         tsYesterday
       )
       )
+
     } catch (error) {
       console.log(error)
     }
   }
 
-  onButtonTest = () => {
-    console.log('open')
-    // this.props.dispatch({ type: 'PING', payload: 'resttter' })
-    // this.props.dispatch({ type: RELAY_OPEN_WEBSOCKET, payload: { 
-    //   url: 'wss://api.ercdex.com',
-    //   baseTokenAddress: this.props.exchange.selectedTokensPair.baseToken.address,
-    //   quoteTokenAddress: this.props.exchange.selectedTokensPair.quoteToken.address
-    // }})
-    var filter = {
-      networkId: this.props.exchange.relay.networkId,
-      baseTokenAddress: this.props.exchange.selectedTokensPair.baseToken.address,
-      quoteTokenAddress: this.props.exchange.selectedTokensPair.quoteToken.address,
-      aggregated: this.props.exchange.orderBook.aggregated
-    }
-    this.props.dispatch(this.relayGetOrders(filter))
-    // this.props.dispatch({ type: 'RELAY_SUBSCRIBE_WEBSOCKET', payload: { sub: 'sub:ticker2' }})
-  }
+  // onButtonTest = () => {
+  //   console.log('open')
+  //   var filter = {
+  //     networkId: this.props.exchange.relay.networkId,
+  //     baseTokenAddress: this.props.exchange.selectedTokensPair.baseToken.address,
+  //     quoteTokenAddress: this.props.exchange.selectedTokensPair.quoteToken.address,
+  //     aggregated: this.props.exchange.orderBook.aggregated
+  //   }
+  //   this.props.dispatch(this.relayGetOrders(filter))
+  //   // this.props.dispatch({ type: 'RELAY_SUBSCRIBE_WEBSOCKET', payload: { sub: 'sub:ticker2' }})
+  // }
 
-  onButtonTest2 = () => {
-    console.log('subscribe')
-    getMarketTakerOrder(
-      this.props.exchange.selectedTokensPair.baseToken.address,
-      this.props.exchange.selectedTokensPair.quoteToken.address,
-      this.props.exchange.selectedTokensPair.baseToken.address,
-      '95000000000000000000',
-      this.props.exchange.relay.networkId,
-      "0x57072759Ba54479669CAdF1A25528a472Af95cEF".toLowerCase()
-    )
-      .then(results => {
-        console.log(results)
-      })
-    // this.props.dispatch({ type: 'RELAY_OPEN_WEBSOCKET', payload: { url: 'wss://api.ercdex.com'}})
-    // this.props.dispatch({ type: 'RELAY_SUBSCRIBE_WEBSOCKET', payload: { sub: 'sub:ticker' }})
-    // this.props.dispatch({ type: 'RELAY_SUBSCRIBE_WEBSOCKET', payload: { sub: 'sub:ticker2' }})
-  }
+  // onButtonTest2 = () => {
+  //   console.log('subscribe')
+  //   getMarketTakerOrder(
+  //     this.props.exchange.selectedTokensPair.baseToken.address,
+  //     this.props.exchange.selectedTokensPair.quoteToken.address,
+  //     this.props.exchange.selectedTokensPair.baseToken.address,
+  //     '95000000000000000000',
+  //     this.props.exchange.relay.networkId,
+  //     "0x57072759Ba54479669CAdF1A25528a472Af95cEF".toLowerCase()
+  //   )
+  //     .then(results => {
+  //       console.log(results)
+  //     })
+  // }
 
   render() {
     const {
@@ -408,7 +379,7 @@ class ApplicationExchangeHome extends Component {
     if (endpoint.loading) {
       return <Loading></Loading>
     }
-    // console.log(endpoint.networkInfo.name)
+    // console.log(this.props)
 
     if (endpoint.networkInfo.name !== 'kovan') {
       return (
@@ -490,7 +461,7 @@ class ApplicationExchangeHome extends Component {
     }
 
     if (user.isManager) {
-      const { bids, asks, spread, aggregated } = this.props.exchange.orderBook
+      const { bids, asks, spread } = this.props.exchange.orderBook
       const asksOrderNormalized = asks.slice(asks.length - 20, asks.length)
       const bidsOrderNormalized = bids.slice(0, 20)
       // console.log(this.props.exchange.selectedExchange)
@@ -498,21 +469,10 @@ class ApplicationExchangeHome extends Component {
       // const asksOrderNormalizedFilled = [ ...Array(20 - asksOrderNormalized.length).fill(null), ...asksOrderNormalized]
       // console.log(this.props.transactionsDrago.manager.list)
       const { prices, chartData, fundOrders } = this.props.exchange
-      var currentPrice = "1"
-      var previousPrice = "0"
-      var priceVariation = "0.00"
-
-      // console.log(this.props.exchange.selectedTokensPair)
-      if (typeof prices[this.props.exchange.selectedTokensPair.baseToken.symbol].priceEth !== 'undefined') {
-        currentPrice = new BigNumber(prices[this.props.exchange.selectedTokensPair.baseToken.symbol].priceEth)
-      }
-      if (typeof prices.previous[this.props.exchange.selectedTokensPair.baseToken.symbol] !== 'undefined') {
-        previousPrice = new BigNumber(prices.previous[this.props.exchange.selectedTokensPair.baseToken.symbol].priceEth)
-      }
-      if (priceVariation !== '0.00') {
-        priceVariation = currentPrice.sub(previousPrice).div(previousPrice).mul(100).toFixed(2)
-      }
-
+      const currentPrice = new BigNumber(this.props.exchange.selectedTokensPair.ticker.current.price)
+      const priceVariation = new BigNumber(this.props.exchange.selectedTokensPair.ticker.variation).toFixed(4)
+      // console.log(this.props.exchange)
+      // console.log(RELAYS)
       return (
         <div ref={node => this.node = node}>
           <Row className={styles.maincontainer}>
@@ -539,7 +499,7 @@ class ApplicationExchangeHome extends Component {
                   <Col xs={4} className={styles.tokenPriceContainer}>
                     <TokenPrice
                       selectedTradeTokensPair={exchange.selectedTokensPair}
-                      tokenPrice={currentPrice.toFixed(6)}
+                      tokenPrice={currentPrice.toFixed(4)}
                       priceVariation={priceVariation}
                     />
                   </Col>
@@ -581,16 +541,13 @@ class ApplicationExchangeHome extends Component {
                     bidsOrders={bidsOrderNormalized}
                     asksOrders={asksOrderNormalized}
                     spread={spread}
-                    aggregated={aggregated}
+                    aggregated={this.props.exchange.orderBookAggregated}
                     onToggleAggregateOrders={this.onToggleAggregateOrders}
                     onlyAggregated={this.props.exchange.selectedRelay.onlyAggregateOrderbook}
                   />
                 </Col>
-
-
               </Row>
             </Col>
-
           </Row>
           <Row>
             <Col xs={12}>
@@ -604,7 +561,6 @@ class ApplicationExchangeHome extends Component {
                 )}
             </Col>
           </Row>
-
           <ElementBottomStatusBar
             blockNumber={endpoint.prevBlockNumber}
             networkName={endpoint.networkInfo.name}
@@ -649,27 +605,26 @@ class ApplicationExchangeHome extends Component {
   }
 
   connectToExchange = async (tradeTokensPair) => {
-    console.log(tradeTokensPair)
     const { api } = this.context
     const networkInfo = api._rb.network
-    const endpoints = this.props.endpoint.endpointInfo
-    var exchangeUtils = new Exchange(endpoints, networkInfo, tradeTokensPair)
-    var contract = exchangeUtils.init()
-    const subscription = contract.events.allEvents({
-      fromBlock: 0,
-      toBlock: 'latest'
-    }, this.onNewEventZeroExExchange)
-    var filter = {
+    // const endpoints = this.props.endpoint.endpointInfo
+    // var exchangeUtils = new Exchange(endpoints, networkInfo, tradeTokensPair)
+    // var contract = exchangeUtils.init()
+    // const subscription = contract.events.allEvents({
+    //   fromBlock: 0,
+    //   toBlock: 'latest'
+    // }, this.onNewEventZeroExExchange)
+    var payload = {
       relay: this.props.exchange.selectedRelay,
       networkId: this.props.exchange.relay.networkId,
       baseToken: this.props.exchange.selectedTokensPair.baseToken,
       quoteToken: this.props.exchange.selectedTokensPair.quoteToken,
-      aggregated: this.props.exchange.orderBook.aggregated
+      aggregated: this.props.exchange.orderBookAggregated
     }
-    this.props.dispatch(this.relayGetOrders(filter))
+    this.props.dispatch(Actions.exchange.relayGetOrders(payload))
     this.props.dispatch({
       type: RELAY_OPEN_WEBSOCKET, payload: {
-        url: 'wss://api.ercdex.com',
+        relay: this.props.exchange.selectedRelay,
         baseToken: this.props.exchange.selectedTokensPair.baseToken,
         quoteToken: this.props.exchange.selectedTokensPair.quoteToken
       }

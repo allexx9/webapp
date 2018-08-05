@@ -3,7 +3,6 @@
 
 import Exchange from './index'
 
-
 describe("get tickers from exchange", () => {
   var networks = new Array()
   networks[1] = 'Mainnet'
@@ -27,3 +26,4 @@ describe("get tickers from exchange", () => {
     })
   })
 })
+
