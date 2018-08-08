@@ -69,7 +69,7 @@
     "build-parity-win": "react-scripts build",
     "build-beta": "GENERATE_SOURCEMAP=false PUBLIC_URL=./ react-scripts build",
     "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom --coverage",
+    "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "watch": "node scripts/watch.js",
     "analyze": "source-map-explorer build/static/js/main.*"

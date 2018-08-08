@@ -15,7 +15,7 @@ import {
 } from './const' 
 
 describe("get tickers from exchange REST API", () => {
-  var networks = new Array()
+  let networks = new Array()
   networks[1] = 'Mainnet'
   networks[42] = 'Kovan'
   networks[3] = 'Ropsten'
@@ -51,7 +51,7 @@ describe("get tickers from exchange REST API", () => {
 })
 
 describe("get aggregate orders from exchange REST API", () => {
-  var networks = new Array()
+  let networks = new Array()
   networks[1] = 'Mainnet'
   networks[42] = 'Kovan'
   networks[3] = 'Ropsten'
@@ -94,7 +94,7 @@ describe("get aggregate orders from exchange REST API", () => {
 })
 
 describe("get historical price data from exchange REST API", () => {
-  var networks = new Array()
+  let networks = new Array()
   networks[1] = 'Mainnet'
   networks[42] = 'Kovan'
   networks[3] = 'Ropsten'
@@ -139,7 +139,7 @@ describe("get historical price data from exchange REST API", () => {
 })
 
 describe("get orders from exchange REST API", () => {
-  var networks = new Array()
+  let networks = new Array()
   networks[1] = 'Mainnet'
   networks[42] = 'Kovan'
   networks[3] = 'Ropsten'

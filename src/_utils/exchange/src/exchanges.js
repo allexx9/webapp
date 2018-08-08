@@ -104,15 +104,15 @@ export const getHistoricalPricesData = {
 
 // Get a list of tokens with price information
 export const getTickers = {
-  // ERCdEX: (networkId = 1) => {
-  //   const options = {
-  //     method: 'GET',
-  //     url: `${SupportedExchanges.ERCdEX.http[NETWORKS_ID[networkId]]}/reports/ticker?networkId=${networkId}`,
-  //     qs: {},
-  //     json: true
-  //   }
-  //   return options
-  // },
+  ERCdEX: (networkId = 1) => {
+    const options = {
+      method: 'GET',
+      url: `${SupportedExchanges.ERCdEX.http[NETWORKS_ID[networkId]]}/reports/ticker?networkId=${networkId}`,
+      qs: {},
+      json: true
+    }
+    return options
+  },
   Ethfinex: (networkId = 1) => {
     const symbols = SupportedExchanges.Ethfinex.tickersTokenPairs.toString()
     const options = {
