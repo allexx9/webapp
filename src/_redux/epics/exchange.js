@@ -48,7 +48,7 @@ import {
   UPDATE_SELECTED_FUND,
   UPDATE_ELEMENT_LOADING,
   UPDATE_MARKET_DATA,
-  FETCH_MARKET_PRICE_DATA,
+  FETCH_CANDLES_DATA,
   FETCH_HISTORY_TRANSACTION_LOGS,
   UPDATE_HISTORY_TRANSACTION_LOGS,
   FETCH_FUND_ORDERS,
@@ -88,11 +88,9 @@ const getOrderBookFromRelay$ = (relay, networkId, baseToken, quoteToken, aggrega
 export const getOrderBookFromRelayEpic = (action$) => {
   return action$.ofType(RELAY_GET_ORDERS)
     .mergeMap((action) => {
-      console.log(RELAY_GET_ORDERS)
       return getOrderBookFromRelay$(
         action.payload.relay,
         action.payload.networkId,
-        // '42',
         action.payload.baseToken,
         action.payload.quoteToken,
         action.payload.aggregated
@@ -207,49 +205,7 @@ export const getAssetsPricesDataFromERCdEXEpic = (action$) => {
     });
 }
 
-//
-// FETCH HISTORICAL MARKET DATA
-//
 
-
-const getHistoricalPricesData$ = (relay, networkId, baseToken, quoteToken, startDate) => {
-  // const relay = {
-  //   name: 'ERCdEX'
-  // }
-  const exchange = new Exchange(relay.name, networkId)
-  return Observable.fromPromise(exchange.getHistoricalPricesData(
-    utils.getTockenSymbolForRelay(relay.name, baseToken),
-    utils.getTockenSymbolForRelay(relay.name, quoteToken),
-    startDate))
-}
-
-// const getHistoricalPricesData$ = (networkId, baseToken, quoteToken, startDate) =>
-//   Observable.fromPromise(getHistoricalPricesDataFromERCdEX(networkId, baseToken.address, quoteToken.address, startDate))
-
-export const getHistoricalPricesDataFromERCdEXEpic = (action$) => {
-  return action$.ofType(FETCH_MARKET_PRICE_DATA)
-    .mergeMap((action) => {
-      console.log(action)
-      return Observable.concat(
-        Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: true } }),
-        getHistoricalPricesData$(
-          action.payload.selectedRelay,
-          action.payload.networkId,
-          action.payload.baseToken,
-          action.payload.quoteToken,
-          action.payload.startDate
-        )
-        .map(historical => {
-          return {
-            type: UPDATE_MARKET_DATA,
-            payload: historical
-          }
-        })
-        ,
-        Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: false } }),
-      )
-    });
-}
 
 //
 // FETCH HISTORICAL TRANSCATION LOGS DATA

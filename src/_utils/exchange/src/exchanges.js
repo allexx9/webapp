@@ -52,21 +52,21 @@ export const getOrders = {
     };
     return options
   },
-  // Ethfinex: (networkId = 1, baseToken, quoteToken) => {
-  //   if (baseToken.length > 4) {
-  //     throw new Error('baseToken has to be a shorter than 4 characters')
-  //   }
-  //   if (quoteToken.length > 4) {
-  //     throw new Error('quoteToken has to be a shorter than 4 characters')
-  //   }
-  //   const options = {
-  //     method: 'GET',
-  //     url: `${SupportedExchanges.Ethfinex.http[NETWORKS_ID[networkId]]}/book/t${baseToken}${quoteToken}/P0`,
-  //     qs: {},
-  //     json: true
-  //   }
-  //   return options
-  // }
+  Ethfinex: (networkId = 1, baseToken, quoteToken) => {
+    if (baseToken.length > 4) {
+      throw new Error('baseToken has to be a shorter than 4 characters')
+    }
+    if (quoteToken.length > 4) {
+      throw new Error('quoteToken has to be a shorter than 4 characters')
+    }
+    const options = {
+      method: 'GET',
+      url: `${SupportedExchanges.Ethfinex.http[NETWORKS_ID[networkId]]}/book/t${baseToken}${quoteToken}/P2`,
+      qs: {},
+      json: true
+    }
+    return options
+  }
 }
 
 // Get historical prices data for a given period of time
@@ -104,15 +104,15 @@ export const getHistoricalPricesData = {
 
 // Get a list of tokens with price information
 export const getTickers = {
-  ERCdEX: (networkId = 1) => {
-    const options = {
-      method: 'GET',
-      url: `${SupportedExchanges.ERCdEX.http[NETWORKS_ID[networkId]]}/reports/ticker?networkId=${networkId}`,
-      qs: {},
-      json: true
-    }
-    return options
-  },
+  // ERCdEX: (networkId = 1) => {
+  //   const options = {
+  //     method: 'GET',
+  //     url: `${SupportedExchanges.ERCdEX.http[NETWORKS_ID[networkId]]}/reports/ticker?networkId=${networkId}`,
+  //     qs: {},
+  //     json: true
+  //   }
+  //   return options
+  // },
   Ethfinex: (networkId = 1) => {
     const symbols = SupportedExchanges.Ethfinex.tickersTokenPairs.toString()
     const options = {

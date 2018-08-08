@@ -17,14 +17,45 @@ import logger from 'redux-logger'
 import { createEpicMiddleware } from 'redux-observable';
 import { rootEpic } from './_redux/epics/root';
 import { composeWithDevTools } from 'redux-devtools-extension';
+import * as ACTIONS  from './_redux/actions/const'
+import utils from './_utils/utils'
+import serializeError from 'serialize-error';
 
 import './index.module.css';
 
 const epicMiddleware = createEpicMiddleware(rootEpic);
 
+const relayActionsMiddleWare = store => next => action => {
+    const state = store.getState()
+    // console.log("relayActionsMiddleWare triggered:", action)
+    // console.log(state.exchange.selectedRelay.name)
+
+    // console.log(ACTIONS.CUSTOM_EXCHANGE_ACTIONS)
+    if (ACTIONS.CUSTOM_EXCHANGE_ACTIONS.includes(action.type)) {
+        console.log(`relayActionsMiddleWare  action: ${state.exchange.selectedRelay.name.toUpperCase()}_${action.type}`)
+        action.type = `${state.exchange.selectedRelay.name.toUpperCase()}_${action.type}`  
+        console.log(action.type)   
+    }
+    next(action);
+  }
+
+  const notificationsMiddleWare = store => next => action => {
+    const state = store.getState()
+    // console.log("notificationsMiddleWare triggered:", action)
+    // console.log(state.exchange.selectedRelay.name)
+
+    // console.log(ACTIONS.CUSTOM_EXCHANGE_ACTIONS)
+    if (action.type === ACTIONS.ADD_ERROR_NOTIFICATION) {
+        utils.notificationError(state.notifications.engine, serializeError(action.payload))
+    }
+    next(action);
+  }
+
 const middlewares = [
     thunkMiddleware,
     epicMiddleware,
+    relayActionsMiddleWare,
+    notificationsMiddleWare,
     promiseMiddleware()
 ];
 

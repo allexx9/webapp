@@ -7,7 +7,6 @@ import {
   KOVAN,
   PROD,
   WS,
-  EXCHANGES
 } from './const'
 import * as abis from '../PoolsApi/src/contracts/abi'
 import { ZeroEx } from '0x.js';
@@ -17,10 +16,9 @@ import rp from 'request-promise'
 import PoolApi from '../PoolsApi/src'
 
 
-export const  setAllowaceOnExchangeThroughDrago = (selectedFund, token, selectedExchange, amount) => {
+export const setAllowaceOnExchangeThroughDrago = (selectedFund, token, selectedExchange, amount) => {
   // var provider = account.source === 'MetaMask' ? window.web3 : api
-  var poolApi = null;
-  poolApi = new PoolApi(window.web3)
+  const poolApi = new PoolApi(window.web3)
   poolApi.contract.drago.init(selectedFund.details.address)
   console.log('selectedFund.details.address ', selectedFund.details.address)
   console.log('tokenTransferProxyAddress ', selectedExchange.tokenTransferProxyAddress)
@@ -48,7 +46,7 @@ export const  setAllowaceOnExchangeThroughDrago = (selectedFund, token, selected
 //   return rp(options)
 // }
 
-export const getOrdersFromRelayERCdEX = ( networkId, maker, baseTokenAddress, quoteTokenAddress) => {
+export const getOrdersFromRelayERCdEX = (networkId, maker, baseTokenAddress, quoteTokenAddress) => {
   console.log('Fetching open orders from ERCdEX')
   if (!networkId) {
     throw new Error('networkId needs to be set')
@@ -62,7 +60,7 @@ export const getOrdersFromRelayERCdEX = ( networkId, maker, baseTokenAddress, qu
   if (!quoteTokenAddress) {
     throw new Error('quoteTokenAddress needs to be set')
   }
-  var options = {
+  let options = {
     method: 'GET',
     url: `https://api.ercdex.com/api/standard/${networkId}/v0/orders`,
     qs: {
@@ -77,7 +75,7 @@ export const getOrdersFromRelayERCdEX = ( networkId, maker, baseTokenAddress, qu
   return rp(options)
 }
 
-export const getTradeHistoryLogsFromRelayERCdEX = ( networkId, baseTokenAddress, quoteTokenAddress) => {
+export const getTradeHistoryLogsFromRelayERCdEX = (networkId, baseTokenAddress, quoteTokenAddress) => {
   console.log('Fetching transactions log from ERCdEX')
   if (!networkId) {
     throw new Error('networkId needs to be set')
@@ -88,7 +86,7 @@ export const getTradeHistoryLogsFromRelayERCdEX = ( networkId, baseTokenAddress,
   if (!quoteTokenAddress) {
     throw new Error('quoteTokenAddress needs to be set')
   }
-  var options = {
+  let options = {
     method: 'GET',
     url: `https://api.ercdex.com/api/trade_history_logs`,
     qs: {
@@ -103,7 +101,7 @@ export const getTradeHistoryLogsFromRelayERCdEX = ( networkId, baseTokenAddress,
   return rp(options)
 }
 
-export const getHistoricalPricesDataFromERCdEX = ( networkId, baseTokenAddress, quoteTokenAddress,  startDate) =>{
+export const getHistoricalPricesDataFromERCdEX = (networkId, baseTokenAddress, quoteTokenAddress, startDate) => {
   if (!networkId) {
     throw new Error('networkId needs to be set')
   }
@@ -116,12 +114,12 @@ export const getHistoricalPricesDataFromERCdEX = ( networkId, baseTokenAddress, 
   if (!startDate) {
     throw new Error('startDate needs to be set')
   }
-  var options = {
+  let options = {
     method: 'POST',
     url: `https://api.ercdex.com/api/reports/historical`,
     body: {
       networkId: networkId,
-      baseTokenAddress: baseTokenAddress, 
+      baseTokenAddress: baseTokenAddress,
       quoteTokenAddress: quoteTokenAddress,
       startDate: startDate
     },
@@ -129,54 +127,54 @@ export const getHistoricalPricesDataFromERCdEX = ( networkId, baseTokenAddress, 
   };
   // console.log(options)
   return rp(options)
-  .then(historical => {
-    return historical
-  })
-  .catch(error => {
-    console.log(error)
-    return []
-  })
+    .then(historical => {
+      return historical
+    })
+    .catch(error => {
+      console.log(error)
+      return []
+    })
 }
 
-export const getOrderBookFromRelayERCdEX = (networkId, baseTokenAddress, quoteTokenAddress) => {
-  console.log('Fetching orderbook from ERCdEX')
-  if (!networkId) {
-    throw new Error('networkId needs to be set')
-  }
-  if (!baseTokenAddress) {
-    throw new Error('baseTokenAddress needs to be set')
-  }
-  if (!quoteTokenAddress) {
-    throw new Error('quoteTokenAddress needs to be set')
-  }
-  var options = {
-    method: 'GET',
-    url: `https://api.ercdex.com/api/standard/${networkId}/v0/orderbook`,
-    qs: {
-      baseTokenAddress: baseTokenAddress, 
-      quoteTokenAddress: quoteTokenAddress
-    },
-    json: true // Automatically stringifies the body to JSON
-  };
-  console.log(options)
-  return rp(options)
-  .then(orders => {
-    console.log(orders)
-    const bidsOrders = formatOrders(orders.bids, 'bids')
-    const asksOrders = formatOrders(orders.asks, 'asks')
-    var spread = 0
-    if (bidsOrders.length !== 0 && asksOrders.length !== 0) {
-      spread = new BigNumber(asksOrders[asksOrders.length-1].orderPrice).minus(new BigNumber(bidsOrders[0].orderPrice)).toFixed(5)
-    } else {
-      spread = new BigNumber(0).toFixed(5)
-    }
-    return {
-      bids: bidsOrders,
-      asks: asksOrders,
-      spread 
-    }
-  })
-}
+// export const getOrderBookFromRelayERCdEX = (networkId, baseTokenAddress, quoteTokenAddress) => {
+//   console.log('Fetching orderbook from ERCdEX')
+//   if (!networkId) {
+//     throw new Error('networkId needs to be set')
+//   }
+//   if (!baseTokenAddress) {
+//     throw new Error('baseTokenAddress needs to be set')
+//   }
+//   if (!quoteTokenAddress) {
+//     throw new Error('quoteTokenAddress needs to be set')
+//   }
+//   var options = {
+//     method: 'GET',
+//     url: `https://api.ercdex.com/api/standard/${networkId}/v0/orderbook`,
+//     qs: {
+//       baseTokenAddress: baseTokenAddress, 
+//       quoteTokenAddress: quoteTokenAddress
+//     },
+//     json: true // Automatically stringifies the body to JSON
+//   };
+//   console.log(options)
+//   return rp(options)
+//   .then(orders => {
+//     console.log(orders)
+//     const bidsOrders = formatOrders(orders.bids, 'bids')
+//     const asksOrders = formatOrders(orders.asks, 'asks')
+//     var spread = 0
+//     if (bidsOrders.length !== 0 && asksOrders.length !== 0) {
+//       spread = new BigNumber(asksOrders[asksOrders.length-1].orderPrice).minus(new BigNumber(bidsOrders[0].orderPrice)).toFixed(5)
+//     } else {
+//       spread = new BigNumber(0).toFixed(5)
+//     }
+//     return {
+//       bids: bidsOrders,
+//       asks: asksOrders,
+//       spread 
+//     }
+//   })
+// }
 
 // export const getAggregatedOrdersFromRelayERCdEX = (networkId, baseTokenAddress, quoteTokenAddress) => {
 //   console.log('Fetching aggregated orders from ERCdEX')
@@ -238,10 +236,10 @@ export const getOrderBookFromRelayERCdEX = (networkId, baseTokenAddress, quoteTo
 //   return formattedOrders
 // }
 
-export const formatOrders = (orders, orderType) =>{
-  var orderPrice, orderAmount
+export const formatOrders = (orders, orderType) => {
+  let orderPrice, orderAmount
   let web3 = new Web3(Web3.currentProvider)
-  var formattedOrders = orders.map((order) => {
+  let formattedOrders = orders.map((order) => {
     switch (orderType) {
       case "asks":
         orderPrice = new BigNumber(order.takerTokenAmount).div(new BigNumber(order.makerTokenAmount)).toFixed(7)
@@ -252,8 +250,8 @@ export const formatOrders = (orders, orderType) =>{
         orderAmount = new BigNumber(web3.utils.fromWei(order.takerTokenAmount, 'ether')).toFixed(5)
         break;
     }
-    var orderHash = ZeroEx.getOrderHashHex(order)
-    var orderObject = {
+    let orderHash = ZeroEx.getOrderHashHex(order)
+    let orderObject = {
       order,
       orderAmount,
       orderType,
@@ -267,7 +265,7 @@ export const formatOrders = (orders, orderType) =>{
 
 export const signOrder = async (order, ZeroExConfig) => {
   const DECIMALS = 18;
-  var makerTokenAmount, takerTokenAmount
+  let makerTokenAmount, takerTokenAmount
   const zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig);
 
   switch (order.orderType) {
@@ -284,7 +282,7 @@ export const signOrder = async (order, ZeroExConfig) => {
     makerTokenAmount: ZeroEx.toBaseUnitAmount(makerTokenAmount, DECIMALS), // Base 18 decimals
     takerTokenAmount: ZeroEx.toBaseUnitAmount(takerTokenAmount, DECIMALS), // Base 18 decimals
   };
-  var orderToBeSigned = { ...order.details.order, ...tokensAmounts }
+  let orderToBeSigned = { ...order.details.order, ...tokensAmounts }
   const fees = await getFees(orderToBeSigned, ZeroExConfig.networkId)
   console.log(fees)
   const orderToBeSignedWithFees = {
@@ -302,7 +300,7 @@ export const signOrder = async (order, ZeroExConfig) => {
     ecSignature,
     orderToBeSigned.maker
   )
-)
+  )
   // Append signature to order
   const signedOrder = {
     ...orderToBeSignedWithFees,
@@ -321,7 +319,7 @@ export const submitOrderToRelay = async (signedOrder) => {
   // const relayerClient = new HttpClient(relayerApiUrl);
   // const response = await relayerClient.submitOrderAsync(signedOrder);
   // console.log(response)
-  var options = {
+  let options = {
     method: 'POST',
     uri: relayerApiUrl,
     body: signedOrder,
@@ -337,10 +335,10 @@ export const softCancelOrderFromRelayERCdEX = async (signedOrder) => {
   // const relayerClient = new HttpClient(relayerApiUrl);
   // const response = await relayerClient.submitOrderAsync(signedOrder);
   // console.log(response)
-  
+
   const signature = JSON.stringify(signedOrder.order.ecSignature)
   const oderHash = ZeroEx.getOrderHashHex(signedOrder.order);
-  var options = {
+  let options = {
     method: 'POST',
     uri: relayerApiUrl,
     body: {
@@ -356,7 +354,7 @@ export const softCancelOrderFromRelayERCdEX = async (signedOrder) => {
 export const getFees = async (order, networkId) => {
   const relayerApiUrl = `https://api.ercdex.com/api/fees`
 
-  var options = {
+  let options = {
     method: 'POST',
     uri: relayerApiUrl,
     qs: {
@@ -375,15 +373,18 @@ export const getFees = async (order, networkId) => {
 }
 
 export const getTokenAllowance = async (
-  tokenAddress,
+  token,
   ownerAddress,
   ZeroExConfig,
 ) => {
+  if (token.symbol === 'ETH') {
+    return true
+  }
   const zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig)
   return zeroEx.token.getProxyAllowanceAsync(
-    tokenAddress,
+    token.address,
     ownerAddress
-    )
+  )
 }
 
 export const setTokenAllowance = async (
@@ -397,7 +398,7 @@ export const setTokenAllowance = async (
     tokenAddress,
     ownerAddress,
     spenderAddress,
-    )
+  )
 }
 
 export const getAvailableAddresses = async (
@@ -406,7 +407,7 @@ export const getAvailableAddresses = async (
   const zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig)
   return zeroEx.getAvailableAddressesAsync()
 }
- 
+
 export const getMarketTakerOrder = async (
   makerTokenAddress,
   takerTokenAddress,
@@ -418,7 +419,7 @@ export const getMarketTakerOrder = async (
 
   const relayerApiUrl = `https://api.ercdex.com/api/orders/best`
 
-  var options = {
+  let options = {
     method: 'GET',
     uri: relayerApiUrl,
     qs: {
@@ -436,11 +437,11 @@ export const getMarketTakerOrder = async (
 }
 
 export const newMakerOrder = async (orderType, baseTokenAddress, quoteTokenAddress, ZeroExConfig, selectedFund) => {
-  const zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig);
+  // const zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig);
   // const EXCHANGE_ADDRESS = zeroEx.exchange.getContractAddress();
   const EXCHANGE_ADDRESS = '0xf307de6528fa16473d8f6509b7b1d8851320dba5'
-  const accounts = await zeroEx.getAvailableAddressesAsync();
-  const makerAddress = accounts[0]
+  // const accounts = await zeroEx.getAvailableAddressesAsync();
+  // const makerAddress = accounts[0]
   const makerTokenAddress = (orderType === 'asks') ? baseTokenAddress : quoteTokenAddress
   const takerTokenAddress = (orderType === 'asks') ? quoteTokenAddress : baseTokenAddress
 
@@ -463,7 +464,7 @@ export const newMakerOrder = async (orderType, baseTokenAddress, quoteTokenAddre
   return order
 }
 
-export const fillOrderToExchange = async (signedOrder, amount, ZeroExConfig) =>{
+export const fillOrderToExchange = async (signedOrder, amount, ZeroExConfig) => {
   // const zeroEx = this._zeroEx
   const DECIMALS = 18;
   const shouldThrowOnInsufficientBalanceOrAllowance = true;
@@ -486,7 +487,7 @@ export const fillOrderToExchange = async (signedOrder, amount, ZeroExConfig) =>{
   console.log('FillOrder transaction receipt: ', txReceipt);
 }
 
-export const fillOrderToExchangeViaProxy = async (selectedFund, signedOrder, amount, ZeroExConfig) =>{
+export const fillOrderToExchangeViaProxy = async (selectedFund, signedOrder, amount, ZeroExConfig) => {
   // const zeroEx = this._zeroEx
   const DECIMALS = 18;
 
@@ -495,51 +496,51 @@ export const fillOrderToExchangeViaProxy = async (selectedFund, signedOrder, amo
   console.log(JSON.stringify(signedOrder))
 
   const orderAddresses = [
-      order.maker,
-      order.taker,
-      order.makerTokenAddress,
-      order.takerTokenAddress,
-      order.feeRecipient,
-    ]
-    const orderValues = [
-      order.makerTokenAmount,
-      order.takerTokenAmount,
-      order.makerFee,
-      order.takerFee,
-      order.expirationUnixTimestampSec,
-      order.salt
-    ]
-    const v = order.ecSignature.v
-    const r = order.ecSignature.r
-    const s = order.ecSignature.s
-    const shouldThrowOnInsufficientBalanceOrAllowance = true;
-    console.log(
-      orderAddresses,
-      orderValues,
-      ZeroEx.toBaseUnitAmount(new BigNumber(amount), DECIMALS).toString(),
-      shouldThrowOnInsufficientBalanceOrAllowance,
-      v,
-      r,
-      s
-    )
+    order.maker,
+    order.taker,
+    order.makerTokenAddress,
+    order.takerTokenAddress,
+    order.feeRecipient,
+  ]
+  const orderValues = [
+    order.makerTokenAmount,
+    order.takerTokenAmount,
+    order.makerFee,
+    order.takerFee,
+    order.expirationUnixTimestampSec,
+    order.salt
+  ]
+  const v = order.ecSignature.v
+  const r = order.ecSignature.r
+  const s = order.ecSignature.s
+  const shouldThrowOnInsufficientBalanceOrAllowance = true;
+  console.log(
+    orderAddresses,
+    orderValues,
+    ZeroEx.toBaseUnitAmount(new BigNumber(amount), DECIMALS).toString(),
+    shouldThrowOnInsufficientBalanceOrAllowance,
+    v,
+    r,
+    s
+  )
 
-    var poolApi = null;
-    poolApi = new PoolApi(window.web3)
-    poolApi.contract.drago.init(selectedFund.details.address)
-    return poolApi.contract.drago.fillOrderOnZeroExExchange(
-      selectedFund.managerAccount,
-      orderAddresses,
-      orderValues,
-      ZeroEx.toBaseUnitAmount(new BigNumber(amount), DECIMALS).toString(),
-      shouldThrowOnInsufficientBalanceOrAllowance,
-      v,
-      r,
-      s,
-      ZeroExConfig
-    )
+  let poolApi = null;
+  poolApi = new PoolApi(window.web3)
+  poolApi.contract.drago.init(selectedFund.details.address)
+  return poolApi.contract.drago.fillOrderOnZeroExExchange(
+    selectedFund.managerAccount,
+    orderAddresses,
+    orderValues,
+    ZeroEx.toBaseUnitAmount(new BigNumber(amount), DECIMALS).toString(),
+    shouldThrowOnInsufficientBalanceOrAllowance,
+    v,
+    r,
+    s,
+    ZeroExConfig
+  )
 }
 
-export const cancelOrderOnExchangeViaProxy = async (selectedFund, signedOrder, cancelTakerTokenAmount) =>{
+export const cancelOrderOnExchangeViaProxy = async (selectedFund, signedOrder, cancelTakerTokenAmount) => {
   // const zeroEx = this._zeroEx
   const DECIMALS = 18;
 
@@ -548,36 +549,36 @@ export const cancelOrderOnExchangeViaProxy = async (selectedFund, signedOrder, c
   console.log(JSON.stringify(signedOrder))
 
   const orderAddresses = [
-      order.maker,
-      order.taker,
-      order.makerTokenAddress,
-      order.takerTokenAddress,
-      order.feeRecipient,
-    ]
-    const orderValues = [
-      order.makerTokenAmount,
-      order.takerTokenAmount,
-      order.makerFee,
-      order.takerFee,
-      order.expirationUnixTimestampSec,
-      order.salt
-    ]
-    console.log(
-      orderAddresses,
-      orderValues,
-      ZeroEx.toBaseUnitAmount(new BigNumber(cancelTakerTokenAmount), DECIMALS).toString(),
-    )
+    order.maker,
+    order.taker,
+    order.makerTokenAddress,
+    order.takerTokenAddress,
+    order.feeRecipient,
+  ]
+  const orderValues = [
+    order.makerTokenAmount,
+    order.takerTokenAmount,
+    order.makerFee,
+    order.takerFee,
+    order.expirationUnixTimestampSec,
+    order.salt
+  ]
+  console.log(
+    orderAddresses,
+    orderValues,
+    ZeroEx.toBaseUnitAmount(new BigNumber(cancelTakerTokenAmount), DECIMALS).toString(),
+  )
 
-    var poolApi = null;
-    poolApi = new PoolApi(window.web3)
-    poolApi.contract.drago.init(selectedFund.details.address)
-    return poolApi.contract.drago.cancelOrderOnZeroExExchange(
-      selectedFund.managerAccount,
-      orderAddresses,
-      orderValues,
-      ZeroEx.toBaseUnitAmount(new BigNumber(cancelTakerTokenAmount), DECIMALS).toString(),
-      signedOrder.exchangeContractAddress
-    )
+  let poolApi = null;
+  poolApi = new PoolApi(window.web3)
+  poolApi.contract.drago.init(selectedFund.details.address)
+  return poolApi.contract.drago.cancelOrderOnZeroExExchange(
+    selectedFund.managerAccount,
+    orderAddresses,
+    orderValues,
+    ZeroEx.toBaseUnitAmount(new BigNumber(cancelTakerTokenAmount), DECIMALS).toString(),
+    signedOrder.exchangeContractAddress
+  )
 }
 
 class Exchange {
@@ -612,7 +613,7 @@ class Exchange {
       this._https = endpointInfo.https[this._network.name].dev
       this._wss = endpointInfo.wss[this._network.name].dev
     }
-    
+
     const ZeroExConfig = {
       networkId: this._network.id,
       // exchangeContractAddress: this._network.id
@@ -641,8 +642,8 @@ class Exchange {
   init = () => {
     // console.log(Aqueduct.Initialize())
     if (this._onWs) {
-      var api
       try {
+        let api
         console.log("Network: ", this._network.name)
         console.log("Connecting to: ", this._wss)
         api = new Web3(this._wss)
@@ -656,6 +657,7 @@ class Exchange {
       }
     } else {
       try {
+        let api
         console.log("Network: ", this._network.name)
         console.log("Connecting to: ", this._https)
         api = new Web3(this._https)
@@ -756,9 +758,9 @@ class Exchange {
   //     });
   // }
 
-  formatOrders = (orders, orderType) =>{
-    var orderPrice, orderAmount
-    var formattedOrders = orders.map((order) => {
+  formatOrders = (orders, orderType) => {
+    let orderPrice, orderAmount
+    let formattedOrders = orders.map((order) => {
       switch (orderType) {
         case "asks":
           orderPrice = new BigNumber(order.takerTokenAmount).div(new BigNumber(order.makerTokenAmount)).toFixed(7)
@@ -769,8 +771,8 @@ class Exchange {
           orderAmount = new BigNumber(this.api.utils.fromWei(order.takerTokenAmount, 'ether')).toFixed(5)
           break;
       }
-      var orderHash = ZeroEx.getOrderHashHex(order)
-      var orderObject = {
+      let orderHash = ZeroEx.getOrderHashHex(order)
+      let orderObject = {
         order,
         orderAmount,
         orderType,
@@ -857,7 +859,7 @@ class Exchange {
   // }
 
   // getFees = async (feesRequest) => {
-    
+
   //   const relayerApiUrl = 'https://api.kovan.radarrelay.com/0x/v0/'
   //   const relayerClient = new HttpClient(relayerApiUrl);
   //   const relayerFees = await relayerClient.getFeesAsync(feesRequest)
@@ -881,7 +883,7 @@ class Exchange {
     // const relayerClient = new HttpClient(relayerApiUrl);
     // const response = await relayerClient.submitOrderAsync(signedOrder);
     // console.log(response)
-    var options = {
+    let options = {
       method: 'POST',
       uri: relayerApiUrl,
       body: signedOrder,
@@ -930,7 +932,7 @@ class Exchange {
 
   updateOrderToOrderBook = (order, orders, action) => {
     console.log(order, orders, action)
-    var orderPrice, orderAmount, orderType
+    let orderPrice, orderAmount, orderType
     (this._baseTokenAddress === order.makerTokenAddress ? orderType = 'asks' : orderType = 'bids')
     switch (orderType) {
       case "asks":
@@ -943,14 +945,14 @@ class Exchange {
         break;
     }
     // var orderHash = ZeroEx.getOrderHashHex(order)
-    var orderObject = {
+    let orderObject = {
       order,
       orderAmount,
       orderType,
       orderPrice,
       orderHash: order.orderHash
     }
-    var newOrders = { ...orders }
+    let newOrders = { ...orders }
 
     switch (action) {
       case 'add':

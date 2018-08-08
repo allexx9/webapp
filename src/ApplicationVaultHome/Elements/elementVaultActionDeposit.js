@@ -7,6 +7,7 @@ import React, { Component } from 'react';
 import { ERRORS, validateAccount, validatePositiveNumber } from '../../_utils/validation';
 import AccountSelector from '../../Elements/elementAccountSelector';
 import PoolApi from '../../PoolsApi/src'
+import ActionsDialogHeader from '../../_atomic/molecules/actionsDialogHeader';
 
 const NAME_ID = ' ';
 const ADDRESS_0 = '0x0000000000000000000000000000000000000000'; //ADDRESS_0 is for ETH deposits
@@ -24,7 +25,8 @@ export default class ElementVaultActionDeposit extends Component {
     accounts: PropTypes.array.isRequired,
     vaultDetails: PropTypes.object.isRequired,
     open: PropTypes.bool.isRequired,
-    snackBar: PropTypes.func
+    snackBar: PropTypes.func.isRequired,
+    onClose: PropTypes.func.isRequired,
   }
 
   state = {
@@ -178,11 +180,11 @@ export default class ElementVaultActionDeposit extends Component {
     const { vaultDetails } = this.props
     // const { instance } = this.context;
     const exchangeAddress = this.state.exchangeAddress; //cfd exchange; //this.state.exchange;
-    const values = [exchangeAddress.toString(), ADDRESS_0, api.util.toWei(this.state.amount).toString()]; //this.state.account.address
+    // const values = [exchangeAddress.toString(), ADDRESS_0, api.util.toWei(this.state.amount).toString()]; //this.state.account.address
     // const options = {
     //   from: this.state.account.address
     // };
-    var poolApi = null;
+    let poolApi = null;
 
     this.setState({
       sending: true
@@ -212,7 +214,7 @@ export default class ElementVaultActionDeposit extends Component {
       poolApi.contract.drago.init(vaultDetails.address)
       poolApi.contract.drago.depositToExchange(this.state.account.address, exchangeAddress.toString(), 
                                                 ADDRESS_0, api.util.toWei(this.state.amount).toString())
-      .then((r) => {
+      .then(() => {
         this.onClose()
         this.props.snackBar('Deposit awaiting for authorization')
       })

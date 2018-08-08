@@ -1,4 +1,4 @@
-import  * as Colors from 'material-ui/styles/colors';
+import * as Colors from 'material-ui/styles/colors';
 import { Row, Col } from 'react-flexbox-grid';
 import ActionSwapHoriz from 'material-ui/svg-icons/action/swap-horiz';
 import BigNumber from 'bignumber.js';
@@ -29,8 +29,8 @@ import { connect } from 'react-redux';
 import { Actions } from '../../_redux/actions';
 
 const customContentStyle = {
-  minHeight: '500px',
-};
+  minHeight: '500px'
+}
 
 const zeroAmount = new BigNumber(0).toFormat(4)
 
@@ -60,13 +60,13 @@ class ElementVaultActions extends React.Component {
         account: {},
         accountError: ERRORS.invalidAccount,
         accountCorrect: false,
-        newDrgBalance:  zeroAmount,
-        drgBalance:  zeroAmount,
-        drgOrder:  zeroAmount,
+        newDrgBalance: zeroAmount,
+        drgBalance: zeroAmount,
+        drgOrder: zeroAmount,
         amountError: ERRORS.invalidAmount,
         amountFieldDisabled: true,
-        unitsSummary:  zeroAmount,
-        amountSummary:  zeroAmount,
+        unitsSummary: zeroAmount,
+        amountSummary: zeroAmount,
       }
     } else {
       this.state = {
@@ -102,13 +102,13 @@ class ElementVaultActions extends React.Component {
   };
 
   static propTypes = {
-    vaultDetails: PropTypes.object.isRequired, 
-    actionSelected: PropTypes.object,
+    vaultDetails: PropTypes.object.isRequired,
+    actionSelected: PropTypes.object.isRequired,
     accounts: PropTypes.array.isRequired,
     onTransactionSent: PropTypes.func.isRequired,
     dispatch: PropTypes.func.isRequired
   };
-  
+
   resetState = {
     openAuth: false,
     actionSummary: 'SENDING',
@@ -123,7 +123,7 @@ class ElementVaultActions extends React.Component {
     amountFieldDisabled: true,
     unitsSummary: zeroAmount,
     amountSummary: zeroAmount,
-    actionStyleBuySell: { 
+    actionStyleBuySell: {
       color: Colors.green300
     },
     canSubmit: false,
@@ -148,23 +148,23 @@ class ElementVaultActions extends React.Component {
 
   }
 
-  UNSAFE_componentWillReceiveProps (nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     console.log(nextProps)
     if (this.props.actionSelected.action !== nextProps.actionSelected.action) {
-      nextProps.actionSelected.action == 'deposit' 
-      ? this.handleBuyAction()
-      : this.handleSellAction()
+      nextProps.actionSelected.action == 'deposit'
+        ? this.handleBuyAction()
+        : this.handleSellAction()
     }
 
-    this.setState ({
-      open: nextProps.actionSelected.open, 
+    this.setState({
+      open: nextProps.actionSelected.open,
     })
   }
 
   handleOpen = () => {
     this.setState({
       open: true,
-      ...this.resetState  
+      ...this.resetState
     })
   }
 
@@ -179,8 +179,10 @@ class ElementVaultActions extends React.Component {
 
   handleCancel = () => {
     this.setState(
-      { open: false,
-        ...this.resetState  }
+      {
+        open: false,
+        ...this.resetState
+      }
     ), this.props.onTransactionSent()
   }
 
@@ -189,10 +191,10 @@ class ElementVaultActions extends React.Component {
       { openAuth: true }
     );
   }
-  
+
 
   handleSellAction = () => {
-    const {vaultDetails} = this.props
+    const { vaultDetails } = this.props
     return this.setState({
       open: true,
       action: 'withdraw',
@@ -250,8 +252,8 @@ class ElementVaultActions extends React.Component {
 
   onChangeAccounts = (account) => {
     const { api } = this.context
-    const {vaultDetails} = this.props
-    const accountError = validateAccount(account,api)
+    const { vaultDetails } = this.props
+    const accountError = validateAccount(account, api)
     // Setting variables depending on account source
     // var provider = account.source === 'MetaMask' ? window.web3 : api
     var provider = api
@@ -267,14 +269,14 @@ class ElementVaultActions extends React.Component {
       poolApi.contract.vault.init(vaultDetails.address)
       console.log(poolApi.contract.vault.balanceOf(account.address))
       poolApi.contract.vault.balanceOf(account.address)
-      .then((amount) =>{
-        console.log(amount)
-        const drgBalance = formatCoins(new BigNumber(amount),4,api)
-        this.setState({
-          drgBalance,
-          amountFieldDisabled: false
-        });
-      })
+        .then((amount) => {
+          console.log(amount)
+          const drgBalance = formatCoins(new BigNumber(amount), 4, api)
+          this.setState({
+            drgBalance,
+            amountFieldDisabled: false
+          });
+        })
       // const instance = api.newContract(abis.drago, vaultDetails.address).instance;
       // instance.balanceOf.call({}, [account.address])
       // .then((amount) =>{
@@ -307,13 +309,13 @@ class ElementVaultActions extends React.Component {
       if (this.state.switchButton.label == 'Units') { // Buy in ETH amount
         let amountDRG = orderAmount.times(ratio)
         let amountETH = new BigNumber(amount)
-        return {amountETH: amountETH, amountDRG: amountDRG} 
+        return { amountETH: amountETH, amountDRG: amountDRG }
       }
       // Checking if the amount is expressed in DRG
       if (this.state.switchButton.label == 'Amount') { // Buy in DRG units
         let amountDRG = orderAmount
         let amountETH = new BigNumber(amount).times(ratio)
-        return {amountETH: amountETH, amountDRG: amountDRG} 
+        return { amountETH: amountETH, amountDRG: amountDRG }
       }
     }
 
@@ -328,8 +330,8 @@ class ElementVaultActions extends React.Component {
     }
 
     // Second: updating the state with the new balances
-    var newDrgBalance = action == 'deposit' 
-      ? getAmounts(action, amount).amountDRG.plus(drgCurrent) 
+    var newDrgBalance = action == 'deposit'
+      ? getAmounts(action, amount).amountDRG.plus(drgCurrent)
       : drgCurrent.minus(getAmounts(action, amount).amountDRG)
     this.setState({
       newDrgBalance: newDrgBalance.toFormat(4),
@@ -341,12 +343,12 @@ class ElementVaultActions extends React.Component {
   }
 
   onChangeAmount = (event, amount) => {
-      const accountError = validatePositiveNumber(amount.trim())
-      this.setState({
-        amount: amount.trim(),
-        amountError: accountError,
-      }, this.validateOrder)
-      
+    const accountError = validatePositiveNumber(amount.trim())
+    this.setState({
+      amount: amount.trim(),
+      amountError: accountError,
+    }, this.validateOrder)
+
   }
 
   validateOrder = () => {
@@ -357,16 +359,16 @@ class ElementVaultActions extends React.Component {
     const buyRatio = new BigNumber(1).div(buyPrice)
     const sellRatio = new BigNumber(1).div(sellPrice)
     const ratio = action == 'deposit' ? buyRatio : sellRatio
-    const calculateAmount = (amount) =>{
-      switch(this.state.switchButton.label) {
+    const calculateAmount = (amount) => {
+      switch (this.state.switchButton.label) {
         case "Units":
           return action == 'deposit' ? new BigNumber(amount) : new BigNumber(amount).times(ratio)
         case "Amount":
           return action == 'deposit' ? new BigNumber(amount).div(ratio) : new BigNumber(amount)
-      } 
+      }
     }
     // First: checking if any error in the account or amount. If error then return.
-    if ( accountError || amountError ) {
+    if (accountError || amountError) {
       this.setState({
         drgOrder: new BigNumber(0).toFormat(4),
         unitsSummary: 0
@@ -374,7 +376,7 @@ class ElementVaultActions extends React.Component {
       return
     }
     // Second: checking if the account balance has enough ETH
-    switch(this.state.action) {
+    switch (this.state.action) {
       case 'deposit':
         if (calculateAmount(amount).gt(account.ethBalance.replace(/,/g, ''))) {
           this.setState({
@@ -397,7 +399,7 @@ class ElementVaultActions extends React.Component {
           this.calculateBalance()
         }
         break
-    } 
+    }
 
   }
 
@@ -424,7 +426,7 @@ class ElementVaultActions extends React.Component {
       amount: this.state.amountSummary
     }
     this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
-    const {account} = this.state
+    const { account } = this.state
 
     // Sending the transaction
     poolApi = new PoolApi(provider)
@@ -439,7 +441,7 @@ class ElementVaultActions extends React.Component {
           transactionDetails.status = 'executed'
           transactionDetails.receipt = receipt
           transactionDetails.hash = receipt.transactionHash
-          transactionDetails.timestamp = new Date ()
+          transactionDetails.timestamp = new Date()
           this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
         } else {
           transactionDetails.parityId = receipt
@@ -490,8 +492,8 @@ class ElementVaultActions extends React.Component {
     }
 
     this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
-    const {account} = this.state
-    
+    const { account } = this.state
+
     // Sending the transaction
     poolApi = new PoolApi(provider)
     poolApi.contract.vault.init(vaultDetails.address)
@@ -505,7 +507,7 @@ class ElementVaultActions extends React.Component {
           transactionDetails.status = 'executed'
           transactionDetails.receipt = receipt
           transactionDetails.hash = receipt.transactionHash
-          transactionDetails.timestamp = new Date ()
+          transactionDetails.timestamp = new Date()
           this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
         } else {
           transactionDetails.parityId = receipt
@@ -526,30 +528,30 @@ class ElementVaultActions extends React.Component {
     // this.props.snackBar('Sell order waiting for authorization for ' + this.state.amountSummary + ' ' + vaultDetails.symbol.toUpperCase())
     this.setState({
       authMsg: authMsg,
-      authAccount: {...this.state.account},
+      authAccount: { ...this.state.account },
       sending: false,
       complete: true,
     }, this.handleSubmit)
   }
 
   onSend = () => {
-    switch(this.state.action) {
+    switch (this.state.action) {
       case "deposit":
         this.onSendBuy()
         break
       case "withdraw":
         this.onSendSell()
         break
-    } 
+    }
   }
 
   unitsSwitch = () => {
-    const {vaultDetails} = this.props
+    const { vaultDetails } = this.props
     this.setState({
-      switchButton: { 
+      switchButton: {
         label: this.state.switchButton.label == 'Units' ? 'Amount' : 'Units',
         hint: this.state.switchButton.hint == 'Units' ? 'Amount' : 'Units',
-        denomination: this.state.switchButton.denomination == 'ETH' ? vaultDetails.symbol : 'ETH',      
+        denomination: this.state.switchButton.denomination == 'ETH' ? vaultDetails.symbol : 'ETH',
       },
       amountError: ' ',
     })
@@ -558,32 +560,32 @@ class ElementVaultActions extends React.Component {
   buyFields = () => {
     const floatingLabelTextAmount = this.state.switchButton.denomination == 'ETH'
       ? 'Amount in ' + this.state.switchButton.denomination
-      : 'Units of ' + this.state.switchButton.denomination 
+      : 'Units of ' + this.state.switchButton.denomination
     return (
       <Col xs={6}>
         <Row middle="xs" >
           <Col xs={12}>
-          <AccountSelector
-          accounts={ this.props.accounts }
-          account={ this.state.account }
-          errorText={ this.state.accountError }
-          floatingLabelText='From account'
-          hintText='The account the transaction will be made from'
-          onSelect={ this.onChangeAccounts } />
+            <AccountSelector
+              accounts={this.props.accounts}
+              account={this.state.account}
+              errorText={this.state.accountError}
+              floatingLabelText='From account'
+              hintText='The account the transaction will be made from'
+              onSelect={this.onChangeAccounts} />
           </Col>
           <Col xs={6}>
             <TextField
-                id='actionBuyAmount'
-                autoComplete='off'
-                floatingLabelFixed
-                floatingLabelText={floatingLabelTextAmount}
-                fullWidth
-                hintText={this.state.switchButton.hint}
-                errorText={ this.state.amountError }
-                name='amount'
-                disabled={this.state.amountFieldDisabled}
-                value={ this.state.amount }
-                onChange={ this.onChangeAmount } />
+              id='actionBuyAmount'
+              autoComplete='off'
+              floatingLabelFixed
+              floatingLabelText={floatingLabelTextAmount}
+              fullWidth
+              hintText={this.state.switchButton.hint}
+              errorText={this.state.amountError}
+              name='amount'
+              disabled={this.state.amountFieldDisabled}
+              value={this.state.amount}
+              onChange={this.onChangeAmount} />
           </Col>
           <Col xs={6}>
             <RaisedButton
@@ -601,34 +603,34 @@ class ElementVaultActions extends React.Component {
 
   sellFields = () => {
     const floatingLabelTextAmount = this.state.switchButton.denomination == 'ETH'
-    ? 'Amount in ' + this.state.switchButton.denomination
-    : 'Units of ' + this.state.switchButton.denomination 
+      ? 'Amount in ' + this.state.switchButton.denomination
+      : 'Units of ' + this.state.switchButton.denomination
     return (
       <Col xs={6}>
         <Row middle="xs" >
           <Col xs={12}>
             <AccountSelector
-            id='actionAccount'
-            accounts={ this.props.accounts }
-            account={ this.state.account }
-            errorText={ this.state.accountError }
-            floatingLabelText='From account'
-            hintText='The account the transaction will be made from'
-            onSelect={ this.onChangeAccounts } />
+              id='actionAccount'
+              accounts={this.props.accounts}
+              account={this.state.account}
+              errorText={this.state.accountError}
+              floatingLabelText='From account'
+              hintText='The account the transaction will be made from'
+              onSelect={this.onChangeAccounts} />
           </Col>
           <Col xs={6}>
             <TextField
-                id='actionSellAmount'
-                autoComplete='off'
-                floatingLabelFixed
-                floatingLabelText={floatingLabelTextAmount}
-                fullWidth
-                hintText={this.state.switchButton.hint}
-                errorText={ this.state.amountError }
-                name='amount'
-                disabled={this.state.amountFieldDisabled}
-                value={ this.state.amount }
-                onChange={ this.onChangeAmount } />
+              id='actionSellAmount'
+              autoComplete='off'
+              floatingLabelFixed
+              floatingLabelText={floatingLabelTextAmount}
+              fullWidth
+              hintText={this.state.switchButton.hint}
+              errorText={this.state.amountError}
+              name='amount'
+              disabled={this.state.amountFieldDisabled}
+              value={this.state.amount}
+              onChange={this.onChangeAmount} />
           </Col>
           <Col xs={6}>
             <RaisedButton
@@ -647,28 +649,28 @@ class ElementVaultActions extends React.Component {
   holding = () => {
     const { newDrgBalance, drgBalance, drgOrder } = this.state
     const { vaultDetails } = this.props
-    
+
     return (
-        <Table selectable={false} className={styles.detailsTable}>
-          <TableBody displayRowCheckbox={false}>
-            <TableRow hoverable={false} >
-              <TableRowColumn className={styles.detailsTableCell}>Current</TableRowColumn>
-              <TableRowColumn className={styles.detailsTableCell2}>{drgBalance} ETH</TableRowColumn>
-            </TableRow>
-            <TableRow hoverable={false} >
-              <TableRowColumn className={styles.detailsTableCell}>Order</TableRowColumn>
-              <TableRowColumn className={styles.detailsTableCell2}>{drgOrder} ETH</TableRowColumn>
-            </TableRow>
-            <TableRow hoverable={false} >
-              <TableRowColumn className={styles.detailsTableCell}>Fee</TableRowColumn>
-              <TableRowColumn className={styles.detailsTableCell2}>{new BigNumber(String((drgOrder*vaultDetails.price)/100)).toFixed(4)} ETH</TableRowColumn>
-            </TableRow>
-            <TableRow hoverable={false} >
-              <TableRowColumn className={styles.detailsTableCell}>Expected*</TableRowColumn>
-              <TableRowColumn className={styles.detailsTableCell2}>{new BigNumber(String(newDrgBalance-(drgOrder*vaultDetails.price)/100)).toFixed(4)} ETH</TableRowColumn>
-            </TableRow>
-          </TableBody>
-        </Table>
+      <Table selectable={false} className={styles.detailsTable}>
+        <TableBody displayRowCheckbox={false}>
+          <TableRow hoverable={false} >
+            <TableRowColumn className={styles.detailsTableCell}>Current</TableRowColumn>
+            <TableRowColumn className={styles.detailsTableCell2}>{drgBalance} ETH</TableRowColumn>
+          </TableRow>
+          <TableRow hoverable={false} >
+            <TableRowColumn className={styles.detailsTableCell}>Order</TableRowColumn>
+            <TableRowColumn className={styles.detailsTableCell2}>{drgOrder} ETH</TableRowColumn>
+          </TableRow>
+          <TableRow hoverable={false} >
+            <TableRowColumn className={styles.detailsTableCell}>Fee</TableRowColumn>
+            <TableRowColumn className={styles.detailsTableCell2}>{new BigNumber(String((drgOrder * vaultDetails.price) / 100)).toFixed(4)} ETH</TableRowColumn>
+          </TableRow>
+          <TableRow hoverable={false} >
+            <TableRowColumn className={styles.detailsTableCell}>Expected*</TableRowColumn>
+            <TableRowColumn className={styles.detailsTableCell2}>{new BigNumber(String(newDrgBalance - (drgOrder * vaultDetails.price) / 100)).toFixed(4)} ETH</TableRowColumn>
+          </TableRow>
+        </TableBody>
+      </Table>
     )
   }
 
@@ -678,7 +680,7 @@ class ElementVaultActions extends React.Component {
     const { vaultDetails } = this.props
     const { openAuth, authMsg, authAccount } = this.state
     const { sending } = this.state;
-    const hasError = !!(this.state.accountError || this.state.amountError );
+    const hasError = !!(this.state.accountError || this.state.amountError);
     const actions = [
       <FlatButton
         key='CancelButton'
@@ -690,7 +692,7 @@ class ElementVaultActions extends React.Component {
         key='SubmitButton'
         label="Submit"
         primary={true}
-        disabled={ hasError || sending }
+        disabled={hasError || sending}
         onClick={this.onSend}
       />,
     ];
@@ -714,43 +716,44 @@ class ElementVaultActions extends React.Component {
       <div>
         {/* <RaisedButton label="Trade" primary={true} onClick={this.handleOpen} 
           labelStyle={{fontWeight: 700, fontSize: '20px'}}/> */}
-          <Dialog
-            title={<ElementVaultActionsHeader vaultDetails={vaultDetails} 
-              action={this.state.action} 
-              handleSellAction={this.handleSellAction}
-              handleBuyAction={this.handleBuyAction}
-            />}
-            actions={actions}
-            modal={false}
-            open={this.state.open}
-            contentStyle={customContentStyle}
-            onRequestClose={this.handleCancel}
-          >
+        <Dialog
+          title={<ElementVaultActionsHeader vaultDetails={vaultDetails}
+            action={this.state.action}
+            handleSellAction={this.handleSellAction}
+            handleBuyAction={this.handleBuyAction}
+          />
+          }
+          actions={actions}
+          modal={false}
+          open={this.state.open}
+          contentStyle={customContentStyle}
+          onRequestClose={this.handleCancel}
+        >
           <Row>
             <Col xs={12}>
               <Row center="xs">
                 <Col xs={6}>
                   <h2><span style={this.state.actionStyleBuySell}>{this.state.action.toUpperCase()}</span>&nbsp;FEE&nbsp;<span className={styles.summary}>{vaultDetails.price}</span>%</h2>
-                  
+
                 </Col>
               </Row>
             </Col>
           </Row>
           <Paper className={styles.paperContainer} zDepth={1}>
-          <Row>
+            <Row>
               <Col xs={6}>
                 <p>Holding</p>
               </Col>
               <Col xs={6}>
                 <p>Order</p>
               </Col>
-          </Row>
-          <Row>
-            <Col xs={6}>
-              {this.holding()}
-            </Col>
-            {this.state.action =='deposit' ? this.buyFields() : this.sellFields()}
-          </Row>
+            </Row>
+            <Row>
+              <Col xs={6}>
+                {this.holding()}
+              </Col>
+              {this.state.action == 'deposit' ? this.buyFields() : this.sellFields()}
+            </Row>
           </Paper>
           <Row>
             <Col xs={12} className={styles.grossAmountWarning}>

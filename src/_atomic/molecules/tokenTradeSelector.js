@@ -43,7 +43,7 @@ export default class TokenTradeSelector extends Component {
   }
 
   render() {
-    console.log(this.props.selectedTradeTokensPair)
+    // console.log(this.props.selectedTradeTokensPair)
     return (
       <Row>
         <Col xs={12}>

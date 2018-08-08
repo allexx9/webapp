@@ -18,6 +18,8 @@ function mapStateToProps(state) {
 class TableOrderBook extends Component {
 
   static propTypes = {
+    onlyAggregated: PropTypes.bool.isRequired,
+    aggregated: PropTypes.bool.isRequired,
     orders: PropTypes.array.isRequired,
     orderType: PropTypes.string.isRequired,
     exchange: PropTypes.object.isRequired,
@@ -48,7 +50,9 @@ class TableOrderBook extends Component {
   };
 
   onClickOrder = (id) =>{
-    this.props.dispatch(this.updateSelectedOrder(this.props.orders[id]))
+    if (!this.props.aggregated && !this.props.onlyAggregated) {
+      this.props.dispatch(this.updateSelectedOrder(this.props.orders[id]))
+    }
   }
 
   renderRows = (ordersSorted) =>{

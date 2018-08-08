@@ -8,10 +8,14 @@ import ExchangeSelector from '../molecules/exchangeSelector';
 import styles from './exchangeBox.module.css';
 import { Actions } from '../../_redux/actions';
 import utils from '../../_utils/utils';
+import BigNumber from 'bignumber.js';
+import { getTokenAllowance } from '../../_utils/exchange';
 
 import {
   RELAYS,
-  TRADE_TOKENS_PAIRS
+  TRADE_TOKENS_PAIRS,
+  ERC20_TOKENS,
+  CANCEL_SELECTED_ORDER
 } from '../../_utils/const'
 
 const paperStyle = {
@@ -24,24 +28,59 @@ function mapStateToProps(state) {
 
 class ExchangeBox extends Component {
 
+  static contextTypes = {
+    api: PropTypes.object.isRequired,
+  };
+
   static propTypes = {
     exchange: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
     notifications: PropTypes.object.isRequired,
   };
 
-  static defaultProps = {
-  };
+  onSelectExchange = async (relay) => {
+    const { api } = this.context
+    const { selectedExchange, selectedFund } = this.props.exchange
+    const selectedRelay = RELAYS[relay]
+    const availableTradeTokensPair = utils.availableTradeTokensPair(TRADE_TOKENS_PAIRS, RELAYS[relay].name)
+    const baseToken = ERC20_TOKENS[api._rb.network.name][selectedRelay.defaultTokensPair.baseTokenSymbol]
+    const quoteToken = ERC20_TOKENS[api._rb.network.name][selectedRelay.defaultTokensPair.quoteTokenSymbol]
+    const allowanceBaseToken = await getTokenAllowance(baseToken, selectedFund.details.address, selectedExchange)
+    const allowanceQuoteToken = await getTokenAllowance(quoteToken, selectedFund.details.address, selectedExchange)
+    const tradeTokensPair = {
+      baseToken: baseToken,
+      quoteToken: quoteToken,
+      baseTokenAllowance: new BigNumber(allowanceBaseToken).gt(0),
+      quoteTokenAllowance: new BigNumber(allowanceQuoteToken).gt(0),
+      ticker: {
+        current: {
+          price: '0'
+        },
+        previous: {
+          price: '0'
+        },
+        variation: 0
+      }
+    }
 
-  onSelectExchange = (relay) => {
-    console.log(relay)
-    const payload = RELAYS[relay]
-    console.log(payload)
+    // Resetting current order
+    this.props.dispatch({
+      type: CANCEL_SELECTED_ORDER,
+    })
+
+    // Updating selected relay
     this.props.dispatch(
-      Actions.exchange.updateSelectedRelayAction(payload))
+      Actions.exchange.updateSelectedRelayAction(selectedRelay))
+
+    // Updating available tokens pair
     this.props.dispatch(
-      Actions.exchange.updateAvailableTradeTokensPairs(utils.availableTradeTokensPair(TRADE_TOKENS_PAIRS, RELAYS[relay].name))
+      Actions.exchange.updateAvailableTradeTokensPairs(availableTradeTokensPair)
     )
+    // Updating selected tokens pair
+    this.props.dispatch(
+      Actions.exchange.updateSelectedTradeTokensPair(tradeTokensPair)
+    )
+
   }
 
   render() {
@@ -59,6 +98,7 @@ class ExchangeBox extends Component {
                   <Col xs={12}>
                     <p className={styles.titleSection}>Exchanges</p>
                     <ExchangeSelector
+                      availableRelays={this.props.exchange.availableRelays}
                       selectedRelay={this.props.exchange.selectedRelay.name}
                       onSelectExchange={this.onSelectExchange} />
                   </Col>

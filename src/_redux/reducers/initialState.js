@@ -52,6 +52,7 @@ const initialState = {
     makerAddress: '',
     selectedExchange: EXCHANGES.zeroEx[NETWORK_NAME],
     selectedRelay: RELAYS[ERCdEX],
+    availableRelays: {},
     // selectedExchange: EXCHANGES.rigoBlock[DEFAULT_NETWORK_NAME],
     selectedTokensPair: {
       baseToken: BASE_TOKEN,

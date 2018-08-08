@@ -5,16 +5,16 @@ import {
   INIT_NOTIFICATION
 } from '../../_utils/const'
 
-function notificationsReducer (state = initialState.notifications, action) {
+function notificationsReducer(state = initialState.notifications, action) {
   switch (action.type) {
     case INIT_NOTIFICATION:
-    console.log(action)
-    return {
-      ...state, engine: action.payload
-    }
+      console.log(action)
+      return {
+        ...state, engine: action.payload
+      }
     default: return state;
   }
-  
+
 }
 
 export default notificationsReducer

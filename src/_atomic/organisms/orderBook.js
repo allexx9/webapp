@@ -104,6 +104,8 @@ class OrderBook extends Component {
                       <Col xs={12}>
                         {ordersAsksSorted.length !== 0
                           ? <TableOrderBook
+                            aggregated={this.props.aggregated}
+                            onlyAggregated={this.props.onlyAggregated}
                             key="asksBook"
                             orders={ordersAsksSorted}
                             orderType="asks"
@@ -127,6 +129,8 @@ class OrderBook extends Component {
                       <Col xs={12}>
                         {ordersBidsSorted.length !== 0
                           ? <TableOrderBook
+                            aggregated={this.props.aggregated}
+                            onlyAggregated={this.props.onlyAggregated}
                             key="bidsBook"
                             orders={ordersBidsSorted}
                             orderType="bids"

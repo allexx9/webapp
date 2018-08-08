@@ -7,7 +7,7 @@ import {
   UPDATE_TRANSACTIONS_VAULT_HOLDER,
   UPDATE_TRANSACTIONS_VAULT_MANAGER,
   INIT_NOTIFICATION,
-  TOKEN_PRICE_TICKER_OPEN_WEBSOCKET
+  TOKEN_PRICE_TICKERS_FETCH_START
 } from './const'
 import drago from './drago'
 import transactions from './transactions'
@@ -72,7 +72,7 @@ class actions {
   tokens = {
     priceTickerOpenWsAction: () => {
       return {
-        type: TOKEN_PRICE_TICKER_OPEN_WEBSOCKET,
+        type: TOKEN_PRICE_TICKERS_FETCH_START,
       }
     }
   }

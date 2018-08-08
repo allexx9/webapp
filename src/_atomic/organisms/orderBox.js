@@ -56,9 +56,6 @@ class OrderBox extends Component {
     orderRawDialogOpen: false
   }
 
-  static defaultProps = {
-  };
-
   static contextTypes = {
     exchangeUtils: PropTypes.object.isRequired,
     api: PropTypes.object.isRequired,

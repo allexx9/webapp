@@ -5,13 +5,14 @@ import BigNumber from 'bignumber.js'
 import PoolApi from '../PoolsApi/src'
 import { toUnitAmount } from './format'
 import palette from './palete'
-import { 
-  ERC20_TOKENS, 
+import {
+  ERC20_TOKENS,
   ERCdEX,
-  Ethfinex
+  Ethfinex,
+  DEFAULT_RELAY
 } from './const'
 
-import { Actions } from '../_redux/actions' 
+import { Actions } from '../_redux/actions'
 
 class utilities {
 
@@ -19,7 +20,7 @@ class utilities {
     var oldConsoleLog = null;
   }
 
-  getTockenSymbolForRelay = (relayName, token) =>{
+  getTockenSymbolForRelay = (relayName, token) => {
     switch (relayName) {
       case ERCdEX:
         return token.address
@@ -41,9 +42,8 @@ class utilities {
     });
   }
 
-  availableTradeTokensPair = (tradeTokensPairs, selectedRelayName) =>{
-    console.log(tradeTokensPairs, selectedRelayName)
-    var availableTokens = {}
+  availableTradeTokensPair = (tradeTokensPairs, selectedRelayName) => {
+    let availableTokens = {}
     for (var baseToken in tradeTokensPairs) {
       Object.keys(tradeTokensPairs[baseToken]).forEach((key) => {
         let quoteToken = tradeTokensPairs[baseToken][key];
@@ -53,28 +53,52 @@ class utilities {
           }
           availableTokens[baseToken][key] = tradeTokensPairs[baseToken][key]
         }
-      });    
+      });
     }
-    console.log(availableTokens)
     return availableTokens
+  }
+
+  availableRelays = (relays, networkId) => {
+    let availableRelays = {}
+    Object.keys(relays).forEach((key) => {
+      if (relays[key].supportedNetworks.includes(networkId.toString())) {
+        availableRelays[key] = relays[key]
+      }
+    })
+    
+    return availableRelays
   }
 
   calculatePortfolioValue = (dragoAssetsList, assetsPrices) => {
     const totalValue = dragoAssetsList.reduce((total, asset) => {
-      console.log(asset.symbol)
-      const value = new BigNumber(assetsPrices[asset.symbol].priceEth).mul(toUnitAmount(new BigNumber(asset.balance), asset.decimals).toFixed(5))
-      return total.plus(value)
+      // console.log(asset.symbol)
+      if (typeof assetsPrices[asset.symbol] !== 'undefined') {
+        if (typeof assetsPrices[asset.symbol].priceEth !== 'undefined') {
+          const value = new BigNumber(assetsPrices[asset.symbol].priceEth).mul(toUnitAmount(new BigNumber(asset.balance), asset.decimals).toFixed(5))
+          return total.plus(value)
+        }
+      } else {
+        return total.plus(0)
+      }
+
     }, new BigNumber(0))
 
     return totalValue.toFixed(5)
   }
 
   calculatePieChartPortfolioValue = (dragoAssetsList, assetsPrices, dragoETHBalance) => {
-    var labels = Array(0)
+    let labels = Array(0)
     const data = dragoAssetsList.map((asset) => {
-      const value = new BigNumber(assetsPrices[asset.symbol].priceEth).mul(toUnitAmount(new BigNumber(asset.balance), asset.decimals).toFixed(5))
-      labels.push(asset.symbol)
-      return value.toFixed(5)
+      if (typeof assetsPrices[asset.symbol] !== 'undefined') {
+        if (typeof assetsPrices[asset.symbol].priceEth !== 'undefined') {
+          const value = new BigNumber(assetsPrices[asset.symbol].priceEth).mul(toUnitAmount(new BigNumber(asset.balance), asset.decimals).toFixed(5))
+          labels.push(asset.symbol)
+          return value.toFixed(5)
+        }
+      } else {
+        return 0
+      }
+
     })
     data.push(new BigNumber(dragoETHBalance).toFixed(5))
     labels.push('ETH')
@@ -108,9 +132,9 @@ class utilities {
 
   // This funcions needs to be rewritten to work async.
   updateTransactionsQueue = (api, recentTransactions) => {
-    var checkTransaction = true
-    var shouldTransactionListUpdate = false
-    var newRecentTransactions = new Map(recentTransactions)
+    let checkTransaction = true
+    let shouldTransactionListUpdate = false
+    let newRecentTransactions = new Map(recentTransactions)
     newRecentTransactions.forEach((value) => {
       if (value.status === 'executed' || value.status === 'error') {
         return
@@ -930,7 +954,7 @@ class utilities {
   }
 
 
-  getDragoDetailsFromId = async (dragoId, api) =>{  
+  getDragoDetailsFromId = async (dragoId, api) => {
     console.log(Actions)
     const poolApi = new PoolApi(api)
     await poolApi.contract.dragoregistry.init()
@@ -938,10 +962,10 @@ class utilities {
     return dragoDetails
   }
 
-  getDragoDetails = async (dragoDetails, props, api ) => {
-  
+  getDragoDetails = async (dragoDetails, props, api) => {
+
     const { endpoint: { accounts: accounts }, dispatch, endpoint } = props
-  
+
     //
     // Initializing Drago API
     // Passing Parity API
@@ -967,9 +991,17 @@ class utilities {
     const getTokensBalances = async () => {
       var dragoAssets = ERC20_TOKENS[api._rb.network.name]
       for (var token in dragoAssets) {
-        dragoAssets[token].balance = await poolApi.contract.drago.getTokenBalance(ERC20_TOKENS[api._rb.network.name][token].address)
+        if (ERC20_TOKENS[api._rb.network.name][token].address !== "0x") {
+          try {
+            dragoAssets[token].balance = await poolApi.contract.drago.getTokenBalance(ERC20_TOKENS[api._rb.network.name][token].address)
+          } catch (err) {
+            console.log(err)
+            dragoAssets[token].balance = 0
+          }
+        } else {
+          dragoAssets[token].balance = 0
+        }
       }
-
       return dragoAssets
     }
 
@@ -1043,28 +1075,28 @@ class utilities {
   getVaultDetails = async (vaultDetails, props, api) => {
 
     const { endpoint: { accounts: accounts }, dispatch } = props
-  
+
     //
     // Initializing vault API
     // Passing Parity API
     //      
     const poolApi = new PoolApi(api)
-  
+
     const vaultAddress = vaultDetails[0][0]
     //
     // Getting last transactions
     //
     await poolApi.contract.vaulteventful.init()
-  
+
     //
     // Initializing vault contract
     //
     await poolApi.contract.vault.init(vaultAddress)
-    
+
     //
     // Gettind vault data, creation date, supply, ETH balances
     //
-  
+
     const getvaultCreationDate = async (vaultAddress, contract) => {
       const hexVaultAddress = '0x' + vaultAddress.substr(2).padStart(64, '0')
       const eventsFilterCreate = {
@@ -1079,14 +1111,14 @@ class utilities {
       const blockInfo = await api.eth.getBlockByNumber((vaultCreatedLog[0].blockNumber.toFixed(0)))
       return this.dateFromTimeStampHuman(blockInfo.timestamp)
     }
-  
+
     const vaultData = await poolApi.contract.vault.getData()
     const vaultAdminData = await poolApi.contract.vault.getAdminData()
     const vaultCreatedDate = await getvaultCreationDate(vaultAddress, poolApi.contract.vaulteventful)
     const vaultTotalSupply = await poolApi.contract.vault.totalSupply()
     const vaultETHBalance = await formatEth(await poolApi.contract.vault.getBalance(), 5, api)
     const fee = (new BigNumber(vaultAdminData[4]).div(100).toFixed(2))
-  
+
     var details = {
       address: vaultDetails[0][0],
       name: vaultDetails[0][1].charAt(0).toUpperCase() + vaultDetails[0][1].slice(1),
@@ -1101,12 +1133,12 @@ class utilities {
       vaultETHBalance,
       fee
     }
-  
+
     dispatch(Actions.vault.updateSelectedVaultAction({
       details
     })
     )
-  
+
     //
     // Getting balance for each user account
     //

@@ -85,7 +85,7 @@ class PageFundDetailsVaultTrader extends Component {
   componentWillUnmount() {
     const { contractSubscription } = this.state
     const sourceLogClass = this.constructor.name
-    // this.props.dispatch({type: TOKEN_PRICE_TICKER_CLOSE_WEBSOCKET})
+    // this.props.dispatch({type: TOKEN_PRICE_TICKERS_FETCH_STOP})
     try {
       contractSubscription.unsubscribe(function (error, success) {
         if (success) {

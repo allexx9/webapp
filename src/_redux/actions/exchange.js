@@ -3,16 +3,16 @@
 import * as TYPE_ from './const'
 
 const exchange = {
-  getChartData: (selectedRelay, networkId, baseToken, quoteToken, startDate) => {
+  getChartData: (relay, networkId, baseToken, quoteToken, startDate) => {
     const payload = {
-      selectedRelay,
+      relay,
       networkId,
       baseToken,
       quoteToken,
       startDate
     }
     return {
-      type: TYPE_.FETCH_MARKET_PRICE_DATA,
+      type: TYPE_.FETCH_CANDLES_DATA,
       payload: payload
     }
   },
@@ -27,10 +27,27 @@ const exchange = {
       payload: payload
     }
   },
-  relayGetOrders: (payload) => {
+  relayGetOrders: (relay, networkId, baseToken, quoteToken, aggregated) => {
     return {
       type: TYPE_.RELAY_GET_ORDERS,
-      payload: payload
+      payload: {
+        relay,
+        networkId,
+        baseToken,
+        quoteToken,
+        aggregated
+      }
+    }
+  },
+  relayOpenWs: (relay, networkId, baseToken, quoteToken) => {
+    return {
+      type: TYPE_.RELAY_OPEN_WEBSOCKET,
+      payload: {
+        relay,
+        networkId,
+        baseToken,
+        quoteToken
+      }
     }
   },
   setAggregateOrders: (isInputChecked) => {
@@ -56,7 +73,14 @@ const exchange = {
       type: TYPE_.UPDATE_AVAILABLE_TRADE_TOKENS_PAIRS,
       payload: payload
     }
-  }
+  },
+  updateAvailableRelays: (payload) => {
+    return {
+      type: TYPE_.UPDATE_AVAILABLE_RELAYS,
+      payload: payload
+    }
+  },
+  
 }
 
 export default exchange;

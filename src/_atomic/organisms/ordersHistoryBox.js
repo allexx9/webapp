@@ -35,8 +35,6 @@ class OrdersHistoryBox extends Component {
     notifications: PropTypes.object.isRequired,
   };
 
-  static defaultProps = {
-  };
 
   onCancelOrder  = async (order) => {
     const { selectedFund, selectedTokensPair } = this.props.exchange

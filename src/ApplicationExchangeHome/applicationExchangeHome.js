@@ -27,23 +27,23 @@ import { Actions } from '../_redux/actions';
 import {
   ERC20_TOKENS,
   TRADE_TOKENS_PAIRS,
+  RELAYS,
+  DEFAULT_RELAY
 } from '../_utils/const';
 
 import {
   CANCEL_SELECTED_ORDER,
   FETCH_FUND_ORDERS,
-
   RELAY_CLOSE_WEBSOCKET,
   RELAY_OPEN_WEBSOCKET,
   UPDATE_FUND_LIQUIDITY,
   UPDATE_SELECTED_FUND,
-  UPDATE_TRADE_TOKENS_PAIR
 } from '../_redux/actions/const';
 import { getAvailableAddresses, getTokenAllowance } from '../_utils/exchange';
 import utils from '../_utils/utils';
 import styles from './applicationExchangeHome.module.css';
 import ExchangeBox from '../_atomic/organisms/exchangeBox';
-import { Action } from '../../node_modules/rxjs/internal/scheduler/Action';
+
 
 
 // import { getData } from "../_utils/data"
@@ -155,50 +155,75 @@ class ApplicationExchangeHome extends Component {
   }
 
   componentDidMount() {
-    if (this.props.endpoint.networkInfo.name === 'kovan') {
-      const { accounts } = this.props.endpoint
-      const { selectedTokensPair, selectedExchange } = this.props.exchange
-      this.getSelectedFundDetails(null, accounts)
-      // this.connectToRadarRelay()
-      this.connectToExchange(selectedTokensPair)
-      getAvailableAddresses(selectedExchange)
-        .then(addresses => {
-          this.props.dispatch({ type: 'SET_MAKER_ADDRESS', payload: addresses[0] })
-        })
+    const { api } = this.context
 
-      // Set available trade tokens pairs
-      this.props.dispatch(Actions.exchange.updateAvailableTradeTokensPairs(
-        utils.availableTradeTokensPair(TRADE_TOKENS_PAIRS, this.props.exchange.selectedRelay.name))
-      )
-
-
-      // Getting trade history logs
-      this.props.dispatch(Actions.exchange.getTradeHistoryLogs(
-        this.props.exchange.relay.networkId,
-        this.props.exchange.selectedTokensPair.baseToken.address,
-        this.props.exchange.selectedTokensPair.quoteToken.address,
-      )
-      )
-
-      // // Getting history logs
-      // this.props.dispatch(this.getTradeHistoryLogs(
-      //   this.props.exchange.relay.networkId,
-      //   this.props.exchange.selectedTokensPair.baseToken.address,
-      //   this.props.exchange.selectedTokensPair.quoteToken.address,
-      // )
-      // )
-
-      // Getting chart data
-      var tsYesterday = new Date((Math.floor(Date.now() / 1000) - 86400 * 7) * 1000).toISOString()
-      this.props.dispatch(Actions.exchange.getChartData(
-        this.props.exchange.selectedRelay,
-        this.props.exchange.relay.networkId,
-        this.props.exchange.selectedTokensPair.baseToken,
-        this.props.exchange.selectedTokensPair.quoteToken,
-        tsYesterday
-      )
-      )
+    const { accounts } = this.props.endpoint
+    const { selectedTokensPair, selectedExchange } = this.props.exchange
+    const defaultRelay = RELAYS[DEFAULT_RELAY[api._rb.network.name]]
+    const defaultTokensPair = {
+      baseToken: ERC20_TOKENS[api._rb.network.name][defaultRelay.defaultTokensPair.baseTokenSymbol],
+      quoteToken: ERC20_TOKENS[api._rb.network.name][defaultRelay.defaultTokensPair.quoteTokenSymbol]
     }
+    this.getSelectedFundDetails(null, accounts)
+    // this.connectToRadarRelay()
+
+    getAvailableAddresses(selectedExchange)
+      .then(addresses => {
+        this.props.dispatch({ type: 'SET_MAKER_ADDRESS', payload: addresses[0] })
+      })
+      .catch(err => {
+        console.log(err)
+      })
+
+    // Set available relays
+    this.props.dispatch(Actions.exchange.updateAvailableRelays(
+      utils.availableRelays(RELAYS, api._rb.network.id))
+    )
+
+    // Updating selected relay
+    this.props.dispatch(
+      Actions.exchange.updateSelectedRelayAction(defaultRelay))
+
+    // Set available trade tokens pairs
+    this.props.dispatch(Actions.exchange.updateAvailableTradeTokensPairs(
+      utils.availableTradeTokensPair(TRADE_TOKENS_PAIRS, defaultRelay.name))
+    )
+
+    // Updating selected tokens pair
+    this.props.dispatch(
+      Actions.exchange.updateSelectedTradeTokensPair(defaultTokensPair)
+    )
+
+    this.connectToExchange(defaultRelay, defaultTokensPair)
+
+    // Getting trade history logs
+    this.props.dispatch(Actions.exchange.getTradeHistoryLogs(
+      defaultRelay,
+      api._rb.network.id,
+      defaultTokensPair.baseToken.address,
+      defaultTokensPair.quoteToken.address,
+    )
+    )
+
+    // // Getting history logs
+    // this.props.dispatch(this.getTradeHistoryLogs(
+    //   this.props.exchange.relay.networkId,
+    //   this.props.exchange.selectedTokensPair.baseToken.address,
+    //   this.props.exchange.selectedTokensPair.quoteToken.address,
+    // )
+    // )
+
+    // Getting chart data
+    var tsYesterday = new Date((Math.floor(Date.now() / 1000) - 86400 * 7) * 1000).toISOString()
+    this.props.dispatch(Actions.exchange.getChartData(
+      defaultRelay,
+      api._rb.network.id,
+      defaultTokensPair.baseToken,
+      defaultTokensPair.quoteToken,
+      tsYesterday
+    )
+    )
+
   }
 
   componentWillUnmount() {
@@ -222,6 +247,32 @@ class ApplicationExchangeHome extends Component {
         activeElement.focus()
       }
     }
+  }
+
+  connectToExchange = async (defaultRelay, defaultTokensPair) => {
+    const { api } = this.context
+    // const networkInfo = api._rb.network
+    // const endpoints = this.props.endpoint.endpointInfo
+    // var exchangeUtils = new Exchange(endpoints, networkInfo, tradeTokensPair)
+    // var contract = exchangeUtils.init()
+    // const subscription = contract.events.allEvents({
+    //   fromBlock: 0,
+    //   toBlock: 'latest'
+    // }, this.onNewEventZeroExExchange)
+
+    this.props.dispatch(Actions.exchange.relayGetOrders(
+      defaultRelay,
+      api._rb.network.id,
+      defaultTokensPair.baseToken,
+      defaultTokensPair.quoteToken,
+      defaultRelay.initOrdeBookAggregated
+    ))
+    this.props.dispatch(Actions.exchange.relayOpenWs(
+      defaultRelay,
+      api._rb.network.id,
+      defaultTokensPair.baseToken,
+      defaultTokensPair.quoteToken
+    ))
   }
 
   onToggleAggregateOrders = (isInputChecked) => {
@@ -259,8 +310,8 @@ class ApplicationExchangeHome extends Component {
       this.props.dispatch(this.updateSelectedFundLiquidity(fund.address, api))
 
       // Getting allowances
-      const allowanceBaseToken = await getTokenAllowance(selectedTokensPair.baseToken.address, fund.address, selectedExchange)
-      const allowanceQuoteToken = await getTokenAllowance(selectedTokensPair.quoteToken.address, fund.address, selectedExchange)
+      const allowanceBaseToken = await getTokenAllowance(selectedTokensPair.baseToken, fund.address, selectedExchange)
+      const allowanceQuoteToken = await getTokenAllowance(selectedTokensPair.quoteToken, fund.address, selectedExchange)
       const tokensAllowance = {
         baseTokenAllowance: new BigNumber(allowanceBaseToken).gt(0),
         quoteTokenAllowance: new BigNumber(allowanceQuoteToken).gt(0)
@@ -283,13 +334,12 @@ class ApplicationExchangeHome extends Component {
   onSelectTokenTrade = async (pair) => {
     const { api } = this.context
     const { selectedTokensPair, selectedExchange, selectedFund } = this.props.exchange
-    console.log(pair)
     const selectedTokens = pair.split("-");
     try {
       const baseToken = ERC20_TOKENS[api._rb.network.name][selectedTokens[0]]
       const quoteToken = ERC20_TOKENS[api._rb.network.name][selectedTokens[1]]
-      const allowanceBaseToken = await getTokenAllowance(selectedTokensPair.baseToken.address, selectedFund.details.address, selectedExchange)
-      const allowanceQuoteToken = await getTokenAllowance(selectedTokensPair.quoteToken.address, selectedFund.details.address, selectedExchange)
+      const allowanceBaseToken = await getTokenAllowance(selectedTokensPair.baseToken, selectedFund.details.address, selectedExchange)
+      const allowanceQuoteToken = await getTokenAllowance(selectedTokensPair.quoteToken, selectedFund.details.address, selectedExchange)
       const tradeTokensPair = {
         baseToken: baseToken,
         quoteToken: quoteToken,
@@ -381,38 +431,38 @@ class ApplicationExchangeHome extends Component {
     }
     // console.log(this.props)
 
-    if (endpoint.networkInfo.name !== 'kovan') {
-      return (
-        <div ref={node => this.node = node}>
-          <Row className={styles.maincontainer}>
-            <Col xs={12}>
-              <Paper className={styles.paperTopBarContainer} zDepth={1}>
-                <div style={{ paddingTop: '16px', paddingBottom: '16px' }}>
-                  The exchange is only available on Ethereum Kovan network.
-              </div>
-              </Paper>
-            </Col>
-          </Row>
-          <Row>
-            <Col xs={12}>
-              {notificationsOpen ? (
-                <ElementNotificationsDrawer
-                  handleToggleNotifications={handleToggleNotifications}
-                  notificationsOpen={notificationsOpen}
-                />
-              ) : (
-                  null
-                )}
-            </Col>
-          </Row>
-          <ElementBottomStatusBar
-            blockNumber={endpoint.prevBlockNumber}
-            networkName={endpoint.networkInfo.name}
-            networkError={endpoint.networkError}
-            networkStatus={endpoint.networkStatus} />
-        </div>
-      )
-    }
+    // if (endpoint.networkInfo.name !== 'kovan') {
+    //   return (
+    //     <div ref={node => this.node = node}>
+    //       <Row className={styles.maincontainer}>
+    //         <Col xs={12}>
+    //           <Paper className={styles.paperTopBarContainer} zDepth={1}>
+    //             <div style={{ paddingTop: '16px', paddingBottom: '16px' }}>
+    //               The exchange is only available on Ethereum Kovan network.
+    //           </div>
+    //           </Paper>
+    //         </Col>
+    //       </Row>
+    //       <Row>
+    //         <Col xs={12}>
+    //           {notificationsOpen ? (
+    //             <ElementNotificationsDrawer
+    //               handleToggleNotifications={handleToggleNotifications}
+    //               notificationsOpen={notificationsOpen}
+    //             />
+    //           ) : (
+    //               null
+    //             )}
+    //         </Col>
+    //       </Row>
+    //       <ElementBottomStatusBar
+    //         blockNumber={endpoint.prevBlockNumber}
+    //         networkName={endpoint.networkInfo.name}
+    //         networkError={endpoint.networkError}
+    //         networkStatus={endpoint.networkStatus} />
+    //     </div>
+    //   )
+    // }
 
     if ((endpoint.accounts.length === 0 || !endpoint.networkCorrect)) {
       return (
@@ -468,7 +518,7 @@ class ApplicationExchangeHome extends Component {
       // const bidsOrderNormalizedFilled = [ ...Array(20 - bidsOrderNormalized.length).fill(null), ...bidsOrderNormalized ]
       // const asksOrderNormalizedFilled = [ ...Array(20 - asksOrderNormalized.length).fill(null), ...asksOrderNormalized]
       // console.log(this.props.transactionsDrago.manager.list)
-      const { prices, chartData, fundOrders } = this.props.exchange
+      const { chartData, fundOrders } = this.props.exchange
       const currentPrice = new BigNumber(this.props.exchange.selectedTokensPair.ticker.current.price)
       const priceVariation = new BigNumber(this.props.exchange.selectedTokensPair.ticker.variation).toFixed(4)
       // console.log(this.props.exchange)
@@ -526,7 +576,8 @@ class ApplicationExchangeHome extends Component {
                     <Col xs={12}>
                       <ChartBox
                         data={chartData}
-                        loading={exchange.loading.marketBox}
+                        // loading={exchange.loading.marketBox}
+                        loading={false}
                       />
                     </Col>
                     <Col xs={12}>
@@ -604,32 +655,7 @@ class ApplicationExchangeHome extends Component {
 
   }
 
-  connectToExchange = async (tradeTokensPair) => {
-    const { api } = this.context
-    const networkInfo = api._rb.network
-    // const endpoints = this.props.endpoint.endpointInfo
-    // var exchangeUtils = new Exchange(endpoints, networkInfo, tradeTokensPair)
-    // var contract = exchangeUtils.init()
-    // const subscription = contract.events.allEvents({
-    //   fromBlock: 0,
-    //   toBlock: 'latest'
-    // }, this.onNewEventZeroExExchange)
-    var payload = {
-      relay: this.props.exchange.selectedRelay,
-      networkId: this.props.exchange.relay.networkId,
-      baseToken: this.props.exchange.selectedTokensPair.baseToken,
-      quoteToken: this.props.exchange.selectedTokensPair.quoteToken,
-      aggregated: this.props.exchange.orderBookAggregated
-    }
-    this.props.dispatch(Actions.exchange.relayGetOrders(payload))
-    this.props.dispatch({
-      type: RELAY_OPEN_WEBSOCKET, payload: {
-        relay: this.props.exchange.selectedRelay,
-        baseToken: this.props.exchange.selectedTokensPair.baseToken,
-        quoteToken: this.props.exchange.selectedTokensPair.quoteToken
-      }
-    })
-  }
+
 
   // Getting last transactions
   async getSelectedFundDetails(dragoAddress, accounts) {

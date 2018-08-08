@@ -38,7 +38,42 @@ export const ERC20_TOKENS = {
       address: '0x1dad4783cf3fe3085c1426157ab175a6119a04ba',
       decimals: 18,
       name: 'MakerDAO'
-    }
+    },
+    // For testing. Remember to remove ETH and USDT from kovan
+    // ETH: {
+    //   symbol: 'ETH',
+    //   symbolTicker: {
+    //     Ethfinex: 'ETH'
+    //   },
+    //   address: '0x',
+    //   decimals: 18,
+    //   name: 'Ether',
+    //   wrappers: {
+    //     Ethfinex: {
+    //       symbol: 'ETHW',
+    //       decimals: 18,
+    //       address: "0x965808e7F815CfffD4c018ef2Ba4C5A65EBa087e",
+    //       name: 'ETHWrapper',
+    //     }
+    //   }
+    // },
+    // USDT: {
+    //   symbol: 'USDT',
+    //   symbolTicker: {
+    //     Ethfinex: 'USD'
+    //   },
+    //   address: '0x0736d0c130b2eAD47476cC262dbed90D7C4eeABD',
+    //   decimals: 18,
+    //   name: 'Tether USD',
+    //   wrappers: {
+    //     Ethfinex: {
+    //       symbol: 'USDT',
+    //       decimals: 18,
+    //       address: "0x83E42e6d1ac009285376340ef64BaC1C7d106C89",
+    //       name: 'USDTWrapper',
+    //     }
+    //   }
+    // }
   },
   mainnet: {
     WETH: {
@@ -79,11 +114,29 @@ export const ERC20_TOKENS = {
     }
   },
   ropsten: {
+    WETH: {
+      symbol: 'WETH',
+      symbolTicker: {
+        Ethfinex: 'ETH'
+      },
+      address: '0xc778417e063141139fce010982780140aa0cd5ab',
+      decimals: 18,
+      name: 'Wrapped Ether 0x'
+    },
+    ZRX: {
+      symbol: 'ZRX',
+      symbolTicker: {
+        Ethfinex: 'ZRX'
+      },
+      address: '0xa8e9fa8f91e5ae138c74648c9c304f1c75003a8d',
+      decimals: 18,
+      name: '0x Protocol Token'
+    },
     ETHW: {
       symbol: 'WETH',
       address: '0xc778417E063141139Fce010982780140Aa0cD5Ab',
       decimals: 18,
-      name: 'Wrapped Ether',
+      name: 'Wrapped Ether EF',
       wrappers: {
         Ethfinex: {
           symbol: 'ETHW',

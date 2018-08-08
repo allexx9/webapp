@@ -17,7 +17,10 @@ import {
   UPDATE_FUND_ORDERS,
   UPDATE_SELECTED_RELAY,
   UPDATE_AVAILABLE_TRADE_TOKENS_PAIRS,
-  UPDATE_CURRENT_TOKEN_PRICE
+  UPDATE_CURRENT_TOKEN_PRICE,
+  UPDATE_AVAILABLE_RELAYS,
+  ADD_DATAPOINT_MARKET_DATA,
+  INIT_MARKET_DATA
 } from '../actions/const'
 
 
@@ -32,10 +35,55 @@ function exchangeReducer(state = initialState.exchange, action) {
       };
 
     case UPDATE_MARKET_DATA:
+      if (action.payload !== "") {
+        return {
+          ...state,
+          chartData: action.payload
+        }
+      } else {
+        return {
+          ...state
+        }
+      }
+
+    case INIT_MARKET_DATA:
+      if (action.payload !== "") {
+        return {
+          ...state,
+          chartData: action.payload
+        }
+      } else {
+        return {
+          ...state
+        }
+      }
+
+    case ADD_DATAPOINT_MARKET_DATA:
+      let newChartData = [...state.chartData]
+      if (action.payload.epoch === newChartData[newChartData.length - 1].epoch) {
+        newChartData[newChartData.length - 1] = action.payload
+        console.log('first')
+        return {
+          ...state,
+          chartData: newChartData
+        }
+      }
+      if (action.payload.epoch === newChartData[newChartData.length - 2].epoch) {
+        console.log('second')
+        newChartData[newChartData.length - 2] = action.payload
+        return {
+          ...state,
+          chartData: newChartData
+        }
+      }   
+      // newChartData.pop()
+      console.log('***** NEW *****')
+      newChartData.push(action.payload)
       return {
         ...state,
-        chartData: action.payload
-      };
+        chartData: newChartData
+      }
+
 
     case UPDATE_ELEMENT_LOADING:
       const elementLoading = action.payload
@@ -57,8 +105,8 @@ function exchangeReducer(state = initialState.exchange, action) {
       };
 
     case UPDATE_SELECTED_ORDER:
-      var orderDetails = action.payload
-      var selectedOrder = { ...state.selectedOrder, ...orderDetails }
+      let orderDetails = action.payload
+      let selectedOrder = { ...state.selectedOrder, ...orderDetails }
       return {
         ...state,
         selectedOrder: selectedOrder
@@ -74,6 +122,12 @@ function exchangeReducer(state = initialState.exchange, action) {
       return {
         ...state,
         availableTradeTokensPairs: { ...action.payload }
+      };
+
+    case UPDATE_AVAILABLE_RELAYS:
+      return {
+        ...state,
+        availableRelays: action.payload
       };
 
     case SET_MAKER_ADDRESS:
@@ -107,21 +161,21 @@ function exchangeReducer(state = initialState.exchange, action) {
       return { ...state, webSocket: { ...action.payload } }
 
     case TOKENS_TICKERS_UPDATE:
-      var prices = {
+      let prices = {
         ...action.payload,
         previous: { ...state.prices }
       }
       return { ...state, prices }
 
     case UPDATE_CURRENT_TOKEN_PRICE:
-      var ticker
+      let ticker
       if (typeof action.payload.current !== 'undefined') {
-        var ticker = {
+        ticker = {
           current: action.payload.current,
           previous: { ...state.selectedTokensPair.ticker.current }
         }
-        var currentPrice = new BigNumber(ticker.current.price)
-        var previousPrice = new BigNumber(ticker.previous.price)
+        let currentPrice = new BigNumber(ticker.current.price)
+        let previousPrice = new BigNumber(ticker.previous.price)
         if (!previousPrice.eq(0)) {
           ticker.variation = currentPrice.sub(previousPrice).div(previousPrice).mul(100).toFixed(4)
         } else {
@@ -130,15 +184,15 @@ function exchangeReducer(state = initialState.exchange, action) {
         }
       }
       else {
-        var ticker = {
+        ticker = {
           current: { ...state.selectedTokensPair.ticker.current },
           previous: { ...state.selectedTokensPair.ticker.current },
-          variation: state.selectedTokensPair.ticker.variation 
+          variation: state.selectedTokensPair.ticker.variation
         }
       }
       return {
         ...state,
-        selectedTokensPair: { ...state.selectedTokensPair, ticker: {...ticker} }
+        selectedTokensPair: { ...state.selectedTokensPair, ticker: { ...ticker } }
       };
 
     default: return state;

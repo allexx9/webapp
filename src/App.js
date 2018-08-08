@@ -179,8 +179,12 @@ export class App extends Component {
       clearTimeout(this.tdIsConnected)
       clearTimeout(this.tdIsMetaMaskUnlocked)
     }
+    try {
+      this.detachInterface();
+    } catch (err) {
+      console.log(err)
+    }
     // Unsubscribing to the event when the the user moves away from this page
-    this.detachInterface();
   }
 
   UNSAFE_componentWillUpdate() {

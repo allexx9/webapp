@@ -16,7 +16,6 @@ export default class FundHeaderNameSymbol extends Component {
   }
 
   render() {
-    console.log(this.props)
     const headerStyle = {
       drago: {
         toolBar:

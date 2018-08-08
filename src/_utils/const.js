@@ -27,15 +27,45 @@ export const RELAYS = {
     name: 'ERCdEX',
     icon: 'ercdex.png',
     supported: true,
-    onlyAggregateOrderbook: false
+    initOrdeBookAggregated: false,
+    onlyAggregateOrderbook: false,
+    defaultTokensPair: {
+      baseTokenSymbol: 'ZRX',
+      quoteTokenSymbol: 'WETH'
+    },
+    supportedNetworks: ['1', '42']
+  },
+  Radarrelay: {
+    name: 'Radarrelay',
+    icon: 'radarrelay.png',
+    supported: true,
+    initOrdeBookAggregated: false,
+    onlyAggregateOrderbook: false,
+    defaultTokensPair: {
+      baseTokenSymbol: 'ZRX',
+      quoteTokenSymbol: 'WETH'
+    },
+    supportedNetworks: ['1', '3']
   },
   Ethfinex: {
     name: 'Ethfinex',
     icon: 'ethfinex.png',
     supported: true,
-    onlyAggregateOrderbook: true
+    initOrdeBookAggregated: true,
+    onlyAggregateOrderbook: true,
+    defaultTokensPair: {
+      baseTokenSymbol: 'ETH',
+      quoteTokenSymbol: 'USDT'
+    },
+    supportedNetworks: ['1', '3']
   }
 }
+
+export const DEFAULT_RELAY = {
+  kovan: 'ERCdEX',
+  ropsten: 'Ethfinex',
+}
+
 
 // export const ERCdEX = "ERCdEX"
 // export const Ethfinex = "Ethfinex"
@@ -56,9 +86,11 @@ export const EP_RIGOBLOCK_KV_PROD_WS = "wss://kovan.endpoint.network:8546"
 
 // Parity on ports 86xx
 export const EP_RIGOBLOCK_RP_DEV = "https://srv03.endpoint.network:8645"
-export const EP_RIGOBLOCK_RP_DEV_WS = "wss://srv03.endpoint.network:8646"
+// export const EP_RIGOBLOCK_RP_DEV_WS = "wss://srv03.endpoint.network:8646"
+export const EP_RIGOBLOCK_RP_DEV_WS = "wss://ropsten.dev.endpoint.network:8546"
 export const EP_RIGOBLOCK_RP_PROD = "https://ropsten.endpoint.network:8645"
-export const EP_RIGOBLOCK_RP_PROD_WS = "wss://ropsten.endpoint.network:8646"
+// export const EP_RIGOBLOCK_RP_PROD_WS = "wss://ropsten.endpoint.network:8646"
+export const EP_RIGOBLOCK_RP_PROD_WS = "wss://ropsten.dev.endpoint.network:8546"
 
 // Parity on ports 87xx
 export const EP_RIGOBLOCK_MN_DEV = "https://srv03.endpoint.network:8745"
@@ -159,8 +191,8 @@ export const ENDPOINTS = {
         prod: "wss://kovan.endpoint.network:8546"
       },
       ropsten: {
-        dev: "wss://srv03.endpoint.network:8646",
-        prod: "wss://ropsten.endpoint.network:8646"
+        dev: EP_RIGOBLOCK_RP_DEV_WS,
+        prod: EP_RIGOBLOCK_RP_PROD_WS
       },
       mainnet: {
         dev: "wss://mainnet.endpoint.network:8946",
@@ -315,7 +347,7 @@ export const UPDATE_FUND_ORDERS = 'UPDATE_FUND_ORDERS'
 
 // Market
 export const UPDATE_MARKET_DATA = 'UPDATE_MARKET_DATA'
-export const FETCH_MARKET_PRICE_DATA = 'FETCH_MARKET_PRICE_DATA'
+export const FETCH_CANDLES_DATA = 'FETCH_CANDLES_DATA'
 export const FETCH_HISTORY_TRANSACTION_LOGS = 'FETCH_HISTORY_TRANSACTION_LOGS'
 export const UPDATE_HISTORY_TRANSACTION_LOGS = 'UPDATE_HISTORY_TRANSACTION_LOGS'
 export const FETCH_ASSETS_PRICE_DATA = 'FETCH_ASSETS_PRICE_DATA'
@@ -349,9 +381,9 @@ export const RELAY_UPDATE_ORDERS = 'RELAY_UPDATE_ORDERS'
 // Tokens
 export const SET_TOKEN_ALLOWANCE = 'SET_TOKEN_ALLOWANCE'
 export const GET_PRICES_BITFINEXE = 'GET_PRICES_BITFINEX'
-export const TOKEN_PRICE_TICKER_OPEN_WEBSOCKET = "TOKEN_PRICE_TICKER_OPEN_WEBSOCKET"
+export const TOKEN_PRICE_TICKERS_FETCH_START = "TOKEN_PRICE_TICKERS_FETCH_START"
 export const TOKENS_TICKERS_UPDATE = "TOKENS_TICKERS_UPDATE"
-export const TOKEN_PRICE_TICKER_CLOSE_WEBSOCKET = "TOKEN_PRICE_TICKER_CLOSE_WEBSOCKET"
+export const TOKEN_PRICE_TICKERS_FETCH_STOP = "TOKEN_PRICE_TICKERS_FETCH_STOP"
 export const UPDATE_FUND_LIQUIDITY = "UPDATE_FUND_LIQUIDITY"
 
 

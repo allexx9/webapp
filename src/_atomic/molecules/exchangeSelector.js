@@ -12,6 +12,7 @@ import ExchangeItem from '../atoms/exchangeSelectItem'
 export default class ExchangeSelector extends Component {
 
   static propTypes = {
+    availableRelays: PropTypes.object.isRequired,
     selectedRelay: PropTypes.string.isRequired,
     onSelectExchange: PropTypes.func.isRequired
   }
@@ -23,7 +24,7 @@ export default class ExchangeSelector extends Component {
   renderExchange = () => {
     var menu = []
     // console.log(RELAYS)
-    Object.keys(RELAYS).forEach((key) => {
+    Object.keys(this.props.availableRelays).forEach((key) => {
       // console.log(key)
       // console.log(RELAYS[key])
       menu.push(

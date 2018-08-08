@@ -9,15 +9,15 @@ import * as ws from './exchangesWs';
 import * as FORMAT from './format';
 
 class Exchange {
-  constructor(exchange = Ethfinex, network = '1', transport = 'http') {
+  constructor(exchange, networkId, transport = 'http') {
     if (typeof SupportedExchanges[exchange] === 'undefined') {
       throw new Error('Exchange not supported: ' + exchange)
     }
-    if (!SupportedExchanges[exchange].supportedNetworks.includes(network)) {
-      throw new Error('Network not supported on this exchange: ' + network)
+    if (!SupportedExchanges[exchange].supportedNetworks.includes(networkId.toString())) {
+      throw new Error('Network not supported on this exchange: ' + networkId)
     }
     this._exchange = exchange
-    this._network = network
+    this._network = 1
     this._transport = transport
     this._exchangeProperties = SupportedExchanges[exchange]
     this._call = {
@@ -36,6 +36,7 @@ class Exchange {
             // console.log(results)
             // console.log(formatFunction)
             // console.log(formatFunction(results))
+            // console.log('formatting')
             return formatFunction(results)
           })
           .catch(err => {
