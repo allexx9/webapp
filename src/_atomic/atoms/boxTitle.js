@@ -20,7 +20,7 @@ class BoxTitle extends React.Component {
         title={this.props.titleText}
         showMenuIconButton={false}
         className={styles.appBar}
-        titleStyle={{ fontSize: 14 }}
+        titleStyle={{ fontSize: 14, fontWeight: 700 }}
       />
     )
   }

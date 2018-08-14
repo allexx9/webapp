@@ -62,14 +62,14 @@ function exchangeReducer(state = initialState.exchange, action) {
       let newChartData = [...state.chartData]
       if (action.payload.epoch === newChartData[newChartData.length - 1].epoch) {
         newChartData[newChartData.length - 1] = action.payload
-        console.log('first')
+        // console.log('first')
         return {
           ...state,
           chartData: newChartData
         }
       }
       if (action.payload.epoch === newChartData[newChartData.length - 2].epoch) {
-        console.log('second')
+        // console.log('second')
         newChartData[newChartData.length - 2] = action.payload
         return {
           ...state,
@@ -77,7 +77,7 @@ function exchangeReducer(state = initialState.exchange, action) {
         }
       }   
       // newChartData.pop()
-      console.log('***** NEW *****')
+      // console.log('***** NEW *****')
       newChartData.push(action.payload)
       return {
         ...state,

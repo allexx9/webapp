@@ -5,9 +5,7 @@ import TableOrderBook from '../molecules/tableOrderBook';
 import styles from './orderBook.module.css'
 import AppBar from 'material-ui/AppBar'
 import Paper from 'material-ui/Paper'
-import Toggle from 'material-ui/Toggle';
-import * as Colors from 'material-ui/styles/colors'
-import { connect } from 'react-redux';
+import BoxTitle from '../atoms/boxTitle';
 import ToggleSwitch from '../atoms/toggleSwitch'
 
 const paperStyle = {
@@ -65,13 +63,7 @@ class OrderBook extends Component {
         <Col xs={12}>
           <Row className={styles.sectionTitle}>
             <Col xs={12}>
-
-              <AppBar
-                title='ORDER BOOK'
-                showMenuIconButton={false}
-                className={styles.appBar}
-                titleStyle={{ fontSize: 14 }}
-              />
+              <BoxTitle titleText={'ORDER BOOK'} />
               <Paper style={paperStyle} zDepth={1} >
                 <Row className={styles.orderBookContainer}>
                   <Col xs={12}>

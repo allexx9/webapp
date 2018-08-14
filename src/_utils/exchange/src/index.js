@@ -17,7 +17,7 @@ class Exchange {
       throw new Error('Network not supported on this exchange: ' + networkId)
     }
     this._exchange = exchange
-    this._network = networkId
+    this._network = 1
     this._transport = transport
     this._exchangeProperties = SupportedExchanges[exchange]
     this._call = {
@@ -40,7 +40,8 @@ class Exchange {
             return formatFunction(results)
           })
           .catch(err => {
-            return err
+            console.log(err)
+            throw new Error(err)
           })
       default:
         throw new Error('Transport unknown')
@@ -71,7 +72,7 @@ class Exchange {
   }
 
   submbitOrder = (signedOrder) => {
-    console.log(`Submitting orderr to ${this._exchange}`)
+    console.log(`Submitting order to ${this._exchange}`)
     if (!signedOrder) {
       throw new Error('signedOrder needs to be set')
     }
@@ -90,8 +91,34 @@ class Exchange {
     )
   }
 
+  getAccountOrders = (account, baseToken, quoteToken) => {
+    console.log(`${this._exchange}: Fetching account orders.`)
+    if (!account) {
+      throw new Error('account needs to be set')
+    }
+    if (!baseToken) {
+      throw new Error('baseToken needs to be set')
+    }
+    if (!quoteToken) {
+      throw new Error('quoteToken needs to be set')
+    }
+    return this.returnResults(
+      () => {
+        switch (this._exchange) {
+          // case ERCdEX:
+          //   return this._call[this._transport].getAccountOrders[this._exchange](this._network, baseToken, quoteToken)
+          case Ethfinex:
+            return this._call[this._transport].getAccountOrders[this._exchange](3, account)
+          default:
+            throw new Error('Relay unknown')
+        }
+      },
+      FORMAT.accountOrders[this._exchange]
+    )
+  }
+
   getOrders = (baseToken, quoteToken) => {
-    console.log(`Fetching orders from ${this._exchange}`)
+    console.log(`${this._exchange}: Fetching orders.`)
     if (!baseToken) {
       throw new Error('baseToken needs to be set')
     }
@@ -163,7 +190,7 @@ class Exchange {
   }
 
   getTickers = () => {
-    console.log(`Fetching tokens prices from ${this._exchange}`)
+    console.log(`${this._exchange}: Fetching tokens prices`)
     // I have only added Ethfinex so far, because this function return every tokens price
     // and we use the data to calcuate the funds assets value. 
     // Ethfinex will be our source of truth for the moment.

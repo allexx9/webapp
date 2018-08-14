@@ -52,7 +52,7 @@ export const getHistoricalPricesData = {
   //   return websocket
   // },
   Ethfinex: (networkId = 1, baseToken, quoteToken) => {
-    const websocket = new ReconnectingWebSocket(SupportedExchanges.Ethfinex.ws[NETWORKS_ID['1']])
+    const websocket = new ReconnectingWebSocket(SupportedExchanges.Ethfinex.ws[NETWORKS_ID[networkId]])
     websocket.addEventListener('open', () => {
       let msg = JSON.stringify({ 
         event: `subscribe`, 

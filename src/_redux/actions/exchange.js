@@ -3,6 +3,19 @@
 import * as TYPE_ from './const'
 
 const exchange = {
+  getAccountOrders: (relay, networkId, account, baseToken, quoteToken ) => {
+    const payload = {
+      relay,
+      networkId,
+      account,
+      baseToken,
+      quoteToken,
+    }
+    return {
+      type: TYPE_.FETCH_FUND_ORDERS,
+      payload: payload
+    }
+  },
   getChartData: (relay, networkId, baseToken, quoteToken, startDate) => {
     const payload = {
       relay,
@@ -25,6 +38,14 @@ const exchange = {
     return {
       type: TYPE_.FETCH_HISTORY_TRANSACTION_LOGS,
       payload: payload
+    }
+  },
+  relayCloseWs: () => {
+    return {
+      type: TYPE_.RELAY_CLOSE_WEBSOCKET,
+      payload: {
+
+      }
     }
   },
   relayGetOrders: (relay, networkId, baseToken, quoteToken, aggregated) => {

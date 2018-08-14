@@ -125,12 +125,11 @@ const getTickers$ = () => {
 
 export const getPricesERCdEXEpic = (action$) =>
   action$.ofType(TOKEN_PRICE_TICKERS_FETCH_START)
-    .switchMap((action) => {
+    .switchMap(() => {
       return Observable
         .timer(0, 5000)
         .takeUntil(
           action$.ofType(TOKEN_PRICE_TICKERS_FETCH_STOP)
-            .filter(closeAction => closeAction.ticker === action.ticker)
         )
         .exhaustMap(() =>
         getTickers$()

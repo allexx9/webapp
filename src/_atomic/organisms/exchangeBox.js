@@ -10,6 +10,9 @@ import { Actions } from '../../_redux/actions';
 import utils from '../../_utils/utils';
 import BigNumber from 'bignumber.js';
 import { getTokenAllowance } from '../../_utils/exchange';
+import ButtonAuthenticate from '../atoms/buttonAuthenticate'
+import Web3 from 'web3';
+import rp from 'request-promise';
 
 import {
   RELAYS,
@@ -83,6 +86,88 @@ class ExchangeBox extends Component {
 
   }
 
+  onAuthEF = async  () => {
+    const { api } = this.context
+    // metamask will take care of the 3rd parameter, "password"
+  //   if (web3.currentProvider.isMetaMask) {
+  //     return web3.eth.personal.sign(toSign, efx.get('account'))
+  //   } else {
+  //     return web3.eth.sign(toSign, efx.get('account'))
+  //   }
+  // const token = ((Date.now() / 1000) + 30) + ''
+
+  // web3.eth.sign(token, address, (err, res) => {
+  //       if (err) { reject(err) }
+  //       signature = res.signature
+  //     })
+  console.log('auth')
+  try {
+    // var provider = account.source === 'MetaMask' ? window.web3 : api
+    const token = ((Date.now() / 1000) + 3600) + ''
+    let web3 = new Web3(window.web3)
+    console.log(token)
+    let result = await web3.eth.personal.sign(token, "0xc8dcd42e846466f2d2b89f3c54eba37bf738019b")
+    // .then((result) => {
+    //   console.log(result)
+    // })
+    console.log(result)
+    const account = {
+      signature: result,
+      nonce: token,
+    }
+    // Fetch active orders
+    this.props.dispatch(Actions.exchange.getAccountOrders(
+      this.props.exchange.selectedRelay,
+      api._rb.network.id,
+      account,
+      this.props.exchange.selectedTokensPair.baseToken,
+      this.props.exchange.selectedTokensPair.quoteToken,
+    )
+    )
+    
+    // rp(
+    //   {
+    //     method: 'POST',
+    //     url: `https://test.ethfinex.com/trustless/v1/r/orders`,
+    //     body: {
+    //       signature: result,
+    //       nonce: token,
+    //       protocol: '0x'
+    //     },
+    //     json: true
+    //   }
+    // )
+    // .then(results => {
+    //   console.log(results)
+    //   // console.log(formatFunction)
+    //   // console.log(formatFunction(results))
+    //   // console.log('formatting')
+    // })
+    // .catch(err => {
+    //   return err
+    // })
+
+    // let signature = web3.eth.sign("Hello world", '0xc8dcd42e846466f2d2b89f3c54eba37bf738019b', (err, res) => {
+    //   if (err) return console.error(err)
+    //   console.log(res)
+    //   return res.signature
+    // })
+    // console.log(signature)
+    // web3.eth.sign("Hello world", "0xc8dcd42e846466f2d2b89f3c54eba37bf738019b")
+    // .then((result) => {
+    //   console.log(result)
+    // })
+//     web3.eth.sign("Hello world", "0xc8dcd42e846466f2d2b89f3c54eba37bf738019b")
+// .then(console.log);
+    // .catch((error) =>{
+    //   console.log(error)
+    // })
+    // this.props.dispatch(this.updateSelectedTradeTokensPair('base', true))
+  } catch (error) {
+    console.log(error)
+  }
+}
+
   render() {
     // console.log(this.props.fundOrders)
     // console.log(this.props.exchange)
@@ -101,6 +186,11 @@ class ExchangeBox extends Component {
                       availableRelays={this.props.exchange.availableRelays}
                       selectedRelay={this.props.exchange.selectedRelay.name}
                       onSelectExchange={this.onSelectExchange} />
+                  </Col>
+                  <Col xs={12}>
+                    <ButtonAuthenticate 
+                    onAuthEF={this.onAuthEF}
+                    />
                   </Col>
                 </Row>
               </Paper>

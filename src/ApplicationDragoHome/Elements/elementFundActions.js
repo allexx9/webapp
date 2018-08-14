@@ -245,7 +245,6 @@ class ElementFundActions extends React.Component {
   }
 
   handleBuyAction = () => {
-    const {dragoDetails} = this.props
     return this.setState({
       open: true,
       action: 'buy',

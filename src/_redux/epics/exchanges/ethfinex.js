@@ -46,9 +46,12 @@ import {
   UPDATE_MARKET_DATA,
   INIT_MARKET_DATA,
   ADD_DATAPOINT_MARKET_DATA,
+  FETCH_FUND_ORDERS_STOP,
 
   FETCH_CANDLES_DATA,
-  ADD_ERROR_NOTIFICATION
+  ADD_ERROR_NOTIFICATION,
+  FETCH_FUND_ORDERS,
+  UPDATE_FUND_ORDERS
 
 } from '../../../_redux/actions/const'
 
@@ -154,16 +157,18 @@ const candelsWebsocket$ = (relay, networkId, baseToken, quoteToken) => {
     }
     websocket.onclose = (msg) => {
       // websocket.send(`unsub:ticker`);
-      console.log(msg)
-      // return msg.wasClean ? observer.complete() : null
+      console.log(`Candle WS closed`);
+      // console.log(msg)
+      return msg.wasClean ? observer.complete() : null
     };
     websocket.onerror = (error) => {
-      console.log(error)
+      // console.log(error)
       console.log('WebSocket error.');
-      // return observer.error(error)
+      return observer.error(error)
     };
-    return () => websocket.close();
+    return () => websocket.close(1000, 'Closed by client', { keepClosed: true });
   })
+
 }
 
 const updateCandles = (tickerOutput) => {
@@ -171,49 +176,48 @@ const updateCandles = (tickerOutput) => {
   // console.log(ticker)
   // console.log(Array.isArray(ticker))
 
-    if (ticker[1].length !== 6 && ticker[1] !== "hb") {
-      let candles = ticker[1].map(tick => {
-        let entry = {
-          date: new Date(tick[0]),
-          low: tick[4],
-          high: tick[3],
-          open: tick[1],
-          close: tick[2],
-          volume: tick[5],
-          epoch: tick[0]
-        }
-        return entry
-      })
-      return {
-        type: INIT_MARKET_DATA,
-        payload: candles.reverse()
+  if (ticker[1].length !== 6 && ticker[1] !== "hb") {
+    let candles = ticker[1].map(tick => {
+      let entry = {
+        date: new Date(tick[0]),
+        low: tick[4],
+        high: tick[3],
+        open: tick[1],
+        close: tick[2],
+        volume: tick[5],
+        epoch: tick[0]
       }
+      return entry
+    })
+    return {
+      type: INIT_MARKET_DATA,
+      payload: candles.reverse()
+    }
 
+  }
+  if (ticker[1].length === 6 && ticker[1] !== "hb") {
+    // console.log(`${ticker[1][0]} -> ${date}`)
+    // console.log(new Date(ticker[1][0]))
+    let candles =
+    {
+      date: new Date(ticker[1][0]),
+      low: ticker[1][4],
+      high: ticker[1][3],
+      open: ticker[1][1],
+      close: ticker[1][2],
+      volume: ticker[1][5],
+      epoch: ticker[1][0]
     }
-    if (ticker[1].length === 6 && ticker[1] !== "hb") {
-      let date = new Date(ticker[1][0])
-      console.log(`${ticker[1][0]} -> ${date}`)
-      // console.log(new Date(ticker[1][0]))
-      let candles = 
-        {
-          date: new Date(ticker[1][0]),
-          low: ticker[1][4],
-          high: ticker[1][3],
-          open: ticker[1][1],
-          close: ticker[1][2],
-          volume: ticker[1][5],
-          epoch: ticker[1][0]
-        }
-      
-      return {
-        type: ADD_DATAPOINT_MARKET_DATA,
-        payload: candles
-      }
-    }
+
     return {
       type: ADD_DATAPOINT_MARKET_DATA,
-      payload: ""
+      payload: candles
     }
+  }
+  return {
+    type: ADD_DATAPOINT_MARKET_DATA,
+    payload: ""
+  }
 
 }
 
@@ -231,29 +235,27 @@ export const getCandlesDataEpic = (action$) => {
           action.payload.quoteToken,
           action.payload.startDate
         )
-        .skip(2)
-        // .filter(val => { 
-        //   return Array.isArray(JSON.parse(val)) 
-        // })
-        .filter(val => { 
-          let tick = JSON.parse(val)
-          return tick[1] !== "hb"
-        }
-        )
-        // .bufferCount(2)
-        // .do(val => {
-        //   console.log(val)
-        //   return val
-        // })
-        // .takeLast(1)
-        .do(val => {
-          // console.log(val)
-          return val
-        })
-        // .last()
-        .map(historical => {
-          return updateCandles(historical)
-        }),
+          .takeUntil(
+            action$.ofType(customRelayAction(RELAY_CLOSE_WEBSOCKET))
+          )
+          .skip(2)
+          .filter(val => {
+            let tick = JSON.parse(val)
+            return tick[1] !== "hb"
+          }
+          )
+          .filter(val => {
+            let tick = JSON.parse(val)
+            return (typeof tick[1] !== 'undefined' || typeof tick[0] !== 'undefined')
+          }
+          )
+          .do(val => {
+            // console.log(val)
+            return val
+          })
+          .map(historical => {
+            return updateCandles(historical)
+          }),
         // Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: false } }),
       )
     });
@@ -266,28 +268,27 @@ export const getCandlesDataEpic = (action$) => {
 
 const reconnectingWebsocket$ = (relay, networkId, baseToken, quoteToken) => {
   return Observable.create(observer => {
-    console.log(networkId)
     const exchange = new Exchange(relay.name, networkId, 'ws')
     const websocket = exchange.getTicker(
       utils.getTockenSymbolForRelay(relay.name, baseToken),
       utils.getTockenSymbolForRelay(relay.name, quoteToken)
     )
     websocket.onmessage = (msg) => {
-      console.log('WebSocket message.');
+      // console.log('WebSocket message.');
       // console.log(msg)
       return observer.next(msg.data);
     }
     websocket.onclose = (msg) => {
       // websocket.send(`unsub:ticker`);
       console.log(msg)
-      // return msg.wasClean ? observer.complete() : null
+      return msg.wasClean ? observer.complete() : null
     };
     websocket.onerror = (error) => {
       console.log(error)
       console.log('WebSocket error.');
       return observer.error(error)
     };
-    return () => websocket.close();
+    return () => websocket.close(1000, 'Closed by client', { keepClosed: true })
   })
 }
 
@@ -301,14 +302,11 @@ export const initRelayWebSocketEpic = (action$) =>
         action.payload.baseToken,
         action.payload.quoteToken
       )
-
         .takeUntil(
-          action$.ofType(RELAY_CLOSE_WEBSOCKET)
-            .filter(closeAction => closeAction.ticker === action.ticker)
+          action$.ofType(customRelayAction(RELAY_CLOSE_WEBSOCKET))
         )
         .map(payload => ({ type: customRelayAction(RELAY_MSG_FROM_WEBSOCKET), payload }))
         .catch(() => {
-          // console.log(val)
           return Observable.of({
             type: ADD_ERROR_NOTIFICATION,
             payload: 'Error connecting to price ticker.'
@@ -338,44 +336,6 @@ const updateCurrentTokenPrice = (tickerOutput) => {
     }
   }
 }
-
-// export const orderBookEpic = (action$, store) => {
-//   const state = store.getState()
-//   const relay = state.exchange.selectedRelay
-//   const networkId = state.exchange.relay.networkId
-//   const baseToken = state.exchange.selectedTokensPair.baseToken
-//   const quoteToken = state.exchange.selectedTokensPair.quoteToken
-//   const aggregated = state.exchange.orderBook.aggregated
-//   return action$.ofType(customRelayAction(RELAY_MSG_FROM_WEBSOCKET))
-//     .map(action => {
-//       console.log(action)
-//       return action.payload
-//     })
-//     .bufferTime(1000)
-//     .filter(value => {
-//       return value.length !== 0
-//     })
-//     .bufferCount(1)
-//     .map(ticker => {
-
-//       const lastItem = ticker[0].pop()
-//       return lastItem
-//     })
-//     .switchMap((ticker) => Observable.of(
-//       {
-//         type: RELAY_GET_ORDERS,
-//         payload: {
-//           relay,
-//           networkId,
-//           baseToken,
-//           quoteToken,
-//           aggregated
-//         }
-//       },
-//       updateCurrentTokenPrice(ticker, relay, baseToken)
-//     )
-//     )
-// }
 
 export const orderBookEpic = (action$, state$) => {
   return action$.ofType(customRelayAction(RELAY_MSG_FROM_WEBSOCKET))
@@ -413,5 +373,76 @@ export const orderBookEpic = (action$, state$) => {
       updateCurrentTokenPrice(ticker.item, ticker.state.exchange.selectedTokensPair.baseToken)
     )
     )
+}
+
+//
+// FETCH OPEN ORDERS
+//
+
+const getAccountOrdersFromRelay$ = (relay, networkId, account, baseToken, quoteToken) => {
+    const exchange = new Exchange(relay.name, networkId)
+    return Observable.fromPromise(exchange.getAccountOrders(account, baseToken, quoteToken))
+}
+  
+
+export const getAccountOrdersEpic = (action$) => {
+  return action$.ofType(customRelayAction(FETCH_FUND_ORDERS))
+    .mergeMap((action) => {
+      return Observable.concat(
+        // Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: true }}),
+          
+        Observable
+        .timer(0, 5000)
+        .takeUntil(
+          action$.ofType(customRelayAction(FETCH_FUND_ORDERS_STOP))
+        )
+        .exhaustMap(() =>
+          getAccountOrdersFromRelay$(
+            action.payload.relay,
+            action.payload.networkId,
+            action.payload.account,
+            action.payload.quoteToken,
+            action.payload.baseToken,
+          )
+          .map(orders => {
+            console.log(orders)
+            return {
+              type: UPDATE_FUND_ORDERS,
+              payload: {
+                open: orders
+              }
+            }
+          })
+          .catch(() => {
+            return Observable.of({
+              type: ADD_ERROR_NOTIFICATION,
+              payload: 'Error fetching account orders.'
+            })
+          }
+          )
+
+        )       
+        
+
+        
+        // getAccountOrdersFromRelay$(
+        //     action.payload.relay,
+        //     action.payload.networkId,
+        //     action.payload.account,
+        //     action.payload.quoteToken,
+        //     action.payload.baseToken,
+        //   )
+        //   .map(orders => {
+        //     return {
+        //       type: UPDATE_FUND_ORDERS,
+        //       payload: {
+        //         open: orders
+        //       }
+        //     }
+        //   })
+        ,
+        // Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: false }}),
+      )
+    });
 }
 
