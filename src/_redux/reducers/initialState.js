@@ -39,7 +39,29 @@ const initialState = {
       orderBox: true,
       marketBox: true,
     },
-    chartData: [],
+    // chartData: [
+    //   {
+    //     date: new Date(),
+    //     low: 1,
+    //     high: 2,
+    //     open: 1,
+    //     close: 2,
+    //     volume: 2,
+    //     epoch: 0
+    //   },
+    //   {
+    //     date: new Date(),
+    //     low: 2,
+    //     high: 3,
+    //     open: 2,
+    //     close: 2,
+    //     volume: 3,
+    //     epoch: 0
+    //   }
+    // ],
+    chartData: [
+
+    ],
     selectedFund: {
       details: {},
       liquidity: {

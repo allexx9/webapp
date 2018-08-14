@@ -35,7 +35,6 @@ import {
   CANCEL_SELECTED_ORDER,
   FETCH_FUND_ORDERS,
   RELAY_CLOSE_WEBSOCKET,
-  RELAY_OPEN_WEBSOCKET,
   UPDATE_FUND_LIQUIDITY,
   UPDATE_SELECTED_FUND,
 } from '../_redux/actions/const';
@@ -43,6 +42,7 @@ import { getAvailableAddresses, getTokenAllowance } from '../_utils/exchange';
 import utils from '../_utils/utils';
 import styles from './applicationExchangeHome.module.css';
 import ExchangeBox from '../_atomic/organisms/exchangeBox';
+
 
 
 
@@ -136,8 +136,8 @@ class ApplicationExchangeHome extends Component {
 
 
   shouldComponentUpdate(nextProps, nextState) {
-    var stateUpdate = true
-    var propsUpdate = true
+    let stateUpdate = true
+    let propsUpdate = true
     // shouldComponentUpdate returns false if no need to update children, true if needed.
     propsUpdate = (!utils.shallowEqual(this.props, nextProps))
     stateUpdate = (!utils.shallowEqual(this.state.loading, nextState.loading))
@@ -156,9 +156,8 @@ class ApplicationExchangeHome extends Component {
 
   componentDidMount() {
     const { api } = this.context
-
     const { accounts } = this.props.endpoint
-    const { selectedTokensPair, selectedExchange } = this.props.exchange
+    const { selectedExchange } = this.props.exchange
     const defaultRelay = RELAYS[DEFAULT_RELAY[api._rb.network.name]]
     const defaultTokensPair = {
       baseToken: ERC20_TOKENS[api._rb.network.name][defaultRelay.defaultTokensPair.baseTokenSymbol],
@@ -214,7 +213,7 @@ class ApplicationExchangeHome extends Component {
     // )
 
     // Getting chart data
-    var tsYesterday = new Date((Math.floor(Date.now() / 1000) - 86400 * 7) * 1000).toISOString()
+    let tsYesterday = new Date((Math.floor(Date.now() / 1000) - 86400 * 7) * 1000).toISOString()
     this.props.dispatch(Actions.exchange.getChartData(
       defaultRelay,
       api._rb.network.id,
@@ -226,8 +225,9 @@ class ApplicationExchangeHome extends Component {
 
   }
 
-  componentWillUnmount() {
-    this.props.dispatch({ type: RELAY_CLOSE_WEBSOCKET })
+  componentWillUnmount = () => {
+    console.log('***** UNMOUNT *****')
+    this.props.dispatch(Actions.exchange.relayCloseWs())
   }
 
   UNSAFE_componentWillUpdate() {
@@ -275,11 +275,12 @@ class ApplicationExchangeHome extends Component {
     ))
   }
 
+
   onToggleAggregateOrders = (isInputChecked) => {
     console.log(isInputChecked)
     this.props.dispatch(Actions.exchange.setAggregateOrders(isInputChecked))
 
-    var filter = {
+    let filter = {
       relay: this.props.exchange.selectedRelay,
       networkId: this.props.exchange.relay.networkId,
       baseToken: this.props.exchange.selectedTokensPair.baseToken,
@@ -375,7 +376,7 @@ class ApplicationExchangeHome extends Component {
       this.connectToExchange(tradeTokensPair)
 
       // Getting chart data
-      var tsYesterday = new Date((Math.floor(Date.now() / 1000) - 86400 * 7) * 1000).toISOString()
+      let tsYesterday = new Date((Math.floor(Date.now() / 1000) - 86400 * 7) * 1000).toISOString()
       this.props.dispatch(Actions.exchange.getChartData(
         this.props.exchange.selectedRelay,
         this.props.exchange.relay.networkId,
@@ -626,7 +627,7 @@ class ApplicationExchangeHome extends Component {
         <div ref={node => this.node = node}>
           <Row className={styles.maincontainer}>
             <Col xs={12}>
-              Only managers can access this section.
+              Only wizards can access this section.
             </Col>
           </Row>
           <Row>
@@ -651,9 +652,9 @@ class ApplicationExchangeHome extends Component {
     }
   }
 
-  onNewEventZeroExExchange = (error, event) => {
+  // onNewEventZeroExExchange = (error, event) => {
 
-  }
+  // }
 
 
 
@@ -667,10 +668,10 @@ class ApplicationExchangeHome extends Component {
       const createdLogs = results[1].filter(event => {
         return event.type !== 'BuyDrago' && event.type !== 'SellDrago'
       })
-      console.log(results)
+      // console.log(results)
       results[1] = createdLogs
       results[2].sort(function (a, b) {
-        var keyA = a.symbol,
+        let keyA = a.symbol,
           keyB = b.symbol;
         // Compare the 2 dates
         if (keyA < keyB) return -1;
@@ -699,6 +700,8 @@ class ApplicationExchangeHome extends Component {
       console.warn(error)
     }
   }
+
+
 
 }
 

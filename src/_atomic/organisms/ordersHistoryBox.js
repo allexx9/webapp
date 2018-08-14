@@ -40,7 +40,7 @@ class OrdersHistoryBox extends Component {
     const { selectedFund, selectedTokensPair } = this.props.exchange
 
     const transactionId = sha3_512(new Date() + selectedFund.managerAccount)
-    var transactionDetails = {
+    let transactionDetails = {
       status: 'pending',
       hash: '',
       parityId: null,

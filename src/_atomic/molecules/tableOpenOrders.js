@@ -17,7 +17,7 @@ class TableOpenOrders extends Component {
     event.preventDefault();
     console.log(id)
     console.log(this.props.orders[id])
-    this.props.onCancelOrder(this.props.orders[id])
+    // this.props.onCancelOrder(this.props.orders[id])
   }
 
   renderTableRows = (orders) => {
@@ -72,7 +72,7 @@ class TableOpenOrders extends Component {
               PRICE
               </Col>
             <Col xs={2}>
-              FILLED
+              QUANTITY
               </Col>
             {/* <Col xs={2}>
                 EXPIRES

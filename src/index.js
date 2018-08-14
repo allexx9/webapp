@@ -45,7 +45,9 @@ const relayActionsMiddleWare = store => next => action => {
     // console.log(state.exchange.selectedRelay.name)
 
     // console.log(ACTIONS.CUSTOM_EXCHANGE_ACTIONS)
+    // console.log(action.type)
     if (action.type === ACTIONS.ADD_ERROR_NOTIFICATION) {
+        
         utils.notificationError(state.notifications.engine, serializeError(action.payload))
     }
     next(action);

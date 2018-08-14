@@ -22,13 +22,18 @@ import 'rxjs/observable/fromEvent';
 import 'rxjs/add/observable/fromPromise';
 // import { timer } from 'rxjs/observable/timer'
 import 'rxjs/add/observable/forkJoin';
+import { zip } from 'rxjs/observable/zip';
 import Exchange from '../../../_utils/exchange/src/index'
 import utils from '../../../_utils/utils'
+
+import {
+  getOrdersFromRelayERCdEX,
+  formatOrders
+} from '../../../_utils/exchange'
 
 
 import {
   ERCdEX,
-  Ethfinex
 } from '../../../_utils/const'
 
 import {
@@ -40,6 +45,8 @@ import {
   UPDATE_ELEMENT_LOADING,
   UPDATE_MARKET_DATA,
   FETCH_CANDLES_DATA,
+  FETCH_FUND_ORDERS,
+  UPDATE_FUND_ORDERS
 } from '../../../_redux/actions/const'
 
 
@@ -200,6 +207,55 @@ export const getCandlesDataEpic = (action$) => {
         })
         ,
         Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: false } }),
+      )
+    });
+}
+
+//
+// FETCH OPEN ORDERS
+//
+
+const getAccountOrdersFromRelay$ = (networkId, maker, baseTokenAddress, quoteTokenAddress) =>
+  Observable.fromPromise(getOrdersFromRelayERCdEX(networkId, maker, baseTokenAddress, quoteTokenAddress))
+
+export const getAccountOrdersEpic = (action$) => {
+  return action$.ofType(customRelayAction(FETCH_FUND_ORDERS))
+    .mergeMap((action) => {
+      return Observable.concat(
+        // Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: true }}),
+        zip(
+          getAccountOrdersFromRelay$(
+            action.payload.networkId,
+            action.payload.maker,
+            action.payload.baseTokenAddress,
+            action.payload.quoteTokenAddress,
+          )
+            .map(orders => {
+              return formatOrders(orders, 'asks')
+            })
+          ,
+          getAccountOrdersFromRelay$(
+            action.payload.networkId,
+            action.payload.maker,
+            action.payload.quoteTokenAddress,
+            action.payload.baseTokenAddress,
+          )
+            .map(orders => {
+              return formatOrders(orders, 'bids')
+            })
+        )
+
+          .map(orders => {
+            console.log(orders[0].concat(orders[1]))
+            return {
+              type: UPDATE_FUND_ORDERS,
+              payload: {
+                open: orders[0].concat(orders[1])
+              }
+            }
+          })
+        ,
+        // Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: false }}),
       )
     });
 }

@@ -237,23 +237,27 @@ export const getHistoricalPricesDataFromERCdEX = (networkId, baseTokenAddress, q
 // }
 
 export const formatOrders = (orders, orderType) => {
-  let orderPrice, orderAmount
+  let orderPrice, orderAmount,remainingAmount
   let web3 = new Web3(Web3.currentProvider)
   let formattedOrders = orders.map((order) => {
     switch (orderType) {
       case "asks":
         orderPrice = new BigNumber(order.takerTokenAmount).div(new BigNumber(order.makerTokenAmount)).toFixed(7)
         orderAmount = new BigNumber(web3.utils.fromWei(order.makerTokenAmount, 'ether')).toFixed(5)
+        remainingAmount = new BigNumber(web3.utils.fromWei(order.remainingTakerTokenAmount, 'ether')).toFixed(5)
         break;
       case "bids":
         orderPrice = new BigNumber(1).div(new BigNumber(order.takerTokenAmount).div(new BigNumber(order.makerTokenAmount))).toFixed(7)
         orderAmount = new BigNumber(web3.utils.fromWei(order.takerTokenAmount, 'ether')).toFixed(5)
+        remainingAmount = new BigNumber(web3.utils.fromWei(order.remainingTakerTokenAmount, 'ether')).toFixed(5)
         break;
     }
     let orderHash = ZeroEx.getOrderHashHex(order)
     let orderObject = {
       order,
+      dateCreated: order.dateCreated,
       orderAmount,
+      remainingAmount,
       orderType,
       orderPrice,
       orderHash

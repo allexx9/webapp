@@ -30,7 +30,7 @@ export const getAggregatedOrders = {
     }
     const options = {
       method: 'GET',
-      url: `${SupportedExchanges.Ethfinex.http[NETWORKS_ID[networkId]]}/book/t${baseToken}${quoteToken}/P0`,
+      url: `${SupportedExchanges.Ethfinex.http[NETWORKS_ID[networkId]]}/v2/book/t${baseToken}${quoteToken}/P0`,
       qs: {},
       json: true
     }
@@ -61,7 +61,7 @@ export const getOrders = {
     }
     const options = {
       method: 'GET',
-      url: `${SupportedExchanges.Ethfinex.http[NETWORKS_ID[networkId]]}/book/t${baseToken}${quoteToken}/P2`,
+      url: `${SupportedExchanges.Ethfinex.http[NETWORKS_ID[networkId]]}/v2/book/t${baseToken}${quoteToken}/P2`,
       qs: {},
       json: true
     }
@@ -117,8 +117,35 @@ export const getTickers = {
     const symbols = SupportedExchanges.Ethfinex.tickersTokenPairs.toString()
     const options = {
       method: 'GET',
-      url: `${SupportedExchanges.Ethfinex.http[NETWORKS_ID[networkId]]}/tickers?symbols=${symbols}`,
+      url: `${SupportedExchanges.Ethfinex.http[NETWORKS_ID[networkId]]}/v2/tickers?symbols=${symbols}`,
       qs: {},
+      json: true
+    }
+    return options
+  }
+}
+
+// Get a list of submitted orders for a specific account
+export const getAccountOrders = {
+  // ERCdEX: (networkId = 1) => {
+  //   const options = {
+  //     method: 'GET',
+  //     url: `${SupportedExchanges.ERCdEX.http[NETWORKS_ID[networkId]]}/reports/ticker?networkId=${networkId}`,
+  //     qs: {},
+  //     json: true
+  //   }
+  //   return options
+  // },
+  Ethfinex: (networkId = 1, account, protocol = '0x') => {
+    console.log(networkId)
+    const options = {
+      method: 'POST',
+      url: `${SupportedExchanges.Ethfinex.http[NETWORKS_ID[networkId]]}/trustless/v1/r/orders`,
+      body: {
+        signature: account.signature,
+        nonce: account.nonce,
+        protocol: protocol
+      },
       json: true
     }
     return options

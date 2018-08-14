@@ -172,6 +172,42 @@ export const orders = {
   },
 }
 
+export const accountOrders = {
+  // [ERCdEX]: (orders) => {
+  //   const bidsOrders = formatOrdersFromERCdEX(orders.bids, 'bids')
+  //   const asksOrders = formatOrdersFromERCdEX(orders.asks, 'asks')
+  //   const spread = calculateSpread(asksOrders, bidsOrders)
+  //   return {
+  //     bids: bidsOrders,
+  //     asks: asksOrders,
+  //     spread,
+  //     // aggregated: false
+  //   }
+  // },
+  [Ethfinex]: (orders) => {
+    let orderPrice, orderAmount,remainingAmount
+    let formattedOrders = orders.map((order) => {
+          let orderType = (order.amount > 0 ) ? 'bids' : 'asks' 
+          orderPrice = new BigNumber(order.price).toFixed(7)
+          orderAmount = new BigNumber(order.amount).toFixed(5)
+          remainingAmount = new BigNumber(order.amount).toFixed(5)
+          let orderObject = {
+            order,
+            dateCreated: order.created_at,
+            orderAmount,
+            remainingAmount,
+            orderType,
+            orderPrice,
+          }
+          
+      return orderObject
+    })
+    console.log(formattedOrders)
+    return formattedOrders
+  },
+}
+
+
 export const historicalPricesData = {
   [ERCdEX]: (historical) => {
     // return historical

@@ -32,9 +32,9 @@ export const SupportedExchanges = {
     supportedNetworks: ['1', '3'],
     tickersTokenPairs: ['tZRXETH', 'tMKRETH', 'tGNTETH'],
     http: {
-      mainnet: 'https://api.ethfinex.com/v2',
-      ropsten: 'https://test.ethfinex.com/v2',
-      kovan: 'https://test.ethfinex.com/v2'
+      mainnet: 'https://api.ethfinex.com',
+      ropsten: 'https://test.ethfinex.com',
+      kovan: 'https://test.ethfinex.com'
     },
     ws: {
       mainnet: 'wss://api.ethfinex.com/ws/2',

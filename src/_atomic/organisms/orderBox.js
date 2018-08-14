@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import { Row, Col } from 'react-flexbox-grid';
 // import * as Colors from 'material-ui/styles/colors'
 import styles from './orderBox.module.css'
-import AppBar from 'material-ui/AppBar'
 import Paper from 'material-ui/Paper'
 import ButtonBuy from '../atoms/buttonBuy'
 import ButtonSell from '../atoms/buttonSell'
@@ -13,7 +12,8 @@ import ButtonOrderSubmit from '../atoms/buttonOrderSubmit'
 import ButtonOrderCancel from '../atoms/buttonOrderCancel'
 import OrderSummary from '../molecules/orderSummary'
 import OrderRawDialog from '../molecules/orderRawDialog'
-import OrderTypeSelector from '../atoms/orderTypeSelector'
+import BoxTitle from '../atoms/boxTitle';
+// import OrderTypeSelector from '../atoms/orderTypeSelector'
 import ToggleSwitch from '../atoms/toggleSwitch'
 import { connect } from 'react-redux';
 import {
@@ -129,7 +129,7 @@ class OrderBox extends Component {
     const { selectedOrder, selectedExchange, selectedFund } = this.props.exchange
 
     const transactionId = sha3_512(new Date() + selectedFund.managerAccount)
-    var transactionDetails = {
+    let transactionDetails = {
       status: 'pending',
       hash: '',
       parityId: null,
@@ -179,7 +179,7 @@ class OrderBox extends Component {
         symbol: selectedOrder.selectedTokensPair.baseToken.symbol.toUpperCase(),
         amount: selectedOrder.orderFillAmount
       }
-      var signedOrder = await signOrder(selectedOrder, selectedExchange)
+      let signedOrder = await signOrder(selectedOrder, selectedExchange)
       console.log(signedOrder)
       const payload = {
         details: { order: signedOrder },
@@ -218,7 +218,7 @@ class OrderBox extends Component {
 
   onToggleAllowQuoteTokenTrade = async (event, isInputChecked) => {
     const { selectedFund, selectedTokensPair, selectedExchange } = this.props.exchange
-    var amount
+    let amount
     isInputChecked ? amount = UNLIMITED_ALLOWANCE_IN_BASE_UNITS : amount = '0'
     try {
       const result = await setAllowaceOnExchangeThroughDrago(selectedFund, selectedTokensPair.quoteToken, selectedExchange, amount)
@@ -249,7 +249,7 @@ class OrderBox extends Component {
     // }
 
     const { selectedFund, selectedTokensPair, selectedExchange } = this.props.exchange
-    var amount
+    let amount
     isInputChecked ? amount = UNLIMITED_ALLOWANCE_IN_BASE_UNITS : amount = '0'
     try {
       const result = await setAllowaceOnExchangeThroughDrago(selectedFund, selectedTokensPair.baseToken, selectedExchange, amount)
@@ -285,8 +285,8 @@ class OrderBox extends Component {
 
   render() {
     const { selectedOrder, selectedTokensPair } = this.props.exchange
-    var buySelected = (selectedOrder.orderType === 'bids')
-    var sellSelected = (selectedOrder.orderType === 'asks')
+    let buySelected = (selectedOrder.orderType === 'bids')
+    let sellSelected = (selectedOrder.orderType === 'asks')
     if (selectedOrder.takerOrder) {
       buySelected = (selectedOrder.orderType === 'asks')
       sellSelected = (selectedOrder.orderType === 'bids')
@@ -297,12 +297,7 @@ class OrderBox extends Component {
         <Col xs={12}>
           <Row className={styles.sectionTitle}>
             <Col xs={12}>
-              <AppBar
-                title='ORDER BOX'
-                showMenuIconButton={false}
-                className={styles.appBar}
-                titleStyle={{ fontSize: 14 }}
-              />
+              <BoxTitle titleText={'ORDER BOX'} />
               <Paper style={paperStyle} zDepth={1} >
                 <Row className={styles.orderBookContainer}>
                   <Col xs={12}>

@@ -6,7 +6,6 @@ import {
   getOrderBookFromRelayEpic,
   updateFundLiquidityEpic,
   getTradeHistoryLogsFromRelayERCdEXEpic,
-  getOrdersFromRelayERCdEXEpic,
   getAssetsPricesDataFromERCdEXEpic
 } from './exchange'
 import { setTokenAllowanceEpic,
@@ -15,20 +14,29 @@ import { setTokenAllowanceEpic,
 
 import { Ethfinex, ERCdEX } from './exchanges'
 
-export const rootEpic = combineEpics (
-  // relayWebSocketEpic,
+const ERCdEX_Epics = [
   ERCdEX.getCandlesDataEpic,
   ERCdEX.initRelayWebSocketEpic,
   ERCdEX.orderBookEpic,
+  ERCdEX.getAccountOrdersEpic,
+]
+
+const Ethfinex_Epics = [
   Ethfinex.getCandlesDataEpic,
   Ethfinex.initRelayWebSocketEpic,
   Ethfinex.orderBookEpic,
+  Ethfinex.getAccountOrdersEpic,
+]
+
+export const rootEpic = combineEpics (
+  // relayWebSocketEpic,
+  ...ERCdEX_Epics,
+  ...Ethfinex_Epics,
   setTokenAllowanceEpic,
   getOrderBookFromRelayEpic,
   getPricesERCdEXEpic,
   updateFundLiquidityEpic,
   // Ethfinex.candelsWebSocketEpic,
   getTradeHistoryLogsFromRelayERCdEXEpic,
-  getOrdersFromRelayERCdEXEpic,
   getAssetsPricesDataFromERCdEXEpic
 );
