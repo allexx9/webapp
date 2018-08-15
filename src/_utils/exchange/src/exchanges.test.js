@@ -41,7 +41,7 @@ describe("get tickers from exchange REST API", () => {
       .toEqual(
         {
           method: 'GET',
-          url: `${SupportedExchanges.Ethfinex.http[NETWORKS_ID[networkId]]}/tickers?symbols=${symbols}`,
+          url: `${SupportedExchanges.Ethfinex.http[NETWORKS_ID[networkId]]}/v2/tickers?symbols=${symbols}`,
           qs: {},
           json: true 
         }
@@ -84,7 +84,7 @@ describe("get aggregate orders from exchange REST API", () => {
       .toEqual(
         {
           method: 'GET',
-          url: `${SupportedExchanges.Ethfinex.http[NETWORKS_ID[networkId]]}/book/t${baseToken}${quoteToken}/P0`,
+          url: `${SupportedExchanges.Ethfinex.http[NETWORKS_ID[networkId]]}/v2/book/t${baseToken}${quoteToken}/P0`,
           qs: {},
           json: true
         }

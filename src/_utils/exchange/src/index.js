@@ -18,6 +18,7 @@ class Exchange {
     }
     this._exchange = exchange
     this._network = networkId
+    // this._network = 1
     this._transport = transport
     this._exchangeProperties = SupportedExchanges[exchange]
     this._call = {
