@@ -13,8 +13,8 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { Col, Grid, Row } from 'react-flexbox-grid';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
-import scrollToElement from 'scroll-to-element';
 import Sticky from 'react-stickynode';
+import scrollToElement from 'scroll-to-element';
 import Web3 from 'web3';
 import ElementFundNotFound from '../../Elements/elementFundNotFound';
 import InfoTable from '../../Elements/elementInfoTable';
@@ -24,6 +24,7 @@ import AssetsPieChart from '../../_atomic/atoms/assetsPieChart';
 import Loading from '../../_atomic/atoms/loading';
 import SectionHeader from '../../_atomic/atoms/sectionHeader';
 import SectionTitle from '../../_atomic/atoms/sectionTitle';
+import FundHeader from '../../_atomic/molecules/fundHeader';
 import { Actions } from '../../_redux/actions';
 import { ENDPOINTS, PROD } from '../../_utils/const';
 import { formatCoins, formatEth } from '../../_utils/format';
@@ -33,7 +34,6 @@ import ElementListAssets from '../Elements/elementListAssets';
 import ElementListTransactions from '../Elements/elementListTransactions';
 import ElementPriceBox from '../Elements/elementPricesBox';
 import styles from './pageFundDetailsDragoTrader.module.css';
-import FundHeader from '../../_atomic/molecules/fundHeader';
 
 function mapStateToProps(state) {
   return state
@@ -82,6 +82,8 @@ class PageFundDetailsDragoTrader extends Component {
     await this.getTransactions(dragoDetails, this.context.api, this.props.endpoint.accounts)
     await poolApi.contract.dragoeventful.init()
     this.subscribeToEvents(poolApi.contract.dragoeventful)
+    console.log(this.props)
+    // this.props.dispatch(Actions.tokens.priceTickersStartAction())
   }
 
   componentWillUnmount() {
@@ -289,6 +291,7 @@ class PageFundDetailsDragoTrader extends Component {
                       <span id='summary-section' ref={(section) => { this.Summary = section; }}></span>
                       <SectionHeader
                         titleText='SUMMARY'
+                        
                          />
                     </Col>
                   </Row>

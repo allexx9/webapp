@@ -70,14 +70,15 @@ class actions {
   }
 
   tokens = {
-    priceTickerOpenWsAction: () => {
+    priceTickersStartAction: (tokenPairs) => {
       return {
         type: TOKEN_PRICE_TICKERS_FETCH_START,
+        payload: tokenPairs
       }
     }
   }
 
 }
 
-var Actions = new actions();
+let Actions = new actions();
 export { Actions };

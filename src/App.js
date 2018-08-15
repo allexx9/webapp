@@ -157,7 +157,6 @@ export class App extends Component {
 
   componentDidMount() {
     this.props.dispatch(Actions.notifications.initNotificationsSystemAction(this._notificationSystem))
-    this.props.dispatch(Actions.tokens.priceTickerOpenWsAction())
     this.props.dispatch(this.attachInterfaceAction())
     setTimeout(() => {
       this.setState({

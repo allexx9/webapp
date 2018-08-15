@@ -22,9 +22,6 @@ import ElementListTransactions from '../Elements/elementListTransactions'
 import UserDashboardHeader from '../../_atomic/atoms/userDashboardHeader'
 import utils from '../../_utils/utils'
 import BigNumber from 'bignumber.js';
-import {
-  UPDATE_TRANSACTIONS_VAULT_MANAGER,
-} from '../../_utils/const'
 import { connect } from 'react-redux';
 import SectionHeader from '../../_atomic/atoms/sectionHeader';
 
@@ -83,8 +80,8 @@ class PageDashboardVaultManager extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     const sourceLogClass = this.constructor.name
-    var stateUpdate = true
-    var propsUpdate = true
+    let stateUpdate = true
+    let propsUpdate = true
     propsUpdate = !utils.shallowEqual(this.props, nextProps)
     stateUpdate = !utils.shallowEqual(this.state, nextState)
     if (stateUpdate || propsUpdate) {
@@ -205,6 +202,7 @@ class PageDashboardVaultManager extends Component {
                     <SectionHeader
                       titleText='ACCOUNTS'
                       textStyle={{ backgroundColor: Colors.blueGrey500 }}
+                      fundType="vault"
                     />
                   </Col>
                 </Row>
@@ -228,6 +226,7 @@ class PageDashboardVaultManager extends Component {
                     <SectionHeader
                       titleText='VAULTS'
                       textStyle={{ backgroundColor: Colors.blueGrey500 }}
+                      fundType="vault"
                     />
                   </Col>
                 </Row>
@@ -257,6 +256,7 @@ class PageDashboardVaultManager extends Component {
                     <SectionHeader
                       titleText='TRANSACTIONS'
                       textStyle={{ backgroundColor: Colors.blueGrey500 }}
+                      fundType="vault"
                     />
                   </Col>
                 </Row>
@@ -308,7 +308,7 @@ class PageDashboardVaultManager extends Component {
     const { api } = this.context
     // const options = {balance: false, supply: true}
     const options = { balance: false, supply: true, limit: 10, trader: false }
-    var sourceLogClass = this.constructor.name
+    let sourceLogClass = this.constructor.name
     utils.getTransactionsVaultOptV2(api, dragoAddress, accounts, options)
       .then(results => {
         console.log(`${sourceLogClass} -> Transactions list loaded`)

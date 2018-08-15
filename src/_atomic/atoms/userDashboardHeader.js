@@ -42,7 +42,7 @@ export default class UserDashboardHeader extends Component {
       vault: {
         toolBar:
         {
-          backgroundColor: '#607D8B'
+          background: THEME_COLOR.vault
         },
         titleText: {
           color: '#ffffff',

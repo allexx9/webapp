@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Divider from 'material-ui/Divider';
 import styles from './sectionHeader.module.css';
+import classNames from 'classnames';
 
 
 export default class SectionHeader extends Component {
@@ -13,16 +14,16 @@ export default class SectionHeader extends Component {
     help: PropTypes.bool,
     helpText: PropTypes.string,
     helpReadMoreLink: PropTypes.string,
+    fundType: PropTypes.string,
   };
 
   static defaultProps = {
     help: false,
     helpText: '',
     textStyle: { backgroundColor: '#054186' },
-    helpReadMoreLink: ''
+    helpReadMoreLink: '',
+    fundType: 'drago'
   };
-
-  
 
   render() {
 
@@ -49,7 +50,7 @@ export default class SectionHeader extends Component {
           <div className={styles.actionButtonContainer}>
             {this.props.actionButton}
           </div>
-          <div className={styles.title} style={this.props.textStyle}>
+          <div className={classNames(styles.title, styles[this.props.fundType])} style={this.props.textStyle}>
             {this.props.help ? renderHelp() : null}
             {this.props.titleText}
           </div>

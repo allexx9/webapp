@@ -201,14 +201,12 @@ class Interfaces {
     return api.parity.nodeKind()
       .then(result => {
         if (result.availability === 'public') {
-          console.log(result.availability)
           // if Parity in --public-node then getting only MetaMask accounts
           // return [this.getAccountsMetamask(api)]
           return [this.getAccountsParity(api), this.getAccountsMetamask(api)]
         }
         else {
           // if Parity NOT in --public-node then getting both Parity and MetaMask accounts
-          console.log(result.availability)
           return [this.getAccountsParity(api), this.getAccountsMetamask(api)]
         }
       })
@@ -219,7 +217,6 @@ class Interfaces {
             const allAccounts = { ...accountsInfo, ...accountsMetaMask }
             console.log('Parity accounts loaded: ', accountsInfo)
             console.log('MetaMask account loaded: ', accountsMetaMask)
-            console.log(Object.keys(allAccounts).length)
             const stateUpdate = {
               loading: false,
               ethBalance: new BigNumber(0),
@@ -228,7 +225,6 @@ class Interfaces {
                   .keys(allAccounts)
                   .map((address) => {
                     const info = allAccounts[address] || {};
-                    console.log(info)
                     return {
                       address,
                       name: info.name,
@@ -240,10 +236,8 @@ class Interfaces {
                   })
                 : []
             }
-            console.log(stateUpdate)
             const result = { ...this._success, ...stateUpdate }
             this._success = result
-            console.log(result.accounts)
             return result
           })
           .catch((error) => {
@@ -290,8 +284,7 @@ class Interfaces {
     } else {
       try {
         api.unsubscribe(subscriptionData)
-          .then((result) => {
-            console.log(result)
+          .then(() => {
             console.log(`${sourceLogClass}: Successfully unsubscribed from eth_blockNumber -> Subscription ID: ${subscriptionData}.`);
           })
           .catch((error) => {

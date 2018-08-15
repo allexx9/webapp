@@ -77,8 +77,8 @@ class PageDashboardVaultTrader extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     const sourceLogClass = this.constructor.name
-    var stateUpdate = true
-    var propsUpdate = true
+    let stateUpdate = true
+    let propsUpdate = true
     propsUpdate = !utils.shallowEqual(this.props, nextProps)
     stateUpdate = !utils.shallowEqual(this.state, nextState)
     if (stateUpdate || propsUpdate) {
@@ -197,6 +197,7 @@ class PageDashboardVaultTrader extends Component {
                     <SectionHeader
                       titleText='ACCOUNTS'
                       textStyle={{ backgroundColor: Colors.blueGrey500 }}
+                      fundType="vault"
                     />
                   </Col>
                 </Row>
@@ -220,6 +221,7 @@ class PageDashboardVaultTrader extends Component {
                     <SectionHeader
                       titleText='VAULTS'
                       textStyle={{ backgroundColor: Colors.blueGrey500 }}
+                      fundType="vault"
                     />
                   </Col>
                 </Row>
@@ -245,6 +247,7 @@ class PageDashboardVaultTrader extends Component {
                     <SectionHeader
                       titleText='TRANSACTIONS'
                       textStyle={{ backgroundColor: Colors.blueGrey500 }}
+                      fundType="vault"
                     />
                   </Col>
                 </Row>
@@ -294,7 +297,7 @@ class PageDashboardVaultTrader extends Component {
   getTransactions = (dragoAddress, accounts) => {
     const { api } = this.context
     const options = { balance: true, supply: false, limit: 10, trader: true }
-    var sourceLogClass = this.constructor.name
+    let sourceLogClass = this.constructor.name
     utils.getTransactionsVaultOptV2(api, dragoAddress, accounts, options)
       .then(results => {
         console.log(`${sourceLogClass} -> Transactions list loaded`)

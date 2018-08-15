@@ -318,5 +318,6 @@ export const MSG_NETWORK_STATUS_OK = "Service is operating normally."
 export const MSG_NETWORK_STATUS_ERROR = "Service disruption. Cannot update accounts balances. Account balances could be out of date."
 
 export const THEME_COLOR = {
-  drago: "linear-gradient(135deg,rgb(5, 65, 134),rgb(1, 17, 36))"
+  drago: "linear-gradient(135deg,rgb(5, 65, 134),rgb(1, 17, 36))",
+  vault: "linear-gradient(135deg,rgb(96, 125, 139),rgb(40, 41, 41))"
 }

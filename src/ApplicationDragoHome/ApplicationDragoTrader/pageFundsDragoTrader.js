@@ -63,8 +63,8 @@ class PageFundsDragoTrader extends Component {
 
     shouldComponentUpdate(nextProps, nextState){
       const  sourceLogClass = this.constructor.name
-      var stateUpdate = true
-      var propsUpdate = true
+      let stateUpdate = true
+      let propsUpdate = true
       const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
       const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
       stateUpdate = !utils.shallowEqual(this.state, nextState)
@@ -85,7 +85,7 @@ class PageFundsDragoTrader extends Component {
     }
 
     render() {
-      var { location} = this.props
+      let { location} = this.props
       const { dragoCreatedLogs, dragoFilteredList } = this.state;
       // const dragoSearchList = Immutable.List(dragoCreatedLogs)
       // const dragoList = dragoFilteredList

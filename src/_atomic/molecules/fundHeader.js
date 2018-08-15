@@ -17,7 +17,8 @@ export default class FundHeader extends Component {
   };
 
   static defaultProps = {
-    fundType: 'drago'
+    fundType: 'drago',
+    actions: ''
   }
 
   render() {
@@ -32,7 +33,7 @@ export default class FundHeader extends Component {
       vault: {
         toolBar:
         {
-          backgroundColor: '#607D8B'
+          background: THEME_COLOR.vault
         },
       }
     }

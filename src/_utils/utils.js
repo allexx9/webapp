@@ -206,11 +206,11 @@ class utilities {
 
   getTransactionsVaultOptV2 = (api, dragoAddress, accounts, options = { balance: true, supply: false, limit: 20, trader: true }) => {
     const sourceLogClass = this.constructor.name
-    var resultsAll = null
+    let resultsAll = null
     const poolApi = new PoolApi(api)
-    var ethvalue = 0
-    var drgvalue = 0
-    var dragoSymbolRegistry = new Map()
+    let ethvalue = 0
+    let drgvalue = 0
+    let dragoSymbolRegistry = new Map()
     // console.log(options)
     const logToEvent = (log) => {
       const key = api.util.sha3(JSON.stringify(log))
@@ -253,9 +253,9 @@ class utilities {
     //  https://github.com/RigoBlock/Books/blob/master/Solidity_01_Events.MD
 
     // const hexDragoAddress = '0x' + dragoAddress.substr(2).padStart(64,'0')
-    var hexAccounts = null
+    let hexAccounts = null
 
-    var balances = null
+    let balances = null
     // Formatting accounts address
     if (accounts !== null) {
       hexAccounts = accounts.map((account) => {
@@ -279,23 +279,23 @@ class utilities {
               ]
             }
             // Filter for buy events
-            const eventsFilterBuy = {
-              topics: [
-                [poolApi.contract.vaulteventful.hexSignature.BuyVault],
-                null,
-                hexAccounts,
-                null
-              ]
-            }
+            // const eventsFilterBuy = {
+            //   topics: [
+            //     [poolApi.contract.vaulteventful.hexSignature.BuyVault],
+            //     null,
+            //     hexAccounts,
+            //     null
+            //   ]
+            // }
             // Filter for sell events
-            const eventsFilterSell = {
-              topics: [
-                [poolApi.contract.vaulteventful.hexSignature.SellVault],
-                null,
-                null,
-                hexAccounts
-              ]
-            }
+            // const eventsFilterSell = {
+            //   topics: [
+            //     [poolApi.contract.vaulteventful.hexSignature.SellVault],
+            //     null,
+            //     null,
+            //     hexAccounts
+            //   ]
+            // }
 
             // Filter for buy and sell events
             const eventsFilterBuySell = {
@@ -348,7 +348,7 @@ class utilities {
                 )
             }
 
-            var promisesEvents = null
+            let promisesEvents = null
             if (options.trader) {
               // promisesEvents = [buyDragoEvents(), sellDragoEvents()]
               promisesEvents = [buySellDragoEvents()]
@@ -377,18 +377,18 @@ class utilities {
                 }
                 console.log(results)
                 // var allLogs = options.trader ? [...results[0], ...results[1]] : [...results[0]]
-                var allLogs = [...results[0]]
-                var supply = []
-                var balances = []
-                var balancesList = []
+                let allLogs = [...results[0]]
+                let supply = []
+                let balances = []
+                let balancesList = []
                 allLogs.sort(compare);
-                var dragoTransactionsLogs = allLogs.slice(allLogs.length - 20, allLogs.length)
+                let dragoTransactionsLogs = allLogs.slice(allLogs.length - 20, allLogs.length)
                 // console.log(allLogs)
 
                 // This is an inefficient way to get the symbol for each transactions. 
                 // In the future the symbol will have to be saved in the eventful logs.
                 const getDragoDetails = () => {
-                  var arrayPromises = []
+                  let arrayPromises = []
                   dragoSymbolRegistry.forEach((v, k) => {
                     arrayPromises.push(
                       poolApi.contract.dragoregistry.fromAddress(k)
@@ -425,7 +425,7 @@ class utilities {
 
                 // Getting dragos supply
                 const getDragoSupply = () => {
-                  var arrayPromises = []
+                  let arrayPromises = []
                   if (options.supply === false) {
                     supply = []
                     return arrayPromises
@@ -454,7 +454,7 @@ class utilities {
 
                 // Getting dragos balances
                 const getDragoBalances = () => {
-                  var arrayPromises = []
+                  let arrayPromises = []
                   // Checking if balance return is required
                   if (options.balance === false) {
                     balances = []
@@ -487,10 +487,10 @@ class utilities {
 
                 // Setting symbol
                 const getSymbols = () => {
-                  var transLogs = dragoTransactionsLogs.map((log) => {
+                  let transLogs = dragoTransactionsLogs.map((log) => {
                     const symbol = dragoSymbolRegistry.get(log.params.vault.value).symbol
-                    const vaultId = dragoSymbolRegistry.get(log.params.vault.value).vaultId
-                    const name = dragoSymbolRegistry.get(log.params.vault.value).name
+                    // const vaultId = dragoSymbolRegistry.get(log.params.vault.value).vaultId
+                    // const name = dragoSymbolRegistry.get(log.params.vault.value).name
                     log.symbol = symbol
                     return log
                   })
@@ -524,12 +524,12 @@ class utilities {
                           .then(() => {
                             if (options.balance) {
                               // Reorganizing the balances array
-                              var balancesRegistry = new Map()
-                              var tokenBalances = []
-                              for (var v in balances) {
+                              let balancesRegistry = new Map()
+                              let tokenBalances = []
+                              for (let v in balances) {
                                 balances[v].map(balance => {
                                   if (balancesRegistry.has(balance.vaultId)) {
-                                    var dragoBalance = balancesRegistry.get(balance.vaultId).balance
+                                    let dragoBalance = balancesRegistry.get(balance.vaultId).balance
                                     balancesRegistry.set(balance.vaultId, { symbol: balance.symbol, vaultId: balance.vaultId, name: balance.name, balance: dragoBalance.add(balance.balance) })
                                   } else {
                                     balancesRegistry.set(balance.vaultId, { symbol: balance.symbol, vaultId: balance.vaultId, name: balance.name, balance: balance.balance })
@@ -554,10 +554,10 @@ class utilities {
                             }
                           })
                           .then(() => {
-                            var logs = getSymbols()
+                            let logs = getSymbols()
                             return Promise.all(getTimestamp(logs))
                               .then((logs) => {
-                                var results = [balancesList, logs, supply]
+                                let results = [balancesList, logs, supply]
                                 return results
                               })
                           })
@@ -589,12 +589,12 @@ class utilities {
   * This function can be a performance hit, so it will need to be optimized as much as possible.
   **/
   getTransactionsDragoOptV2 = (api, dragoAddress, accounts, options = { balance: true, supply: false, limit: 20, trader: true }) => {
-    const sourceLogClass = this.constructor.name
-    var resultsAll = null
+    // const sourceLogClass = this.constructor.name
+    let resultsAll = null
     const poolApi = new PoolApi(api)
-    var ethvalue = 0
-    var drgvalue = 0
-    var dragoSymbolRegistry = new Map()
+    let ethvalue = 0
+    let drgvalue = 0
+    let dragoSymbolRegistry = new Map()
     console.log('getTransactionsDragoOptV2')
     const logToEvent = (log) => {
       const key = api.util.sha3(JSON.stringify(log))
@@ -649,9 +649,9 @@ class utilities {
     //  https://github.com/RigoBlock/Books/blob/master/Solidity_01_Events.MD
 
     // const hexDragoAddress = '0x' + dragoAddress.substr(2).padStart(64,'0')
-    var hexAccounts = null
+    let hexAccounts = null
 
-    var balances = null
+    let balances = null
     // Formatting accounts address
     if (accounts !== null) {
       hexAccounts = accounts.map((account) => {
@@ -743,7 +743,7 @@ class utilities {
                 )
             }
 
-            var promisesEvents = null
+            let promisesEvents = null
             if (options.trader) {
               // promisesEvents = [buyDragoEvents(), sellDragoEvents()]
               promisesEvents = [buySellDragoEvents()]
@@ -771,18 +771,18 @@ class utilities {
                   return comparison;
                 }
                 // var allLogs = options.trader ? [...results[0], ...results[1]] : [...results[0]]
-                var allLogs = [...results[0]]
-                var supply = []
-                var balances = []
-                var balancesList = []
+                let allLogs = [...results[0]]
+                let supply = []
+                let balances = []
+                let balancesList = []
                 allLogs.sort(compare);
-                var dragoTransactionsLogs = allLogs.slice(allLogs.length - 20, allLogs.length)
+                let dragoTransactionsLogs = allLogs.slice(allLogs.length - 20, allLogs.length)
                 // console.log(allLogs)
 
                 // This is an inefficient way to get the symbol for each transactions. 
                 // In the future the symbol will have to be saved in the eventful logs.
                 const getDragoDetails = () => {
-                  var arrayPromises = []
+                  let arrayPromises = []
                   dragoSymbolRegistry.forEach((v, k) => {
                     arrayPromises.push(
                       poolApi.contract.dragoregistry.fromAddress(k)
@@ -824,7 +824,7 @@ class utilities {
 
                 // Getting dragos supply
                 const getDragoSupply = () => {
-                  var arrayPromises = []
+                  let arrayPromises = []
                   if (options.supply === false) {
                     supply = []
                     return arrayPromises
@@ -855,7 +855,7 @@ class utilities {
 
                 // Getting dragos balances
                 const getDragoBalances = () => {
-                  var arrayPromises = []
+                  let arrayPromises = []
                   // Checking if balance return is required
                   if (options.balance === false) {
                     balances = []
@@ -888,10 +888,10 @@ class utilities {
 
                 // Setting symbol
                 const getSymbols = () => {
-                  var transLogs = dragoTransactionsLogs.map((log) => {
+                  let transLogs = dragoTransactionsLogs.map((log) => {
                     const symbol = dragoSymbolRegistry.get(log.params.drago.value).symbol
-                    const dragoId = dragoSymbolRegistry.get(log.params.drago.value).dragoId
-                    const name = dragoSymbolRegistry.get(log.params.drago.value).name
+                    // const dragoId = dragoSymbolRegistry.get(log.params.drago.value).dragoId
+                    // const name = dragoSymbolRegistry.get(log.params.drago.value).name
                     log.symbol = symbol
                     return log
                   })
@@ -924,12 +924,12 @@ class utilities {
                           .then(() => {
                             if (options.balance) {
                               // Reorganizing the balances array
-                              var balancesRegistry = new Map()
-                              var tokenBalances = []
-                              for (var v in balances) {
+                              let balancesRegistry = new Map()
+                              let tokenBalances = []
+                              for (let v in balances) {
                                 balances[v].map(balance => {
                                   if (balancesRegistry.has(balance.dragoId)) {
-                                    var dragoBalance = balancesRegistry.get(balance.dragoId).balance
+                                    let dragoBalance = balancesRegistry.get(balance.dragoId).balance
                                     balancesRegistry.set(balance.dragoId, { symbol: balance.symbol, dragoId: balance.dragoId, name: balance.name, balance: dragoBalance.add(balance.balance) })
                                   } else {
                                     balancesRegistry.set(balance.dragoId, { symbol: balance.symbol, dragoId: balance.dragoId, name: balance.name, balance: balance.balance })
@@ -954,10 +954,10 @@ class utilities {
                             }
                           })
                           .then(() => {
-                            var logs = getSymbols()
+                            let logs = getSymbols()
                             return Promise.all(getTimestamp(logs))
                               .then((logs) => {
-                                var results = [balancesList, logs, supply]
+                                let results = [balancesList, logs, supply]
                                 return results
                               })
                           })
@@ -974,7 +974,6 @@ class utilities {
 
 
   getDragoDetailsFromId = async (dragoId, api) => {
-    console.log(Actions)
     const poolApi = new PoolApi(api)
     await poolApi.contract.dragoregistry.init()
     const dragoDetails = await poolApi.contract.dragoregistry.fromId(dragoId)
@@ -1008,8 +1007,8 @@ class utilities {
     // Getting Drago assets
     //
     const getTokensBalances = async () => {
-      var dragoAssets = ERC20_TOKENS[api._rb.network.name]
-      for (var token in dragoAssets) {
+      let dragoAssets = ERC20_TOKENS[api._rb.network.name]
+      for (let token in dragoAssets) {
         if (ERC20_TOKENS[api._rb.network.name][token].address !== "0x") {
           try {
             dragoAssets[token].balance = await poolApi.contract.drago.getTokenBalance(ERC20_TOKENS[api._rb.network.name][token].address)
@@ -1054,7 +1053,7 @@ class utilities {
     const dragoETHBalance = await formatEth(await poolApi.contract.drago.getBalance(), 5, api)
     const dragoWETHBalance = await formatEth(await poolApi.contract.drago.getBalanceWETH(), 5, api)
 
-    var details = {
+    let details = {
       address: dragoDetails[0][0],
       name: dragoDetails[0][1].charAt(0).toUpperCase() + dragoDetails[0][1].slice(1),
       symbol: dragoDetails[0][2],
@@ -1077,7 +1076,7 @@ class utilities {
     //
     // Getting balance for each user account
     //
-    var balanceDRG = new BigNumber(0)
+    let balanceDRG = new BigNumber(0)
     await Promise.all(accounts.map(async (account) => {
       const balance = await poolApi.contract.drago.balanceOf(account.address)
       balanceDRG = balanceDRG.add(balance)
@@ -1138,7 +1137,7 @@ class utilities {
     const vaultETHBalance = await formatEth(await poolApi.contract.vault.getBalance(), 5, api)
     const fee = (new BigNumber(vaultAdminData[4]).div(100).toFixed(2))
 
-    var details = {
+    let details = {
       address: vaultDetails[0][0],
       name: vaultDetails[0][1].charAt(0).toUpperCase() + vaultDetails[0][1].slice(1),
       symbol: vaultDetails[0][2],
@@ -1161,7 +1160,7 @@ class utilities {
     //
     // Getting balance for each user account
     //
-    var balanceDRG = new BigNumber(0)
+    let balanceDRG = new BigNumber(0)
     await Promise.all(accounts.map(async (account) => {
       const balance = await poolApi.contract.vault.balanceOf(account.address)
       balanceDRG = balanceDRG.add(balance)
@@ -1186,7 +1185,7 @@ class utilities {
   }
 
   shallowEqual(objA: mixed, objB: mixed): boolean {
-    const sourceLogClass = this.constructor.name
+    // const sourceLogClass = this.constructor.name
     if (objA === objB) {
       // console.log(`${sourceLogClass} -> objA === objB`)
       return true;
@@ -1198,8 +1197,8 @@ class utilities {
       return false;
     }
 
-    var keysA = Object.keys(objA);
-    var keysB = Object.keys(objB);
+    let keysA = Object.keys(objA);
+    let keysB = Object.keys(objB);
 
     if (keysA.length !== keysB.length) {
       // console.log(`${sourceLogClass} -> keysA.length`);
@@ -1207,8 +1206,8 @@ class utilities {
     }
 
     // Test for A's keys different from B.
-    var bHasOwnProperty = hasOwnProperty.bind(objB);
-    for (var i = 0; i < keysA.length; i++) {
+    let bHasOwnProperty = hasOwnProperty.bind(objB);
+    for (let i = 0; i < keysA.length; i++) {
       if (!bHasOwnProperty(keysA[i]) || objA[keysA[i]] !== objB[keysA[i]]) {
         // console.log(`${sourceLogClass} -> Test for A's keys different from B`)
         return false;
@@ -1218,12 +1217,12 @@ class utilities {
   }
 
   pathExplode(path) {
-    var explodedPath = path.pathname.split('/');
+    let explodedPath = path.pathname.split('/');
     return explodedPath
   }
 
   rootPath(location) {
-    var path = location.split('/');
+    let path = location.split('/');
     // path.splice(-1,1);
     // var url = path.join('/');
     return DS + APP + DS + path[2]
@@ -1238,7 +1237,7 @@ class utilities {
   }
 
   logger = function () {
-    var pub = {};
+    let pub = {};
 
     pub.enable = function enableLogger() {
       if (this.oldConsoleLog == null)

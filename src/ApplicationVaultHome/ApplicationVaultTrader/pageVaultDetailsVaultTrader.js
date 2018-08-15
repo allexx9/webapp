@@ -117,8 +117,8 @@ class PageFundDetailsVaultTrader extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     const sourceLogClass = this.constructor.name
-    var stateUpdate = true
-    var propsUpdate = true
+    let stateUpdate = true
+    let propsUpdate = true
     // const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
     // const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
     stateUpdate = !utils.shallowEqual(this.state, nextState)
@@ -260,6 +260,7 @@ class PageFundDetailsVaultTrader extends Component {
                       <SectionHeader
                         titleText='SUMMARY'
                         textStyle={{ backgroundColor: Colors.blueGrey500 }}
+                        fundType="vault"
                       />
                     </Col>
                   </Row>
@@ -330,6 +331,7 @@ class PageFundDetailsVaultTrader extends Component {
                     <SectionHeader
                       titleText='LOGS'
                       textStyle={{ backgroundColor: Colors.blueGrey500 }}
+                      fundType="vault"
                     />
                   </Col>
                 </Row>
