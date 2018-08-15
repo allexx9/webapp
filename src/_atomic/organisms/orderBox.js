@@ -20,8 +20,10 @@ import {
   UPDATE_SELECTED_ORDER,
   CANCEL_SELECTED_ORDER,
   UPDATE_TRADE_TOKENS_PAIR,
-  UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
   UPDATE_FUND_LIQUIDITY
+} from '../../_redux/actions/const'
+import {
+  UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
 } from '../../_utils/const'
 import {
   signOrder,

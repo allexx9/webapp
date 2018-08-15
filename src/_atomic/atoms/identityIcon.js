@@ -3,7 +3,6 @@
 import styles from './identityIcon.module.css';
 import React, { Component} from 'react';
 import PropTypes from 'prop-types';
-import  * as Colors from 'material-ui/styles/colors'
 
 export default class IdentityIcon extends Component {
 

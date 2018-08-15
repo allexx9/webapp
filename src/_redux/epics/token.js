@@ -11,11 +11,6 @@ import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/operator/exhaustMap';
 import 'rxjs/add/observable/timer'
 
-// import 'rxjs/add/operator/retryWhen';
-// import 'rxjs/add/operator/tap';
-// import 'rxjs/add/operator/delayWhen';
-import { map, tap, retryWhen, delayWhen } from 'rxjs/operators';
-
 import {
   setTokenAllowance,
 } from '../../_utils/exchange'
@@ -27,9 +22,9 @@ import {
   TOKEN_PRICE_TICKERS_FETCH_START,
   TOKEN_PRICE_TICKERS_FETCH_STOP,
   TOKENS_TICKERS_UPDATE
-} from '../../_utils/const'
+} from '../actions/const'
 import Exchange from '../../_utils/exchange/src/index'
-import ReconnectingWebSocket from 'reconnecting-websocket'
+
 // import ReconnectingWebSocket from 'reconnecting-websocket/dist/reconnecting-websocket-cjs'
 
 // Setting allowance for a token

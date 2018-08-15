@@ -3,7 +3,7 @@
 import initialState from './initialState'
 import {
   INIT_NOTIFICATION
-} from '../../_utils/const'
+} from '../actions/const'
 
 function notificationsReducer(state = initialState.notifications, action) {
   switch (action.type) {

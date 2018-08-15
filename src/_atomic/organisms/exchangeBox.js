@@ -18,8 +18,12 @@ import {
   RELAYS,
   TRADE_TOKENS_PAIRS,
   ERC20_TOKENS,
-  CANCEL_SELECTED_ORDER
 } from '../../_utils/const'
+
+import {
+  CANCEL_SELECTED_ORDER
+} from '../../_redux/actions/const'
+
 
 const paperStyle = {
   padding: "10px"

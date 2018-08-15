@@ -14,22 +14,15 @@ class ApplicationTopBar extends Component {
 
   static propTypes = {
     location: PropTypes.object.isRequired,
-    handleTopBarSelectAccountType: PropTypes.func,
+    handleTopBarSelectAccountType: PropTypes.func.isRequired,
     handleToggleNotifications: PropTypes.func.isRequired,
   };
 
-  state = {
+  static defaultProps = {
+    handleTopBarSelectAccountType: () => {},
+  };
 
-  }
 
-  renderTitle = () => {
-    return (
-      <div>
-        <span><img style={{ height: "32px", paddingTop: "8px" }} src='/img/new_logo_white.png' /></span>&nbsp;<span style={{ fontSize: "12px" }}>beta </span>
-      </div>
-
-    )
-  }
 
   renderBurgerMenu = () => {
     return (
@@ -65,6 +58,7 @@ class ApplicationTopBar extends Component {
           iconElementLeft={<NavLinksLeft location={location} />}
           iconElementRight={<NavLinksRight handleToggleNotifications={handleToggleNotifications}
           location={location} handleTopBarSelectAccountType={handleTopBarSelectAccountType} />}
+          style={{background: "linear-gradient(135deg,rgb(5, 65, 134),rgb(1, 17, 36))"}}
         />
 
       </div>

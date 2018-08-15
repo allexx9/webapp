@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import { Row, Col } from 'react-flexbox-grid';
 import TableOrderBook from '../molecules/tableOrderBook';
 import styles from './orderBook.module.css'
-import AppBar from 'material-ui/AppBar'
 import Paper from 'material-ui/Paper'
 import BoxTitle from '../atoms/boxTitle';
 import ToggleSwitch from '../atoms/toggleSwitch'

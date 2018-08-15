@@ -5,10 +5,10 @@ import {
   ATTACH_INTERFACE_FULFILLED,
   ATTACH_INTERFACE_REJECTED,
   UPDATE_INTERFACE
-} from '../../_utils/const'
+} from '../actions/const'
 
 function endpointsReducer(state = initialState.endpoint, action) {
-  var endpoint = {}
+  let endpoint = {}
   switch (action.type) {
 
     case ATTACH_INTERFACE_PENDING:

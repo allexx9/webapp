@@ -3,7 +3,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Toggle from 'material-ui/Toggle';
-import * as Colors from 'material-ui/styles/colors'
 import ReactTooltip from 'react-tooltip'
 
 export default class ToggleSwitch extends Component {
@@ -17,7 +16,8 @@ export default class ToggleSwitch extends Component {
   }
 
   static defaultProps = {
-    toolTip: 'Activate trading'
+    toolTip: 'Activate trading',
+    disabled: false
   }
 
   render() {

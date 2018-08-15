@@ -8,7 +8,7 @@ import styles from './tableOrderBook.module.css'
 import { connect } from 'react-redux';
 import {
   UPDATE_SELECTED_ORDER
-} from '../../_utils/const'
+} from '../../_redux/actions/const'
 import { detect } from 'detect-browser'
 
 function mapStateToProps(state) {

@@ -33,7 +33,7 @@ import {
 } from './_utils/const'
 import {
   ATTACH_INTERFACE,
-} from './_utils/const'
+} from './_redux/actions/const'
 import utils from './_utils/utils'
 import { Interfaces } from './_utils/interfaces'
 import { connect } from 'react-redux';
@@ -44,8 +44,8 @@ import AppLoading from './Elements/elementAppLoading'
 import ReactGA from 'react-ga';
 import { Actions } from './_redux/actions'
 
-var appHashPath = true;
-var sourceLogClass = null
+let appHashPath = true;
+let sourceLogClass = null
 const isConnectedTimeout = 4000
 const isMetaMaskUnlockedTimeout = 1000
 
@@ -79,7 +79,7 @@ export class App extends Component {
     this._notificationSystem = null;
     sourceLogClass = this.constructor.name
     // Connecting to blockchain client
-    var endpoint = new Endpoint(this.props.endpoint.endpointInfo, this.props.endpoint.networkInfo)
+    let endpoint = new Endpoint(this.props.endpoint.endpointInfo, this.props.endpoint.networkInfo)
     this._api = endpoint.connect()
     console.log(this._api)
     this.state = {
@@ -123,17 +123,18 @@ export class App extends Component {
     return {
       type: ATTACH_INTERFACE,
       payload: new Promise((resolve) => {
-        this.attachInterface().then(result => {
-          this.setState({
-            appLoading: false,
-            isConnected: true,
+        this.attachInterface()
+          .then(result => {
+            this.setState({
+              appLoading: false,
+              isConnected: true,
+            })
+            resolve(result);
           })
-          resolve(result);
-        })
       })
         .catch(error => {
           console.log(error)
-          var newEndpoint = { ...this.props.endpoint }
+          let newEndpoint = { ...this.props.endpoint }
           newEndpoint.networkStatus = MSG_NETWORK_STATUS_ERROR
           newEndpoint.networkError = NETWORK_WARNING
           this.props.dispatch(Actions.endpoint.updateInterfaceAction(newEndpoint))
@@ -158,7 +159,7 @@ export class App extends Component {
     this.props.dispatch(Actions.notifications.initNotificationsSystemAction(this._notificationSystem))
     this.props.dispatch(Actions.tokens.priceTickerOpenWsAction())
     this.props.dispatch(this.attachInterfaceAction())
-    setTimeout(() => { 
+    setTimeout(() => {
       this.setState({
         appLoading: false,
       })
@@ -229,8 +230,8 @@ export class App extends Component {
     if (typeof window.web3 !== 'undefined') {
       const web3 = window.web3
       const { endpoint } = this.props
-      var newEndpoint = { ...endpoint }
-      var newAccounts = [].concat(endpoint.accounts)
+      let newEndpoint = { ...endpoint }
+      let newAccounts = [].concat(endpoint.accounts)
       web3.eth.getAccounts()
         .then((accountsMetaMask) => {
           // If MetaMask is unlocked then remove from accounts list.
@@ -285,7 +286,7 @@ export class App extends Component {
   }
 
   render() {
-    var notificationStyle = {
+    let notificationStyle = {
       NotificationItem: { // Override the notification item
         DefaultStyle: { // Applied to every notification, regardless of the notification level
           margin: '0px 0px 0px 0px'
@@ -343,13 +344,13 @@ export class App extends Component {
 
   attachInterface = () => {
     // Allowed endpoints are defined in const.js
-    var sourceLogClass = this.constructor.name
-    var WsSecureUrl = ''
+    let sourceLogClass = this.constructor.name
+    let WsSecureUrl = ''
     const selectedEndpoint = this.props.endpoint.endpointInfo.name
     const networkId = this.props.endpoint.networkInfo.id
     const networkName = this.props.endpoint.networkInfo.name
-    var subscriptionData
-    var blockchain = new Interfaces(this._api, networkId)
+    let subscriptionData
+    let blockchain = new Interfaces(this._api, networkId)
     switch (selectedEndpoint) {
       case INFURA:
         console.log(`${sourceLogClass} -> ${INFURA}`)
@@ -392,7 +393,7 @@ export class App extends Component {
               return Promise
                 .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
                 .then(result => {
-                  var subscription = result[0]
+                  let subscription = result[0]
                   console.log(`${sourceLogClass}: Subscribed to eth_blockNumber`);
                   subscriptionData = subscription
                   attachedInterface.subscriptionData = subscriptionData
@@ -431,18 +432,18 @@ export class App extends Component {
               WsSecureUrl = this.props.endpoint.endpointInfo.wss[networkName].dev
             }
             // Subscribing to newBlockNumber event
-            var web3
+            let web3
             try {
               console.log(`${sourceLogClass}: Connectiong to Websocket ${WsSecureUrl}`);
               web3 = new Web3(WsSecureUrl)
             } catch (error) {
               throw error
             }
-            
+
             return Promise
               .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
               .then(result => {
-                var subscription = result[0]
+                let subscription = result[0]
                 console.log(`${sourceLogClass}: Subscribed to eth_blockNumber`);
                 subscriptionData = subscription
                 attachedInterface.subscriptionData = subscriptionData
@@ -482,7 +483,7 @@ export class App extends Component {
             return Promise
               .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
               .then(result => {
-                var subscription = result[0]
+                let subscription = result[0]
                 console.log(`${sourceLogClass}: Subscribed to eth_blockNumber`);
                 subscriptionData = subscription
                 attachedInterface.subscriptionData = subscriptionData
@@ -494,7 +495,7 @@ export class App extends Component {
             // this.setState({...this.state, ...blockchain.error})
           })
       default:
-      return
+        return
     }
 
   }
@@ -509,7 +510,7 @@ export class App extends Component {
     // const { api } = this.context;
     const { endpoint } = this.props;
     const prevBlockNumber = endpoint.prevBlockNumber
-    var newBlockNumber = new BigNumber(0)
+    let newBlockNumber = new BigNumber(0)
     // Checking if blockNumber is passed by Parity Api or Web3
     if (typeof blockNumber.number !== 'undefined') {
       newBlockNumber = new BigNumber(blockNumber.number)

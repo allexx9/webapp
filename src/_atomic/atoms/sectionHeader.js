@@ -13,16 +13,36 @@ export default class SectionHeader extends Component {
     help: PropTypes.bool,
     helpText: PropTypes.string,
     helpReadMoreLink: PropTypes.string,
-    actionButton: PropTypes.object,
   };
 
   static defaultProps = {
     help: false,
-    textStyle: { backgroundColor: '#054186' }
+    helpText: '',
+    textStyle: { backgroundColor: '#054186' },
+    helpReadMoreLink: ''
   };
 
+  
 
   render() {
+
+    const helpIconStyle = {
+      height: '20px',
+      width: '20px',
+      color: 'white'
+    }
+
+    const renderHelp = () => {
+      return (
+        <div className={styles.help}>
+          <HelpIcon 
+          style={helpIconStyle} 
+          helpText={this.props.helpText}
+          />
+        </div>
+      )
+    }
+
     return (
       <div className={styles.container} 
           >
@@ -30,6 +50,7 @@ export default class SectionHeader extends Component {
             {this.props.actionButton}
           </div>
           <div className={styles.title} style={this.props.textStyle}>
+            {this.props.help ? renderHelp() : null}
             {this.props.titleText}
           </div>
           <Divider style={{

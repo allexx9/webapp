@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import HelpOutline from 'material-ui/svg-icons/action/help-outline'
+import ReactTooltip from 'react-tooltip'
+import styles from './helpIcon.module.css';
 
 export default class HelpIcon extends Component {
   
@@ -8,7 +10,6 @@ export default class HelpIcon extends Component {
     style: PropTypes.object,
     helpText: PropTypes.string.isRequired,
     helpReadMoreLink: PropTypes.string,
-    color: PropTypes.string
   };
 
   static defaultProps = {
@@ -20,8 +21,17 @@ export default class HelpIcon extends Component {
 
   render() {
     return (
-      <div> 
+      <div data-tip={this.props.helpText}> 
         <HelpOutline style={this.props.style} />
+        <ReactTooltip 
+        effect="solid" 
+        place="top" 
+        type="light"
+        multiline={true}
+        // border={true}
+        className={styles.helpicon}
+        delayHide={500}
+        />
       </div>
       
     )

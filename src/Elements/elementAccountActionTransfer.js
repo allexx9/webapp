@@ -28,10 +28,10 @@ class ElementAccountActionTransfer extends Component {
   static propTypes = {
     account: PropTypes.object.isRequired,
     open: PropTypes.bool.isRequired,
-    snackBar: PropTypes.func,
-    dispatch: PropTypes.func,
+    snackBar: PropTypes.func.isRequired,
+    dispatch: PropTypes.func.isRequired,
     onTransferOpen: PropTypes.func.isRequired,
-    fundType: PropTypes.string
+    fundType: PropTypes.string.isRequired
   }
 
   state = {
@@ -190,7 +190,7 @@ class ElementAccountActionTransfer extends Component {
   validateTotal = () => {
     const { amount, token } = this.state;
     const { account } = this.props;
-    var amountError = ''
+    let amountError = ''
     let bn = null;
     
     try {
@@ -254,10 +254,10 @@ class ElementAccountActionTransfer extends Component {
     const authMsg = 'You trasferred ' + this.state.unitsSummary + ' units of ' + token
     const transactionId = api.util.sha3(new Date() + toAddress)
     // Setting variables depending on account source
-    var provider = this.props.account.source === 'MetaMask' ? window.web3 : api
-    var poolApi = null;
+    let provider = this.props.account.source === 'MetaMask' ? window.web3 : api
+    let poolApi = null;
     // Initializing transaction variables
-    var transactionDetails = {
+    let transactionDetails = {
       status: this.props.account.source === 'MetaMask' ? 'pending' : 'authorization',
       hash: '',
       parityId: null,
@@ -309,10 +309,10 @@ class ElementAccountActionTransfer extends Component {
     const authMsg = 'You trasferred ' + this.state.unitsSummary + ' units of ' + token
     const transactionId = api.util.sha3(new Date() + toAddress)
     // Setting variables depending on account source
-    var provider = this.props.account.source === 'MetaMask' ? window.web3 : api
-    var poolApi = null;
+    let provider = this.props.account.source === 'MetaMask' ? window.web3 : api
+    let poolApi = null;
     // Initializing transaction variables
-    var transactionDetails = {
+    let transactionDetails = {
       status: this.props.account.source === 'MetaMask' ? 'pending' : 'authorization',
       hash: '',
       parityId: null,

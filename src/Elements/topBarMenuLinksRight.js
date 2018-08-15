@@ -27,8 +27,7 @@ function mapStateToProps(state) {
   return state
 }
 
-
-var menuStyles = {
+let menuStyles = {
   dropDown: {
     color: "#ffffff"
   },
@@ -46,12 +45,12 @@ var menuStyles = {
   },
 };
 
-var disabledUserType = {
+let disabledUserType = {
   dropDown: {
   }
 }
 
-var enabledUserType = {
+let enabledUserType = {
   dropDown: {
     color: "#ffffff"
   }
@@ -84,8 +83,8 @@ class NavLinks extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    var stateUpdate = true
-    var propsUpdate = true
+    let stateUpdate = true
+    let propsUpdate = true
     propsUpdate = !utils.shallowEqual(this.props, nextProps)
     stateUpdate = !utils.shallowEqual(this.state, nextState)
     if (stateUpdate || propsUpdate) {
@@ -110,12 +109,12 @@ class NavLinks extends Component {
 
   activeSectionPath = () => {
     const { match } = this.props
-    var path = match.path.split('/')
+    let path = match.path.split('/')
     return path[3]
   }
 
   buildUrlPath = (location) => {
-    var path = location.pathname.split('/');
+    let path = location.pathname.split('/');
     // path.splice(-1,1);
     // var url = path.join('/');
     return path[2]
@@ -137,7 +136,7 @@ class NavLinks extends Component {
   };
 
   handleToggleNotifications = () => {
-    var transactionsDrawerNetworkButtonStyle, transactionsDrawerNetworkButtonIconStyle
+    let transactionsDrawerNetworkButtonStyle, transactionsDrawerNetworkButtonIconStyle
     !this.state.transactionsDrawerOpen
       ? transactionsDrawerNetworkButtonStyle = styles.networkIconOpen
       : transactionsDrawerNetworkButtonStyle = styles.networkIconClosed
@@ -155,8 +154,8 @@ class NavLinks extends Component {
   render() {
     const { location, user } = this.props
     const { transactions } = this.props
-    var userTypeDisabled = false;
-    var userTypeLabel = 'HOLDER'
+    // let userTypeDisabled = false;
+    let userTypeLabel = 'HOLDER'
     const buttonAccountType = {
       border: "1px solid",
       borderColor: '#FFFFFF',
@@ -165,14 +164,14 @@ class NavLinks extends Component {
     // Disabling user type if isManager not defined
     if (typeof user.isManager === 'undefined') {
       user.isManager = false;
-      userTypeDisabled = true;
+      // userTypeDisabled = true;
       menuStyles = { ...menuStyles, ...disabledUserType };
     } else {
       user.isManager ? userTypeLabel = 'WIZARD' : userTypeLabel = 'HOLDER'
       menuStyles = { ...menuStyles, ...enabledUserType };
     }
     return (
-      <Toolbar style={{backgroundColor: '#054186'}}>
+      <Toolbar style={{background: ""}}>
         <ToolbarGroup >
           <ToolbarSeparator style={menuStyles.separator} />
           <ToolbarGroup>

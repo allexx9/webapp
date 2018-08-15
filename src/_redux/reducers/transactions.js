@@ -4,13 +4,13 @@ import initialState from './initialState'
 import {
   ADD_TRANSACTION,
   UPDATE_TRANSACTIONS,
-} from '../../_utils/const'
+} from '../actions/const'
 
 function transactionsReducer(state = initialState.transactions, action) {
-  var pendingTransactions = 0
+  let pendingTransactions = 0
   switch (action.type) {
     case ADD_TRANSACTION:
-      var transactions = Object.assign({}, state)
+      let transactions = Object.assign({}, state)
       transactions.queue.set(action.payload.transactionId, action.payload.transactionDetails)
       transactions.queue.forEach((value) => {
         if (value.status !== 'executed' && value.status !== 'error') {

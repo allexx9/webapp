@@ -26,6 +26,7 @@ import SectionHeader from '../../_atomic/atoms/sectionHeader';
 
 import styles from './pageDashboardDragoTrader.module.css'
 import { Actions } from '../../_redux/actions' 
+import { HELP_} from '../../_utils/const'
 
 function mapStateToProps(state) {
   return state
@@ -75,8 +76,8 @@ class PageDashboardDragoTrader extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     const sourceLogClass = this.constructor.name
-    var stateUpdate = true
-    var propsUpdate = true
+    let stateUpdate = true
+    let propsUpdate = true
     propsUpdate = !utils.shallowEqual(this.props, nextProps)
     stateUpdate = !utils.shallowEqual(this.state, nextState)
     if (stateUpdate || propsUpdate) {
@@ -190,6 +191,8 @@ class PageDashboardDragoTrader extends Component {
                     <span id='accounts-section' ref={(section) => { this.Accounts = section; }}></span>
                     <SectionHeader
                       titleText='ACCOUNTS'
+                      help={true}
+                      helpText={ HELP_.H001 }
                     />
                   </Col>
                 </Row>
@@ -284,10 +287,9 @@ class PageDashboardDragoTrader extends Component {
 
   // Getting last transactions
   getTransactions = (dragoAddress, accounts) => {
-    console.log('getTransactions')
     const { api } = this.context
     const options = { balance: true, supply: false, limit: 10, trader: true }
-    var sourceLogClass = this.constructor.name
+    let sourceLogClass = this.constructor.name
     utils.getTransactionsDragoOptV2(api, dragoAddress, accounts, options)
       .then(results => {
         console.log(`${sourceLogClass} -> Transactions list loaded`)

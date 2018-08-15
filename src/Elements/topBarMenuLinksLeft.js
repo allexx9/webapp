@@ -12,10 +12,11 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { APP, DS } from '../_utils/const.js'
 import { connect } from 'react-redux';
-import styles from './elements.module.css'
+import styles from './topBarMenuLinksLeft.module.css'
 import utils from '../_utils/utils'
 import { Hidden, Visible } from 'react-grid-system'
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import { THEME_COLOR } from './../_utils/const'
 
 function mapStateToProps(state) {
   return state
@@ -35,8 +36,8 @@ class NavLinksLeft extends Component {
   };
 
   shouldComponentUpdate(nextProps, nextState) {
-    var stateUpdate = true
-    var propsUpdate = true
+    let stateUpdate = true
+    let propsUpdate = true
     propsUpdate = !utils.shallowEqual(this.props, nextProps)
     stateUpdate = !utils.shallowEqual(this.state, nextState)
     if (stateUpdate || propsUpdate) {
@@ -47,22 +48,24 @@ class NavLinksLeft extends Component {
 
   activeSectionPath = () => {
     const { match } = this.props
-    var path = match.path.split('/')
+    let path = match.path.split('/')
     return path[3]
   }
 
   renderTopLinksLong = (links) => {
     const activeLink = this.activeSectionPath()
-    var backgroundColorActive = '#054186'
+    // let backgroundColorActive = '#054186'
     const { location } = this.props
+    let labelSytle = { fontWeight: 700  }
+    let buttonStyle
     return links.map((link) => {
-      link.to === activeLink ? backgroundColorActive = '#1968C0' : backgroundColorActive = '#054186'
+      link.to === activeLink ? buttonStyle = styles.topBarButtonSelected : buttonStyle = styles.topBarButton
       return (
         <FlatButton key={link.label} label={link.label.toUpperCase()} containerElement={<Link to={DS + APP + DS + this.buildUrlPath(location) + DS + link.to} />} disableTouchRipple={true}
-          hoverColor={'#054186'} className={styles.topbarbuttons}
+          hoverColor={THEME_COLOR.drago} className={buttonStyle}
           icon={link.icon}
-          labelStyle={{ fontWeight: 700 }}
-          backgroundColor={backgroundColorActive}
+          labelStyle={ labelSytle }
+          // backgroundColor={backgroundColorActive}
         />
       )
     })
@@ -72,12 +75,6 @@ class NavLinksLeft extends Component {
     const { location } = this.props
     const menuItems = links.map((link) => {
       return (
-        // <FlatButton key={link.label} label={link.label.toUpperCase()} containerElement={<Link to={DS + APP + DS + this.buildUrlPath(location) + DS + link.to} />} disableTouchRipple={true}
-        //   hoverColor={'#054186'} className={styles.topbarbuttons}
-        //   icon={link.icon}
-        //   labelStyle={{ fontWeight: 700 }}
-        //   backgroundColor={backgroundColorActive}
-        // />
         <MenuItem
           key={link.label}
           primaryText={link.label.toUpperCase()}
@@ -101,7 +98,7 @@ class NavLinksLeft extends Component {
   }
 
   buildUrlPath = (location) => {
-    var path = location.pathname.split('/');
+    let path = location.pathname.split('/');
     // path.splice(-1,1);
     // var url = path.join('/');
     return path[2]
@@ -120,9 +117,8 @@ class NavLinksLeft extends Component {
       { label: 'drago', to: 'drago', icon: <ActionShowChart color="#054186" /> },
       { label: 'exchange', to: 'exchange', icon: <ActionPolymer color="#054186" /> }
     ]
-
     return (
-      <Toolbar style={{backgroundColor: '#054186', paddingLeft: '38px'}}>
+      <Toolbar style={{background: "", paddingLeft: '38px'}}>
         <ToolbarGroup >
           <Hidden xs sm md>
             <ToolbarGroup>

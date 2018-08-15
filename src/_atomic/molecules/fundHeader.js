@@ -6,6 +6,7 @@ import styles from './fundHeader.module.css';
 import * as Colors from 'material-ui/styles/colors';
 import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 import FundHeaderNameSymbol from '../atoms/fundHeaderNameSymbol'
+import { THEME_COLOR } from './../../_utils/const'
 
 export default class FundHeader extends Component {
 
@@ -25,7 +26,7 @@ export default class FundHeader extends Component {
       drago: {
         toolBar:
         {
-          backgroundColor: '#054186'
+          background: THEME_COLOR.drago
         },
       },
       vault: {

@@ -10,7 +10,7 @@ import CopyContent from 'material-ui/svg-icons/content/content-copy'
 import { Link } from 'react-router-dom'
 import Search from 'material-ui/svg-icons/action/search'
 import Paper from 'material-ui/Paper'
-import ChipTokenGGG from '../_atomic/molecules/chipTokenGGG.js'
+import ChipTokenGRG from '../_atomic/molecules/chipTokenGRG.js'
 import ChipTokenETH from '../_atomic/molecules/chipTokenETH.js'
 import ElementAccountActionTransfer from './elementAccountActionTransfer'
 
@@ -24,8 +24,12 @@ class ElementAccountBox extends Component {
   static propTypes = {
     account: PropTypes.object.isRequired,
     etherscanUrl: PropTypes.string.isRequired,
-    snackBar: PropTypes.func,
-    fundType: PropTypes.string
+    snackBar: PropTypes.func.isRequired,
+    fundType: PropTypes.string.isRequired
+  };
+
+  static defaultProps = {
+    fundType: "drago"
   };
 
   state = {
@@ -50,7 +54,7 @@ class ElementAccountBox extends Component {
       return null;
     }
     return (
-      <a href={this.props.etherscanUrl + type + '/' + text} target='_blank'><Search className={styles.copyAddress} /></a>
+      <a href={this.props.etherscanUrl + type + '/' + text} target='_blank' rel="noopener noreferrer"><Search className={styles.copyAddress} /></a>
     );
   }
 
@@ -118,7 +122,7 @@ class ElementAccountBox extends Component {
                           <ChipTokenETH account={account} />
                         </div>
                         <div className={styles.accountChipTokenGGG}>
-                          <ChipTokenGGG account={account} />
+                          <ChipTokenGRG account={account} />
                         </div>
                       </Col>
                     </Row>

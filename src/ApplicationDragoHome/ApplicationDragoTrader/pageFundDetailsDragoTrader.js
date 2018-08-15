@@ -119,8 +119,8 @@ class PageFundDetailsDragoTrader extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     const sourceLogClass = this.constructor.name
-    var stateUpdate = true
-    var propsUpdate = true
+    let stateUpdate = true
+    let propsUpdate = true
     // const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
     // const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
     stateUpdate = !utils.shallowEqual(this.state, nextState)
@@ -157,7 +157,7 @@ class PageFundDetailsDragoTrader extends Component {
     }
 
     return (
-      <a key={"addressether" + text} href={this.props.endpoint.networkInfo.etherscan + type + '/' + text} target='_blank'><Search className={styles.copyAddress} /></a>
+      <a key={"addressether" + text} href={this.props.endpoint.networkInfo.etherscan + type + '/' + text} rel="noopener noreferrer" target='_blank'><Search className={styles.copyAddress} /></a>
     );
   }
 
@@ -214,15 +214,15 @@ class PageFundDetailsDragoTrader extends Component {
       ['Address', dragoDetails.address, tableButtonsDragoAddress],
       ['Manager', dragoDetails.addressOwner, tableButtonsDragoOwner]
     ]
-    var portfolioValue = 'N/A'
-    var totalValue = 'N/A'
-    var assetsValues = {}
-    var tableLiquidity = [
+    let portfolioValue = 'N/A'
+    let totalValue = 'N/A'
+    let assetsValues = {}
+    let tableLiquidity = [
       ['Liquidity', 'N/A', ''],
       ['Porfolio value', 'N/A', ''],
       ['Total', 'N/A', ''],
     ]
-    var estimatedPrice = 'N/A'
+    let estimatedPrice = 'N/A'
 
     // Waiting until getDragoDetails returns the drago details
     if (loading || Object.keys(dragoDetails).length === 0) {
@@ -463,7 +463,7 @@ class PageFundDetailsDragoTrader extends Component {
 
   subscribeToEvents = (contract) => {
     const networkName = this.props.endpoint.networkInfo.name
-    var WsSecureUrl = ''
+    let WsSecureUrl = ''
     const eventfullContracAddress = contract.contract.address[0]
     if (PROD) {
       WsSecureUrl = ENDPOINTS.rigoblock.wss[networkName].prod
@@ -482,7 +482,7 @@ class PageFundDetailsDragoTrader extends Component {
       ]
     }, (error, events) => {
       if (!error) {
-        var sourceLogClass = this.constructor.name
+        let sourceLogClass = this.constructor.name
         console.log(`${sourceLogClass} -> New contract event.`);
         console.log(events)
         this.initDrago()
@@ -578,7 +578,7 @@ class PageFundDetailsDragoTrader extends Component {
         // Creating an array of promises that will be executed to add timestamp to each entry
         // Doing so because for each entry we need to make an async call to the client
         // For additional refernce: https://stackoverflow.com/questions/39452083/using-promise-function-inside-javascript-array-map
-        var promises = dragoTransactionsLog.map((log) => {
+        let promises = dragoTransactionsLog.map((log) => {
           return api.eth
             .getBlockByNumber(log.blockNumber.c[0])
             .then((block) => {

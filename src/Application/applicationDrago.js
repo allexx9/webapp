@@ -12,6 +12,7 @@ import styles from './application.module.css';
 import classNames from 'classnames';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { connect } from 'react-redux';
+import { THEME_COLOR } from './../_utils/const'
 
 const muiTheme = getMuiTheme({
   palette: {
@@ -20,7 +21,8 @@ const muiTheme = getMuiTheme({
   },
   appBar: {
     height: 45,
-    fontSize: "20px !important"
+    fontSize: "20px !important",
+    background: THEME_COLOR.drago
   },
 });
 

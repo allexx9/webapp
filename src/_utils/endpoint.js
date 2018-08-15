@@ -66,6 +66,7 @@ class Endpoint {
 
   connect = () => {
     this._checkWeb3()
+    let api
     if (this._checkLocal()) {
       console.log(`Endpoint: local`)
       window.parity.api._rb = {}
@@ -73,7 +74,6 @@ class Endpoint {
       return window.parity.api
     }
     if (this._onWs) {
-      var api
       try {
         console.log("Network: ", this._network.name)
         console.log("Connecting to WebSocket: ", this._wss)

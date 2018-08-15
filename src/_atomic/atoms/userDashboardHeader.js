@@ -2,10 +2,10 @@ import PropTypes from "prop-types";
 import React, { Component } from "react";
 import { Col, Row } from 'react-flexbox-grid';
 import styles from './userDashboardHeader.module.css';
-import * as Colors from 'material-ui/styles/colors';
 import ActionHome from 'material-ui/svg-icons/action/home'
 import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 import Avatar from 'material-ui/Avatar'
+import { THEME_COLOR } from './../../_utils/const'
 
 export default class UserDashboardHeader extends Component {
 
@@ -25,7 +25,8 @@ export default class UserDashboardHeader extends Component {
       drago: {
         toolBar:
         {
-          backgroundColor: '#054186'
+          // backgroundColor: '#054186'
+          background: THEME_COLOR.drago
         },
         titleText: {
           color: '#ffffff',
