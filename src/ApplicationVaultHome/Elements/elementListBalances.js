@@ -186,7 +186,7 @@ class ElementListBalances extends PureComponent {
 
   renderDrgValue(rowData) {
     return (
-      <div>{rowData.balance} <small>{rowData.symbol.toUpperCase()}</small></div>
+      <div>{rowData.balance}</div>
     )
   }
 

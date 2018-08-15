@@ -17,7 +17,7 @@ class ChipTokenGRG extends Component {
       <Chip style={{ border: "1px solid", borderColor: "#E0E0E0", padding: "1px" }}
         backgroundColor="#FFFFFF">
         <Avatar src="img/Logo-RigoblockRGB-OUT-02.png" style={{border: "1px solid" }} backgroundColor="#FFFFFF"/>
-        {account.rigoTokenBalance} <span className={styles.tokensSymbolText}>GRG</span>
+        {Number(account.rigoTokenBalance).toLocaleString(undefined, {minimumFractionDigits: 3, maximumFractionDigits: 3})} <span className={styles.tokensSymbolText}>GRG</span>
       </Chip>
     )
   }

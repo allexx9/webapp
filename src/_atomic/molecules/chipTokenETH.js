@@ -17,7 +17,7 @@ class ChipTokenETH extends Component {
       <Chip style={{ border: "1px solid", borderColor: "#E0E0E0", padding: "1px" }}
       backgroundColor="#FFFFFF">
       <Avatar src="img/ethereum-black-64x64.png" style={{border: "1px solid"}} backgroundColor="#E0E0E0"/>
-      {account.ethBalance} <span className={styles.tokensSymbolText}>ETH</span>
+      {Number(account.ethBalance).toLocaleString(undefined, {minimumFractionDigits: 3, maximumFractionDigits: 3})} <span className={styles.tokensSymbolText}>ETH</span>
     </Chip>
     )
   }

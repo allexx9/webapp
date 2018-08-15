@@ -137,26 +137,28 @@ class ElementAccountBox extends Component {
                     }
                   </Col>
                 </Row>
-
+                <Row className={styles.accountBodyContainer}>
+                  <Col xs={12} >
+                    <RaisedButton
+                      label="TRANSFER"
+                      // labelColor={'#054186'}
+                      labelStyle={{ fontWeight: 600 }}
+                      onClick={this.onTransferOpen}
+                    />
+                    <ElementAccountActionTransfer
+                      open={this.state.transferOpen}
+                      onTransferOpen={this.onTransferOpen}
+                      account={account}
+                      snackBar={this.props.snackBar}
+                      fundType={this.props.fundType}
+                    />
+                  </Col>
+                </Row>
               </Col>
             </Row>
           </Paper>
         </Col>
-        <Col xs={12} className={styles.accountBodyContainer}>
-          <RaisedButton
-            label="TRANSFER"
-            // labelColor={'#054186'}
-            labelStyle={{ fontWeight: 600 }}
-            onClick={this.onTransferOpen}
-          />
-          <ElementAccountActionTransfer
-            open={this.state.transferOpen}
-            onTransferOpen={this.onTransferOpen}
-            account={account}
-            snackBar={this.props.snackBar} 
-            fundType={this.props.fundType}
-            />
-        </Col>
+
       </Row>
 
     )

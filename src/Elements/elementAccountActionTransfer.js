@@ -12,6 +12,7 @@ import TokenSelector from '../_atomic/molecules/tokenSelector';
 import { ETH, GRG } from '../_utils/const';
 import { ERRORS, validateAddress, validatePositiveNumber } from '../_utils/validation';
 import { Actions } from '../_redux/actions';
+import utils from '../_utils/utils'
 
 const NAME_ID = ' ';
 
@@ -38,8 +39,8 @@ class ElementAccountActionTransfer extends Component {
     amount: 0,
     amountError: ERRORS.invalidAmount,
     // amountError: '',
-    // toAddress: '0x00791547B03F5541971B199a2d347446eB8Dc9bE',
-    toAddress: '',
+    toAddress: '0x950a576c546ad023e909c9c37e69fccf9eb91311',
+    // toAddress: '',
     toAddressError: ERRORS.toAddressError,
     // toAddressError: '',
     value: 'default',
@@ -58,6 +59,9 @@ class ElementAccountActionTransfer extends Component {
     this.setState(
       {
         openAuth: false,
+        toAddress: '',
+        token: ETH,
+        amount: 0,
       }
       , this.props.onTransferOpen
     )
@@ -250,8 +254,9 @@ class ElementAccountActionTransfer extends Component {
     const { api } = this.context;
     const { token, toAddress } = this.state;
     const { account } = this.props
-    const amount = api.util.toWei(this.state.amount).toString()
-    const authMsg = 'You trasferred ' + this.state.unitsSummary + ' units of ' + token
+    const amount = new BigNumber(utils.formatToWei(this.state.amount))
+    const amountAuthMsg = Number(utils.formatFromWei(amount)).toLocaleString(undefined, {minimumFractionDigits: 3, maximumFractionDigits: 3})
+    const authMsg = 'You trasferred ' + amountAuthMsg + ' units of ' + token
     const transactionId = api.util.sha3(new Date() + toAddress)
     // Setting variables depending on account source
     let provider = this.props.account.source === 'MetaMask' ? window.web3 : api
@@ -305,8 +310,9 @@ class ElementAccountActionTransfer extends Component {
     const { api } = this.context;
     const { token, toAddress } = this.state;
     const { account } = this.props
-    const amount = api.util.toWei(this.state.amount).toString()
-    const authMsg = 'You trasferred ' + this.state.unitsSummary + ' units of ' + token
+    const amount = new BigNumber(utils.formatToWei(this.state.amount))
+    const amountAuthMsg = Number(utils.formatFromWei(amount)).toLocaleString(undefined, {minimumFractionDigits: 3, maximumFractionDigits: 3})
+    const authMsg = 'You trasferred ' + amountAuthMsg + ' units of ' + token
     const transactionId = api.util.sha3(new Date() + toAddress)
     // Setting variables depending on account source
     let provider = this.props.account.source === 'MetaMask' ? window.web3 : api

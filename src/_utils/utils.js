@@ -5,11 +5,11 @@ import BigNumber from 'bignumber.js'
 import PoolApi from '../PoolsApi/src'
 import { toUnitAmount } from './format'
 import palette from './palete'
+import Web3 from 'web3'
 import {
   ERC20_TOKENS,
   ERCdEX,
   Ethfinex,
-  DEFAULT_RELAY
 } from './const'
 
 import { Actions } from '../_redux/actions'
@@ -17,8 +17,27 @@ import { Actions } from '../_redux/actions'
 class utilities {
 
   constructor() {
-    var oldConsoleLog = null;
+    // var oldConsoleLog = null;
   }
+
+  formatFromWei = (number) => {
+    const web3 = new Web3();
+    try {
+      return new BigNumber(web3.utils.fromWei(number.toFixed())).toFixed(3)
+    } catch (err) {
+      return new BigNumber(web3.utils.fromWei(number)).toFixed(3)
+    }
+  }
+
+  formatToWei = (number) => {
+    const web3 = new Web3();
+    try {
+      return web3.utils.toWei(number)
+    } catch (err) {
+      return err
+    }
+  }
+
 
   getTockenSymbolForRelay = (relayName, token) => {
     switch (relayName) {
@@ -44,7 +63,7 @@ class utilities {
 
   availableTradeTokensPair = (tradeTokensPairs, selectedRelayName) => {
     let availableTokens = {}
-    for (var baseToken in tradeTokensPairs) {
+    for (let baseToken in tradeTokensPairs) {
       Object.keys(tradeTokensPairs[baseToken]).forEach((key) => {
         let quoteToken = tradeTokensPairs[baseToken][key];
         if (quoteToken.exchanges.includes(selectedRelayName)) {
@@ -1238,6 +1257,6 @@ class utilities {
   }()
 }
 
-var utils = new utilities();
+const utils = new utilities();
 
 export default utils;

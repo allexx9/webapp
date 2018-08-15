@@ -178,7 +178,8 @@ class ElementListSupply extends PureComponent {
 
   renderDrgValue(rowData) {
     return (
-      <div>{rowData.supply} <small>{rowData.symbol}</small></div>
+      // <div>{rowData.supply} <small>{rowData.symbol}</small></div>
+      <div>{rowData.supply}</div>
     )
   }
 

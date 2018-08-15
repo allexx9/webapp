@@ -7,10 +7,11 @@ import {
   NETWORK_WARNING
 } from './const'
 import PoolsApi from '../PoolsApi/src'
+import utils from '../_utils/utils'
 
 class Interfaces {
 
-  constructor (api, networkId) {
+  constructor(api, networkId) {
     this._api = api
     this._parityNetworkId = networkId
     this._success = {}
@@ -19,11 +20,11 @@ class Interfaces {
     this._sourceLogClass = this.constructor.name
   }
 
-  get success () {
+  get success() {
     return this._success;
   }
 
-  get error () {
+  get error() {
     return this._error;
   }
 
@@ -44,24 +45,11 @@ class Interfaces {
   getAccountsParity() {
     console.log(`${this._sourceLogClass} -> getAccountsParity`)
     const api = this._api
-    var accounts = {}
-    var arrayPromises = []
+    let accounts = {}
+    let arrayPromises = []
     return api.parity
       .accountsInfo()
       .then((accountsInfo) => {
-        // var poolsApi = new PoolsApi(api)
-        // console.log(poolsApi.contract)
-        // poolsApi.contract.rigotoken.init()
-        // .then(() =>{
-        //   poolsApi.contract.rigotoken.balanceOf('0x00791547B03F5541971B199a2d347446eB8Dc9bE')
-        //   .then((rigoTokenBalance) => {
-        //     console.log(api.util.fromWei(rigoTokenBalance).toFormat(3))
-        //   })
-        //   .catch((error) =>{
-        //     console.log(error)
-        //   })
-        // })
-        // const rigoTokenContract = api.newContract(rigotoken, GRG_ADDRESS_KV)
         const poolsApi = new PoolsApi(this._api)
         poolsApi.contract.rigotoken.init()
         Object.keys(accountsInfo).forEach(function (k) {
@@ -69,7 +57,7 @@ class Interfaces {
           accounts[k] = {}
           arrayPromises.push(api.eth.getBalance(k)
             .then((balance) => {
-              accounts[k].ethBalance = api.util.fromWei(balance).toFormat(3)
+              accounts[k].ethBalance = utils.formatFromWei(balance)
               accounts[k].name = accountsInfo[k].name
               accounts[k].source = "parity"
               return accounts
@@ -78,16 +66,10 @@ class Interfaces {
           // Getting accounts GRG balance
           arrayPromises.push(poolsApi.contract.rigotoken.balanceOf(k)
             .then((rigoTokenBalance) => {
-              accounts[k].rigoTokenBalance = api.util.fromWei(rigoTokenBalance).toFormat(3)
+              accounts[k].rigoTokenBalance = utils.formatFromWei(rigoTokenBalance)
               return accounts
             })
           )
-          // arrayPromises.push(rigoTokenContract.instance.balanceOf.call({}, [k])
-          //   .then((rigoTokenBalance) => {
-          //     accounts[k].rigoTokenBalance = api.util.fromWei(rigoTokenBalance).toFormat(3)
-          //     return accounts
-          //   })
-          // )
           // Getting transactions count
           arrayPromises.push(api.eth.getTransactionCount(k)
             .then((result) => {
@@ -97,13 +79,13 @@ class Interfaces {
           )
         })
         return Promise
-        .all(arrayPromises)
-        .then(() => {
-          console.log('Parity getAccounts', accounts)
-          // const accountsData = {...results}
-          // console.log(accountsData)
-          return accounts
-        })
+          .all(arrayPromises)
+          .then(() => {
+            console.log('Parity getAccounts', accounts)
+            // const accountsData = {...results}
+            // console.log(accountsData)
+            return accounts
+          })
       })
       .catch((error) => {
         console.warn('getAccounts', error);
@@ -113,10 +95,9 @@ class Interfaces {
 
   getAccountsMetamask() {
     // console.log(`${this._sourceLogClass} -> getAccountsMetamask`)
-    const api = this._api
     const web3 = window.web3
     const parityNetworkId = this._parityNetworkId
-    var accountsMetaMask = {}
+    let accountsMetaMask = {}
     if (typeof web3 === 'undefined') {
       return;
     }
@@ -124,7 +105,7 @@ class Interfaces {
     // Checking if MetaMask is connected to the same network as the endpoint
     return web3.eth.net.getId()
       .then((metaMaskNetworkId) => {
-        var currentState = this._success
+        let currentState = this._success
         if (metaMaskNetworkId !== parityNetworkId) {
           const stateUpdate = {
             networkCorrect: false,
@@ -139,80 +120,41 @@ class Interfaces {
           }
           this._success = { ...currentState, ...stateUpdate }
           return web3.eth.getAccounts()
-          .then(accounts => {
-            // Returning empty object if MetaMask is locked.
-            if (accounts.length === 0) {
-              return {}
-            }
-            return web3.eth.getBalance(accounts[0])
-              .then((ethBalance) => {
-                // const rigoTokenContract = api.newContract(rigotoken, GRG_ADDRESS_KV)
-                // return rigoTokenContract.instance.balanceOf.call({}, [accounts[0]])
-                var poolsApi = new PoolsApi(web3)
-                poolsApi.contract.rigotoken.init()
-                return poolsApi.contract.rigotoken.balanceOf(accounts[0])
-                  .then((rigoTokenBalance) => {
-                    accountsMetaMask = {
-                      [accounts[0]]: {
-                        ethBalance: api.util.fromWei(ethBalance).toFormat(3),
-                        rigoTokenBalance: api.util.fromWei(rigoTokenBalance).toFormat(3),
-                        name: "MetaMask",
-                        source: "MetaMask"
-                      }
-                    }
-                    return accountsMetaMask;
-                  })
-              })
-              .catch((error) => {
-                console.warn(error)
+            .then(accounts => {
+              // Returning empty object if MetaMask is locked.
+              if (accounts.length === 0) {
                 return {}
-              })
-          })
-          .catch((error) => {
-            console.warn(error)
-            return {}
-          })
+              }
+              return web3.eth.getBalance(accounts[0])
+                .then((ethBalance) => {
+                  // const rigoTokenContract = api.newContract(rigotoken, GRG_ADDRESS_KV)
+                  // return rigoTokenContract.instance.balanceOf.call({}, [accounts[0]])
+                  let poolsApi = new PoolsApi(web3)
+                  poolsApi.contract.rigotoken.init()
+                  return poolsApi.contract.rigotoken.balanceOf(accounts[0])
+                    .then((rigoTokenBalance) => {
+                      accountsMetaMask = {
+                        [accounts[0]]: {
+                          ethBalance: utils.formatFromWei(ethBalance),
+                          rigoTokenBalance: utils.formatFromWei(rigoTokenBalance),
+                          name: "MetaMask",
+                          source: "MetaMask"
+                        }
+                      }
+                      return accountsMetaMask;
+                    })
+                })
+                .catch((error) => {
+                  console.warn(error)
+                  return {}
+                })
+            })
+            .catch((error) => {
+              console.warn(error)
+              return {}
+            })
         }
-
       })
-      // Getting ETH and GRG balances
-      // .then(() => {
-      //   return web3.eth.getAccounts()
-      //     .then(accounts => {
-      //       // Returning empty object if MetaMask is locked.
-      //       if (accounts.length === 0) {
-      //         return {}
-      //       }
-      //       console.log('not locked')
-      //       return web3.eth.getBalance(accounts[0])
-      //         .then((ethBalance) => {
-      //           // const rigoTokenContract = api.newContract(rigotoken, GRG_ADDRESS_KV)
-      //           // return rigoTokenContract.instance.balanceOf.call({}, [accounts[0]])
-      //           var poolsApi = new PoolsApi(web3)
-      //           poolsApi.contract.rigotoken.init()
-      //           return poolsApi.contract.rigotoken.balanceOf(accounts[0])
-      //             .then((rigoTokenBalance) => {
-      //               accountsMetaMask = {
-      //                 [accounts[0]]: {
-      //                   ethBalance: api.util.fromWei(ethBalance).toFormat(3),
-      //                   rigoTokenBalance: api.util.fromWei(rigoTokenBalance).toFormat(3),
-      //                   name: "MetaMask",
-      //                   source: "MetaMask"
-      //                 }
-      //               }
-      //               return accountsMetaMask;
-      //             })
-      //         })
-      //         .catch((error) => {
-      //           console.warn(error)
-      //           return {}
-      //         })
-      //     })
-      //     .catch((error) => {
-      //       console.warn(error)
-      //       return {}
-      //     })
-      // })
   }
 
   async attachInterfaceInfuraV2() {
@@ -220,7 +162,7 @@ class Interfaces {
     const api = this._api
     try {
       const accountsMetaMask = await this.getAccountsMetamask(api)
-      const allAccounts = {...accountsMetaMask}
+      const allAccounts = { ...accountsMetaMask }
       console.log('Metamask account loaded: ', accountsMetaMask)
       const stateUpdate = {
         // accountsInfo: accountsMetaMask,
@@ -237,17 +179,17 @@ class Interfaces {
               rigoTokenBalance: info.rigoTokenBalance
             };
           })
-        }
-        const result = {...this._success, ...stateUpdate}
-        this._success = result
-        return result
-    } catch(error) {
-      var currentState = this._error
+      }
+      const result = { ...this._success, ...stateUpdate }
+      this._success = result
+      return result
+    } catch (error) {
+      let currentState = this._error
       const stateUpdate = {
         networkError: NETWORK_WARNING,
         networkStatus: MSG_NETWORK_STATUS_ERROR,
       }
-      this._error = {...currentState, ...stateUpdate}
+      this._error = { ...currentState, ...stateUpdate }
       console.warn('attachInterface', error)
     }
   }
@@ -299,37 +241,37 @@ class Interfaces {
                 : []
             }
             console.log(stateUpdate)
-            const result = {...this._success, ...stateUpdate}
+            const result = { ...this._success, ...stateUpdate }
             this._success = result
             console.log(result.accounts)
             return result
           })
           .catch((error) => {
-            var currentState = this._error
+            let currentState = this._error
             const stateUpdate = {
               networkError: NETWORK_WARNING,
               networkStatus: MSG_NETWORK_STATUS_ERROR,
             }
-            this._error = {...currentState, ...stateUpdate}
+            this._error = { ...currentState, ...stateUpdate }
             console.log('attachInterfaceRigoBlock', error)
             return this._error
-            
+
           });
       })
       .catch((error) => {
-        var currentState = this._error
+        let currentState = this._error
         const stateUpdate = {
           networkError: NETWORK_WARNING,
           networkStatus: MSG_NETWORK_STATUS_ERROR,
         }
-        this._error = {...currentState, ...stateUpdate}
+        this._error = { ...currentState, ...stateUpdate }
         console.log('attachInterfaceRigoBlock', error)
         return this._error
       });
   }
 
   detachInterface = (api, subscriptionData) => {
-    var sourceLogClass = this.constructor.name
+    let sourceLogClass = this.constructor.name
     if (typeof subscriptionData === 'object') {
       console.log(subscriptionData)
       try {
@@ -348,19 +290,19 @@ class Interfaces {
     } else {
       try {
         api.unsubscribe(subscriptionData)
-        .then((result) => {
-          console.log(result)
-          console.log(`${sourceLogClass}: Successfully unsubscribed from eth_blockNumber -> Subscription ID: ${subscriptionData}.`);
-        })
-        .catch((error) => {
-          console.warn(`${sourceLogClass}: Unsubscribe error ${error}.`)
-        });
+          .then((result) => {
+            console.log(result)
+            console.log(`${sourceLogClass}: Successfully unsubscribed from eth_blockNumber -> Subscription ID: ${subscriptionData}.`);
+          })
+          .catch((error) => {
+            console.warn(`${sourceLogClass}: Unsubscribe error ${error}.`)
+          });
       } catch (error) {
         console.log(error)
       }
     }
-  } 
+  }
 }
 
-export {Interfaces};
+export { Interfaces };
 

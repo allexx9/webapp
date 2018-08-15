@@ -78,14 +78,14 @@ class PageDashboardDragoManager extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     const sourceLogClass = this.constructor.name
-    var stateUpdate = true
-    var propsUpdate = true
+    let stateUpdate = true
+    let propsUpdate = true
     propsUpdate = !utils.shallowEqual(this.props, nextProps)
     stateUpdate = !utils.shallowEqual(this.state, nextState)
     if (stateUpdate || propsUpdate) {
-      console.log('State updated ', stateUpdate)
-      console.log('Props updated ', propsUpdate)
-      console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
+      // console.log('State updated ', stateUpdate)
+      // console.log('Props updated ', propsUpdate)
+      // console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
     }
     return stateUpdate || propsUpdate
   }

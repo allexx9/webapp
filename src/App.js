@@ -501,7 +501,7 @@ export class App extends Component {
   }
 
   onNewBlockNumber = (_error, blockNumber) => {
-    utils.logger.disable()
+    // utils.logger.disable()
     console.log('new block')
     if (_error) {
       console.error('onNewBlockNumber', _error)
@@ -556,7 +556,7 @@ export class App extends Component {
           const prevAccounts = [].concat(endpoint.accounts)
           prevAccounts.map((account, index) => {
             // Checking ETH balance
-            const newEthBalance = this._api.util.fromWei(ethBalances[index]).toFormat(3)
+            const newEthBalance = utils.formatFromWei(ethBalances[index])
             if ((account.ethBalance !== newEthBalance) && prevBlockNumber !== 0) {
               console.log(`${account.name} balance changed.`)
               let secondaryText = []
@@ -580,18 +580,18 @@ export class App extends Component {
               }
             }
             // Checking GRG balance
-            const newRigoTokenBalance = this._api.util.fromWei(rigoTokenBalances[index]).toFormat(3)
+            const newRigoTokenBalance = utils.formatFromWei(rigoTokenBalances[index])
             if ((account.rigoTokenBalance !== newRigoTokenBalance) && prevBlockNumber !== 0) {
               console.log(`${account.name} balance changed.`)
               let secondaryText = []
-              let balDifference = account.rigoTokenBalance - newRigoTokenBalance
-              if (balDifference > 0) {
+              let balDifference = new BigNumber(account.rigoTokenBalance.toString()).minus(new BigNumber(newRigoTokenBalance.toString()))
+              if ((balDifference).gt(0)) {
                 console.log(`${sourceLogClass} -> You transferred ${balDifference.toFixed(4)} GRG!`)
                 secondaryText[0] = `You transferred ${balDifference.toFixed(4)} GRG!`
                 secondaryText[1] = utils.dateFromTimeStamp(new Date())
               } else {
                 console.log(`${sourceLogClass} -> You received ${Math.abs(balDifference).toFixed(4)} GRG!`)
-                secondaryText[0] = `You received ${Math.abs(balDifference).toFixed(4)} GRG!`
+                secondaryText[0] = `You received ${balDifference.abs().toFixed(4)} GRG!`
                 secondaryText[1] = utils.dateFromTimeStamp(new Date())
               }
               if (this._notificationSystem && endpoint.accountsBalanceError === false) {
@@ -620,9 +620,9 @@ export class App extends Component {
             ethBalance: ethBalances.reduce((total, balance) => total.add(balance), new BigNumber(0)),
             accounts: [].concat(accounts.map((account, index) => {
               const ethBalance = ethBalances[index];
-              account.ethBalance = this._api.util.fromWei(ethBalance).toFormat(3);
+              account.ethBalance = utils.formatFromWei(ethBalance)
               const rigoTokenBalance = rigoTokenBalances[index];
-              account.rigoTokenBalance = this._api.util.fromWei(rigoTokenBalance).toFormat(3);
+              account.rigoTokenBalance = utils.formatFromWei(rigoTokenBalance)
               return account;
             })
             )
@@ -642,8 +642,8 @@ export class App extends Component {
             ethBalance: new BigNumber(0),
             rigoTokenBalance: new BigNumber(0),
             accounts: [].concat(accounts.map((account) => {
-              account.ethBalance = this._api.util.fromWei(new BigNumber(0)).toFormat(3);
-              account.rigoTokenBalance = this._api.util.fromWei(new BigNumber(0)).toFormat(3);
+              account.ethBalance = utils.formatFromWei(new BigNumber(0))
+              account.rigoTokenBalance = utils.formatFromWei(new BigNumber(0))
               return account;
             })
             )
@@ -657,7 +657,7 @@ export class App extends Component {
       newEndpoint.prevBlockNumber = newBlockNumber.toFixed()
       this.props.dispatch(Actions.endpoint.updateInterfaceAction(newEndpoint))
     }
-    utils.logger.enable()
+    // utils.logger.enable()
   }
 
   detachInterface = () => {
