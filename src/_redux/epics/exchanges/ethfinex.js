@@ -42,8 +42,8 @@ import {
   RELAY_CLOSE_WEBSOCKET,
   RELAY_GET_ORDERS,
   UPDATE_CURRENT_TOKEN_PRICE,
-  UPDATE_ELEMENT_LOADING,
-  UPDATE_MARKET_DATA,
+  // UPDATE_ELEMENT_LOADING,
+  // UPDATE_MARKET_DATA,
   INIT_MARKET_DATA,
   ADD_DATAPOINT_MARKET_DATA,
   FETCH_FUND_ORDERS_STOP,
@@ -61,82 +61,9 @@ const customRelayAction = (action) => {
 }
 
 
-// //
-// // CONNECTING TO WS AND GETTING UPDATES FROM RELAY ERCdEX
-// //
-
-// // https://github.com/ReactiveX/rxjs/issues/2048
-
-// const reconnectingWebsocket$ = (relay, baseToken, quoteToken) => {
-//   return Observable.create(observer => {
-//     // const relay = {
-//     //   name: 'Ethfinex'
-//     // }
-//     const exchange = new Exchange(relay.name, '42', 'ws')
-//     const websocket = exchange.getTicker(
-//       utils.getTockenSymbolForRelay(relay.name, baseToken),
-//       utils.getTockenSymbolForRelay(relay.name, quoteToken)
-//     )
-//     websocket.onmessage = (msg) => {
-//       console.log('WebSocket message.');
-//       console.log(msg)
-//       return observer.next(msg.data);
-//     }
-//     websocket.onclose = (msg) => {
-//       // websocket.send(`unsub:ticker`);
-//       console.log(msg)
-//       // return msg.wasClean ? observer.complete() : null
-//     };
-//     websocket.onerror = (error) => {
-//       console.log(error)
-//       console.log('WebSocket error.');
-//       // return observer.error(error)
-//     };
-//     return () => websocket.close();
-//   })
-// }
-
 //
-// FETCH HISTORICAL MARKET DATA
+// FETCH HISTORICAL MARKET DATA FOR A SPECIFIC TRADING PAIR
 //
-
-
-// const getHistoricalPricesData$ = (relay, networkId, baseToken, quoteToken, startDate) => {
-//   const exchange = new Exchange(relay.name, networkId)
-//   return Observable.fromPromise(exchange.getHistoricalPricesData(
-//     utils.getTockenSymbolForRelay(relay.name, baseToken),
-//     utils.getTockenSymbolForRelay(relay.name, quoteToken),
-//     startDate))
-// }
-
-// const getHistoricalPricesData$ = (networkId, baseToken, quoteToken, startDate) =>
-//   Observable.fromPromise(getHistoricalPricesDataFromERCdEX(networkId, baseToken.address, quoteToken.address, startDate))
-
-
-// export const getCandlesDataEpic = (action$) => {
-//   return action$.ofType(customRelayAction(FETCH_CANDLES_DATA))
-//     .mergeMap((action) => {
-//       console.log(action)
-//       return Observable.concat(
-//         Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: true } }),
-//         getHistoricalPricesData$(
-//           action.payload.selectedRelay,
-//           action.payload.networkId,
-//           action.payload.baseToken,
-//           action.payload.quoteToken,
-//           action.payload.startDate
-//         )
-//         .map(historical => {
-//           return {
-//             type: UPDATE_MARKET_DATA,
-//             payload: historical
-//           }
-//         })
-//         ,
-//         Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: false } }),
-//       )
-//     });
-// }
 
 const candelsWebsocket$ = (relay, networkId, baseToken, quoteToken) => {
   return Observable.create(observer => {
@@ -263,7 +190,7 @@ export const getCandlesDataEpic = (action$) => {
 
 
 //
-// CONNECTING TO WS AND GETTING UPDATES FROM RELAY
+// CONNECTING TO WS AND GETTING UPDATES FOR A SPECIFIC TRADING PAIR
 //
 
 const reconnectingWebsocket$ = (relay, networkId, baseToken, quoteToken) => {
@@ -314,6 +241,10 @@ export const initRelayWebSocketEpic = (action$) =>
         }
         )
     });
+
+//
+// FETCHING THE ORDER BOOK AND UPDATING THE CURRENT PRICE FOR A SPECIFIC TRADING PAIR
+//
 
 const updateCurrentTokenPrice = (tickerOutput) => {
   let ticker = JSON.parse(tickerOutput)
@@ -420,26 +351,7 @@ export const getAccountOrdersEpic = (action$) => {
             })
           }
           )
-
-        )       
-        
-
-        
-        // getAccountOrdersFromRelay$(
-        //     action.payload.relay,
-        //     action.payload.networkId,
-        //     action.payload.account,
-        //     action.payload.quoteToken,
-        //     action.payload.baseToken,
-        //   )
-        //   .map(orders => {
-        //     return {
-        //       type: UPDATE_FUND_ORDERS,
-        //       payload: {
-        //         open: orders
-        //       }
-        //     }
-        //   })
+        )
         ,
         // Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: false }}),
       )

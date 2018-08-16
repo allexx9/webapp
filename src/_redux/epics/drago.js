@@ -34,19 +34,26 @@ const getTokensBalances$ = (dragoDetails, api) => {
   poolApi.contract.drago.init(dragoAddress)
 
   const getTokensBalances = async () => {
-    let dragoAssets = ERC20_TOKENS[api._rb.network.name]
-    for (let token in dragoAssets) {
-      if (ERC20_TOKENS[api._rb.network.name][token].address !== "0x") {
+    let allowedTokens = ERC20_TOKENS[api._rb.network.name]
+    let dragoAssets = {}
+    for (let token in allowedTokens) {
+      if (allowedTokens[token].address !== "0x") {
         try {
-          dragoAssets[token].balance = await poolApi.contract.drago.getTokenBalance(ERC20_TOKENS[api._rb.network.name][token].address)
+          let balance = await poolApi.contract.drago.getTokenBalance(allowedTokens[token].address)
+          if (!balance.eq(0) ) {
+            dragoAssets[token] = allowedTokens[token]
+            dragoAssets[token].balance = balance
+          }
         } catch (err) {
           console.log(err)
-          dragoAssets[token].balance = 0
+          // dragoAssets[token].balance = 0
         }
       } else {
-        dragoAssets[token].balance = 0
+        // dragoAssets[token].balance = 0
       }
     }
+    console.log(dragoAssets)
+
     return dragoAssets
   }
   return Observable

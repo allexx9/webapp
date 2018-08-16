@@ -113,8 +113,7 @@ export const getTickers = {
     }
     return options
   },
-  Ethfinex: (networkId = 1) => {
-    const symbols = SupportedExchanges.Ethfinex.tickersTokenPairs.toString()
+  Ethfinex: (networkId = 1, symbols) => {
     const options = {
       method: 'GET',
       url: `${SupportedExchanges.Ethfinex.http[NETWORKS_ID[networkId]]}/v2/tickers?symbols=${symbols}`,

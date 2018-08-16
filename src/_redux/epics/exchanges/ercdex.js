@@ -28,8 +28,10 @@ import utils from '../../../_utils/utils'
 
 import {
   getOrdersFromRelayERCdEX,
-  formatOrders
+  formatOrders,
+  getHistoricalPricesDataFromERCdEX
 } from '../../../_utils/exchange'
+
 
 
 import {
@@ -46,7 +48,9 @@ import {
   UPDATE_MARKET_DATA,
   FETCH_CANDLES_DATA,
   FETCH_FUND_ORDERS,
-  UPDATE_FUND_ORDERS
+  UPDATE_FUND_ORDERS,
+  UPDATE_SELECTED_DRAGO_DETAILS,
+  FETCH_ASSETS_PRICE_DATA
 } from '../../../_redux/actions/const'
 
 
@@ -257,5 +261,73 @@ export const getAccountOrdersEpic = (action$) => {
         ,
         // Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: false }}),
       )
+    });
+}
+
+//
+// FETCH ASSETS PRICES DATA
+//
+
+const getAssetsPricesDataFromERCdEX$ = (networkId, symbol, baseTokenAddress, quoteTokenAddress, startDate) =>
+  Observable
+    .fromPromise(getHistoricalPricesDataFromERCdEX(networkId, baseTokenAddress, quoteTokenAddress, startDate))
+    .map(result => {
+      const data = {
+        symbol: symbol,
+        startDate,
+        data: result.map(entry => {
+          const date = new Date(entry.date)
+          entry.date = date
+          return entry
+        }),
+        error: ''
+      }
+      return data
+    })
+    .catch(error => {
+      const data = {
+        symbol: symbol,
+        startDate,
+        data: [],
+        error
+      }
+      return Observable.of(data)
+    })
+
+export const getAssetsPricesDataFromERCdEXEpic = (action$) => {
+  return action$.ofType(FETCH_ASSETS_PRICE_DATA)
+    .mergeMap((action) => {
+      const observableArray = () => {
+        const observableArray = Array()
+        for (let property in action.payload.assets) {
+          if (action.payload.assets.hasOwnProperty(property)) {
+            // console.log(action.payload.assets[property])
+            observableArray.push(
+              getAssetsPricesDataFromERCdEX$(
+                action.payload.networkId,
+                action.payload.assets[property].symbol,
+                action.payload.assets[property].address,
+                action.payload.quoteToken,
+                new Date((Math.floor(Date.now() / 1000) - 86400 * 7) * 1000).toISOString()
+              )
+            )
+          }
+        }
+        return observableArray
+      }
+      return Observable.forkJoin(observableArray())
+        .map((result) => {
+          const arrayToObject = (arr, keyField) =>
+            Object.assign({}, ...arr.map(item => ({ [item[keyField]]: item })))
+          const assetsCharts = arrayToObject(result, 'symbol')
+          return {
+            type: UPDATE_SELECTED_DRAGO_DETAILS,
+            payload: {
+              assetsCharts
+            }
+          }
+        }
+        )
+
     });
 }

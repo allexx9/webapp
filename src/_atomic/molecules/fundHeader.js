@@ -12,13 +12,13 @@ export default class FundHeader extends Component {
 
   static propTypes = {
     fundDetails: PropTypes.object.isRequired,
-    actions: PropTypes.object,
+    // actions: PropTypes.object,
     fundType: PropTypes.string.isRequired
   };
 
   static defaultProps = {
     fundType: 'drago',
-    actions: ''
+    // actions: ''
   }
 
   render() {
@@ -43,11 +43,11 @@ export default class FundHeader extends Component {
       return <p>empty</p>;
     } return (
       <Toolbar className={styles.detailsToolbar} style={headerStyle[fundType].toolBar}>
-        {actions
+        {/* {actions
           ? <div className={styles.managerButtonContainer}>
             {actions}
           </div>
-          : null}
+          : null} */}
         <ToolbarGroup className={styles.detailsToolbarGroup}>
           <Row className={styles.detailsToolbarGroup} >
             <div className={styles.identityIconContainer}>

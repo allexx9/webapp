@@ -190,7 +190,7 @@ class Exchange {
     )
   }
 
-  getTickers = () => {
+  getTickers = (symbols = SupportedExchanges.Ethfinex.tickersTokenPairs.toString()) => {
     console.log(`${this._exchange}: Fetching tokens prices`)
     // I have only added Ethfinex so far, because this function return every tokens price
     // and we use the data to calcuate the funds assets value. 
@@ -200,7 +200,7 @@ class Exchange {
 
     return this.returnResults(
       () => {
-        return this._call[this._transport].getTickers[this._exchange](this._network, this._exchangeProperties.tickersTokenPairs)
+        return this._call[this._transport].getTickers[this._exchange](this._network, symbols)
       },
       FORMAT.tickers[this._exchange]
     )
