@@ -86,11 +86,15 @@ class PageFundDetailsDragoManager extends Component {
   initDrago = async () => {
     const poolApi = new PoolApi(this.context.api)
     const dragoId = this.props.match.params.dragoid
+
+    // Getting drago details from Id
     const dragoDetails = await utils.getDragoDetailsFromId(dragoId, this.context.api)
     await utils.getDragoDetails(dragoDetails, this.props, this.context.api)
     this.setState({
       loading: false
     })
+
+    // Getting drago transaction list
     await this.getTransactions(dragoDetails, this.context.api)
     await poolApi.contract.dragoeventful.init()
     this.subscribeToEvents(poolApi.contract.dragoeventful)

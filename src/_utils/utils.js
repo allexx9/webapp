@@ -1003,30 +1003,33 @@ class utilities {
     //
     await poolApi.contract.drago.init(dragoAddress)
 
-    //
-    // Getting Drago assets
-    //
-    const getTokensBalances = async () => {
-      let dragoAssets = ERC20_TOKENS[api._rb.network.name]
-      for (let token in dragoAssets) {
-        if (ERC20_TOKENS[api._rb.network.name][token].address !== "0x") {
-          try {
-            dragoAssets[token].balance = await poolApi.contract.drago.getTokenBalance(ERC20_TOKENS[api._rb.network.name][token].address)
-          } catch (err) {
-            console.log(err)
-            dragoAssets[token].balance = 0
-          }
-        } else {
-          dragoAssets[token].balance = 0
-        }
-      }
-      return dragoAssets
-    }
+    // //
+    // // Getting Drago assets
+    // //
+    // const getTokensBalances = async () => {
+    //   let dragoAssets = ERC20_TOKENS[api._rb.network.name]
+    //   for (let token in dragoAssets) {
+    //     if (ERC20_TOKENS[api._rb.network.name][token].address !== "0x") {
+    //       try {
+    //         dragoAssets[token].balance = await poolApi.contract.drago.getTokenBalance(ERC20_TOKENS[api._rb.network.name][token].address)
+    //       } catch (err) {
+    //         console.log(err)
+    //         dragoAssets[token].balance = 0
+    //       }
+    //     } else {
+    //       dragoAssets[token].balance = 0
+    //     }
+    //   }
+    //   return dragoAssets
+    // }
 
-    getTokensBalances().then(dragoAssets => {
-      dispatch(Actions.drago.getAssetsPriceDataAction(dragoAssets, endpoint.networkInfo.id, ERC20_TOKENS[endpoint.networkInfo.name].WETH.address))
-      dispatch(Actions.drago.updateSelectedDragoAction({ assets: Object.values(dragoAssets) }))
-    })
+    // getTokensBalances().then(dragoAssets => {
+    //   dispatch(Actions.drago.getAssetsPriceDataAction(dragoAssets, endpoint.networkInfo.id, ERC20_TOKENS[endpoint.networkInfo.name].WETH.address))
+    //   dispatch(Actions.drago.updateSelectedDragoAction({ assets: Object.values(dragoAssets) }))
+    // })
+
+    dispatch(Actions.drago.getTokenBalancesDrago(dragoDetails, api))
+
 
     //
     // Gettind drago data, creation date, supply, ETH balances

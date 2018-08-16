@@ -14,6 +14,8 @@ import { setTokenAllowanceEpic,
 
 import { Ethfinex, ERCdEX } from './exchanges'
 
+import { getTokensBalancesEpic } from './drago'
+
 const ERCdEX_Epics = [
   ERCdEX.getCandlesDataEpic,
   ERCdEX.initRelayWebSocketEpic,
@@ -30,6 +32,7 @@ const Ethfinex_Epics = [
 
 export const rootEpic = combineEpics (
   // relayWebSocketEpic,
+  getTokensBalancesEpic,
   ...ERCdEX_Epics,
   ...Ethfinex_Epics,
   setTokenAllowanceEpic,

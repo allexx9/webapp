@@ -263,18 +263,18 @@ class ElementFundActionWrapETH extends Component {
     const { api } = this.context;
     const { dragoDetails } = this.props
     // const { instance } = this.context;
-    var poolApi = null;
+    let poolApi = null;
     const WETHaddress = ERC20_TOKENS[api._rb.network.name].WETH.address
     this.setState({
       sending: true
     });
-    var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
+    let provider = this.state.account.source === 'MetaMask' ? window.web3 : api
     const {account} = this.state
     const authMsg = 'You un-wrapped ' + this.state.amount + ' ETH'
 
     // Initializing transaction variables
     const transactionId = api.util.sha3(new Date() + account.address)
-    var transactionDetails = {
+    let transactionDetails = {
       status: account.source === 'MetaMask' ? 'pending' : 'authorization',
       hash: '',
       parityId: null,

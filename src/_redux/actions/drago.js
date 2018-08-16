@@ -5,13 +5,17 @@ import {
   FETCH_ASSETS_PRICE_DATA,
   UPDATE_TRANSACTIONS_DRAGO_HOLDER,
   UPDATE_TRANSACTIONS_DRAGO_MANAGER,
+  GET_TOKEN_BALANCES_DRAGO
 } from './const'
 
 const drago = {
-  updateSelectedDragoAction: (results) => {
+  getTokenBalancesDrago: (dragoDetails, api) => {
     return {
-      type: UPDATE_SELECTED_DRAGO_DETAILS,
-      payload: results
+      type: GET_TOKEN_BALANCES_DRAGO,
+      payload: {
+        dragoDetails,
+        api,
+      }
     }
   },
   getAssetsPriceDataAction: (assets, networkId, quoteToken) => {
@@ -22,6 +26,12 @@ const drago = {
         networkId,
         quoteToken
       }
+    }
+  },
+  updateSelectedDragoAction: (results) => {
+    return {
+      type: UPDATE_SELECTED_DRAGO_DETAILS,
+      payload: results
     }
   },
   updateTransactionsDragoHolderAction: (results) => {
