@@ -98,7 +98,7 @@ class CandleStickChartWithMACDIndicator extends React.Component {
 				ratio={ratio}
 				margin={{ left: 70, right: 70, top: 20, bottom: 30 }}
 				type={type}
-				seriesName="MSFT"
+				seriesName="TOKEN"
         data={data}
 				xScale={xScale}
         xAccessor={xAccessor}

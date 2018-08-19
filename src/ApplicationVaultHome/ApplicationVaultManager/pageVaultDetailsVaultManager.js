@@ -88,12 +88,12 @@ class PageVaultDetailsVaultManager extends Component {
           console.log(`${sourceLogClass}: Successfully unsubscribed from contract.`);
         }
         if (error) {
-          console.warn(`${sourceLogClass}: Unsubscribe error ${error}.`)
+          console.log(`${sourceLogClass}: Unsubscribe error ${error}.`)
         }
       });
     }
     catch (error) {
-      console.warn(`${sourceLogClass}: Unsubscribe error ${error}.`)
+      console.log(`${sourceLogClass}: Unsubscribe error ${error}.`)
     }
   }
 
@@ -608,7 +608,7 @@ class PageVaultDetailsVaultManager extends Component {
             .catch((error) => {
               // Sometimes Infura returns null for api.eth.getBlockByNumber, therefore we are assigning a fake timestamp to avoid
               // other issues in the app.
-              console.warn(error)
+              console.log(error)
               log.timestamp = new Date()
               return log
             })

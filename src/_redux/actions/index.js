@@ -7,11 +7,11 @@ import {
   UPDATE_TRANSACTIONS_VAULT_HOLDER,
   UPDATE_TRANSACTIONS_VAULT_MANAGER,
   INIT_NOTIFICATION,
-  TOKEN_PRICE_TICKERS_FETCH_START
 } from './const'
 import drago from './drago'
 import transactions from './transactions'
 import exchange from './exchange'
+import tokens from './tokens'
 
 class actions {
 
@@ -69,14 +69,7 @@ class actions {
     }
   }
 
-  tokens = {
-    priceTickersStartAction: (tokenPairs) => {
-      return {
-        type: TOKEN_PRICE_TICKERS_FETCH_START,
-        payload: tokenPairs
-      }
-    }
-  }
+  tokens = tokens
 
 }
 

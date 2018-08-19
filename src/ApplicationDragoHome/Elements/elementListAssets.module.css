@@ -54,6 +54,7 @@
   padding-right: 0px !important;
   /* margin-top: 5px;
   margin-bottom: 5px; */
+  padding-bottom: 5px;
 }
 
 .headerColumn {
@@ -85,4 +86,13 @@
   justify-content: center;
   font-size: 1em;
   color: #bdbdbd;
+}
+
+.chart {
+/* min-width: 200px; */
+box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 10px 1px;
+border-radius: 4px 4px 4px 4px;
+margin: 10px;
+/* height: 145px; */
+/* width: 200px; */
 }

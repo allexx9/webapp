@@ -26,7 +26,7 @@ import SectionHeader from '../../_atomic/atoms/sectionHeader';
 import SectionTitle from '../../_atomic/atoms/sectionTitle';
 import FundHeader from '../../_atomic/molecules/fundHeader';
 import { Actions } from '../../_redux/actions';
-import { ENDPOINTS, PROD } from '../../_utils/const';
+import { ENDPOINTS, PROD, Ethfinex } from '../../_utils/const';
 import { formatCoins, formatEth } from '../../_utils/format';
 import utils from '../../_utils/utils';
 import ElementFundActions from '../Elements/elementFundActions';
@@ -34,6 +34,7 @@ import ElementListAssets from '../Elements/elementListAssets';
 import ElementListTransactions from '../Elements/elementListTransactions';
 import ElementPriceBox from '../Elements/elementPricesBox';
 import styles from './pageFundDetailsDragoTrader.module.css';
+// import { Action } from '../../../node_modules/rxjs/internal/scheduler/Action';
 
 function mapStateToProps(state) {
   return state
@@ -56,6 +57,8 @@ class PageFundDetailsDragoTrader extends Component {
     transactionsDrago: PropTypes.object.isRequired,
   };
 
+  static sourceLogClass = this.constructor.name
+
   state = {
     dragoTransactionsLogs: [],
     loading: true,
@@ -67,60 +70,82 @@ class PageFundDetailsDragoTrader extends Component {
     },
   }
 
-  componentDidMount() {
-    this.initDrago()
+  componentDidMount = async () => {
+    const { api } = this.context
+    const relay = {
+      name: Ethfinex
+    }
+    // Getting Drago details
+    let dragoDetails = await this.getDragoDetails()
+
+    // Getting Drago assets
+    this.props.dispatch(Actions.drago.getTokenBalancesDrago(dragoDetails, api, relay))
+    // await this.getPortfolioDetails(dragoDetails)
+    const poolApi = new PoolApi(api)
+    await poolApi.contract.dragoeventful.init()
+    this.subscribeToEvents(poolApi.contract.dragoeventful)
   }
 
-  initDrago = async () => {
-    const poolApi = new PoolApi(this.context.api)
+  getDragoDetails = async () => {
+    const { api } = this.context
+    const relay = {
+      name: Ethfinex
+    }
     const dragoId = this.props.match.params.dragoid
-    const dragoDetails = await utils.getDragoDetailsFromId(dragoId, this.context.api)
-    await utils.getDragoDetails(dragoDetails, this.props, this.context.api)
+    const dragoDetails = await utils.getDragoDetailsFromId(dragoId, api)
+    await utils.getDragoDetails(dragoDetails, this.props, api, relay)
     this.setState({
       loading: false
     })
-    await this.getTransactions(dragoDetails, this.context.api, this.props.endpoint.accounts)
-    await poolApi.contract.dragoeventful.init()
-    this.subscribeToEvents(poolApi.contract.dragoeventful)
+    await this.getTransactions(dragoDetails, api, this.props.endpoint.accounts)
     console.log(this.props)
-    // this.props.dispatch(Actions.tokens.priceTickersStartAction())
+    return dragoDetails
   }
+
+  // getPortfolioDetails = async (dragoDetails) => {
+  //   const { api } = this.context
+  //   const relay = {
+  //     name: Ethfinex
+  //   }
+  //   this.props.dispatch(Actions.drago.getTokenBalancesDrago(dragoDetails, api, relay))
+  // }
 
   componentWillUnmount() {
     const { contractSubscription } = this.state
     const sourceLogClass = this.constructor.name
-    // this.props.dispatch({type: TOKEN_PRICE_TICKERS_FETCH_STOP})
+    this.props.dispatch(Actions.tokens.priceTickersStop())
+    this.props.dispatch(Actions.exchange.getPortfolioChartDataStop())  
     try {
       contractSubscription.unsubscribe(function (error, success) {
         if (success) {
           console.log(`${sourceLogClass}: Successfully unsubscribed from contract.`);
         }
         if (error) {
-          console.warn(`${sourceLogClass}: Unsubscribe error ${error}.`)
+          console.log(`${sourceLogClass}: Unsubscribe error ${error}.`)
         }
       });
     }
     catch (error) {
-      console.warn(`${sourceLogClass}: Unsubscribe error ${error}.`)
+      console.log(`${sourceLogClass}: Unsubscribe error ${error}.`)
     }
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
     // Updating the lists on each new block if the accounts balances have changed
     // Doing this this to improve performances by avoiding useless re-rendering
-    const sourceLogClass = this.constructor.name
+    // const sourceLogClass = this.constructor.name
     const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
     const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
     if (!currentBalance.eq(nextBalance)) {
-      this.initDrago()
-      console.log(`${sourceLogClass} -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`);
+      this.getDragoDetails()
+      // console.log(`${sourceLogClass} -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`);
     } else {
       null
     }
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    const sourceLogClass = this.constructor.name
+    // const sourceLogClass = this.constructor.name
     let stateUpdate = true
     let propsUpdate = true
     // const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
@@ -128,7 +153,7 @@ class PageFundDetailsDragoTrader extends Component {
     stateUpdate = !utils.shallowEqual(this.state, nextState)
     propsUpdate = !utils.shallowEqual(this.props, nextProps)
     if (stateUpdate || propsUpdate) {
-      console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
+      // console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
     }
     return stateUpdate || propsUpdate
   }
@@ -226,6 +251,8 @@ class PageFundDetailsDragoTrader extends Component {
     ]
     let estimatedPrice = 'N/A'
 
+    console.log(this.props.exchange.prices)
+
     // Waiting until getDragoDetails returns the drago details
     if (loading || Object.keys(dragoDetails).length === 0) {
       return (
@@ -239,6 +266,7 @@ class PageFundDetailsDragoTrader extends Component {
         <ElementFundNotFound />
       );
     }
+    console.log(dragoAssetsList)
     if (dragoAssetsList.length !== 0 && Object.keys(this.props.exchange.prices).length !== 0) {
       if (typeof dragoDetails.dragoETHBalance !== 'undefined') {
         portfolioValue = utils.calculatePortfolioValue(dragoAssetsList, this.props.exchange.prices)
@@ -259,7 +287,7 @@ class PageFundDetailsDragoTrader extends Component {
           <div className={styles.pageContainer} >
             <Paper zDepth={1}>
               <Sticky enabled={true} innerZ={1}>
-              <FundHeader
+                <FundHeader
                   fundType='drago'
                   fundDetails={dragoDetails}
                 />
@@ -267,15 +295,15 @@ class PageFundDetailsDragoTrader extends Component {
                   <Col xs={12}>
                     <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle}>
                       <Tab label="SUMMARY" className={styles.detailsTab}
-                        onActive={() => scrollToElement('#summary-section', {offset: -165})}
+                        onActive={() => scrollToElement('#summary-section', { offset: -165 })}
                         icon={<ActionList color={'#054186'} />}>
                       </Tab>
                       <Tab label="INSIGHT" className={styles.detailsTab}
-                        onActive={() => scrollToElement('#insight-section', {offset: -165})}
+                        onActive={() => scrollToElement('#insight-section', { offset: -165 })}
                         icon={<ActionAssessment color={'#054186'} />}>
                       </Tab>
                       <Tab label="LOGS" className={styles.detailsTab}
-                        onActive={() => scrollToElement('#transactions-section', {offset: -165})}
+                        onActive={() => scrollToElement('#transactions-section', { offset: -165 })}
                         icon={<ActionShowChart color={'#054186'} />}>
                       </Tab>
                     </Tabs>
@@ -291,8 +319,8 @@ class PageFundDetailsDragoTrader extends Component {
                       <span id='summary-section' ref={(section) => { this.Summary = section; }}></span>
                       <SectionHeader
                         titleText='SUMMARY'
-                        
-                         />
+
+                      />
                     </Col>
                   </Row>
                   <Row>
@@ -371,7 +399,7 @@ class PageFundDetailsDragoTrader extends Component {
                     <span id='insight-section' ref={(section) => { this.InSight = section; }}></span>
                     <SectionHeader
                       titleText='INSIGHT'
-                       />
+                    />
                   </Col>
                 </Row>
                 <Row>
@@ -419,7 +447,7 @@ class PageFundDetailsDragoTrader extends Component {
                     <span id='transactions-section' ref={(section) => { this.Logs = section; }}></span>
                     <SectionHeader
                       titleText='LOGS'
-                       />
+                    />
                   </Col>
                 </Row>
                 <Row>
@@ -488,7 +516,7 @@ class PageFundDetailsDragoTrader extends Component {
         let sourceLogClass = this.constructor.name
         console.log(`${sourceLogClass} -> New contract event.`);
         console.log(events)
-        this.initDrago()
+        this.getDragoDetails()
       }
     })
     this.setState({
@@ -591,7 +619,7 @@ class PageFundDetailsDragoTrader extends Component {
             .catch((error) => {
               // Sometimes Infura returns null for api.eth.getBlockByNumber, therefore we are assigning a fake timestamp to avoid
               // other issues in the app.
-              console.warn(error)
+              console.log(error)
               log.timestamp = new Date()
               return log
             })

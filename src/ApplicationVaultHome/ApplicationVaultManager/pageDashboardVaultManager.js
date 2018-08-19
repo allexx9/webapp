@@ -319,7 +319,7 @@ class PageDashboardVaultManager extends Component {
         this.props.dispatch(Actions.vault.updateTransactionsVaultManagerAction(results))
       })
       .catch((error) => {
-        console.warn(error)
+        console.log(error)
       })
   }
 

@@ -9,12 +9,13 @@ import {
 } from './const'
 
 const drago = {
-  getTokenBalancesDrago: (dragoDetails, api) => {
+  getTokenBalancesDrago: (dragoDetails, api, relay) => {
     return {
       type: GET_TOKEN_BALANCES_DRAGO,
       payload: {
         dragoDetails,
         api,
+        relay
       }
     }
   },

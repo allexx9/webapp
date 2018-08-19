@@ -42,8 +42,6 @@ import {
   UPDATE_ELEMENT_LOADING,
   FETCH_HISTORY_TRANSACTION_LOGS,
   UPDATE_HISTORY_TRANSACTION_LOGS,
-  UPDATE_SELECTED_DRAGO_DETAILS,
-
 } from '../../_redux/actions/const'
 export * from './exchanges'
 

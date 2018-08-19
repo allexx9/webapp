@@ -20,6 +20,7 @@ const muiTheme = getMuiTheme({
     "primary1Color": '#054186',
 
   },
+  fontFamily: "'Muli', sans-serif",
   appBar: {
     height: 45,
     fontSize: "20px !important"

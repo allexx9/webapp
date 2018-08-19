@@ -86,11 +86,11 @@ class TableTranscationsHistory extends Component {
     //     return Math.max(a, b);
     // });
 
-    var max = ordersSorted.reduce(function (prev, current) {
+    let max = ordersSorted.reduce(function (prev, current) {
       return (Number(prev.orderAmount) > Number(current.orderAmount) ? prev : current)
     })
     return ordersSorted.map((order, key) => {
-      var amountGradient
+      let amountGradient
       price = order.orderPrice
       amount = order.orderAmount
 

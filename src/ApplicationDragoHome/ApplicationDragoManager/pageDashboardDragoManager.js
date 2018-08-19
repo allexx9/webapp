@@ -310,7 +310,7 @@ class PageDashboardDragoManager extends Component {
         });
       })
       .catch((error) => {
-        console.warn(error)
+        console.log(error)
       })
   }
 }

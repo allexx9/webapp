@@ -303,7 +303,7 @@ class PageDashboardDragoTrader extends Component {
         });
       })
       .catch(error => {
-        console.warn(`${sourceLogClass} -> Transactions list load error: ${error}`)
+        console.log(`${sourceLogClass} -> Transactions list load error: ${error}`)
       })
   }
 }

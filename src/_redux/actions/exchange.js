@@ -25,8 +25,27 @@ const exchange = {
       startDate
     }
     return {
-      type: TYPE_.FETCH_CANDLES_DATA,
+      type: TYPE_.FETCH_CANDLES_DATA_SINGLE,
       payload: payload
+    }
+  },
+  // Starts collecting chart data for Drago details pages
+  getPortfolioChartDataStart: (relay, networkId, startDate) => {
+    const payload = {
+      relay,
+      networkId,
+      startDate
+    }
+    return {
+      type: TYPE_.FETCH_CANDLES_DATA_PORTFOLIO_START,
+      payload: payload
+    }
+  },
+  // Stops collecting chart data for Drago details pages
+  getPortfolioChartDataStop: () => {
+    return {
+      type: TYPE_.FETCH_CANDLES_DATA_PORTFOLIO_STOP,
+
     }
   },
   getTradeHistoryLogs: (networkId, baseTokenAddress, quoteTokenAddress) => {

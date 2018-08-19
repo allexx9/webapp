@@ -88,7 +88,7 @@ class Interfaces {
           })
       })
       .catch((error) => {
-        console.warn('getAccounts', error);
+        console.log('getAccounts', error);
         return {}
       })
   }
@@ -145,12 +145,12 @@ class Interfaces {
                     })
                 })
                 .catch((error) => {
-                  console.warn(error)
+                  console.log(error)
                   return {}
                 })
             })
             .catch((error) => {
-              console.warn(error)
+              console.log(error)
               return {}
             })
         }
@@ -190,7 +190,7 @@ class Interfaces {
         networkStatus: MSG_NETWORK_STATUS_ERROR,
       }
       this._error = { ...currentState, ...stateUpdate }
-      console.warn('attachInterface', error)
+      console.log('attachInterface', error)
     }
   }
 
@@ -274,7 +274,7 @@ class Interfaces {
             console.log(`${sourceLogClass}: Successfully unsubscribed from eth_blockNumber.`);
           }
           if (error) {
-            console.warn(`${sourceLogClass}: Unsubscribe error ${error}.`)
+            console.log(`${sourceLogClass}: Unsubscribe error ${error}.`)
           }
         });
       } catch (error) {
@@ -288,7 +288,7 @@ class Interfaces {
             console.log(`${sourceLogClass}: Successfully unsubscribed from eth_blockNumber -> Subscription ID: ${subscriptionData}.`);
           })
           .catch((error) => {
-            console.warn(`${sourceLogClass}: Unsubscribe error ${error}.`)
+            console.log(`${sourceLogClass}: Unsubscribe error ${error}.`)
           });
       } catch (error) {
         console.log(error)

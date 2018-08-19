@@ -23,6 +23,7 @@ import {
 import {
   ERC20_TOKENS
 } from '../../_utils/tokens'
+import { BigNumber } from '../../../node_modules/bignumber.js/bignumber';
 
 
 const getTokensBalances$ = (dragoDetails, api) => {
@@ -37,23 +38,35 @@ const getTokensBalances$ = (dragoDetails, api) => {
     let allowedTokens = ERC20_TOKENS[api._rb.network.name]
     let dragoAssets = {}
     for (let token in allowedTokens) {
+      let balances = {
+        token: new BigNumber(0),
+        wrappers: {},
+        total: new BigNumber(0),
+      }
       if (allowedTokens[token].address !== "0x") {
+        let total = new BigNumber(0)
         try {
-          let balance = await poolApi.contract.drago.getTokenBalance(allowedTokens[token].address)
-          if (!balance.eq(0) ) {
-            dragoAssets[token] = allowedTokens[token]
-            dragoAssets[token].balance = balance
+          balances.token = await poolApi.contract.drago.getTokenBalance(allowedTokens[token].address)
+          // console.log(`${token} - ${allowedTokens[token].address} -> ${balances.token}`)
+          total = total.plus(balances.token)
+          if (typeof allowedTokens[token].wrappers !== 'undefined' ) {
+            for (let wrapper in allowedTokens[token].wrappers) {
+              balances.wrappers[wrapper] = await poolApi.contract.drago.getTokenBalance(wrapper.address)
+              total = total.plus(balances.wrappers[wrapper])
+            }
           }
+          // Only add tokens with balance > 0
+          if (!total.eq(0)) {
+            balances.total = total
+            dragoAssets[token] = allowedTokens[token]
+            dragoAssets[token].balances = balances
+          } 
         } catch (err) {
           console.log(err)
-          // dragoAssets[token].balance = 0
         }
       } else {
-        // dragoAssets[token].balance = 0
       }
     }
-    console.log(dragoAssets)
-
     return dragoAssets
   }
   return Observable
@@ -69,18 +82,29 @@ export const getTokensBalancesEpic = (action$) => {
       )
         .mergeMap(dragoAssets =>
           Observable.concat(
-            Observable.of(
-              Actions.drago.getAssetsPriceDataAction(
-                dragoAssets,
-                42,
-                ERC20_TOKENS['kovan'].WETH.address
-              )
-            ),
+            // Observable.of(
+            //   Actions.drago.getAssetsPriceDataAction(
+            //     dragoAssets,
+            //     42,
+            //     ERC20_TOKENS['kovan'].WETH.address
+            //   )
+            // ),
             Observable.of(
               Actions.drago.updateSelectedDragoAction(
                 { assets: Object.values(dragoAssets) }
               )
             ),
+            Observable.of(
+              Actions.tokens.priceTickersStart(
+                action.payload.relay, 
+                action.payload.api._rb.network.id)
+            ),
+            Observable.of(
+              Actions.exchange.getPortfolioChartDataStart(
+                action.payload.relay, 
+                action.payload.api._rb.network.id)
+            ),
+
           )
         )
         .catch(() => {

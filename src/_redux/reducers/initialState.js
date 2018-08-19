@@ -28,6 +28,25 @@ const QUOTE_TOKEN = ERC20_TOKENS[NETWORK_NAME].WETH
 // const ERCdEX = 'ERCdEX'
 // const Ethfinex = 'Ethfinex'
 
+const fakeTicker = () =>{
+  let arr = Array();
+  let now = (new Date).getTime();
+  let yesterday = (new Date).setDate((new Date).getDate() - 1)
+  let _15minEpoch = (15 * 60 * 1000)
+  for (let i = now; i > yesterday; i -= _15minEpoch) {
+    arr.push({
+      date: new Date(i),
+      low: 70.2,
+      high: 100,
+      open: 70,
+      close: 80,
+      volume: 1000,
+      epoch: i
+    })
+  }
+  return arr.reverse()
+}
+
 const initialState = {
   notifications: {
     engine: ''
@@ -140,7 +159,11 @@ const initialState = {
       details: {},
       transactions: [],
       assets: [],
-      assetsCharts: {},
+      assetsCharts: {
+        GRG: { 
+          data: fakeTicker()
+        }
+      },
     },
   },
   transactionsVault: {
@@ -170,7 +193,7 @@ const initialState = {
     rigoTokenBalance: null,
     warnMsg: '',
   },
-  user :{
+  user: {
     isManager: false
   }
 };

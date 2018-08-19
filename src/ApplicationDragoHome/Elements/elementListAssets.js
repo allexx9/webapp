@@ -32,6 +32,8 @@ class ElementListAssets extends PureComponent {
     assetsChart: PropTypes.object.isRequired,
   };
 
+  static sourceLogClass = this.constructor.name
+
   constructor(props, context) {
     super(props, context);
     const { list } = this.props
@@ -39,7 +41,7 @@ class ElementListAssets extends PureComponent {
     const sortedList = list.sortBy(item => item.symbol)
       .update(
         list => (sortDirection === SortDirection.DESC ? list : list.reverse()),
-    );
+      );
     const rowCount = list.size
     this.state = {
       disableHeader: false,
@@ -48,7 +50,7 @@ class ElementListAssets extends PureComponent {
       width: 600,
       hideIndexRow: false,
       overscanRowCount: 10,
-      rowHeight: 82,
+      rowHeight: 90,
       rowCount: rowCount,
       scrollToIndex: undefined,
       sortDirection,
@@ -71,13 +73,12 @@ class ElementListAssets extends PureComponent {
     const sortedList = list.sortBy(item => item.symbol)
       .update(
         list => (sortDirection === SortDirection.DESC ? list : list.reverse()),
-    );
+      );
     const rowCount = list.size
     this.setState({
       sortedList: sortedList,
       rowCount: rowCount,
     })
-    const sourceLogClass = this.constructor.name
     // console.log(`${sourceLogClass} -> UNSAFE_componentWillReceiveProps`);
   }
 
@@ -189,7 +190,7 @@ class ElementListAssets extends PureComponent {
                   <Column
                     width={350}
                     disableSort
-                    label="CHART 24H"
+                    label="MARKET 24H"
                     cellDataGetter={({ rowData }) => rowData}
                     dataKey="stats"
                     className={styles.exampleColumn}
@@ -211,14 +212,10 @@ class ElementListAssets extends PureComponent {
     if (typeof this.props.assetsChart[token.symbol] !== 'undefined') {
       const data = this.props.assetsChart[token.symbol].data
       if (data.length !== 0) {
-        // console.log(this.props.assetsChart[token.symbol])
-        // console.log(data)
         return (
-          //   <ChartBox
-          //   data={data}
-          //   loading={false}
-          // />
-          <AssetChart data={data} />
+          <div className={styles.chart}>
+            <AssetChart data={data} />
+          </div>
         )
       } else {
         return (
@@ -271,25 +268,25 @@ class ElementListAssets extends PureComponent {
       <Row>
         <Col xs={12}>
           <Row>
-          <Col xs={12} >
-          <div className={styles.holdingTitleText}>Amount</div>
-        </Col>
-        <Col xs={12}>
-          {toUnitAmount(new BigNumber(token.balance), token.decimals).toFixed(5)} <small className={styles.symbolLegendText}>{token.symbol.toUpperCase()}</small>
-        </Col>
+            <Col xs={12} >
+              <div className={styles.holdingTitleText}>Amount</div>
+            </Col>
+            <Col xs={12}>
+              {toUnitAmount(new BigNumber(token.balances.total), token.decimals).toFixed(5)} <small className={styles.symbolLegendText}>{token.symbol.toUpperCase()}</small>
+            </Col>
           </Row>
         </Col>
 
         <Col xs={12}>
           <Row>
-          <Col xs={12}>
-          <div className={styles.holdingTitleText}>Price</div>
-        </Col>
-        <Col xs={12}>
-          {(typeof this.props.assetsPrices[token.symbol] !== 'undefined')
-            ? new BigNumber(this.props.assetsPrices[token.symbol].priceEth).toFixed(5)
-            : <small>N/A</small>} <small className={styles.symbolLegendText}>ETH</small>
-        </Col>
+            <Col xs={12}>
+              <div className={styles.holdingTitleText}>Price</div>
+            </Col>
+            <Col xs={12}>
+              {(typeof this.props.assetsPrices[token.symbol] !== 'undefined')
+                ? new BigNumber(this.props.assetsPrices[token.symbol].priceEth).toFixed(5)
+                : <small>N/A</small>} <small className={styles.symbolLegendText}>ETH</small>
+            </Col>
           </Row>
         </Col>
       </Row>
@@ -322,7 +319,7 @@ class ElementListAssets extends PureComponent {
   renderValue(token) {
     if (typeof this.props.assetsPrices[token.symbol] !== 'undefined') {
       return (
-        <div className={styles.valueText}>{new BigNumber(this.props.assetsPrices[token.symbol].priceEth).mul(toUnitAmount(new BigNumber(token.balance), token.decimals).toFixed(5)).toFixed(5)} <small className={styles.symbolLegendText}>ETH</small></div>
+        <div className={styles.valueText}>{new BigNumber(this.props.assetsPrices[token.symbol].priceEth).mul(toUnitAmount(new BigNumber(token.balances.total), token.decimals).toFixed(5)).toFixed(5)} <small className={styles.symbolLegendText}>ETH</small></div>
       )
     }
     return (
@@ -425,7 +422,7 @@ class ElementListAssets extends PureComponent {
       .sortBy(item => item.timestamp)
       .update(
         list => (sortDirection === SortDirection.DESC ? list : list.reverse()),
-    );
+      );
   }
 
   _updateUseDynamicRowHeight(value) {

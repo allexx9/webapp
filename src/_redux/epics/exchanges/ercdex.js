@@ -45,8 +45,8 @@ import {
   RELAY_GET_ORDERS,
   UPDATE_CURRENT_TOKEN_PRICE,
   UPDATE_ELEMENT_LOADING,
-  UPDATE_MARKET_DATA,
-  FETCH_CANDLES_DATA,
+  CHART_MARKET_DATA_UPDATE,
+  FETCH_CANDLES_DATA_SINGLE,
   FETCH_FUND_ORDERS,
   UPDATE_FUND_ORDERS,
   UPDATE_SELECTED_DRAGO_DETAILS,
@@ -190,8 +190,8 @@ const getCandlesData$ = (relay, networkId, baseToken, quoteToken, startDate) => 
 // const getHistoricalPricesData$ = (networkId, baseToken, quoteToken, startDate) =>
 //   Observable.fromPromise(getHistoricalPricesDataFromERCdEX(networkId, baseToken.address, quoteToken.address, startDate))
 
-export const getCandlesDataEpic = (action$) => {
-  return action$.ofType(customRelayAction(FETCH_CANDLES_DATA))
+export const getCandlesSingleDataEpic = (action$) => {
+  return action$.ofType(customRelayAction(FETCH_CANDLES_DATA_SINGLE))
     .mergeMap((action) => {
       console.log(action)
       return Observable.concat(
@@ -205,7 +205,7 @@ export const getCandlesDataEpic = (action$) => {
         )
         .map(historical => {
           return {
-            type: UPDATE_MARKET_DATA,
+            type: CHART_MARKET_DATA_UPDATE,
             payload: historical
           }
         })

@@ -13,14 +13,14 @@ import {
   SET_MAKER_ADDRESS,
   TOKENS_TICKERS_UPDATE,
   UPDATE_ELEMENT_LOADING,
-  UPDATE_MARKET_DATA,
+  CHART_MARKET_DATA_UPDATE,
   UPDATE_FUND_ORDERS,
   UPDATE_SELECTED_RELAY,
   UPDATE_AVAILABLE_TRADE_TOKENS_PAIRS,
   UPDATE_CURRENT_TOKEN_PRICE,
   UPDATE_AVAILABLE_RELAYS,
-  ADD_DATAPOINT_MARKET_DATA,
-  INIT_MARKET_DATA
+  CHART_MARKET_DATA_ADD_DATAPOINT,
+  CHART_MARKET_DATA_INIT
 } from '../actions/const'
 
 
@@ -34,7 +34,7 @@ function exchangeReducer(state = initialState.exchange, action) {
         fundOrders: { ...state.fundOrders, ...action.payload }
       };
 
-    case UPDATE_MARKET_DATA:
+    case CHART_MARKET_DATA_UPDATE:
       if (action.payload !== "") {
         return {
           ...state,
@@ -46,7 +46,7 @@ function exchangeReducer(state = initialState.exchange, action) {
         }
       }
 
-    case INIT_MARKET_DATA:
+    case CHART_MARKET_DATA_INIT:
       if (action.payload !== "") {
         return {
           ...state,
@@ -58,7 +58,7 @@ function exchangeReducer(state = initialState.exchange, action) {
         }
       }
 
-    case ADD_DATAPOINT_MARKET_DATA:
+    case CHART_MARKET_DATA_ADD_DATAPOINT:
       let newChartData = [...state.chartData]
       if (action.payload.epoch === newChartData[newChartData.length - 1].epoch) {
         newChartData[newChartData.length - 1] = action.payload
@@ -76,7 +76,6 @@ function exchangeReducer(state = initialState.exchange, action) {
           chartData: newChartData
         }
       }   
-      // newChartData.pop()
       // console.log('***** NEW *****')
       newChartData.push(action.payload)
       return {
@@ -136,7 +135,6 @@ function exchangeReducer(state = initialState.exchange, action) {
         makerAddress: action.payload
       };
 
-
     case CANCEL_SELECTED_ORDER:
       return {
         ...state,
@@ -144,7 +142,6 @@ function exchangeReducer(state = initialState.exchange, action) {
       };
 
     case SET_ORDERBOOK_AGGREGATE_ORDERS:
-      console.log(action.payload)
       return {
         ...state,
         orderBookAggregated: action.payload

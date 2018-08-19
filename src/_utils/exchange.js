@@ -656,7 +656,7 @@ class Exchange {
         this.api = api
         return new api.eth.Contract(this._exchangeAbi, this._exchangeAddress)
       } catch (error) {
-        console.warn('Connection error: ', error)
+        console.log('Connection error: ', error)
         return error
       }
     } else {
@@ -670,7 +670,7 @@ class Exchange {
         this.api = api
         return new api.eth.Contract(this._exchangeAbi, this._exchangeAddress)
       } catch (error) {
-        console.warn('Connection error: ', error)
+        console.log('Connection error: ', error)
         return error
       }
     }

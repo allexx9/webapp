@@ -4,14 +4,13 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import ElementNotification from './elementNotification'
 import { Row, Col } from 'react-flexbox-grid'
-import AppBar from 'material-ui/AppBar';
 import classNames from 'classnames'
 import utils from '../_utils/utils'
 import { connect } from 'react-redux';
 import styles from './elementNotificationsDrawer.module.css';
 
 
-var timerId = null;
+let timerId = null;
 
 function mapStateToProps(state) {
   return {
@@ -48,8 +47,8 @@ class ElementNotificationsDrawer extends Component {
   };
 
   shouldComponentUpdate(nextProps, nextState) {
-    var stateUpdate = true
-    var propsUpdate = true
+    let stateUpdate = true
+    let propsUpdate = true
     // shouldComponentUpdate returns false if no need to update children, true if needed.
     // propsUpdate = (!utils.shallowEqual(this.props, nextProps))
     // stateUpdate = (!utils.shallowEqual(this.state, nextState))
@@ -65,7 +64,7 @@ class ElementNotificationsDrawer extends Component {
 
   componentDidMount() {
     const that = this
-    var runTick = () => {
+    let runTick = () => {
       timerId = setTimeout(function tick() {
         that.updateTransactionsQueue()
         timerId = setTimeout(tick, 2000); // (*)
@@ -111,19 +110,19 @@ class ElementNotificationsDrawer extends Component {
 
   renderNotifications = () => {
     const eventType = 'transaction'
-    var eventStatus = 'executed'
-    var primaryText, drgvalue, symbol = null
-    var secondaryText = []
-    var timeStamp = ''
-    var txHash = ''
+    let eventStatus = 'executed'
+    let primaryText, drgvalue, symbol = null
+    let secondaryText = []
+    let timeStamp = ''
+    let txHash = ''
     const { recentTransactions } = this.props
     if (recentTransactions.size === 0) {
       return <div className={styles.noRecentTransactions}><p className={styles.noTransacationsMsg}>No recent transactions.</p></div>
     }
     return Array.from(recentTransactions).reverse().map((transaction) => {
       secondaryText = []
-      var value = transaction.pop()
-      var key = transaction.pop()
+      let value = transaction.pop()
+      let key = transaction.pop()
       timeStamp = value.receipt ? utils.dateFromTimeStamp(value.timestamp) : utils.dateFromTimeStamp(value.timestamp)
       txHash = value.hash.length !== 0 ? txHash = value.hash : ""
       switch (value.action) {
@@ -244,7 +243,7 @@ class ElementNotificationsDrawer extends Component {
 
   render() {
     const { notificationsOpen, recentTransactions } = this.props
-    var drawerHeight = 72
+    let drawerHeight = 72
     if (recentTransactions.size !== 0) {
       drawerHeight = 72 * recentTransactions.size
     }

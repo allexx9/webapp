@@ -379,7 +379,7 @@ export class App extends Component {
                   return attachedInterface
                 })
                 .catch((error) => {
-                  console.warn('error subscription', error)
+                  console.log('error subscription', error)
                   this.setState({
                     appLoading: false,
                     isConnected: false,
@@ -403,7 +403,7 @@ export class App extends Component {
                   return attachedInterface
                 })
                 .catch((error) => {
-                  console.warn('error subscription', error)
+                  console.log('error subscription', error)
                   this.setState({
                     appLoading: false,
                     isConnected: false,
@@ -453,7 +453,7 @@ export class App extends Component {
                 return attachedInterface
               })
               .catch((error) => {
-                console.warn('error subscription', error)
+                console.log('error subscription', error)
                 this.setState({
                   appLoading: false,
                   isConnected: false,
@@ -630,7 +630,7 @@ export class App extends Component {
           return endpoint
         })
         .catch((error) => {
-          console.warn(`${sourceLogClass} -> ${error}`)
+          console.log(`${sourceLogClass} -> ${error}`)
           // Setting the balances to 0 if receiving an error from the endpoint. It happens with Infura.
           const endpoint = {
             prevBlockNumber: newBlockNumber.toFixed(),

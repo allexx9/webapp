@@ -697,7 +697,7 @@ class ApplicationExchangeHome extends Component {
       }
 
     } catch (error) {
-      console.warn(error)
+      console.log(error)
     }
   }
 

@@ -18,8 +18,8 @@ import { connect } from 'react-redux';
 const muiTheme = getMuiTheme({
   palette: {
     "primary1Color": '#054186',
-
   },
+  fontFamily: "'Muli', sans-serif",
   appBar: {
     height: 45,
     fontSize: "20px !important"

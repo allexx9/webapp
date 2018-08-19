@@ -110,12 +110,12 @@ class PageFundDetailsDragoManager extends Component {
           console.log(`${sourceLogClass}: Successfully unsubscribed from contract.`);
         }
         if (error) {
-          console.warn(`${sourceLogClass}: Unsubscribe error ${error}.`)
+          console.log(`${sourceLogClass}: Unsubscribe error ${error}.`)
         }
       });
     }
     catch (error) {
-      console.warn(`${sourceLogClass}: Unsubscribe error ${error}.`)
+      console.log(`${sourceLogClass}: Unsubscribe error ${error}.`)
     }
   }
 
@@ -175,11 +175,11 @@ class PageFundDetailsDragoManager extends Component {
     switch (type) {
       case 'tx':
         return (
-          <a key={"addressether" + address1} href={this.props.endpoint.networkInfo.etherscan + type + '/' + address1} target='_blank'><Search className={styles.copyAddress} /></a>
+          <a key={"addressether" + address1} href={this.props.endpoint.networkInfo.etherscan + type + '/' + address1} target='_blank' rel="noopener noreferrer"><Search className={styles.copyAddress} /></a>
         );
       case 'token':
         return (
-          <a key={"addressether" + address1} href={this.props.endpoint.networkInfo.etherscan + 'token' + '/' + address1 + '?a=' + address2} target='_blank'><Search className={styles.copyAddress} /></a>
+          <a key={"addressether" + address1} href={this.props.endpoint.networkInfo.etherscan + 'token' + '/' + address1 + '?a=' + address2} target='_blank' rel="noopener noreferrer"><Search className={styles.copyAddress} /></a>
         );
     }
 
@@ -603,7 +603,7 @@ class PageFundDetailsDragoManager extends Component {
             .catch((error) => {
               // Sometimes Infura returns null for api.eth.getBlockByNumber, therefore we are assigning a fake timestamp to avoid
               // other issues in the app.
-              console.warn(error)
+              console.log(error)
               log.timestamp = new Date()
               return log
             })

@@ -38,7 +38,7 @@ export default class FundHeader extends Component {
       }
     }
 
-    const { fundDetails, actions, fundType } = this.props
+    const { fundDetails, fundType } = this.props
     if (!fundDetails.address) {
       return <p>empty</p>;
     } return (

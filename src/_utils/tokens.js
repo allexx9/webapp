@@ -24,7 +24,7 @@ export const ERC20_TOKENS = {
     GNT: {
       symbol: 'GNT',
       symbolTicker: {
-        [Ethfinex]: 'GNT'
+        Ethfinex: 'GNT'
       },
       address: '0xef7fff64389b814a946f3e92105513705ca6b990',
       decimals: 18,
@@ -39,41 +39,24 @@ export const ERC20_TOKENS = {
       decimals: 18,
       name: 'MakerDAO'
     },
-    // For testing. Remember to remove ETH and USDT from kovan
-    // ETH: {
-    //   symbol: 'ETH',
-    //   symbolTicker: {
-    //     Ethfinex: 'ETH'
-    //   },
-    //   address: '0x',
-    //   decimals: 18,
-    //   name: 'Ether',
-    //   wrappers: {
-    //     Ethfinex: {
-    //       symbol: 'ETHW',
-    //       decimals: 18,
-    //       address: "0x965808e7F815CfffD4c018ef2Ba4C5A65EBa087e",
-    //       name: 'ETHWrapper',
-    //     }
-    //   }
-    // },
-    // USDT: {
-    //   symbol: 'USDT',
-    //   symbolTicker: {
-    //     Ethfinex: 'USD'
-    //   },
-    //   address: '0x0736d0c130b2eAD47476cC262dbed90D7C4eeABD',
-    //   decimals: 18,
-    //   name: 'Tether USD',
-    //   wrappers: {
-    //     Ethfinex: {
-    //       symbol: 'USDT',
-    //       decimals: 18,
-    //       address: "0x83E42e6d1ac009285376340ef64BaC1C7d106C89",
-    //       name: 'USDTWrapper',
-    //     }
-    //   }
-    // }
+    USDT: {
+      symbol: 'USDT',
+      symbolTicker: {
+        Ethfinex: 'USD'
+      },
+      address: '0x3487A04103859A6d95ba0bAFdCf1Ca521490176E',
+      decimals: 18,
+      name: 'Tether USD',
+    },
+    GRG: {
+      symbol: 'GRG',
+      symbolTicker: {
+        Ethfinex: 'GRG'
+      },
+      address: '0x9F121AFBc98A7a133fbb31fE975205f39e8f08D2',
+      decimals: 6,
+      name: 'GRG Token',
+    }
   },
   mainnet: {
     WETH: {
@@ -92,7 +75,38 @@ export const ERC20_TOKENS = {
       },
       address: '0xe41d2489571d322189246dafa5ebde1f4699f498',
       decimals: 18,
-      name: '0x Protocol Token'
+      name: '0x Protocol Token',
+      wrappers: {
+        Ethfinex: {
+          symbol: 'ZRXW',
+          decimals: 18,
+          address: "0xd7a7afe4b20611f2c839ec5cd340f27fe08c949c",
+          name: 'ZRX Wrapper',
+        }
+      }
+    },
+    ETHW: {
+      symbol: 'WETH',
+      address: '0x768C42FF6F5805bD2631AC7Cc9eaBE3AF17b4b41',
+      decimals: 18,
+      name: 'Wrapped Ether EFX',
+    },
+    ETH: {
+      symbol: 'ETH',
+      symbolTicker: {
+        Ethfinex: 'ETH'
+      },
+      address: '0x',
+      decimals: 18,
+      name: 'Ether',
+      wrappers: {
+        Ethfinex: {
+          symbol: 'ETHW',
+          decimals: 18,
+          address: "0x768C42FF6F5805bD2631AC7Cc9eaBE3AF17b4b41",
+          name: 'ETH Wrapper',
+        }
+      }
     },
     GNT: {
       symbol: 'GNT',
@@ -111,6 +125,32 @@ export const ERC20_TOKENS = {
       address: '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2',
       decimals: 18,
       name: 'MakerDAO'
+    },
+    USDT: {
+      symbol: 'USDT',
+      symbolTicker: {
+        Ethfinex: 'USD'
+      },
+      address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+      decimals: 6,
+      name: 'Tether USD',
+      wrappers: {
+        Ethfinex: {
+          symbol: 'USDT',
+          decimals: 6,
+          address: "0x4c24a4dfb0c67916d47b4726958eb66b63bdd268",
+          name: 'USDTWrapper',
+        }
+      }
+    },
+    GRG: {
+      symbol: 'GRG',
+      symbolTicker: {
+        Ethfinex: 'GRG'
+      },
+      address: '0xD34cf65739954EB99D284fD20aB4f88c64e4d67D',
+      decimals: 18,
+      name: 'GRG Token',
     }
   },
   ropsten: {
@@ -128,23 +168,23 @@ export const ERC20_TOKENS = {
       symbolTicker: {
         Ethfinex: 'ZRX'
       },
-      address: '0xa8e9fa8f91e5ae138c74648c9c304f1c75003a8d',
+      address: '0xA8E9Fa8f91e5Ae138C74648c9C304F1C75003A8D',
       decimals: 18,
-      name: '0x Protocol Token'
+      name: '0x Protocol Token',
+      wrappers: {
+        Ethfinex: {
+          symbol: 'ZRXW',
+          decimals: 18,
+          address: "0xFF32E76EAdc11Fc816A727980E92805D237CDB28",
+          name: 'ZRX Wrapper',
+        }
+      }
     },
     ETHW: {
       symbol: 'WETH',
-      address: '0xc778417E063141139Fce010982780140Aa0cD5Ab',
+      address: '0x965808e7F815CfffD4c018ef2Ba4C5A65EBa087e',
       decimals: 18,
-      name: 'Wrapped Ether EF',
-      wrappers: {
-        Ethfinex: {
-          symbol: 'ETHW',
-          decimals: 18,
-          address: "0x965808e7F815CfffD4c018ef2Ba4C5A65EBa087e",
-          name: 'ETHWrapper',
-        }
-      }
+      name: 'Wrapped Ether EFX',
     },
     ETH: {
       symbol: 'ETH',
@@ -159,7 +199,7 @@ export const ERC20_TOKENS = {
           symbol: 'ETHW',
           decimals: 18,
           address: "0x965808e7F815CfffD4c018ef2Ba4C5A65EBa087e",
-          name: 'ETHWrapper',
+          name: 'ETH Wrapper',
         }
       }
     },
@@ -169,14 +209,31 @@ export const ERC20_TOKENS = {
         Ethfinex: 'USD'
       },
       address: '0x0736d0c130b2eAD47476cC262dbed90D7C4eeABD',
-      decimals: 18,
+      decimals: 6,
       name: 'Tether USD',
       wrappers: {
         Ethfinex: {
-          symbol: 'USDT',
-          decimals: 18,
+          symbol: 'USDTW',
+          decimals: 6,
           address: "0x83E42e6d1ac009285376340ef64BaC1C7d106C89",
-          name: 'USDTWrapper',
+          name: 'USDT Wrapper',
+        }
+      }
+    },
+    GRG: {
+      symbol: 'GRG',
+      symbolTicker: {
+        Ethfinex: 'GRG'
+      },
+      address: '0x6FA8590920c5966713b1a86916f7b0419411e474',
+      decimals: 18,
+      name: 'GRG Token',
+      wrappers: {
+        Ethfinex: {
+          symbol: 'GRGW',
+          decimals: 18,
+          address: "0x5959f2036608d693B4d085020ACAdBBf664C793E",
+          name: 'GRG Wrapper',
         }
       }
     }

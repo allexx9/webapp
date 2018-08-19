@@ -7,7 +7,6 @@ import { toUnitAmount } from './format'
 import palette from './palete'
 import Web3 from 'web3'
 import {
-  ERC20_TOKENS,
   ERCdEX,
   Ethfinex,
 } from './const'
@@ -27,6 +26,16 @@ class utilities {
     } catch (err) {
       return new BigNumber(web3.utils.fromWei(number)).toFixed(3)
     }
+  }
+
+  ethfinexTickersToArray = (assets) => {
+    let assetArray = Array(0)
+    for (let token in assets) {
+      if(!['ETH','WETH', 'USDT', 'WETH'].includes(assets[token].symbol)) {
+        assetArray.push(`t${assets[token].symbolTicker.Ethfinex}ETH`)
+      }
+    }
+    return assetArray
   }
 
   formatToWei = (number) => {
@@ -93,7 +102,7 @@ class utilities {
       // console.log(asset.symbol)
       if (typeof assetsPrices[asset.symbol] !== 'undefined') {
         if (typeof assetsPrices[asset.symbol].priceEth !== 'undefined') {
-          const value = new BigNumber(assetsPrices[asset.symbol].priceEth).mul(toUnitAmount(new BigNumber(asset.balance), asset.decimals).toFixed(5))
+          const value = new BigNumber(assetsPrices[asset.symbol].priceEth).mul(toUnitAmount(new BigNumber(asset.balances.total), asset.decimals).toFixed(5))
           return total.plus(value)
         }
       } else {
@@ -110,7 +119,7 @@ class utilities {
     const data = dragoAssetsList.map((asset) => {
       if (typeof assetsPrices[asset.symbol] !== 'undefined') {
         if (typeof assetsPrices[asset.symbol].priceEth !== 'undefined') {
-          const value = new BigNumber(assetsPrices[asset.symbol].priceEth).mul(toUnitAmount(new BigNumber(asset.balance), asset.decimals).toFixed(5))
+          const value = new BigNumber(assetsPrices[asset.symbol].priceEth).mul(toUnitAmount(new BigNumber(asset.balances.total), asset.decimals).toFixed(5))
           labels.push(asset.symbol)
           return value.toFixed(5)
         }
@@ -205,8 +214,7 @@ class utilities {
   }
 
   getTransactionsVaultOptV2 = (api, dragoAddress, accounts, options = { balance: true, supply: false, limit: 20, trader: true }) => {
-    const sourceLogClass = this.constructor.name
-    let resultsAll = null
+    // const sourceLogClass = this.constructor.name
     const poolApi = new PoolApi(api)
     let ethvalue = 0
     let drgvalue = 0
@@ -255,7 +263,6 @@ class utilities {
     // const hexDragoAddress = '0x' + dragoAddress.substr(2).padStart(64,'0')
     let hexAccounts = null
 
-    let balances = null
     // Formatting accounts address
     if (accounts !== null) {
       hexAccounts = accounts.map((account) => {
@@ -508,7 +515,7 @@ class utilities {
                       .catch((error) => {
                         // Sometimes Infura returns null for api.eth.getBlockByNumber, therefore we are assigning a fake timestamp to avoid
                         // other issues in the app.
-                        console.warn(error)
+                        console.log(error)
                         log.timestamp = new Date()
                         return log
                       })
@@ -590,7 +597,6 @@ class utilities {
   **/
   getTransactionsDragoOptV2 = (api, dragoAddress, accounts, options = { balance: true, supply: false, limit: 20, trader: true }) => {
     // const sourceLogClass = this.constructor.name
-    let resultsAll = null
     const poolApi = new PoolApi(api)
     let ethvalue = 0
     let drgvalue = 0
@@ -651,7 +657,6 @@ class utilities {
     // const hexDragoAddress = '0x' + dragoAddress.substr(2).padStart(64,'0')
     let hexAccounts = null
 
-    let balances = null
     // Formatting accounts address
     if (accounts !== null) {
       hexAccounts = accounts.map((account) => {
@@ -980,9 +985,9 @@ class utilities {
     return dragoDetails
   }
 
-  getDragoDetails = async (dragoDetails, props, api) => {
+  getDragoDetails = async (dragoDetails, props, api, relay) => {
 
-    const { endpoint: { accounts: accounts }, dispatch, endpoint } = props
+    const { endpoint: { accounts: accounts }, dispatch } = props
 
     //
     // Initializing Drago API
@@ -1003,34 +1008,12 @@ class utilities {
     //
     await poolApi.contract.drago.init(dragoAddress)
 
-    // //
-    // // Getting Drago assets
-    // //
-    // const getTokensBalances = async () => {
-    //   let dragoAssets = ERC20_TOKENS[api._rb.network.name]
-    //   for (let token in dragoAssets) {
-    //     if (ERC20_TOKENS[api._rb.network.name][token].address !== "0x") {
-    //       try {
-    //         dragoAssets[token].balance = await poolApi.contract.drago.getTokenBalance(ERC20_TOKENS[api._rb.network.name][token].address)
-    //       } catch (err) {
-    //         console.log(err)
-    //         dragoAssets[token].balance = 0
-    //       }
-    //     } else {
-    //       dragoAssets[token].balance = 0
-    //     }
-    //   }
-    //   return dragoAssets
-    // }
+    //
+    // Getting Drago assets
+    //
 
-    // getTokensBalances().then(dragoAssets => {
-    //   dispatch(Actions.drago.getAssetsPriceDataAction(dragoAssets, endpoint.networkInfo.id, ERC20_TOKENS[endpoint.networkInfo.name].WETH.address))
-    //   dispatch(Actions.drago.updateSelectedDragoAction({ assets: Object.values(dragoAssets) }))
-    // })
-
-    dispatch(Actions.drago.getTokenBalancesDrago(dragoDetails, api))
-
-
+    // dispatch(Actions.drago.getTokenBalancesDrago(dragoDetails, api, relay))
+    
     //
     // Gettind drago data, creation date, supply, ETH balances
     //
@@ -1071,10 +1054,10 @@ class utilities {
       dragoWETHBalance
     }
 
-    dispatch(Actions.drago.updateSelectedDragoAction({
-      details
-    })
-    )
+    // dispatch(Actions.drago.updateSelectedDragoAction({
+    //   details
+    // })
+    // )
 
     //
     // Getting balance for each user account
@@ -1187,7 +1170,7 @@ class utilities {
     return [dragoETHBalance, dragoWETHBalance, dragoZRXBalance]
   }
 
-  shallowEqual(objA: mixed, objB: mixed): boolean {
+  shallowEqual(objA, objB) {
     // const sourceLogClass = this.constructor.name
     if (objA === objB) {
       // console.log(`${sourceLogClass} -> objA === objB`)

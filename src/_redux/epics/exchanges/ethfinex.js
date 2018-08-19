@@ -43,12 +43,11 @@ import {
   RELAY_GET_ORDERS,
   UPDATE_CURRENT_TOKEN_PRICE,
   // UPDATE_ELEMENT_LOADING,
-  // UPDATE_MARKET_DATA,
-  INIT_MARKET_DATA,
-  ADD_DATAPOINT_MARKET_DATA,
+  // CHART_MARKET_DATA_UPDATE,
+  CHART_MARKET_DATA_INIT,
+  CHART_MARKET_DATA_ADD_DATAPOINT,
   FETCH_FUND_ORDERS_STOP,
-
-  FETCH_CANDLES_DATA,
+  FETCH_CANDLES_DATA_SINGLE,
   ADD_ERROR_NOTIFICATION,
   FETCH_FUND_ORDERS,
   UPDATE_FUND_ORDERS
@@ -65,18 +64,31 @@ const customRelayAction = (action) => {
 // FETCH HISTORICAL MARKET DATA FOR A SPECIFIC TRADING PAIR
 //
 
-const candelsWebsocket$ = (relay, networkId, baseToken, quoteToken) => {
+const candlesSingleWebsocket$ = (relay, networkId, baseToken, quoteToken) => {
   return Observable.create(observer => {
     // const relay = {
     //   name: 'Ethfinex'
     // }
-    console.log('candels')
+    console.log('candles')
     const exchange = new Exchange(relay.name, networkId, 'ws')
     const websocket = exchange.getHistoricalPricesData(
-      utils.getTockenSymbolForRelay(relay.name, baseToken),
-      utils.getTockenSymbolForRelay(relay.name, quoteToken),
+      // utils.getTockenSymbolForRelay(relay.name, baseToken),
+      // utils.getTockenSymbolForRelay(relay.name, quoteToken),
+      'test',
+      'test',
       '1m'
     )
+    const baseTokenSymbol = utils.getTockenSymbolForRelay(relay.name, baseToken)
+    const quoteTokenSymbol = utils.getTockenSymbolForRelay(relay.name, quoteToken)
+    websocket.addEventListener('open', () => {
+      let msg = JSON.stringify({
+        event: `subscribe`,
+        channel: `candles`,
+        key: `trade:1m:t${baseTokenSymbol}${quoteTokenSymbol}`
+      })
+      websocket.send(msg);
+    })
+
     websocket.onmessage = (msg) => {
       // console.log('WebSocket message.');
       // console.log(msg)
@@ -98,7 +110,7 @@ const candelsWebsocket$ = (relay, networkId, baseToken, quoteToken) => {
 
 }
 
-const updateCandles = (tickerOutput) => {
+const updateSingleCandles = (tickerOutput) => {
   let ticker = JSON.parse(tickerOutput)
   // console.log(ticker)
   // console.log(Array.isArray(ticker))
@@ -117,7 +129,7 @@ const updateCandles = (tickerOutput) => {
       return entry
     })
     return {
-      type: INIT_MARKET_DATA,
+      type: CHART_MARKET_DATA_INIT,
       payload: candles.reverse()
     }
 
@@ -137,25 +149,24 @@ const updateCandles = (tickerOutput) => {
     }
 
     return {
-      type: ADD_DATAPOINT_MARKET_DATA,
+      type: CHART_MARKET_DATA_ADD_DATAPOINT,
       payload: candles
     }
   }
   return {
-    type: ADD_DATAPOINT_MARKET_DATA,
+    type: CHART_MARKET_DATA_ADD_DATAPOINT,
     payload: ""
   }
-
 }
 
 
-export const getCandlesDataEpic = (action$) => {
-  return action$.ofType(customRelayAction(FETCH_CANDLES_DATA))
+export const getCandlesSingleDataEpic = (action$) => {
+  return action$.ofType(customRelayAction(FETCH_CANDLES_DATA_SINGLE))
     .mergeMap((action) => {
       console.log(action)
       return Observable.concat(
         // Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: true } }),
-        candelsWebsocket$(
+        candlesSingleWebsocket$(
           action.payload.relay,
           action.payload.networkId,
           action.payload.baseToken,
@@ -181,7 +192,7 @@ export const getCandlesDataEpic = (action$) => {
             return val
           })
           .map(historical => {
-            return updateCandles(historical)
+            return updateSingleCandles(historical)
           }),
         // Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: false } }),
       )
@@ -311,47 +322,47 @@ export const orderBookEpic = (action$, state$) => {
 //
 
 const getAccountOrdersFromRelay$ = (relay, networkId, account, baseToken, quoteToken) => {
-    const exchange = new Exchange(relay.name, networkId)
-    return Observable.fromPromise(exchange.getAccountOrders(account, baseToken, quoteToken))
+  const exchange = new Exchange(relay.name, networkId)
+  return Observable.fromPromise(exchange.getAccountOrders(account, baseToken, quoteToken))
 }
-  
+
 
 export const getAccountOrdersEpic = (action$) => {
   return action$.ofType(customRelayAction(FETCH_FUND_ORDERS))
     .mergeMap((action) => {
       return Observable.concat(
         // Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: true }}),
-          
+
         Observable
-        .timer(0, 5000)
-        .takeUntil(
-          action$.ofType(customRelayAction(FETCH_FUND_ORDERS_STOP))
-        )
-        .exhaustMap(() =>
-          getAccountOrdersFromRelay$(
-            action.payload.relay,
-            action.payload.networkId,
-            action.payload.account,
-            action.payload.quoteToken,
-            action.payload.baseToken,
+          .timer(0, 5000)
+          .takeUntil(
+            action$.ofType(customRelayAction(FETCH_FUND_ORDERS_STOP))
           )
-          .map(orders => {
-            console.log(orders)
-            return {
-              type: UPDATE_FUND_ORDERS,
-              payload: {
-                open: orders
+          .exhaustMap(() =>
+            getAccountOrdersFromRelay$(
+              action.payload.relay,
+              action.payload.networkId,
+              action.payload.account,
+              action.payload.quoteToken,
+              action.payload.baseToken,
+            )
+              .map(orders => {
+                console.log(orders)
+                return {
+                  type: UPDATE_FUND_ORDERS,
+                  payload: {
+                    open: orders
+                  }
+                }
+              })
+              .catch(() => {
+                return Observable.of({
+                  type: ADD_ERROR_NOTIFICATION,
+                  payload: 'Error fetching account orders.'
+                })
               }
-            }
-          })
-          .catch(() => {
-            return Observable.of({
-              type: ADD_ERROR_NOTIFICATION,
-              payload: 'Error fetching account orders.'
-            })
-          }
+              )
           )
-        )
         ,
         // Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: false }}),
       )

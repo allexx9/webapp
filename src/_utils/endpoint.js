@@ -83,7 +83,7 @@ class Endpoint {
         api._rb.network = this._network
         return api
       } catch (error) {
-        console.warn('Connection error: ', error)
+        console.log('Connection error: ', error)
         return error
       }
     } else {
@@ -96,7 +96,7 @@ class Endpoint {
         api._rb.network = this._network
         return api
       } catch (error) {
-        console.warn('Connection error: ', error)
+        console.log('Connection error: ', error)
         return error
       }
     }

@@ -116,8 +116,10 @@ export const getTickers = {
   Ethfinex: (networkId = 1, symbols) => {
     const options = {
       method: 'GET',
-      url: `${SupportedExchanges.Ethfinex.http[NETWORKS_ID[networkId]]}/v2/tickers?symbols=${symbols}`,
-      qs: {},
+      url: `${SupportedExchanges.Ethfinex.http[NETWORKS_ID[networkId]]}/v2/tickers`,
+      qs: {
+        symbols: `${symbols},tETHUSD`,
+      },
       json: true
     }
     return options

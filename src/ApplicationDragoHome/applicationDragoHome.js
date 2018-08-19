@@ -47,8 +47,8 @@ class ApplicationDragoHome extends Component {
   activeElement = null
 
   shouldComponentUpdate(nextProps, nextState){    
-    var stateUpdate = true
-    var propsUpdate = true
+    let stateUpdate = true
+    let propsUpdate = true
     // shouldComponentUpdate returns false if no need to update children, true if needed.
     propsUpdate = (!utils.shallowEqual(this.props, nextProps))
     stateUpdate = (!utils.shallowEqual(this.state.loading, nextState.loading))
@@ -79,7 +79,7 @@ class ApplicationDragoHome extends Component {
   componentDidUpdate() {
     // The following code is needed to fix a bug in tables. The scrolling posision is reset at every component re-render.
     // Setting the page scroll position
-    console.log(`${this.sourceLogClass} -> componentDidUpdate`);
+    // console.log(`${this.sourceLogClass} -> componentDidUpdate`);
     // const element = ReactDOM.findDOMNode(this);
     const element = this.node
     if (element !== null) {
