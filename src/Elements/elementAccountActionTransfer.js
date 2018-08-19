@@ -218,7 +218,7 @@ class ElementAccountActionTransfer extends Component {
         }
         break;
       case GRG:
-        if (bn.gt(account.rigoTokenBalance.replace(/,/g, ''))) {
+        if (bn.gt(account.grgBalance.replace(/,/g, ''))) {
           amountError = ERRORS.invalidTotal
         }
         break;

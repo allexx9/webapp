@@ -1,7 +1,6 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
 import {
-  UPDATE_INTERFACE,
   UPDATE_SELECTED_VAULT_DETAILS,
   IS_MANAGER,
   UPDATE_TRANSACTIONS_VAULT_HOLDER,
@@ -10,6 +9,7 @@ import {
 } from './const'
 import drago from './drago'
 import transactions from './transactions'
+import endpoint from './endpoint'
 import exchange from './exchange'
 import tokens from './tokens'
 
@@ -18,6 +18,8 @@ class actions {
   drago = drago
 
   exchange = exchange
+
+  endpoint = endpoint
 
   transactions = transactions
 
@@ -38,15 +40,6 @@ class actions {
       return {
         type: UPDATE_TRANSACTIONS_VAULT_MANAGER,
         payload: results
-      }
-    }
-  }
-
-  endpoint = {
-    updateInterfaceAction: (endpoint) => {
-      return {
-        type: UPDATE_INTERFACE,
-        payload: endpoint
       }
     }
   }

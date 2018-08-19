@@ -27,7 +27,7 @@ export default class SelectTokenItem extends Component {
         tokenName = 'Ethereum'
         break;
       case GRG:
-        balance = account.rigoTokenBalance;
+        balance = account.grgBalance;
         tokenName = 'RigoBlock'
         break;
       default:

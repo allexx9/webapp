@@ -1,4 +1,4 @@
-// // Copyright 2016-2017 Rigo Investment Sagl.
+// Copyright 2016-2017 Rigo Investment Sagl.
 
 // import { Observable } from 'rxjs';
 import { Observable } from 'rxjs/Observable'

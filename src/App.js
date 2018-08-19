@@ -228,59 +228,7 @@ export class App extends Component {
   checkMetaMaskUnlocked = () => {
     if (typeof window.web3 !== 'undefined') {
       const web3 = window.web3
-      const { endpoint } = this.props
-      let newEndpoint = { ...endpoint }
-      let newAccounts = [].concat(endpoint.accounts)
-      web3.eth.getAccounts()
-        .then((accountsMetaMask) => {
-          // If MetaMask is unlocked then remove from accounts list.
-          if (accountsMetaMask.length === 0) {
-            // Checking if MetaMask was already locked in order to avoid unnecessary update of the state
-            let metaMaskAccountIndex = endpoint.accounts.findIndex(account => {
-              return (account.source === 'MetaMask')
-            });
-            if (metaMaskAccountIndex !== -1) {
-              newAccounts.splice(metaMaskAccountIndex, 1)
-              newEndpoint.accounts = newAccounts
-              this.props.dispatch(Actions.endpoint.updateInterfaceAction(newEndpoint))
-            }
-          } else {
-            // Checking if the MetaMask account is already in accounts list.
-            let metaMaskAccountIndex = endpoint.accounts.findIndex(account => {
-              return (account.address === accountsMetaMask[0])
-            });
-            // If it is NOT then add it to the accounts list.
-            if (metaMaskAccountIndex < 0) {
-              const networkId = this.props.endpoint.networkInfo.id
-              const blockchain = new Interfaces(this._api, networkId)
-              return blockchain.attachInterfaceInfuraV2()
-                .then((result) => {
-                  if (result.accounts.length !== 0) {
-                    newAccounts.push(result.accounts[0])
-                  }
-                  newEndpoint.accounts = newAccounts
-                  this.props.dispatch(Actions.endpoint.updateInterfaceAction(newEndpoint))
-                  return result
-                })
-            }
-          }
-          return endpoint.accounts
-        }
-        )
-        .then(() => {
-          this.tdIsConnected = setTimeout(this.checkMetaMaskUnlocked, isMetaMaskUnlockedTimeout)
-        })
-        .catch(() => {
-          let metaMaskAccountIndex = endpoint.accounts.findIndex(account => {
-            return (account.source === 'MetaMask')
-          });
-          if (metaMaskAccountIndex !== -1) {
-            newAccounts.splice(metaMaskAccountIndex, 1)
-            newEndpoint.accounts = newAccounts
-            this.props.dispatch(Actions.endpoint.updateInterfaceAction(newEndpoint))
-          }
-          this.tdIsConnected = setTimeout(this.checkMetaMaskUnlocked, isMetaMaskUnlockedTimeout)
-        })
+      this.props.dispatch(Actions.endpoint.checkMetaMaskIsUnlocked(this._api, web3))
     }
   }
 
@@ -548,10 +496,10 @@ export class App extends Component {
       Promise
         .all(promisesBalances)
         .then((results) => {
-          // Splitting the the result array between ethBalances and rigoTokenBalances
+          // Splitting the the result array between ethBalances and grgBalances
           const halfLength = Math.ceil(results.length / 2)
           const ethBalances = results.splice(0, halfLength)
-          const rigoTokenBalances = results
+          const grgBalances = results
           const prevAccounts = [].concat(endpoint.accounts)
           prevAccounts.map((account, index) => {
             // Checking ETH balance
@@ -579,11 +527,11 @@ export class App extends Component {
               }
             }
             // Checking GRG balance
-            const newRigoTokenBalance = utils.formatFromWei(rigoTokenBalances[index])
-            if ((account.rigoTokenBalance !== newRigoTokenBalance) && prevBlockNumber !== 0) {
+            const newgrgBalance = utils.formatFromWei(grgBalances[index])
+            if ((account.grgBalance !== newgrgBalance) && prevBlockNumber !== 0) {
               console.log(`${account.name} balance changed.`)
               let secondaryText = []
-              let balDifference = new BigNumber(account.rigoTokenBalance.toString()).minus(new BigNumber(newRigoTokenBalance.toString()))
+              let balDifference = new BigNumber(account.grgBalance.toString()).minus(new BigNumber(newgrgBalance.toString()))
               if ((balDifference).gt(0)) {
                 console.log(`${sourceLogClass} -> You transferred ${balDifference.toFixed(4)} GRG!`)
                 secondaryText[0] = `You transferred ${balDifference.toFixed(4)} GRG!`
@@ -604,24 +552,24 @@ export class App extends Component {
             }
             return null
           })
-          return [ethBalances, rigoTokenBalances]
+          return [ethBalances, grgBalances]
         })
         .then((balances) => {
           const ethBalances = balances[0]
-          const rigoTokenBalances = balances[1]
+          const grgBalances = balances[1]
           const endpoint = {
             prevBlockNumber: newBlockNumber.toFixed(),
             loading: false,
             networkError: NETWORK_OK,
             networkStatus: MSG_NETWORK_STATUS_OK,
             accountsBalanceError: false,
-            rigoTokenBalance: rigoTokenBalances.reduce((total, balance) => total.add(balance), new BigNumber(0)),
+            grgBalance: grgBalances.reduce((total, balance) => total.add(balance), new BigNumber(0)),
             ethBalance: ethBalances.reduce((total, balance) => total.add(balance), new BigNumber(0)),
             accounts: [].concat(accounts.map((account, index) => {
               const ethBalance = ethBalances[index];
               account.ethBalance = utils.formatFromWei(ethBalance)
-              const rigoTokenBalance = rigoTokenBalances[index];
-              account.rigoTokenBalance = utils.formatFromWei(rigoTokenBalance)
+              const grgBalance = grgBalances[index];
+              account.grgBalance = utils.formatFromWei(grgBalance)
               return account;
             })
             )
@@ -639,10 +587,10 @@ export class App extends Component {
             networkStatus: MSG_NETWORK_STATUS_ERROR,
             accountsBalanceError: true,
             ethBalance: new BigNumber(0),
-            rigoTokenBalance: new BigNumber(0),
+            grgBalance: new BigNumber(0),
             accounts: [].concat(accounts.map((account) => {
               account.ethBalance = utils.formatFromWei(new BigNumber(0))
-              account.rigoTokenBalance = utils.formatFromWei(new BigNumber(0))
+              account.grgBalance = utils.formatFromWei(new BigNumber(0))
               return account;
             })
             )

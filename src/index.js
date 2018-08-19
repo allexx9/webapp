@@ -15,7 +15,7 @@ import adapter from 'redux-localstorage/lib/adapters/localStorage';
 import filter from 'redux-localstorage-filter';
 import logger from 'redux-logger'
 import { createEpicMiddleware } from 'redux-observable';
-import { rootEpic } from './_redux/epics/root';
+import { rootEpic } from './_redux/epics/root_epics';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import * as ACTIONS  from './_redux/actions/const'
 import utils from './_utils/utils'

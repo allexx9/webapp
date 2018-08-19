@@ -58,6 +58,7 @@ class Interfaces {
           arrayPromises.push(api.eth.getBalance(k)
             .then((balance) => {
               accounts[k].ethBalance = utils.formatFromWei(balance)
+              accounts[k].ethBalanceWei = balance
               accounts[k].name = accountsInfo[k].name
               accounts[k].source = "parity"
               return accounts
@@ -65,8 +66,9 @@ class Interfaces {
           )
           // Getting accounts GRG balance
           arrayPromises.push(poolsApi.contract.rigotoken.balanceOf(k)
-            .then((rigoTokenBalance) => {
-              accounts[k].rigoTokenBalance = utils.formatFromWei(rigoTokenBalance)
+            .then((grgBalance) => {
+              accounts[k].grgBalance = utils.formatFromWei(grgBalance)
+              accounts[k].grgBalanceWei = grgBalance
               return accounts
             })
           )
@@ -93,7 +95,7 @@ class Interfaces {
       })
   }
 
-  getAccountsMetamask() {
+  getAccountsMetamask = async () => {
     // console.log(`${this._sourceLogClass} -> getAccountsMetamask`)
     const web3 = window.web3
     const parityNetworkId = this._parityNetworkId
@@ -101,63 +103,56 @@ class Interfaces {
     if (typeof web3 === 'undefined') {
       return;
     }
-
-    // Checking if MetaMask is connected to the same network as the endpoint
-    return web3.eth.net.getId()
-      .then((metaMaskNetworkId) => {
-        let currentState = this._success
-        if (metaMaskNetworkId !== parityNetworkId) {
-          const stateUpdate = {
-            networkCorrect: false,
-            warnMsg: MSG_NO_SUPPORTED_NETWORK
-          }
-          this._success = { ...currentState, ...stateUpdate }
-          return accountsMetaMask
-        } else {
-          const stateUpdate = {
-            networkCorrect: true,
-            warnMsg: ''
-          }
-          this._success = { ...currentState, ...stateUpdate }
-          return web3.eth.getAccounts()
-            .then(accounts => {
-              // Returning empty object if MetaMask is locked.
-              if (accounts.length === 0) {
-                return {}
-              }
-              return web3.eth.getBalance(accounts[0])
-                .then((ethBalance) => {
-                  // const rigoTokenContract = api.newContract(rigotoken, GRG_ADDRESS_KV)
-                  // return rigoTokenContract.instance.balanceOf.call({}, [accounts[0]])
-                  let poolsApi = new PoolsApi(web3)
-                  poolsApi.contract.rigotoken.init()
-                  return poolsApi.contract.rigotoken.balanceOf(accounts[0])
-                    .then((rigoTokenBalance) => {
-                      accountsMetaMask = {
-                        [accounts[0]]: {
-                          ethBalance: utils.formatFromWei(ethBalance),
-                          rigoTokenBalance: utils.formatFromWei(rigoTokenBalance),
-                          name: "MetaMask",
-                          source: "MetaMask"
-                        }
-                      }
-                      return accountsMetaMask;
-                    })
-                })
-                .catch((error) => {
-                  console.log(error)
-                  return {}
-                })
-            })
-            .catch((error) => {
-              console.log(error)
-              return {}
-            })
+    try {
+      // Check if MetaMask is connected to the same network as the endpoint
+      let metaMaskNetworkId = await web3.eth.net.getId()
+      let currentState = this._success
+      if (metaMaskNetworkId !== parityNetworkId) {
+        const stateUpdate = {
+          networkCorrect: false,
+          warnMsg: MSG_NO_SUPPORTED_NETWORK
         }
-      })
+        this._success = { ...currentState, ...stateUpdate }
+        return accountsMetaMask
+      } else {
+        // Get MetaMask accounts
+        const stateUpdate = {
+          networkCorrect: true,
+          warnMsg: ''
+        }
+        this._success = { ...currentState, ...stateUpdate }
+        let accounts = await web3.eth.getAccounts()
+        // Return empty object if MetaMask is locked.
+        if (accounts.length === 0) {
+          return {}
+        }
+        // Get ETH balance
+        let ethBalance = await web3.eth.getBalance(accounts[0])
+        let poolsApi = new PoolsApi(web3)
+        poolsApi.contract.rigotoken.init()
+        // Get GRG balance
+        let grgBalance = await poolsApi.contract.rigotoken.balanceOf(accounts[0])
+        let nonce = await web3.eth.getTransactionCount(accounts[0])
+        let accountsMetaMask = {
+          [accounts[0]]: {
+            ethBalance: utils.formatFromWei(ethBalance),
+            ethBalanceWei: ethBalance,
+            grgBalance: utils.formatFromWei(grgBalance),
+            grgBalanceWei: grgBalance,
+            name: "MetaMask",
+            source: "MetaMask",
+            nonce: nonce
+          }
+        }
+        return accountsMetaMask;
+      }
+    } catch (error) {
+      console.log(error)
+      return {}
+    }
   }
 
-  async attachInterfaceInfuraV2() {
+  attachInterfaceInfuraV2 = async () => {
     // console.log(`${this._sourceLogClass} -> Interface Infura`)
     const api = this._api
     try {
@@ -176,7 +171,10 @@ class Interfaces {
               name: info.name,
               source: info.source,
               ethBalance: info.ethBalance,
-              rigoTokenBalance: info.rigoTokenBalance
+              ethBalanceWei: info.ethBalanceWei,
+              grgBalance: info.grgBalance,
+              grgBalanceWei: info.grgBalanceWei,
+              nonce: info.nonce
             };
           })
       }
@@ -202,8 +200,8 @@ class Interfaces {
       .then(result => {
         if (result.availability === 'public') {
           // if Parity in --public-node then getting only MetaMask accounts
-          // return [this.getAccountsMetamask(api)]
-          return [this.getAccountsParity(api), this.getAccountsMetamask(api)]
+          return [this.getAccountsMetamask(api)]
+          // return [this.getAccountsParity(api), this.getAccountsMetamask(api)]
         }
         else {
           // if Parity NOT in --public-node then getting both Parity and MetaMask accounts
@@ -230,7 +228,9 @@ class Interfaces {
                       name: info.name,
                       source: info.source,
                       ethBalance: info.ethBalance,
-                      rigoTokenBalance: info.rigoTokenBalance,
+                      ethBalanceWei: info.ethBalanceWei,
+                      grgBalance: info.grgBalance,
+                      grgBalanceWei: info.grgBalanceWei,
                       nonce: info.nonce
                     };
                   })

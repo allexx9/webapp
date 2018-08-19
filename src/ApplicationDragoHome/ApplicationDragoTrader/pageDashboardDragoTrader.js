@@ -52,6 +52,8 @@ class PageDashboardDragoTrader extends Component {
     snackBarMsg: ''
   }
 
+  static sourceLogClass = this.constructor.name
+
   componentDidMount() {
     const { accounts } = this.props.endpoint
     console.log('componentDidMount')
@@ -62,28 +64,27 @@ class PageDashboardDragoTrader extends Component {
     // Updating the lists on each new block if the accounts balances have changed
     // Doing this this to improve performances by avoiding useless re-rendering
     const { accounts } = this.props.endpoint
-    const sourceLogClass = this.constructor.name
-    console.log(`${sourceLogClass} -> UNSAFE_componentWillReceiveProps-> nextProps received.`);
+    // console.log(`${sourceLogClass} -> UNSAFE_componentWillReceiveProps-> nextProps received.`);
     // Updating the transaction list if there have been a change in total accounts balance and the previous balance is
     // different from 0 (balances are set to 0 on app loading)
     const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
     const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
     if (!currentBalance.eq(nextBalance) && !currentBalance.eq(0)) {
       this.getTransactions(null, accounts)
-      console.log(`${sourceLogClass} -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`);
+      // console.log(`${sourceLogClass} -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`);
     }
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    const sourceLogClass = this.constructor.name
+  
     let stateUpdate = true
     let propsUpdate = true
     propsUpdate = !utils.shallowEqual(this.props, nextProps)
     stateUpdate = !utils.shallowEqual(this.state, nextState)
     if (stateUpdate || propsUpdate) {
-      console.log('State updated ', stateUpdate)
-      console.log('Props updated ', propsUpdate)
-      console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
+      // console.log('State updated ', stateUpdate)
+      // console.log('Props updated ', propsUpdate)
+      // console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
     }
     return stateUpdate || propsUpdate
   }
@@ -145,12 +146,12 @@ class PageDashboardDragoTrader extends Component {
       }
     }
 
-    const listAccounts = accounts.map((account) => {
+    const listAccounts = accounts.map((account, key) => {
       return (
-        <Col xs={6} key={account.name}>
+        <Col xs={6} key={account.name+key}>
           <ElementAccountBox
             account={account}
-            key={account.name}
+            key={account.name+key}
             snackBar={this.snackBar}
             etherscanUrl={this.props.endpoint.networkInfo.etherscan} />
         </Col>
@@ -292,11 +293,11 @@ class PageDashboardDragoTrader extends Component {
     let sourceLogClass = this.constructor.name
     utils.getTransactionsDragoOptV2(api, dragoAddress, accounts, options)
       .then(results => {
-        console.log(`${sourceLogClass} -> Transactions list loaded`)
+        // console.log(`${sourceLogClass} -> Transactions list loaded`)
         // const buySellLogs = results[1].filter(event =>{
         //   return event.type !== 'DragoCreated'
         // })
-        console.log(results)
+        // console.log(results)
         this.props.dispatch(Actions.drago.updateTransactionsDragoHolderAction(results))
         this.setState({
           loading: false,

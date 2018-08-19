@@ -190,7 +190,7 @@ const initialState = {
     networkError: NETWORK_OK,
     networkStatus: MSG_NETWORK_STATUS_OK,
     prevBlockNumber: "0",
-    rigoTokenBalance: null,
+    grgBalance: null,
     warnMsg: '',
   },
   user: {

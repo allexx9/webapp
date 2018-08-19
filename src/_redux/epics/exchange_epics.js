@@ -25,7 +25,7 @@ import 'rxjs/add/observable/forkJoin';
 
 // import rp from 'request-promise'
 import {
-  getHistoricalPricesDataFromERCdEX,
+  // getHistoricalPricesDataFromERCdEX,
   getTradeHistoryLogsFromRelayERCdEX,
 } from '../../_utils/exchange'
 // import io from 'socket.io-client'
@@ -42,7 +42,7 @@ import {
   UPDATE_ELEMENT_LOADING,
   FETCH_HISTORY_TRANSACTION_LOGS,
   UPDATE_HISTORY_TRANSACTION_LOGS,
-} from '../../_redux/actions/const'
+} from '../actions/const'
 export * from './exchanges'
 
 
