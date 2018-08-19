@@ -48,18 +48,18 @@ class Interfaces {
     let accounts = {}
     let arrayPromises = []
     return api.parity
-      .accountsInfo()
-      .then((accountsInfo) => {
+      .accountsParity()
+      .then((accountsParity) => {
         const poolsApi = new PoolsApi(this._api)
         poolsApi.contract.rigotoken.init()
-        Object.keys(accountsInfo).forEach(function (k) {
+        Object.keys(accountsParity).forEach(function (k) {
           // Getting accounts ETH balance
           accounts[k] = {}
           arrayPromises.push(api.eth.getBalance(k)
             .then((balance) => {
               accounts[k].ethBalance = utils.formatFromWei(balance)
               accounts[k].ethBalanceWei = balance
-              accounts[k].name = accountsInfo[k].name
+              accounts[k].name = accountsParity[k].name
               accounts[k].source = "parity"
               return accounts
             })
@@ -159,9 +159,10 @@ class Interfaces {
       const accountsMetaMask = await this.getAccountsMetamask(api)
       const allAccounts = { ...accountsMetaMask }
       console.log('Metamask account loaded: ', accountsMetaMask)
+      const blockNumber = await api.eth.blockNumber()
       const stateUpdate = {
-        // accountsInfo: accountsMetaMask,
         loading: false,
+        prevBlockNumber: blockNumber.toFixed(),
         accounts: Object
           .keys(allAccounts)
           .map((address) => {
@@ -192,76 +193,130 @@ class Interfaces {
     }
   }
 
-  attachInterfaceRigoBlockV2 = () => {
+  attachInterfaceRigoBlockV2 = async () => {
     console.log(`${this._sourceLogClass} -> Interface RigoBlock`)
     const api = this._api
-    // Checking if the parity node is running in --public-mode
-    return api.parity.nodeKind()
-      .then(result => {
-        if (result.availability === 'public') {
-          // if Parity in --public-node then getting only MetaMask accounts
-          return [this.getAccountsMetamask(api)]
-          // return [this.getAccountsParity(api), this.getAccountsMetamask(api)]
-        }
-        else {
-          // if Parity NOT in --public-node then getting both Parity and MetaMask accounts
-          return [this.getAccountsParity(api), this.getAccountsMetamask(api)]
-        }
-      })
-      .then((getAccounts) => {
-        return Promise
-          .all(getAccounts)
-          .then(([accountsInfo, accountsMetaMask]) => {
-            const allAccounts = { ...accountsInfo, ...accountsMetaMask }
-            console.log('Parity accounts loaded: ', accountsInfo)
-            console.log('MetaMask account loaded: ', accountsMetaMask)
-            const stateUpdate = {
-              loading: false,
-              ethBalance: new BigNumber(0),
-              accounts: Object.keys(allAccounts).length !== 0
-                ? Object
-                  .keys(allAccounts)
-                  .map((address) => {
-                    const info = allAccounts[address] || {};
-                    return {
-                      address,
-                      name: info.name,
-                      source: info.source,
-                      ethBalance: info.ethBalance,
-                      ethBalanceWei: info.ethBalanceWei,
-                      grgBalance: info.grgBalance,
-                      grgBalanceWei: info.grgBalanceWei,
-                      nonce: info.nonce
-                    };
-                  })
-                : []
-            }
-            const result = { ...this._success, ...stateUpdate }
-            this._success = result
-            return result
-          })
-          .catch((error) => {
-            let currentState = this._error
-            const stateUpdate = {
-              networkError: NETWORK_WARNING,
-              networkStatus: MSG_NETWORK_STATUS_ERROR,
-            }
-            this._error = { ...currentState, ...stateUpdate }
-            console.log('attachInterfaceRigoBlock', error)
-            return this._error
+    let accountsParity = {}
+    let accountsMetaMask = {}
+    try {
+      // Check if the parity node is running in --public-mode
+      let nodeKind = await api.parity.nodeKind()
+      if (nodeKind.availability === 'public') {
+        // if Parity in --public-node then getting only MetaMask accounts
+        accountsMetaMask = await this.getAccountsMetamask()
+      }
+      else {
+        // if Parity NOT in --public-node then getting both Parity and MetaMask accounts
+        accountsMetaMask = await this.getAccountsMetamask()
+        accountsParity = await this.getAccountsParity()
+      }
+      const blockNumber = await api.eth.blockNumber()
+      console.log('Parity accounts loaded: ', accountsParity)
+      console.log('MetaMask account loaded: ', accountsMetaMask)
+      const allAccounts = { ...accountsParity, ...accountsMetaMask }
+      const stateUpdate = {
+        loading: false,
+        prevBlockNumber: blockNumber.toFixed(),
+        ethBalance: new BigNumber(0),
+        accounts: Object.keys(allAccounts).length !== 0
+          ? Object
+            .keys(allAccounts)
+            .map((address) => {
+              const info = allAccounts[address] || {};
+              return {
+                address,
+                name: info.name,
+                source: info.source,
+                ethBalance: info.ethBalance,
+                ethBalanceWei: info.ethBalanceWei,
+                grgBalance: info.grgBalance,
+                grgBalanceWei: info.grgBalanceWei,
+                nonce: info.nonce
+              };
+            })
+          : []
+      }
+      const result = { ...this._success, ...stateUpdate }
+      this._success = result
+      return result
+    } catch (error) {
+      let currentState = this._error
+      const stateUpdate = {
+        networkError: NETWORK_WARNING,
+        networkStatus: MSG_NETWORK_STATUS_ERROR,
+      }
+      this._error = { ...currentState, ...stateUpdate }
+      console.log('attachInterfaceRigoBlock', error)
+      return this._error
+    }
 
-          });
-      })
-      .catch((error) => {
-        let currentState = this._error
-        const stateUpdate = {
-          networkError: NETWORK_WARNING,
-          networkStatus: MSG_NETWORK_STATUS_ERROR,
-        }
-        this._error = { ...currentState, ...stateUpdate }
-        console.log('attachInterfaceRigoBlock', error)
-        return this._error
-      });
+    // Check if the parity node is running in --public-mode
+    // return api.parity.nodeKind()
+    //   .then(result => {
+    //     if (result.availability === 'public') {
+    //       // if Parity in --public-node then getting only MetaMask accounts
+    //       return [this.getAccountsMetamask(api)]
+    //       // return [this.getAccountsParity(api), this.getAccountsMetamask(api)]
+    //     }
+    //     else {
+    //       // if Parity NOT in --public-node then getting both Parity and MetaMask accounts
+    //       return [this.getAccountsParity(api), this.getAccountsMetamask(api)]
+    //     }
+    //   })
+    //   .then((getAccounts) => {
+    //     return Promise
+    //       .all(getAccounts)
+    //       .then(([accountsParity, accountsMetaMask]) => {
+    //         const allAccounts = { ...accountsParity, ...accountsMetaMask }
+    //         console.log('Parity accounts loaded: ', accountsParity)
+    //         console.log('MetaMask account loaded: ', accountsMetaMask)
+    //         const stateUpdate = {
+    //           loading: false,
+    //           ethBalance: new BigNumber(0),
+    //           accounts: Object.keys(allAccounts).length !== 0
+    //             ? Object
+    //               .keys(allAccounts)
+    //               .map((address) => {
+    //                 const info = allAccounts[address] || {};
+    //                 return {
+    //                   address,
+    //                   name: info.name,
+    //                   source: info.source,
+    //                   ethBalance: info.ethBalance,
+    //                   ethBalanceWei: info.ethBalanceWei,
+    //                   grgBalance: info.grgBalance,
+    //                   grgBalanceWei: info.grgBalanceWei,
+    //                   nonce: info.nonce
+    //                 };
+    //               })
+    //             : []
+    //         }
+    //         const result = { ...this._success, ...stateUpdate }
+    //         this._success = result
+    //         return result
+    //       })
+    //       .catch((error) => {
+    //         let currentState = this._error
+    //         const stateUpdate = {
+    //           networkError: NETWORK_WARNING,
+    //           networkStatus: MSG_NETWORK_STATUS_ERROR,
+    //         }
+    //         this._error = { ...currentState, ...stateUpdate }
+    //         console.log('attachInterfaceRigoBlock', error)
+    //         return this._error
+
+    //       });
+    //   })
+    //   .catch((error) => {
+    //     let currentState = this._error
+    //     const stateUpdate = {
+    //       networkError: NETWORK_WARNING,
+    //       networkStatus: MSG_NETWORK_STATUS_ERROR,
+    //     }
+    //     this._error = { ...currentState, ...stateUpdate }
+    //     console.log('attachInterfaceRigoBlock', error)
+    //     return this._error
+    //   });
   }
 
   detachInterface = (api, subscriptionData) => {

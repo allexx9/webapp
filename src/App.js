@@ -158,6 +158,7 @@ export class App extends Component {
   componentDidMount() {
     this.props.dispatch(Actions.notifications.initNotificationsSystemAction(this._notificationSystem))
     this.props.dispatch(this.attachInterfaceAction())
+    this.checkMetaMaskUnlocked()
     setTimeout(() => {
       this.setState({
         appLoading: false,
@@ -170,14 +171,12 @@ export class App extends Component {
     // because the checki is done by Parity and a messagge will be displayed by the client
     if (this.props.endpoint.endpointInfo.name !== 'local') {
       this.tdIsConnected = setTimeout(this.checkConnectionToNode, 1000)
-      this.tdIsMetaMaskUnlocked = setTimeout(this.checkMetaMaskUnlocked, isMetaMaskUnlockedTimeout)
     }
   }
 
   componentWillUnmount() {
     if (this.props.endpoint.endpointInfo.name !== 'local') {
       clearTimeout(this.tdIsConnected)
-      clearTimeout(this.tdIsMetaMaskUnlocked)
     }
     try {
       this.detachInterface();
@@ -320,7 +319,6 @@ export class App extends Component {
                   console.log(`${sourceLogClass}: Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);
                   subscriptionData = subscriptionID
                   attachedInterface.subscriptionData = subscriptionData
-                  attachedInterface.prevBlockNumber = "0"
                   this.setState({
                     appLoading: false
                   })
@@ -344,7 +342,6 @@ export class App extends Component {
                   console.log(`${sourceLogClass}: Subscribed to eth_blockNumber`);
                   subscriptionData = subscription
                   attachedInterface.subscriptionData = subscriptionData
-                  attachedInterface.prevBlockNumber = "0"
                   this.setState({
                     appLoading: false
                   })
@@ -394,7 +391,6 @@ export class App extends Component {
                 console.log(`${sourceLogClass}: Subscribed to eth_blockNumber`);
                 subscriptionData = subscription
                 attachedInterface.subscriptionData = subscriptionData
-                attachedInterface.prevBlockNumber = "0"
                 this.setState({
                   appLoading: false
                 })
@@ -434,7 +430,6 @@ export class App extends Component {
                 console.log(`${sourceLogClass}: Subscribed to eth_blockNumber`);
                 subscriptionData = subscription
                 attachedInterface.subscriptionData = subscriptionData
-                attachedInterface.prevBlockNumber = "0"
                 return attachedInterface
               })
           })

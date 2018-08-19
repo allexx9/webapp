@@ -145,7 +145,7 @@ class PageDashboardDragoTrader extends Component {
         backgroundColor: '#FFFFFF',
       }
     }
-
+console.log(this.props.endpoint)
     const listAccounts = accounts.map((account, key) => {
       return (
         <Col xs={6} key={account.name+key}>
