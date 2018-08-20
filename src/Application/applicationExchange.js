@@ -32,6 +32,7 @@ const muiThemeExchange = getMuiTheme({
   palette: {
     "primary1Color": '#054186',
   },
+  fontFamily: "'Muli', sans-serif",
   appBar: {
     height: 20,
     fontSize: "15px !important"

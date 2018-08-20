@@ -48,8 +48,8 @@ class ApplicationVaultHome extends Component {
   activeElement = null
 
   shouldComponentUpdate(nextProps, nextState){    
-    var stateUpdate = true
-    var propsUpdate = true
+    let stateUpdate = true
+    let propsUpdate = true
     // shouldComponentUpdate returns false if no need to update children, true if needed.
     propsUpdate = (!utils.shallowEqual(this.props, nextProps))
     stateUpdate = (!utils.shallowEqual(this.state.loading, nextState.loading))

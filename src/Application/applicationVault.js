@@ -32,6 +32,7 @@ const muiThemeVault = getMuiTheme({
   palette: {
     "primary1Color": Colors.blueGrey500,
   },
+  fontFamily: "'Muli', sans-serif",
   appBar: {
     height: 45,
     fontSize: "20px !important"

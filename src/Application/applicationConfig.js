@@ -1,7 +1,6 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
 import React, { Component } from 'react';
-import  * as Colors from 'material-ui/styles/colors';
 import PropTypes from 'prop-types';
 import ApplicationConfigHome from '../ApplicationConfig';
 import ApplicationTopBar from './ApplicationTopBar';
