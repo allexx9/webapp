@@ -196,6 +196,7 @@ export class App extends Component {
   }
 
   checkConnectionToNode = () => {
+    this.tdIsConnected = setTimeout(this.checkConnectionToNode, isConnectedTimeout)
     if (this._api.isConnected) {
       if (!this.state.isConnected) {
         this.props.dispatch(this.attachInterfaceAction())
@@ -212,7 +213,12 @@ export class App extends Component {
             })
           }
         })
-      this.tdIsConnected = setTimeout(this.checkConnectionToNode, isConnectedTimeout)
+        .catch((error) => {
+          console.log(error)
+          this.setState({
+            isConnected: false
+          })
+        })
     } else {
       this.setState({
         isConnected: false

@@ -113,7 +113,8 @@ const checkMetaMaskIsUnlocked$ = (api, web3, endpoint) => {
         return newEndpoint
       }
       )
-      .catch(() => {
+      .catch((error) => {
+        console.log(error)
         let metaMaskAccountIndex = endpoint.accounts.findIndex(account => {
           return (account.source === 'MetaMask')
         });
@@ -154,7 +155,8 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
                   options))
               )
             )
-            .catch(() => {
+            .catch((error) => {
+              console.log(error)
               return Observable.of({
                 type: TYPE_.ADD_WARNING_NOTIFICATION,
                 payload: 'Unable to fetch accounts from MetaMask. Is it unlocket?'
