@@ -25,8 +25,8 @@ import SectionHeader from '../../_atomic/atoms/sectionHeader';
 // import SectionTitle from '../../_atomic/atoms/sectionTitle';
 
 import styles from './pageDashboardDragoTrader.module.css'
-import { Actions } from '../../_redux/actions' 
-import { HELP_} from '../../_utils/const'
+import { Actions } from '../../_redux/actions'
+import { HELP_ } from '../../_utils/const'
 
 function mapStateToProps(state) {
   return state
@@ -52,31 +52,32 @@ class PageDashboardDragoTrader extends Component {
     snackBarMsg: ''
   }
 
-  static sourceLogClass = this.constructor.name
-
   componentDidMount() {
     const { accounts } = this.props.endpoint
+    const { api } = this.context
+    const options = { balance: true, supply: false, limit: 10, trader: true }
     console.log('componentDidMount')
-    this.getTransactions(null, accounts)
+    this.props.dispatch(Actions.endpoint.getAccountsTransactions(api, null, accounts, options))
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
     // Updating the lists on each new block if the accounts balances have changed
     // Doing this this to improve performances by avoiding useless re-rendering
     const { accounts } = this.props.endpoint
-    // console.log(`${sourceLogClass} -> UNSAFE_componentWillReceiveProps-> nextProps received.`);
+    const { api } = this.context
+    const options = { balance: true, supply: false, limit: 10, trader: true }
+    // console.log(`${this.constructor.name} -> UNSAFE_componentWillReceiveProps-> nextProps received.`);
     // Updating the transaction list if there have been a change in total accounts balance and the previous balance is
     // different from 0 (balances are set to 0 on app loading)
     const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
     const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
     if (!currentBalance.eq(nextBalance) && !currentBalance.eq(0)) {
-      this.getTransactions(null, accounts)
-      // console.log(`${sourceLogClass} -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`);
+      console.log(`${this.constructor.name} -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`);
+      // this.props.dispatch(Actions.endpoint.getAccountsTransactions(api, null, accounts, options))
     }
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-  
     let stateUpdate = true
     let propsUpdate = true
     propsUpdate = !utils.shallowEqual(this.props, nextProps)
@@ -84,7 +85,7 @@ class PageDashboardDragoTrader extends Component {
     if (stateUpdate || propsUpdate) {
       // console.log('State updated ', stateUpdate)
       // console.log('Props updated ', propsUpdate)
-      // console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
+      console.log(`${this.constructor.name} -> shouldComponentUpdate -> Proceeding with rendering.`);
     }
     return stateUpdate || propsUpdate
   }
@@ -145,13 +146,14 @@ class PageDashboardDragoTrader extends Component {
         backgroundColor: '#FFFFFF',
       }
     }
-console.log(this.props.endpoint)
+    console.log(this.props)
+    console.log(this.props.endpoint.accounts[0].address)
     const listAccounts = accounts.map((account, key) => {
       return (
-        <Col xs={6} key={account.name+key}>
+        <Col xs={6} key={account.name + key}>
           <ElementAccountBox
             account={account}
-            key={account.name+key}
+            key={account.name + key}
             snackBar={this.snackBar}
             etherscanUrl={this.props.endpoint.networkInfo.etherscan} />
         </Col>
@@ -168,15 +170,15 @@ console.log(this.props.endpoint)
                 <Col xs={12}>
                   <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle}>
                     <Tab label="Accounts" className={styles.detailsTab}
-                      onActive={() => scrollToElement('#accounts-section', {offset: -165})}
+                      onActive={() => scrollToElement('#accounts-section', { offset: -165 })}
                       icon={<ActionList color={'#054186'} />}>
                     </Tab>
                     <Tab label="Holding" className={styles.detailsTab}
-                      onActive={() => scrollToElement('#holding-section', {offset: -165})}
+                      onActive={() => scrollToElement('#holding-section', { offset: -165 })}
                       icon={<ActionAssessment color={'#054186'} />}>
                     </Tab>
                     <Tab label="Transactions" className={styles.detailsTab}
-                      onActive={() => scrollToElement('#transactions-section', {offset: -165})}
+                      onActive={() => scrollToElement('#transactions-section', { offset: -165 })}
                       icon={<ActionShowChart color={'#054186'} />}>
                     </Tab>
                   </Tabs>
@@ -193,7 +195,7 @@ console.log(this.props.endpoint)
                     <SectionHeader
                       titleText='ACCOUNTS'
                       help={true}
-                      helpText={ HELP_.H001 }
+                      helpText={HELP_.H001}
                     />
                   </Col>
                 </Row>
@@ -224,7 +226,10 @@ console.log(this.props.endpoint)
                     <div className={styles.sectionParagraph}>
                       Your portfolio:
                     </div>
-                    <ElementListWrapper list={dragoBalances} loading={this.state.loading}>
+                    <ElementListWrapper
+                      list={dragoBalances}
+                    // loading={this.state.loading}
+                    >
                       <ElementListBalances />
                     </ElementListWrapper>
                   </Col>
@@ -249,10 +254,11 @@ console.log(this.props.endpoint)
                       Your last 20 transactions:
                   </div>
 
-                    <ElementListWrapper list={dragoTransactionsLogs}
+                    <ElementListWrapper
+                      list={dragoTransactionsLogs}
                       renderCopyButton={this.renderCopyButton}
                       renderEtherscanButton={this.renderEtherscanButton}
-                      loading={this.state.loading}
+                    // loading={this.state.loading}
                     >
                       <ElementListTransactions />
                     </ElementListWrapper>
@@ -284,28 +290,6 @@ console.log(this.props.endpoint)
         />
       </Row>
     )
-  }
-
-  // Getting last transactions
-  getTransactions = (dragoAddress, accounts) => {
-    const { api } = this.context
-    const options = { balance: true, supply: false, limit: 10, trader: true }
-    let sourceLogClass = this.constructor.name
-    utils.getTransactionsDragoOptV2(api, dragoAddress, accounts, options)
-      .then(results => {
-        // console.log(`${sourceLogClass} -> Transactions list loaded`)
-        // const buySellLogs = results[1].filter(event =>{
-        //   return event.type !== 'DragoCreated'
-        // })
-        // console.log(results)
-        this.props.dispatch(Actions.drago.updateTransactionsDragoHolderAction(results))
-        this.setState({
-          loading: false,
-        });
-      })
-      .catch(error => {
-        console.log(`${sourceLogClass} -> Transactions list load error: ${error}`)
-      })
   }
 }
 

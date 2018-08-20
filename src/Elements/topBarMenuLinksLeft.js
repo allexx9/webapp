@@ -41,7 +41,7 @@ class NavLinksLeft extends Component {
     propsUpdate = !utils.shallowEqual(this.props, nextProps)
     stateUpdate = !utils.shallowEqual(this.state, nextState)
     if (stateUpdate || propsUpdate) {
-      // console.log(`${sourceLogClass} -> shouldComponentUpdate: TRUE -> Proceedding with rendering.`);
+      // console.log(`${this.constructor.name} -> shouldComponentUpdate: TRUE -> Proceedding with rendering.`);
     }
     return stateUpdate || propsUpdate
   }

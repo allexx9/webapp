@@ -57,7 +57,7 @@ class ApplicationExchangeHome extends Component {
   constructor() {
     super();
     this._notificationSystem = null;
-    this.sourceLogClass = this.constructor.name
+    
   }
 
   static contextTypes = {

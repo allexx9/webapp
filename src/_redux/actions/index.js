@@ -9,7 +9,7 @@ import {
 } from './const'
 import drago from './drago'
 import transactions from './transactions'
-import endpoint from './endpoint'
+import endpoint from './endpoint_actions'
 import exchange from './exchange'
 import tokens from './tokens'
 

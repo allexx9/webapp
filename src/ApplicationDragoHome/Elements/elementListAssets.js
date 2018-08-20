@@ -32,7 +32,7 @@ class ElementListAssets extends PureComponent {
     assetsChart: PropTypes.object.isRequired,
   };
 
-  static sourceLogClass = this.constructor.name
+  
 
   constructor(props, context) {
     super(props, context);
@@ -79,7 +79,7 @@ class ElementListAssets extends PureComponent {
       sortedList: sortedList,
       rowCount: rowCount,
     })
-    // console.log(`${sourceLogClass} -> UNSAFE_componentWillReceiveProps`);
+    // console.log(`${this.constructor.name} -> UNSAFE_componentWillReceiveProps`);
   }
 
   render() {

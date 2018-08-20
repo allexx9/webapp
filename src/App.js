@@ -45,9 +45,7 @@ import ReactGA from 'react-ga';
 import { Actions } from './_redux/actions'
 
 let appHashPath = true;
-let sourceLogClass = null
 const isConnectedTimeout = 4000
-const isMetaMaskUnlockedTimeout = 1000
 
 ReactGA.initialize('UA-117171641-1');
 ReactGA.pageview(window.location.pathname + window.location.search);
@@ -77,7 +75,6 @@ export class App extends Component {
   constructor(props) {
     super(props);
     this._notificationSystem = null;
-    sourceLogClass = this.constructor.name
     // Connecting to blockchain client
     let endpoint = new Endpoint(this.props.endpoint.endpointInfo, this.props.endpoint.networkInfo)
     this._api = endpoint.connect()
@@ -151,7 +148,7 @@ export class App extends Component {
     // console.log(this.props.user.isManager)
     const propsUpdate = (!utils.shallowEqual(this.props, nextProps))
     const stateUpdate = (!utils.shallowEqual(this.state, nextState))
-    // console.log(`${sourceLogClass} -> propsUpdate: %c${propsUpdate}.%c stateUpdate: %c${stateUpdate}`, `color: ${propsUpdate ? 'green' : 'red'}; font-weight: bold;`,'',`color: ${stateUpdate ? 'green' : 'red'}; font-weight: bold;`)
+    // console.log(`${this.constructor.name} -> propsUpdate: %c${propsUpdate}.%c stateUpdate: %c${stateUpdate}`, `color: ${propsUpdate ? 'green' : 'red'}; font-weight: bold;`,'',`color: ${stateUpdate ? 'green' : 'red'}; font-weight: bold;`)
     return stateUpdate || propsUpdate
   }
 
@@ -237,11 +234,48 @@ export class App extends Component {
         DefaultStyle: { // Applied to every notification, regardless of the notification level
           margin: '0px 0px 0px 0px'
         },
-
         info: { // Applied only to the success notification item
           backgroundColor: 'white'
+        },
+        error: {
+          borderTop: '2px solid',
+          WebkitBoxShadow: 'rgba(0, 0, 0, 0.1) 0px 5px 5px',
+          MozBoxShadow: 'rgba(0, 0, 0, 0.1) 0px 5px 5px',
+          boxShadow: 'rgba(0, 0, 0, 0.1) 0px 5px 5px',
+          backgroundColor: '#F44336',
+          color: '#ffffff',
+          marginBottom: '5px'
+        },
+        warning: {
+          borderTop: '0px solid',
+          WebkitBoxShadow: 'rgba(0, 0, 0, 0.1) 0px 5px 5px',
+          MozBoxShadow: 'rgba(0, 0, 0, 0.1) 0px 5px 5px',
+          boxShadow: 'rgba(0, 0, 0, 0.1) 0px 5px 5px',
+          backgroundColor: '#E65100',
+          color: '#ffffff',
+          marginBottom: '5px'
+        },
+      },
+      Title: {
+        error: {
+          color: '#ffffff',
+          fontWeight: 700
+        },
+        warning: {
+          color: '#ffffff',
+          fontWeight: 700
         }
-      }
+    },
+    Dismiss: {  
+      error: {
+        backgroundColor: '',
+        color: '#ffffff'
+      },
+      warning: {
+        backgroundColor: '',
+        color: '#ffffff'
+      },
+  },
     }
     return (
       <div>
@@ -290,7 +324,6 @@ export class App extends Component {
 
   attachInterface = () => {
     // Allowed endpoints are defined in const.js
-    let sourceLogClass = this.constructor.name
     let WsSecureUrl = ''
     const selectedEndpoint = this.props.endpoint.endpointInfo.name
     const networkId = this.props.endpoint.networkInfo.id
@@ -299,7 +332,7 @@ export class App extends Component {
     let blockchain = new Interfaces(this._api, networkId)
     switch (selectedEndpoint) {
       case INFURA:
-        console.log(`${sourceLogClass} -> ${INFURA}`)
+        console.log(`${this.constructor.name} -> ${INFURA}`)
         console.log(this._api, networkId)
         return blockchain.attachInterfaceInfuraV2(this._api, networkId)
           .then((attachedInterface) => {
@@ -316,7 +349,7 @@ export class App extends Component {
             if (networkName === KOVAN) {
               return this._api.subscribe('eth_blockNumber', this.onNewBlockNumber)
                 .then((subscriptionID) => {
-                  console.log(`${sourceLogClass}: Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);
+                  console.log(`Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);
                   subscriptionData = subscriptionID
                   attachedInterface.subscriptionData = subscriptionData
                   this.setState({
@@ -339,7 +372,7 @@ export class App extends Component {
                 .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
                 .then(result => {
                   let subscription = result[0]
-                  console.log(`${sourceLogClass}: Subscribed to eth_blockNumber`);
+                  console.log(`Subscribed to eth_blockNumber`);
                   subscriptionData = subscription
                   attachedInterface.subscriptionData = subscriptionData
                   this.setState({
@@ -366,7 +399,7 @@ export class App extends Component {
             })
           })
       case RIGOBLOCK:
-        console.log(`${sourceLogClass} -> ${RIGOBLOCK}`)
+        console.log(`${this.constructor.name} -> ${RIGOBLOCK}`)
         return blockchain.attachInterfaceRigoBlockV2(this._api, networkId)
           .then((attachedInterface) => {
             // Setting connection to node
@@ -378,7 +411,7 @@ export class App extends Component {
             // Subscribing to newBlockNumber event
             let web3
             try {
-              console.log(`${sourceLogClass}: Connectiong to Websocket ${WsSecureUrl}`);
+              console.log(`Connectiong to Websocket ${WsSecureUrl}`);
               web3 = new Web3(WsSecureUrl)
             } catch (error) {
               throw error
@@ -388,7 +421,7 @@ export class App extends Component {
               .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
               .then(result => {
                 let subscription = result[0]
-                console.log(`${sourceLogClass}: Subscribed to eth_blockNumber`);
+                console.log(`Subscribed to eth_blockNumber`);
                 subscriptionData = subscription
                 attachedInterface.subscriptionData = subscriptionData
                 this.setState({
@@ -412,7 +445,7 @@ export class App extends Component {
             })
           })
       case LOCAL:
-        console.log(`${sourceLogClass} -> ${LOCAL}`)
+        console.log(`${this.constructor.name} -> ${LOCAL}`)
         return blockchain.attachInterfaceRigoBlockV2(this._api, networkId)
           .then((attachedInterface) => {
             // Setting connection to node
@@ -427,7 +460,7 @@ export class App extends Component {
               .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
               .then(result => {
                 let subscription = result[0]
-                console.log(`${sourceLogClass}: Subscribed to eth_blockNumber`);
+                console.log(`Subscribed to eth_blockNumber`);
                 subscriptionData = subscription
                 attachedInterface.subscriptionData = subscriptionData
                 return attachedInterface
@@ -459,11 +492,11 @@ export class App extends Component {
     } else {
       newBlockNumber = blockNumber
     }
-    console.log(`${sourceLogClass} -> Last block: ` + prevBlockNumber)
-    console.log(`${sourceLogClass} -> New block: ` + newBlockNumber.toFixed())
+    console.log(`${this.constructor.name} -> Last block: ` + prevBlockNumber)
+    console.log(`${this.constructor.name} -> New block: ` + newBlockNumber.toFixed())
     // Checking that the current newBlockNumber is higher than previous one.
     if (prevBlockNumber > newBlockNumber.toFixed()) {
-      console.log(`${sourceLogClass} -> Detected prevBlockNumber > currentBlockNumber. Skipping accounts update.`)
+      console.log(`${this.constructor.name} -> Detected prevBlockNumber > currentBlockNumber. Skipping accounts update.`)
       const endpoint = {
         prevBlockNumber: newBlockNumber.toFixed()
       }
@@ -476,14 +509,14 @@ export class App extends Component {
       poolsApi.contract.rigotoken.init()
 
       const tokensQueries = accounts.map((account) => {
-        console.log(`${sourceLogClass} -> API call getBalance RigoToken-> applicationDragoHome: Getting balance of account ${account.name}`)
+        console.log(`${this.constructor.name} -> API call getBalance RigoToken-> applicationDragoHome: Getting balance of account ${account.address}`)
         // return rigoTokenContract.instance.balanceOf.call({}, [account.address])
         return poolsApi.contract.rigotoken.balanceOf(account.address)
       })
 
       // Checking ethereum balance
       const ethQueries = accounts.map((account) => {
-        console.log(`${sourceLogClass} -> API call getBalance -> applicationDragoHome: Getting balance of account ${account.name}`)
+        console.log(`${this.constructor.name} -> API call getBalance -> applicationDragoHome: Getting balance of account ${account.address}`)
         return this._api.eth.getBalance(account.address, newBlockNumber)
       })
       const promisesBalances = [...ethQueries, ...tokensQueries]
@@ -504,11 +537,11 @@ export class App extends Component {
               let secondaryText = []
               let balDifference = account.ethBalance - newEthBalance
               if (balDifference > 0) {
-                console.log(`${sourceLogClass} -> You transferred ${balDifference.toFixed(4)} ETH!`)
+                console.log(`${this.constructor.name} -> You transferred ${balDifference.toFixed(4)} ETH!`)
                 secondaryText[0] = `You transferred ${balDifference.toFixed(4)} ETH!`
                 secondaryText[1] = utils.dateFromTimeStamp(new Date())
               } else {
-                console.log(`${sourceLogClass} -> You received ${Math.abs(balDifference).toFixed(4)} ETH!`)
+                console.log(`${this.constructor.name} -> You received ${Math.abs(balDifference).toFixed(4)} ETH!`)
                 secondaryText[0] = `You received ${Math.abs(balDifference).toFixed(4)} ETH!`
                 secondaryText[1] = utils.dateFromTimeStamp(new Date())
               }
@@ -528,11 +561,11 @@ export class App extends Component {
               let secondaryText = []
               let balDifference = new BigNumber(account.grgBalance.toString()).minus(new BigNumber(newgrgBalance.toString()))
               if ((balDifference).gt(0)) {
-                console.log(`${sourceLogClass} -> You transferred ${balDifference.toFixed(4)} GRG!`)
+                console.log(`${this.constructor.name} -> You transferred ${balDifference.toFixed(4)} GRG!`)
                 secondaryText[0] = `You transferred ${balDifference.toFixed(4)} GRG!`
                 secondaryText[1] = utils.dateFromTimeStamp(new Date())
               } else {
-                console.log(`${sourceLogClass} -> You received ${Math.abs(balDifference).toFixed(4)} GRG!`)
+                console.log(`${this.constructor.name} -> You received ${Math.abs(balDifference).toFixed(4)} GRG!`)
                 secondaryText[0] = `You received ${balDifference.abs().toFixed(4)} GRG!`
                 secondaryText[1] = utils.dateFromTimeStamp(new Date())
               }
@@ -563,8 +596,10 @@ export class App extends Component {
             accounts: [].concat(accounts.map((account, index) => {
               const ethBalance = ethBalances[index];
               account.ethBalance = utils.formatFromWei(ethBalance)
+              account.ethBalanceWei = new BigNumber(ethBalance)
               const grgBalance = grgBalances[index];
               account.grgBalance = utils.formatFromWei(grgBalance)
+              account.grgBalanceWei = new BigNumber(grgBalance)
               return account;
             })
             )
@@ -573,7 +608,7 @@ export class App extends Component {
           return endpoint
         })
         .catch((error) => {
-          console.log(`${sourceLogClass} -> ${error}`)
+          console.log(`${this.constructor.name} -> ${error}`)
           // Setting the balances to 0 if receiving an error from the endpoint. It happens with Infura.
           const endpoint = {
             prevBlockNumber: newBlockNumber.toFixed(),

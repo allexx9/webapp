@@ -24,7 +24,7 @@ class ApplicationDragoHome extends Component {
   constructor() {
     super();
     this._notificationSystem = null;
-    this.sourceLogClass = this.constructor.name
+    
   }
 
   static contextTypes = {
@@ -79,7 +79,7 @@ class ApplicationDragoHome extends Component {
   componentDidUpdate() {
     // The following code is needed to fix a bug in tables. The scrolling posision is reset at every component re-render.
     // Setting the page scroll position
-    // console.log(`${this.sourceLogClass} -> componentDidUpdate`);
+    // console.log(`${this.constructor.name} -> componentDidUpdate`);
     // const element = ReactDOM.findDOMNode(this);
     const element = this.node
     if (element !== null) {

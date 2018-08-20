@@ -81,19 +81,19 @@ class PageVaultDetailsVaultManager extends Component {
 
   componentWillUnmount() {
     const { contractSubscription } = this.state
-    const sourceLogClass = this.constructor.name
+    
     try {
       contractSubscription.unsubscribe(function (error, success) {
         if (success) {
-          console.log(`${sourceLogClass}: Successfully unsubscribed from contract.`);
+          console.log(`Successfully unsubscribed from contract.`);
         }
         if (error) {
-          console.log(`${sourceLogClass}: Unsubscribe error ${error}.`)
+          console.log(`Unsubscribe error ${error}.`)
         }
       });
     }
     catch (error) {
-      console.log(`${sourceLogClass}: Unsubscribe error ${error}.`)
+      console.log(`Unsubscribe error ${error}.`)
     }
   }
 
@@ -101,19 +101,19 @@ class PageVaultDetailsVaultManager extends Component {
   UNSAFE_componentWillReceiveProps(nextProps) {
     // Updating the lists on each new block if the accounts balances have changed
     // Doing this this to improve performances by avoiding useless re-rendering
-    const sourceLogClass = this.constructor.name
+    
     const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
     const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
     if (!currentBalance.eq(nextBalance)) {
       this.initVault()
-      console.log(`${sourceLogClass} -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`);
+      console.log(`${this.constructor.name} -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`);
     } else {
       null
     }
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    const sourceLogClass = this.constructor.name
+    
     let stateUpdate = true
     let propsUpdate = true
     // const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
@@ -121,7 +121,7 @@ class PageVaultDetailsVaultManager extends Component {
     stateUpdate = !utils.shallowEqual(this.state, nextState)
     propsUpdate = !utils.shallowEqual(this.props, nextProps)
     if (stateUpdate || propsUpdate) {
-      console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
+      console.log(`${this.constructor.name} -> shouldComponentUpdate -> Proceedding with rendering.`);
     }
     return stateUpdate || propsUpdate
   }
@@ -493,8 +493,8 @@ class PageVaultDetailsVaultManager extends Component {
         null
       ]
     }, (error, events) => {
-      var sourceLogClass = this.constructor.name
-      console.log(`${sourceLogClass} -> New contract event.`);
+      
+      console.log(`${this.constructor.name} -> New contract event.`);
       console.log(events)
       this.initVault()
     })
@@ -506,7 +506,7 @@ class PageVaultDetailsVaultManager extends Component {
   // Getting last transactions
   getTransactions = async (vaultDetails, api) => {
     const vaultAddress = vaultDetails[0][0]
-    var sourceLogClass = this.constructor.name
+    
     const poolApi = new PoolApi(this.context.api)
     await poolApi.contract.vaulteventful.init()
     const contract = poolApi.contract.vaulteventful
@@ -616,7 +616,7 @@ class PageVaultDetailsVaultManager extends Component {
         Promise.all(promises)
         .then((results) => {
           this.props.dispatch(Actions.vault.updateSelectedVaultAction({ transactions: results }))
-          console.log(`${sourceLogClass} -> Transactions list loaded`);
+          console.log(`${this.constructor.name} -> Transactions list loaded`);
           this.setState({
             loading: false,
           })

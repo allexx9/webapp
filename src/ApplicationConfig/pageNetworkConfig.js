@@ -82,7 +82,7 @@ class PageNetworkConfig extends Component {
 
     onChangeEndpoint = (event, key) => {
       this.unsubscribeFromNewBlock()
-      var endpoint = {}
+      let endpoint = {}
       switch (key) {
         case 0:
           endpoint.endpointInfo = ENDPOINTS.infura
@@ -104,7 +104,7 @@ class PageNetworkConfig extends Component {
 
     onChangeNetwork = (event, key) => {
       this.unsubscribeFromNewBlock()
-      var endpoint = {}
+      let endpoint = {}
       switch (key) {
         case 0:
           endpoint.networkInfo = NETWORKS.kovan

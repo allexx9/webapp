@@ -50,19 +50,19 @@ class PageFundsDragoTrader extends Component {
     UNSAFE_componentWillReceiveProps(nextProps) {
       // Updating the lists on each new block if the accounts balances have changed
       // Doing this this to improve performances by avoiding useless re-rendering
-      const sourceLogClass = this.constructor.name
+      
       const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
       const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
       if (!currentBalance.eq(nextBalance)) {
         this.getDragos()
-        console.log(`${sourceLogClass} -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`);
+        console.log(`${this.constructor.name} -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`);
       } else {
         null
       }
     }
 
     shouldComponentUpdate(nextProps, nextState){
-      const  sourceLogClass = this.constructor.name
+      
       let stateUpdate = true
       let propsUpdate = true
       const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
@@ -70,7 +70,7 @@ class PageFundsDragoTrader extends Component {
       stateUpdate = !utils.shallowEqual(this.state, nextState)
       propsUpdate = !currentBalance.eq(nextBalance)
       if (stateUpdate || propsUpdate) {
-        console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
+        console.log(`${this.constructor.name} -> shouldComponentUpdate -> Proceedding with rendering.`);
       }
       return stateUpdate || propsUpdate
     }

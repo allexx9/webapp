@@ -66,8 +66,8 @@ class ElementListBalances extends PureComponent {
       sortedList: sortedList,
       rowCount: rowCount,
     })
-    const sourceLogClass = this.constructor.name
-    // console.log(`${sourceLogClass} -> UNSAFE_componentWillReceiveProps`);
+    
+    // console.log(`${this.constructor.name} -> UNSAFE_componentWillReceiveProps`);
   }
 
   render() {

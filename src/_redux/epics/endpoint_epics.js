@@ -24,19 +24,50 @@ import 'rxjs/observable/timer';
 import 'rxjs/observable/fromEvent';
 import 'rxjs/add/observable/fromPromise';
 import 'rxjs/add/observable/forkJoin';
-import {
-  CHECK_METAMASK_IS_UNLOCKED
-} from '../actions/const'
+import * as TYPE_ from '../actions/const'
 import { Actions } from '../actions/'
 import { Interfaces } from '../../_utils/interfaces'
 import BigNumber from 'bignumber.js';
+import utils from '../../_utils/utils'
+
+//
+// CHECK THAT METAMASK IS UNLOCKED AND UPDATE ACTIVE ACCOUNT
+//
+
+const getAccountsTransactions$ = (api, dragoAddress, accounts, options) => {
+  return Observable.fromPromise(
+    utils.getTransactionsDragoOptV2(api, dragoAddress, accounts, options)
+  )
+}
+
+export const getAccountsTransactionsEpic = (action$) =>
+  action$.ofType(TYPE_.GET_ACCOUNTS_TRANSACTIONS)
+    .mergeMap((action) => {
+      return getAccountsTransactions$(
+        action.payload.api,
+        action.payload.dragoAddress,
+        action.payload.accounts,
+        action.payload.options
+      )
+        .map(results => {
+          console.log(results)
+          return Actions.drago.updateTransactionsDragoHolderAction(results)
+        })
+        .catch(() => {
+          return Observable.of({
+            type: TYPE_.ADD_ERROR_NOTIFICATION,
+            payload: 'Error fetching account transactions.'
+          })
+        }
+        )
+    });
 
 //
 // CHECK THAT METAMASK IS UNLOCKED AND UPDATE ACTIVE ACCOUNT
 //
 
 const checkMetaMaskIsUnlocked$ = (api, web3, endpoint) => {
-  let newEndpoint = { }
+  let newEndpoint = {}
   let newAccounts = [].concat(endpoint.accounts)
   return Observable.fromPromise(
     web3.eth.getAccounts()
@@ -66,11 +97,11 @@ const checkMetaMaskIsUnlocked$ = (api, web3, endpoint) => {
             const blockchain = new Interfaces(api, networkId)
             return blockchain.attachInterfaceInfuraV2()
               .then((result) => {
-                // console.log(result)
+                console.log(result)
                 if (result.accounts.length !== 0) {
                   newAccounts.push(result.accounts[0])
                 }
-                newEndpoint = {...result }
+                newEndpoint = { ...result }
                 newEndpoint.accounts = newAccounts
                 // Update total ETH and GRG balance
                 newEndpoint.ethBalance = newEndpoint.accounts.reduce((total, account) => total.add(account.ethBalanceWei), new BigNumber(0))
@@ -96,23 +127,38 @@ const checkMetaMaskIsUnlocked$ = (api, web3, endpoint) => {
 }
 
 export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
-  return action$.ofType(CHECK_METAMASK_IS_UNLOCKED)
+  const options = { balance: true, supply: false, limit: 10, trader: true }
+  return action$.ofType(TYPE_.CHECK_METAMASK_IS_UNLOCKED)
     .mergeMap((action) => {
       return Observable
         .timer(0, 1000)
         .exhaustMap(() => {
           const currentState = state$.getState()
+          // console.log(currentState)
           return checkMetaMaskIsUnlocked$(
             action.payload.api,
             action.payload.web3,
             currentState.endpoint,
           )
-            .map(newEndpoint => {
-              // console.log(newEndpoint)
-              return Actions.endpoint.updateInterfaceAction(newEndpoint)
+            .filter(val => {
+              return Object.keys(val).length !== 0
             })
-            .catch((newEndpoint) => {
-              return Actions.endpoint.updateInterfaceAction(newEndpoint)
+            .flatMap(newEndpoint =>
+              // Concat 2 observables so they fire sequentially
+              Observable.concat(
+                Observable.of(Actions.endpoint.updateInterfaceAction(newEndpoint)),
+                Observable.of(Actions.endpoint.getAccountsTransactions(
+                  action.payload.api, 
+                  null, 
+                  newEndpoint.accounts, 
+                  options))
+              )
+            )
+            .catch(() => {
+              return Observable.of({
+                type: TYPE_.ADD_WARNING_NOTIFICATION,
+                payload: 'Unable to fetch accounts from MetaMask. Is it unlocket?'
+              })
             }
             )
         }

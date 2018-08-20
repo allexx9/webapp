@@ -66,20 +66,20 @@ class PageDashboardVaultManager extends Component {
     // Updating the lists on each new block if the accounts balances have changed
     // Doing this this to improve performances by avoiding useless re-rendering
     const { accounts } = this.props
-    const sourceLogClass = this.constructor.name
-    console.log(`${sourceLogClass} -> UNSAFE_componentWillReceiveProps-> nextProps received.`);
+    
+    console.log(`${this.constructor.name} -> UNSAFE_componentWillReceiveProps-> nextProps received.`);
     // Updating the transaction list if there have been a change in total accounts balance and the previous balance is
     // different from 0 (balances are set to 0 on app loading)
     const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
     const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
     if (!currentBalance.eq(nextProps.endpoint.ethBalance) && !nextBalance.eq(0)) {
       this.getTransactions(null, accounts)
-      console.log(`${sourceLogClass} -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`);
+      console.log(`${this.constructor.name} -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`);
     }
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    const sourceLogClass = this.constructor.name
+    
     let stateUpdate = true
     let propsUpdate = true
     propsUpdate = !utils.shallowEqual(this.props, nextProps)
@@ -87,7 +87,7 @@ class PageDashboardVaultManager extends Component {
     if (stateUpdate || propsUpdate) {
       console.log('State updated ', stateUpdate)
       console.log('Props updated ', propsUpdate)
-      console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
+      console.log(`${this.constructor.name} -> shouldComponentUpdate -> Proceedding with rendering.`);
     }
     return stateUpdate || propsUpdate
   }
@@ -308,10 +308,10 @@ class PageDashboardVaultManager extends Component {
     const { api } = this.context
     // const options = {balance: false, supply: true}
     const options = { balance: false, supply: true, limit: 10, trader: false }
-    let sourceLogClass = this.constructor.name
+    
     utils.getTransactionsVaultOptV2(api, dragoAddress, accounts, options)
       .then(results => {
-        console.log(`${sourceLogClass} -> Transactions list loaded`)
+        console.log(`${this.constructor.name} -> Transactions list loaded`)
         const createdLogs = results[1].filter(event => {
           return event.type !== 'BuyVault' && event.type !== 'SellVault'
         })

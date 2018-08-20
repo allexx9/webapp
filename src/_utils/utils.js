@@ -59,13 +59,13 @@ class utilities {
     }
   }
 
-  notificationError = (notificationEngine, message) => {
+  notificationError = (notificationEngine, message, level = 'error') => {
     const messageFirstLine = message.split(/\r?\n/)
     notificationEngine.addNotification({
-      title: 'Error:',
+      title: level.charAt(0).toUpperCase() + level.slice(1),
       message: messageFirstLine[0],
-      level: 'error',
-      position: 'bl',
+      level: level,
+      position: 'br',
       autoDismiss: 10
     });
   }
@@ -214,7 +214,7 @@ class utilities {
   }
 
   getTransactionsVaultOptV2 = (api, dragoAddress, accounts, options = { balance: true, supply: false, limit: 20, trader: true }) => {
-    // const sourceLogClass = this.constructor.name
+    // 
     const poolApi = new PoolApi(api)
     let ethvalue = 0
     let drgvalue = 0
@@ -596,7 +596,11 @@ class utilities {
   * This function can be a performance hit, so it will need to be optimized as much as possible.
   **/
   getTransactionsDragoOptV2 = (api, dragoAddress, accounts, options = { balance: true, supply: false, limit: 20, trader: true }) => {
-    // const sourceLogClass = this.constructor.name
+    // 
+    // return Promise.reject(new Error('fail'))
+    if (accounts.length === 0){
+      return (Array(0),Array(0),Array(0))
+    }
     const poolApi = new PoolApi(api)
     let ethvalue = 0
     let drgvalue = 0
@@ -1171,15 +1175,15 @@ class utilities {
   }
 
   shallowEqual(objA, objB) {
-    // const sourceLogClass = this.constructor.name
+    // 
     if (objA === objB) {
-      // console.log(`${sourceLogClass} -> objA === objB`)
+      // console.log(`${this.constructor.name} -> objA === objB`)
       return true;
     }
 
     if (typeof objA !== 'object' || objA === null ||
       typeof objB !== 'object' || objB === null) {
-      // console.log(`${sourceLogClass} -> objA !== 'object'`)
+      // console.log(`${this.constructor.name} -> objA !== 'object'`)
       return false;
     }
 
@@ -1187,7 +1191,7 @@ class utilities {
     let keysB = Object.keys(objB);
 
     if (keysA.length !== keysB.length) {
-      // console.log(`${sourceLogClass} -> keysA.length`);
+      // console.log(`${this.constructor.name} -> keysA.length`);
       return false;
     }
 
@@ -1195,7 +1199,7 @@ class utilities {
     let bHasOwnProperty = hasOwnProperty.bind(objB);
     for (let i = 0; i < keysA.length; i++) {
       if (!bHasOwnProperty(keysA[i]) || objA[keysA[i]] !== objB[keysA[i]]) {
-        // console.log(`${sourceLogClass} -> Test for A's keys different from B`)
+        // console.log(`${this.constructor.name} -> Test for A's keys different from B`)
         return false;
       }
     }

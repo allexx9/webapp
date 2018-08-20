@@ -102,40 +102,37 @@ class PageFundDetailsDragoManager extends Component {
 
   componentWillUnmount() {
     const { contractSubscription } = this.state
-    const sourceLogClass = this.constructor.name
     // this.props.dispatch({type: TOKEN_PRICE_TICKERS_FETCH_STOP})
     try {
       contractSubscription.unsubscribe(function (error, success) {
         if (success) {
-          console.log(`${sourceLogClass}: Successfully unsubscribed from contract.`);
+          console.log(`Successfully unsubscribed from contract.`);
         }
         if (error) {
-          console.log(`${sourceLogClass}: Unsubscribe error ${error}.`)
+          console.log(`Unsubscribe error ${error}.`)
         }
       });
     }
     catch (error) {
-      console.log(`${sourceLogClass}: Unsubscribe error ${error}.`)
+      console.log(`Unsubscribe error ${error}.`)
     }
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
     // Updating the lists on each new block if the accounts balances have changed
     // Doing this this to improve performances by avoiding useless re-rendering
-    const sourceLogClass = this.constructor.name
     // console.log(nextProps)
     const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
     const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
     if (!currentBalance.eq(nextBalance)) {
       this.initDrago()
-      console.log(`${sourceLogClass} -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`);
+      console.log(`${this.constructor.name} -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`);
     } else {
       null
     }
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    const sourceLogClass = this.constructor.name
     let stateUpdate = true
     let propsUpdate = true
     // const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
@@ -143,7 +140,7 @@ class PageFundDetailsDragoManager extends Component {
     stateUpdate = !utils.shallowEqual(this.state, nextState)
     propsUpdate = !utils.shallowEqual(this.props, nextProps)
     if (stateUpdate || propsUpdate) {
-      console.log(`${sourceLogClass} -> shouldComponentUpdate -> Proceedding with rendering.`);
+      console.log(`${this.constructor.name} -> shouldComponentUpdate -> Proceedding with rendering.`);
     }
     return stateUpdate || propsUpdate
   }
@@ -491,8 +488,8 @@ class PageFundDetailsDragoManager extends Component {
       ]
     }, (error, events) => {
       if (!error) {
-        let sourceLogClass = this.constructor.name
-        console.log(`${sourceLogClass} -> New contract event.`);
+        
+        console.log(`${this.constructor.name} -> New contract event.`);
         console.log(events)
         this.initDrago()
       }
@@ -505,7 +502,7 @@ class PageFundDetailsDragoManager extends Component {
   // Getting last transactions
   getTransactions = async (dragoDetails, api) => {
     const dragoAddress = dragoDetails[0][0]
-    const sourceLogClass = this.constructor.name
+    
     const poolApi = new PoolApi(this.context.api)
     await poolApi.contract.dragoeventful.init()
     const contract = poolApi.contract.dragoeventful
@@ -610,7 +607,7 @@ class PageFundDetailsDragoManager extends Component {
         })
         Promise.all(promises).then((results) => {
           this.props.dispatch(Actions.drago.updateSelectedDragoAction({ transactions: results }))
-          console.log(`${sourceLogClass} -> Transactions list loaded`);
+          console.log(`${this.constructor.name} -> Transactions list loaded`);
           this.setState({
             loading: false,
           })

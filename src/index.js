@@ -16,7 +16,7 @@ import filter from 'redux-localstorage-filter';
 import logger from 'redux-logger'
 import { createEpicMiddleware } from 'redux-observable';
 import { rootEpic } from './_redux/epics/root_epics';
-import { composeWithDevTools } from 'redux-devtools-extension';
+// import { composeWithDevTools } from 'redux-devtools-extension';
 import * as ACTIONS  from './_redux/actions/const'
 import utils from './_utils/utils'
 import serializeError from 'serialize-error';
@@ -48,7 +48,19 @@ const relayActionsMiddleWare = store => next => action => {
     // console.log(action.type)
     if (action.type === ACTIONS.ADD_ERROR_NOTIFICATION) {
         
-        utils.notificationError(state.notifications.engine, serializeError(action.payload))
+        utils.notificationError(
+            state.notifications.engine, 
+            serializeError(action.payload),
+            'error'
+        )
+    }
+    if (action.type === ACTIONS.ADD_WARNING_NOTIFICATION) {
+        
+        utils.notificationError(
+            state.notifications.engine, 
+            serializeError(action.payload),
+            'warning'
+        )
     }
     next(action);
   }
@@ -70,7 +82,15 @@ const reducer = compose(
   )(Reducers.rootReducer);
 
 const storage = compose(
-    filter(['user', 'endpoint'])
+    filter(['user', 
+    // 'endpoint',
+    'endpoint.endpointInfo',
+    'endpoint.prevBlockNumber',
+    'endpoint.networkInfo',
+    'endpoint.prevBlockNumber',
+    'endpoint.networkError',
+    'endpoint.networkStatus'
+])
   )(adapter(window.localStorage));
 
   const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose

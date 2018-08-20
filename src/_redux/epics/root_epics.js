@@ -36,6 +36,7 @@ const Ethfinex_Epics = [
 
 const Endpoint_Epics = [
   Endpoint.checkMetaMaskIsUnlockedEpic,
+  Endpoint.getAccountsTransactionsEpic
 ]
 
 export const rootEpic = combineEpics (

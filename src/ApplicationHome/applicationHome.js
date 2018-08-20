@@ -77,7 +77,7 @@ class ApplicationHome extends Component {
         <Loading />
       );
     }
-
+    console.log(this.props)
     return (
       <div className={styles.body}>
         <Row>

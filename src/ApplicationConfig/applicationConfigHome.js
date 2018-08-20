@@ -45,7 +45,8 @@ class ApplicationConfigHome extends Component {
           blockNumber={endpoint.prevBlockNumber}
           networkName={endpoint.networkInfo.name}
           networkError={endpoint.networkError}
-          networkStatus={endpoint.networkStatus} />
+          networkStatus={endpoint.networkStatus} 
+          />
       </div>
 
     );

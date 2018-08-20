@@ -17,7 +17,6 @@ class Interfaces {
     this._success = {}
     this._error = {}
     this._isConnected = {}
-    this._sourceLogClass = this.constructor.name
   }
 
   get success() {
@@ -43,13 +42,15 @@ class Interfaces {
   }
 
   getAccountsParity() {
-    console.log(`${this._sourceLogClass} -> getAccountsParity`)
+    console.log(`${this.constructor.name} -> getAccountsParity`)
     const api = this._api
     let accounts = {}
     let arrayPromises = []
     return api.parity
-      .accountsParity()
+      .accountsInfo()
+      // .allAccountsInfo()
       .then((accountsParity) => {
+        // console.log(accountsParity)
         const poolsApi = new PoolsApi(this._api)
         poolsApi.contract.rigotoken.init()
         Object.keys(accountsParity).forEach(function (k) {
@@ -96,7 +97,7 @@ class Interfaces {
   }
 
   getAccountsMetamask = async () => {
-    // console.log(`${this._sourceLogClass} -> getAccountsMetamask`)
+    // console.log(`${this.constructor.name} -> getAccountsMetamask`)
     const web3 = window.web3
     const parityNetworkId = this._parityNetworkId
     let accountsMetaMask = {}
@@ -153,7 +154,7 @@ class Interfaces {
   }
 
   attachInterfaceInfuraV2 = async () => {
-    // console.log(`${this._sourceLogClass} -> Interface Infura`)
+    // console.log(`${this.constructor.name} -> Interface Infura`)
     const api = this._api
     try {
       const accountsMetaMask = await this.getAccountsMetamask(api)
@@ -194,10 +195,11 @@ class Interfaces {
   }
 
   attachInterfaceRigoBlockV2 = async () => {
-    console.log(`${this._sourceLogClass} -> Interface RigoBlock`)
+    console.log(`${this.constructor.name} -> Interface RigoBlock`)
     const api = this._api
     let accountsParity = {}
     let accountsMetaMask = {}
+    console.log(api)
     try {
       // Check if the parity node is running in --public-mode
       let nodeKind = await api.parity.nodeKind()
@@ -320,16 +322,15 @@ class Interfaces {
   }
 
   detachInterface = (api, subscriptionData) => {
-    let sourceLogClass = this.constructor.name
     if (typeof subscriptionData === 'object') {
       console.log(subscriptionData)
       try {
         subscriptionData.unsubscribe(function (error, success) {
           if (success) {
-            console.log(`${sourceLogClass}: Successfully unsubscribed from eth_blockNumber.`);
+            console.log(`Successfully unsubscribed from eth_blockNumber.`);
           }
           if (error) {
-            console.log(`${sourceLogClass}: Unsubscribe error ${error}.`)
+            console.log(`Unsubscribe error ${error}.`)
           }
         });
       } catch (error) {
@@ -340,10 +341,10 @@ class Interfaces {
       try {
         api.unsubscribe(subscriptionData)
           .then(() => {
-            console.log(`${sourceLogClass}: Successfully unsubscribed from eth_blockNumber -> Subscription ID: ${subscriptionData}.`);
+            console.log(`Successfully unsubscribed from eth_blockNumber -> Subscription ID: ${subscriptionData}.`);
           })
           .catch((error) => {
-            console.log(`${sourceLogClass}: Unsubscribe error ${error}.`)
+            console.log(`Unsubscribe error ${error}.`)
           });
       } catch (error) {
         console.log(error)

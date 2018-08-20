@@ -117,7 +117,7 @@ export const PARITY_NETWORKS_ID = {
   ropsten: 3,
   foundation: 1
 }
-export const DEFAULT_ENDPOINT = 'rigoblock';
+export const DEFAULT_ENDPOINT = 'infura';
 // Please refert to the following link for network IDs
 // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md
 // kovan = 42
