@@ -99,7 +99,7 @@ class PageNetworkConfig extends Component {
         selectedEndpoint: key,
         save: false
       })
-      this.props.dispatch(Actions.endpoint.updateInterfaceAction(endpoint))
+      this.props.dispatch(Actions.endpoint.updateInterface(endpoint))
     }
 
     onChangeNetwork = (event, key) => {
@@ -121,7 +121,7 @@ class PageNetworkConfig extends Component {
         selectedNetwork: key,
         save: false
       })
-      this.props.dispatch(Actions.endpoint.updateInterfaceAction(endpoint))
+      this.props.dispatch(Actions.endpoint.updateInterface(endpoint))
     }
 
     unsubscribeFromNewBlock = () => {
@@ -142,7 +142,7 @@ class PageNetworkConfig extends Component {
 
     handleRefresh = () =>{
       const endpoint ={ prevBlockNumber: "0"}
-      this.props.dispatch(Actions.endpoint.updateInterfaceAction(endpoint))
+      this.props.dispatch(Actions.endpoint.updateInterface(endpoint))
       window.location.reload(false)
     }
 

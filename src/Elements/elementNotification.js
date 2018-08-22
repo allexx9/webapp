@@ -80,7 +80,7 @@ export default class ElementNotification extends Component {
     const { ethereumNetworkName } = this.context
     const {txHash} = this.props
     return (
-      <a href={'https://'+ethereumNetworkName+'.etherscan.io/tx/'+txHash} target="_blank"></a>
+      <a href={'https://'+ethereumNetworkName+'.etherscan.io/tx/'+txHash} rel="noopener noreferrer" target="_blank"></a>
     )
   }
 

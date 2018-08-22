@@ -13,6 +13,7 @@ import classNames from 'classnames';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { connect } from 'react-redux';
 import { THEME_COLOR } from './../_utils/const'
+import ElementNotConnected from '../Elements/elementNotConnected'
 
 const muiTheme = getMuiTheme({
   palette: {
@@ -53,9 +54,6 @@ class ApplicationDragoPage extends Component {
 
   static contextTypes = {
     api: PropTypes.object.isRequired,
-    isConnected: PropTypes.bool.isRequired,
-    isSyncing: PropTypes.bool.isRequired,
-    syncStatus: PropTypes.object.isRequired,
   };
 
   UNSAFE_componentWillMount() {
@@ -66,6 +64,7 @@ class ApplicationDragoPage extends Component {
 
   static propTypes = {
     location: PropTypes.object.isRequired,
+    app: PropTypes.object.isRequired
   };
 
   handleToggleNotifications = () => {
@@ -75,6 +74,7 @@ class ApplicationDragoPage extends Component {
   render() {
     const { notificationsOpen } = this.state
     const { location } = this.props
+    const { isSyncing, syncStatus, isConnected } = this.props.app
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
         <Grid fluid className={styles.maincontainer}>
@@ -88,26 +88,15 @@ class ApplicationDragoPage extends Component {
           </Row>
           <Row className={classNames(styles.content)}>
             <Col xs={12}>
-              {/* {this.context.isConnected && !this.context.isSyncing ? (
-                // {false ? (
+              {isConnected && !isSyncing ? (
                 <ApplicationDragoHome
-          
                   location={location}
                   notificationsOpen={notificationsOpen}
                   handleToggleNotifications={this.handleToggleNotifications}
                 />
               ) : (
-                  <ElementNotConnected isSyncing={this.context.isSyncing} syncStatus={this.context.syncStatus} />
-                )} */}
-
-
-                <ApplicationDragoHome
-          
-          location={location}
-          notificationsOpen={notificationsOpen}
-          handleToggleNotifications={this.handleToggleNotifications}
-        />
-
+                  <ElementNotConnected isSyncing={isSyncing} syncStatus={syncStatus} />
+                )}
             </Col>
           </Row>
         </Grid>

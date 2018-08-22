@@ -74,22 +74,28 @@ export class App extends Component {
 
   constructor(props) {
     super(props);
+    console.log(props)
     this._notificationSystem = null;
     // Connecting to blockchain client
     let endpoint = new Endpoint(this.props.endpoint.endpointInfo, this.props.endpoint.networkInfo)
     this._api = endpoint.connect()
-    console.log(this._api)
-    this.state = {
-      isConnected: false,
-      isSyncing: false,
-      syncStatus: {},
-      appLoading: true
-    }
+    // this.state = {
+    //   isConnected: props.app.isConnected,
+    //   isSyncing: props.app.isSyncing,
+    //   syncStatus: props.app.syncStatus,
+    //   appLoading: props.app.appLoading
+    // }
   }
 
   scrollPosition = 0
   tdIsConnected = null
   tdIsMetaMaskUnlocked = null
+
+  state = {
+    isConnected: this.props.app.isConnected,
+    isSyncing: this.props.app.isSyncing,
+    syncStatus: this.props.app.syncStatus,
+  }
 
   // Defining the properties of the context variables passed down to children
   static childContextTypes = {
@@ -101,6 +107,7 @@ export class App extends Component {
   };
 
   static propTypes = {
+    app: PropTypes.object.isRequired,
     endpoint: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
   };
@@ -109,40 +116,52 @@ export class App extends Component {
   getChildContext() {
     return {
       api: this._api,
-      isConnected: this.state.isConnected,
-      isSyncing: this.state.isSyncing,
-      syncStatus: this.state.syncStatus,
+      isConnected: this.props.app.isConnected,
+      isSyncing: this.props.app.isSyncing,
+      syncStatus: this.props.app.syncStatus,
       ethereumNetworkName: DEFAULT_NETWORK_NAME
     };
   }
 
-  attachInterfaceAction = () => {
-    return {
-      type: ATTACH_INTERFACE,
-      payload: new Promise((resolve) => {
-        this.attachInterface()
-          .then(result => {
-            this.setState({
-              appLoading: false,
-              isConnected: true,
-            })
-            resolve(result);
-          })
-      })
-        .catch(error => {
-          console.log(error)
-          let newEndpoint = { ...this.props.endpoint }
-          newEndpoint.networkStatus = MSG_NETWORK_STATUS_ERROR
-          newEndpoint.networkError = NETWORK_WARNING
-          this.props.dispatch(Actions.endpoint.updateInterfaceAction(newEndpoint))
-          this.setState({
-            appLoading: false,
-            isConnected: false,
-          })
-          return
-        })
-    }
-  }
+  // attachInterfaceAction = () => {
+  //   return {
+  //     type: ATTACH_INTERFACE,
+  //     payload: new Promise((resolve) => {
+  //       this.attachInterface()
+  //         .then(result => {
+  //           this.props.dispatch(Actions.app.updateAppStatus(
+  //             {
+  //               appLoading: false,
+  //               // isConnected: true,
+  //             }
+  //           ))
+  //           // this.setState({
+  //           //   appLoading: false,
+  //           //   isConnected: true,
+  //           // })
+  //           resolve(result);
+  //         })
+  //     })
+  //       .catch(error => {
+  //         console.log(error)
+  //         let newEndpoint = { ...this.props.endpoint }
+  //         newEndpoint.networkStatus = MSG_NETWORK_STATUS_ERROR
+  //         newEndpoint.networkError = NETWORK_WARNING
+  //         this.props.dispatch(Actions.endpoint.updateInterface(newEndpoint))
+  //         this.props.dispatch(Actions.app.updateAppStatus(
+  //           {
+  //             appLoading: false,
+  //             // isConnected: false,
+  //           }
+  //         ))
+  //         // this.setState({
+  //         //   appLoading: false,
+  //         //   isConnected: false,
+  //         // })
+  //         return
+  //       })
+  //   }
+  // }
 
   shouldComponentUpdate(nextProps, nextState) {
     // console.log(this.props.user.isManager)
@@ -152,29 +171,30 @@ export class App extends Component {
     return stateUpdate || propsUpdate
   }
 
-  componentDidMount() {
+  componentDidMount = async () =>{
     this.props.dispatch(Actions.notifications.initNotificationsSystemAction(this._notificationSystem))
-    this.props.dispatch(this.attachInterfaceAction())
-    this.checkMetaMaskUnlocked()
-    setTimeout(() => {
-      this.setState({
-        appLoading: false,
-      })
-    }, 7000);
+    const { endpoint } = this.props
+    let WsSecureUrl = ''
+    const networkName = this.props.endpoint.networkInfo.name
+    if (PROD) {
+      WsSecureUrl = this.props.endpoint.endpointInfo.wss[networkName].prod
+    } else {
+      WsSecureUrl = this.props.endpoint.endpointInfo.wss[networkName].dev
+    }
+    const web3 = new Web3(WsSecureUrl)
+    this.props.dispatch(Actions.endpoint.attachInterface(web3, this._api, endpoint))
+    if (typeof window.web3 !== 'undefined') {
+      const web3 = window.web3
+      this.props.dispatch(Actions.endpoint.checkMetaMaskIsUnlocked(this._api, web3))
+    }
   }
 
   UNSAFE_componentWillMount() {
     // Starting connection checking. this is not necessary runnin inside Parity UI
     // because the checki is done by Parity and a messagge will be displayed by the client
-    if (this.props.endpoint.endpointInfo.name !== 'local') {
-      this.tdIsConnected = setTimeout(this.checkConnectionToNode, 1000)
-    }
   }
 
   componentWillUnmount() {
-    if (this.props.endpoint.endpointInfo.name !== 'local') {
-      clearTimeout(this.tdIsConnected)
-    }
     try {
       this.detachInterface();
     } catch (err) {
@@ -186,54 +206,6 @@ export class App extends Component {
   UNSAFE_componentWillUpdate() {
   }
 
-
-  // This function is passed down with context and used as a call back function to show a warning page
-  // if the connection with the node drops
-  isConnected = (status) => {
-    this.setState({
-      isConnected: status
-    })
-  }
-
-  checkConnectionToNode = () => {
-    this.tdIsConnected = setTimeout(this.checkConnectionToNode, isConnectedTimeout)
-    if (this._api.isConnected) {
-      if (!this.state.isConnected) {
-        this.props.dispatch(this.attachInterfaceAction())
-      }
-      this.setState({
-        isConnected: true
-      })
-      this._api.eth.syncing()
-        .then(result => {
-          if (result !== false) {
-            this.setState({
-              isSyncing: true,
-              syncStatus: result
-            })
-          }
-        })
-        .catch((error) => {
-          console.log(error)
-          this.setState({
-            isConnected: false
-          })
-        })
-    } else {
-      this.setState({
-        isConnected: false
-      })
-      this.tdIsMetaMaskUnlocked = setTimeout(this.checkConnectionToNode, isConnectedTimeout)
-    }
-  }
-
-  checkMetaMaskUnlocked = () => {
-    if (typeof window.web3 !== 'undefined') {
-      const web3 = window.web3
-      this.props.dispatch(Actions.endpoint.checkMetaMaskIsUnlocked(this._api, web3))
-    }
-  }
-
   render() {
     let notificationStyle = {
       NotificationItem: { // Override the notification item
@@ -241,7 +213,13 @@ export class App extends Component {
           margin: '0px 0px 0px 0px'
         },
         info: { // Applied only to the success notification item
-          backgroundColor: 'white'
+          border: '1px solid',
+          borderColor: "#EEEEEE",
+          WebkitBoxShadow: 'rgba(0, 0, 0, 0.1) 0px 5px 5px',
+          MozBoxShadow: 'rgba(0, 0, 0, 0.1) 0px 5px 5px',
+          boxShadow: 'rgba(0, 0, 0, 0.1) 0px 5px 5px',
+          backgroundColor: 'white',
+          marginBottom: '5px'
         },
         error: {
           borderTop: '2px solid',
@@ -271,21 +249,25 @@ export class App extends Component {
           color: '#ffffff',
           fontWeight: 700
         }
-    },
-    Dismiss: {  
-      error: {
-        backgroundColor: '',
-        color: '#ffffff'
       },
-      warning: {
-        backgroundColor: '',
-        color: '#ffffff'
+      Dismiss: {
+        info: {
+          backgroundColor: '',
+          color: '#000000'
+        },
+        error: {
+          backgroundColor: '',
+          color: '#ffffff'
+        },
+        warning: {
+          backgroundColor: '',
+          color: '#ffffff'
+        },
       },
-  },
     }
     return (
       <div>
-        {this.state.appLoading
+        {this.props.app.appLoading
           ?
           <div>
             <NotificationSystem ref={n => this._notificationSystem = n} style={notificationStyle} />
@@ -293,7 +275,8 @@ export class App extends Component {
               <AppLoading ></AppLoading>
             </Router>
           </div>
-          : <div><NotificationSystem ref={n => this._notificationSystem = n} style={notificationStyle} />
+          : <div>
+            <NotificationSystem ref={n => this._notificationSystem = n} style={notificationStyle} />
             <Router history={history}>
               <Switch>
                 <Route exact path={"/app/" + appHashPath + "/home"} component={ApplicationHomePage} />
@@ -328,158 +311,185 @@ export class App extends Component {
     )
   }
 
-  attachInterface = () => {
-    // Allowed endpoints are defined in const.js
-    let WsSecureUrl = ''
-    const selectedEndpoint = this.props.endpoint.endpointInfo.name
-    const networkId = this.props.endpoint.networkInfo.id
-    const networkName = this.props.endpoint.networkInfo.name
-    let subscriptionData
-    let blockchain = new Interfaces(this._api, networkId)
-    switch (selectedEndpoint) {
-      case INFURA:
-        console.log(`${this.constructor.name} -> ${INFURA}`)
-        console.log(this._api, networkId)
-        return blockchain.attachInterfaceInfuraV2(this._api, networkId)
-          .then((attachedInterface) => {
-            // this.setState({...this.state, ...blockchain.success})
-            // Subscribing to newBlockNumber event
-            // Setting connection to node
-            if (PROD) {
-              WsSecureUrl = this.props.endpoint.endpointInfo.wss[networkName].prod
-            } else {
-              WsSecureUrl = this.props.endpoint.endpointInfo.wss[networkName].dev
-            }
-            // Infura does not support WebSocket for Kovan yet.
-            console.log(attachedInterface)
-            if (networkName === KOVAN) {
-              return this._api.subscribe('eth_blockNumber', this.onNewBlockNumber)
-                .then((subscriptionID) => {
-                  console.log(`Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);
-                  subscriptionData = subscriptionID
-                  attachedInterface.subscriptionData = subscriptionData
-                  this.setState({
-                    appLoading: false
-                  })
-                  return attachedInterface
-                })
-                .catch((error) => {
-                  console.log('error subscription', error)
-                  this.setState({
-                    appLoading: false,
-                    isConnected: false,
-                  })
-                  // this.props.dispatch(this.updateInterfaceAction(newEndpoint))
-                });
-            } else {
-              // Subscribing to newBlockNumber event
-              const web3 = new Web3(WsSecureUrl)
-              return Promise
-                .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
-                .then(result => {
-                  let subscription = result[0]
-                  console.log(`Subscribed to eth_blockNumber`);
-                  subscriptionData = subscription
-                  attachedInterface.subscriptionData = subscriptionData
-                  this.setState({
-                    appLoading: false
-                  })
-                  return attachedInterface
-                })
-                .catch((error) => {
-                  console.log('error subscription', error)
-                  this.setState({
-                    appLoading: false,
-                    isConnected: false,
-                  })
-                  return attachedInterface
-                });
-            }
+  // attachInterface = () => {
+  //   // Allowed endpoints are defined in const.js
+  //   // let WsSecureUrl = ''
+  //   const selectedEndpointName = this.props.endpoint.endpointInfo.name
+  //   const networkId = this.props.endpoint.networkInfo.id
+  //   // const networkName = this.props.endpoint.networkInfo.name
+  //   // let subscriptionData
+  //   let blockchain = new Interfaces(this._api, networkId)
+  //   switch (selectedEndpointName) {
+  //     case INFURA:
+  //       console.log(`${this.constructor.name} -> ${INFURA}`)
+  //       console.log(this._api, networkId)
+  //       return blockchain.attachInterfaceInfuraV2(this._api, networkId)
+  //         // .then((attachedInterface) => {
+  //         //   // Subscribing to newBlockNumber event
+  //         //   // Setting connection to node
+  //         //   if (PROD) {
+  //         //     WsSecureUrl = this.props.endpoint.endpointInfo.wss[networkName].prod
+  //         //   } else {
+  //         //     WsSecureUrl = this.props.endpoint.endpointInfo.wss[networkName].dev
+  //         //   }
+  //         //   // Infura does not support WebSocket for Kovan yet.
+  //         //   console.log(attachedInterface)
+  //         //   if (networkName === KOVAN) {
+  //         //     return this._api.subscribe('eth_blockNumber', this.onNewBlockNumber)
+  //         //       .then((subscriptionID) => {
+  //         //         console.log(`Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionID}`);
+  //         //         subscriptionData = subscriptionID
+  //         //         attachedInterface.subscriptionData = subscriptionData
+  //         //         this.setState({
+  //         //           appLoading: false
+  //         //         })
+  //         //         return attachedInterface
+  //         //       })
+  //         //       .catch((error) => {
+  //         //         console.log('error subscription', error)
+  //         //         this.setState({
+  //         //           appLoading: false,
+  //         //           isConnected: false,
+  //         //         })
+  //         //         // this.props.dispatch(this.updateInterface(newEndpoint))
+  //         //       });
+  //         //   } else {
+  //         //     // Subscribing to newBlockNumber event
+  //         //     const web3 = new Web3(WsSecureUrl)
+  //         //     return Promise
+  //         //       .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
+  //         //       .then(result => {
+  //         //         let subscription = result[0]
+  //         //         console.log(`Subscribed to eth_blockNumber`);
+  //         //         subscriptionData = subscription
+  //         //         attachedInterface.subscriptionData = subscriptionData
+  //         //         this.setState({
+  //         //           appLoading: false
+  //         //         })
+  //         //         return attachedInterface
+  //         //       })
+  //         //       .catch((error) => {
+  //         //         console.log('error subscription', error)
+  //         //         this.setState({
+  //         //           appLoading: false,
+  //         //           isConnected: false,
+  //         //         })
+  //         //         return attachedInterface
+  //         //       });
+  //         //   }
+  //         // })
+  //         .then (() =>{
+  //           this.props.dispatch(Actions.app.updateAppStatus(
+  //             {
+  //               appLoading: false
+  //             }
+  //           ))
+  //         })
+  //         .catch(() => {
+  //           // this.setState({...this.state, ...blockchain.error})
+  //           this.props.dispatch(Actions.app.updateAppStatus(
+  //             {
+  //               appLoading: false,
+  //               // isConnected: false,
+  //             }
+  //           ))
+  //           // this.setState({
+  //           //   appLoading: false,
+  //           //   isConnected: false,
+  //           // })
+  //         })
+  //     case RIGOBLOCK:
+  //       console.log(`${this.constructor.name} -> ${RIGOBLOCK}`)
+  //       return blockchain.attachInterfaceRigoBlockV2(this._api, networkId)
+  //         // .then((attachedInterface) => {
+  //         //   // Setting connection to node
+  //         //   if (PROD) {
+  //         //     WsSecureUrl = this.props.endpoint.endpointInfo.wss[networkName].prod
+  //         //   } else {
+  //         //     WsSecureUrl = this.props.endpoint.endpointInfo.wss[networkName].dev
+  //         //   }
+  //         //   // Subscribing to newBlockNumber event
+  //         //   let web3
+  //         //   try {
+  //         //     console.log(`Connectiong to Websocket ${WsSecureUrl}`);
+  //         //     web3 = new Web3(WsSecureUrl)
+  //         //   } catch (error) {
+  //         //     throw error
+  //         //   }
 
-          })
-          .catch(() => {
-            // this.setState({...this.state, ...blockchain.error})
-            this.setState({
-              appLoading: false,
-              isConnected: false,
-            })
-          })
-      case RIGOBLOCK:
-        console.log(`${this.constructor.name} -> ${RIGOBLOCK}`)
-        return blockchain.attachInterfaceRigoBlockV2(this._api, networkId)
-          .then((attachedInterface) => {
-            // Setting connection to node
-            if (PROD) {
-              WsSecureUrl = this.props.endpoint.endpointInfo.wss[networkName].prod
-            } else {
-              WsSecureUrl = this.props.endpoint.endpointInfo.wss[networkName].dev
-            }
-            // Subscribing to newBlockNumber event
-            let web3
-            try {
-              console.log(`Connectiong to Websocket ${WsSecureUrl}`);
-              web3 = new Web3(WsSecureUrl)
-            } catch (error) {
-              throw error
-            }
+  //         //   return Promise
+  //         //     .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
+  //         //     .then(result => {
+  //         //       let subscription = result[0]
+  //         //       console.log(`Subscribed to eth_blockNumber`);
+  //         //       subscriptionData = subscription
+  //         //       attachedInterface.subscriptionData = subscriptionData
+  //         //       this.setState({
+  //         //         appLoading: false
+  //         //       })
+  //         //       return attachedInterface
+  //         //     })
+  //         //     .catch((error) => {
+  //         //       console.log('error subscription', error)
+  //         //       this.setState({
+  //         //         appLoading: false,
+  //         //         isConnected: false,
+  //         //       })
+  //         //     });
+  //         // })
+  //         .then (() =>{
+  //           this.props.dispatch(Actions.app.updateAppStatus({appLoading: false}))
+  //         })
+  //         .catch(() => {
 
-            return Promise
-              .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
-              .then(result => {
-                let subscription = result[0]
-                console.log(`Subscribed to eth_blockNumber`);
-                subscriptionData = subscription
-                attachedInterface.subscriptionData = subscriptionData
-                this.setState({
-                  appLoading: false
-                })
-                return attachedInterface
-              })
-              .catch((error) => {
-                console.log('error subscription', error)
-                this.setState({
-                  appLoading: false,
-                  isConnected: false,
-                })
-              });
-          })
-          .catch(() => {
-            this.setState(...this.state, ...blockchain.error)
-            this.setState({
-              appLoading: false,
-              isConnected: false,
-            })
-          })
-      case LOCAL:
-        console.log(`${this.constructor.name} -> ${LOCAL}`)
-        return blockchain.attachInterfaceRigoBlockV2(this._api, networkId)
-          .then((attachedInterface) => {
-            // Setting connection to node
-            if (PROD) {
-              WsSecureUrl = EP_RIGOBLOCK_KV_PROD_WS
-            } else {
-              WsSecureUrl = EP_RIGOBLOCK_KV_DEV_WS
-            }
-            // Subscribing to newBlockNumber event
-            const web3 = new Web3(WsSecureUrl)
-            return Promise
-              .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
-              .then(result => {
-                let subscription = result[0]
-                console.log(`Subscribed to eth_blockNumber`);
-                subscriptionData = subscription
-                attachedInterface.subscriptionData = subscriptionData
-                return attachedInterface
-              })
-          })
-          .catch(() => {
-            // this.setState({...this.state, ...blockchain.error})
-          })
-      default:
-        return
-    }
-
-  }
+  //           // this.setState(...this.state, ...blockchain.error)
+  //           this.props.dispatch(Actions.app.updateAppStatus(
+  //             {
+  //               appLoading: false,
+  //               // isConnected: false,
+  //             }
+  //           ))
+  //           // this.setState({
+  //           //   appLoading: false,
+  //           //   isConnected: false,
+  //           // })
+  //         })
+  //     case LOCAL:
+  //       console.log(`${this.constructor.name} -> ${LOCAL}`)
+  //       return blockchain.attachInterfaceRigoBlockV2(this._api, networkId)
+  //         // .then((attachedInterface) => {
+  //         //   // Setting connection to node
+  //         //   if (PROD) {
+  //         //     WsSecureUrl = EP_RIGOBLOCK_KV_PROD_WS
+  //         //   } else {
+  //         //     WsSecureUrl = EP_RIGOBLOCK_KV_DEV_WS
+  //         //   }
+  //         //   // Subscribing to newBlockNumber event
+  //         //   const web3 = new Web3(WsSecureUrl)
+  //         //   return Promise
+  //         //     .all([web3.eth.subscribe('newBlockHeaders', this.onNewBlockNumber)])
+  //         //     .then(result => {
+  //         //       let subscription = result[0]
+  //         //       console.log(`Subscribed to eth_blockNumber`);
+  //         //       subscriptionData = subscription
+  //         //       attachedInterface.subscriptionData = subscriptionData
+  //         //       return attachedInterface
+  //         //     })
+  //         // })
+  //         .then (() =>{
+  //           this.props.dispatch(Actions.endpoint.updateAppStatus(
+  //             {
+  //               appLoading: false
+  //             }
+  //           ))
+  //         })
+  //         .catch(() => {
+  //           // this.setState({...this.state, ...blockchain.error})
+  //         })
+  //     default:
+  //       return
+  //   }
+  // }
 
   onNewBlockNumber = (_error, blockNumber) => {
     // utils.logger.disable()
@@ -506,7 +516,7 @@ export class App extends Component {
       const endpoint = {
         prevBlockNumber: newBlockNumber.toFixed()
       }
-      Actions.endpoint.updateInterfaceAction(endpoint)
+      this.props.dispatch(Actions.endpoint.updateInterface(endpoint))
       return null
     }
     const accounts = [].concat(endpoint.accounts);
@@ -516,7 +526,6 @@ export class App extends Component {
 
       const tokensQueries = accounts.map((account) => {
         console.log(`${this.constructor.name} -> API call getBalance RigoToken-> applicationDragoHome: Getting balance of account ${account.address}`)
-        // return rigoTokenContract.instance.balanceOf.call({}, [account.address])
         return poolsApi.contract.rigotoken.balanceOf(account.address)
       })
 
@@ -610,7 +619,7 @@ export class App extends Component {
             })
             )
           }
-          this.props.dispatch(Actions.endpoint.updateInterfaceAction(endpoint))
+          this.props.dispatch(Actions.endpoint.updateInterface(endpoint))
           return endpoint
         })
         .catch((error) => {
@@ -631,14 +640,13 @@ export class App extends Component {
             })
             )
           }
-          this.props.dispatch(Actions.endpoint.updateInterfaceAction(endpoint))
+          this.props.dispatch(Actions.endpoint.updateInterface(endpoint))
           return endpoint
         });
-    }
-    else {
+    } else {
       const newEndpoint = { ...endpoint }
       newEndpoint.prevBlockNumber = newBlockNumber.toFixed()
-      this.props.dispatch(Actions.endpoint.updateInterfaceAction(newEndpoint))
+      this.props.dispatch(Actions.endpoint.updateInterface(newEndpoint))
     }
     // utils.logger.enable()
   }

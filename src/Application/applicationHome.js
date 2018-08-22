@@ -54,10 +54,6 @@ class ApplicationHomePage extends Component {
 
   static contextTypes = {
     api: PropTypes.object.isRequired,
-    isConnected: PropTypes.bool.isRequired,
-    isSyncing: PropTypes.bool.isRequired,
-    syncStatus: PropTypes.object.isRequired,
-    ethereumNetworkName: PropTypes.string.isRequired,
   };
 
   UNSAFE_componentWillMount() {
@@ -68,13 +64,15 @@ class ApplicationHomePage extends Component {
 
   static propTypes = {
     location: PropTypes.object.isRequired,
-  };
+    app: PropTypes.object.isRequired
+  }
 
   handleToggleNotifications = () => {
     this.setState({ notificationsOpen: !this.state.notificationsOpen })
   }
 
   render() {
+    const { isSyncing, syncStatus, isConnected } = this.props.app
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
         <Grid fluid className={styles.maincontainer}>
@@ -88,10 +86,11 @@ class ApplicationHomePage extends Component {
           </Row>
           <Row className={classNames(styles.content)}>
             <Col xs={12}>
-              {this.context.isConnected && !this.context.isSyncing ? (
-                  <ApplicationHome />
+              <ApplicationHome />
+              {isConnected && !isSyncing ? (
+                null
               ) : (
-                  <ElementNotConnected isSyncing={this.context.isSyncing} syncStatus={this.context.syncStatus} />
+                  <ElementNotConnected isSyncing={isSyncing} syncStatus={syncStatus} />
                 )}
             </Col>
           </Row>

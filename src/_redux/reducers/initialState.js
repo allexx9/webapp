@@ -48,6 +48,12 @@ const fakeTicker = () =>{
 }
 
 const initialState = {
+  app: {
+    isConnected: false,
+    isSyncing: false,
+    syncStatus: {},
+    appLoading: true
+  },
   notifications: {
     engine: ''
   },

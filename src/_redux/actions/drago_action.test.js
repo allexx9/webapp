@@ -1,4 +1,4 @@
-import drago from './drago';
+import drago from './drago_actions';
 import {
   FETCH_ASSETS_PRICE_DATA,
 } from './const'

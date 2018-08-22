@@ -1,11 +1,10 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
-import * as Colors from 'material-ui/styles/colors'
+
 import styles from './applicationHome.module.css';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import RaisedButton from 'material-ui/RaisedButton';
 import { Card, CardActions, CardTitle, CardText } from 'material-ui/Card';
-import Paper from 'material-ui/Paper';
 import { Row, Col } from 'react-flexbox-grid';
 import FlatButton from 'material-ui/FlatButton'
 import ElementBottomStatusBar from '../Elements/elementBottomStatusBar'
@@ -56,9 +55,6 @@ class ApplicationHome extends Component {
   }
 
   componentDidMount() {
-    // this.setState()
-    // this.checkConnectionToNode();
-    // console.log(this.context);
   }
 
   render() {

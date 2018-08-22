@@ -7,13 +7,16 @@ import {
   UPDATE_TRANSACTIONS_VAULT_MANAGER,
   INIT_NOTIFICATION,
 } from './const'
-import drago from './drago'
+import app from './app_actions'
+import drago from './drago_actions'
 import transactions from './transactions'
 import endpoint from './endpoint_actions'
 import exchange from './exchange'
 import tokens from './tokens'
 
 class actions {
+
+  app = app
 
   drago = drago
 

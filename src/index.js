@@ -42,6 +42,16 @@ const relayActionsMiddleWare = store => next => action => {
 
 const notificationsMiddleWare = store => next => action => {
     const state = store.getState()
+    console.log(action)
+    if (action.type === ACTIONS.ADD_ACCOUNT_NOTIFICATION) {
+        action.payload.map((notification) => {
+            utils.notificationAccount(
+                state.notifications.engine,
+                notification,
+                'info'
+            )
+        })
+    }
     if (action.type === ACTIONS.ADD_ERROR_NOTIFICATION) {
         utils.notificationError(
             state.notifications.engine,
@@ -64,7 +74,7 @@ const middlewares = [
     epicMiddleware,
     relayActionsMiddleWare,
     notificationsMiddleWare,
-    promiseMiddleware()
+    // promiseMiddleware()
 ];
 
 // if (process.env.NODE_ENV === `development`) {
@@ -81,8 +91,8 @@ const saveSubsetFilter = createFilter(
         'prevBlockNumber',
         'networkError',
         'networkStatus'
-]
-  );
+    ]
+);
 //   const saveSubsetBlacklistFilter = createBlacklistFilter(
 //     'endpoint',
 //     ['accounts']
@@ -92,41 +102,20 @@ const persistConfig = {
     key: 'rigoblock',
     storage,
     stateReconciler: autoMergeLevel2,
-    // blacklist: ['endpoint.accounts'],
     whitelist: ['endpoint', 'user'],
     transforms: [
         saveSubsetFilter,
         // saveSubsetBlacklistFilter
-      ]
+    ]
 }
 const persistedReducer = persistReducer(persistConfig, Reducers.rootReducer)
-
-
-
-// const reducer = compose(
-//     mergePersistedState()
-// )(Reducers.rootReducer);
-
-// const storage = compose(
-//     filter(['user',
-//         // 'endpoint',
-//         'endpoint.endpointInfo',
-        // 'endpoint.prevBlockNumber',
-        // 'endpoint.networkInfo',
-        // 'endpoint.prevBlockNumber',
-        // 'endpoint.networkError',
-        // 'endpoint.networkStatus'
-//     ])
-// )(adapter(window.localStorage));
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 
 const enhancer = composeEnhancers(
     applyMiddleware(...middlewares),
-    // persistState(storage, 'rigoblock')
 );
 
-// const store = createStore(reducer, enhancer);
 let store = createStore(persistedReducer, enhancer);
 let persistor = persistStore(store)
 

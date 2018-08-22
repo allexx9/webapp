@@ -10,8 +10,36 @@ import {
   ERCdEX,
   Ethfinex,
 } from './const'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import ElementNotification from '../Elements/elementNotification'
 
 import { Actions } from '../_redux/actions'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+
+class NotificationAlert extends Component {
+
+  static propTypes = {
+    primaryText: PropTypes.string.isRequired,
+    secondaryText: PropTypes.string.isRequired,
+    eventType: PropTypes.string.isRequired,
+  };
+
+  render(primaryText, secondaryText, eventType) {
+    
+    return (
+      <MuiThemeProvider>
+        <ElementNotification
+          primaryText={primaryText}
+          secondaryText={secondaryText}
+          eventType={eventType}
+          eventStatus='executed'
+          txHash=''
+        />
+      </MuiThemeProvider>
+    )
+  }
+}
 
 class utilities {
 
@@ -31,7 +59,7 @@ class utilities {
   ethfinexTickersToArray = (assets) => {
     let assetArray = Array(0)
     for (let token in assets) {
-      if(!['ETH','WETH', 'USDT', 'WETH'].includes(assets[token].symbol)) {
+      if (!['ETH', 'WETH', 'USDT', 'WETH'].includes(assets[token].symbol)) {
         assetArray.push(`t${assets[token].symbolTicker.Ethfinex}ETH`)
       }
     }
@@ -70,6 +98,18 @@ class utilities {
     });
   }
 
+  notificationAccount = (notificationEngine, message, level = 'info') => {
+    let comp = new NotificationAlert([message])
+    notificationEngine.addNotification({
+      level: level,
+      position: 'br',
+      autoDismiss: 10,
+      children: comp.render(message.primaryText,
+        message.secondaryText,
+        message.eventType)
+    });
+  }
+
   availableTradeTokensPair = (tradeTokensPairs, selectedRelayName) => {
     let availableTokens = {}
     for (let baseToken in tradeTokensPairs) {
@@ -93,7 +133,7 @@ class utilities {
         availableRelays[key] = relays[key]
       }
     })
-    
+
     return availableRelays
   }
 
@@ -598,8 +638,8 @@ class utilities {
   getTransactionsDragoOptV2 = (api, dragoAddress, accounts, options = { balance: true, supply: false, limit: 20, trader: true }) => {
     // 
     // return Promise.reject(new Error('fail'))
-    if (accounts.length === 0){
-      return (Array(0),Array(0),Array(0))
+    if (accounts.length === 0) {
+      return (Array(0), Array(0), Array(0))
     }
     const poolApi = new PoolApi(api)
     let ethvalue = 0
@@ -1017,7 +1057,7 @@ class utilities {
     //
 
     // dispatch(Actions.drago.getTokenBalancesDrago(dragoDetails, api, relay))
-    
+
     //
     // Gettind drago data, creation date, supply, ETH balances
     //

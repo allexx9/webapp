@@ -64,6 +64,9 @@ class Interfaces {
               accounts[k].source = "parity"
               return accounts
             })
+            .catch(() =>{
+              throw new Error(`Cannot get ETH balance of account ${k}`)
+            })
           )
           // Getting accounts GRG balance
           arrayPromises.push(poolsApi.contract.rigotoken.balanceOf(k)
@@ -71,6 +74,9 @@ class Interfaces {
               accounts[k].grgBalance = utils.formatFromWei(grgBalance)
               accounts[k].grgBalanceWei = grgBalance
               return accounts
+            })
+            .catch(() =>{
+              throw new Error(`Cannot get GRG balance of account ${k}`)
             })
           )
           // Getting transactions count
@@ -80,6 +86,9 @@ class Interfaces {
               return accounts
             })
           )
+          .catch(() =>{
+            throw new Error(`Cannot get transactions count of account ${k}`)
+          })
         })
         return Promise
           .all(arrayPromises)
@@ -128,12 +137,30 @@ class Interfaces {
           return {}
         }
         // Get ETH balance
-        let ethBalance = await web3.eth.getBalance(accounts[0])
+        let ethBalance
+        try {
+          ethBalance = await web3.eth.getBalance(accounts[0])
+        } catch (err) {
+          throw new Error(`Cannot get ETH balance of account ${accounts[0]}`)
+        }
+
         let poolsApi = new PoolsApi(web3)
         poolsApi.contract.rigotoken.init()
         // Get GRG balance
-        let grgBalance = await poolsApi.contract.rigotoken.balanceOf(accounts[0])
-        let nonce = await web3.eth.getTransactionCount(accounts[0])
+        let grgBalance
+        try {
+          grgBalance = await poolsApi.contract.rigotoken.balanceOf(accounts[0])
+        } catch (err) {
+          throw new Error(`Cannot get GRG balance of account ${accounts[0]}`)
+        }
+        // Getting transactions count
+        let nonce
+        try {
+          nonce = await web3.eth.getTransactionCount(accounts[0])
+        } catch (err) {
+          throw new Error(`Cannot get transactions count of account ${accounts[0]}`)
+        }
+
         let accountsMetaMask = {
           [accounts[0]]: {
             ethBalance: utils.formatFromWei(ethBalance),
@@ -191,6 +218,7 @@ class Interfaces {
       }
       this._error = { ...currentState, ...stateUpdate }
       console.log('attachInterface', error)
+      throw this._error
     }
   }
 
@@ -199,7 +227,6 @@ class Interfaces {
     const api = this._api
     let accountsParity = {}
     let accountsMetaMask = {}
-    console.log(api)
     try {
       // Check if the parity node is running in --public-mode
       let nodeKind = await api.parity.nodeKind()
@@ -248,8 +275,8 @@ class Interfaces {
         networkStatus: MSG_NETWORK_STATUS_ERROR,
       }
       this._error = { ...currentState, ...stateUpdate }
-      console.log('attachInterfaceRigoBlock', error)
-      return this._error
+      console.log('Error attachInterfaceRigoBlock', error)
+      throw new Error(this._error)
     }
 
     // Check if the parity node is running in --public-mode

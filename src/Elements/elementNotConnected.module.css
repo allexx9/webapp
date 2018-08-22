@@ -68,7 +68,8 @@
 }
 
 .modalHeader img {
-  width: 460px;
+  height: 90px;
+  /* width: 460px; */
   padding-top: 22px;
   padding-bottom: 12px;
 }

@@ -19,7 +19,7 @@ class Endpoint {
     if (!networkInfo) {
       throw new Error('network name needs to be provided to Endpoint')
     }
-    this._timeout = 5000
+    this._timeout = 10000
     this._endpoint = endpointInfo
     this._network = networkInfo
     this._prod = prod
@@ -81,6 +81,7 @@ class Endpoint {
         api = new Api(transport)
         api._rb = {}
         api._rb.network = this._network
+        console.log(api)
         return api
       } catch (error) {
         console.log('Connection error: ', error)
@@ -94,6 +95,7 @@ class Endpoint {
         api = new Api(transport)
         api._rb = {}
         api._rb.network = this._network
+        console.log(api)
         return api
       } catch (error) {
         console.log('Connection error: ', error)

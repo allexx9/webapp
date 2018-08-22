@@ -252,7 +252,6 @@ export const getPricesEpic = (action$, state$) =>
               })
             }
             )
-          // .catch(error => Observable.of(getDataFailureAction(error)))
         }
 
         )

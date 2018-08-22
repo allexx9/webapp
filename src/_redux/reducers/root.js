@@ -2,9 +2,10 @@
 
 import transactionsReducer from './transactions'
 import usersReducer from './users'
-import endpointsReducer from './endpoints'
+import endpointsReducer from './endpoint_reducer'
 import exchangeReducer from './exchange'
 import notificationsReducer from './notification'
+import appReducer from './app_reducer'
 import {
   eventfulDragoReducer,
   eventfulVaultReducer
@@ -15,6 +16,7 @@ import {combineReducers } from "redux"
 class reducers {
 
   rootReducer = combineReducers({
+    app: appReducer,
     exchange: exchangeReducer,
     transactions: transactionsReducer,
     user: usersReducer,
@@ -27,5 +29,5 @@ class reducers {
 
 }
 
-var Reducers = new reducers();
+let Reducers = new reducers();
 export { Reducers };

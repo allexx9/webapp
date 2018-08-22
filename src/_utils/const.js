@@ -13,7 +13,7 @@ export const LOGGER = true;
 // Set connetions to production server
 export const PROD = false;
 // Set connetions to WebSocketSecure or HTTPs
-export const WS = true;
+export const WS = false
 // Address of the Parity registry of smart contracts
 export const REGISTRY_KOVAN = '0xfAb104398BBefbd47752E7702D9fE23047E1Bca3';
 // Address of RigoToken GRG
@@ -87,12 +87,10 @@ export const EP_RIGOBLOCK_KV_DEV_WS = "wss://srv03.endpoint.network:8546"
 export const EP_RIGOBLOCK_KV_PROD = "https://kovan.endpoint.network:8545"
 export const EP_RIGOBLOCK_KV_PROD_WS = "wss://kovan.endpoint.network:8546"
 
-// Parity on ports 86xx
-export const EP_RIGOBLOCK_RP_DEV = "https://srv03.endpoint.network:8645"
-// export const EP_RIGOBLOCK_RP_DEV_WS = "wss://srv03.endpoint.network:8646"
+// Parity - Ropsten
+export const EP_RIGOBLOCK_RP_DEV = "https://ropsten.dev.endpoint.network:8545"
 export const EP_RIGOBLOCK_RP_DEV_WS = "wss://ropsten.dev.endpoint.network:8546"
-export const EP_RIGOBLOCK_RP_PROD = "https://ropsten.endpoint.network:8645"
-// export const EP_RIGOBLOCK_RP_PROD_WS = "wss://ropsten.endpoint.network:8646"
+export const EP_RIGOBLOCK_RP_PROD = "https://ropsten.dev.endpoint.network:8545"
 export const EP_RIGOBLOCK_RP_PROD_WS = "wss://ropsten.dev.endpoint.network:8546"
 
 // Parity on ports 87xx
@@ -180,8 +178,8 @@ export const ENDPOINTS = {
         prod: "https://kovan.endpoint.network:8545"
       },
       ropsten: {
-        dev: "https://srv03.endpoint.network:8645",
-        prod: "https://ropsten.endpoint.network:8645"
+        dev: EP_RIGOBLOCK_RP_DEV,
+        prod: EP_RIGOBLOCK_RP_PROD
       },
       mainnet: {
         dev: "wss://mainnet.endpoint.network:8945",
