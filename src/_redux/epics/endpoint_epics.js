@@ -62,7 +62,7 @@ export const checkConnectionPromise = async (api) => {
     syncStatus: {},
   }
   if (api.isConnected) {
-    console.log('isConnected')
+    // console.log('isConnected')
     try {
       let result = await api.eth.syncing()
       if (result !== false) {
@@ -75,7 +75,7 @@ export const checkConnectionPromise = async (api) => {
         nodeStatus.syncStatus = {}
       }
     } catch (error) {
-      console.log(error)
+      // console.log(error)
       nodeStatus.isConnected = false
       nodeStatus.isSyncing = false
       nodeStatus.syncStatus = {}
@@ -100,7 +100,7 @@ export const isConnectedToNodeEpic = (action$, state$) =>
           return isConnectedToNode$(
             action.payload.api)
             .do(result => {
-              console.log(result)
+              // console.log(result)
               return result
             }
             )
@@ -146,7 +146,6 @@ export const attachInterfacePromise = async (api, endpoint) => {
   switch (selectedEndpointName) {
     case INFURA:
       console.log(`endpoint_epic -> ${INFURA}`)
-      console.log(this._api, networkId)
       newEndpoint = await blockchain.attachInterfaceInfuraV2(api, networkId)
       break;
     case RIGOBLOCK:
@@ -159,7 +158,6 @@ export const attachInterfacePromise = async (api, endpoint) => {
       break;
     default:
       console.log(`endpoint_epic -> ${INFURA}`)
-      console.log(api, networkId)
       newEndpoint = await blockchain.attachInterfaceInfuraV2(api, networkId)
       break;
   }
@@ -198,7 +196,7 @@ export const attacheInterfaceEpic = (action$) =>
           }
           ),
           flatMap(endpoint => {
-            console.log(action.payload)
+            // console.log(action.payload)
             return Observable.concat(
               Observable.of(Actions.app.updateAppStatus({
                 appLoading: false,
@@ -302,7 +300,7 @@ export const updateAccounts = async (api, blockNumber, state$) => {
           let balDifference = prevEthBalance.minus(newEthBalance)
           console.log(prevEthBalance.toFixed(), newEthBalance.toFixed())
           console.log(balDifference.toFixed())
-          if (balDifference > 0) {
+          if (balDifference.gt(new BigNumber(0))) {
             console.log(`endpoint_epic -> You transferred ${utils.formatFromWei(balDifference)} ETH!`)
             secondaryText[0] = `You transferred ${utils.formatFromWei(balDifference)} ETH!`
             secondaryText[1] = utils.dateFromTimeStamp(new Date())
@@ -319,30 +317,36 @@ export const updateAccounts = async (api, blockNumber, state$) => {
             })
           }
         }
+
         // Checking GRG balance
-        // console.log(grgBalances[index])
-        // const newgrgBalance = utils.formatFromWei(grgBalances[index])
-        // if ((account.grgBalance !== newgrgBalance) && prevBlockNumber !== 0) {
-        //   console.log(`${account.name} balance changed.`)
-        //   let secondaryText = []
-        //   let balDifference = new BigNumber(account.grgBalance.toString()).minus(new BigNumber(newgrgBalance.toString()))
-        //   if ((balDifference).gt(0)) {
-        //     console.log(`endpoint_epic -> You transferred ${balDifference.toFixed(4)} GRG!`)
-        //     secondaryText[0] = `You transferred ${balDifference.toFixed(4)} GRG!`
-        //     secondaryText[1] = utils.dateFromTimeStamp(new Date())
-        //   } else {
-        //     console.log(`endpoint_epic -> You received ${Math.abs(balDifference).toFixed(4)} GRG!`)
-        //     secondaryText[0] = `You received ${balDifference.abs().toFixed(4)} GRG!`
-        //     secondaryText[1] = utils.dateFromTimeStamp(new Date())
-        //   }
-        //   if (endpoint.accountsBalanceError === false) {
-        //     notifications.push({
-        //       primaryText: account.name,
-        //       secondaryText: secondaryText,
-        //       eventType: 'transfer'
-        //     })
-        //   }
-        // }
+        console.log(grgBalances[index])
+        console.log(account.grgBalanceWei)
+        const newgrgBalance = new BigNumber(grgBalances[index])
+        const prevGrgBalance = new BigNumber(account.grgBalanceWei)
+        console.log(newgrgBalance, prevGrgBalance )
+        if (!(new BigNumber(newgrgBalance).eq(prevGrgBalance)) && prevBlockNumber !== 0) {
+          console.log(`${account.name} balance changed.`)
+          let secondaryText = []
+          let balDifference = prevGrgBalance.minus(newgrgBalance)
+          console.log(prevGrgBalance.toFixed(), newgrgBalance.toFixed())
+          console.log(balDifference.toFixed())
+          if (balDifference.gt(new BigNumber(0))) {
+            console.log(`endpoint_epic -> You transferred ${utils.formatFromWei(balDifference)} GRG!`)
+            secondaryText[0] = `You transferred ${utils.formatFromWei(balDifference)} GRG!`
+            secondaryText[1] = utils.dateFromTimeStamp(new Date())
+          } else {
+            console.log(`endpoint_epic -> You received ${Math.abs(utils.formatFromWei(balDifference))} GRG!`)
+            secondaryText[0] = `You received ${Math.abs(utils.formatFromWei(balDifference))} GRG!`
+            secondaryText[1] = utils.dateFromTimeStamp(new Date())
+          }
+          if (endpoint.accountsBalanceError === false) {
+            notifications.push({
+              primaryText: account.name,
+              secondaryText: secondaryText,
+              eventType: 'transfer'
+            })
+          }
+        }
         return null
       })
       newEndpoint = {
@@ -376,12 +380,12 @@ export const updateAccounts = async (api, blockNumber, state$) => {
         accountsBalanceError: true,
         // ethBalance: new BigNumber(0),
         // grgBalance: new BigNumber(0),
-        accounts: [].concat(accounts.map((account) => {
-          account.ethBalance = utils.formatFromWei(new BigNumber(0))
-          account.grgBalance = utils.formatFromWei(new BigNumber(0))
-          return account;
-        })
-        )
+        // accounts: [].concat(accounts.map((account) => {
+        //   account.ethBalance = utils.formatFromWei(new BigNumber(0))
+        //   account.grgBalance = utils.formatFromWei(new BigNumber(0))
+        //   return account;
+        // })
+        // )
       }
       return [newEndpoint, notifications]
     }
@@ -479,7 +483,7 @@ export const monitorAccountsEpic = (action$, state$) =>
           console.log(error)
           return Observable.of({
             type: TYPE_.ADD_ERROR_NOTIFICATION,
-            payload: 'Error connecting to blockchain.'
+            payload: 'Error: cannot update accounts balance.'
           })
         }
         )

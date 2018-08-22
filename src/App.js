@@ -76,15 +76,8 @@ export class App extends Component {
     super(props);
     console.log(props)
     this._notificationSystem = null;
-    // Connecting to blockchain client
     let endpoint = new Endpoint(this.props.endpoint.endpointInfo, this.props.endpoint.networkInfo)
     this._api = endpoint.connect()
-    // this.state = {
-    //   isConnected: props.app.isConnected,
-    //   isSyncing: props.app.isSyncing,
-    //   syncStatus: props.app.syncStatus,
-    //   appLoading: props.app.appLoading
-    // }
   }
 
   scrollPosition = 0
@@ -123,46 +116,6 @@ export class App extends Component {
     };
   }
 
-  // attachInterfaceAction = () => {
-  //   return {
-  //     type: ATTACH_INTERFACE,
-  //     payload: new Promise((resolve) => {
-  //       this.attachInterface()
-  //         .then(result => {
-  //           this.props.dispatch(Actions.app.updateAppStatus(
-  //             {
-  //               appLoading: false,
-  //               // isConnected: true,
-  //             }
-  //           ))
-  //           // this.setState({
-  //           //   appLoading: false,
-  //           //   isConnected: true,
-  //           // })
-  //           resolve(result);
-  //         })
-  //     })
-  //       .catch(error => {
-  //         console.log(error)
-  //         let newEndpoint = { ...this.props.endpoint }
-  //         newEndpoint.networkStatus = MSG_NETWORK_STATUS_ERROR
-  //         newEndpoint.networkError = NETWORK_WARNING
-  //         this.props.dispatch(Actions.endpoint.updateInterface(newEndpoint))
-  //         this.props.dispatch(Actions.app.updateAppStatus(
-  //           {
-  //             appLoading: false,
-  //             // isConnected: false,
-  //           }
-  //         ))
-  //         // this.setState({
-  //         //   appLoading: false,
-  //         //   isConnected: false,
-  //         // })
-  //         return
-  //       })
-  //   }
-  // }
-
   shouldComponentUpdate(nextProps, nextState) {
     // console.log(this.props.user.isManager)
     const propsUpdate = (!utils.shallowEqual(this.props, nextProps))
@@ -195,11 +148,11 @@ export class App extends Component {
   }
 
   componentWillUnmount() {
-    try {
-      this.detachInterface();
-    } catch (err) {
-      console.log(err)
-    }
+    // try {
+    //   this.detachInterface();
+    // } catch (err) {
+    //   console.log(err)
+    // }
     // Unsubscribing to the event when the the user moves away from this page
   }
 
@@ -491,170 +444,170 @@ export class App extends Component {
   //   }
   // }
 
-  onNewBlockNumber = (_error, blockNumber) => {
-    // utils.logger.disable()
-    console.log('new block')
-    if (_error) {
-      console.error('onNewBlockNumber', _error)
-      return
-    }
-    // const { api } = this.context;
-    const { endpoint } = this.props;
-    const prevBlockNumber = endpoint.prevBlockNumber
-    let newBlockNumber = new BigNumber(0)
-    // Checking if blockNumber is passed by Parity Api or Web3
-    if (typeof blockNumber.number !== 'undefined') {
-      newBlockNumber = new BigNumber(blockNumber.number)
-    } else {
-      newBlockNumber = blockNumber
-    }
-    console.log(`${this.constructor.name} -> Last block: ` + prevBlockNumber)
-    console.log(`${this.constructor.name} -> New block: ` + newBlockNumber.toFixed())
-    // Checking that the current newBlockNumber is higher than previous one.
-    if (prevBlockNumber > newBlockNumber.toFixed()) {
-      console.log(`${this.constructor.name} -> Detected prevBlockNumber > currentBlockNumber. Skipping accounts update.`)
-      const endpoint = {
-        prevBlockNumber: newBlockNumber.toFixed()
-      }
-      this.props.dispatch(Actions.endpoint.updateInterface(endpoint))
-      return null
-    }
-    const accounts = [].concat(endpoint.accounts);
-    if (accounts.length !== 0) {
-      const poolsApi = new PoolsApi(this._api)
-      poolsApi.contract.rigotoken.init()
+  // onNewBlockNumber = (_error, blockNumber) => {
+  //   // utils.logger.disable()
+  //   console.log('new block')
+  //   if (_error) {
+  //     console.error('onNewBlockNumber', _error)
+  //     return
+  //   }
+  //   // const { api } = this.context;
+  //   const { endpoint } = this.props;
+  //   const prevBlockNumber = endpoint.prevBlockNumber
+  //   let newBlockNumber = new BigNumber(0)
+  //   // Checking if blockNumber is passed by Parity Api or Web3
+  //   if (typeof blockNumber.number !== 'undefined') {
+  //     newBlockNumber = new BigNumber(blockNumber.number)
+  //   } else {
+  //     newBlockNumber = blockNumber
+  //   }
+  //   console.log(`${this.constructor.name} -> Last block: ` + prevBlockNumber)
+  //   console.log(`${this.constructor.name} -> New block: ` + newBlockNumber.toFixed())
+  //   // Checking that the current newBlockNumber is higher than previous one.
+  //   if (prevBlockNumber > newBlockNumber.toFixed()) {
+  //     console.log(`${this.constructor.name} -> Detected prevBlockNumber > currentBlockNumber. Skipping accounts update.`)
+  //     const endpoint = {
+  //       prevBlockNumber: newBlockNumber.toFixed()
+  //     }
+  //     this.props.dispatch(Actions.endpoint.updateInterface(endpoint))
+  //     return null
+  //   }
+  //   const accounts = [].concat(endpoint.accounts);
+  //   if (accounts.length !== 0) {
+  //     const poolsApi = new PoolsApi(this._api)
+  //     poolsApi.contract.rigotoken.init()
 
-      const tokensQueries = accounts.map((account) => {
-        console.log(`${this.constructor.name} -> API call getBalance RigoToken-> applicationDragoHome: Getting balance of account ${account.address}`)
-        return poolsApi.contract.rigotoken.balanceOf(account.address)
-      })
+  //     const tokensQueries = accounts.map((account) => {
+  //       console.log(`${this.constructor.name} -> API call getBalance RigoToken-> applicationDragoHome: Getting balance of account ${account.address}`)
+  //       return poolsApi.contract.rigotoken.balanceOf(account.address)
+  //     })
 
-      // Checking ethereum balance
-      const ethQueries = accounts.map((account) => {
-        console.log(`${this.constructor.name} -> API call getBalance -> applicationDragoHome: Getting balance of account ${account.address}`)
-        return this._api.eth.getBalance(account.address, newBlockNumber)
-      })
-      const promisesBalances = [...ethQueries, ...tokensQueries]
+  //     // Checking ethereum balance
+  //     const ethQueries = accounts.map((account) => {
+  //       console.log(`${this.constructor.name} -> API call getBalance -> applicationDragoHome: Getting balance of account ${account.address}`)
+  //       return this._api.eth.getBalance(account.address, newBlockNumber)
+  //     })
+  //     const promisesBalances = [...ethQueries, ...tokensQueries]
 
-      Promise
-        .all(promisesBalances)
-        .then((results) => {
-          // Splitting the the result array between ethBalances and grgBalances
-          const halfLength = Math.ceil(results.length / 2)
-          const ethBalances = results.splice(0, halfLength)
-          const grgBalances = results
-          const prevAccounts = [].concat(endpoint.accounts)
-          prevAccounts.map((account, index) => {
-            // Checking ETH balance
-            const newEthBalance = utils.formatFromWei(ethBalances[index])
-            if ((account.ethBalance !== newEthBalance) && prevBlockNumber !== 0) {
-              console.log(`${account.name} balance changed.`)
-              let secondaryText = []
-              let balDifference = account.ethBalance - newEthBalance
-              if (balDifference > 0) {
-                console.log(`${this.constructor.name} -> You transferred ${balDifference.toFixed(4)} ETH!`)
-                secondaryText[0] = `You transferred ${balDifference.toFixed(4)} ETH!`
-                secondaryText[1] = utils.dateFromTimeStamp(new Date())
-              } else {
-                console.log(`${this.constructor.name} -> You received ${Math.abs(balDifference).toFixed(4)} ETH!`)
-                secondaryText[0] = `You received ${Math.abs(balDifference).toFixed(4)} ETH!`
-                secondaryText[1] = utils.dateFromTimeStamp(new Date())
-              }
-              if (this._notificationSystem && endpoint.accountsBalanceError === false) {
-                this._notificationSystem.addNotification({
-                  level: 'info',
-                  position: 'br',
-                  autoDismiss: 10,
-                  children: this.notificationAlert(account.name, secondaryText)
-                });
-              }
-            }
-            // Checking GRG balance
-            const newgrgBalance = utils.formatFromWei(grgBalances[index])
-            if ((account.grgBalance !== newgrgBalance) && prevBlockNumber !== 0) {
-              console.log(`${account.name} balance changed.`)
-              let secondaryText = []
-              let balDifference = new BigNumber(account.grgBalance.toString()).minus(new BigNumber(newgrgBalance.toString()))
-              if ((balDifference).gt(0)) {
-                console.log(`${this.constructor.name} -> You transferred ${balDifference.toFixed(4)} GRG!`)
-                secondaryText[0] = `You transferred ${balDifference.toFixed(4)} GRG!`
-                secondaryText[1] = utils.dateFromTimeStamp(new Date())
-              } else {
-                console.log(`${this.constructor.name} -> You received ${Math.abs(balDifference).toFixed(4)} GRG!`)
-                secondaryText[0] = `You received ${balDifference.abs().toFixed(4)} GRG!`
-                secondaryText[1] = utils.dateFromTimeStamp(new Date())
-              }
-              if (this._notificationSystem && endpoint.accountsBalanceError === false) {
-                this._notificationSystem.addNotification({
-                  level: 'info',
-                  position: 'br',
-                  autoDismiss: 10,
-                  children: this.notificationAlert(account.name, secondaryText)
-                });
-              }
-            }
-            return null
-          })
-          return [ethBalances, grgBalances]
-        })
-        .then((balances) => {
-          const ethBalances = balances[0]
-          const grgBalances = balances[1]
-          const endpoint = {
-            prevBlockNumber: newBlockNumber.toFixed(),
-            loading: false,
-            networkError: NETWORK_OK,
-            networkStatus: MSG_NETWORK_STATUS_OK,
-            accountsBalanceError: false,
-            grgBalance: grgBalances.reduce((total, balance) => total.add(balance), new BigNumber(0)),
-            ethBalance: ethBalances.reduce((total, balance) => total.add(balance), new BigNumber(0)),
-            accounts: [].concat(accounts.map((account, index) => {
-              const ethBalance = ethBalances[index];
-              account.ethBalance = utils.formatFromWei(ethBalance)
-              account.ethBalanceWei = new BigNumber(ethBalance)
-              const grgBalance = grgBalances[index];
-              account.grgBalance = utils.formatFromWei(grgBalance)
-              account.grgBalanceWei = new BigNumber(grgBalance)
-              return account;
-            })
-            )
-          }
-          this.props.dispatch(Actions.endpoint.updateInterface(endpoint))
-          return endpoint
-        })
-        .catch((error) => {
-          console.log(`${this.constructor.name} -> ${error}`)
-          // Setting the balances to 0 if receiving an error from the endpoint. It happens with Infura.
-          const endpoint = {
-            prevBlockNumber: newBlockNumber.toFixed(),
-            loading: false,
-            networkError: NETWORK_WARNING,
-            networkStatus: MSG_NETWORK_STATUS_ERROR,
-            accountsBalanceError: true,
-            ethBalance: new BigNumber(0),
-            grgBalance: new BigNumber(0),
-            accounts: [].concat(accounts.map((account) => {
-              account.ethBalance = utils.formatFromWei(new BigNumber(0))
-              account.grgBalance = utils.formatFromWei(new BigNumber(0))
-              return account;
-            })
-            )
-          }
-          this.props.dispatch(Actions.endpoint.updateInterface(endpoint))
-          return endpoint
-        });
-    } else {
-      const newEndpoint = { ...endpoint }
-      newEndpoint.prevBlockNumber = newBlockNumber.toFixed()
-      this.props.dispatch(Actions.endpoint.updateInterface(newEndpoint))
-    }
-    // utils.logger.enable()
-  }
+  //     Promise
+  //       .all(promisesBalances)
+  //       .then((results) => {
+  //         // Splitting the the result array between ethBalances and grgBalances
+  //         const halfLength = Math.ceil(results.length / 2)
+  //         const ethBalances = results.splice(0, halfLength)
+  //         const grgBalances = results
+  //         const prevAccounts = [].concat(endpoint.accounts)
+  //         prevAccounts.map((account, index) => {
+  //           // Checking ETH balance
+  //           const newEthBalance = utils.formatFromWei(ethBalances[index])
+  //           if ((account.ethBalance !== newEthBalance) && prevBlockNumber !== 0) {
+  //             console.log(`${account.name} balance changed.`)
+  //             let secondaryText = []
+  //             let balDifference = account.ethBalance - newEthBalance
+  //             if (balDifference > 0) {
+  //               console.log(`${this.constructor.name} -> You transferred ${balDifference.toFixed(4)} ETH!`)
+  //               secondaryText[0] = `You transferred ${balDifference.toFixed(4)} ETH!`
+  //               secondaryText[1] = utils.dateFromTimeStamp(new Date())
+  //             } else {
+  //               console.log(`${this.constructor.name} -> You received ${Math.abs(balDifference).toFixed(4)} ETH!`)
+  //               secondaryText[0] = `You received ${Math.abs(balDifference).toFixed(4)} ETH!`
+  //               secondaryText[1] = utils.dateFromTimeStamp(new Date())
+  //             }
+  //             if (this._notificationSystem && endpoint.accountsBalanceError === false) {
+  //               this._notificationSystem.addNotification({
+  //                 level: 'info',
+  //                 position: 'br',
+  //                 autoDismiss: 10,
+  //                 children: this.notificationAlert(account.name, secondaryText)
+  //               });
+  //             }
+  //           }
+  //           // Checking GRG balance
+  //           const newgrgBalance = utils.formatFromWei(grgBalances[index])
+  //           if ((account.grgBalance !== newgrgBalance) && prevBlockNumber !== 0) {
+  //             console.log(`${account.name} balance changed.`)
+  //             let secondaryText = []
+  //             let balDifference = new BigNumber(account.grgBalance.toString()).minus(new BigNumber(newgrgBalance.toString()))
+  //             if ((balDifference).gt(0)) {
+  //               console.log(`${this.constructor.name} -> You transferred ${balDifference.toFixed(4)} GRG!`)
+  //               secondaryText[0] = `You transferred ${balDifference.toFixed(4)} GRG!`
+  //               secondaryText[1] = utils.dateFromTimeStamp(new Date())
+  //             } else {
+  //               console.log(`${this.constructor.name} -> You received ${Math.abs(balDifference).toFixed(4)} GRG!`)
+  //               secondaryText[0] = `You received ${balDifference.abs().toFixed(4)} GRG!`
+  //               secondaryText[1] = utils.dateFromTimeStamp(new Date())
+  //             }
+  //             if (this._notificationSystem && endpoint.accountsBalanceError === false) {
+  //               this._notificationSystem.addNotification({
+  //                 level: 'info',
+  //                 position: 'br',
+  //                 autoDismiss: 10,
+  //                 children: this.notificationAlert(account.name, secondaryText)
+  //               });
+  //             }
+  //           }
+  //           return null
+  //         })
+  //         return [ethBalances, grgBalances]
+  //       })
+  //       .then((balances) => {
+  //         const ethBalances = balances[0]
+  //         const grgBalances = balances[1]
+  //         const endpoint = {
+  //           prevBlockNumber: newBlockNumber.toFixed(),
+  //           loading: false,
+  //           networkError: NETWORK_OK,
+  //           networkStatus: MSG_NETWORK_STATUS_OK,
+  //           accountsBalanceError: false,
+  //           grgBalance: grgBalances.reduce((total, balance) => total.add(balance), new BigNumber(0)),
+  //           ethBalance: ethBalances.reduce((total, balance) => total.add(balance), new BigNumber(0)),
+  //           accounts: [].concat(accounts.map((account, index) => {
+  //             const ethBalance = ethBalances[index];
+  //             account.ethBalance = utils.formatFromWei(ethBalance)
+  //             account.ethBalanceWei = new BigNumber(ethBalance)
+  //             const grgBalance = grgBalances[index];
+  //             account.grgBalance = utils.formatFromWei(grgBalance)
+  //             account.grgBalanceWei = new BigNumber(grgBalance)
+  //             return account;
+  //           })
+  //           )
+  //         }
+  //         this.props.dispatch(Actions.endpoint.updateInterface(endpoint))
+  //         return endpoint
+  //       })
+  //       .catch((error) => {
+  //         console.log(`${this.constructor.name} -> ${error}`)
+  //         // Setting the balances to 0 if receiving an error from the endpoint. It happens with Infura.
+  //         const endpoint = {
+  //           prevBlockNumber: newBlockNumber.toFixed(),
+  //           loading: false,
+  //           networkError: NETWORK_WARNING,
+  //           networkStatus: MSG_NETWORK_STATUS_ERROR,
+  //           accountsBalanceError: true,
+  //           ethBalance: new BigNumber(0),
+  //           grgBalance: new BigNumber(0),
+  //           accounts: [].concat(accounts.map((account) => {
+  //             account.ethBalance = utils.formatFromWei(new BigNumber(0))
+  //             account.grgBalance = utils.formatFromWei(new BigNumber(0))
+  //             return account;
+  //           })
+  //           )
+  //         }
+  //         this.props.dispatch(Actions.endpoint.updateInterface(endpoint))
+  //         return endpoint
+  //       });
+  //   } else {
+  //     const newEndpoint = { ...endpoint }
+  //     newEndpoint.prevBlockNumber = newBlockNumber.toFixed()
+  //     this.props.dispatch(Actions.endpoint.updateInterface(newEndpoint))
+  //   }
+  //   // utils.logger.enable()
+  // }
 
-  detachInterface = () => {
-    const { subscriptionData } = this.state
-    Interfaces.detachInterface(this._api, subscriptionData)
-  }
+  // detachInterface = () => {
+  //   const { subscriptionData } = this.state
+  //   Interfaces.detachInterface(this._api, subscriptionData)
+  // }
 }
 
 export default connect(mapStateToProps)(App)

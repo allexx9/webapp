@@ -147,7 +147,7 @@ class PageDashboardDragoTrader extends Component {
       }
     }
     console.log(this.props)
-    console.log(this.props.endpoint.accounts[0].address)
+    // console.log(this.props.endpoint.accounts[0].address)
     const listAccounts = accounts.map((account, key) => {
       return (
         <Col xs={6} key={account.name + key}>
