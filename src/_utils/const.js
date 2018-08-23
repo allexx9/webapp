@@ -81,17 +81,17 @@ export const EP_INFURA_KV_WS = "wss://kovan.infura.io/ws"
 export const EP_INFURA_RP_WS = "wss://ropsten.infura.io/ws"
 export const EP_INFURA_MN_WS = "wss://mainnet.infura.io/ws"
 
-// Parity on ports 85xx
-export const EP_RIGOBLOCK_KV_DEV = "https://srv03.endpoint.network:8545"
-export const EP_RIGOBLOCK_KV_DEV_WS = "wss://srv03.endpoint.network:8546"
-export const EP_RIGOBLOCK_KV_PROD = "https://kovan.endpoint.network:8545"
-export const EP_RIGOBLOCK_KV_PROD_WS = "wss://kovan.endpoint.network:8546"
+// Parity - Kovan
+export const EP_RIGOBLOCK_KV_DEV = "https://kovan.dev.endpoint.network/rpc"
+export const EP_RIGOBLOCK_KV_DEV_WS = "wss://kovan.dev.endpoint.network/ws"
+export const EP_RIGOBLOCK_KV_PROD = "https://kovan..dev.endpoint.network/rpc"
+export const EP_RIGOBLOCK_KV_PROD_WS = "wss://kovan.dev.endpoint.network/ws"
 
 // Parity - Ropsten
-export const EP_RIGOBLOCK_RP_DEV = "https://ropsten.dev.endpoint.network:8545"
-export const EP_RIGOBLOCK_RP_DEV_WS = "wss://ropsten.dev.endpoint.network:8546"
-export const EP_RIGOBLOCK_RP_PROD = "https://ropsten.dev.endpoint.network:8545"
-export const EP_RIGOBLOCK_RP_PROD_WS = "wss://ropsten.dev.endpoint.network:8546"
+export const EP_RIGOBLOCK_RP_DEV = "https://ropsten.dev.endpoint.network/rpc"
+export const EP_RIGOBLOCK_RP_DEV_WS = "wss://ropsten.dev.endpoint.network/ws"
+export const EP_RIGOBLOCK_RP_PROD = "https://ropsten.dev.endpoint.network/rpc"
+export const EP_RIGOBLOCK_RP_PROD_WS = "wss://ropsten.dev.endpoint.network/ws"
 
 // Parity on ports 87xx
 export const EP_RIGOBLOCK_MN_DEV = "https://srv03.endpoint.network:8745"
@@ -174,8 +174,8 @@ export const ENDPOINTS = {
     name: "rigoblock",
     https: {
       kovan: {
-        dev: "https://srv03.endpoint.network:8545",
-        prod: "https://kovan.endpoint.network:8545"
+        dev: EP_RIGOBLOCK_KV_DEV,
+        prod: EP_RIGOBLOCK_RP_PROD
       },
       ropsten: {
         dev: EP_RIGOBLOCK_RP_DEV,
@@ -188,8 +188,8 @@ export const ENDPOINTS = {
     },
     wss: {
       kovan: {
-        dev: "wss://srv03.endpoint.network:8546",
-        prod: "wss://kovan.endpoint.network:8546"
+        dev: EP_RIGOBLOCK_KV_DEV_WS,
+        prod: EP_RIGOBLOCK_KV_PROD_WS
       },
       ropsten: {
         dev: EP_RIGOBLOCK_RP_DEV_WS,

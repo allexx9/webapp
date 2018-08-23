@@ -10,9 +10,11 @@ import { APP, DS } from '../_utils/const'
 import SectionHeader from '../_atomic/atoms/sectionHeader';
 import SyncStatusCurrentBlock from '../_atomic/atoms/syncStatusCurrentBlock'
 import SyncStatusWarpChunksProcessed from '../_atomic/atoms/syncStatusWarpChunksProcessed'
+import { connect } from 'react-redux';
 
-
-let td = null
+function mapStateToProps(state) {
+  return state
+}
 
 const style = {
   dialogRoot: {
@@ -33,13 +35,8 @@ const style = {
 
 class ElementNotConnected extends Component {
 
-  state = {
-    counter: 15
-  }
-
-  static contextTypes = {
-    isSyncing: PropTypes.bool.isRequired,
-    syncStatus: PropTypes.object.isRequired,
+  static propTypes = {
+    app: PropTypes.object.isRequired,
   };
 
   componentDidMount() {
@@ -75,7 +72,7 @@ class ElementNotConnected extends Component {
   // }
 
   renderSyncing = () => {
-    const progressWarp = new BigNumber(this.context.syncStatus.warpChunksProcessed).div(new BigNumber(this.context.syncStatus.warpChunksAmount)).mul(100).toFixed(2)
+    // const progressWarp = new BigNumber(this.context.syncStatus.warpChunksProcessed).div(new BigNumber(this.context.syncStatus.warpChunksAmount)).mul(100).toFixed(2)
     return (
       <Dialog
         open={true}
@@ -100,7 +97,7 @@ class ElementNotConnected extends Component {
                 <p><b>Your node is syncing with Ethereum blockchain.</b></p>
                 <p>Please wait until fully synced before accessing RigoBlock.</p>
                 <p>Syncing progress:</p>
-                <p><SyncStatusCurrentBlock syncStatus={this.context.syncStatus} /></p>
+                <p><SyncStatusCurrentBlock syncStatus={this.props.app.syncStatus} /></p>
                 {/* <p><SyncStatusWarpChunksProcessed syncStatus={this.context.syncStatus}/></p> */}
                 <p>Please contact our support or {<Link to={DS + APP + DS + this.buildUrlPath() + DS + "config"}>select</Link>} a different endpoint.</p>
               </Col>
@@ -136,7 +133,8 @@ class ElementNotConnected extends Component {
                 <p><b>Unable to connect to the network.</b></p>
                 {/* <p>Trying to establish a new connection in {this.state.counter} seconds... </p> */}
                 <p>Trying to establish a new connection... </p>
-                <p>Please contact our support or {<Link to={DS + APP + DS + this.buildUrlPath() + DS + "config"}>select</Link>} a different network.</p>
+                <p>Attempt {this.props.app.connectionRetries}: retrying in {this.props.app.retryTimeInterval}ms</p>
+                <p>Please contact our support or {<Link to={DS + APP + DS + this.buildUrlPath() + DS + "config"}>select</Link>} a different endpoint.</p>
               </Col>
             </Row>
           </Grid>
@@ -162,11 +160,11 @@ class ElementNotConnected extends Component {
   }
 
   render() {
-    const { isSyncing, syncStatus } = this.context
+    const { isSyncing } = this.props.app
     // console.log('Sync Status: ', syncStatus)
     // console.log('Syncing: ', isSyncing)
     return isSyncing ? this.renderSyncing() : this.renderNotConnected()
   }
 }
 
-export default ElementNotConnected
+export default connect(mapStateToProps)(ElementNotConnected)

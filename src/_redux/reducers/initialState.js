@@ -52,7 +52,9 @@ const initialState = {
     isConnected: false,
     isSyncing: false,
     syncStatus: {},
-    appLoading: true
+    appLoading: true,
+    retryTimeInterval: 0,
+    connectinoRetries: 0
   },
   notifications: {
     engine: ''

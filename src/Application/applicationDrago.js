@@ -88,12 +88,13 @@ class ApplicationDragoPage extends Component {
           </Row>
           <Row className={classNames(styles.content)}>
             <Col xs={12}>
+              <ApplicationDragoHome
+                location={location}
+                notificationsOpen={notificationsOpen}
+                handleToggleNotifications={this.handleToggleNotifications}
+              />
               {isConnected && !isSyncing ? (
-                <ApplicationDragoHome
-                  location={location}
-                  notificationsOpen={notificationsOpen}
-                  handleToggleNotifications={this.handleToggleNotifications}
-                />
+                null
               ) : (
                   <ElementNotConnected isSyncing={isSyncing} syncStatus={syncStatus} />
                 )}

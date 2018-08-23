@@ -5,10 +5,11 @@ import { Observable } from 'rxjs/Observable'
 import { of, timer, throwError } from 'rxjs';
 import { ofType } from 'redux-observable';
 import {
-  switchMap, tap, flatMap, catchError, retryWhen, delayWhen, delay, retry,
+  switchMap, tap, flatMap, catchError, retryWhen, delay,
   mergeMap,
   finalize,
-  map
+  map,
+  timeout,
 } from 'rxjs/operators';
 // import 'rxjs/add/observable/dom/webSocket';
 import 'rxjs/add/operator/delay';
@@ -44,51 +45,49 @@ import {
   MSG_NETWORK_STATUS_OK,
   NETWORK_WARNING,
   MSG_NETWORK_STATUS_ERROR,
-  KOVAN,
   INFURA,
   RIGOBLOCK,
   LOCAL,
 } from '../../_utils/const'
 import PoolsApi from '../../PoolsApi/src'
+// import { race } from 'rxjs/observable/race';
 
 //
 // CHECK IF THE APP If NETWORK IS UP AND THERE IS A CONNECTION TO A NODE
 //
 
-export const checkConnectionPromise = async (api) => {
+const isConnectedToNode$ = (api) => {
+  // return Observable
+  //   .fromPromise(checkConnectionPromise(api))
   let nodeStatus = {
     isConnected: false,
     isSyncing: false,
     syncStatus: {},
   }
-  if (api.isConnected) {
-    // console.log('isConnected')
-    try {
-      let result = await api.eth.syncing()
-      if (result !== false) {
-        nodeStatus.isConnected = true
-        nodeStatus.isSyncing = true
-        nodeStatus.syncStatus = result
-      } else {
-        nodeStatus.isConnected = true
+  return Observable
+    .defer(() => api.eth.syncing())
+    .pipe(
+      timeout(2500),
+      map(result => {
+        console.log('isConnected')
+        if (result !== false) {
+          nodeStatus.isConnected = true
+          nodeStatus.isSyncing = true
+          nodeStatus.syncStatus = result
+        } else {
+          nodeStatus.isConnected = true
+          nodeStatus.isSyncing = false
+          nodeStatus.syncStatus = {}
+        }
+        return nodeStatus
+      }),
+      catchError((error) => {
+        nodeStatus.isConnected = false
         nodeStatus.isSyncing = false
         nodeStatus.syncStatus = {}
-      }
-    } catch (error) {
-      // console.log(error)
-      nodeStatus.isConnected = false
-      nodeStatus.isSyncing = false
-      nodeStatus.syncStatus = {}
-      return nodeStatus
-    }
-    nodeStatus.isConnected = true
-  }
-  return nodeStatus
-}
-
-const isConnectedToNode$ = (api) => {
-  return Observable
-    .fromPromise(checkConnectionPromise(api))
+        throw new Error(nodeStatus)
+      })
+    )
 }
 
 export const isConnectedToNodeEpic = (action$, state$) =>
@@ -100,36 +99,57 @@ export const isConnectedToNodeEpic = (action$, state$) =>
           return isConnectedToNode$(
             action.payload.api)
             .do(result => {
-              // console.log(result)
+              console.log(result)
               return result
             }
             )
             .flatMap(result => {
-              let currentState = state$.getState()
               let actionsArray = Array(0)
-
               actionsArray = [
                 Observable.of(Actions.app.updateAppStatus({ ...result }))
               ]
-
-              // Connencted
-              // if (currentState.app.isConnected && result.isConnected) {
-              //   actionsArray = [
-              //     Observable.of(Actions.app.updateAppStatus({ ...result }))
-              //   ]
-              // }
-              // if (!currentState.app.isConnected && result.isConnected) {
-              //   console.log('Was not connecte. Is connected.')
-              //   actionsArray = [
-              //     Observable.of(Actions.app.updateAppStatus({ ...result })),
-              //     // Observable.of(Actions.endpoint.monitorAccountsStart(action.payload.web3, action.payload.api))
-              //   ]
-              // }
               return Observable.concat(
                 ...actionsArray
               )
             }
             )
+            .retryWhen(error => {
+              let scalingDuration = 1000
+              state$.dispatch(Actions.app.updateAppStatus({
+                isConnected: false,
+                isSyncing: false,
+                syncStatus: {},
+                retryTimeInterval: 1000,
+                connectionRetries: 0
+              }))
+              return error.pipe(
+                mergeMap((error, i) => {
+                  const retryAttempt = i + 1;
+                  // if maximum number of retries have been met
+                  // or response is a status code we don't wish to retry, throw error
+                  // if (
+                  //   retryAttempt > maxRetryAttempts ||
+                  //   excludedStatusCodes.find(e => e === error.status)
+                  // ) {
+                  //   throw(error);
+                  // }
+                  let timeInterval
+                  (retryAttempt > 5)
+                    ? timeInterval = scalingDuration * 5
+                    : timeInterval = scalingDuration * retryAttempt
+                  state$.dispatch(Actions.app.updateAppStatus({
+                    retryTimeInterval: timeInterval,
+                    connectionRetries: retryAttempt
+                  }))
+                  console.log(
+                    `Attempt ${retryAttempt}`
+                  );
+                  // retry after 1s, 2s, etc...
+                  return timer(timeInterval);
+                }),
+                finalize(() => console.log('We are done!'))
+              )
+            })
         }
         )
     })
@@ -202,7 +222,7 @@ export const attacheInterfaceEpic = (action$) =>
                 appLoading: false,
                 isConnected: true
               })),
-              Observable.of(Actions.endpoint.checkIsConnectedToNode(action.payload.api)),
+              // Observable.of(Actions.endpoint.checkIsConnectedToNode(action.payload.api)),
               Observable.of(Actions.endpoint.updateInterface({ endpoint })),
               Observable.of(Actions.endpoint.monitorAccountsStart(action.payload.web3, action.payload.api)),
 
@@ -210,11 +230,7 @@ export const attacheInterfaceEpic = (action$) =>
           }
           ),
           retryWhen(error => {
-            // let maxRetryAttempts = 3
             let scalingDuration = 1000
-            // let excludedStatusCodes = []
-            // console.log(genericRetryStrategy(error))
-            // return genericRetryStrategy(error)
             return error.pipe(
               mergeMap((error, i) => {
                 const retryAttempt = i + 1;
@@ -323,7 +339,7 @@ export const updateAccounts = async (api, blockNumber, state$) => {
         console.log(account.grgBalanceWei)
         const newgrgBalance = new BigNumber(grgBalances[index])
         const prevGrgBalance = new BigNumber(account.grgBalanceWei)
-        console.log(newgrgBalance, prevGrgBalance )
+        console.log(newgrgBalance, prevGrgBalance)
         if (!(new BigNumber(newgrgBalance).eq(prevGrgBalance)) && prevBlockNumber !== 0) {
           console.log(`${account.name} balance changed.`)
           let secondaryText = []
@@ -435,7 +451,7 @@ const monitorAccounts$ = (web3, api, state$) => {
     //     }
     //   })
     // }
-    
+
     subscriptionData = web3.eth.subscribe('newBlockHeaders', (_error, blockNumber) => {
       if (!_error) {
         updateAccounts(api, blockNumber, state$)
@@ -601,6 +617,7 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
             currentState.endpoint,
           )
             .filter(val => {
+              console.log(val)
               return Object.keys(val).length !== 0
             })
             .flatMap(newEndpoint =>
