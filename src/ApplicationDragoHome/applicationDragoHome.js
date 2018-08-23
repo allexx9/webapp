@@ -111,7 +111,7 @@ class ApplicationDragoHome extends Component {
     //   console.log('ethBalance = null')
     //   return null
     // }
-
+    console.log(endpoint.accounts, endpoint.networkCorrect)
     if ((endpoint.accounts.length === 0 || !endpoint.networkCorrect)) {
       return (
         <span>

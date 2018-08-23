@@ -20,15 +20,6 @@ const muiTheme = getMuiTheme({
 
 class AppLoading extends Component {
 
-  state = {
-    counter: 15
-  }
-
-  static contextTypes = {
-    isSyncing: PropTypes.bool.isRequired,
-    syncStatus: PropTypes.object.isRequired,
-  };
-
   renderNotConnected = () => {
     return (
       <div className={styles.divFullHeight}>

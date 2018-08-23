@@ -56,9 +56,7 @@ import PoolsApi from '../../PoolsApi/src'
 // CHECK IF THE APP If NETWORK IS UP AND THERE IS A CONNECTION TO A NODE
 //
 
-const isConnectedToNode$ = (api) => {
-  // return Observable
-  //   .fromPromise(checkConnectionPromise(api))
+export const isConnectedToNode$ = (api) => {
   let nodeStatus = {
     isConnected: false,
     isSyncing: false,
@@ -69,7 +67,6 @@ const isConnectedToNode$ = (api) => {
     .pipe(
       timeout(2500),
       map(result => {
-        console.log('isConnected')
         if (result !== false) {
           nodeStatus.isConnected = true
           nodeStatus.isSyncing = true
@@ -99,7 +96,6 @@ export const isConnectedToNodeEpic = (action$, state$) =>
           return isConnectedToNode$(
             action.payload.api)
             .do(result => {
-              console.log(result)
               return result
             }
             )
@@ -287,7 +283,7 @@ export const updateAccounts = async (api, blockNumber, state$) => {
   if (accounts.length !== 0) {
     try {
       const poolsApi = new PoolsApi(api)
-      console.log(poolsApi)
+      // console.log(poolsApi)
       poolsApi.contract.rigotoken.init()
       // Checking GRG balance
       const grgQueries = accounts.map((account) => {
@@ -303,19 +299,19 @@ export const updateAccounts = async (api, blockNumber, state$) => {
       const ethBalances = await Promise.all(ethQueries)
       const grgBalances = await Promise.all(grgQueries)
       const prevAccounts = [].concat(endpoint.accounts)
-      console.log(endpoint.accounts)
+      // console.log(endpoint.accounts)
       prevAccounts.map((account, index) => {
         // Checking ETH balance
-        console.log(ethBalances[index])
-        console.log(account.ethBalanceWei)
+        // console.log(ethBalances[index])
+        // console.log(account.ethBalanceWei)
         const newEthBalance = new BigNumber(ethBalances[index])
         const prevEthBalance = new BigNumber(account.ethBalanceWei)
         if (!(new BigNumber(newEthBalance).eq(prevEthBalance)) && prevBlockNumber !== 0) {
           console.log(`${account.name} balance changed.`)
           let secondaryText = []
           let balDifference = prevEthBalance.minus(newEthBalance)
-          console.log(prevEthBalance.toFixed(), newEthBalance.toFixed())
-          console.log(balDifference.toFixed())
+          // console.log(prevEthBalance.toFixed(), newEthBalance.toFixed())
+          // console.log(balDifference.toFixed())
           if (balDifference.gt(new BigNumber(0))) {
             console.log(`endpoint_epic -> You transferred ${utils.formatFromWei(balDifference)} ETH!`)
             secondaryText[0] = `You transferred ${utils.formatFromWei(balDifference)} ETH!`
@@ -335,8 +331,8 @@ export const updateAccounts = async (api, blockNumber, state$) => {
         }
 
         // Checking GRG balance
-        console.log(grgBalances[index])
-        console.log(account.grgBalanceWei)
+        // console.log(grgBalances[index])
+        // console.log(account.grgBalanceWei)
         const newgrgBalance = new BigNumber(grgBalances[index])
         const prevGrgBalance = new BigNumber(account.grgBalanceWei)
         console.log(newgrgBalance, prevGrgBalance)
@@ -344,8 +340,8 @@ export const updateAccounts = async (api, blockNumber, state$) => {
           console.log(`${account.name} balance changed.`)
           let secondaryText = []
           let balDifference = prevGrgBalance.minus(newgrgBalance)
-          console.log(prevGrgBalance.toFixed(), newgrgBalance.toFixed())
-          console.log(balDifference.toFixed())
+          // console.log(prevGrgBalance.toFixed(), newgrgBalance.toFixed())
+          // console.log(balDifference.toFixed())
           if (balDifference.gt(new BigNumber(0))) {
             console.log(`endpoint_epic -> You transferred ${utils.formatFromWei(balDifference)} GRG!`)
             secondaryText[0] = `You transferred ${utils.formatFromWei(balDifference)} GRG!`
@@ -477,7 +473,6 @@ const monitorAccounts$ = (web3, api, state$) => {
 export const monitorAccountsEpic = (action$, state$) =>
   action$.ofType(TYPE_.MONITOR_ACCOUNTS_START)
     .mergeMap((action) => {
-      console.log(action)
       return monitorAccounts$(
         action.payload.web3,
         action.payload.api,
@@ -617,7 +612,7 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
             currentState.endpoint,
           )
             .filter(val => {
-              console.log(val)
+              // console.log(val)
               return Object.keys(val).length !== 0
             })
             .flatMap(newEndpoint =>

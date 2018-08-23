@@ -1,7 +1,9 @@
 // https://github.com/redux-observable/redux-observable/issues/477#issuecomment-393516995
 
 
-import { updateAccounts, checkConnection } from './endpoint_epics'
+import { updateAccounts, isConnectedToNode$ } from './endpoint_epics'
+import { Observable } from 'rxjs/Observable'
+
 import PoolsApi from '../../PoolsApi/src/index.js'
 import {
   NETWORK_OK,
@@ -59,8 +61,8 @@ beforeEach(function () {
       getBalance: jest.fn((address) => {
         return accounts.get(address).balance.eth - api.plus
       }),
-      syncing: jest.fn(() => {
-        return api.output.syncing
+      syncing: jest.fn(async () => {
+        return await api.output.syncing
       })
     }
   }
@@ -108,54 +110,68 @@ const createMockStore = (state) => {
 }
 
 describe("monitor connection to node", () => {
-  it('1 -> node is NOT connected success', async () => {
-    api.isConnected = false
-    api.output.syncing = false
-    const results = await checkConnection(api)
-    expect(results)
-      .toEqual(
-        {
-          isConnected: false,
-          isSyncing: false,
-          syncStatus: {},
-        })
-  })
-  it('2 -> node is connected success', async () => {
-    api.isConnected = true
-    api.output.syncing = false
-    const results = await checkConnection(api)
-    expect(results)
-      .toEqual(
-        {
-          isConnected: true,
-          isSyncing: false,
-          syncStatus: {},
-        })
-  })
-  it('3 -> node is connected and syncing success', async () => {
+
+
+  // it('1 -> node is NOT connected success', async () => {
+  //   api.isConnected = false
+  //   api.output.syncing = false
+  //   let ob = isConnectedToNode$(api)
+  //   // console.log(ob)
+  //   ob.subscribe(data => {
+  //     console.log(data)
+  //     expect(data).toEqual(
+  //       {
+  //         isConnected: true,
+  //         isSyncing: true,
+  //         syncStatus: {},
+  //       })
+  //   })
+  // })
+  // it('2 -> node is connected success', () => {
+  //   api.isConnected = true
+  //   api.output.syncing = false
+  //   isConnectedToNode$(api).subscribe(data => {
+  //     expect(data).toEqual(
+  //       {
+  //         isConnected: true,
+  //         isSyncing: false,
+  //         syncStatus: {},
+  //       })
+  //   })
+  // }, 5000)
+  it('3 -> node is connected and syncing success', done => {
     api.isConnected = true
     api.output.syncing = { syncing: "yes" }
-    const results = await checkConnection(api)
-    expect(results)
-      .toEqual(
-        {
-          isConnected: true,
-          isSyncing: true,
-          syncStatus: { syncing: "yes" },
-        })
+    let ob = isConnectedToNode$(api)
+    ob.subscribe(data => {
+      expect(data).toEqual({
+              isConnected: true,
+              isSyncing: true,
+              syncStatus: { syncing: "yes" },
+            })
+      done()
+    })
   })
-  it('4 -> node is connected and NOT syncing success', async () => {
-    api.isConnected = true
-    api.output.syncing = false
-    const results = await checkConnection(api)
-    expect(results)
-      .toEqual(
-        {
-          isConnected: true,
-          isSyncing: false,
-          syncStatus: {},
-        })
-  })
+  // it('4 -> node is connected and NOT syncing success', async () => {
+  //   api.isConnected = true
+  //   api.output.syncing = false
+  //   isConnectedToNode$(api).subscribe(data => {
+  //     console.log(data)
+  //     expect(data).toEqual(
+  //       {
+  //         isConnected: true,
+  //         isSyncing: false,
+  //         syncStatus: {},
+  //       })
+  //   })
+  // })
+  // it('5 -> node timeout success', async () => {
+  //   api.isConnected = true
+  //   api.output.syncing = false
+  //   isConnectedToNode$(api).subscribe(data => {
+  //     expect(data).toThrow()
+  //   })
+  // })
 })
 
 
