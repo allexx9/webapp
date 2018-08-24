@@ -10,7 +10,8 @@ export default class SectionHeader extends Component {
 
   static propTypes = {
     titleText: PropTypes.string.isRequired,
-    textStyle: PropTypes.object.isRequired,
+    textStyle: PropTypes.object,
+    containerStyle: PropTypes.object,
     help: PropTypes.bool,
     helpText: PropTypes.string,
     helpReadMoreLink: PropTypes.string,
@@ -21,6 +22,7 @@ export default class SectionHeader extends Component {
     help: false,
     helpText: '',
     textStyle: { backgroundColor: '#054186' },
+    containerStyle: {},
     helpReadMoreLink: '',
     fundType: 'drago'
   };
@@ -45,7 +47,7 @@ export default class SectionHeader extends Component {
     }
 
     return (
-      <div className={styles.container} 
+      <div className={styles.container} style={this.props.containerStyle}
           >
           <div className={styles.actionButtonContainer}>
             {this.props.actionButton}
@@ -55,7 +57,7 @@ export default class SectionHeader extends Component {
             {this.props.titleText}
           </div>
           <Divider style={{
-            backgroundColor: this.props.textStyle.backgroundColor
+            ...this.props.textStyle
           }} />
       </div>
     )

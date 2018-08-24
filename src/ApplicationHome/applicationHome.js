@@ -10,6 +10,9 @@ import FlatButton from 'material-ui/FlatButton'
 import ElementBottomStatusBar from '../Elements/elementBottomStatusBar'
 import { connect } from 'react-redux';
 import Loading from '../_atomic/atoms/loading';
+import Dialog from 'material-ui/Dialog';
+import WalletSetupStepper from '../_atomic/organisms/walletSetupStepper'
+import SectionHeader from '../_atomic/atoms/sectionHeader';
 
 import {
   Link
@@ -99,7 +102,7 @@ class ApplicationHome extends Component {
 
                   <p className={styles.subHeadline}>We aim to create a new generation of traders and a new level of asset management system.
                   Simple, transparent, meritocratic and democratic.</p>
-                  
+
                 </Col>
               </Row>
               <Row className={styles.cards}>
@@ -159,6 +162,33 @@ class ApplicationHome extends Component {
           </Col>
 
           <Col xs={12}>
+            <Dialog
+              titleStyle={{
+                fontSize: '36px',
+                fontWeight: 700,
+                textAlign: 'center'
+
+              }}
+              title={<SectionHeader
+                textStyle = {{
+                  fontSize: '32px',
+                  fontWeight: 700,
+                  textAlign: 'center',
+                  borderRadius: '0px'
+  
+                }}
+                containerStyle={{marginLeft: '0px', marginRight: '0px'}}
+                titleText='WALLET SETUP'
+              />}
+              modal={false}
+              open={true}
+              onRequestClose={this.handleClose}
+              repositionOnUpdate={false}
+            >
+              <WalletSetupStepper>
+
+              </WalletSetupStepper>
+            </Dialog>
             <ElementBottomStatusBar
               blockNumber={endpoint.prevBlockNumber}
               networkName={endpoint.networkInfo.name}

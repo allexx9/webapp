@@ -112,7 +112,20 @@ class ApplicationDragoHome extends Component {
     //   return null
     // }
     console.log(endpoint.accounts, endpoint.networkCorrect)
-    if ((endpoint.accounts.length === 0 || !endpoint.networkCorrect)) {
+    // if ((endpoint.accounts.length === 0 || !endpoint.networkCorrect)) {
+    //   return (
+    //     <span>
+    //       <CheckAuthPage warnMsg={endpoint.warnMsg} location={location}/>
+    //       <ElementBottomStatusBar
+    //         blockNumber={endpoint.prevBlockNumber}
+    //         networkName={endpoint.networkInfo.name}
+    //         networkError={endpoint.networkError}
+    //         networkStatus={endpoint.networkStatus} />
+    //     </span>
+    // )
+    // }
+
+    if (true) {
       return (
         <span>
           <CheckAuthPage warnMsg={endpoint.warnMsg} location={location}/>

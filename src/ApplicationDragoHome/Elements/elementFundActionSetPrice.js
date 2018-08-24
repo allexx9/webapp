@@ -335,14 +335,14 @@ export default class ElementFundActionSetPrice extends Component {
   }
 
   onSend = () => {
-    const { api } = this.context;
+    const { api } = this.context
     const { dragoDetails } = this.props
     const { buyPrice, sellPrice } = this.state
-    var poolApi = null;
-    var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
+    let poolApi = null
+    let provider = this.state.account.source === 'MetaMask' ? window.web3 : api
     this.setState({
       sending: true
-    });
+    })
 
     poolApi = new PoolApi(provider)
     poolApi.contract.drago.init(dragoDetails.address)

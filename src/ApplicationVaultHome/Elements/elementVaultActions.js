@@ -109,6 +109,13 @@ class ElementVaultActions extends React.Component {
     dispatch: PropTypes.func.isRequired
   };
 
+  static defaultProps = {
+    actionSelected: {
+      open: false,
+      action: 'deposit'
+    }
+  };
+
   resetState = {
     openAuth: false,
     actionSummary: 'SENDING',

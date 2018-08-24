@@ -1,0 +1,18 @@
+.activeStep .titleStep {
+  font-size: 32px;
+  font-weight: 700;
+}
+
+/* .activeStep svg {
+  height: 34px;
+  width: 34px;
+} */
+
+.notActiveStep {
+  
+}
+
+.titleStep {
+  font-size: 16px;
+  font-weight: 700;
+}

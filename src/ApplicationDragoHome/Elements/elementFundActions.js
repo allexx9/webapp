@@ -1,4 +1,4 @@
-import  * as Colors from 'material-ui/styles/colors';
+import * as Colors from 'material-ui/styles/colors';
 import { Row, Col } from 'react-flexbox-grid';
 import ActionSwapHoriz from 'material-ui/svg-icons/action/swap-horiz';
 import BigNumber from 'bignumber.js';
@@ -92,7 +92,7 @@ class ElementFundActions extends React.Component {
         unitsSummary: 0,
         amountSummary: 0,
       }
-            this.state = {
+      this.state = {
         open: props.actionSelected.open,
         action: 'sell',
         amount: 0,
@@ -122,16 +122,24 @@ class ElementFundActions extends React.Component {
 
   static contextTypes = {
     api: PropTypes.object.isRequired,
-  };
+  }
 
   static propTypes = {
-    dragoDetails: PropTypes.object.isRequired, 
+    dragoDetails: PropTypes.object.isRequired,
     actionSelected: PropTypes.object,
     accounts: PropTypes.array.isRequired,
     onTransactionSent: PropTypes.func.isRequired,
-    dispatch: PropTypes.func.isRequired
+    dispatch: PropTypes.func.isRequired,
+    snackBar: PropTypes.func.isRequired
   };
-  
+
+  static defaultProps = {
+    actionSelected: {
+      open: false,
+      action: 'buy'
+    }
+  };
+
 
   resetState = {
     openAuth: false,
@@ -147,7 +155,7 @@ class ElementFundActions extends React.Component {
     amountFieldDisabled: true,
     unitsSummary: 0,
     amountSummary: 0,
-    actionStyleBuySell: { 
+    actionStyleBuySell: {
       color: Colors.green300
     },
     canSubmit: false,
@@ -172,23 +180,23 @@ class ElementFundActions extends React.Component {
 
   }
 
-  UNSAFE_componentWillReceiveProps (nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     // console.log(nextProps)
     if (this.props.actionSelected.action !== nextProps.actionSelected.action) {
-      nextProps.actionSelected.action == 'buy' 
-      ? this.handleBuyAction()
-      : this.handleSellAction()
+      nextProps.actionSelected.action == 'buy'
+        ? this.handleBuyAction()
+        : this.handleSellAction()
     }
 
-    this.setState ({
-      open: nextProps.actionSelected.open, 
+    this.setState({
+      open: nextProps.actionSelected.open,
     })
   }
 
   handleOpen = () => {
     this.setState({
       open: true,
-      ...this.resetState  
+      ...this.resetState
     })
   }
 
@@ -203,8 +211,10 @@ class ElementFundActions extends React.Component {
 
   handleCancel = () => {
     this.setState(
-      { open: false,
-        ...this.resetState  }
+      {
+        open: false,
+        ...this.resetState
+      }
     ), this.props.onTransactionSent()
   }
 
@@ -213,10 +223,10 @@ class ElementFundActions extends React.Component {
       { openAuth: true }
     );
   }
-  
+
 
   handleSellAction = () => {
-    const {dragoDetails} = this.props
+    const { dragoDetails } = this.props
     return this.setState({
       open: true,
       action: 'sell',
@@ -274,11 +284,11 @@ class ElementFundActions extends React.Component {
 
   onChangeAccounts = (account) => {
     const { api } = this.context
-    const {dragoDetails} = this.props
-    const accountError = validateAccount(account,api)
+    const { dragoDetails } = this.props
+    const accountError = validateAccount(account, api)
     // Setting variables depending on account source
     // var provider = account.source === 'MetaMask' ? window.web3 : api
-    var provider = api
+    let provider = api
     this.setState({
       account,
       accountError: accountError
@@ -289,13 +299,13 @@ class ElementFundActions extends React.Component {
       const poolApi = new PoolApi(provider)
       poolApi.contract.drago.init(dragoDetails.address)
       poolApi.contract.drago.balanceOf(account.address)
-      .then((amount) =>{
-        const drgBalance = formatCoins(amount,4,api)
-        this.setState({
-          drgBalance,
-          amountFieldDisabled: false
-        });
-      })
+        .then((amount) => {
+          const drgBalance = formatCoins(amount, 4, api)
+          this.setState({
+            drgBalance,
+            amountFieldDisabled: false
+          });
+        })
     }
   }
 
@@ -309,7 +319,7 @@ class ElementFundActions extends React.Component {
     const drgCurrent = new BigNumber(drgBalance)
     const ratio = action == 'buy' ? buyRatio : sellRatio
     const getAmounts = (action, amount) => {
-      var orderAmount = null;
+      let orderAmount = null;
       if (amount.length == 0) {
         orderAmount = new BigNumber(0)
       } else {
@@ -319,13 +329,13 @@ class ElementFundActions extends React.Component {
       if (this.state.switchButton.label == 'Units') { // Buy in ETH amount
         let amountDRG = orderAmount.times(ratio)
         let amountETH = new BigNumber(amount)
-        return {amountETH: amountETH, amountDRG: amountDRG} 
+        return { amountETH: amountETH, amountDRG: amountDRG }
       }
       // Checking if the amount is expressed in DRG
       if (this.state.switchButton.label == 'Amount') { // Buy in DRG units
         let amountDRG = orderAmount
         let amountETH = new BigNumber(amount).times(ratio)
-        return {amountETH: amountETH, amountDRG: amountDRG} 
+        return { amountETH: amountETH, amountDRG: amountDRG }
       }
     }
 
@@ -340,8 +350,8 @@ class ElementFundActions extends React.Component {
     }
 
     // Second: updating the state with the new balances
-    var newDrgBalance = action == 'buy' 
-      ? getAmounts(action, amount).amountDRG.plus(drgCurrent) 
+    let newDrgBalance = action == 'buy'
+      ? getAmounts(action, amount).amountDRG.plus(drgCurrent)
       : drgCurrent.minus(getAmounts(action, amount).amountDRG)
     this.setState({
       newDrgBalance: newDrgBalance.toFormat(4),
@@ -353,12 +363,12 @@ class ElementFundActions extends React.Component {
   }
 
   onChangeAmount = (event, amount) => {
-      const accountError = validatePositiveNumber(amount.trim())
-      this.setState({
-        amount: amount.trim(),
-        amountError: accountError,
-      }, this.validateOrder)
-      
+    const accountError = validatePositiveNumber(amount.trim())
+    this.setState({
+      amount: amount.trim(),
+      amountError: accountError,
+    }, this.validateOrder)
+
   }
 
   validateOrder = () => {
@@ -369,16 +379,16 @@ class ElementFundActions extends React.Component {
     const buyRatio = new BigNumber(1).div(buyPrice)
     const sellRatio = new BigNumber(1).div(sellPrice)
     const ratio = action == 'buy' ? buyRatio : sellRatio
-    const calculateAmount = (amount) =>{
-      switch(this.state.switchButton.label) {
+    const calculateAmount = (amount) => {
+      switch (this.state.switchButton.label) {
         case "Units":
-          return action == 'buy' ? new BigNumber(amount) : new BigNumber(amount).times(ratio)
+          return action === 'buy' ? new BigNumber(amount) : new BigNumber(amount).times(ratio)
         case "Amount":
-          return action == 'buy' ? new BigNumber(amount).div(ratio) : new BigNumber(amount)
-      } 
+          return action === 'buy' ? new BigNumber(amount).div(ratio) : new BigNumber(amount)
+      }
     }
     // First: checking if any error in the account or amount. If error then return.
-    if ( accountError || amountError ) {
+    if (accountError || amountError) {
       this.setState({
         drgOrder: new BigNumber(0).toFormat(4),
         unitsSummary: 0
@@ -386,7 +396,7 @@ class ElementFundActions extends React.Component {
       return
     }
     // Second: checking if the account balance has enough ETH
-    switch(this.state.action) {
+    switch (this.state.action) {
       case "buy":
         if (calculateAmount(amount).gt(account.ethBalance.replace(/,/g, ''))) {
           this.setState({
@@ -409,7 +419,7 @@ class ElementFundActions extends React.Component {
           this.calculateBalance()
         }
         break
-    } 
+    }
 
   }
 
@@ -420,14 +430,14 @@ class ElementFundActions extends React.Component {
     const amount = api.util.toWei(this.state.amountSummary).toString()
     const authMsg = 'You bought ' + this.state.unitsSummary + ' units of ' + dragoDetails.symbol.toUpperCase() + ' for ' + this.state.amountSummary + ' ETH'
     const transactionId = api.util.sha3(new Date() + account.address)
-   
-    
+
+
     // Setting variables depending on account source
-    var provider = account.source === 'MetaMask' ? window.web3 : api
-    var poolApi = null;
-    
+    let provider = account.source === 'MetaMask' ? window.web3 : api
+    let poolApi = null;
+
     // Initializing transaction variables
-    var transactionDetails = {
+    let transactionDetails = {
       status: account.source === 'MetaMask' ? 'pending' : 'authorization',
       hash: '',
       parityId: null,
@@ -439,7 +449,7 @@ class ElementFundActions extends React.Component {
       amount: this.state.amountSummary
     }
     this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
-    
+
     // Sending the transaction
     poolApi = new PoolApi(provider)
     poolApi.contract.drago.init(dragoDetails.address)
@@ -453,7 +463,7 @@ class ElementFundActions extends React.Component {
           transactionDetails.status = 'executed'
           transactionDetails.receipt = receipt
           transactionDetails.hash = receipt.transactionHash
-          transactionDetails.timestamp = new Date ()
+          transactionDetails.timestamp = new Date()
           this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
         } else {
           transactionDetails.parityId = receipt
@@ -483,18 +493,18 @@ class ElementFundActions extends React.Component {
     const { api } = this.context;
     const { dragoDetails } = this.props
     const DIVISOR = 10 ** 6;  //dragos are divisible by 1 million
-    const {account} = this.state
+    const { account } = this.state
     const amount = new BigNumber(this.state.unitsSummary).mul(DIVISOR).toFixed(0)
     const authMsg = 'You sold ' + this.state.unitsSummary + ' units of ' + dragoDetails.symbol.toUpperCase() + ' for ' + this.state.amountSummary + ' ETH'
     const transactionId = api.util.sha3(new Date() + account.address)
 
 
     // Setting variables depending on account source
-    var provider = account.source === 'MetaMask' ? window.web3 : api
-    var poolApi = null;
-    
+    let provider = account.source === 'MetaMask' ? window.web3 : api
+    let poolApi = null;
+
     // Initializing transaction variables
-    var transactionDetails = {
+    let transactionDetails = {
       status: account.source === 'MetaMask' ? 'pending' : 'authorization',
       hash: '',
       parityId: null,
@@ -506,7 +516,7 @@ class ElementFundActions extends React.Component {
       amount: this.state.amountSummary
     }
     this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
-    
+
     poolApi = new PoolApi(provider)
     poolApi.contract.drago.init(dragoDetails.address)
     poolApi.contract.drago.sellDrago(account.address, amount)
@@ -519,7 +529,7 @@ class ElementFundActions extends React.Component {
           transactionDetails.status = 'executed'
           transactionDetails.receipt = receipt
           transactionDetails.hash = receipt.transactionHash
-          transactionDetails.timestamp = new Date ()
+          transactionDetails.timestamp = new Date()
           this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
         } else {
           transactionDetails.parityId = receipt
@@ -539,30 +549,30 @@ class ElementFundActions extends React.Component {
       })
     this.setState({
       authMsg: authMsg,
-      authAccount: {...this.state.account},
+      authAccount: { ...this.state.account },
       // sending: false,
       complete: true,
     }, this.handleSubmit)
   }
 
   onSend = () => {
-    switch(this.state.action) {
+    switch (this.state.action) {
       case "buy":
         this.onSendBuy()
         break
       case "sell":
         this.onSendSell()
         break
-    } 
+    }
   }
 
   unitsSwitch = () => {
-    const {dragoDetails} = this.props
+    const { dragoDetails } = this.props
     this.setState({
-      switchButton: { 
+      switchButton: {
         label: this.state.switchButton.label == 'Units' ? 'Amount' : 'Units',
         hint: this.state.switchButton.hint == 'Units' ? 'Amount' : 'Units',
-        denomination: this.state.switchButton.denomination == 'ETH' ? dragoDetails.symbol : 'ETH',      
+        denomination: this.state.switchButton.denomination == 'ETH' ? dragoDetails.symbol : 'ETH',
       },
       amountError: ' ',
     })
@@ -571,32 +581,32 @@ class ElementFundActions extends React.Component {
   buyFields = () => {
     const floatingLabelTextAmount = this.state.switchButton.denomination == 'ETH'
       ? 'Amount in ' + this.state.switchButton.denomination
-      : 'Units of ' + this.state.switchButton.denomination 
+      : 'Units of ' + this.state.switchButton.denomination
     return (
       <Col xs={6}>
         <Row middle="xs" >
           <Col xs={12}>
-          <AccountSelector
-          accounts={ this.props.accounts }
-          account={ this.state.account }
-          errorText={ this.state.accountError }
-          floatingLabelText='From account'
-          hintText='The account the transaction will be made from'
-          onSelect={ this.onChangeAccounts } />
+            <AccountSelector
+              accounts={this.props.accounts}
+              account={this.state.account}
+              errorText={this.state.accountError}
+              floatingLabelText='From account'
+              hintText='The account the transaction will be made from'
+              onSelect={this.onChangeAccounts} />
           </Col>
           <Col xs={6}>
             <TextField
-                id='actionBuyAmount'
-                autoComplete='off'
-                floatingLabelFixed
-                floatingLabelText={floatingLabelTextAmount}
-                fullWidth
-                hintText={this.state.switchButton.hint}
-                errorText={ this.state.amountError }
-                name='amount'
-                disabled={this.state.amountFieldDisabled}
-                value={ this.state.amount }
-                onChange={ this.onChangeAmount } />
+              id='actionBuyAmount'
+              autoComplete='off'
+              floatingLabelFixed
+              floatingLabelText={floatingLabelTextAmount}
+              fullWidth
+              hintText={this.state.switchButton.hint}
+              errorText={this.state.amountError}
+              name='amount'
+              disabled={this.state.amountFieldDisabled}
+              value={this.state.amount}
+              onChange={this.onChangeAmount} />
           </Col>
           <Col xs={6}>
             <RaisedButton
@@ -614,34 +624,34 @@ class ElementFundActions extends React.Component {
 
   sellFields = () => {
     const floatingLabelTextAmount = this.state.switchButton.denomination == 'ETH'
-    ? 'Amount in ' + this.state.switchButton.denomination
-    : 'Units of ' + this.state.switchButton.denomination 
+      ? 'Amount in ' + this.state.switchButton.denomination
+      : 'Units of ' + this.state.switchButton.denomination
     return (
       <Col xs={6}>
         <Row middle="xs" >
           <Col xs={12}>
             <AccountSelector
-            id='actionAccount'
-            accounts={ this.props.accounts }
-            account={ this.state.account }
-            errorText={ this.state.accountError }
-            floatingLabelText='From account'
-            hintText='The account the transaction will be made from'
-            onSelect={ this.onChangeAccounts } />
+              id='actionAccount'
+              accounts={this.props.accounts}
+              account={this.state.account}
+              errorText={this.state.accountError}
+              floatingLabelText='From account'
+              hintText='The account the transaction will be made from'
+              onSelect={this.onChangeAccounts} />
           </Col>
           <Col xs={6}>
             <TextField
-                id='actionSellAmount'
-                autoComplete='off'
-                floatingLabelFixed
-                floatingLabelText={floatingLabelTextAmount}
-                fullWidth
-                hintText={this.state.switchButton.hint}
-                errorText={ this.state.amountError }
-                name='amount'
-                disabled={this.state.amountFieldDisabled}
-                value={ this.state.amount }
-                onChange={ this.onChangeAmount } />
+              id='actionSellAmount'
+              autoComplete='off'
+              floatingLabelFixed
+              floatingLabelText={floatingLabelTextAmount}
+              fullWidth
+              hintText={this.state.switchButton.hint}
+              errorText={this.state.amountError}
+              name='amount'
+              disabled={this.state.amountFieldDisabled}
+              value={this.state.amount}
+              onChange={this.onChangeAmount} />
           </Col>
           <Col xs={6}>
             <RaisedButton
@@ -661,25 +671,25 @@ class ElementFundActions extends React.Component {
     const { newDrgBalance, drgBalance, drgOrder } = this.state
     const { dragoDetails } = this.props
     return (
-        <Table selectable={false} className={styles.detailsTable}>
-          <TableBody displayRowCheckbox={false}>
-            <TableRow hoverable={false} >
-              <TableRowColumn className={styles.detailsTableCell}>Current</TableRowColumn>
-              {/* <TableRowColumn className={styles.detailsTableCell}></TableRowColumn> */}
-              <TableRowColumn className={styles.detailsTableCell2}>{drgBalance} {dragoDetails.symbol}</TableRowColumn>
-            </TableRow>
-            <TableRow hoverable={false} >
-              <TableRowColumn className={styles.detailsTableCell}>Order</TableRowColumn>
-              {/* <TableRowColumn className={styles.detailsTableCell}></TableRowColumn> */}
-              <TableRowColumn className={styles.detailsTableCell2}>{drgOrder} {dragoDetails.symbol}</TableRowColumn>
-            </TableRow>
-            <TableRow hoverable={false} >
-              <TableRowColumn className={styles.detailsTableCell}>Expected*</TableRowColumn>
-              {/* <TableRowColumn className={styles.detailsTableCell}></TableRowColumn> */}
-              <TableRowColumn className={styles.detailsTableCell2}>{newDrgBalance} {dragoDetails.symbol}</TableRowColumn>
-            </TableRow>
-          </TableBody>
-        </Table>
+      <Table selectable={false} className={styles.detailsTable}>
+        <TableBody displayRowCheckbox={false}>
+          <TableRow hoverable={false} >
+            <TableRowColumn className={styles.detailsTableCell}>Current</TableRowColumn>
+            {/* <TableRowColumn className={styles.detailsTableCell}></TableRowColumn> */}
+            <TableRowColumn className={styles.detailsTableCell2}>{drgBalance} {dragoDetails.symbol}</TableRowColumn>
+          </TableRow>
+          <TableRow hoverable={false} >
+            <TableRowColumn className={styles.detailsTableCell}>Order</TableRowColumn>
+            {/* <TableRowColumn className={styles.detailsTableCell}></TableRowColumn> */}
+            <TableRowColumn className={styles.detailsTableCell2}>{drgOrder} {dragoDetails.symbol}</TableRowColumn>
+          </TableRow>
+          <TableRow hoverable={false} >
+            <TableRowColumn className={styles.detailsTableCell}>Expected*</TableRowColumn>
+            {/* <TableRowColumn className={styles.detailsTableCell}></TableRowColumn> */}
+            <TableRowColumn className={styles.detailsTableCell2}>{newDrgBalance} {dragoDetails.symbol}</TableRowColumn>
+          </TableRow>
+        </TableBody>
+      </Table>
     )
   }
 
@@ -689,7 +699,7 @@ class ElementFundActions extends React.Component {
     const { dragoDetails } = this.props
     const { openAuth, authMsg, authAccount } = this.state
     const { sending } = this.state;
-    const hasError = !!(this.state.accountError || this.state.amountError );
+    const hasError = !!(this.state.accountError || this.state.amountError);
 
     const actions = [
       <FlatButton
@@ -697,13 +707,12 @@ class ElementFundActions extends React.Component {
         label="Cancel"
         primary={true}
         onClick={this.handleCancel}
-        onClick={this.handleCancel}
       />,
       <FlatButton
         key="SubmitButton"
         label="Submit"
         primary={true}
-        disabled={ hasError || sending }
+        disabled={hasError || sending}
         onClick={this.onSend}
       />,
     ];
@@ -726,44 +735,44 @@ class ElementFundActions extends React.Component {
       <div>
         {/* <RaisedButton label="Trade" primary={true} onClick={this.handleOpen} 
           labelStyle={{fontWeight: 700, fontSize: '20px'}}/> */}
-          <Dialog
-            title={<ElementFundActionsHeader dragoDetails={dragoDetails} 
-              action={this.state.action} 
-              handleSellAction={this.handleSellAction}
-              handleBuyAction={this.handleBuyAction}
-            />}
-            actions={actions}
-            modal={false}
-            open={this.state.open}
-            contentStyle={customContentStyle}
-            onRequestClose={this.handleCancel}
-          >
+        <Dialog
+          title={<ElementFundActionsHeader dragoDetails={dragoDetails}
+            action={this.state.action}
+            handleSellAction={this.handleSellAction}
+            handleBuyAction={this.handleBuyAction}
+          />}
+          actions={actions}
+          modal={false}
+          open={this.state.open}
+          contentStyle={customContentStyle}
+          onRequestClose={this.handleCancel}
+        >
           <Row>
             <Col xs={12}>
               <Row center="xs">
                 <Col xs={6}>
-                  <h2><span style={this.state.actionStyleBuySell}>{this.state.action.toUpperCase()}</span>&nbsp; 
-                  {dragoDetails.symbol} {this.state.action =='buy' ? dragoDetails.buyPrice : dragoDetails.sellPrice}</h2>
+                  <h2><span style={this.state.actionStyleBuySell}>{this.state.action.toUpperCase()}</span>&nbsp;
+                  {dragoDetails.symbol} {this.state.action == 'buy' ? dragoDetails.buyPrice : dragoDetails.sellPrice}</h2>
                 </Col>
               </Row>
             </Col>
           </Row>
           <Paper className={styles.paperContainer} zDepth={1}>
-          <Row>
+            <Row>
               <Col xs={6}>
                 <p>Holding</p>
               </Col>
               <Col xs={6}>
                 <p>Order</p>
               </Col>
-          </Row>
-          <Row>
-            <Col xs={6}>
-              {this.holding()}
-            </Col>
-            {this.state.action =='buy' ? this.buyFields() : this.sellFields()}
+            </Row>
+            <Row>
+              <Col xs={6}>
+                {this.holding()}
+              </Col>
+              {this.state.action == 'buy' ? this.buyFields() : this.sellFields()}
 
-          </Row>
+            </Row>
           </Paper>
           <Row>
             <Col xs={12} className={styles.grossAmountWarning}>
@@ -774,8 +783,8 @@ class ElementFundActions extends React.Component {
             <Col xs={12}>
               <Row center="xs">
                 <Col xs={6}>
-                  <h2><span style={this.state.actionStyleBuySell}>{this.state.actionSummary}</span> <span className={styles.summary}>{this.state.unitsSummary}</span> {dragoDetails.symbol}<br /> 
-                  FOR <span className={styles.summary}>{this.state.amountSummary}</span> ETH </h2>
+                  <h2><span style={this.state.actionStyleBuySell}>{this.state.actionSummary}</span> <span className={styles.summary}>{this.state.unitsSummary}</span> {dragoDetails.symbol}<br />
+                    FOR <span className={styles.summary}>{this.state.amountSummary}</span> ETH </h2>
                 </Col>
               </Row>
             </Col>
