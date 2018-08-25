@@ -1,16 +1,15 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-import React, { Component } from 'react';
-import styles from './exchangeSelectItem.module.css';
-import PropTypes from 'prop-types';
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
 import TokenIcon from '../atoms/tokenIcon'
-
+import styles from './exchangeSelectItem.module.css'
 
 export default class ExchangeTokenSelectItem extends Component {
   static propTypes = {
     baseTokenSymbol: PropTypes.string.isRequired,
-    quoteTokenSymbol: PropTypes.string.isRequired,
-  };
+    quoteTokenSymbol: PropTypes.string.isRequired
+  }
 
   render() {
     return (
@@ -22,10 +21,10 @@ export default class ExchangeTokenSelectItem extends Component {
         </div>
         <div className={styles.details}>
           <div className={styles.name}>
-            {this.props.baseTokenSymbol + "/" + this.props.quoteTokenSymbol}
+            {this.props.baseTokenSymbol + '/' + this.props.quoteTokenSymbol}
           </div>
         </div>
       </div>
-    );
+    )
   }
 }

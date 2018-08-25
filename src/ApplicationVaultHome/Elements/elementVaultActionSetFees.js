@@ -1,29 +1,32 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-import BigNumber from 'bignumber.js';
-import { Dialog, FlatButton, TextField } from 'material-ui';
-import AppBar from 'material-ui/AppBar';
-import Paper from 'material-ui/Paper';
-import * as Colors from 'material-ui/styles/colors';
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { Col, Row } from 'react-flexbox-grid';
-import AccountSelector from '../../Elements/elementAccountSelector';
-import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization';
-import PoolApi from '../../PoolsApi/src';
-import ActionsDialogHeader from '../../_atomic/molecules/actionsDialogHeader';
-import { ERRORS, validateAccount, validatePositiveNumber } from '../../_utils/validation';
-import styles from './elementVaultActionSetFees.module.css';
-import { connect } from 'react-redux';
-import { Actions } from '../../_redux/actions';
+import * as Colors from 'material-ui/styles/colors'
+import { Actions } from '../../_redux/actions'
+import { Col, Row } from 'react-flexbox-grid'
+import { Dialog, FlatButton, TextField } from 'material-ui'
+import {
+  ERRORS,
+  validateAccount,
+  validatePositiveNumber
+} from '../../_utils/validation'
+import { connect } from 'react-redux'
+import AccountSelector from '../../Elements/elementAccountSelector'
+import ActionsDialogHeader from '../../_atomic/molecules/actionsDialogHeader'
+import AppBar from 'material-ui/AppBar'
+import BigNumber from 'bignumber.js'
+import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization'
+import Paper from 'material-ui/Paper'
+import PoolApi from '../../PoolsApi/src'
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
+import styles from './elementVaultActionSetFees.module.css'
 
 //TODO: add address exchange
 
 class ElementVaultActionSetFees extends Component {
-
   static contextTypes = {
-    api: PropTypes.object.isRequired,
-  };
+    api: PropTypes.object.isRequired
+  }
 
   static propTypes = {
     accounts: PropTypes.array.isRequired,
@@ -41,27 +44,26 @@ class ElementVaultActionSetFees extends Component {
     price: this.props.vaultDetails.price,
     feesError: ERRORS.invalidPrices,
     sending: false,
-    complete: false,
+    complete: false
   }
 
   buttonsStyle = {
     marginTop: 12,
     marginBottom: 12,
-    color: 'white',
+    color: 'white'
   }
 
-  componentDidMount () {
+  componentDidMount() {
     const { api } = this.context
     console.log(api)
   }
 
-  render () {
-    
-    const { complete, openAuth, authMsg, authAccount } = this.state;
-    const {vaultDetails} = this.props
+  render() {
+    const { complete, openAuth, authMsg, authAccount } = this.state
+    const { vaultDetails } = this.props
 
     if (complete) {
-      return null;
+      return null
     }
 
     const titleStyle = {
@@ -84,68 +86,72 @@ class ElementVaultActionSetFees extends Component {
     }
 
     return (
-      <div key='setPriceDialoDiv'>
-      <Dialog key='setPriceDialog'
-        title={this.renderHeader()}
-        titleStyle={titleStyle}
-        modal 
-        open={true}
-        actions={ this.renderActions() }>
-        { this.renderFields() }
-      </Dialog>
+      <div key="setPriceDialoDiv">
+        <Dialog
+          key="setPriceDialog"
+          title={this.renderHeader()}
+          titleStyle={titleStyle}
+          modal
+          open={true}
+          actions={this.renderActions()}
+        >
+          {this.renderFields()}
+        </Dialog>
       </div>
-    );
+    )
   }
 
   renderHeader = () => {
     const { vaultDetails } = this.props
     return (
-      <div key='dialogHeader'>
+      <div key="dialogHeader">
         <ActionsDialogHeader
-          primaryText='Set Fees'
-          fundType='vault'
+          primaryText="Set Fees"
+          fundType="vault"
           tokenDetails={vaultDetails}
         />
       </div>
     )
   }
 
-  
-
-  onClose =(event) =>{
+  onClose = event => {
     // Calling callback function passed by parent in order to show/hide this dialog
-    this.props.openActionForm(event,'setFees')
+    this.props.openActionForm(event, 'setFees')
   }
 
   renderActions = () => {
-    const { complete } = this.state;
+    const { complete } = this.state
 
     if (complete) {
       return (
-        <FlatButton key='dialogButton1'
-          label='Done'
+        <FlatButton
+          key="dialogButton1"
+          label="Done"
           primary
-          onClick={ this.onClose } />
-      );
+          onClick={this.onClose}
+        />
+      )
     }
 
-    const { accountError, amountError, sending } = this.state;
-    const hasError = !!( amountError || accountError );
+    const { accountError, amountError, sending } = this.state
+    const hasError = !!(amountError || accountError)
 
-    return ([
+    return [
       <FlatButton
-        key='dialogButton1'
-        label='Cancel'
-        name='setPrice'
+        key="dialogButton1"
+        label="Cancel"
+        name="setPrice"
         primary
-        onClick={ this.onClose} />,
+        onClick={this.onClose}
+      />,
       <FlatButton
-        key='dialogButton2'
-        label='Save'
+        key="dialogButton2"
+        label="Save"
         primary
-        disabled={ hasError || sending }
-        onClick={ this.onSend } />
-    ]);
+        disabled={hasError || sending}
+        onClick={this.onSend}
+      />
+    ]
   }
 
   renderFields = () => {
@@ -163,28 +169,31 @@ class ElementVaultActionSetFees extends Component {
       padding: 0,
       textAlign: 'center',
       fontSize: 25,
-      fontWeight: 600,
+      fontWeight: 600
     }
 
-    
     return (
-      <div key='inputFields'>
+      <div key="inputFields">
         <Row>
           <Col xs={12}>
-          <p>Fees are expressed in basis points and must be equal or higher than 0.01%.</p>
-          <p>Fractions of basis points are not allowed.</p>
+            <p>
+              Fees are expressed in basis points and must be equal or higher
+              than 0.01%.
+            </p>
+            <p>Fractions of basis points are not allowed.</p>
           </Col>
         </Row>
         <Row>
           <Col xs={12}>
-          <AccountSelector
-          key='accountSelector'
-          accounts={this.props.accounts}
-          account={this.state.account}
-          errorText={this.state.accountError}
-          floatingLabelText='From account'
-          hintText='The account the transaction will be made from'
-          onSelect={this.onChangeAddress} />
+            <AccountSelector
+              key="accountSelector"
+              accounts={this.props.accounts}
+              account={this.state.account}
+              errorText={this.state.accountError}
+              floatingLabelText="From account"
+              hintText="The account the transaction will be made from"
+              onSelect={this.onChangeAddress}
+            />
           </Col>
         </Row>
 
@@ -200,37 +209,41 @@ class ElementVaultActionSetFees extends Component {
                     titleStyle={priceBoxHeaderTitleStyle}
                   />
                   <div className={styles.currentPriceText}>
-                    {(isNaN(this.state.price) || this.state.price === '') ? '-' : this.state.price} %
+                    {isNaN(this.state.price) || this.state.price === ''
+                      ? '-'
+                      : this.state.price}{' '}
+                    %
                   </div>
                 </Col>
                 <Col xs={8}>
                   <TextField
-                    key='setFundFeeField'
-                    autoComplete='off'
+                    key="setFundFeeField"
+                    autoComplete="off"
                     floatingLabelFixed
-                    floatingLabelText='The fee for this Vault'
+                    floatingLabelText="The fee for this Vault"
                     fullWidth
                     // hintText={amountLabel}
                     errorText={this.state.amountError}
-                    name='setVaultPriceField'
-                    id='setVaultPriceField'
+                    name="setVaultPriceField"
+                    id="setVaultPriceField"
                     value={this.props.vaultDetails.price}
-                    onChange={this.onChangeAmount} />
+                    onChange={this.onChangeAmount}
+                  />
                 </Col>
               </Row>
             </Paper>
           </Col>
         </Row>
       </div>
-    );
+    )
   }
 
-  onChangeAddress = (account) => {
-    const { api } = this.context;
+  onChangeAddress = account => {
+    const { api } = this.context
     this.setState({
       account,
       accountError: validateAccount(account, api)
-    });
+    })
   }
 
   onChangeAmount = (event, fee) => {
@@ -238,65 +251,68 @@ class ElementVaultActionSetFees extends Component {
       this.setState({
         price: '',
         amountErrorSell: ERRORS.invalidAmount
-      });
+      })
       return
     }
     if (fee === 0) {
       this.setState({
-        price: fee,
-      });
+        price: fee
+      })
       return
     }
-    this.setState({
-      price: fee,
-      amountError: validatePositiveNumber(fee)
-    }, this.validateMimimumFee);
+    this.setState(
+      {
+        price: fee,
+        amountError: validatePositiveNumber(fee)
+      },
+      this.validateMimimumFee
+    )
   }
 
   validateMimimumFee = () => {
     const { price } = this.state
-    let bn = null;
+    let bn = null
 
     try {
-      bn = new BigNumber(price);
+      bn = new BigNumber(price)
     } catch (e) {
       this.setState({
         amountError: ERRORS.invalidAmount
-      });
+      })
       return
     }
     if (bn.decimalPlaces() > 2) {
       this.setState({
         amountError: ERRORS.invalidAmountFractionBasisPoint
-      });
+      })
       return
     }
     if (!bn.gte(0.01)) {
       this.setState({
         amountError: ERRORS.invalidAmountFeeTooLow
-      });
+      })
     }
-    if (bn.gte(1.00)) {
+    if (bn.gte(1.0)) {
       this.setState({
         amountError: ERRORS.invalidAmountFeeTooHigh
-      });
+      })
     }
   }
 
-
   onSend = () => {
-    const { api } = this.context;
+    const { api } = this.context
     const { vaultDetails } = this.props
     const price = this.state.price
     const accountAddress = this.state.account.address
-    var poolApi = null;
-    var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
+    let poolApi = null
+    let provider = this.state.account.source === 'MetaMask' ? window.web3 : api
     this.setState({
       sending: true
-    });
+    })
     const transactionId = api.util.sha3(new Date() + accountAddress)
-    var transactionDetails = {
-      status: this.state.account.source === 'MetaMask' ? 'pending' : 'authorization',
+    let transactionDetails = {
+      status:
+        this.state.account.source === 'MetaMask' ? 'pending' : 'authorization',
       hash: '',
       parityId: null,
       timestamp: new Date(),
@@ -306,42 +322,63 @@ class ElementVaultActionSetFees extends Component {
       symbol: vaultDetails.symbol.toUpperCase(),
       amount: ''
     }
-    this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
-    const {account} = this.state
+    this.props.dispatch(
+      Actions.transactions.addTransactionToQueueAction(
+        transactionId,
+        transactionDetails
+      )
+    )
+    const { account } = this.state
 
     // price must be in basis points. Mimimum fee = 0.01%, equal to price = 1
     poolApi = new PoolApi(provider)
     poolApi.contract.vault.init(vaultDetails.address)
-    poolApi.contract.vault.setTransactionFee(this.state.account.address, price)
-    .then ((receipt) =>{
-      console.log(receipt)
-      if (account.source === 'MetaMask') {
-        transactionDetails.status = 'executed'
-        transactionDetails.receipt = receipt
-        transactionDetails.hash = receipt.transactionHash
-        transactionDetails.timestamp = new Date ()
-        this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
-      } else {
-        transactionDetails.parityId = receipt
-        this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
-      }
-    })
-    .catch((error) => {
-      const errorArray = error.message.split(/\r?\n/)
-      this.props.snackBar(errorArray[0])
-      transactionDetails.status = 'error'
-      transactionDetails.error = errorArray[0]
-      console.log(error)
-      this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
-      this.setState({
-        sending: false
+    poolApi.contract.vault
+      .setTransactionFee(this.state.account.address, price)
+      .then(receipt => {
+        console.log(receipt)
+        if (account.source === 'MetaMask') {
+          transactionDetails.status = 'executed'
+          transactionDetails.receipt = receipt
+          transactionDetails.hash = receipt.transactionHash
+          transactionDetails.timestamp = new Date()
+          this.props.dispatch(
+            Actions.transactions.addTransactionToQueueAction(
+              transactionId,
+              transactionDetails
+            )
+          )
+        } else {
+          transactionDetails.parityId = receipt
+          this.props.dispatch(
+            Actions.transactions.addTransactionToQueueAction(
+              transactionId,
+              transactionDetails
+            )
+          )
+        }
       })
-    })
+      .catch(error => {
+        const errorArray = error.message.split(/\r?\n/)
+        this.props.snackBar(errorArray[0])
+        transactionDetails.status = 'error'
+        transactionDetails.error = errorArray[0]
+        console.log(error)
+        this.props.dispatch(
+          Actions.transactions.addTransactionToQueueAction(
+            transactionId,
+            transactionDetails
+          )
+        )
+        this.setState({
+          sending: false
+        })
+      })
     this.setState({
       sending: false,
       openAuth: true,
-      authMsg: "Fees set to " + price + " %",
-      authAccount: {...this.state.account}
+      authMsg: 'Fees set to ' + price + ' %',
+      authAccount: { ...this.state.account }
     })
     // this.onClose()
     // this.props.snackBar('Instruction awaiting for authorization')

@@ -1,19 +1,17 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-import { Dialog, FlatButton } from 'material-ui';
-import NotificationWifi from 'material-ui/svg-icons/notification/wifi';
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { Col, Row } from 'react-flexbox-grid';
-import ActionsDialogHeader from '../_atomic/molecules/actionsDialogHeader';
-import styles from './elementActionAuthorization.module.css';
-
+import { Col, Row } from 'react-flexbox-grid'
+import { Dialog, FlatButton } from 'material-ui'
+import ActionsDialogHeader from '../_atomic/molecules/actionsDialogHeader'
+import NotificationWifi from 'material-ui/svg-icons/notification/wifi'
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
+import styles from './elementActionAuthorization.module.css'
 
 export default class ElementActionAuthorization extends Component {
-
   static contextTypes = {
-    api: PropTypes.object.isRequired,
-  };
+    api: PropTypes.object.isRequired
+  }
 
   static propTypes = {
     account: PropTypes.object.isRequired,
@@ -23,15 +21,14 @@ export default class ElementActionAuthorization extends Component {
   }
 
   state = {
-    open: true,
+    open: true
   }
 
   buttonsStyle = {
     marginTop: 12,
     marginBottom: 12,
-    color: 'white',
+    color: 'white'
   }
-
 
   handleClose = () => {
     // Executing onClose function passed by parent if exists, otherwise setting state.
@@ -39,20 +36,19 @@ export default class ElementActionAuthorization extends Component {
       this.props.onClose()
     } else {
       this.setState({
-        open: false,
+        open: false
       })
     }
   }
 
-  renderHeader = () => {
-  }
+  renderHeader = () => {}
 
   renderHeader = () => {
     const { tokenDetails } = this.props
     return (
       <ActionsDialogHeader
-        primaryText='Authorize action'
-        fundType='drago'
+        primaryText="Authorize action"
+        fundType="drago"
         tokenDetails={tokenDetails}
       />
     )
@@ -71,34 +67,34 @@ export default class ElementActionAuthorization extends Component {
         label="Close"
         primary={true}
         onClick={this.handleClose}
-      />,
-    ];
+      />
+    ]
     return (
       <Dialog
         title={this.renderHeader()}
         titleStyle={titleStyle}
         modal
         open={this.state.open}
-        actions={actions}>
-
+        actions={actions}
+      >
         <Row className={styles.container}>
           <Col xs={12}>
-            <span style={{ borderBottom: "1px dotted" }}>
-              {authMsg}
-            </span>
+            <span style={{ borderBottom: '1px dotted' }}>{authMsg}</span>
           </Col>
           <Col xs={12}>
-            Please check your {account.source.charAt(0).toUpperCase() + account.source.slice(1)} wallet and authorize this transaction.
-        </Col>
+            Please check your{' '}
+            {account.source.charAt(0).toUpperCase() + account.source.slice(1)}{' '}
+            wallet and authorize this transaction.
+          </Col>
           <Col xs={12}>
-            Click on the {<NotificationWifi color={'#054186'} />} icon in the top bar to track the progress of your transaction.
-        </Col>
+            Click on the {<NotificationWifi color={'#054186'} />} icon in the
+            top bar to track the progress of your transaction.
+          </Col>
           <Col xs={12}>
             Transactions can take up to 45 seconds to be mined into a new block.
-        </Col>
+          </Col>
         </Row>
       </Dialog>
     )
   }
-
 }

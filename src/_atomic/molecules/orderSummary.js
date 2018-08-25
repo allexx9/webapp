@@ -1,27 +1,25 @@
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { Row, Col } from 'react-flexbox-grid';
+import { Col, Row } from 'react-flexbox-grid'
 import BigNumber from 'bignumber.js'
-import Divider from 'material-ui/Divider';
+import Divider from 'material-ui/Divider'
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
 import Web3 from 'web3'
 
+import classNames from 'classnames'
 import styles from './orderSummary.module.css'
-import classNames from 'classnames';
 
 class OrderSummary extends Component {
-
   static propTypes = {
-    order: PropTypes.object.isRequired,
-  };
+    order: PropTypes.object.isRequired
+  }
 
   static contextTypes = {
-    api: PropTypes.object.isRequired,
-  };
-
+    api: PropTypes.object.isRequired
+  }
 
   render() {
     const { order } = this.props
-    var fee, total, action
+    let fee, total, action
     const web3 = new Web3(Web3.currentProvider)
     // price = (order.orderPrice !== '') ? order.orderPrice : '0'
     // amount = (order.orderFillAmount !== '') ? order.orderFillAmount : '0'
@@ -33,8 +31,7 @@ class OrderSummary extends Component {
       try {
         new BigNumber(order.orderPrice)
         return order.orderPrice
-      }
-      catch (error) {
+      } catch (error) {
         return 0
       }
     }
@@ -43,20 +40,20 @@ class OrderSummary extends Component {
       try {
         new BigNumber(order.orderFillAmount)
         return order.orderFillAmount
-      }
-      catch (error) {
+      } catch (error) {
         return 0
       }
     }
-    fee = new BigNumber(web3.utils.fromWei(order.details.order.takerFee, 'ether')).toFixed(5)
+    fee = new BigNumber(
+      web3.utils.fromWei(order.details.order.takerFee, 'ether')
+    ).toFixed(5)
     total = new BigNumber(price()).mul(amount()).toFixed(5)
 
     order.takerOrder
-      ? action = (order.orderType === 'asks') ? 'buy' : 'sell'
-      : action = (order.orderType === 'bids') ? 'buy' : 'sell'
+      ? (action = order.orderType === 'asks' ? 'buy' : 'sell')
+      : (action = order.orderType === 'bids' ? 'buy' : 'sell')
 
     return (
-
       <Row className={styles.containerOrders}>
         <Col xs={12} className={classNames(styles.action, styles[action])}>
           <div>{action.toUpperCase()}</div>
@@ -78,17 +75,20 @@ class OrderSummary extends Component {
                   <div>{amount()}</div>
                 </Col>
                 <Col xs={2}>
-                  <div><small>{order.selectedTokensPair.baseToken.symbol}</small></div>
+                  <div>
+                    <small>{order.selectedTokensPair.baseToken.symbol}</small>
+                  </div>
                 </Col>
                 <Col xs={8}>
                   <div>{(amount() * price()).toFixed(5)}</div>
                 </Col>
                 <Col xs={2}>
-                  <div><small>{order.selectedTokensPair.quoteToken.symbol}</small></div>
+                  <div>
+                    <small>{order.selectedTokensPair.quoteToken.symbol}</small>
+                  </div>
                 </Col>
               </Row>
             </Col>
-
           </Row>
         </Col>
         <Col xs={12} className={styles.summaryRow}>
@@ -112,7 +112,9 @@ class OrderSummary extends Component {
                   <div>{fee}</div>
                 </Col>
                 <Col xs={2}>
-                  <div><small>ZRX</small></div>
+                  <div>
+                    <small>ZRX</small>
+                  </div>
                 </Col>
               </Row>
             </Col>
@@ -133,13 +135,14 @@ class OrderSummary extends Component {
                   <div>{total}</div>
                 </Col>
                 <Col xs={2}>
-                  <div><small>{order.selectedTokensPair.quoteToken.symbol}</small></div>
+                  <div>
+                    <small>{order.selectedTokensPair.quoteToken.symbol}</small>
+                  </div>
                 </Col>
               </Row>
             </Col>
           </Row>
         </Col>
-
       </Row>
     )
   }

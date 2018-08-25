@@ -1,17 +1,23 @@
 import { Doughnut } from 'react-chartjs-2'
-import React, { Component } from "react";
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
 
 export default class AssetsPieChart extends Component {
-
   static propTypes = {
-    data: PropTypes.object.isRequired,
-  };
+    data: PropTypes.object.isRequired
+  }
 
   render() {
     console.log(this.props.data)
     return (
-      <div style={{height: '200px', width: '200px', textAlign: 'center', margin: 'auto'}}>
+      <div
+        style={{
+          height: '200px',
+          width: '200px',
+          textAlign: 'center',
+          margin: 'auto'
+        }}
+      >
         <Doughnut
           data={this.props.data}
           width={200}
@@ -19,12 +25,11 @@ export default class AssetsPieChart extends Component {
           options={{
             legend: {
               display: true,
-              position: 'bottom',
-          }
+              position: 'bottom'
+            }
           }}
         />
       </div>
-
     )
   }
 }

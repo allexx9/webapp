@@ -23,7 +23,7 @@
       "rules": {
         "no-unused-vars": ["error", { "vars": "all", "args": "after-used", "ignoreRestSiblings": false }],
         "no-var": ["error"],
-        "eqeqeq":"error",
+        "eqeqeq":["error", "always", {"null": "ignore"}]        ,
         "import/newline-after-import": ["error", { "count": 1 }],
         "sort-imports-es6-autofix/sort-imports-es6": [2, {
           "ignoreCase": false,

@@ -1,40 +1,38 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import ApplicationConfigHome from '../ApplicationConfig';
-import ApplicationTopBar from './ApplicationTopBar';
+import ApplicationConfigHome from '../ApplicationConfig'
+import ApplicationTopBar from './ApplicationTopBar'
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
 
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import { Grid, Row, Col } from 'react-flexbox-grid';
+import { Col, Grid, Row } from 'react-flexbox-grid'
+import getMuiTheme from 'material-ui/styles/getMuiTheme'
 
-import styles from './application.module.css';
-import classNames from 'classnames';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import { connect } from 'react-redux';
-
+import { connect } from 'react-redux'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+import classNames from 'classnames'
+import styles from './application.module.css'
 
 const muiTheme = getMuiTheme({
   palette: {
-    "primary1Color": '#054186',
+    primary1Color: '#054186'
   },
   fontFamily: "'Muli', sans-serif",
   appBar: {
     height: 45,
-    fontSize: "20px !important"
-  },
-});
+    fontSize: '20px !important'
+  }
+})
 
 function mapStateToProps(state) {
   return state
 }
 
 class ApplicationConfigPage extends Component {
-
   // Context
   static childContextTypes = {
-    muiTheme: PropTypes.object,
-  };
+    muiTheme: PropTypes.object
+  }
 
   state = {
     notificationsOpen: false
@@ -42,22 +40,20 @@ class ApplicationConfigPage extends Component {
 
   getChildContext() {
     return {
-      muiTheme,
-    };
+      muiTheme
+    }
   }
 
   static contextTypes = {
     api: PropTypes.object.isRequired,
     isConnected: PropTypes.bool.isRequired,
     isSyncing: PropTypes.bool.isRequired,
-    syncStatus: PropTypes.object.isRequired,
-  };
-
-  UNSAFE_componentWillMount() {
+    syncStatus: PropTypes.object.isRequired
   }
 
-  componentWillUnmount() {
-  }
+  UNSAFE_componentWillMount() {}
+
+  componentWillUnmount() {}
 
   // Callback function to handle account type selection in the Top Bar
   // value = 1 = Trader
@@ -68,14 +64,14 @@ class ApplicationConfigPage extends Component {
       true: true
     }
     this.setState({
-      isManager: accountType[value],
-    });
-  };
+      isManager: accountType[value]
+    })
+  }
 
   static propTypes = {
     location: PropTypes.object.isRequired,
-    match: PropTypes.object.isRequired,
-  };
+    match: PropTypes.object.isRequired
+  }
 
   handleToggleNotifications = () => {
     this.setState({ notificationsOpen: !this.state.notificationsOpen })
@@ -91,7 +87,9 @@ class ApplicationConfigPage extends Component {
             <Col xs={12}>
               {/* <ApplicationTabsMenu /> */}
               <ApplicationTopBar
-                handleTopBarSelectAccountType={this.handleTopBarSelectAccountType}
+                handleTopBarSelectAccountType={
+                  this.handleTopBarSelectAccountType
+                }
                 isManager={this.state.isManager}
                 handleToggleNotifications={this.handleToggleNotifications}
               />

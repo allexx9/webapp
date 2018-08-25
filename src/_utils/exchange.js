@@ -1,27 +1,29 @@
 // Copyright 2017 Rigo Investment Sagl.
 // This file is part of RigoBlock.
 
-import Web3 from 'web3'
-import {
-  INFURA,
-  KOVAN,
-  PROD,
-  WS,
-} from './const'
 import * as abis from '../PoolsApi/src/contracts/abi'
-import { ZeroEx } from '0x.js';
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber } from '@0xproject/utils'
+import { INFURA, KOVAN, PROD, WS } from './const'
+import { ZeroEx } from '0x.js'
+import Web3 from 'web3'
 // import ReconnectingWebSocket from 'reconnectingwebsocket'
-import rp from 'request-promise'
 import PoolApi from '../PoolsApi/src'
+import rp from 'request-promise'
 
-
-export const setAllowaceOnExchangeThroughDrago = (selectedFund, token, selectedExchange, amount) => {
+export const setAllowaceOnExchangeThroughDrago = (
+  selectedFund,
+  token,
+  selectedExchange,
+  amount
+) => {
   // var provider = account.source === 'MetaMask' ? window.web3 : api
   const poolApi = new PoolApi(window.web3)
   poolApi.contract.drago.init(selectedFund.details.address)
   console.log('selectedFund.details.address ', selectedFund.details.address)
-  console.log('tokenTransferProxyAddress ', selectedExchange.tokenTransferProxyAddress)
+  console.log(
+    'tokenTransferProxyAddress ',
+    selectedExchange.tokenTransferProxyAddress
+  )
   console.log('token.address ', token.address)
   console.log('selectedFund.managerAccount ', selectedFund.managerAccount)
   console.log('amount ', amount)
@@ -46,7 +48,12 @@ export const setAllowaceOnExchangeThroughDrago = (selectedFund, token, selectedE
 //   return rp(options)
 // }
 
-export const getOrdersFromRelayERCdEX = (networkId, maker, baseTokenAddress, quoteTokenAddress) => {
+export const getOrdersFromRelayERCdEX = (
+  networkId,
+  maker,
+  baseTokenAddress,
+  quoteTokenAddress
+) => {
   console.log('Fetching open orders from ERCdEX')
   if (!networkId) {
     throw new Error('networkId needs to be set')
@@ -67,15 +74,19 @@ export const getOrdersFromRelayERCdEX = (networkId, maker, baseTokenAddress, quo
       maker: maker,
       // tokenAddress: baseTokenAddress,
       makerTokenAddress: baseTokenAddress,
-      takerTokenAddress: quoteTokenAddress,
+      takerTokenAddress: quoteTokenAddress
     },
     json: true // Automatically stringifies the body to JSON
-  };
+  }
   console.log(options)
   return rp(options)
 }
 
-export const getTradeHistoryLogsFromRelayERCdEX = (networkId, baseTokenAddress, quoteTokenAddress) => {
+export const getTradeHistoryLogsFromRelayERCdEX = (
+  networkId,
+  baseTokenAddress,
+  quoteTokenAddress
+) => {
   console.log('Fetching transactions log from ERCdEX')
   if (!networkId) {
     throw new Error('networkId needs to be set')
@@ -96,12 +107,17 @@ export const getTradeHistoryLogsFromRelayERCdEX = (networkId, baseTokenAddress, 
       maker_token_address: quoteTokenAddress
     },
     json: true // Automatically stringifies the body to JSON
-  };
+  }
   console.log(options)
   return rp(options)
 }
 
-export const getHistoricalPricesDataFromERCdEX = (networkId, baseTokenAddress, quoteTokenAddress, startDate) => {
+export const getHistoricalPricesDataFromERCdEX = (
+  networkId,
+  baseTokenAddress,
+  quoteTokenAddress,
+  startDate
+) => {
   if (!networkId) {
     throw new Error('networkId needs to be set')
   }
@@ -124,7 +140,7 @@ export const getHistoricalPricesDataFromERCdEX = (networkId, baseTokenAddress, q
       startDate: startDate
     },
     json: true // Automatically stringifies the body to JSON
-  };
+  }
   // console.log(options)
   return rp(options)
     .then(historical => {
@@ -151,7 +167,7 @@ export const getHistoricalPricesDataFromERCdEX = (networkId, baseTokenAddress, q
 //     method: 'GET',
 //     url: `https://api.ercdex.com/api/standard/${networkId}/v0/orderbook`,
 //     qs: {
-//       baseTokenAddress: baseTokenAddress, 
+//       baseTokenAddress: baseTokenAddress,
 //       quoteTokenAddress: quoteTokenAddress
 //     },
 //     json: true // Automatically stringifies the body to JSON
@@ -171,7 +187,7 @@ export const getHistoricalPricesDataFromERCdEX = (networkId, baseTokenAddress, q
 //     return {
 //       bids: bidsOrders,
 //       asks: asksOrders,
-//       spread 
+//       spread
 //     }
 //   })
 // }
@@ -192,7 +208,7 @@ export const getHistoricalPricesDataFromERCdEX = (networkId, baseTokenAddress, q
 //     uri: `https://api.ercdex.com/api/aggregated_orders`,
 //     qs: {
 //       networkId: networkId,
-//       baseTokenAddress: baseTokenAddress, 
+//       baseTokenAddress: baseTokenAddress,
 //       quoteTokenAddress: quoteTokenAddress
 //     },
 //     json: true // Automatically stringifies the body to JSON
@@ -214,7 +230,7 @@ export const getHistoricalPricesDataFromERCdEX = (networkId, baseTokenAddress, q
 //     }
 //     return {
 //       bids: bidsOrders,
-//       asks: asksOrders, 
+//       asks: asksOrders,
 //       spread,
 //       aggregated: true
 //     }
@@ -237,20 +253,36 @@ export const getHistoricalPricesDataFromERCdEX = (networkId, baseTokenAddress, q
 // }
 
 export const formatOrders = (orders, orderType) => {
-  let orderPrice, orderAmount,remainingAmount
+  let orderPrice, orderAmount, remainingAmount
   let web3 = new Web3(Web3.currentProvider)
-  let formattedOrders = orders.map((order) => {
+  let formattedOrders = orders.map(order => {
     switch (orderType) {
-      case "asks":
-        orderPrice = new BigNumber(order.takerTokenAmount).div(new BigNumber(order.makerTokenAmount)).toFixed(7)
-        orderAmount = new BigNumber(web3.utils.fromWei(order.makerTokenAmount, 'ether')).toFixed(5)
-        remainingAmount = new BigNumber(web3.utils.fromWei(order.remainingTakerTokenAmount, 'ether')).toFixed(5)
-        break;
-      case "bids":
-        orderPrice = new BigNumber(1).div(new BigNumber(order.takerTokenAmount).div(new BigNumber(order.makerTokenAmount))).toFixed(7)
-        orderAmount = new BigNumber(web3.utils.fromWei(order.takerTokenAmount, 'ether')).toFixed(5)
-        remainingAmount = new BigNumber(web3.utils.fromWei(order.remainingTakerTokenAmount, 'ether')).toFixed(5)
-        break;
+      case 'asks':
+        orderPrice = new BigNumber(order.takerTokenAmount)
+          .div(new BigNumber(order.makerTokenAmount))
+          .toFixed(7)
+        orderAmount = new BigNumber(
+          web3.utils.fromWei(order.makerTokenAmount, 'ether')
+        ).toFixed(5)
+        remainingAmount = new BigNumber(
+          web3.utils.fromWei(order.remainingTakerTokenAmount, 'ether')
+        ).toFixed(5)
+        break
+      case 'bids':
+        orderPrice = new BigNumber(1)
+          .div(
+            new BigNumber(order.takerTokenAmount).div(
+              new BigNumber(order.makerTokenAmount)
+            )
+          )
+          .toFixed(7)
+        orderAmount = new BigNumber(
+          web3.utils.fromWei(order.takerTokenAmount, 'ether')
+        ).toFixed(5)
+        remainingAmount = new BigNumber(
+          web3.utils.fromWei(order.remainingTakerTokenAmount, 'ether')
+        ).toFixed(5)
+        break
     }
     let orderHash = ZeroEx.getOrderHashHex(order)
     let orderObject = {
@@ -268,24 +300,28 @@ export const formatOrders = (orders, orderType) => {
 }
 
 export const signOrder = async (order, ZeroExConfig) => {
-  const DECIMALS = 18;
+  const DECIMALS = 18
   let makerTokenAmount, takerTokenAmount
-  const zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig);
+  const zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig)
 
   switch (order.orderType) {
-    case "asks":
+    case 'asks':
       makerTokenAmount = new BigNumber(order.orderFillAmount)
-      takerTokenAmount = new BigNumber(makerTokenAmount).mul(new BigNumber(order.orderPrice))
-      break;
-    case "bids":
-      makerTokenAmount = new BigNumber(order.orderFillAmount).mul(new BigNumber(order.orderPrice))
+      takerTokenAmount = new BigNumber(makerTokenAmount).mul(
+        new BigNumber(order.orderPrice)
+      )
+      break
+    case 'bids':
+      makerTokenAmount = new BigNumber(order.orderFillAmount).mul(
+        new BigNumber(order.orderPrice)
+      )
       takerTokenAmount = new BigNumber(order.orderFillAmount)
-      break;
+      break
   }
   const tokensAmounts = {
     makerTokenAmount: ZeroEx.toBaseUnitAmount(makerTokenAmount, DECIMALS), // Base 18 decimals
-    takerTokenAmount: ZeroEx.toBaseUnitAmount(takerTokenAmount, DECIMALS), // Base 18 decimals
-  };
+    takerTokenAmount: ZeroEx.toBaseUnitAmount(takerTokenAmount, DECIMALS) // Base 18 decimals
+  }
   let orderToBeSigned = { ...order.details.order, ...tokensAmounts }
   const fees = await getFees(orderToBeSigned, ZeroExConfig.networkId)
   console.log(fees)
@@ -294,32 +330,35 @@ export const signOrder = async (order, ZeroExConfig) => {
     ...fees
   }
   console.log(orderToBeSignedWithFees)
-  const orderHash = ZeroEx.getOrderHashHex(orderToBeSignedWithFees);
+  const orderHash = ZeroEx.getOrderHashHex(orderToBeSignedWithFees)
   console.log(ZeroEx.isValidOrderHash(orderHash))
-  const shouldAddPersonalMessagePrefix = true;
-  const signer = await zeroEx.getAvailableAddressesAsync();
-  const ecSignature = await zeroEx.signOrderHashAsync(orderHash, signer[0], shouldAddPersonalMessagePrefix);
-  console.log(ZeroEx.isValidSignature(
+  const shouldAddPersonalMessagePrefix = true
+  const signer = await zeroEx.getAvailableAddressesAsync()
+  const ecSignature = await zeroEx.signOrderHashAsync(
     orderHash,
-    ecSignature,
-    orderToBeSigned.maker
+    signer[0],
+    shouldAddPersonalMessagePrefix
   )
+  console.log(
+    ZeroEx.isValidSignature(orderHash, ecSignature, orderToBeSigned.maker)
   )
   // Append signature to order
   const signedOrder = {
     ...orderToBeSignedWithFees,
-    ecSignature,
-  };
+    ecSignature
+  }
   return signedOrder
 }
 
-export const submitOrderToRelay = async (signedOrder) => {
+export const submitOrderToRelay = async signedOrder => {
   console.log(signedOrder)
   const ZeroExConfig = {
-    networkId: 42,
+    networkId: 42
     // exchangeContractAddress: this._network.id
   }
-  const relayerApiUrl = `https://api.ercdex.com/api/standard/${ZeroExConfig.networkId}/v0/order`
+  const relayerApiUrl = `https://api.ercdex.com/api/standard/${
+    ZeroExConfig.networkId
+  }/v0/order`
   // const relayerClient = new HttpClient(relayerApiUrl);
   // const response = await relayerClient.submitOrderAsync(signedOrder);
   // console.log(response)
@@ -328,12 +367,12 @@ export const submitOrderToRelay = async (signedOrder) => {
     uri: relayerApiUrl,
     body: signedOrder,
     json: true // Automatically stringifies the body to JSON
-  };
+  }
 
   return rp(options)
 }
 
-export const softCancelOrderFromRelayERCdEX = async (signedOrder) => {
+export const softCancelOrderFromRelayERCdEX = async signedOrder => {
   console.log(signedOrder)
   const relayerApiUrl = `https://api.ercdex.com/api/orders/soft-cancel`
   // const relayerClient = new HttpClient(relayerApiUrl);
@@ -341,16 +380,16 @@ export const softCancelOrderFromRelayERCdEX = async (signedOrder) => {
   // console.log(response)
 
   const signature = JSON.stringify(signedOrder.order.ecSignature)
-  const oderHash = ZeroEx.getOrderHashHex(signedOrder.order);
+  const oderHash = ZeroEx.getOrderHashHex(signedOrder.order)
   let options = {
     method: 'POST',
     uri: relayerApiUrl,
     body: {
       orderHash: oderHash,
-      signature: signature,
+      signature: signature
     },
     json: true // Automatically stringifies the body to JSON
-  };
+  }
 
   return rp(options)
 }
@@ -371,43 +410,34 @@ export const getFees = async (order, networkId) => {
       networkId: networkId
     },
     json: true // Automatically stringifies the body to JSON
-  };
+  }
   console.log(options.qs)
   return rp(options)
 }
 
-export const getTokenAllowance = async (
-  token,
-  ownerAddress,
-  ZeroExConfig,
-) => {
+export const getTokenAllowance = async (token, ownerAddress, ZeroExConfig) => {
   if (token.symbol === 'ETH') {
     return true
   }
   const zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig)
-  return zeroEx.token.getProxyAllowanceAsync(
-    token.address,
-    ownerAddress
-  )
+  return zeroEx.token.getProxyAllowanceAsync(token.address, ownerAddress)
 }
 
 export const setTokenAllowance = async (
   tokenAddress,
   ownerAddress,
   spenderAddress,
-  ZeroExConfig,
+  ZeroExConfig
 ) => {
   const zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig)
   return zeroEx.token.setUnlimitedAllowanceAsync(
     tokenAddress,
     ownerAddress,
-    spenderAddress,
+    spenderAddress
   )
 }
 
-export const getAvailableAddresses = async (
-  ZeroExConfig,
-) => {
+export const getAvailableAddresses = async ZeroExConfig => {
   const zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig)
   return zeroEx.getAvailableAddressesAsync()
 }
@@ -418,9 +448,8 @@ export const getMarketTakerOrder = async (
   baseTokenAddress,
   quantity,
   networkId,
-  takerAddress,
+  takerAddress
 ) => {
-
   const relayerApiUrl = `https://api.ercdex.com/api/orders/best`
 
   let options = {
@@ -432,22 +461,30 @@ export const getMarketTakerOrder = async (
       baseTokenAddress,
       quantity,
       networkId,
-      takerAddress,
+      takerAddress
     },
     json: true // Automatically stringifies the body to JSON
-  };
+  }
   console.log(options.qs)
   return rp(options)
 }
 
-export const newMakerOrder = async (orderType, baseTokenAddress, quoteTokenAddress, ZeroExConfig, selectedFund) => {
+export const newMakerOrder = async (
+  orderType,
+  baseTokenAddress,
+  quoteTokenAddress,
+  ZeroExConfig,
+  selectedFund
+) => {
   // const zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig);
   // const EXCHANGE_ADDRESS = zeroEx.exchange.getContractAddress();
   const EXCHANGE_ADDRESS = '0xf307de6528fa16473d8f6509b7b1d8851320dba5'
   // const accounts = await zeroEx.getAvailableAddressesAsync();
   // const makerAddress = accounts[0]
-  const makerTokenAddress = (orderType === 'asks') ? baseTokenAddress : quoteTokenAddress
-  const takerTokenAddress = (orderType === 'asks') ? quoteTokenAddress : baseTokenAddress
+  const makerTokenAddress =
+    orderType === 'asks' ? baseTokenAddress : quoteTokenAddress
+  const takerTokenAddress =
+    orderType === 'asks' ? quoteTokenAddress : baseTokenAddress
 
   const order = {
     maker: selectedFund.details.address.toLowerCase(),
@@ -463,17 +500,24 @@ export const newMakerOrder = async (orderType, baseTokenAddress, quoteTokenAddre
     takerFee: '0',
     makerTokenAmount: '0', // Base 18 decimals
     takerTokenAmount: '0', // Base 18 decimals
-    expirationUnixTimestampSec: new BigNumber(Date.now() + 2592000), // Valid for up to 1 month
-  };
+    expirationUnixTimestampSec: new BigNumber(Date.now() + 2592000) // Valid for up to 1 month
+  }
   return order
 }
 
-export const fillOrderToExchange = async (signedOrder, amount, ZeroExConfig) => {
+export const fillOrderToExchange = async (
+  signedOrder,
+  amount,
+  ZeroExConfig
+) => {
   // const zeroEx = this._zeroEx
-  const DECIMALS = 18;
-  const shouldThrowOnInsufficientBalanceOrAllowance = true;
-  const zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig);
-  const fillTakerTokenAmount = ZeroEx.toBaseUnitAmount(new BigNumber(amount), DECIMALS)
+  const DECIMALS = 18
+  const shouldThrowOnInsufficientBalanceOrAllowance = true
+  const zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig)
+  const fillTakerTokenAmount = ZeroEx.toBaseUnitAmount(
+    new BigNumber(amount),
+    DECIMALS
+  )
   const takerAddress = await zeroEx.getAvailableAddressesAsync()
   console.log(takerAddress)
   console.log(fillTakerTokenAmount)
@@ -486,14 +530,19 @@ export const fillOrderToExchange = async (signedOrder, amount, ZeroExConfig) => 
     {
       shouldValidate: false
     }
-  );
-  const txReceipt = await zeroEx.awaitTransactionMinedAsync(txHash);
-  console.log('FillOrder transaction receipt: ', txReceipt);
+  )
+  const txReceipt = await zeroEx.awaitTransactionMinedAsync(txHash)
+  console.log('FillOrder transaction receipt: ', txReceipt)
 }
 
-export const fillOrderToExchangeViaProxy = async (selectedFund, signedOrder, amount, ZeroExConfig) => {
+export const fillOrderToExchangeViaProxy = async (
+  selectedFund,
+  signedOrder,
+  amount,
+  ZeroExConfig
+) => {
   // const zeroEx = this._zeroEx
-  const DECIMALS = 18;
+  const DECIMALS = 18
 
   const order = signedOrder
 
@@ -504,7 +553,7 @@ export const fillOrderToExchangeViaProxy = async (selectedFund, signedOrder, amo
     order.taker,
     order.makerTokenAddress,
     order.takerTokenAddress,
-    order.feeRecipient,
+    order.feeRecipient
   ]
   const orderValues = [
     order.makerTokenAmount,
@@ -517,7 +566,7 @@ export const fillOrderToExchangeViaProxy = async (selectedFund, signedOrder, amo
   const v = order.ecSignature.v
   const r = order.ecSignature.r
   const s = order.ecSignature.s
-  const shouldThrowOnInsufficientBalanceOrAllowance = true;
+  const shouldThrowOnInsufficientBalanceOrAllowance = true
   console.log(
     orderAddresses,
     orderValues,
@@ -528,7 +577,7 @@ export const fillOrderToExchangeViaProxy = async (selectedFund, signedOrder, amo
     s
   )
 
-  let poolApi = null;
+  let poolApi = null
   poolApi = new PoolApi(window.web3)
   poolApi.contract.drago.init(selectedFund.details.address)
   return poolApi.contract.drago.fillOrderOnZeroExExchange(
@@ -544,9 +593,13 @@ export const fillOrderToExchangeViaProxy = async (selectedFund, signedOrder, amo
   )
 }
 
-export const cancelOrderOnExchangeViaProxy = async (selectedFund, signedOrder, cancelTakerTokenAmount) => {
+export const cancelOrderOnExchangeViaProxy = async (
+  selectedFund,
+  signedOrder,
+  cancelTakerTokenAmount
+) => {
   // const zeroEx = this._zeroEx
-  const DECIMALS = 18;
+  const DECIMALS = 18
 
   const order = signedOrder
 
@@ -557,7 +610,7 @@ export const cancelOrderOnExchangeViaProxy = async (selectedFund, signedOrder, c
     order.taker,
     order.makerTokenAddress,
     order.takerTokenAddress,
-    order.feeRecipient,
+    order.feeRecipient
   ]
   const orderValues = [
     order.makerTokenAmount,
@@ -570,26 +623,38 @@ export const cancelOrderOnExchangeViaProxy = async (selectedFund, signedOrder, c
   console.log(
     orderAddresses,
     orderValues,
-    ZeroEx.toBaseUnitAmount(new BigNumber(cancelTakerTokenAmount), DECIMALS).toString(),
+    ZeroEx.toBaseUnitAmount(
+      new BigNumber(cancelTakerTokenAmount),
+      DECIMALS
+    ).toString()
   )
 
-  let poolApi = null;
+  let poolApi = null
   poolApi = new PoolApi(window.web3)
   poolApi.contract.drago.init(selectedFund.details.address)
   return poolApi.contract.drago.cancelOrderOnZeroExExchange(
     selectedFund.managerAccount,
     orderAddresses,
     orderValues,
-    ZeroEx.toBaseUnitAmount(new BigNumber(cancelTakerTokenAmount), DECIMALS).toString(),
+    ZeroEx.toBaseUnitAmount(
+      new BigNumber(cancelTakerTokenAmount),
+      DECIMALS
+    ).toString(),
     signedOrder.exchangeContractAddress
   )
 }
 
 class Exchange {
-
-  constructor(endpointInfo, networkInfo = { name: KOVAN }, prod = PROD, ws = WS) {
+  constructor(
+    endpointInfo,
+    networkInfo = { name: KOVAN },
+    prod = PROD,
+    ws = WS
+  ) {
     if (!endpointInfo) {
-      throw new Error('endpointInfo connection data needs to be provided to Endpoint')
+      throw new Error(
+        'endpointInfo connection data needs to be provided to Endpoint'
+      )
     }
     if (!networkInfo) {
       throw new Error('network name needs to be provided to Endpoint')
@@ -604,11 +669,14 @@ class Exchange {
     this._baseTokenAddress = null
     this._quoteTokenAddress = null
     this._supportedRelays = {
-      radarrelay: "wss://ws.kovan.radarrelay.com/0x/v0/ws",
-      ercdex: "https://api.ercdex.com/api/standard"
+      radarrelay: 'wss://ws.kovan.radarrelay.com/0x/v0/ws',
+      ercdex: 'https://api.ercdex.com/api/standard'
     }
     // Infura does not support WebSocket on Kovan network yet. Disabling.
-    this._onWs = (this._network.name === KOVAN && this._endpoint.name === INFURA) ? false : ws
+    this._onWs =
+      this._network.name === KOVAN && this._endpoint.name === INFURA
+        ? false
+        : ws
     // Setting production or development endpoints
     if (prod) {
       this._https = endpointInfo.https[this._network.name].prod
@@ -619,14 +687,14 @@ class Exchange {
     }
 
     const ZeroExConfig = {
-      networkId: this._network.id,
+      networkId: this._network.id
       // exchangeContractAddress: this._network.id
     }
-    this._zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig);
+    this._zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig)
   }
 
   get timeout() {
-    return this._timeout;
+    return this._timeout
   }
 
   set timeout(timeout) {
@@ -634,7 +702,7 @@ class Exchange {
   }
 
   get tradeTokensPair() {
-    return this._tradeTokensPair;
+    return this._tradeTokensPair
   }
 
   set tradeTokensPair(tradeTokensPair) {
@@ -648,8 +716,8 @@ class Exchange {
     if (this._onWs) {
       try {
         let api
-        console.log("Network: ", this._network.name)
-        console.log("Connecting to: ", this._wss)
+        console.log('Network: ', this._network.name)
+        console.log('Connecting to: ', this._wss)
         api = new Web3(this._wss)
         api._rb = {}
         api._rb.network = this._network
@@ -662,8 +730,8 @@ class Exchange {
     } else {
       try {
         let api
-        console.log("Network: ", this._network.name)
-        console.log("Connecting to: ", this._https)
+        console.log('Network: ', this._network.name)
+        console.log('Connecting to: ', this._https)
         api = new Web3(this._https)
         api._rb = {}
         api._rb.network = this._network
@@ -764,16 +832,28 @@ class Exchange {
 
   formatOrders = (orders, orderType) => {
     let orderPrice, orderAmount
-    let formattedOrders = orders.map((order) => {
+    let formattedOrders = orders.map(order => {
       switch (orderType) {
-        case "asks":
-          orderPrice = new BigNumber(order.takerTokenAmount).div(new BigNumber(order.makerTokenAmount)).toFixed(7)
-          orderAmount = new BigNumber(this.api.utils.fromWei(order.makerTokenAmount, 'ether')).toFixed(5)
-          break;
-        case "bids":
-          orderPrice = new BigNumber(1).div(new BigNumber(order.takerTokenAmount).div(new BigNumber(order.makerTokenAmount))).toFixed(7)
-          orderAmount = new BigNumber(this.api.utils.fromWei(order.takerTokenAmount, 'ether')).toFixed(5)
-          break;
+        case 'asks':
+          orderPrice = new BigNumber(order.takerTokenAmount)
+            .div(new BigNumber(order.makerTokenAmount))
+            .toFixed(7)
+          orderAmount = new BigNumber(
+            this.api.utils.fromWei(order.makerTokenAmount, 'ether')
+          ).toFixed(5)
+          break
+        case 'bids':
+          orderPrice = new BigNumber(1)
+            .div(
+              new BigNumber(order.takerTokenAmount).div(
+                new BigNumber(order.makerTokenAmount)
+              )
+            )
+            .toFixed(7)
+          orderAmount = new BigNumber(
+            this.api.utils.fromWei(order.takerTokenAmount, 'ether')
+          ).toFixed(5)
+          break
       }
       let orderHash = ZeroEx.getOrderHashHex(order)
       let orderObject = {
@@ -881,7 +961,7 @@ class Exchange {
   //   // }
   // }
 
-  submitOrderToRelay = async (signedOrder) => {
+  submitOrderToRelay = async signedOrder => {
     console.log(signedOrder)
     const relayerApiUrl = 'https://api.kovan.radarrelay.com/0x/v0/order'
     // const relayerClient = new HttpClient(relayerApiUrl);
@@ -892,17 +972,17 @@ class Exchange {
       uri: relayerApiUrl,
       body: signedOrder,
       json: true // Automatically stringifies the body to JSON
-    };
+    }
 
     rp(options)
-      .then(function (parsedBody) {
+      .then(function(parsedBody) {
         console.log(parsedBody)
         // POST succeeded...
       })
-      .catch(function (err) {
+      .catch(function(err) {
         console.log(err)
         // POST failed...
-      });
+      })
   }
 
   // newMakerOrder = async (orderType) => {
@@ -937,16 +1017,30 @@ class Exchange {
   updateOrderToOrderBook = (order, orders, action) => {
     console.log(order, orders, action)
     let orderPrice, orderAmount, orderType
-    (this._baseTokenAddress === order.makerTokenAddress ? orderType = 'asks' : orderType = 'bids')
+    this._baseTokenAddress === order.makerTokenAddress
+      ? (orderType = 'asks')
+      : (orderType = 'bids')
     switch (orderType) {
-      case "asks":
-        orderPrice = new BigNumber(order.takerTokenAmount).div(new BigNumber(order.makerTokenAmount)).toFixed(7)
-        orderAmount = new BigNumber(this.api.utils.fromWei(order.makerTokenAmount, 'ether')).toFixed(5)
-        break;
-      case "bids":
-        orderPrice = new BigNumber(1).div(new BigNumber(order.takerTokenAmount).div(new BigNumber(order.makerTokenAmount))).toFixed(7)
-        orderAmount = new BigNumber(this.api.utils.fromWei(order.takerTokenAmount, 'ether')).toFixed(5)
-        break;
+      case 'asks':
+        orderPrice = new BigNumber(order.takerTokenAmount)
+          .div(new BigNumber(order.makerTokenAmount))
+          .toFixed(7)
+        orderAmount = new BigNumber(
+          this.api.utils.fromWei(order.makerTokenAmount, 'ether')
+        ).toFixed(5)
+        break
+      case 'bids':
+        orderPrice = new BigNumber(1)
+          .div(
+            new BigNumber(order.takerTokenAmount).div(
+              new BigNumber(order.makerTokenAmount)
+            )
+          )
+          .toFixed(7)
+        orderAmount = new BigNumber(
+          this.api.utils.fromWei(order.takerTokenAmount, 'ether')
+        ).toFixed(5)
+        break
     }
     // var orderHash = ZeroEx.getOrderHashHex(order)
     let orderObject = {
@@ -962,29 +1056,29 @@ class Exchange {
       case 'add':
         console.log(action)
         switch (orderType) {
-          case "asks":
+          case 'asks':
             newOrders.asksOrders.push(orderObject)
-            break;
-          case "bids":
+            break
+          case 'bids':
             newOrders.bidsOrders.push(orderObject)
-            break;
+            break
         }
-        break;
+        break
       case 'remove':
         console.log(action)
         switch (orderType) {
-          case "asks":
+          case 'asks':
             newOrders.asksOrders = orders.asksOrders.filter(oldOrder => {
               return oldOrder.orderHash !== order.orderHash
-            });
-            break;
-          case "bids":
+            })
+            break
+          case 'bids':
             newOrders.bidsOrders = orders.bidsOrders.filter(oldOrder => {
               return oldOrder.orderHash !== order.orderHash
-            });
-            break;
+            })
+            break
         }
-        break;
+        break
       default:
         newOrders = { ...orders }
     }
@@ -993,4 +1087,4 @@ class Exchange {
   }
 }
 
-export default Exchange;
+export default Exchange

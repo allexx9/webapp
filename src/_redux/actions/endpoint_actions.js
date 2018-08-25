@@ -9,7 +9,7 @@ const endpoint = {
       payload: {
         web3,
         api,
-        endpoint,
+        endpoint
       }
     }
   },
@@ -18,11 +18,11 @@ const endpoint = {
       type: TYPE_.CHECK_METAMASK_IS_UNLOCKED,
       payload: {
         api,
-        web3,
+        web3
       }
     }
   },
-  checkIsConnectedToNode: (api) => {
+  checkIsConnectedToNode: api => {
     return {
       type: TYPE_.CHECK_APP_IS_CONNECTED,
       payload: {
@@ -46,7 +46,7 @@ const endpoint = {
       type: TYPE_.MONITOR_ACCOUNTS_START,
       payload: {
         web3,
-        api,
+        api
       }
     }
   },
@@ -55,11 +55,11 @@ const endpoint = {
       type: TYPE_.MONITOR_ACCOUNTS_STOP,
       payload: {
         web3,
-        api,
+        api
       }
     }
   },
-  updateInterface: (endpoint) => {
+  updateInterface: endpoint => {
     return {
       type: TYPE_.UPDATE_INTERFACE,
       payload: endpoint
@@ -67,4 +67,4 @@ const endpoint = {
   }
 }
 
-export default endpoint;
+export default endpoint

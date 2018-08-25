@@ -1,50 +1,47 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-import BigNumber from 'bignumber.js';
-import Paper from 'material-ui/Paper';
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { Col, Row } from 'react-flexbox-grid';
-import { connect } from 'react-redux';
-import CheckAuthPage from '../Elements/checkAuthPage';
-import ElementBottomStatusBar from '../Elements/elementBottomStatusBar';
-import ElementNotificationsDrawer from '../Elements/elementNotificationsDrawer';
+import { Col, Row } from 'react-flexbox-grid'
+import { connect } from 'react-redux'
+import BigNumber from 'bignumber.js'
+import CheckAuthPage from '../Elements/checkAuthPage'
+import ElementBottomStatusBar from '../Elements/elementBottomStatusBar'
+import ElementNotificationsDrawer from '../Elements/elementNotificationsDrawer'
+import Paper from 'material-ui/Paper'
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
 // import FlatButton from 'material-ui/FlatButton'
-import PoolApi from '../PoolsApi/src';
+import PoolApi from '../PoolsApi/src'
 // import ApplicationDragoManager from './ApplicationDragoManager'
 // import ApplicationDragoTrader from './ApplicationDragoTrader'
-import Loading from '../_atomic/atoms/loading';
+import Loading from '../_atomic/atoms/loading'
 // import DragoComingSoon from '../Elements/elementDragoComingSoon'
-import TokenLiquidity from '../_atomic/atoms/tokenLiquidity';
-import TokenPrice from '../_atomic/atoms/tokenPrice';
-import FundSelector from '../_atomic/molecules/fundSelector';
-import TokenTradeSelector from '../_atomic/molecules/tokenTradeSelector';
-import ChartBox from '../_atomic/organisms/chartBox';
-import OrderBook from '../_atomic/organisms/orderBook';
-import OrderBox from '../_atomic/organisms/orderBox';
-import OrdersHistoryBox from '../_atomic/organisms/ordersHistoryBox';
-import { Actions } from '../_redux/actions';
+import { Actions } from '../_redux/actions'
 import {
+  DEFAULT_RELAY,
   ERC20_TOKENS,
-  TRADE_TOKENS_PAIRS,
   RELAYS,
-  DEFAULT_RELAY
-} from '../_utils/const';
+  TRADE_TOKENS_PAIRS
+} from '../_utils/const'
+import ChartBox from '../_atomic/organisms/chartBox'
+import FundSelector from '../_atomic/molecules/fundSelector'
+import OrderBook from '../_atomic/organisms/orderBook'
+import OrderBox from '../_atomic/organisms/orderBox'
+import OrdersHistoryBox from '../_atomic/organisms/ordersHistoryBox'
+import TokenLiquidity from '../_atomic/atoms/tokenLiquidity'
+import TokenPrice from '../_atomic/atoms/tokenPrice'
+import TokenTradeSelector from '../_atomic/molecules/tokenTradeSelector'
 
 import {
   CANCEL_SELECTED_ORDER,
   FETCH_FUND_ORDERS,
   RELAY_CLOSE_WEBSOCKET,
   UPDATE_FUND_LIQUIDITY,
-  UPDATE_SELECTED_FUND,
-} from '../_redux/actions/const';
-import { getAvailableAddresses, getTokenAllowance } from '../_utils/exchange';
-import utils from '../_utils/utils';
-import styles from './applicationExchangeHome.module.css';
-import ExchangeBox from '../_atomic/organisms/exchangeBox';
-
-
-
+  UPDATE_SELECTED_FUND
+} from '../_redux/actions/const'
+import { getAvailableAddresses, getTokenAllowance } from '../_utils/exchange'
+import ExchangeBox from '../_atomic/organisms/exchangeBox'
+import styles from './applicationExchangeHome.module.css'
+import utils from '../_utils/utils'
 
 // import { getData } from "../_utils/data"
 
@@ -53,25 +50,23 @@ function mapStateToProps(state) {
 }
 
 class ApplicationExchangeHome extends Component {
-
   constructor() {
-    super();
-    this._notificationSystem = null;
-    
+    super()
+    this._notificationSystem = null
   }
 
   static contextTypes = {
-    api: PropTypes.object.isRequired,
-  };
+    api: PropTypes.object.isRequired
+  }
 
   static childContextTypes = {
     exchangeUtils: PropTypes.object
-  };
+  }
 
   getChildContext() {
     return {
-      exchangeUtils: this.state.exchangeUtils,
-    };
+      exchangeUtils: this.state.exchangeUtils
+    }
   }
 
   static propTypes = {
@@ -82,8 +77,8 @@ class ApplicationExchangeHome extends Component {
     user: PropTypes.object.isRequired,
     notificationsOpen: PropTypes.bool.isRequired,
     dispatch: PropTypes.func.isRequired,
-    exchange: PropTypes.object.isRequired,
-  };
+    exchange: PropTypes.object.isRequired
+  }
 
   state = {
     exchangeUtils: {},
@@ -108,7 +103,7 @@ class ApplicationExchangeHome extends Component {
       type: UPDATE_SELECTED_FUND,
       payload: payload
     }
-  };
+  }
 
   updateSelectedFundLiquidity = (fundAddress, api) => {
     return {
@@ -118,14 +113,14 @@ class ApplicationExchangeHome extends Component {
         api
       }
     }
-  };
+  }
 
   getFundOrders = (networkId, maker, baseTokenAddress, quoteTokenAddress) => {
     const payload = {
       networkId,
       maker,
       baseTokenAddress,
-      quoteTokenAddress,
+      quoteTokenAddress
     }
     console.log(payload)
     return {
@@ -134,14 +129,13 @@ class ApplicationExchangeHome extends Component {
     }
   }
 
-
   shouldComponentUpdate(nextProps, nextState) {
     let stateUpdate = true
     let propsUpdate = true
     // shouldComponentUpdate returns false if no need to update children, true if needed.
-    propsUpdate = (!utils.shallowEqual(this.props, nextProps))
-    stateUpdate = (!utils.shallowEqual(this.state.loading, nextState.loading))
-    stateUpdate = (!utils.shallowEqual(this.state, nextState))
+    propsUpdate = !utils.shallowEqual(this.props, nextProps)
+    stateUpdate = !utils.shallowEqual(this.state.loading, nextState.loading)
+    stateUpdate = !utils.shallowEqual(this.state, nextState)
     // Saving the scroll position. Neede in componentDidUpdate in order to avoid the the page scroll to be
     // set top
     const element = this.node
@@ -151,8 +145,7 @@ class ApplicationExchangeHome extends Component {
     return stateUpdate || propsUpdate
   }
 
-  UNSAFE_componentWillMount() {
-  }
+  UNSAFE_componentWillMount() {}
 
   componentDidMount() {
     const { api } = this.context
@@ -160,32 +153,46 @@ class ApplicationExchangeHome extends Component {
     const { selectedExchange } = this.props.exchange
     const defaultRelay = RELAYS[DEFAULT_RELAY[api._rb.network.name]]
     const defaultTokensPair = {
-      baseToken: ERC20_TOKENS[api._rb.network.name][defaultRelay.defaultTokensPair.baseTokenSymbol],
-      quoteToken: ERC20_TOKENS[api._rb.network.name][defaultRelay.defaultTokensPair.quoteTokenSymbol]
+      baseToken:
+        ERC20_TOKENS[api._rb.network.name][
+          defaultRelay.defaultTokensPair.baseTokenSymbol
+        ],
+      quoteToken:
+        ERC20_TOKENS[api._rb.network.name][
+          defaultRelay.defaultTokensPair.quoteTokenSymbol
+        ]
     }
     this.getSelectedFundDetails(null, accounts)
     // this.connectToRadarRelay()
 
     getAvailableAddresses(selectedExchange)
       .then(addresses => {
-        this.props.dispatch({ type: 'SET_MAKER_ADDRESS', payload: addresses[0] })
+        this.props.dispatch({
+          type: 'SET_MAKER_ADDRESS',
+          payload: addresses[0]
+        })
       })
       .catch(err => {
         console.log(err)
       })
 
     // Set available relays
-    this.props.dispatch(Actions.exchange.updateAvailableRelays(
-      utils.availableRelays(RELAYS, api._rb.network.id))
+    this.props.dispatch(
+      Actions.exchange.updateAvailableRelays(
+        utils.availableRelays(RELAYS, api._rb.network.id)
+      )
     )
 
     // Updating selected relay
     this.props.dispatch(
-      Actions.exchange.updateSelectedRelayAction(defaultRelay))
+      Actions.exchange.updateSelectedRelayAction(defaultRelay)
+    )
 
     // Set available trade tokens pairs
-    this.props.dispatch(Actions.exchange.updateAvailableTradeTokensPairs(
-      utils.availableTradeTokensPair(TRADE_TOKENS_PAIRS, defaultRelay.name))
+    this.props.dispatch(
+      Actions.exchange.updateAvailableTradeTokensPairs(
+        utils.availableTradeTokensPair(TRADE_TOKENS_PAIRS, defaultRelay.name)
+      )
     )
 
     // Updating selected tokens pair
@@ -196,12 +203,13 @@ class ApplicationExchangeHome extends Component {
     this.connectToExchange(defaultRelay, defaultTokensPair)
 
     // Getting trade history logs
-    this.props.dispatch(Actions.exchange.getTradeHistoryLogs(
-      defaultRelay,
-      api._rb.network.id,
-      defaultTokensPair.baseToken.address,
-      defaultTokensPair.quoteToken.address,
-    )
+    this.props.dispatch(
+      Actions.exchange.getTradeHistoryLogs(
+        defaultRelay,
+        api._rb.network.id,
+        defaultTokensPair.baseToken.address,
+        defaultTokensPair.quoteToken.address
+      )
     )
 
     // // Getting history logs
@@ -213,16 +221,18 @@ class ApplicationExchangeHome extends Component {
     // )
 
     // Getting chart data
-    let tsYesterday = new Date((Math.floor(Date.now() / 1000) - 86400 * 7) * 1000).toISOString()
-    this.props.dispatch(Actions.exchange.getChartData(
-      defaultRelay,
-      api._rb.network.id,
-      defaultTokensPair.baseToken,
-      defaultTokensPair.quoteToken,
-      tsYesterday
+    let tsYesterday = new Date(
+      (Math.floor(Date.now() / 1000) - 86400 * 7) * 1000
+    ).toISOString()
+    this.props.dispatch(
+      Actions.exchange.getChartData(
+        defaultRelay,
+        api._rb.network.id,
+        defaultTokensPair.baseToken,
+        defaultTokensPair.quoteToken,
+        tsYesterday
+      )
     )
-    )
-
   }
 
   componentWillUnmount = () => {
@@ -241,8 +251,8 @@ class ApplicationExchangeHome extends Component {
       window.scrollTo(0, this.scrollPosition)
     }
     // Setting focus on the element active before component re-render
-    if (this.activeElement.id !== "") {
-      const activeElement = document.getElementById(this.activeElement.id);
+    if (this.activeElement.id !== '') {
+      const activeElement = document.getElementById(this.activeElement.id)
       if (activeElement !== null) {
         activeElement.focus()
       }
@@ -260,23 +270,26 @@ class ApplicationExchangeHome extends Component {
     //   toBlock: 'latest'
     // }, this.onNewEventZeroExExchange)
 
-    this.props.dispatch(Actions.exchange.relayGetOrders(
-      defaultRelay,
-      api._rb.network.id,
-      defaultTokensPair.baseToken,
-      defaultTokensPair.quoteToken,
-      defaultRelay.initOrdeBookAggregated
-    ))
-    this.props.dispatch(Actions.exchange.relayOpenWs(
-      defaultRelay,
-      api._rb.network.id,
-      defaultTokensPair.baseToken,
-      defaultTokensPair.quoteToken
-    ))
+    this.props.dispatch(
+      Actions.exchange.relayGetOrders(
+        defaultRelay,
+        api._rb.network.id,
+        defaultTokensPair.baseToken,
+        defaultTokensPair.quoteToken,
+        defaultRelay.initOrdeBookAggregated
+      )
+    )
+    this.props.dispatch(
+      Actions.exchange.relayOpenWs(
+        defaultRelay,
+        api._rb.network.id,
+        defaultTokensPair.baseToken,
+        defaultTokensPair.quoteToken
+      )
+    )
   }
 
-
-  onToggleAggregateOrders = (isInputChecked) => {
+  onToggleAggregateOrders = isInputChecked => {
     console.log(isInputChecked)
     this.props.dispatch(Actions.exchange.setAggregateOrders(isInputChecked))
 
@@ -290,13 +303,13 @@ class ApplicationExchangeHome extends Component {
     this.props.dispatch(Actions.exchange.relayGetOrders(filter))
   }
 
-  onSelectFund = async (fund) => {
+  onSelectFund = async fund => {
     const { api } = this.context
     const { selectedTokensPair, selectedExchange } = this.props.exchange
 
     // Resetting current order
     this.props.dispatch({
-      type: CANCEL_SELECTED_ORDER,
+      type: CANCEL_SELECTED_ORDER
     })
 
     try {
@@ -305,19 +318,31 @@ class ApplicationExchangeHome extends Component {
 
       // Getting drago details
       const dragoDetails = await poolApi.contract.drago.getAdminData()
-      this.props.dispatch(this.updateSelectedFundDetails(fund, dragoDetails[0].toLowerCase()))
+      this.props.dispatch(
+        this.updateSelectedFundDetails(fund, dragoDetails[0].toLowerCase())
+      )
 
       // Getting drago liquidity
       this.props.dispatch(this.updateSelectedFundLiquidity(fund.address, api))
 
       // Getting allowances
-      const allowanceBaseToken = await getTokenAllowance(selectedTokensPair.baseToken, fund.address, selectedExchange)
-      const allowanceQuoteToken = await getTokenAllowance(selectedTokensPair.quoteToken, fund.address, selectedExchange)
+      const allowanceBaseToken = await getTokenAllowance(
+        selectedTokensPair.baseToken,
+        fund.address,
+        selectedExchange
+      )
+      const allowanceQuoteToken = await getTokenAllowance(
+        selectedTokensPair.quoteToken,
+        fund.address,
+        selectedExchange
+      )
       const tokensAllowance = {
         baseTokenAllowance: new BigNumber(allowanceBaseToken).gt(0),
         quoteTokenAllowance: new BigNumber(allowanceQuoteToken).gt(0)
       }
-      this.props.dispatch(Actions.exchange.updateSelectedTradeTokensPair(tokensAllowance))
+      this.props.dispatch(
+        Actions.exchange.updateSelectedTradeTokensPair(tokensAllowance)
+      )
       // Getting fund orders
       // this.props.dispatch(this.getFundOrders(
       //   this.props.exchange.relay.networkId,
@@ -326,21 +351,32 @@ class ApplicationExchangeHome extends Component {
       //   this.props.exchange.selectedTokensPair.quoteToken.address,
       // )
       // )
-
     } catch (error) {
       console.log(error)
     }
   }
 
-  onSelectTokenTrade = async (pair) => {
+  onSelectTokenTrade = async pair => {
     const { api } = this.context
-    const { selectedTokensPair, selectedExchange, selectedFund } = this.props.exchange
-    const selectedTokens = pair.split("-");
+    const {
+      selectedTokensPair,
+      selectedExchange,
+      selectedFund
+    } = this.props.exchange
+    const selectedTokens = pair.split('-')
     try {
       const baseToken = ERC20_TOKENS[api._rb.network.name][selectedTokens[0]]
       const quoteToken = ERC20_TOKENS[api._rb.network.name][selectedTokens[1]]
-      const allowanceBaseToken = await getTokenAllowance(selectedTokensPair.baseToken, selectedFund.details.address, selectedExchange)
-      const allowanceQuoteToken = await getTokenAllowance(selectedTokensPair.quoteToken, selectedFund.details.address, selectedExchange)
+      const allowanceBaseToken = await getTokenAllowance(
+        selectedTokensPair.baseToken,
+        selectedFund.details.address,
+        selectedExchange
+      )
+      const allowanceQuoteToken = await getTokenAllowance(
+        selectedTokensPair.quoteToken,
+        selectedFund.details.address,
+        selectedExchange
+      )
       const tradeTokensPair = {
         baseToken: baseToken,
         quoteToken: quoteToken,
@@ -359,7 +395,7 @@ class ApplicationExchangeHome extends Component {
 
       // Resetting current order
       this.props.dispatch({
-        type: CANCEL_SELECTED_ORDER,
+        type: CANCEL_SELECTED_ORDER
       })
 
       // Updating selected tokens pair
@@ -369,23 +405,25 @@ class ApplicationExchangeHome extends Component {
 
       // Terminating connection to the exchange
       this.props.dispatch({
-        type: RELAY_CLOSE_WEBSOCKET,
+        type: RELAY_CLOSE_WEBSOCKET
       })
 
       // Reconnecting to the exchange
       this.connectToExchange(tradeTokensPair)
 
       // Getting chart data
-      let tsYesterday = new Date((Math.floor(Date.now() / 1000) - 86400 * 7) * 1000).toISOString()
-      this.props.dispatch(Actions.exchange.getChartData(
-        this.props.exchange.selectedRelay,
-        this.props.exchange.relay.networkId,
-        this.props.exchange.selectedTokensPair.baseToken,
-        this.props.exchange.selectedTokensPair.quoteToken,
-        tsYesterday
+      let tsYesterday = new Date(
+        (Math.floor(Date.now() / 1000) - 86400 * 7) * 1000
+      ).toISOString()
+      this.props.dispatch(
+        Actions.exchange.getChartData(
+          this.props.exchange.selectedRelay,
+          this.props.exchange.relay.networkId,
+          this.props.exchange.selectedTokensPair.baseToken,
+          this.props.exchange.selectedTokensPair.quoteToken,
+          tsYesterday
+        )
       )
-      )
-
     } catch (error) {
       console.log(error)
     }
@@ -428,7 +466,7 @@ class ApplicationExchangeHome extends Component {
       exchange
     } = this.props
     if (endpoint.loading) {
-      return <Loading></Loading>
+      return <Loading />
     }
     // console.log(this.props)
 
@@ -465,7 +503,7 @@ class ApplicationExchangeHome extends Component {
     //   )
     // }
 
-    if ((endpoint.accounts.length === 0 || !endpoint.networkCorrect)) {
+    if (endpoint.accounts.length === 0 || !endpoint.metaMaskNetworkCorrect) {
       return (
         <span>
           <CheckAuthPage warnMsg={endpoint.warnMsg} location={location} />
@@ -473,14 +511,15 @@ class ApplicationExchangeHome extends Component {
             blockNumber={endpoint.prevBlockNumber}
             networkName={endpoint.networkInfo.name}
             networkError={endpoint.networkError}
-            networkStatus={endpoint.networkStatus} />
+            networkStatus={endpoint.networkStatus}
+          />
         </span>
       )
     }
 
     if (this.state.managerHasNoFunds) {
       return (
-        <div ref={node => this.node = node}>
+        <div ref={node => (this.node = node)}>
           <Row className={styles.maincontainer}>
             <Col xs={12}>
               <Paper className={styles.paperTopBarContainer} zDepth={1}>
@@ -497,18 +536,17 @@ class ApplicationExchangeHome extends Component {
                   handleToggleNotifications={handleToggleNotifications}
                   notificationsOpen={notificationsOpen}
                 />
-              ) : (
-                  null
-                )}
+              ) : null}
             </Col>
           </Row>
           <ElementBottomStatusBar
             blockNumber={endpoint.prevBlockNumber}
             networkName={endpoint.networkInfo.name}
             networkError={endpoint.networkError}
-            networkStatus={endpoint.networkStatus} />
+            networkStatus={endpoint.networkStatus}
+          />
         </div>
-      );
+      )
     }
 
     if (user.isManager) {
@@ -520,12 +558,16 @@ class ApplicationExchangeHome extends Component {
       // const asksOrderNormalizedFilled = [ ...Array(20 - asksOrderNormalized.length).fill(null), ...asksOrderNormalized]
       // console.log(this.props.transactionsDrago.manager.list)
       const { chartData, fundOrders } = this.props.exchange
-      const currentPrice = new BigNumber(this.props.exchange.selectedTokensPair.ticker.current.price)
-      const priceVariation = new BigNumber(this.props.exchange.selectedTokensPair.ticker.variation).toFixed(4)
+      const currentPrice = new BigNumber(
+        this.props.exchange.selectedTokensPair.ticker.current.price
+      )
+      const priceVariation = new BigNumber(
+        this.props.exchange.selectedTokensPair.ticker.variation
+      ).toFixed(4)
       // console.log(this.props.exchange)
       // console.log(RELAYS)
       return (
-        <div ref={node => this.node = node}>
+        <div ref={node => (this.node = node)}>
           <Row className={styles.maincontainer}>
             <Col xs={12}>
               <Paper className={styles.paperTopBarContainer} zDepth={1}>
@@ -533,12 +575,14 @@ class ApplicationExchangeHome extends Component {
                   <Col xs={4}>
                     <FundSelector
                       funds={this.props.transactionsDrago.manager.list}
-                      onSelectFund={this.onSelectFund} />
+                      onSelectFund={this.onSelectFund}
+                    />
                   </Col>
                   <Col xs={2}>
                     <TokenLiquidity
                       liquidity={exchange.selectedFund.liquidity}
-                      loading={exchange.loading.liquidity} />
+                      loading={exchange.loading.liquidity}
+                    />
                   </Col>
                   <Col xs={2}>
                     <TokenTradeSelector
@@ -555,7 +599,7 @@ class ApplicationExchangeHome extends Component {
                     />
                   </Col>
                 </Row>
-              </ Paper>
+              </Paper>
             </Col>
             {/* <Col xs={12}>
               <ChartBox data={this.state.chartData} />
@@ -582,9 +626,7 @@ class ApplicationExchangeHome extends Component {
                       />
                     </Col>
                     <Col xs={12}>
-                      <OrdersHistoryBox
-                        fundOrders={fundOrders}
-                      />
+                      <OrdersHistoryBox fundOrders={fundOrders} />
                     </Col>
                   </Row>
                 </Col>
@@ -595,7 +637,9 @@ class ApplicationExchangeHome extends Component {
                     spread={spread}
                     aggregated={this.props.exchange.orderBookAggregated}
                     onToggleAggregateOrders={this.onToggleAggregateOrders}
-                    onlyAggregated={this.props.exchange.selectedRelay.onlyAggregateOrderbook}
+                    onlyAggregated={
+                      this.props.exchange.selectedRelay.onlyAggregateOrderbook
+                    }
                   />
                 </Col>
               </Row>
@@ -608,27 +652,24 @@ class ApplicationExchangeHome extends Component {
                   handleToggleNotifications={handleToggleNotifications}
                   notificationsOpen={notificationsOpen}
                 />
-              ) : (
-                  null
-                )}
+              ) : null}
             </Col>
           </Row>
           <ElementBottomStatusBar
             blockNumber={endpoint.prevBlockNumber}
             networkName={endpoint.networkInfo.name}
             networkError={endpoint.networkError}
-            networkStatus={endpoint.networkStatus} />
+            networkStatus={endpoint.networkStatus}
+          />
         </div>
-      );
+      )
     }
 
     if (!user.isManager) {
       return (
-        <div ref={node => this.node = node}>
+        <div ref={node => (this.node = node)}>
           <Row className={styles.maincontainer}>
-            <Col xs={12}>
-              Only wizards can access this section.
-            </Col>
+            <Col xs={12}>Only wizards can access this section.</Col>
           </Row>
           <Row>
             <Col xs={12}>
@@ -637,18 +678,17 @@ class ApplicationExchangeHome extends Component {
                   handleToggleNotifications={handleToggleNotifications}
                   notificationsOpen={notificationsOpen}
                 />
-              ) : (
-                  null
-                )}
+              ) : null}
             </Col>
           </Row>
           <ElementBottomStatusBar
             blockNumber={endpoint.prevBlockNumber}
             networkName={endpoint.networkInfo.name}
             networkError={endpoint.networkError}
-            networkStatus={endpoint.networkStatus} />
+            networkStatus={endpoint.networkStatus}
+          />
         </div>
-      );
+      )
     }
   }
 
@@ -656,29 +696,34 @@ class ApplicationExchangeHome extends Component {
 
   // }
 
-
-
   // Getting last transactions
   async getSelectedFundDetails(dragoAddress, accounts) {
     const { api } = this.context
     // const options = {balance: false, supply: true}
     const options = { balance: false, supply: true, limit: 10, trader: false }
     try {
-      const results = await utils.getTransactionsDragoOptV2(api, dragoAddress, accounts, options)
+      const results = await utils.getTransactionsDragoOptV2(
+        api,
+        dragoAddress,
+        accounts,
+        options
+      )
       const createdLogs = results[1].filter(event => {
         return event.type !== 'BuyDrago' && event.type !== 'SellDrago'
       })
       // console.log(results)
       results[1] = createdLogs
-      results[2].sort(function (a, b) {
+      results[2].sort(function(a, b) {
         let keyA = a.symbol,
-          keyB = b.symbol;
+          keyB = b.symbol
         // Compare the 2 dates
-        if (keyA < keyB) return -1;
-        if (keyA > keyB) return 1;
-        return 0;
-      });
-      this.props.dispatch(Actions.drago.updateTransactionsDragoManagerAction(results))
+        if (keyA < keyB) return -1
+        if (keyA > keyB) return 1
+        return 0
+      })
+      this.props.dispatch(
+        Actions.drago.updateTransactionsDragoManagerAction(results)
+      )
 
       if (results[2].length !== 0) {
         // Getting fund orders
@@ -692,17 +737,13 @@ class ApplicationExchangeHome extends Component {
         this.onSelectFund(results[2][0])
       } else {
         this.setState({
-          managerHasNoFunds: true,
-        });
+          managerHasNoFunds: true
+        })
       }
-
     } catch (error) {
       console.log(error)
     }
   }
-
-
-
 }
 
 export default connect(mapStateToProps)(ApplicationExchangeHome)

@@ -2,8 +2,8 @@
 // This file is part of RigoBlock.
 
 import * as abis from '../../contracts/abi'
-import Registry from '../registry'
 import { DRAGOREGISTRY } from '../../utils/const'
+import Registry from '../registry'
 
 class DragoRegistryParity {
   constructor(api) {
@@ -51,9 +51,7 @@ class DragoRegistryParity {
 
   fromAddress = dragoAddress => {
     if (!dragoAddress) {
-      throw new Error(
-        `dragoAddress needs to be provided to drago`
-      )
+      throw new Error(`dragoAddress needs to be provided to drago`)
     }
     const instance = this._instance
     return instance.fromAddress.call({}, [dragoAddress])

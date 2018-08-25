@@ -1,18 +1,17 @@
-import PropTypes from "prop-types";
-import React, { Component } from "react";
-import { Col, Row } from 'react-flexbox-grid';
-import styles from './userDashboardHeader.module.css';
-import ActionHome from 'material-ui/svg-icons/action/home'
-import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
-import Avatar from 'material-ui/Avatar'
+import { Col, Row } from 'react-flexbox-grid'
 import { THEME_COLOR } from './../../_utils/const'
+import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar'
+import ActionHome from 'material-ui/svg-icons/action/home'
+import Avatar from 'material-ui/Avatar'
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
+import styles from './userDashboardHeader.module.css'
 
 export default class UserDashboardHeader extends Component {
-
   static propTypes = {
     fundType: PropTypes.string.isRequired,
     userType: PropTypes.string.isRequired
-  };
+  }
 
   static defaultProps = {
     fundType: 'drago',
@@ -20,11 +19,9 @@ export default class UserDashboardHeader extends Component {
   }
 
   render() {
-
     const headerStyle = {
       drago: {
-        toolBar:
-        {
+        toolBar: {
           // backgroundColor: '#054186'
           background: THEME_COLOR.drago
         },
@@ -40,8 +37,7 @@ export default class UserDashboardHeader extends Component {
         }
       },
       vault: {
-        toolBar:
-        {
+        toolBar: {
           background: THEME_COLOR.vault
         },
         titleText: {
@@ -59,23 +55,26 @@ export default class UserDashboardHeader extends Component {
 
     const { userType, fundType } = this.props
     return (
-      <Toolbar className={styles.detailsToolbar} style={headerStyle[fundType].toolBar}>
+      <Toolbar
+        className={styles.detailsToolbar}
+        style={headerStyle[fundType].toolBar}
+      >
         <ToolbarGroup className={styles.detailsToolbarGroup}>
-
-          <Row className={styles.detailsToolbarGroup} >
+          <Row className={styles.detailsToolbarGroup}>
             <div className={styles.identityIconContainer}>
-              <Avatar size={60} icon={<ActionHome />} className={styles.avatar}/>  
+              <Avatar
+                size={60}
+                icon={<ActionHome />}
+                className={styles.avatar}
+              />
             </div>
 
             <Col xs={12} className={styles.userTitle}>
               <p style={headerStyle[fundType].titleText}>{userType}</p>
             </Col>
-
-
           </Row>
         </ToolbarGroup>
       </Toolbar>
-
-    );
+    )
   }
 }

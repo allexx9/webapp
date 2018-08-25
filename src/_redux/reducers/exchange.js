@@ -1,41 +1,38 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-import initialState from './initialState'
-import BigNumber from 'bignumber.js';
 import {
-  UPDATE_SELECTED_FUND,
-  UPDATE_SELECTED_ORDER,
-  UPDATE_TRADE_TOKENS_PAIR,
   CANCEL_SELECTED_ORDER,
-  ORDERBOOK_UPDATE,
-  ORDERBOOK_INIT,
-  SET_ORDERBOOK_AGGREGATE_ORDERS,
-  SET_MAKER_ADDRESS,
-  TOKENS_TICKERS_UPDATE,
-  UPDATE_ELEMENT_LOADING,
+  CHART_MARKET_DATA_ADD_DATAPOINT,
+  CHART_MARKET_DATA_INIT,
   CHART_MARKET_DATA_UPDATE,
-  UPDATE_FUND_ORDERS,
-  UPDATE_SELECTED_RELAY,
+  ORDERBOOK_INIT,
+  ORDERBOOK_UPDATE,
+  SET_MAKER_ADDRESS,
+  SET_ORDERBOOK_AGGREGATE_ORDERS,
+  TOKENS_TICKERS_UPDATE,
+  UPDATE_AVAILABLE_RELAYS,
   UPDATE_AVAILABLE_TRADE_TOKENS_PAIRS,
   UPDATE_CURRENT_TOKEN_PRICE,
-  UPDATE_AVAILABLE_RELAYS,
-  CHART_MARKET_DATA_ADD_DATAPOINT,
-  CHART_MARKET_DATA_INIT
+  UPDATE_ELEMENT_LOADING,
+  UPDATE_FUND_ORDERS,
+  UPDATE_SELECTED_FUND,
+  UPDATE_SELECTED_ORDER,
+  UPDATE_SELECTED_RELAY,
+  UPDATE_TRADE_TOKENS_PAIR
 } from '../actions/const'
-
-
+import BigNumber from 'bignumber.js'
+import initialState from './initialState'
 
 function exchangeReducer(state = initialState.exchange, action) {
   switch (action.type) {
-
     case UPDATE_FUND_ORDERS:
       return {
         ...state,
         fundOrders: { ...state.fundOrders, ...action.payload }
-      };
+      }
 
     case CHART_MARKET_DATA_UPDATE:
-      if (action.payload !== "") {
+      if (action.payload !== '') {
         return {
           ...state,
           chartData: action.payload
@@ -47,7 +44,7 @@ function exchangeReducer(state = initialState.exchange, action) {
       }
 
     case CHART_MARKET_DATA_INIT:
-      if (action.payload !== "") {
+      if (action.payload !== '') {
         return {
           ...state,
           chartData: action.payload
@@ -60,7 +57,9 @@ function exchangeReducer(state = initialState.exchange, action) {
 
     case CHART_MARKET_DATA_ADD_DATAPOINT:
       let newChartData = [...state.chartData]
-      if (action.payload.epoch === newChartData[newChartData.length - 1].epoch) {
+      if (
+        action.payload.epoch === newChartData[newChartData.length - 1].epoch
+      ) {
         newChartData[newChartData.length - 1] = action.payload
         // console.log('first')
         return {
@@ -68,14 +67,16 @@ function exchangeReducer(state = initialState.exchange, action) {
           chartData: newChartData
         }
       }
-      if (action.payload.epoch === newChartData[newChartData.length - 2].epoch) {
+      if (
+        action.payload.epoch === newChartData[newChartData.length - 2].epoch
+      ) {
         // console.log('second')
         newChartData[newChartData.length - 2] = action.payload
         return {
           ...state,
           chartData: newChartData
         }
-      }   
+      }
       // console.log('***** NEW *****')
       newChartData.push(action.payload)
       return {
@@ -83,25 +84,24 @@ function exchangeReducer(state = initialState.exchange, action) {
         chartData: newChartData
       }
 
-
     case UPDATE_ELEMENT_LOADING:
       const elementLoading = action.payload
       return {
         ...state,
         loading: { ...state.loading, ...elementLoading }
-      };
+      }
 
     case UPDATE_SELECTED_FUND:
       return {
         ...state,
         selectedFund: { ...state.selectedFund, ...action.payload }
-      };
+      }
 
     case UPDATE_SELECTED_RELAY:
       return {
         ...state,
         selectedRelay: { ...state.selectedRelay, ...action.payload }
-      };
+      }
 
     case UPDATE_SELECTED_ORDER:
       let orderDetails = action.payload
@@ -109,43 +109,43 @@ function exchangeReducer(state = initialState.exchange, action) {
       return {
         ...state,
         selectedOrder: selectedOrder
-      };
+      }
 
     case UPDATE_TRADE_TOKENS_PAIR:
       return {
         ...state,
         selectedTokensPair: { ...state.selectedTokensPair, ...action.payload }
-      };
+      }
 
     case UPDATE_AVAILABLE_TRADE_TOKENS_PAIRS:
       return {
         ...state,
         availableTradeTokensPairs: { ...action.payload }
-      };
+      }
 
     case UPDATE_AVAILABLE_RELAYS:
       return {
         ...state,
         availableRelays: action.payload
-      };
+      }
 
     case SET_MAKER_ADDRESS:
       return {
         ...state,
         makerAddress: action.payload
-      };
+      }
 
     case CANCEL_SELECTED_ORDER:
       return {
         ...state,
         selectedOrder: initialState.exchange.selectedOrder
-      };
+      }
 
     case SET_ORDERBOOK_AGGREGATE_ORDERS:
       return {
         ...state,
         orderBookAggregated: action.payload
-      };
+      }
 
     case ORDERBOOK_INIT:
       const newOrderBook = { ...state.orderBook, ...action.payload }
@@ -174,13 +174,15 @@ function exchangeReducer(state = initialState.exchange, action) {
         let currentPrice = new BigNumber(ticker.current.price)
         let previousPrice = new BigNumber(ticker.previous.price)
         if (!previousPrice.eq(0)) {
-          ticker.variation = currentPrice.sub(previousPrice).div(previousPrice).mul(100).toFixed(4)
+          ticker.variation = currentPrice
+            .sub(previousPrice)
+            .div(previousPrice)
+            .mul(100)
+            .toFixed(4)
         } else {
           ticker.variation = 0
-
         }
-      }
-      else {
+      } else {
         ticker = {
           current: { ...state.selectedTokensPair.ticker.current },
           previous: { ...state.selectedTokensPair.ticker.current },
@@ -189,14 +191,15 @@ function exchangeReducer(state = initialState.exchange, action) {
       }
       return {
         ...state,
-        selectedTokensPair: { ...state.selectedTokensPair, ticker: { ...ticker } }
-      };
+        selectedTokensPair: {
+          ...state.selectedTokensPair,
+          ticker: { ...ticker }
+        }
+      }
 
-    default: return state;
+    default:
+      return state
   }
-
-
-
 }
 
 export default exchangeReducer

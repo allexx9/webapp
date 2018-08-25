@@ -1,50 +1,49 @@
-import BigNumber from 'bignumber.js';
-import { Row, Col, Grid } from 'react-flexbox-grid'
-import { Link, withRouter } from 'react-router-dom'
+import { Col, Grid, Row } from 'react-flexbox-grid'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
-import { Tabs, Tab } from 'material-ui/Tabs'
+import { Link, withRouter } from 'react-router-dom'
+import { Tab, Tabs } from 'material-ui/Tabs'
+import { connect } from 'react-redux'
 import ActionAssessment from 'material-ui/svg-icons/action/assessment'
 import ActionList from 'material-ui/svg-icons/action/list'
 import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
+import BigNumber from 'bignumber.js'
 import CopyContent from 'material-ui/svg-icons/content/content-copy'
-import Paper from 'material-ui/Paper'
-import PropTypes from 'prop-types';
-import React, { Component } from 'react'
-import scrollToElement from 'scroll-to-element'
-import Search from 'material-ui/svg-icons/action/search'
-import Snackbar from 'material-ui/Snackbar'
-import Sticky from 'react-stickynode'
-import ElementListWrapper from '../../Elements/elementListWrapper'
 import ElementAccountBox from '../../Elements/elementAccountBox'
 import ElementListBalances from '../Elements/elementListBalances'
 import ElementListTransactions from '../Elements/elementListTransactions'
+import ElementListWrapper from '../../Elements/elementListWrapper'
+import Paper from 'material-ui/Paper'
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
+import Search from 'material-ui/svg-icons/action/search'
+import SectionHeader from '../../_atomic/atoms/sectionHeader'
+import Snackbar from 'material-ui/Snackbar'
+import Sticky from 'react-stickynode'
 import UserDashboardHeader from '../../_atomic/atoms/userDashboardHeader'
+import scrollToElement from 'scroll-to-element'
 import utils from '../../_utils/utils'
-import { connect } from 'react-redux';
-import SectionHeader from '../../_atomic/atoms/sectionHeader';
 // import SectionTitle from '../../_atomic/atoms/sectionTitle';
 
-import styles from './pageDashboardDragoTrader.module.css'
 import { Actions } from '../../_redux/actions'
 import { HELP_ } from '../../_utils/const'
+import styles from './pageDashboardDragoTrader.module.css'
 
 function mapStateToProps(state) {
   return state
 }
 
 class PageDashboardDragoTrader extends Component {
-
   // Checking the type of the context variable that we receive by the parent
   static contextTypes = {
-    api: PropTypes.object.isRequired,
-  };
+    api: PropTypes.object.isRequired
+  }
 
   static propTypes = {
     location: PropTypes.object.isRequired,
     endpoint: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
-    transactionsDrago: PropTypes.object.isRequired,
-  };
+    transactionsDrago: PropTypes.object.isRequired
+  }
 
   state = {
     loading: true,
@@ -57,7 +56,9 @@ class PageDashboardDragoTrader extends Component {
     const { api } = this.context
     const options = { balance: true, supply: false, limit: 10, trader: true }
     console.log('componentDidMount')
-    this.props.dispatch(Actions.endpoint.getAccountsTransactions(api, null, accounts, options))
+    this.props.dispatch(
+      Actions.endpoint.getAccountsTransactions(api, null, accounts, options)
+    )
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
@@ -72,7 +73,11 @@ class PageDashboardDragoTrader extends Component {
     const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
     const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
     if (!currentBalance.eq(nextBalance) && !currentBalance.eq(0)) {
-      console.log(`${this.constructor.name} -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`);
+      console.log(
+        `${
+          this.constructor.name
+        } -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`
+      )
       // this.props.dispatch(Actions.endpoint.getAccountsTransactions(api, null, accounts, options))
     }
   }
@@ -85,15 +90,18 @@ class PageDashboardDragoTrader extends Component {
     if (stateUpdate || propsUpdate) {
       // console.log('State updated ', stateUpdate)
       // console.log('Props updated ', propsUpdate)
-      console.log(`${this.constructor.name} -> shouldComponentUpdate -> Proceeding with rendering.`);
+      console.log(
+        `${
+          this.constructor.name
+        } -> shouldComponentUpdate -> Proceeding with rendering.`
+      )
     }
     return stateUpdate || propsUpdate
   }
 
-  componentDidUpdate() {
-  }
+  componentDidUpdate() {}
 
-  snackBar = (msg) => {
+  snackBar = msg => {
     this.setState({
       snackBar: true,
       snackBarMsg: msg
@@ -107,27 +115,37 @@ class PageDashboardDragoTrader extends Component {
     })
   }
 
-  renderCopyButton = (text) => {
+  renderCopyButton = text => {
     if (!text) {
-      return null;
+      return null
     }
 
     return (
-      <CopyToClipboard text={text}
-        onCopy={() => this.snackBar('Copied to clipboard')}>
-        <Link to={'#'} ><CopyContent className={styles.copyAddress} /></Link>
+      <CopyToClipboard
+        text={text}
+        onCopy={() => this.snackBar('Copied to clipboard')}
+      >
+        <Link to={'#'}>
+          <CopyContent className={styles.copyAddress} />
+        </Link>
       </CopyToClipboard>
-    );
+    )
   }
 
   renderEtherscanButton = (type, text) => {
     if (!text) {
-      return null;
+      return null
     }
 
     return (
-      <a href={this.props.endpoint.networkInfo.etherscan + type + '/' + text} target='_blank' rel="noopener noreferrer"><Search className={styles.copyAddress} /></a>
-    );
+      <a
+        href={this.props.endpoint.networkInfo.etherscan + type + '/' + text}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <Search className={styles.copyAddress} />
+      </a>
+    )
   }
 
   render() {
@@ -143,7 +161,7 @@ class PageDashboardDragoTrader extends Component {
       tabItemContainerStyle: {
         margin: 'auto',
         width: 300,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#FFFFFF'
       }
     }
     console.log(this.props)
@@ -155,32 +173,49 @@ class PageDashboardDragoTrader extends Component {
             account={account}
             key={account.name + key}
             snackBar={this.snackBar}
-            etherscanUrl={this.props.endpoint.networkInfo.etherscan} />
+            etherscanUrl={this.props.endpoint.networkInfo.etherscan}
+          />
         </Col>
       )
-    }
-    )
+    })
     return (
       <Row>
         <Col xs={12}>
           <Paper className={styles.paperContainer} zDepth={1}>
             <Sticky enabled={true} innerZ={1}>
-              <UserDashboardHeader fundType='drago' userType='holder' />
+              <UserDashboardHeader fundType="drago" userType="holder" />
               <Row className={styles.tabsRow}>
                 <Col xs={12}>
-                  <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle}>
-                    <Tab label="Accounts" className={styles.detailsTab}
-                      onActive={() => scrollToElement('#accounts-section', { offset: -165 })}
-                      icon={<ActionList color={'#054186'} />}>
-                    </Tab>
-                    <Tab label="Holding" className={styles.detailsTab}
-                      onActive={() => scrollToElement('#holding-section', { offset: -165 })}
-                      icon={<ActionAssessment color={'#054186'} />}>
-                    </Tab>
-                    <Tab label="Transactions" className={styles.detailsTab}
-                      onActive={() => scrollToElement('#transactions-section', { offset: -165 })}
-                      icon={<ActionShowChart color={'#054186'} />}>
-                    </Tab>
+                  <Tabs
+                    tabItemContainerStyle={tabButtons.tabItemContainerStyle}
+                    inkBarStyle={tabButtons.inkBarStyle}
+                  >
+                    <Tab
+                      label="Accounts"
+                      className={styles.detailsTab}
+                      onActive={() =>
+                        scrollToElement('#accounts-section', { offset: -165 })
+                      }
+                      icon={<ActionList color={'#054186'} />}
+                    />
+                    <Tab
+                      label="Holding"
+                      className={styles.detailsTab}
+                      onActive={() =>
+                        scrollToElement('#holding-section', { offset: -165 })
+                      }
+                      icon={<ActionAssessment color={'#054186'} />}
+                    />
+                    <Tab
+                      label="Transactions"
+                      className={styles.detailsTab}
+                      onActive={() =>
+                        scrollToElement('#transactions-section', {
+                          offset: -165
+                        })
+                      }
+                      icon={<ActionShowChart color={'#054186'} />}
+                    />
                   </Tabs>
                 </Col>
               </Row>
@@ -190,10 +225,15 @@ class PageDashboardDragoTrader extends Component {
             <div className={styles.detailsBoxContainer}>
               <Grid fluid>
                 <Row>
-                  <Col xs={12} >
-                    <span id='accounts-section' ref={(section) => { this.Accounts = section; }}></span>
+                  <Col xs={12}>
+                    <span
+                      id="accounts-section"
+                      ref={section => {
+                        this.Accounts = section
+                      }}
+                    />
                     <SectionHeader
-                      titleText='ACCOUNTS'
+                      titleText="ACCOUNTS"
                       help={true}
                       helpText={HELP_.H001}
                     />
@@ -201,10 +241,7 @@ class PageDashboardDragoTrader extends Component {
                 </Row>
                 <Row>
                   <Col xs={12}>
-                    <Row>
-                      {listAccounts}
-                    </Row>
-
+                    <Row>{listAccounts}</Row>
                   </Col>
                 </Row>
               </Grid>
@@ -214,11 +251,14 @@ class PageDashboardDragoTrader extends Component {
             <div className={styles.detailsBoxContainer}>
               <Grid fluid>
                 <Row>
-                  <Col xs={12} >
-                    <span id='holding-section' ref={(section) => { this.Dragos = section; }}></span>
-                    <SectionHeader
-                      titleText='HOLDING'
+                  <Col xs={12}>
+                    <span
+                      id="holding-section"
+                      ref={section => {
+                        this.Dragos = section
+                      }}
                     />
+                    <SectionHeader titleText="HOLDING" />
                   </Col>
                 </Row>
                 <Row>
@@ -228,7 +268,7 @@ class PageDashboardDragoTrader extends Component {
                     </div>
                     <ElementListWrapper
                       list={dragoBalances}
-                    // loading={this.state.loading}
+                      // loading={this.state.loading}
                     >
                       <ElementListBalances />
                     </ElementListWrapper>
@@ -241,24 +281,27 @@ class PageDashboardDragoTrader extends Component {
             <div className={styles.detailsBoxContainer}>
               <Grid fluid>
                 <Row>
-                  <Col xs={12} >
-                    <span id='transactions-section' ref={(section) => { this.Transactions = section; }}></span>
-                    <SectionHeader
-                      titleText='TRANSACTIONS'
+                  <Col xs={12}>
+                    <span
+                      id="transactions-section"
+                      ref={section => {
+                        this.Transactions = section
+                      }}
                     />
+                    <SectionHeader titleText="TRANSACTIONS" />
                   </Col>
                 </Row>
                 <Row>
                   <Col xs={12}>
                     <div className={styles.sectionParagraph}>
                       Your last 20 transactions:
-                  </div>
+                    </div>
 
                     <ElementListWrapper
                       list={dragoTransactionsLogs}
                       renderCopyButton={this.renderCopyButton}
                       renderEtherscanButton={this.renderEtherscanButton}
-                    // loading={this.state.loading}
+                      // loading={this.state.loading}
                     >
                       <ElementListTransactions />
                     </ElementListWrapper>
@@ -272,20 +315,20 @@ class PageDashboardDragoTrader extends Component {
           open={this.state.snackBar}
           message={this.state.snackBarMsg}
           action="close"
-          onActionTouchTap={this.handlesnackBarRequestClose}
+          
           onRequestClose={this.handlesnackBarRequestClose}
           bodyStyle={{
-            height: "auto",
+            height: 'auto',
             flexGrow: 0,
-            paddingTop: "10px",
-            lineHeight: "20px",
-            borderRadius: "2px 2px 0px 0px",
-            backgroundColor: "#fafafa",
-            boxShadow: "#bdbdbd 0px 0px 5px 0px"
+            paddingTop: '10px',
+            lineHeight: '20px',
+            borderRadius: '2px 2px 0px 0px',
+            backgroundColor: '#fafafa',
+            boxShadow: '#bdbdbd 0px 0px 5px 0px'
           }}
           contentStyle={{
-            color: "#000000 !important",
-            fontWeight: "600"
+            color: '#000000 !important',
+            fontWeight: '600'
           }}
         />
       </Row>

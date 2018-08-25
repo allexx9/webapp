@@ -1,19 +1,23 @@
 // Copyright 2017 Rigo Investment Sagl.
 // This file is part of RigoBlock.
 
-import rp from 'request-promise';
-import { ERCdEX, Ethfinex } from './const';
-import { SupportedExchanges } from './const';
-import * as http from './exchanges';
-import * as ws from './exchangesWs';
-import * as FORMAT from './format';
+import * as FORMAT from './format'
+import * as http from './exchanges'
+import * as ws from './exchangesWs'
+import { ERCdEX, Ethfinex } from './const'
+import { SupportedExchanges } from './const'
+import rp from 'request-promise'
 
 class Exchange {
   constructor(exchange, networkId, transport = 'http') {
     if (typeof SupportedExchanges[exchange] === 'undefined') {
       throw new Error('Exchange not supported: ' + exchange)
     }
-    if (!SupportedExchanges[exchange].supportedNetworks.includes(networkId.toString())) {
+    if (
+      !SupportedExchanges[exchange].supportedNetworks.includes(
+        networkId.toString()
+      )
+    ) {
       throw new Error('Network not supported on this exchange: ' + networkId)
     }
     this._exchange = exchange
@@ -27,7 +31,12 @@ class Exchange {
     }
   }
 
-  returnResults = (query, formatFunction = (input) => { return input }) => {
+  returnResults = (
+    query,
+    formatFunction = input => {
+      return input
+    }
+  ) => {
     switch (this._transport) {
       case 'ws':
         return query()
@@ -57,22 +66,23 @@ class Exchange {
     if (!quoteToken) {
       throw new Error('quoteToken needs to be set')
     }
-    return this.returnResults(
-      () => {
-        switch (this._exchange) {
-          case ERCdEX:
-            return this._call[this._transport].getAggregatedOrders[this._exchange](this._network, baseToken, quoteToken)
-          case Ethfinex:
-            return this._call[this._transport].getAggregatedOrders[this._exchange](this._network, baseToken, quoteToken)
-          default:
-            throw new Error('Relay unknown')
-        }
-      },
-      FORMAT.aggregatedOrders[this._exchange]
-    )
+    return this.returnResults(() => {
+      switch (this._exchange) {
+        case ERCdEX:
+          return this._call[this._transport].getAggregatedOrders[
+            this._exchange
+          ](this._network, baseToken, quoteToken)
+        case Ethfinex:
+          return this._call[this._transport].getAggregatedOrders[
+            this._exchange
+          ](this._network, baseToken, quoteToken)
+        default:
+          throw new Error('Relay unknown')
+      }
+    }, FORMAT.aggregatedOrders[this._exchange])
   }
 
-  submbitOrder = (signedOrder) => {
+  submbitOrder = signedOrder => {
     console.log(`Submitting order to ${this._exchange}`)
     if (!signedOrder) {
       throw new Error('signedOrder needs to be set')
@@ -81,13 +91,15 @@ class Exchange {
       () => {
         switch (this._exchange) {
           case ERCdEX:
-            return this._call[this._transport].getOrders[this._exchange](signedOrder)
+            return this._call[this._transport].getOrders[this._exchange](
+              signedOrder
+            )
           // case Ethfinex:
           //   return this._call[this._transport].getOrders[this._exchange](signedOrder)
           default:
             throw new Error('Relay unknown')
         }
-      },
+      }
       // FORMAT.orders[this._exchange]
     )
   }
@@ -103,19 +115,19 @@ class Exchange {
     if (!quoteToken) {
       throw new Error('quoteToken needs to be set')
     }
-    return this.returnResults(
-      () => {
-        switch (this._exchange) {
-          // case ERCdEX:
-          //   return this._call[this._transport].getAccountOrders[this._exchange](this._network, baseToken, quoteToken)
-          case Ethfinex:
-            return this._call[this._transport].getAccountOrders[this._exchange](3, account)
-          default:
-            throw new Error('Relay unknown')
-        }
-      },
-      FORMAT.accountOrders[this._exchange]
-    )
+    return this.returnResults(() => {
+      switch (this._exchange) {
+        // case ERCdEX:
+        //   return this._call[this._transport].getAccountOrders[this._exchange](this._network, baseToken, quoteToken)
+        case Ethfinex:
+          return this._call[this._transport].getAccountOrders[this._exchange](
+            3,
+            account
+          )
+        default:
+          throw new Error('Relay unknown')
+      }
+    }, FORMAT.accountOrders[this._exchange])
   }
 
   getOrders = (baseToken, quoteToken) => {
@@ -126,19 +138,24 @@ class Exchange {
     if (!quoteToken) {
       throw new Error('quoteToken needs to be set')
     }
-    return this.returnResults(
-      () => {
-        switch (this._exchange) {
-          case ERCdEX:
-            return this._call[this._transport].getOrders[this._exchange](this._network, baseToken, quoteToken)
-          case Ethfinex:
-            return this._call[this._transport].getOrders[this._exchange](this._network, baseToken, quoteToken)
-          default:
-            throw new Error('Relay unknown')
-        }
-      },
-      FORMAT.orders[this._exchange]
-    )
+    return this.returnResults(() => {
+      switch (this._exchange) {
+        case ERCdEX:
+          return this._call[this._transport].getOrders[this._exchange](
+            this._network,
+            baseToken,
+            quoteToken
+          )
+        case Ethfinex:
+          return this._call[this._transport].getOrders[this._exchange](
+            this._network,
+            baseToken,
+            quoteToken
+          )
+        default:
+          throw new Error('Relay unknown')
+      }
+    }, FORMAT.orders[this._exchange])
   }
 
   getHistoricalPricesData = (baseToken, quoteToken, startDate) => {
@@ -152,24 +169,23 @@ class Exchange {
     if (!startDate) {
       throw new Error('startDate needs to be set')
     }
-    return this.returnResults(
-      () => {
-        switch (this._exchange) {
-          case ERCdEX:
-            return this._call[this._transport].getHistoricalPricesData[this._exchange](this._network, baseToken, quoteToken, startDate)
-          case Ethfinex:
-            return this._call[this._transport].getHistoricalPricesData[this._exchange](this._network, baseToken, quoteToken, startDate)
-          default:
-            throw new Error('Relay unknown')
-        }
-      },
-      FORMAT.historicalPricesData[this._exchange]
-    )
+    return this.returnResults(() => {
+      switch (this._exchange) {
+        case ERCdEX:
+          return this._call[this._transport].getHistoricalPricesData[
+            this._exchange
+          ](this._network, baseToken, quoteToken, startDate)
+        case Ethfinex:
+          return this._call[this._transport].getHistoricalPricesData[
+            this._exchange
+          ](this._network, baseToken, quoteToken, startDate)
+        default:
+          throw new Error('Relay unknown')
+      }
+    }, FORMAT.historicalPricesData[this._exchange])
   }
 
-
   getTicker = (baseToken, quoteToken) => {
-    
     if (!baseToken) {
       throw new Error('baseToken needs to be set')
     }
@@ -180,30 +196,39 @@ class Exchange {
       switch (this._exchange) {
         case ERCdEX:
           console.log(`Connecting to WS ${this._exchange}`)
-          return this._call[this._transport].getTicker[this._exchange](this._network, baseToken, quoteToken)
+          return this._call[this._transport].getTicker[this._exchange](
+            this._network,
+            baseToken,
+            quoteToken
+          )
         case Ethfinex:
-          return this._call[this._transport].getTicker[this._exchange](this._network, baseToken, quoteToken)
+          return this._call[this._transport].getTicker[this._exchange](
+            this._network,
+            baseToken,
+            quoteToken
+          )
         default:
           throw new Error('Relay unknown')
       }
-    }
-    )
+    })
   }
 
-  getTickers = (symbols = SupportedExchanges.Ethfinex.tickersTokenPairs.toString()) => {
+  getTickers = (
+    symbols = SupportedExchanges.Ethfinex.tickersTokenPairs.toString()
+  ) => {
     console.log(`${this._exchange}: Fetching tokens prices`)
     // I have only added Ethfinex so far, because this function return every tokens price
-    // and we use the data to calcuate the funds assets value. 
+    // and we use the data to calcuate the funds assets value.
     // Ethfinex will be our source of truth for the moment.
     // On the exchange, for now, we only need the price of the selected token.
     // Anyway, it's a mock.
 
-    return this.returnResults(
-      () => {
-        return this._call[this._transport].getTickers[this._exchange](this._network, symbols)
-      },
-      FORMAT.tickers[this._exchange]
-    )
+    return this.returnResults(() => {
+      return this._call[this._transport].getTickers[this._exchange](
+        this._network,
+        symbols
+      )
+    }, FORMAT.tickers[this._exchange])
   }
 }
 

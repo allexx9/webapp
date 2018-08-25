@@ -3,13 +3,13 @@
 import * as TYPE_ from './const'
 
 const exchange = {
-  getAccountOrders: (relay, networkId, account, baseToken, quoteToken ) => {
+  getAccountOrders: (relay, networkId, account, baseToken, quoteToken) => {
     const payload = {
       relay,
       networkId,
       account,
       baseToken,
-      quoteToken,
+      quoteToken
     }
     return {
       type: TYPE_.FETCH_FUND_ORDERS,
@@ -44,15 +44,14 @@ const exchange = {
   // Stops collecting chart data for Drago details pages
   getPortfolioChartDataStop: () => {
     return {
-      type: TYPE_.FETCH_CANDLES_DATA_PORTFOLIO_STOP,
-
+      type: TYPE_.FETCH_CANDLES_DATA_PORTFOLIO_STOP
     }
   },
   getTradeHistoryLogs: (networkId, baseTokenAddress, quoteTokenAddress) => {
     const payload = {
       networkId,
       baseTokenAddress,
-      quoteTokenAddress,
+      quoteTokenAddress
     }
     return {
       type: TYPE_.FETCH_HISTORY_TRANSACTION_LOGS,
@@ -62,9 +61,7 @@ const exchange = {
   relayCloseWs: () => {
     return {
       type: TYPE_.RELAY_CLOSE_WEBSOCKET,
-      payload: {
-
-      }
+      payload: {}
     }
   },
   relayGetOrders: (relay, networkId, baseToken, quoteToken, aggregated) => {
@@ -90,37 +87,36 @@ const exchange = {
       }
     }
   },
-  setAggregateOrders: (isInputChecked) => {
+  setAggregateOrders: isInputChecked => {
     return {
       type: TYPE_.SET_ORDERBOOK_AGGREGATE_ORDERS,
       payload: isInputChecked
     }
   },
-  updateSelectedRelayAction: (payload) => {
+  updateSelectedRelayAction: payload => {
     return {
       type: TYPE_.UPDATE_SELECTED_RELAY,
       payload: payload
     }
   },
-  updateSelectedTradeTokensPair: (tradeTokensPair) => {
+  updateSelectedTradeTokensPair: tradeTokensPair => {
     return {
       type: TYPE_.UPDATE_TRADE_TOKENS_PAIR,
       payload: tradeTokensPair
     }
   },
-  updateAvailableTradeTokensPairs: (payload) => {
+  updateAvailableTradeTokensPairs: payload => {
     return {
       type: TYPE_.UPDATE_AVAILABLE_TRADE_TOKENS_PAIRS,
       payload: payload
     }
   },
-  updateAvailableRelays: (payload) => {
+  updateAvailableRelays: payload => {
     return {
       type: TYPE_.UPDATE_AVAILABLE_RELAYS,
       payload: payload
     }
-  },
-  
+  }
 }
 
-export default exchange;
+export default exchange

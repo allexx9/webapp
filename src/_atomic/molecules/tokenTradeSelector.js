@@ -1,11 +1,11 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-import styles from './tokenTradeSelector.module.css';
-import React, { Component } from 'react';
-import { MenuItem, SelectField } from 'material-ui';
-import PropTypes from 'prop-types';
-import { Row, Col } from 'react-flexbox-grid';
+import { Col, Row } from 'react-flexbox-grid'
+import { MenuItem, SelectField } from 'material-ui'
 import ExchangeTokenSelectItem from '../atoms/exchangeTokenSelectItem'
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
+import styles from './tokenTradeSelector.module.css'
 
 // const tradableTokens = ["WETH / ZRX", "WETH / GRG"]
 
@@ -22,22 +22,25 @@ export default class TokenTradeSelector extends Component {
   }
 
   renderTokens = () => {
-    var menu = []
+    let menu = []
     for (var quoteToken in this.props.tradableTokens) {
-      Object.keys(this.props.tradableTokens[quoteToken]).forEach((baseToken) => {
-        let baseTokenSymbol = this.props.tradableTokens[quoteToken][baseToken].symbol;
-        let quoteTokenSymbol = quoteToken;
+      Object.keys(this.props.tradableTokens[quoteToken]).forEach(baseToken => {
+        let baseTokenSymbol = this.props.tradableTokens[quoteToken][baseToken]
+          .symbol
+        let quoteTokenSymbol = quoteToken
         menu.push(
-          <MenuItem key={baseTokenSymbol}
+          <MenuItem
+            key={baseTokenSymbol}
             value={baseTokenSymbol + '-' + quoteTokenSymbol}
-            primaryText={<ExchangeTokenSelectItem
-              baseTokenSymbol={baseTokenSymbol}
-              quoteTokenSymbol={quoteTokenSymbol}
-            />
+            primaryText={
+              <ExchangeTokenSelectItem
+                baseTokenSymbol={baseTokenSymbol}
+                quoteTokenSymbol={quoteTokenSymbol}
+              />
             }
           />
         )
-      });
+      })
     }
     return menu
   }
@@ -47,20 +50,22 @@ export default class TokenTradeSelector extends Component {
     return (
       <Row>
         <Col xs={12}>
-          <div className={styles.sectionTitle}>
-            Trading pairs
-        </div>
+          <div className={styles.sectionTitle}>Trading pairs</div>
         </Col>
         <Col xs={12}>
           <SelectField
             fullWidth
-            value={this.props.selectedTradeTokensPair.baseToken.symbol + '-' + this.props.selectedTradeTokensPair.quoteToken.symbol}
+            value={
+              this.props.selectedTradeTokensPair.baseToken.symbol +
+              '-' +
+              this.props.selectedTradeTokensPair.quoteToken.symbol
+            }
             onChange={this.onSelectTokenTrade}
           >
             {this.renderTokens()}
           </SelectField>
         </Col>
       </Row>
-    );
+    )
   }
 }

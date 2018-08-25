@@ -1,21 +1,21 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
+import { UPDATE_INTERFACE } from '../actions/const'
 import initialState from './initialState'
-import {
-  UPDATE_INTERFACE
-} from '../actions/const'
 
 function endpointsReducer(state = initialState.endpoint, action) {
   let endpoint = {}
   switch (action.type) {
-
     case UPDATE_INTERFACE:
-      endpoint = { ...state.endpoint, ...{ ...action.payload } }
+      console.log(endpoint)
       return {
-        ...state, ...endpoint
-      };
+        ...state,
+        ...action.payload,
+        pino: 'ok'
+      }
 
-    default: return state;
+    default:
+      return state
   }
 }
 

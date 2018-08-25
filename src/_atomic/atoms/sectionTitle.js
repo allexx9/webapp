@@ -1,29 +1,26 @@
+import Divider from 'material-ui/Divider'
 import HelpIcon from './helpIcon'
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import Divider from 'material-ui/Divider';
-import styles from './sectionTitle.module.css';
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
+import styles from './sectionTitle.module.css'
 
 export default class SectionTitle extends Component {
-
   static propTypes = {
     titleText: PropTypes.string.isRequired,
     textStyle: PropTypes.object.isRequired,
     help: PropTypes.bool,
     helpText: PropTypes.string,
-    helpReadMoreLink: PropTypes.string,
-  };
+    helpReadMoreLink: PropTypes.string
+  }
 
   static defaultProps = {
     textStyle: {},
     help: false,
     helpText: '',
     helpReadMoreLink: ''
-  };
-
+  }
 
   render() {
-
     const helpIconStyle = {
       height: '20px',
       width: '20px'

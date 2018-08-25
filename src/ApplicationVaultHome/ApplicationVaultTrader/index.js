@@ -1,3 +1,3 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-export { default } from './applicationVaultTrader';
+export { default } from './applicationVaultTrader'

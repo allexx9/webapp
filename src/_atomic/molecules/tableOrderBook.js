@@ -1,22 +1,19 @@
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { Row, Col } from 'react-flexbox-grid';
+import * as Colors from 'material-ui/styles/colors'
+import { Col, Row } from 'react-flexbox-grid'
 import BigNumber from 'bignumber.js'
-import  * as Colors from 'material-ui/styles/colors'
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
 
-import styles from './tableOrderBook.module.css'
-import { connect } from 'react-redux';
-import {
-  UPDATE_SELECTED_ORDER
-} from '../../_redux/actions/const'
+import { UPDATE_SELECTED_ORDER } from '../../_redux/actions/const'
+import { connect } from 'react-redux'
 import { detect } from 'detect-browser'
+import styles from './tableOrderBook.module.css'
 
 function mapStateToProps(state) {
   return state
 }
 
 class TableOrderBook extends Component {
-
   static propTypes = {
     onlyAggregated: PropTypes.bool.isRequired,
     aggregated: PropTypes.bool.isRequired,
@@ -24,16 +21,16 @@ class TableOrderBook extends Component {
     orderType: PropTypes.string.isRequired,
     exchange: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired
-  };
+  }
 
   static contextTypes = {
-    api: PropTypes.object.isRequired,
-  };
+    api: PropTypes.object.isRequired
+  }
 
-  updateSelectedOrder = (order) => {
+  updateSelectedOrder = order => {
     const { selectedTokensPair } = this.props.exchange
     const payload = {
-      details: {...order}, 
+      details: { ...order },
       orderAmountError: false,
       orderPriceError: false,
       orderFillAmount: order.orderAmount,
@@ -47,38 +44,38 @@ class TableOrderBook extends Component {
       type: UPDATE_SELECTED_ORDER,
       payload: payload
     }
-  };
+  }
 
-  onClickOrder = (id) =>{
+  onClickOrder = id => {
     if (!this.props.aggregated && !this.props.onlyAggregated) {
       this.props.dispatch(this.updateSelectedOrder(this.props.orders[id]))
     }
   }
 
-  renderRows = (ordersSorted) =>{
+  renderRows = ordersSorted => {
     const { orderType } = this.props
-    var price, amount
+    let price, amount
     const orderStylePrice = {
       asks: {
-        color: Colors.red400,
+        color: Colors.red400
       },
       bids: {
         color: Colors.green400
-      },
-    } 
-    
+      }
+    }
+
     const orderStyleAmount = {
       asks: {
-        color: Colors.red400,
+        color: Colors.red400
       },
       bids: {
         color: Colors.green400
-      },
+      }
     }
 
     const progressBarAmountColor = {
       asks: Colors.red100,
-      bids: Colors.green100,
+      bids: Colors.green100
     }
 
     // var arr = [1,2,3];
@@ -87,37 +84,67 @@ class TableOrderBook extends Component {
     //     return Math.max(a, b);
     // });
 
-    var max = ordersSorted.reduce(function (prev, current) {
-      return (Number(prev.orderAmount) > Number(current.orderAmount) ? prev : current)
+    let max = ordersSorted.reduce(function(prev, current) {
+      return Number(prev.orderAmount) > Number(current.orderAmount)
+        ? prev
+        : current
     })
     return ordersSorted.map((order, key) => {
-      var amountGradient
+      let amountGradient
       price = order.orderPrice
       amount = order.orderAmount
 
-      const relativeToTotal = new BigNumber(amount).dividedBy(new BigNumber(max.orderAmount)).mul(100.).toFixed(0)
+      const relativeToTotal = new BigNumber(amount)
+        .dividedBy(new BigNumber(max.orderAmount))
+        .mul(100)
+        .toFixed(0)
 
-      const browser = detect();
+      const browser = detect()
       switch (browser && browser.name) {
         case 'chrome':
-          amountGradient = `-webkit-linear-gradient(left, ${progressBarAmountColor[orderType]} ${relativeToTotal}%, ${progressBarAmountColor[orderType]} ${relativeToTotal}%, rgba(255,255,255,1) ${relativeToTotal}%, rgba(255,255,255,1) 100%)`
-          break;
+          amountGradient = `-webkit-linear-gradient(left, ${
+            progressBarAmountColor[orderType]
+          } ${relativeToTotal}%, ${
+            progressBarAmountColor[orderType]
+          } ${relativeToTotal}%, rgba(255,255,255,1) ${relativeToTotal}%, rgba(255,255,255,1) 100%)`
+          break
         case 'firefox':
-          amountGradient = `-moz-linear-gradient(left, ${progressBarAmountColor[orderType]} ${relativeToTotal}%, ${progressBarAmountColor[orderType]} ${relativeToTotal}%, rgba(255,255,255,1) ${relativeToTotal}%, rgba(255,255,255,1) 100%)`
-          break;
+          amountGradient = `-moz-linear-gradient(left, ${
+            progressBarAmountColor[orderType]
+          } ${relativeToTotal}%, ${
+            progressBarAmountColor[orderType]
+          } ${relativeToTotal}%, rgba(255,255,255,1) ${relativeToTotal}%, rgba(255,255,255,1) 100%)`
+          break
         case 'edge':
-          amountGradient = `-ms-linear-gradient(left, ${progressBarAmountColor[orderType]} ${relativeToTotal}%, ${progressBarAmountColor[orderType]} ${relativeToTotal}%, rgba(255,255,255,1) ${relativeToTotal}%, rgba(255,255,255,1) 100%)`
-          break;
+          amountGradient = `-ms-linear-gradient(left, ${
+            progressBarAmountColor[orderType]
+          } ${relativeToTotal}%, ${
+            progressBarAmountColor[orderType]
+          } ${relativeToTotal}%, rgba(255,255,255,1) ${relativeToTotal}%, rgba(255,255,255,1) 100%)`
+          break
         default:
-          amountGradient = `linear-gradient(left, ${progressBarAmountColor[orderType]} ${relativeToTotal}%, ${progressBarAmountColor[orderType]} ${relativeToTotal}%, rgba(255,255,255,1) ${relativeToTotal}%, rgba(255,255,255,1) 100%)`
+          amountGradient = `linear-gradient(left, ${
+            progressBarAmountColor[orderType]
+          } ${relativeToTotal}%, ${
+            progressBarAmountColor[orderType]
+          } ${relativeToTotal}%, rgba(255,255,255,1) ${relativeToTotal}%, rgba(255,255,255,1) 100%)`
       }
       return (
-        <Row key={"order" + key} >
-
-          <Col xs={12} className={styles.sectionOrder} id={key} onClick={() => this.onClickOrder(key)}>
+        <Row key={'order' + key}>
+          <Col
+            xs={12}
+            className={styles.sectionOrder}
+            id={key}
+            onClick={() => this.onClickOrder(key)}
+          >
             <Row className={styles.cellOrder}>
-              <Col xs={2} style={{ ...orderStyleAmount[orderType], backgroundImage: amountGradient }}>
-              </Col>
+              <Col
+                xs={2}
+                style={{
+                  ...orderStyleAmount[orderType],
+                  backgroundImage: amountGradient
+                }}
+              />
               <Col xs={5} style={orderStylePrice[orderType]}>
                 {amount}
               </Col>
@@ -126,7 +153,6 @@ class TableOrderBook extends Component {
               </Col>
             </Row>
           </Col>
-
         </Row>
       )
     })
@@ -138,9 +164,7 @@ class TableOrderBook extends Component {
 
     return (
       <Row className={styles.containerOrders}>
-        <Col xs={12}>
-          {this.renderRows(orders)}
-        </Col>
+        <Col xs={12}>{this.renderRows(orders)}</Col>
       </Row>
     )
   }

@@ -2,8 +2,8 @@
 // This file is part of RigoBlock.
 
 import * as abis from '../../contracts/abi'
-import Registry from '../registry'
 import { RIGOTOKEN_ADDRESSES } from '../../utils/const'
+import Registry from '../registry'
 
 class RigoTokenParity {
   constructor(api) {

@@ -1,38 +1,34 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
-import "babel-polyfill";
-import Endpoint from './_utils/endpoint';
-import { Switch, Redirect, Router, Route } from 'react-router-dom'
-import createHashHistory from 'history/createHashHistory';
-import NotificationSystem from 'react-notification-system'
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import Web3 from 'web3'
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import 'babel-polyfill'
 import 'react-virtualized/styles.css'
-import ApplicationConfigPage from './Application/applicationConfig';
-import ApplicationDragoPage from './Application/applicationDrago';
-import ApplicationVaultPage from './Application/applicationVault';
-import ApplicationHomePage from './Application/applicationHome';
-import ApplicationExchangePage from './Application/applicationExchange';
-import Whoops404 from './Application/whoops404';
-import {
-  DEFAULT_NETWORK_NAME,
-  PROD,
-} from './_utils/const'
+import { DEFAULT_NETWORK_NAME, PROD } from './_utils/const'
+import { Redirect, Route, Router, Switch } from 'react-router-dom'
+import ApplicationConfigPage from './Application/applicationConfig'
+import ApplicationDragoPage from './Application/applicationDrago'
+import ApplicationExchangePage from './Application/applicationExchange'
+import ApplicationHomePage from './Application/applicationHome'
+import ApplicationVaultPage from './Application/applicationVault'
+import Endpoint from './_utils/endpoint'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+import NotificationSystem from 'react-notification-system'
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
+import Web3 from 'web3'
+import Whoops404 from './Application/whoops404'
+import createHashHistory from 'history/createHashHistory'
 
-import utils from './_utils/utils'
-import { connect } from 'react-redux';
-import ElementNotification from './Elements/elementNotification'
+import { connect } from 'react-redux'
 import AppLoading from './Elements/elementAppLoading'
+import ElementNotification from './Elements/elementNotification'
+import utils from './_utils/utils'
 // import ElementNotConnected from './Elements/elementNotConnected'
-import ReactGA from 'react-ga';
 import { Actions } from './_redux/actions'
+import ReactGA from 'react-ga'
 
-let appHashPath = true;
+let appHashPath = true
 
-
-ReactGA.initialize('UA-117171641-1');
-ReactGA.pageview(window.location.pathname + window.location.search);
+ReactGA.initialize('UA-117171641-1')
+ReactGA.pageview(window.location.pathname + window.location.search)
 
 // Detectiong if the app is running inside Parity client
 // var pathArray = window.location.hash.split('/');
@@ -40,14 +36,14 @@ ReactGA.pageview(window.location.pathname + window.location.search);
 if (typeof window.parity !== 'undefined') {
   // Need to check if this works inside the Parity UI
   // appHashPath = pathArray[2];
-  appHashPath = 'web';
+  appHashPath = 'web'
 } else {
-  appHashPath = 'web';
+  appHashPath = 'web'
 }
 
-const history = createHashHistory();
+const history = createHashHistory()
 
-// Setting the routes. 
+// Setting the routes.
 // Component Whoops404 is loaded if a page does not exist.
 
 function mapStateToProps(state) {
@@ -55,12 +51,14 @@ function mapStateToProps(state) {
 }
 
 export class App extends Component {
-
   constructor(props) {
-    super(props);
+    super(props)
     console.log(props)
-    this._notificationSystem = null;
-    let endpoint = new Endpoint(this.props.endpoint.endpointInfo, this.props.endpoint.networkInfo)
+    this._notificationSystem = null
+    let endpoint = new Endpoint(
+      this.props.endpoint.endpointInfo,
+      this.props.endpoint.networkInfo
+    )
     this._api = endpoint.connect()
   }
 
@@ -71,39 +69,43 @@ export class App extends Component {
   state = {
     isConnected: this.props.app.isConnected,
     isSyncing: this.props.app.isSyncing,
-    syncStatus: this.props.app.syncStatus,
+    syncStatus: this.props.app.syncStatus
   }
 
   // Defining the properties of the context variables passed down to children
   static childContextTypes = {
     api: PropTypes.object,
-    ethereumNetworkName: PropTypes.string,
-  };
+    ethereumNetworkName: PropTypes.string
+  }
 
   static propTypes = {
     app: PropTypes.object.isRequired,
     endpoint: PropTypes.object.isRequired,
-    dispatch: PropTypes.func.isRequired,
-  };
+    dispatch: PropTypes.func.isRequired
+  }
 
   // Passing down the context variables to children
   getChildContext() {
     return {
       api: this._api,
       ethereumNetworkName: DEFAULT_NETWORK_NAME
-    };
+    }
   }
 
   shouldComponentUpdate(nextProps, nextState) {
     // console.log(this.props.user.isManager)
-    const propsUpdate = (!utils.shallowEqual(this.props, nextProps))
-    const stateUpdate = (!utils.shallowEqual(this.state, nextState))
+    const propsUpdate = !utils.shallowEqual(this.props, nextProps)
+    const stateUpdate = !utils.shallowEqual(this.state, nextState)
     // console.log(`${this.constructor.name} -> propsUpdate: %c${propsUpdate}.%c stateUpdate: %c${stateUpdate}`, `color: ${propsUpdate ? 'green' : 'red'}; font-weight: bold;`,'',`color: ${stateUpdate ? 'green' : 'red'}; font-weight: bold;`)
     return stateUpdate || propsUpdate
   }
 
-  componentDidMount = async () =>{
-    this.props.dispatch(Actions.notifications.initNotificationsSystemAction(this._notificationSystem))
+  componentDidMount = async () => {
+    this.props.dispatch(
+      Actions.notifications.initNotificationsSystemAction(
+        this._notificationSystem
+      )
+    )
     const { endpoint } = this.props
     let WsSecureUrl = ''
     const networkName = this.props.endpoint.networkInfo.name
@@ -114,10 +116,14 @@ export class App extends Component {
     }
     const web3 = new Web3(WsSecureUrl)
     this.props.dispatch(Actions.endpoint.checkIsConnectedToNode(this._api))
-    this.props.dispatch(Actions.endpoint.attachInterface(web3, this._api, endpoint))
+    this.props.dispatch(
+      Actions.endpoint.attachInterface(web3, this._api, endpoint)
+    )
     if (typeof window.web3 !== 'undefined') {
       const web3 = window.web3
-      this.props.dispatch(Actions.endpoint.checkMetaMaskIsUnlocked(this._api, web3))
+      this.props.dispatch(
+        Actions.endpoint.checkMetaMaskIsUnlocked(this._api, web3)
+      )
     }
   }
 
@@ -126,21 +132,22 @@ export class App extends Component {
     // because the checki is done by Parity and a messagge will be displayed by the client
   }
 
-  componentWillUnmount() {
-  }
+  componentWillUnmount() {}
 
-  UNSAFE_componentWillUpdate() {
-  }
+  UNSAFE_componentWillUpdate() {}
 
   render() {
     let notificationStyle = {
-      NotificationItem: { // Override the notification item
-        DefaultStyle: { // Applied to every notification, regardless of the notification level
+      NotificationItem: {
+        // Override the notification item
+        DefaultStyle: {
+          // Applied to every notification, regardless of the notification level
           margin: '0px 0px 0px 0px'
         },
-        info: { // Applied only to the success notification item
+        info: {
+          // Applied only to the success notification item
           border: '1px solid',
-          borderColor: "#EEEEEE",
+          borderColor: '#EEEEEE',
           WebkitBoxShadow: 'rgba(0, 0, 0, 0.1) 0px 5px 5px',
           MozBoxShadow: 'rgba(0, 0, 0, 0.1) 0px 5px 5px',
           boxShadow: 'rgba(0, 0, 0, 0.1) 0px 5px 5px',
@@ -164,7 +171,7 @@ export class App extends Component {
           backgroundColor: '#E65100',
           color: '#ffffff',
           marginBottom: '5px'
-        },
+        }
       },
       Title: {
         error: {
@@ -188,37 +195,65 @@ export class App extends Component {
         warning: {
           backgroundColor: '',
           color: '#ffffff'
-        },
-      },
+        }
+      }
     }
     return (
       <div>
-        {this.props.app.appLoading
-          ?
+        {this.props.app.appLoading ? (
           <div>
-            <NotificationSystem ref={n => this._notificationSystem = n} style={notificationStyle} />
+            <NotificationSystem
+              ref={n => (this._notificationSystem = n)}
+              style={notificationStyle}
+            />
             <Router history={history}>
-              <AppLoading ></AppLoading>
+              <AppLoading />
             </Router>
           </div>
-          : <div>
-            <NotificationSystem ref={n => this._notificationSystem = n} style={notificationStyle} />
+        ) : (
+          <div>
+            <NotificationSystem
+              ref={n => (this._notificationSystem = n)}
+              style={notificationStyle}
+            />
             <Router history={history}>
               <Switch>
-                <Route exact path={"/app/" + appHashPath + "/home"} component={ApplicationHomePage} />
-                <Route path={"/app/" + appHashPath + "/vault"} component={ApplicationVaultPage} />
-                <Route path={"/app/" + appHashPath + "/drago"} component={ApplicationDragoPage} />
-                <Route path={"/app/" + appHashPath + "/exchange"} component={ApplicationExchangePage} />
-                <Route path={"/app/" + appHashPath + "/config"} component={ApplicationConfigPage} />
-                <Redirect from="/exchange/" to={"/app/" + appHashPath + "/exchange"} />
-                <Redirect from="/vault/" to={"/app/" + appHashPath + "/vault"} />
-                <Redirect from="/drago" to={"/app/" + appHashPath + "/drago"} />
-                <Redirect from="/" to={"/app/" + appHashPath + "/home"} />
+                <Route
+                  exact
+                  path={'/app/' + appHashPath + '/home'}
+                  component={ApplicationHomePage}
+                />
+                <Route
+                  path={'/app/' + appHashPath + '/vault'}
+                  component={ApplicationVaultPage}
+                />
+                <Route
+                  path={'/app/' + appHashPath + '/drago'}
+                  component={ApplicationDragoPage}
+                />
+                <Route
+                  path={'/app/' + appHashPath + '/exchange'}
+                  component={ApplicationExchangePage}
+                />
+                <Route
+                  path={'/app/' + appHashPath + '/config'}
+                  component={ApplicationConfigPage}
+                />
+                <Redirect
+                  from="/exchange/"
+                  to={'/app/' + appHashPath + '/exchange'}
+                />
+                <Redirect
+                  from="/vault/"
+                  to={'/app/' + appHashPath + '/vault'}
+                />
+                <Redirect from="/drago" to={'/app/' + appHashPath + '/drago'} />
+                <Redirect from="/" to={'/app/' + appHashPath + '/home'} />
                 <Route component={Whoops404} />
               </Switch>
             </Router>
           </div>
-        }
+        )}
       </div>
     )
   }
@@ -230,8 +265,8 @@ export class App extends Component {
           primaryText={primaryText}
           secondaryText={secondaryText}
           eventType={eventType}
-          eventStatus='executed'
-          txHash=''
+          eventStatus="executed"
+          txHash=""
         />
       </MuiThemeProvider>
     )

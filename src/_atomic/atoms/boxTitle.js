@@ -1,20 +1,18 @@
-import React from "react";
-import PropTypes from "prop-types";
-import styles from './boxTitle.module.css'
 import AppBar from 'material-ui/AppBar'
+import PropTypes from 'prop-types'
+import React from 'react'
+import styles from './boxTitle.module.css'
 
 class BoxTitle extends React.Component {
-
   static propTypes = {
-    titleText: PropTypes.string.isRequired,
-  };
+    titleText: PropTypes.string.isRequired
+  }
 
   static defaultProps = {
-    titleText: '',
-  };
+    titleText: ''
+  }
 
   render() {
-
     return (
       <AppBar
         title={this.props.titleText}
@@ -26,4 +24,4 @@ class BoxTitle extends React.Component {
   }
 }
 
-export default BoxTitle;
+export default BoxTitle

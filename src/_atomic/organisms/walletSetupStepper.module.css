@@ -8,11 +8,19 @@
   width: 34px;
 } */
 
-.notActiveStep {
-  
-}
+.notActiveStep {}
 
 .titleStep {
   font-size: 16px;
+  font-weight: 700;
+}
+
+.unlockedText {
+  color: #4CAF50;
+  font-weight: 700;
+}
+
+.lockedText {
+  color: #FF9800;
   font-weight: 700;
 }

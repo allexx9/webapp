@@ -1,16 +1,16 @@
-import React, { Component } from 'react'
-import { Row, Col, Grid } from 'react-flexbox-grid';
-import BigNumber from 'bignumber.js';
-import Dialog from 'material-ui/Dialog';
+import { Col, Grid, Row } from 'react-flexbox-grid'
 import { Link } from 'react-router-dom'
+import BigNumber from 'bignumber.js'
+import Dialog from 'material-ui/Dialog'
+import React, { Component } from 'react'
 
-import styles from './elementNotConnected.module.css'
-import PropTypes from 'prop-types';
 import { APP, DS } from '../_utils/const'
-import SectionHeader from '../_atomic/atoms/sectionHeader';
+import { connect } from 'react-redux'
+import PropTypes from 'prop-types'
+import SectionHeader from '../_atomic/atoms/sectionHeader'
 import SyncStatusCurrentBlock from '../_atomic/atoms/syncStatusCurrentBlock'
 import SyncStatusWarpChunksProcessed from '../_atomic/atoms/syncStatusWarpChunksProcessed'
-import { connect } from 'react-redux';
+import styles from './elementNotConnected.module.css'
 
 function mapStateToProps(state) {
   return state
@@ -18,26 +18,25 @@ function mapStateToProps(state) {
 
 const style = {
   dialogRoot: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingTop: 0
   },
   dialogContent: {
-    position: "relative",
-    width: "80vw",
-    transform: "",
+    position: 'relative',
+    width: '80vw',
+    transform: ''
   },
   dialogBody: {
     paddingBottom: 0
   }
-};
+}
 
 class ElementNotConnected extends Component {
-
   static propTypes = {
-    app: PropTypes.object.isRequired,
-  };
+    app: PropTypes.object.isRequired
+  }
 
   componentDidMount() {
     // this.counter()
@@ -47,9 +46,8 @@ class ElementNotConnected extends Component {
     // clearTimeout(td)
   }
 
-
   buildUrlPath = () => {
-    let path = window.location.hash.split('/');
+    let path = window.location.hash.split('/')
     // path.splice(-1,1);
     // var url = path.join('/');
     return path[2]
@@ -86,20 +84,36 @@ class ElementNotConnected extends Component {
         <div className={styles.detailsBoxContainer}>
           <Grid fluid>
             <Row>
-              <Col xs={12} >
-                <SectionHeader
-                  titleText='NODE SYNCING'
-                />
+              <Col xs={12}>
+                <SectionHeader titleText="NODE SYNCING" />
               </Col>
             </Row>
             <Row>
               <Col xs={12}>
-                <p><b>Your node is syncing with Ethereum blockchain.</b></p>
-                <p>Please wait until fully synced before accessing RigoBlock.</p>
+                <p>
+                  <b>Your node is syncing with Ethereum blockchain.</b>
+                </p>
+                <p>
+                  Please wait until fully synced before accessing RigoBlock.
+                </p>
                 <p>Syncing progress:</p>
-                <p><SyncStatusCurrentBlock syncStatus={this.props.app.syncStatus} /></p>
+                <p>
+                  <SyncStatusCurrentBlock
+                    syncStatus={this.props.app.syncStatus}
+                  />
+                </p>
                 {/* <p><SyncStatusWarpChunksProcessed syncStatus={this.context.syncStatus}/></p> */}
-                <p>Please contact our support or {<Link to={DS + APP + DS + this.buildUrlPath() + DS + "config"}>select</Link>} a different endpoint.</p>
+                <p>
+                  Please contact our support or{' '}
+                  {
+                    <Link
+                      to={DS + APP + DS + this.buildUrlPath() + DS + 'config'}
+                    >
+                      select
+                    </Link>
+                  }{' '}
+                  a different endpoint.
+                </p>
               </Col>
             </Row>
           </Grid>
@@ -122,19 +136,33 @@ class ElementNotConnected extends Component {
         <div className={styles.detailsBoxContainer}>
           <Grid fluid>
             <Row>
-              <Col xs={12} >
-                <SectionHeader
-                  titleText='CONNECTION ERROR'
-                />
+              <Col xs={12}>
+                <SectionHeader titleText="CONNECTION ERROR" />
               </Col>
             </Row>
             <Row>
               <Col xs={12}>
-                <p><b>Unable to connect to the network.</b></p>
+                <p>
+                  <b>Unable to connect to the network.</b>
+                </p>
                 {/* <p>Trying to establish a new connection in {this.state.counter} seconds... </p> */}
                 <p>Trying to establish a new connection... </p>
-                <p>Attempt {this.props.app.connectionRetries}: retrying in {this.props.app.retryTimeInterval}ms</p>
-                <p>Please contact our support or {<Link to={DS + APP + DS + this.buildUrlPath() + DS + "config"}>select</Link>} a different endpoint.</p>
+                <p>
+                  Attempt {this.props.app.connectionRetries}: retrying in{' '}
+                  {this.props.app.retryTimeInterval}
+                  ms
+                </p>
+                <p>
+                  Please contact our support or{' '}
+                  {
+                    <Link
+                      to={DS + APP + DS + this.buildUrlPath() + DS + 'config'}
+                    >
+                      select
+                    </Link>
+                  }{' '}
+                  a different endpoint.
+                </p>
               </Col>
             </Row>
           </Grid>

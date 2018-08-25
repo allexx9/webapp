@@ -3,19 +3,19 @@
 import {
   DEFAULT_ENDPOINT,
   DEFAULT_NETWORK_NAME,
-  MSG_NETWORK_STATUS_OK,
-  NETWORK_OK,
   ENDPOINTS,
-  NETWORKS,
   ERC20_TOKENS,
-  EXCHANGES,
-  RELAYS,
-  TRADE_TOKENS_PAIRS,
   ERCdEX,
-  Ethfinex
+  EXCHANGES,
+  Ethfinex,
+  MSG_NETWORK_STATUS_OK,
+  NETWORKS,
+  NETWORK_OK,
+  RELAYS,
+  TRADE_TOKENS_PAIRS
 } from '../../_utils/const'
 
-import BigNumber from 'bignumber.js';
+import BigNumber from 'bignumber.js'
 
 const NETWORK_NAME = DEFAULT_NETWORK_NAME
 // const NETWORK_NAME = 'ropsten'
@@ -28,11 +28,11 @@ const QUOTE_TOKEN = ERC20_TOKENS[NETWORK_NAME].WETH
 // const ERCdEX = 'ERCdEX'
 // const Ethfinex = 'Ethfinex'
 
-const fakeTicker = () =>{
-  let arr = Array();
-  let now = (new Date).getTime();
-  let yesterday = (new Date).setDate((new Date).getDate() - 1)
-  let _15minEpoch = (15 * 60 * 1000)
+const fakeTicker = () => {
+  let arr = Array()
+  let now = new Date().getTime()
+  let yesterday = new Date().setDate(new Date().getDate() - 1)
+  let _15minEpoch = 15 * 60 * 1000
   for (let i = now; i > yesterday; i -= _15minEpoch) {
     arr.push({
       date: new Date(i),
@@ -64,7 +64,7 @@ const initialState = {
       liquidity: true,
       orderSummary: true,
       orderBox: true,
-      marketBox: true,
+      marketBox: true
     },
     // chartData: [
     //   {
@@ -86,17 +86,15 @@ const initialState = {
     //     epoch: 0
     //   }
     // ],
-    chartData: [
-
-    ],
+    chartData: [],
     selectedFund: {
       details: {},
       liquidity: {
         ETH: new BigNumber(0),
         WETH: new BigNumber(0),
-        ZRX: new BigNumber(0),
+        ZRX: new BigNumber(0)
       },
-      managerAccount: '',
+      managerAccount: ''
     },
     makerAddress: '',
     selectedExchange: EXCHANGES.zeroEx[NETWORK_NAME],
@@ -136,7 +134,7 @@ const initialState = {
       selectedTokensPair: {
         baseToken: BASE_TOKEN,
         quoteToken: QUOTE_TOKEN
-      },
+      }
     },
     orderBookAggregated: RELAYS[ERCdEX].onlyAggregateOrderbook,
     orderBook: {
@@ -168,11 +166,11 @@ const initialState = {
       transactions: [],
       assets: [],
       assetsCharts: {
-        GRG: { 
+        GRG: {
           data: fakeTicker()
         }
-      },
-    },
+      }
+    }
   },
   transactionsVault: {
     holder: {
@@ -185,7 +183,7 @@ const initialState = {
     },
     selectedVault: {
       details: {},
-      transactions: [],
+      transactions: []
     }
   },
   endpoint: {
@@ -197,13 +195,16 @@ const initialState = {
     loading: true,
     networkError: NETWORK_OK,
     networkStatus: MSG_NETWORK_STATUS_OK,
-    prevBlockNumber: "0",
+    prevBlockNumber: '0',
     grgBalance: null,
     warnMsg: '',
+    metaMaskNetworkCorrect: false,
+    metaMaskLocked: true,
+    openWalletSetup: false
   },
   user: {
     isManager: false
   }
-};
+}
 
 export default initialState

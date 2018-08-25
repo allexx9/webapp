@@ -1,6 +1,6 @@
-export const OMG_MN = "0xd26114cd6ee289accf82350c8d8487fedb8a0c07"
-export const WETH_MN = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
-export const ZRX_MN = "0xe41d2489571d322189246dafa5ebde1f4699f498"
+export const OMG_MN = '0xd26114cd6ee289accf82350c8d8487fedb8a0c07'
+export const WETH_MN = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+export const ZRX_MN = '0xe41d2489571d322189246dafa5ebde1f4699f498'
 
 export const fakeOrders = {
   ZRX: `{

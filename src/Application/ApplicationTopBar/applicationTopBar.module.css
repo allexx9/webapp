@@ -98,3 +98,14 @@
 .menuToggle:checked + .trigger + .menu > .burgerContainer {
     display: block;
 }
+
+.beta {
+    position: absolute;
+    top: 18px;
+    left: 32px;
+    font-size: 12px;
+    font-weight: 700;
+    /* color: #B71C1C; */
+    color: #000000;
+    opacity: 0.8;
+}

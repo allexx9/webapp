@@ -1,24 +1,23 @@
 // Copyright 2017 Rigo Investment Sagl.
 // This file is part of RigoBlock.
 
-import { 
-  SupportedExchanges,
-  NETWORKS_ID
-} from './const'
+import { NETWORKS_ID, SupportedExchanges } from './const'
 
 // Get a list of orders aggregated by price levels
 export const getAggregatedOrders = {
   ERCdEX: (networkId = 1, baseTokenAddress, quoteTokenAddress) => {
     const options = {
       method: 'GET',
-      uri: `${SupportedExchanges.ERCdEX.http[NETWORKS_ID[networkId]]}/aggregated_orders`,
+      uri: `${
+        SupportedExchanges.ERCdEX.http[NETWORKS_ID[networkId]]
+      }/aggregated_orders`,
       qs: {
         networkId: networkId,
         baseTokenAddress: baseTokenAddress,
         quoteTokenAddress: quoteTokenAddress
       },
-      json: true 
-    };
+      json: true
+    }
     return options
   },
   Ethfinex: (networkId = 1, baseToken, quoteToken) => {
@@ -30,7 +29,9 @@ export const getAggregatedOrders = {
     }
     const options = {
       method: 'GET',
-      url: `${SupportedExchanges.Ethfinex.http[NETWORKS_ID[networkId]]}/v2/book/t${baseToken}${quoteToken}/P0`,
+      url: `${
+        SupportedExchanges.Ethfinex.http[NETWORKS_ID[networkId]]
+      }/v2/book/t${baseToken}${quoteToken}/P0`,
       qs: {},
       json: true
     }
@@ -43,13 +44,15 @@ export const getOrders = {
   ERCdEX: (networkId = 1, baseTokenAddress, quoteTokenAddress) => {
     const options = {
       method: 'GET',
-      uri: `${SupportedExchanges.ERCdEX.http[NETWORKS_ID[networkId]]}/standard/${networkId}/v0/orderbook`,
+      uri: `${
+        SupportedExchanges.ERCdEX.http[NETWORKS_ID[networkId]]
+      }/standard/${networkId}/v0/orderbook`,
       qs: {
         baseTokenAddress: baseTokenAddress,
         quoteTokenAddress: quoteTokenAddress
       },
-      json: true 
-    };
+      json: true
+    }
     return options
   },
   Ethfinex: (networkId = 1, baseToken, quoteToken) => {
@@ -61,7 +64,9 @@ export const getOrders = {
     }
     const options = {
       method: 'GET',
-      url: `${SupportedExchanges.Ethfinex.http[NETWORKS_ID[networkId]]}/v2/book/t${baseToken}${quoteToken}/P2`,
+      url: `${
+        SupportedExchanges.Ethfinex.http[NETWORKS_ID[networkId]]
+      }/v2/book/t${baseToken}${quoteToken}/P2`,
       qs: {},
       json: true
     }
@@ -74,17 +79,19 @@ export const getHistoricalPricesData = {
   ERCdEX: (networkId = 1, baseTokenAddress, quoteTokenAddress, startDate) => {
     const options = {
       method: 'POST',
-      uri: `${SupportedExchanges.ERCdEX.http[NETWORKS_ID[networkId]]}/reports/historical`,
+      uri: `${
+        SupportedExchanges.ERCdEX.http[NETWORKS_ID[networkId]]
+      }/reports/historical`,
       body: {
         networkId: networkId,
         baseTokenAddress: baseTokenAddress,
         quoteTokenAddress: quoteTokenAddress,
         startDate: startDate
       },
-      json: true 
-    };
+      json: true
+    }
     return options
-  },
+  }
   // Ethfinex: (networkId = 1, baseToken, quoteToken) => {
   //   if (baseToken.length > 4) {
   //     throw new Error('baseToken has to be a shorter than 4 characters')
@@ -107,7 +114,9 @@ export const getTickers = {
   ERCdEX: (networkId = 1) => {
     const options = {
       method: 'GET',
-      url: `${SupportedExchanges.ERCdEX.http[NETWORKS_ID[networkId]]}/reports/ticker?networkId=${networkId}`,
+      url: `${
+        SupportedExchanges.ERCdEX.http[NETWORKS_ID[networkId]]
+      }/reports/ticker?networkId=${networkId}`,
       qs: {},
       json: true
     }
@@ -116,9 +125,11 @@ export const getTickers = {
   Ethfinex: (networkId = 1, symbols) => {
     const options = {
       method: 'GET',
-      url: `${SupportedExchanges.Ethfinex.http[NETWORKS_ID[networkId]]}/v2/tickers`,
+      url: `${
+        SupportedExchanges.Ethfinex.http[NETWORKS_ID[networkId]]
+      }/v2/tickers`,
       qs: {
-        symbols: `${symbols},tETHUSD`,
+        symbols: `${symbols},tETHUSD`
       },
       json: true
     }
@@ -141,7 +152,9 @@ export const getAccountOrders = {
     console.log(networkId)
     const options = {
       method: 'POST',
-      url: `${SupportedExchanges.Ethfinex.http[NETWORKS_ID[networkId]]}/trustless/v1/r/orders`,
+      url: `${
+        SupportedExchanges.Ethfinex.http[NETWORKS_ID[networkId]]
+      }/trustless/v1/r/orders`,
       body: {
         signature: account.signature,
         nonce: account.nonce,
@@ -152,7 +165,3 @@ export const getAccountOrders = {
     return options
   }
 }
-
-
-
-

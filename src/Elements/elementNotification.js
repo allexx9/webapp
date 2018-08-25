@@ -1,15 +1,15 @@
-import React, { Component } from 'react';
-import  * as Colors from 'material-ui/styles/colors';
-import {ListItem} from 'material-ui/List';
-import Avatar from 'material-ui/Avatar';
-import styles from './elementNotification.module.css';
-import LinearProgress from 'material-ui/LinearProgress';
-import IconMenu from 'material-ui/IconMenu';
-import MenuItem from 'material-ui/MenuItem';
-import IconButton from 'material-ui/IconButton';
-import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import * as Colors from 'material-ui/styles/colors'
+import { ListItem } from 'material-ui/List'
+import Avatar from 'material-ui/Avatar'
+import IconButton from 'material-ui/IconButton'
+import IconMenu from 'material-ui/IconMenu'
+import LinearProgress from 'material-ui/LinearProgress'
+import MenuItem from 'material-ui/MenuItem'
+import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert'
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
 import Search from 'material-ui/svg-icons/action/search'
-import PropTypes from 'prop-types';
+import styles from './elementNotification.module.css'
 
 const transactionStyle = {
   executed: {
@@ -20,8 +20,8 @@ const transactionStyle = {
     margin: '2px',
     progressBar: {
       color: Colors.green400,
-      backgroundColor: Colors.green100,
-    },
+      backgroundColor: Colors.green100
+    }
   },
   authorization: {
     backgroundColor: 'white',
@@ -31,9 +31,9 @@ const transactionStyle = {
     margin: '2px',
     progressBar: {
       color: Colors.amber400,
-      backgroundColor: Colors.amber100,
-    },
-  }, 
+      backgroundColor: Colors.amber100
+    }
+  },
   pending: {
     backgroundColor: 'white',
     // border: '1px solid',
@@ -42,9 +42,9 @@ const transactionStyle = {
     margin: '2px',
     progressBar: {
       color: Colors.lightBlue400,
-      backgroundColor: Colors.lightBlue100,
-    },
-  }, 
+      backgroundColor: Colors.lightBlue100
+    }
+  },
   error: {
     backgroundColor: 'white',
     // border: '1px solid',
@@ -53,20 +53,19 @@ const transactionStyle = {
     margin: '2px',
     progressBar: {
       color: Colors.red400,
-      backgroundColor: Colors.red100,
-    },
+      backgroundColor: Colors.red100
+    }
   },
   innerDiv: {
     padding: '8px 8px 8px 72px'
-  } 
+  }
 }
 
 export default class ElementNotification extends Component {
-
   static contextTypes = {
-    ethereumNetworkName: PropTypes.string.isRequired,
-  };
-  
+    ethereumNetworkName: PropTypes.string.isRequired
+  }
+
   static propTypes = {
     // accountName: PropTypes.string.isRequired,
     primaryText: PropTypes.string.isRequired,
@@ -74,30 +73,41 @@ export default class ElementNotification extends Component {
     eventType: PropTypes.string.isRequired,
     eventStatus: PropTypes.string.isRequired,
     txHash: PropTypes.string.isRequired
-  };
+  }
 
   etherscanLink = () => {
     const { ethereumNetworkName } = this.context
-    const {txHash} = this.props
+    const { txHash } = this.props
     return (
-      <a href={'https://'+ethereumNetworkName+'.etherscan.io/tx/'+txHash} rel="noopener noreferrer" target="_blank"></a>
+      <a
+        href={'https://' + ethereumNetworkName + '.etherscan.io/tx/' + txHash}
+        rel="noopener noreferrer"
+        target="_blank"
+      />
     )
   }
 
-  transactionMenu = () =>{
-    const {txHash} = this.props
+  transactionMenu = () => {
+    const { txHash } = this.props
     const etherScanDisabled = txHash.length === 0 ? true : false
     return (
       <div className={styles.menu}>
-        <IconMenu desktop={true}
-          iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
+        <IconMenu
+          desktop={true}
+          iconButtonElement={
+            <IconButton>
+              <MoreVertIcon />
+            </IconButton>
+          }
           anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
           targetOrigin={{ horizontal: 'right', vertical: 'top' }}
         >
-          <MenuItem leftIcon={<Search/>} primaryText="Etherscan" 
-                      containerElement={this.etherscanLink()}
-                      disabled={etherScanDisabled}
-                      />
+          <MenuItem
+            leftIcon={<Search />}
+            primaryText="Etherscan"
+            containerElement={this.etherscanLink()}
+            disabled={etherScanDisabled}
+          />
           {/* <MenuItem primaryText="Receipt" /> */}
         </IconMenu>
       </div>
@@ -115,22 +125,32 @@ export default class ElementNotification extends Component {
           primaryText={primaryText}
           secondaryText={
             <p>
-              {secondaryText[0]}<br />
+              {secondaryText[0]}
+              <br />
               {secondaryText[1]}
             </p>
           }
           leftAvatar={<Avatar src="img/ETH.svg" />}
           secondaryTextLines={2}
           style={transactionStyle.innerDiv}
-        >
-        </ListItem>
+        />
         <div className={styles.progressBar}>
-          {showProgressBar.includes(eventStatus)
-            ? <LinearProgress color={transactionStyle[eventStatus].progressBar.color} style={transactionStyle[eventStatus].progressBar} mode="indeterminate" />
-            : <LinearProgress color={transactionStyle[eventStatus].progressBar.color} style={transactionStyle[eventStatus].progressBar} mode="determinate" value={100} />
-          }
+          {showProgressBar.includes(eventStatus) ? (
+            <LinearProgress
+              color={transactionStyle[eventStatus].progressBar.color}
+              style={transactionStyle[eventStatus].progressBar}
+              mode="indeterminate"
+            />
+          ) : (
+            <LinearProgress
+              color={transactionStyle[eventStatus].progressBar.color}
+              style={transactionStyle[eventStatus].progressBar}
+              mode="determinate"
+              value={100}
+            />
+          )}
         </div>
       </div>
-    );
+    )
   }
 }

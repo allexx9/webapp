@@ -18,38 +18,37 @@ export const ERRORS = {
   tradeIdError: 'Please enter a positive number > 0',
   invalidRPCEndpoint: 'Please enter a valid URL',
   exchangeNameError: 'Please select an exchange',
-  cfdError: 'Please select an CDF',
-};
-
-export function validatePositiveNumber (value) {
-  let bn = null;
-
-  try {
-    bn = new BigNumber(value);
-  } catch (e) {
-  }
-
-  if (!bn || !bn.gt(0)) {
-    return ERRORS.invalidAmount;
-  }
-
-  return null;
+  cfdError: 'Please select an CDF'
 }
 
-export function validateAccount (account, api) {
+export function validatePositiveNumber(value) {
+  let bn = null
+
+  try {
+    bn = new BigNumber(value)
+  } catch (e) {}
+
+  if (!bn || !bn.gt(0)) {
+    return ERRORS.invalidAmount
+  }
+
+  return null
+}
+
+export function validateAccount(account, api) {
   if (!account || !account.address) {
-    return ERRORS.invalidAccount;
+    return ERRORS.invalidAccount
   }
 
   if (!api.util.isAddressValid(account.address)) {
-    return ERRORS.invalidAddress;
+    return ERRORS.invalidAddress
   }
   return null
 }
 
 export function validateNewName(name) {
-  // Checking if html in name 
-  var tmp = document.createElement("DIV")
+  // Checking if html in name
+  let tmp = document.createElement('DIV')
   tmp.innerHTML = name
   if (!name) {
     return ERRORS.invalidName
@@ -60,8 +59,8 @@ export function validateNewName(name) {
   return null
 }
 
-export function validateNewSymbol (symbol) {
-  var reg = /[^A-Za-z0-9 ]/
+export function validateNewSymbol(symbol) {
+  let reg = /[^A-Za-z0-9 ]/
   if (!symbol) {
     return ERRORS.invalidSymbol
   }

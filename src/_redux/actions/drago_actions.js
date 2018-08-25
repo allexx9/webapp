@@ -1,11 +1,11 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
 import {
-  UPDATE_SELECTED_DRAGO_DETAILS,
   FETCH_ASSETS_PRICE_DATA,
+  GET_TOKEN_BALANCES_DRAGO,
+  UPDATE_SELECTED_DRAGO_DETAILS,
   UPDATE_TRANSACTIONS_DRAGO_HOLDER,
-  UPDATE_TRANSACTIONS_DRAGO_MANAGER,
-  GET_TOKEN_BALANCES_DRAGO
+  UPDATE_TRANSACTIONS_DRAGO_MANAGER
 } from './const'
 
 const drago = {
@@ -29,19 +29,19 @@ const drago = {
       }
     }
   },
-  updateSelectedDragoAction: (results) => {
+  updateSelectedDragoAction: results => {
     return {
       type: UPDATE_SELECTED_DRAGO_DETAILS,
       payload: results
     }
   },
-  updateTransactionsDragoHolderAction: (results) => {
+  updateTransactionsDragoHolderAction: results => {
     return {
       type: UPDATE_TRANSACTIONS_DRAGO_HOLDER,
       payload: results
     }
   },
-  updateTransactionsDragoManagerAction: (results) => {
+  updateTransactionsDragoManagerAction: results => {
     return {
       type: UPDATE_TRANSACTIONS_DRAGO_MANAGER,
       payload: results
@@ -49,4 +49,4 @@ const drago = {
   }
 }
 
-export default drago;
+export default drago

@@ -1,40 +1,37 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-import React, { Component } from 'react';
-import  * as Colors from 'material-ui/styles/colors';
-import PropTypes from 'prop-types';
-import ApplicationTopBar from './ApplicationTopBar';
+import * as Colors from 'material-ui/styles/colors'
+import ApplicationTopBar from './ApplicationTopBar'
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
 
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import { Grid, Row, Col } from 'react-flexbox-grid';
+import { Col, Grid, Row } from 'react-flexbox-grid'
+import getMuiTheme from 'material-ui/styles/getMuiTheme'
 
-import styles from './application.module.css';
-import classNames from 'classnames';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import { connect } from 'react-redux'
 import ElementNotConnected from '../Elements/elementNotConnected'
-import { connect } from 'react-redux';
-
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+import classNames from 'classnames'
+import styles from './application.module.css'
 
 const muiTheme = getMuiTheme({
   palette: {
-    "primary1Color": '#054186',
-
+    primary1Color: '#054186'
   },
   fontFamily: "'Muli', sans-serif",
   appBar: {
     height: 45,
-    fontSize: "20px !important"
-  },
-});
+    fontSize: '20px !important'
+  }
+})
 
 function mapStateToProps(state) {
   return state
 }
 
 class Whoops404 extends Component {
-
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       notificationsOpen: false
     }
@@ -42,13 +39,13 @@ class Whoops404 extends Component {
 
   // Context
   static childContextTypes = {
-    muiTheme: PropTypes.object,
-  };
+    muiTheme: PropTypes.object
+  }
 
   getChildContext() {
     return {
-      muiTheme,
-    };
+      muiTheme
+    }
   }
 
   static contextTypes = {
@@ -56,17 +53,15 @@ class Whoops404 extends Component {
     isConnected: PropTypes.bool.isRequired,
     isSyncing: PropTypes.bool.isRequired,
     syncStatus: PropTypes.object.isRequired
-  };
-
-  UNSAFE_componentWillMount() {
   }
 
-  componentWillUnmount() {
-  }
+  UNSAFE_componentWillMount() {}
+
+  componentWillUnmount() {}
 
   static propTypes = {
-    location: PropTypes.object.isRequired,
-  };
+    location: PropTypes.object.isRequired
+  }
 
   handleToggleNotifications = () => {
     this.setState({ notificationsOpen: !this.state.notificationsOpen })
@@ -80,7 +75,9 @@ class Whoops404 extends Component {
           <Row>
             <Col xs={12}>
               <ApplicationTopBar
-                handleTopBarSelectAccountType={this.handleTopBarSelectAccountType}
+                handleTopBarSelectAccountType={
+                  this.handleTopBarSelectAccountType
+                }
                 handleToggleNotifications={this.handleToggleNotifications}
               />
             </Col>
@@ -89,12 +86,17 @@ class Whoops404 extends Component {
             <Col xs={12}>
               {this.context.isConnected && !this.context.isSyncing ? (
                 // {false ? (
-                  <div className="">
-                    <h1>Page not found. Resource not found at {location.pathname}</h1>
-                  </div>
+                <div className="">
+                  <h1>
+                    Page not found. Resource not found at {location.pathname}
+                  </h1>
+                </div>
               ) : (
-                  <ElementNotConnected isSyncing={this.context.isSyncing} syncStatus={this.context.syncStatus} />
-                )}
+                <ElementNotConnected
+                  isSyncing={this.context.isSyncing}
+                  syncStatus={this.context.syncStatus}
+                />
+              )}
             </Col>
           </Row>
         </Grid>
@@ -104,7 +106,3 @@ class Whoops404 extends Component {
 }
 
 export default connect(mapStateToProps)(Whoops404)
-
-
-
-

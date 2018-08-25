@@ -1,4 +1,4 @@
-import * as Ethfinex from './ethfinex';
-import * as ERCdEX from './ercdex';
+import * as ERCdEX from './ercdex'
+import * as Ethfinex from './ethfinex'
 
-export { Ethfinex, ERCdEX}
+export { Ethfinex, ERCdEX }

@@ -2,8 +2,8 @@
 // This file is part of RigoBlock.
 
 import * as abis from '../../contracts/abi'
-import Registry from '../registry'
 import { WETH_ADDRESSES, ZRX_ADDRESSES } from '../../utils/const'
+import Registry from '../registry'
 
 class DragoParity {
   constructor(api) {
@@ -60,14 +60,20 @@ class DragoParity {
   getBalanceWETH = () => {
     const api = this._api
     const instance = this._instance
-    const wethInstance = api.newContract(abis.weth, WETH_ADDRESSES[api._rb.network.id]).instance
+    const wethInstance = api.newContract(
+      abis.weth,
+      WETH_ADDRESSES[api._rb.network.id]
+    ).instance
     return wethInstance.balanceOf.call({}, [instance.address])
   }
 
   getBalanceZRX = () => {
     const api = this._api
     const instance = this._instance
-    const wethInstance = api.newContract(abis.weth, ZRX_ADDRESSES[api._rb.network.id]).instance
+    const wethInstance = api.newContract(
+      abis.weth,
+      ZRX_ADDRESSES[api._rb.network.id]
+    ).instance
     return wethInstance.balanceOf.call({}, [instance.address])
   }
 
@@ -128,11 +134,7 @@ class DragoParity {
       })
   }
 
-  depositToExchange = (
-    accountAddress,
-    exchangeAddress,
-    amount
-  ) => {
+  depositToExchange = (accountAddress, exchangeAddress, amount) => {
     if (!accountAddress) {
       throw new Error('accountAddress needs to be provided')
     }
@@ -271,17 +273,14 @@ class DragoParity {
     return instance.totalSupply.call({}, [])
   }
 
-  getTokenBalance = ( tokenAddress ) =>{
+  getTokenBalance = tokenAddress => {
     const api = this._api
     const instance = this._instance
     const erc20Instance = api.newContract(abis.erc20, tokenAddress).instance
     return erc20Instance.balanceOf.call({}, [instance.address])
   }
 
-  getAssets = () =>{
-
-  }
-
+  getAssets = () => {}
 }
 
 export default DragoParity

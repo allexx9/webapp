@@ -46,7 +46,7 @@ export const ERC20_TOKENS = {
       },
       address: '0x3487A04103859A6d95ba0bAFdCf1Ca521490176E',
       decimals: 18,
-      name: 'Tether USD',
+      name: 'Tether USD'
     },
     GRG: {
       symbol: 'GRG',
@@ -55,7 +55,7 @@ export const ERC20_TOKENS = {
       },
       address: '0x9F121AFBc98A7a133fbb31fE975205f39e8f08D2',
       decimals: 6,
-      name: 'GRG Token',
+      name: 'GRG Token'
     }
   },
   mainnet: {
@@ -80,8 +80,8 @@ export const ERC20_TOKENS = {
         Ethfinex: {
           symbol: 'ZRXW',
           decimals: 18,
-          address: "0xd7a7afe4b20611f2c839ec5cd340f27fe08c949c",
-          name: 'ZRX Wrapper',
+          address: '0xd7a7afe4b20611f2c839ec5cd340f27fe08c949c',
+          name: 'ZRX Wrapper'
         }
       }
     },
@@ -89,7 +89,7 @@ export const ERC20_TOKENS = {
       symbol: 'WETH',
       address: '0x768C42FF6F5805bD2631AC7Cc9eaBE3AF17b4b41',
       decimals: 18,
-      name: 'Wrapped Ether EFX',
+      name: 'Wrapped Ether EFX'
     },
     ETH: {
       symbol: 'ETH',
@@ -103,8 +103,8 @@ export const ERC20_TOKENS = {
         Ethfinex: {
           symbol: 'ETHW',
           decimals: 18,
-          address: "0x768C42FF6F5805bD2631AC7Cc9eaBE3AF17b4b41",
-          name: 'ETH Wrapper',
+          address: '0x768C42FF6F5805bD2631AC7Cc9eaBE3AF17b4b41',
+          name: 'ETH Wrapper'
         }
       }
     },
@@ -138,8 +138,8 @@ export const ERC20_TOKENS = {
         Ethfinex: {
           symbol: 'USDT',
           decimals: 6,
-          address: "0x4c24a4dfb0c67916d47b4726958eb66b63bdd268",
-          name: 'USDTWrapper',
+          address: '0x4c24a4dfb0c67916d47b4726958eb66b63bdd268',
+          name: 'USDTWrapper'
         }
       }
     },
@@ -150,7 +150,7 @@ export const ERC20_TOKENS = {
       },
       address: '0xD34cf65739954EB99D284fD20aB4f88c64e4d67D',
       decimals: 18,
-      name: 'GRG Token',
+      name: 'GRG Token'
     }
   },
   ropsten: {
@@ -175,8 +175,8 @@ export const ERC20_TOKENS = {
         Ethfinex: {
           symbol: 'ZRXW',
           decimals: 18,
-          address: "0xFF32E76EAdc11Fc816A727980E92805D237CDB28",
-          name: 'ZRX Wrapper',
+          address: '0xFF32E76EAdc11Fc816A727980E92805D237CDB28',
+          name: 'ZRX Wrapper'
         }
       }
     },
@@ -184,7 +184,7 @@ export const ERC20_TOKENS = {
       symbol: 'WETH',
       address: '0x965808e7F815CfffD4c018ef2Ba4C5A65EBa087e',
       decimals: 18,
-      name: 'Wrapped Ether EFX',
+      name: 'Wrapped Ether EFX'
     },
     ETH: {
       symbol: 'ETH',
@@ -198,8 +198,8 @@ export const ERC20_TOKENS = {
         Ethfinex: {
           symbol: 'ETHW',
           decimals: 18,
-          address: "0x965808e7F815CfffD4c018ef2Ba4C5A65EBa087e",
-          name: 'ETH Wrapper',
+          address: '0x965808e7F815CfffD4c018ef2Ba4C5A65EBa087e',
+          name: 'ETH Wrapper'
         }
       }
     },
@@ -215,8 +215,8 @@ export const ERC20_TOKENS = {
         Ethfinex: {
           symbol: 'USDTW',
           decimals: 6,
-          address: "0x83E42e6d1ac009285376340ef64BaC1C7d106C89",
-          name: 'USDT Wrapper',
+          address: '0x83E42e6d1ac009285376340ef64BaC1C7d106C89',
+          name: 'USDT Wrapper'
         }
       }
     },
@@ -232,32 +232,31 @@ export const ERC20_TOKENS = {
         Ethfinex: {
           symbol: 'GRGW',
           decimals: 18,
-          address: "0x5959f2036608d693B4d085020ACAdBBf664C793E",
-          name: 'GRG Wrapper',
+          address: '0x5959f2036608d693B4d085020ACAdBBf664C793E',
+          name: 'GRG Wrapper'
         }
       }
     }
-  },
+  }
 }
 
-
-// Supported tokens for trading in the form of base tokens for each quote tokens. 
+// Supported tokens for trading in the form of base tokens for each quote tokens.
 // USDT and WETH are quote tokens, meaning the tokens in which the price are expressed.
 
 export const TRADE_TOKENS_PAIRS = {
   WETH: {
     GNT: {
-      symbol: "GNT",
+      symbol: 'GNT',
       exchanges: [ERCdEX]
     },
     ZRX: {
-      symbol: "ZRX",
+      symbol: 'ZRX',
       exchanges: [ERCdEX]
     }
   },
   USDT: {
     ETH: {
-      symbol: "ETH",
+      symbol: 'ETH',
       exchanges: [Ethfinex]
     }
   }

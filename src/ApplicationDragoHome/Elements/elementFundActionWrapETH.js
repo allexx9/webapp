@@ -1,33 +1,36 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-import BigNumber from 'bignumber.js';
-import { Dialog, FlatButton, TextField } from 'material-ui';
-import DropDownMenu from 'material-ui/DropDownMenu';
-import MenuItem from 'material-ui/MenuItem';
-import RaisedButton from 'material-ui/RaisedButton';
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { Col, Row } from 'react-flexbox-grid';
-import { connect } from 'react-redux';
-import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization';
-import PoolApi from '../../PoolsApi/src';
-import ImgETH from '../../_atomic/atoms/imgETH';
-import ActionsDialogHeader from '../../_atomic/molecules/actionsDialogHeader';
-import { ERC20_TOKENS } from '../../_utils/const';
-import { ERRORS, validateAccount, validatePositiveNumber } from '../../_utils/validation';
-import { Actions } from '../../_redux/actions';
+import { Actions } from '../../_redux/actions'
+import { Col, Row } from 'react-flexbox-grid'
+import { Dialog, FlatButton, TextField } from 'material-ui'
+import { ERC20_TOKENS } from '../../_utils/const'
+import {
+  ERRORS,
+  validateAccount,
+  validatePositiveNumber
+} from '../../_utils/validation'
+import { connect } from 'react-redux'
+import ActionsDialogHeader from '../../_atomic/molecules/actionsDialogHeader'
+import BigNumber from 'bignumber.js'
+import DropDownMenu from 'material-ui/DropDownMenu'
+import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization'
+import ImgETH from '../../_atomic/atoms/imgETH'
+import MenuItem from 'material-ui/MenuItem'
+import PoolApi from '../../PoolsApi/src'
+import PropTypes from 'prop-types'
+import RaisedButton from 'material-ui/RaisedButton'
+import React, { Component } from 'react'
 
-const NAME_ID = ' ';
+const NAME_ID = ' '
 
 function mapStateToProps(state) {
   return state
 }
 
 class ElementFundActionWrapETH extends Component {
-
   static contextTypes = {
-    api: PropTypes.object.isRequired,
-  };
+    api: PropTypes.object.isRequired
+  }
 
   static propTypes = {
     accounts: PropTypes.array.isRequired,
@@ -47,7 +50,7 @@ class ElementFundActionWrapETH extends Component {
     exchangeName: {},
     exchangeNameError: null, //ERRORS.invalidAccount,
     exchangeAddress: ' ',
-    fundProxyContractAddress: "",
+    fundProxyContractAddress: '',
     action: 'wrap',
     sending: false,
     complete: false
@@ -56,21 +59,19 @@ class ElementFundActionWrapETH extends Component {
   buttonsStyle = {
     marginTop: 12,
     marginBottom: 12,
-    color: 'white',
+    color: 'white'
   }
 
   handleSubmit = () => {
-    this.setState(
-      { openAuth: true }
-    );
+    this.setState({ openAuth: true })
   }
 
-  render () {
-    const { complete } = this.state;
+  render() {
+    const { complete } = this.state
     const { openAuth, authMsg, authAccount } = this.state
     const { dragoDetails } = this.props
     if (complete) {
-      return null;
+      return null
     }
 
     const titleStyle = {
@@ -98,12 +99,13 @@ class ElementFundActionWrapETH extends Component {
       <Dialog
         title={this.renderHeader()}
         titleStyle={titleStyle}
-        modal 
+        modal
         open={true}
-        actions={ this.renderActions() }>
-        { this.renderFields() }
+        actions={this.renderActions()}
+      >
+        {this.renderFields()}
       </Dialog>
-    );
+    )
   }
 
   renderHeader = () => {
@@ -111,8 +113,8 @@ class ElementFundActionWrapETH extends Component {
     return (
       <div>
         <ActionsDialogHeader
-          primaryText='ETH Wrapper'
-          fundType='drago'
+          primaryText="ETH Wrapper"
+          fundType="drago"
           tokenDetails={dragoDetails}
         />
       </div>
@@ -122,62 +124,66 @@ class ElementFundActionWrapETH extends Component {
   handleCloseAuth = () => {
     this.setState(
       {
-        openAuth: false,
-      }
-      , this.onClose
+        openAuth: false
+      },
+      this.onClose
     )
   }
 
-  onClose =(event) =>{
+  onClose = event => {
     // Calling callback function passed by parent in order to show/hide this dialog
-    this.props.openActionForm(event,'wrapETH')
+    this.props.openActionForm(event, 'wrapETH')
   }
 
-  renderActions () {
-    const { amountError, sending } = this.state;
-    const hasError = !!( amountError );
+  renderActions() {
+    const { amountError, sending } = this.state
+    const hasError = !!amountError
 
-    return ([
+    return [
       <FlatButton
-        key='Cancel'
-        label='Cancel'
-        name='Cancel'
+        key="Cancel"
+        label="Cancel"
+        name="Cancel"
         primary
-        onClick={ this.onClose} />,
+        onClick={this.onClose}
+      />,
       <FlatButton
-        key='Deposit'
+        key="Deposit"
         label={this.state.action}
-        name='Deposit'
+        name="Deposit"
         primary
-        disabled={ hasError || sending }
-        onClick={ this.onSend } />
-    ]);
+        disabled={hasError || sending}
+        onClick={this.onSend}
+      />
+    ]
   }
 
-  renderFields () {
-    var amountLabel
-    this.state.action === 'wrap' ? amountLabel = 'The amount you want to wrap' : amountLabel = 'The amount you want to un-wrap'
-    
+  renderFields() {
+    let amountLabel
+    this.state.action === 'wrap'
+      ? (amountLabel = 'The amount you want to wrap')
+      : (amountLabel = 'The amount you want to un-wrap')
+
     return (
       <div>
         <Row middle="xs">
           <Col xs={1}>
-          <ImgETH/>
+            <ImgETH />
           </Col>
           <Col xs={11}>
             <DropDownMenu
               value={this.state.action}
               onChange={this.onChangeWrap}
             >
-              <MenuItem value={'wrap'} primaryText='Wrap ETH' />
-              <MenuItem value={'unwrap'} primaryText='Unwrap ETH' />
+              <MenuItem value={'wrap'} primaryText="Wrap ETH" />
+              <MenuItem value={'unwrap'} primaryText="Unwrap ETH" />
             </DropDownMenu>
           </Col>
         </Row>
         <Row middle="xs">
           <Col xs={10}>
             <TextField
-              autoComplete='off'
+              autoComplete="off"
               floatingLabelText={amountLabel}
               floatingLabelFixed
               fullWidth
@@ -186,11 +192,12 @@ class ElementFundActionWrapETH extends Component {
               name={NAME_ID}
               id={NAME_ID}
               value={this.state.amount}
-              onChange={this.onChangeAmount} />
+              onChange={this.onChangeAmount}
+            />
           </Col>
           <Col xs={2}>
             <RaisedButton
-              label='Maximum'
+              label="Maximum"
               secondary={true}
               // style={styles.button}
               // icon={<ActionSwapHoriz />}
@@ -198,17 +205,19 @@ class ElementFundActionWrapETH extends Component {
             />
           </Col>
         </Row>
-
       </div>
-    );
+    )
   }
 
-  onChangeAddress = (account) => {
-	const { api } = this.context;
-    this.setState({
-      account,
-      accountError: validateAccount(account,api)
-    }, this.validateTotal);
+  onChangeAddress = account => {
+    const { api } = this.context
+    this.setState(
+      {
+        account,
+        accountError: validateAccount(account, api)
+      },
+      this.validateTotal
+    )
   }
 
   onChangeWrap = (event, index, action) => {
@@ -218,58 +227,67 @@ class ElementFundActionWrapETH extends Component {
   }
 
   onChangeAmount = (event, amount) => {
-    this.setState({
-      amount,
-      amountError: validatePositiveNumber(amount)
-    }, this.validateTotal);
+    this.setState(
+      {
+        amount,
+        amountError: validatePositiveNumber(amount)
+      },
+      this.validateTotal
+    )
   }
 
   onMaximumAmount = () => {
-    const amount = this.state.action === 'wrap' ? this.props.dragoDetails.dragoETHBalance : this.props.dragoDetails.dragoWETHBalance
-    this.setState({
-      amount,
-      amountError: validatePositiveNumber(amount)
-    }, this.validateTotal);
+    const amount =
+      this.state.action === 'wrap'
+        ? this.props.dragoDetails.dragoETHBalance
+        : this.props.dragoDetails.dragoWETHBalance
+    this.setState(
+      {
+        amount,
+        amountError: validatePositiveNumber(amount)
+      },
+      this.validateTotal
+    )
   }
 
   validateTotal = () => {
-    const { account, accountError, amount, amountError } = this.state;
+    const { account, accountError, amount, amountError } = this.state
 
     if (accountError || amountError) {
-      return;
+      return
     }
 
     if (new BigNumber(amount).gt(account.ethBalance.replace(/,/g, ''))) {
       this.setState({
         amountError: ERRORS.invalidTotal
-      });
+      })
     }
   }
 
   onSend = () => {
-    switch(this.state.action) {
-      case "wrap":
+    switch (this.state.action) {
+      case 'wrap':
         this.onSendWrap()
         break
-      case "unwrap":
+      case 'unwrap':
         this.onSendUnwrap()
         break
       default:
         return
-    } 
+    }
   }
 
   onSendUnwrap = () => {
-    const { api } = this.context;
+    const { api } = this.context
     const { dragoDetails } = this.props
     // const { instance } = this.context;
-    let poolApi = null;
+    let poolApi = null
     const WETHaddress = ERC20_TOKENS[api._rb.network.name].WETH.address
     this.setState({
       sending: true
-    });
+    })
     let provider = this.state.account.source === 'MetaMask' ? window.web3 : api
-    const {account} = this.state
+    const { account } = this.state
     const authMsg = 'You un-wrapped ' + this.state.amount + ' ETH'
 
     // Initializing transaction variables
@@ -285,12 +303,22 @@ class ElementFundActionWrapETH extends Component {
       symbol: 'ETH',
       amount: this.state.amount
     }
-    this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
-    
+    this.props.dispatch(
+      Actions.transactions.addTransactionToQueueAction(
+        transactionId,
+        transactionDetails
+      )
+    )
+
     poolApi = new PoolApi(provider)
     poolApi.contract.drago.init(dragoDetails.address)
-    poolApi.contract.drago.withdrawFromExchange(WETHaddress, account.address, api.util.toWei(this.state.amount))
-    .then((receipt) => {
+    poolApi.contract.drago
+      .withdrawFromExchange(
+        WETHaddress,
+        account.address,
+        api.util.toWei(this.state.amount)
+      )
+      .then(receipt => {
         console.log(receipt)
         // Adding transaciont to the queue
         // Parity returns an internal transaction ID straighaway. The transaction then needs to be authorized inside the wallet.
@@ -299,32 +327,48 @@ class ElementFundActionWrapETH extends Component {
           transactionDetails.status = 'executed'
           transactionDetails.receipt = receipt
           transactionDetails.hash = receipt.transactionHash
-          transactionDetails.timestamp = new Date ()
-          this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
+          transactionDetails.timestamp = new Date()
+          this.props.dispatch(
+            Actions.transactions.addTransactionToQueueAction(
+              transactionId,
+              transactionDetails
+            )
+          )
         } else {
           transactionDetails.parityId = receipt
-          this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
+          this.props.dispatch(
+            Actions.transactions.addTransactionToQueueAction(
+              transactionId,
+              transactionDetails
+            )
+          )
         }
       })
-      .catch((error) => {
+      .catch(error => {
         console.log(error)
         const errorArray = error.message.split(/\r?\n/)
         this.props.snackBar(errorArray[0])
         transactionDetails.status = 'error'
         transactionDetails.error = errorArray[0]
-        this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
+        this.props.dispatch(
+          Actions.transactions.addTransactionToQueueAction(
+            transactionId,
+            transactionDetails
+          )
+        )
         this.setState({
           sending: false
         })
       })
-      this.setState({
+    this.setState(
+      {
         authMsg: authMsg,
-        authAccount: {...this.state.account},
+        authAccount: { ...this.state.account }
         // sending: false,
         // complete: true,
-      }, this.handleSubmit)
-
-
+      },
+      this.handleSubmit
+    )
 
     // if(this.state.account.source === 'MetaMask') {
     //   const web3 = window.web3
@@ -365,21 +409,21 @@ class ElementFundActionWrapETH extends Component {
   }
 
   onSendWrap = () => {
-    const { api } = this.context;
+    const { api } = this.context
     const { dragoDetails } = this.props
     // const { instance } = this.context;
-    var poolApi = null;
+    let poolApi = null
     const WETHaddress = ERC20_TOKENS[api._rb.network.name].WETH.address
     this.setState({
       sending: true
-    });
-    var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
-    const {account} = this.state
+    })
+    let provider = this.state.account.source === 'MetaMask' ? window.web3 : api
+    const { account } = this.state
     const authMsg = 'You wrapped ' + this.state.amount + ' ETH'
 
     // Initializing transaction variables
     const transactionId = api.util.sha3(new Date() + account.address)
-    var transactionDetails = {
+    let transactionDetails = {
       status: account.source === 'MetaMask' ? 'pending' : 'authorization',
       hash: '',
       parityId: null,
@@ -390,12 +434,22 @@ class ElementFundActionWrapETH extends Component {
       symbol: 'ETH',
       amount: this.state.amount
     }
-    this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
+    this.props.dispatch(
+      Actions.transactions.addTransactionToQueueAction(
+        transactionId,
+        transactionDetails
+      )
+    )
 
     poolApi = new PoolApi(provider)
     poolApi.contract.drago.init(dragoDetails.address)
-    poolApi.contract.drago.depositToExchange(WETHaddress, account.address, api.util.toWei(this.state.amount))
-    .then((receipt) => {
+    poolApi.contract.drago
+      .depositToExchange(
+        WETHaddress,
+        account.address,
+        api.util.toWei(this.state.amount)
+      )
+      .then(receipt => {
         console.log(receipt)
         // Adding transaciont to the queue
         // Parity returns an internal transaction ID straighaway. The transaction then needs to be authorized inside the wallet.
@@ -404,31 +458,48 @@ class ElementFundActionWrapETH extends Component {
           transactionDetails.status = 'executed'
           transactionDetails.receipt = receipt
           transactionDetails.hash = receipt.transactionHash
-          transactionDetails.timestamp = new Date ()
-          this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
+          transactionDetails.timestamp = new Date()
+          this.props.dispatch(
+            Actions.transactions.addTransactionToQueueAction(
+              transactionId,
+              transactionDetails
+            )
+          )
         } else {
           transactionDetails.parityId = receipt
-          this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
+          this.props.dispatch(
+            Actions.transactions.addTransactionToQueueAction(
+              transactionId,
+              transactionDetails
+            )
+          )
         }
       })
-      .catch((error) => {
+      .catch(error => {
         console.log(error)
         const errorArray = error.message.split(/\r?\n/)
         this.props.snackBar(errorArray[0])
         transactionDetails.status = 'error'
         transactionDetails.error = errorArray[0]
-        this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
+        this.props.dispatch(
+          Actions.transactions.addTransactionToQueueAction(
+            transactionId,
+            transactionDetails
+          )
+        )
         this.setState({
           sending: false
         })
       })
-      this.setState({
+    this.setState(
+      {
         authMsg: authMsg,
-        authAccount: {...this.state.account},
+        authAccount: { ...this.state.account }
         // sending: false,
         // complete: true,
-      }, this.handleSubmit)
-
+      },
+      this.handleSubmit
+    )
   }
 }
 

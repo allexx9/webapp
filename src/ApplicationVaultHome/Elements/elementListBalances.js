@@ -1,32 +1,36 @@
-import { Row, Col } from 'react-flexbox-grid';
+import {
+  AutoSizer,
+  Column,
+  SortDirection,
+  SortIndicator,
+  Table
+} from 'react-virtualized'
+import { Col, Row } from 'react-flexbox-grid'
 import { Link, withRouter } from 'react-router-dom'
-import { Column, Table, AutoSizer, SortDirection, SortIndicator } from 'react-virtualized';
-import FlatButton from 'material-ui/FlatButton';
-import PropTypes from 'prop-types';
-import React, {PureComponent} from 'react';
+import FlatButton from 'material-ui/FlatButton'
+import PropTypes from 'prop-types'
+import React, { PureComponent } from 'react'
 
-
-import {DS} from '../../_utils/const.js'
+import { DS } from '../../_utils/const.js'
 import utils from '../../_utils/utils'
 
-import styles from './elementListTransactions.module.css';
+import styles from './elementListTransactions.module.css'
 
 // const list = Immutable.List(generateRandomList());
 
 class ElementListBalances extends PureComponent {
-
   static propTypes = {
     list: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
-    match: PropTypes.object.isRequired,
-  };
+    match: PropTypes.object.isRequired
+  }
 
   constructor(props, context) {
-    super(props, context);
+    super(props, context)
     const { list } = this.props
-    const sortBy = 'symbol';
-    const sortDirection = SortDirection.ASC;
-    const sortedList = this._sortList({sortBy, sortDirection});
+    const sortBy = 'symbol'
+    const sortDirection = SortDirection.ASC
+    const sortedList = this._sortList({ sortBy, sortDirection })
     const rowCount = list.size
 
     this.state = {
@@ -42,31 +46,32 @@ class ElementListBalances extends PureComponent {
       sortDirection,
       sortedList,
       useDynamicRowHeight: false
-    };
+    }
 
-    this._getRowHeight = this._getRowHeight.bind(this);
-    this._headerRenderer = this._headerRenderer.bind(this);
-    this._noRowsRenderer = this._noRowsRenderer.bind(this);
-    this._onRowCountChange = this._onRowCountChange.bind(this);
-    this._onScrollToRowChange = this._onScrollToRowChange.bind(this);
-    this._rowClassName = this._rowClassName.bind(this);
-    this._sort = this._sort.bind(this);
+    this._getRowHeight = this._getRowHeight.bind(this)
+    this._headerRenderer = this._headerRenderer.bind(this)
+    this._noRowsRenderer = this._noRowsRenderer.bind(this)
+    this._onRowCountChange = this._onRowCountChange.bind(this)
+    this._onScrollToRowChange = this._onScrollToRowChange.bind(this)
+    this._rowClassName = this._rowClassName.bind(this)
+    this._sort = this._sort.bind(this)
   }
 
-  UNSAFE_componentWillReceiveProps (nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     const { list } = nextProps
-    const sortBy = 'symbol';
-    const sortDirection = SortDirection.ASC;
-    const sortedList = list.sortBy(item => item.symbol)
-                      .update(
-                        list => (sortDirection === SortDirection.ASC ? list : list.reverse()),
-                      );
+    const sortBy = 'symbol'
+    const sortDirection = SortDirection.ASC
+    const sortedList = list
+      .sortBy(item => item.symbol)
+      .update(
+        list => (sortDirection === SortDirection.ASC ? list : list.reverse())
+      )
     const rowCount = list.size
     this.setState({
       sortedList: sortedList,
-      rowCount: rowCount,
+      rowCount: rowCount
     })
-    
+
     // console.log(`${this.constructor.name} -> UNSAFE_componentWillReceiveProps`);
   }
 
@@ -85,14 +90,11 @@ class ElementListBalances extends PureComponent {
       sortedList,
       useDynamicRowHeight,
       list
-    } = this.state;
+    } = this.state
 
-    const rowGetter = ({index}) => this._getDatum(sortedList, index);
-   
-    
+    const rowGetter = ({ index }) => this._getDatum(sortedList, index)
 
     return (
-
       <Row>
         <Col xs={12}>
           <div style={{ flex: '1 1 auto' }}>
@@ -100,7 +102,7 @@ class ElementListBalances extends PureComponent {
               {({ width }) => (
                 <Table
                   ref="Table"
-                  id={"fundBalances-table"}
+                  id={'fundBalances-table'}
                   disableHeader={disableHeader}
                   headerClassName={styles.headerColumn}
                   headerHeight={headerHeight}
@@ -108,21 +110,24 @@ class ElementListBalances extends PureComponent {
                   noRowsRenderer={this._noRowsRenderer}
                   overscanRowCount={overscanRowCount}
                   rowClassName={this._rowClassName}
-                  rowHeight={useDynamicRowHeight ? this._getRowHeight : rowHeight}
+                  rowHeight={
+                    useDynamicRowHeight ? this._getRowHeight : rowHeight
+                  }
                   rowGetter={rowGetter}
                   rowCount={rowCount}
                   scrollToIndex={scrollToIndex}
                   sort={this._sort}
                   // sortBy={sortBy}
                   sortDirection={sortDirection}
-                  width={width}>
+                  width={width}
+                >
                   <Column
                     width={150}
                     disableSort
                     label="SYMBOL"
-                    cellDataGetter={({rowData}) => rowData}
+                    cellDataGetter={({ rowData }) => rowData}
                     dataKey="symbol"
-                    cellRenderer={({cellData}) => this.renderSymbol(cellData)}
+                    cellRenderer={({ cellData }) => this.renderSymbol(cellData)}
                     className={styles.exampleColumn}
                     flexShrink={1}
                   />
@@ -130,30 +135,34 @@ class ElementListBalances extends PureComponent {
                     width={width}
                     disableSort
                     label="NAME"
-                    cellDataGetter={({rowData}) => rowData.name}
+                    cellDataGetter={({ rowData }) => rowData.name}
                     dataKey="name"
                     className={styles.exampleColumn}
-                    cellRenderer={({rowData}) => this.renderName(rowData.name)}
+                    cellRenderer={({ rowData }) =>
+                      this.renderName(rowData.name)
+                    }
                     flexShrink={1}
                   />
                   <Column
                     width={250}
                     disableSort
                     label="UNITS"
-                    cellDataGetter={({rowData}) => rowData.balance}
+                    cellDataGetter={({ rowData }) => rowData.balance}
                     dataKey="drg"
                     className={styles.exampleColumn}
-                    cellRenderer={({rowData}) => this.renderDrgValue(rowData)}
+                    cellRenderer={({ rowData }) => this.renderDrgValue(rowData)}
                     flexShrink={1}
                   />
                   <Column
                     width={210}
                     disableSort
                     label="ACTIONS"
-                    cellDataGetter={({rowData}) => rowData.symbol}
+                    cellDataGetter={({ rowData }) => rowData.symbol}
                     dataKey="actions"
                     className={styles.exampleColumn}
-                    cellRenderer={({cellData, rowData}) => this.actionButton(cellData, rowData)}
+                    cellRenderer={({ cellData, rowData }) =>
+                      this.actionButton(cellData, rowData)
+                    }
                     flexShrink={1}
                   />
                 </Table>
@@ -162,119 +171,122 @@ class ElementListBalances extends PureComponent {
           </div>
         </Col>
       </Row>
-    );
+    )
   }
 
   actionButton(cellData, rowData) {
-    const { match} = this.props;
-    const url =  rowData.vaultId + "/" + utils.dragoISIN(cellData, rowData.vaultId)
-    var poolType = match.path.includes('drago') ? 'drago' : 'vault'
-    return <FlatButton label="View" primary={true} containerElement={<Link to={utils.rootPath(match.path)+DS+poolType+"/pools/"+url} />} />
+    const { match } = this.props
+    const url =
+      rowData.vaultId + '/' + utils.dragoISIN(cellData, rowData.vaultId)
+    let poolType = match.path.includes('drago') ? 'drago' : 'vault'
+    return (
+      <FlatButton
+        label="View"
+        primary={true}
+        containerElement={
+          <Link
+            to={utils.rootPath(match.path) + DS + poolType + '/pools/' + url}
+          />
+        }
+      />
+    )
   }
 
   renderSymbol(input) {
-    return (
-      <div>{input.symbol.toUpperCase()}</div>
-    )
+    return <div>{input.symbol.toUpperCase()}</div>
   }
 
   renderEthValue(ethValue) {
     return (
-      <div>{ethValue} <small>ETH</small></div>
+      <div>
+        {ethValue} <small>ETH</small>
+      </div>
     )
   }
 
   renderDrgValue(rowData) {
-    return (
-      <div>{rowData.balance}</div>
-    )
+    return <div>{rowData.balance}</div>
   }
 
   renderName(drgname) {
     const name = drgname.trim()
-    return (
-      <div>{name.charAt(0).toUpperCase() + name.slice(1)}</div>
-    )
+    return <div>{name.charAt(0).toUpperCase() + name.slice(1)}</div>
   }
-
 
   _getDatum(list, index) {
-    return list.get(index % list.size);
+    return list.get(index % list.size)
   }
 
-  _getRowHeight({index}) {
-    const {list} = this.state;
+  _getRowHeight({ index }) {
+    const { list } = this.state
 
-    return this._getDatum(list, index).size;
+    return this._getDatum(list, index).size
   }
 
-  _headerRenderer({dataKey, sortBy, sortDirection}) {
+  _headerRenderer({ dataKey, sortBy, sortDirection }) {
     return (
       <div>
         Full Name
         {sortBy === dataKey && <SortIndicator sortDirection={sortDirection} />}
       </div>
-    );
+    )
   }
 
   _isSortEnabled() {
-    const {list} = this.props;
-    const {rowCount} = this.state;
+    const { list } = this.props
+    const { rowCount } = this.state
 
-    return rowCount <= list.size;
+    return rowCount <= list.size
   }
 
   _noRowsRenderer() {
-    return <div className={styles.noRows}>No rows</div>;
+    return <div className={styles.noRows}>No rows</div>
   }
 
   _onRowCountChange(event) {
-    const rowCount = parseInt(event.target.value, 10) || 0;
+    const rowCount = parseInt(event.target.value, 10) || 0
 
-    this.setState({rowCount});
+    this.setState({ rowCount })
   }
 
   _onScrollToRowChange(event) {
-    const {rowCount} = this.state;
-    let scrollToIndex = Math.min(
-      rowCount - 1,
-      parseInt(event.target.value, 10),
-    );
+    const { rowCount } = this.state
+    let scrollToIndex = Math.min(rowCount - 1, parseInt(event.target.value, 10))
 
     if (isNaN(scrollToIndex)) {
-      scrollToIndex = undefined;
+      scrollToIndex = undefined
     }
 
-    this.setState({scrollToIndex});
+    this.setState({ scrollToIndex })
   }
 
-  _rowClassName({index}) {
+  _rowClassName({ index }) {
     if (index < 0) {
-      return styles.headerRow;
+      return styles.headerRow
     } else {
-      return index % 2 === 0 ? styles.evenRow : styles.oddRow;
+      return index % 2 === 0 ? styles.evenRow : styles.oddRow
     }
   }
 
-  _sort({sortBy, sortDirection}) {
-    const sortedList = this._sortList({sortBy, sortDirection});
+  _sort({ sortBy, sortDirection }) {
+    const sortedList = this._sortList({ sortBy, sortDirection })
 
-    this.setState({sortBy, sortDirection, sortedList});
+    this.setState({ sortBy, sortDirection, sortedList })
   }
 
-  _sortList({sortBy, sortDirection}) {
-    const {list} = this.props;
+  _sortList({ sortBy, sortDirection }) {
+    const { list } = this.props
     return list
       .sortBy(item => item.symbol)
       .update(
-        list => (sortDirection === SortDirection.ASC ? list : list.reverse()),
-      );
+        list => (sortDirection === SortDirection.ASC ? list : list.reverse())
+      )
   }
 
   _updateUseDynamicRowHeight(value) {
     this.setState({
-      useDynamicRowHeight: value,
-    });
+      useDynamicRowHeight: value
+    })
   }
 }
 

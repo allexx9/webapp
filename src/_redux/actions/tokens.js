@@ -18,9 +18,9 @@ const tokens = {
   },
   priceTickersStop: () => {
     return {
-      type: TOKEN_PRICE_TICKERS_FETCH_STOP,
+      type: TOKEN_PRICE_TICKERS_FETCH_STOP
     }
   }
 }
 
-export default tokens;
+export default tokens

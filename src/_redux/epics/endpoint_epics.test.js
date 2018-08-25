@@ -1,31 +1,37 @@
 // https://github.com/redux-observable/redux-observable/issues/477#issuecomment-393516995
 
-
-import { updateAccounts, isConnectedToNode$ } from './endpoint_epics'
 import { Observable } from 'rxjs/Observable'
+import { isConnectedToNode$, updateAccounts } from './endpoint_epics'
 
-import PoolsApi from '../../PoolsApi/src/index.js'
 import {
-  NETWORK_OK,
-  MSG_NETWORK_STATUS_OK,
-  NETWORK_WARNING,
   MSG_NETWORK_STATUS_ERROR,
+  MSG_NETWORK_STATUS_OK,
+  NETWORK_OK,
+  NETWORK_WARNING
 } from '../../_utils/const'
-jest.mock('../../PoolsApi/src/index.js');
+import PoolsApi from '../../PoolsApi/src/index.js'
+
+jest.mock('../../PoolsApi/src/index.js')
 
 const accounts = new Map([
-  ['0x01', {
-    balance: {
-      eth: 30000000000000000000,
-      grg: 50000000000000000000,
+  [
+    '0x01',
+    {
+      balance: {
+        eth: 30000000000000000000,
+        grg: 50000000000000000000
+      }
     }
-  }],
-  ['0x02', {
-    balance: {
-      eth: 30000000000000000000,
-      grg: 50000000000000000000,
+  ],
+  [
+    '0x02',
+    {
+      balance: {
+        eth: 30000000000000000000,
+        grg: 50000000000000000000
+      }
     }
-  }],
+  ]
 ])
 let initialState_1
 let initialState_2
@@ -36,21 +42,19 @@ let api
 // Mock PoolApi
 const rigotoken = {
   init: jest.fn(),
-  balanceOf: jest.fn((address) => {
+  balanceOf: jest.fn(address => {
     return accounts.get(address).balance.grg
   })
-};
+}
 PoolsApi.mockImplementation(() => {
   return {
     contract: {
       rigotoken
     }
-  };
-});
+  }
+})
 
-
-
-beforeEach(function () {
+beforeEach(function() {
   api = {
     isConnected: false,
     plus: 0,
@@ -58,7 +62,7 @@ beforeEach(function () {
       syncing: false
     },
     eth: {
-      getBalance: jest.fn((address) => {
+      getBalance: jest.fn(address => {
         return accounts.get(address).balance.eth - api.plus
       }),
       syncing: jest.fn(async () => {
@@ -73,45 +77,42 @@ beforeEach(function () {
         {
           name: 'MetaMask',
           address: '0x01',
-          ethBalance: "10.000",
-          grgBalance: "20.000",
-          ethBalanceWei: "10000000000000000000",
-          grgBalanceWei: "20000000000000000000"
+          ethBalance: '10.000',
+          grgBalance: '20.000',
+          ethBalanceWei: '10000000000000000000',
+          grgBalanceWei: '20000000000000000000'
         },
         {
           name: 'Parity',
           address: '0x02',
-          ethBalance: "10.000",
-          grgBalance: "20.000",
-          ethBalanceWei: "10000000000000000000",
-          grgBalanceWei: "20000000000000000000"
-        },
+          ethBalance: '10.000',
+          grgBalance: '20.000',
+          ethBalanceWei: '10000000000000000000',
+          grgBalanceWei: '20000000000000000000'
+        }
       ],
       prevBlockNumber: 10
-    },
-  };
+    }
+  }
 
   initialState_2 = {
     endpoint: {
-      accounts: [
-      ],
+      accounts: [],
       prevBlockNumber: 10
-    },
-  };
-});
+    }
+  }
+})
 
-const createMockStore = (state) => {
+const createMockStore = state => {
   return {
     state,
-    getState: function () {
-      return this.state;
+    getState: function() {
+      return this.state
     }
   }
 }
 
-describe("monitor connection to node", () => {
-
-
+describe('monitor connection to node', () => {
   // it('1 -> node is NOT connected success', async () => {
   //   api.isConnected = false
   //   api.output.syncing = false
@@ -141,14 +142,14 @@ describe("monitor connection to node", () => {
   // }, 5000)
   it('3 -> node is connected and syncing success', done => {
     api.isConnected = true
-    api.output.syncing = { syncing: "yes" }
+    api.output.syncing = { syncing: 'yes' }
     let ob = isConnectedToNode$(api)
     ob.subscribe(data => {
       expect(data).toEqual({
-              isConnected: true,
-              isSyncing: true,
-              syncStatus: { syncing: "yes" },
-            })
+        isConnected: true,
+        isSyncing: true,
+        syncStatus: { syncing: 'yes' }
+      })
       done()
     })
   })
@@ -173,7 +174,6 @@ describe("monitor connection to node", () => {
   //   })
   // })
 })
-
 
 // describe("update account balance", () => {
 //   it('1 -> Detect prevBlockNumber > currentBlockNumber success', async () => {
@@ -229,7 +229,7 @@ describe("monitor connection to node", () => {
 //         ethBalance: "20000000000000000000",
 //         grgBalance: "40000000000000000000",
 //         accounts: [
-//           { 
+//           {
 //             name: 'MetaMask',
 //             address: '0x01',
 //             ethBalance : "10.000",

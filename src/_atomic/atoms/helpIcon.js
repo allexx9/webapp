@@ -1,34 +1,33 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import HelpOutline from 'material-ui/svg-icons/action/help-outline'
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
 import ReactTooltip from 'react-tooltip'
 import styles from './helpIcon.module.css'
 
 export default class HelpIcon extends Component {
-
   static propTypes = {
     style: PropTypes.object,
     helpText: PropTypes.string.isRequired,
-    helpReadMoreLink: PropTypes.string,
-  };
+    helpReadMoreLink: PropTypes.string
+  }
 
   static defaultProps = {
     style: {},
     helpText: '',
-    helpReadMoreLink: '',
-  };
+    helpReadMoreLink: ''
+  }
 
   state = {
     popoverIsOpen: true,
     preferPlace: null,
-    place: "below",
+    place: 'below'
   }
 
   togglePopover(toState) {
     const popoverIsOpen =
-      typeof toState === "boolean" ? toState : !this.state.popoverIsOpen
+      typeof toState === 'boolean' ? toState : !this.state.popoverIsOpen
     this.setState({
-      popoverIsOpen,
+      popoverIsOpen
     })
   }
 
@@ -40,21 +39,18 @@ export default class HelpIcon extends Component {
   }
 
   render() {
-
     const tooltipStyle = {
       pointerEvents: 'auto', // enable click/selection etc. events inside tooltip
-      overflowY: 'auto', // make content scrollable,
+      overflowY: 'auto' // make content scrollable,
     }
 
     return (
       <div>
-        <div data-tip={this.props.helpText}
-          data-event="click"
-        >
+        <div data-tip={this.props.helpText} data-event="click">
           {/* <span style={{ cursor: 'pointer' }}>
             <HelpOutline style={this.props.style} />
           </span> */}
-          <div style={{cursor: 'pointer'}}>
+          <div style={{ cursor: 'pointer' }}>
             <HelpOutline style={this.props.style} />
           </div>
           <ReactTooltip
@@ -65,12 +61,9 @@ export default class HelpIcon extends Component {
             globalEventOff="click"
             // border={true}
             className={styles.helpicon}
-          >
-          </ReactTooltip>
+          />
         </div>
       </div>
-
-
     )
   }
 }
