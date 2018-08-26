@@ -127,8 +127,7 @@ class ElementFundActions extends React.Component {
     actionSelected: PropTypes.object,
     accounts: PropTypes.array.isRequired,
     onTransactionSent: PropTypes.func.isRequired,
-    dispatch: PropTypes.func.isRequired,
-    snackBar: PropTypes.func.isRequired
+    dispatch: PropTypes.func.isRequired
   }
 
   static defaultProps = {
@@ -523,7 +522,9 @@ class ElementFundActions extends React.Component {
       })
       .catch(error => {
         const errorArray = error.message.split(/\r?\n/)
-        this.props.snackBar(errorArray[0])
+        this.props.dispatch(
+          Actions.notifications.queueWarningNotification(errorArray[0])
+        )
         transactionDetails.status = 'error'
         transactionDetails.error = errorArray[0]
         console.log(error)
@@ -621,7 +622,9 @@ class ElementFundActions extends React.Component {
       })
       .catch(error => {
         const errorArray = error.message.split(/\r?\n/)
-        this.props.snackBar(errorArray[0])
+        this.props.dispatch(
+          Actions.notifications.queueWarningNotification(errorArray[0])
+        )
         transactionDetails.status = 'error'
         transactionDetails.error = errorArray[0]
         console.log(error)

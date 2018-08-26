@@ -405,7 +405,7 @@ class PageVaultDetailsVaultManager extends Component {
           open={this.state.snackBar}
           message={this.state.snackBarMsg}
           action="close"
-          
+          onActionClick={this.handlesnackBarRequestClose}
           onRequestClose={this.handlesnackBarRequestClose}
           bodyStyle={{
             height: 'auto',
@@ -518,7 +518,7 @@ class PageVaultDetailsVaultManager extends Component {
       //     open={this.state.snackBar}
       //     message={this.state.snackBarMsg}
       //     action="close"
-      //     
+      //
       //     onRequestClose={this.handlesnackBarRequestClose}
       //     bodyStyle={{
       //       height: "auto",

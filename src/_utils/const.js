@@ -116,16 +116,6 @@ export const PARITY_NETWORKS_ID = {
   ropsten: 3,
   foundation: 1
 }
-export const DEFAULT_ENDPOINT = 'infura'
-// Please refert to the following link for network IDs
-// https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md
-// kovan = 42
-export const DEFAULT_NETWORK_NAME = 'kovan'
-export const DEFAULT_NETWORK_ID = 42
-export const DEFAULT_ETHERSCAN = 'https://kovan.etherscan.io/'
-
-export const NETWORK_OK = 'networkOk'
-export const NETWORK_WARNING = 'networkWarning'
 
 export const KOVAN = 'kovan'
 export const KOVAN_ID = 42
@@ -133,6 +123,17 @@ export const ROPSTEN = 'ropsten'
 export const ROPSTEN_ID = 3
 export const MAINNET = 'mainnet'
 export const MAINNET_ID = 1
+
+export const DEFAULT_ENDPOINT = 'infura'
+// Please refert to the following link for network IDs
+// https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md
+// kovan = 42
+export const DEFAULT_NETWORK_NAME = ROPSTEN
+export const DEFAULT_NETWORK_ID = ROPSTEN_ID
+export const DEFAULT_ETHERSCAN = 'https://ropsten.etherscan.io/'
+
+export const NETWORK_OK = 'networkOk'
+export const NETWORK_WARNING = 'networkWarning'
 
 export const KOVAN_ETHERSCAN = 'https://kovan.etherscan.io/'
 export const ROPSTEN_ETHERSCAN = 'https://ropsten.etherscan.io/'

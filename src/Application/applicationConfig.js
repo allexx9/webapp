@@ -45,10 +45,7 @@ class ApplicationConfigPage extends Component {
   }
 
   static contextTypes = {
-    api: PropTypes.object.isRequired,
-    isConnected: PropTypes.bool.isRequired,
-    isSyncing: PropTypes.bool.isRequired,
-    syncStatus: PropTypes.object.isRequired
+    api: PropTypes.object.isRequired
   }
 
   UNSAFE_componentWillMount() {}

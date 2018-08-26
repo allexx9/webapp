@@ -285,8 +285,8 @@ class WalletSetupStepper extends Component {
                 {!correctNetwork && (
                   <div>
                     <p>
-                      We have detected that you are not connected to{' '}
-                      <b>Rospen</b> network.
+                      We have detected that you are <b>not</b> connected to{' '}
+                      <b>{this.props.endpoint.networkInfo.name}</b> network.
                     </p>
                     <p>Please configure your wallet accordingly.</p>
                   </div>

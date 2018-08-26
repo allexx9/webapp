@@ -271,7 +271,7 @@ export const updateAccounts = async (api, blockNumber, state$) => {
     newEndpoint = {
       prevBlockNumber: prevBlockNumber
     }
-    return [newEndpoint, notifications]
+    return [newEndpoint, notifications, fetchTransactions]
   }
 
   const accounts = [].concat(endpoint.accounts)
@@ -413,7 +413,7 @@ export const updateAccounts = async (api, blockNumber, state$) => {
           })
         )
       }
-      return [newEndpoint, notifications, fetchTransactions]
+      return [newEndpoint, Array(0), fetchTransactions]
     } catch (error) {
       console.log(`endpoint_epic -> ${error}`)
       // Setting the balances to 0 if receiving an error from the endpoint. It happens with Infura.
@@ -432,7 +432,7 @@ export const updateAccounts = async (api, blockNumber, state$) => {
         // })
         // )
       }
-      return [...newEndpoint, notifications, fetchTransactions]
+      return [newEndpoint, notifications, fetchTransactions]
     }
   } else {
     const newEndpoint = { ...endpoint }
@@ -504,7 +504,7 @@ export const monitorAccountsEpic = (action$, state$) =>
     return monitorAccounts$(action.payload.web3, action.payload.api, state$)
       .takeUntil(action$.ofType(TYPE_.MONITOR_ACCOUNTS_STOP))
       .do(val => {
-        // console.log(val)
+        console.log(val)
         return val
       })
       .flatMap(accountsUpdate => {
@@ -517,7 +517,7 @@ export const monitorAccountsEpic = (action$, state$) =>
         )
         observablesArray.push(
           Observable.of({
-            type: TYPE_.ADD_ACCOUNT_NOTIFICATION,
+            type: TYPE_.QUEUE_ACCOUNT_NOTIFICATION,
             payload: accountsUpdate[1]
           })
         )

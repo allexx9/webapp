@@ -457,7 +457,6 @@ class PageFundDetailsDragoTrader extends Component {
                               <ElementFundActions
                                 dragoDetails={dragoDetails}
                                 accounts={accounts}
-                                snackBar={this.snackBar}
                                 actionSelected={this.state.openBuySellDialog}
                                 onTransactionSent={this.onTransactionSent}
                               />
@@ -561,7 +560,7 @@ class PageFundDetailsDragoTrader extends Component {
           open={this.state.snackBar}
           message={this.state.snackBarMsg}
           action="close"
-          
+          onActionClick={this.handlesnackBarRequestClose}
           onRequestClose={this.handlesnackBarRequestClose}
           bodyStyle={{
             height: 'auto',
