@@ -51,11 +51,14 @@ class PageDashboardDragoManager extends Component {
   }
 
   componentDidMount() {
-    const { endpoint } = this.props
-    this.getTransactions(null, endpoint.accounts)
+    const { accounts } = this.props.endpoint
+    const { api } = this.context
+    const options = { balance: true, supply: false, limit: 10, trader: true }
+    console.log('componentDidMount')
+    this.props.dispatch(
+      Actions.endpoint.getAccountsTransactions(api, null, accounts, options)
+    )
   }
-
-  UNSAFE_componentWillMount() {}
 
   UNSAFE_componentWillReceiveProps(nextProps) {
     // Updating the lists on each new block if the accounts balances have changed

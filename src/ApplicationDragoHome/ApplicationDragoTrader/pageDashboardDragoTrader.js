@@ -64,9 +64,9 @@ class PageDashboardDragoTrader extends Component {
   UNSAFE_componentWillReceiveProps(nextProps) {
     // Updating the lists on each new block if the accounts balances have changed
     // Doing this this to improve performances by avoiding useless re-rendering
-    const { accounts } = this.props.endpoint
-    const { api } = this.context
-    const options = { balance: true, supply: false, limit: 10, trader: true }
+    // const { accounts } = this.props.endpoint
+    // const { api } = this.context
+    // const options = { balance: true, supply: false, limit: 10, trader: true }
     // console.log(`${this.constructor.name} -> UNSAFE_componentWillReceiveProps-> nextProps received.`);
     // Updating the transaction list if there have been a change in total accounts balance and the previous balance is
     // different from 0 (balances are set to 0 on app loading)
@@ -315,7 +315,6 @@ class PageDashboardDragoTrader extends Component {
           open={this.state.snackBar}
           message={this.state.snackBarMsg}
           action="close"
-          
           onRequestClose={this.handlesnackBarRequestClose}
           bodyStyle={{
             height: 'auto',
