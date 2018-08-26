@@ -74,8 +74,7 @@ export class App extends Component {
 
   // Defining the properties of the context variables passed down to children
   static childContextTypes = {
-    api: PropTypes.object,
-    ethereumNetworkName: PropTypes.string
+    api: PropTypes.object
   }
 
   static propTypes = {
@@ -87,8 +86,7 @@ export class App extends Component {
   // Passing down the context variables to children
   getChildContext() {
     return {
-      api: this._api,
-      ethereumNetworkName: DEFAULT_NETWORK_NAME
+      api: this._api
     }
   }
 

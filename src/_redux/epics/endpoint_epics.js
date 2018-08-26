@@ -413,7 +413,7 @@ export const updateAccounts = async (api, blockNumber, state$) => {
           })
         )
       }
-      return [newEndpoint, Array(0), fetchTransactions]
+      return [newEndpoint, notifications, fetchTransactions]
     } catch (error) {
       console.log(`endpoint_epic -> ${error}`)
       // Setting the balances to 0 if receiving an error from the endpoint. It happens with Infura.

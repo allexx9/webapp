@@ -72,7 +72,8 @@ export default class ElementNotification extends Component {
     secondaryText: PropTypes.array.isRequired,
     eventType: PropTypes.string.isRequired,
     eventStatus: PropTypes.string.isRequired,
-    txHash: PropTypes.string.isRequired
+    txHash: PropTypes.string.isRequired,
+    networkName: PropTypes.string.isRequired
   }
 
   etherscanLink = () => {
@@ -80,7 +81,9 @@ export default class ElementNotification extends Component {
     const { txHash } = this.props
     return (
       <a
-        href={'https://' + ethereumNetworkName + '.etherscan.io/tx/' + txHash}
+        href={
+          'https://' + this.props.networkName + '.etherscan.io/tx/' + txHash
+        }
         rel="noopener noreferrer"
         target="_blank"
       />

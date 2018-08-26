@@ -13,7 +13,8 @@ let timerId = null
 
 function mapStateToProps(state) {
   return {
-    recentTransactions: state.transactions.queue
+    recentTransactions: state.transactions.queue,
+    endpoint: state.endpoint
   }
 }
 
@@ -22,7 +23,8 @@ class ElementNotificationsDrawer extends Component {
     handleToggleNotifications: PropTypes.func.isRequired,
     notificationsOpen: PropTypes.bool.isRequired,
     dispatch: PropTypes.func.isRequired,
-    recentTransactions: PropTypes.object.isRequired
+    recentTransactions: PropTypes.object.isRequired,
+    endpoint: PropTypes.object.isRequired
   }
 
   static contextTypes = {
@@ -287,6 +289,7 @@ class ElementNotificationsDrawer extends Component {
             eventType={eventType}
             eventStatus={eventStatus}
             txHash={txHash}
+            networkName={this.props.endpoint.networkInfo.name}
           />
         )
       })
