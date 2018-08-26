@@ -14,6 +14,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import utils from '../../_utils/utils'
 
+import TokenIcon from '../../_atomic/atoms/tokenIcon'
 import styles from './elementListFunds.module.css'
 
 class ElementListFunds extends PureComponent {
@@ -67,7 +68,7 @@ class ElementListFunds extends PureComponent {
   UNSAFE_componentWillReceiveProps(nextProps) {
     // Updating the list
     const rowCount = nextProps.list.size
-    const { list, sortDirection, sortBy } = nextProps
+    const { list, sortDirection } = nextProps
     const sortedList = list
       .sortBy(item => item.params.symbol.value)
       .update(
@@ -86,7 +87,6 @@ class ElementListFunds extends PureComponent {
       disableHeader,
       headerHeight,
       height,
-      hideIndexRow,
       overscanRowCount,
       rowHeight,
       rowCount,
@@ -94,8 +94,7 @@ class ElementListFunds extends PureComponent {
       sortBy,
       sortDirection,
       sortedList,
-      useDynamicRowHeight,
-      list
+      useDynamicRowHeight
     } = this.state
 
     const rowGetter = ({ index }) => this._getDatum(sortedList, index)
@@ -106,7 +105,6 @@ class ElementListFunds extends PureComponent {
           <AutoSizer disableHeight>
             {({ width }) => (
               <Table
-                ref="Table"
                 disableHeader={disableHeader}
                 headerClassName={styles.headerColumn}
                 headerHeight={headerHeight}

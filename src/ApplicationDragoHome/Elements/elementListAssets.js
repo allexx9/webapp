@@ -92,7 +92,6 @@ class ElementListAssets extends PureComponent {
       disableHeader,
       headerHeight,
       height,
-      hideIndexRow,
       overscanRowCount,
       rowHeight,
       rowCount,
@@ -100,8 +99,7 @@ class ElementListAssets extends PureComponent {
       sortBy,
       sortDirection,
       sortedList,
-      useDynamicRowHeight,
-      list
+      useDynamicRowHeight
     } = this.state
 
     const rowGetter = ({ index }) => this._getDatum(sortedList, index)
@@ -114,7 +112,6 @@ class ElementListAssets extends PureComponent {
               {({ width }) => (
                 <Table
                   id={'assets-table'}
-                  ref="Table"
                   disableHeader={disableHeader}
                   headerClassName={styles.headerColumn}
                   headerHeight={headerHeight}
@@ -140,7 +137,7 @@ class ElementListAssets extends PureComponent {
                     cellDataGetter={({ rowData }) => rowData.symbol}
                     dataKey="symbol"
                     className={styles.exampleColumn}
-                    cellRenderer={({ cellData }) => this.renderSymbol(cellData)}
+                    cellRenderer={({ cellData }) => this.renderIcon(cellData)}
                     flexShrink={1}
                   />
                   <Column
@@ -244,7 +241,7 @@ class ElementListAssets extends PureComponent {
     )
   }
 
-  renderSymbol(input) {
+  renderIcon(input) {
     return (
       <div>
         <TokenIcon size={40} symbol={input.toLowerCase()} />

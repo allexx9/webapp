@@ -582,7 +582,9 @@ class utilities {
             const getTimestamp = logs => {
               return logs.map(log => {
                 return api.eth
-                  .getBlockByNumber(new BigNumber(log.blockNumber.c[0]).toFixed(0))
+                  .getBlockByNumber(
+                    new BigNumber(log.blockNumber.c[0]).toFixed(0)
+                  )
                   .then(block => {
                     log.timestamp = block.timestamp
                     return log
@@ -678,7 +680,7 @@ class utilities {
    *
    * This function can be a performance hit, so it will need to be optimized as much as possible.
    **/
-  getTransactionsDragoOptV2 = (
+  getTransactionsDragoOptV2 = async (
     api,
     dragoAddress,
     accounts,
@@ -724,9 +726,10 @@ class utilities {
         // } else {
         //   symbol = params.symbol.value
         // }
+        console.log(params)
         const dragoData = {
-          symbol: null,
-          dragoId: params.symbol.value,
+          symbol: params.symbol.value,
+          dragoId: null,
           name: null,
           address: params.drago.value
         }
@@ -887,11 +890,30 @@ class utilities {
             // In the future the symbol will have to be saved in the eventful logs.
             const getDragoDetails = () => {
               let arrayPromises = []
+
+              // dragoSymbolRegistry.forEach((v, k) => {
+              //   poolApi.contract.drago.init(k)
+              //   arrayPromises.push(
+              //     poolApi.contract.drago.getData().then(dragoDetails => {
+              //       console.log(dragoDetails)
+              //       const dragoData = {
+              //         symbol: dragoDetails[2].trim(),
+              //         dragoId: dragoDetails[3].toFixed(),
+              //         name: dragoDetails[1].trim(),
+              //         address: k.trim()
+              //       }
+              //       dragoSymbolRegistry.set(k, dragoData)
+              //       return dragoDetails
+              //     })
+              //   )
+              // })
+
               dragoSymbolRegistry.forEach((v, k) => {
                 arrayPromises.push(
                   poolApi.contract.dragoregistry
                     .fromAddress(k)
                     .then(dragoDetails => {
+                      console.log(dragoDetails)
                       const dragoData = {
                         symbol: dragoDetails[2].trim(),
                         dragoId: dragoDetails[3].toFixed(),
@@ -999,7 +1021,9 @@ class utilities {
             const getTimestamp = logs => {
               return logs.map(log => {
                 return api.eth
-                  .getBlockByNumber(new BigNumber(log.blockNumber.c[0]).toFixed(0))
+                  .getBlockByNumber(
+                    new BigNumber(log.blockNumber.c[0]).toFixed(0)
+                  )
                   .then(block => {
                     log.timestamp = block.timestamp
                     return log

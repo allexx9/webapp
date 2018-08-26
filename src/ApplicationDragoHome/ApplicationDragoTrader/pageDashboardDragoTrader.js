@@ -267,6 +267,7 @@ class PageDashboardDragoTrader extends Component {
                     </div>
                     <ElementListWrapper
                       list={dragoBalances}
+                      // dragoDetails={}
                       // loading={this.state.loading}
                     >
                       <ElementListBalances />
