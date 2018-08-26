@@ -34,7 +34,7 @@ import utils from '../../../_utils/utils'
 import { Ethfinex } from '../../../_utils/const'
 
 import {
-  ADD_ERROR_NOTIFICATION,
+  QUEUE_ERROR_NOTIFICATION,
   CHART_MARKET_DATA_ADD_DATAPOINT,
   CHART_MARKET_DATA_INIT,
   FETCH_CANDLES_DATA_SINGLE,
@@ -237,7 +237,7 @@ export const initRelayWebSocketEpic = action$ =>
       }))
       .catch(() => {
         return Observable.of({
-          type: ADD_ERROR_NOTIFICATION,
+          type: QUEUE_ERROR_NOTIFICATION,
           payload: 'Error connecting to price ticker.'
         })
       })
@@ -356,7 +356,7 @@ export const getAccountOrdersEpic = action$ => {
               })
               .catch(() => {
                 return Observable.of({
-                  type: ADD_ERROR_NOTIFICATION,
+                  type: QUEUE_ERROR_NOTIFICATION,
                   payload: 'Error fetching account orders.'
                 })
               })

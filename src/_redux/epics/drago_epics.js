@@ -16,8 +16,8 @@ import { Observable } from 'rxjs/Observable'
 import PoolApi from '../../PoolsApi/src'
 
 import {
-  ADD_ERROR_NOTIFICATION,
-  GET_TOKEN_BALANCES_DRAGO
+  GET_TOKEN_BALANCES_DRAGO,
+  QUEUE_ERROR_NOTIFICATION
 } from '../actions/const'
 
 import { BigNumber } from '../../../node_modules/bignumber.js/bignumber'
@@ -115,7 +115,7 @@ export const getTokensBalancesEpic = action$ => {
       )
       .catch(() => {
         return Observable.of({
-          type: ADD_ERROR_NOTIFICATION,
+          type: QUEUE_ERROR_NOTIFICATION,
           payload: 'Error fetching fund assets balances.'
         })
       })

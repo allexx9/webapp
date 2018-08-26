@@ -15,9 +15,9 @@ import 'rxjs/observable/timer'
 import { setTokenAllowance } from '../../_utils/exchange'
 // import { fromPromise } from 'rxjs/add/observable/fromPromise';
 import {
-  ADD_ERROR_NOTIFICATION,
   FETCH_CANDLES_DATA_PORTFOLIO_START,
   FETCH_CANDLES_DATA_PORTFOLIO_STOP,
+  QUEUE_ERROR_NOTIFICATION,
   SET_TOKEN_ALLOWANCE,
   TOKENS_TICKERS_UPDATE,
   TOKEN_PRICE_TICKERS_FETCH_START,
@@ -195,6 +195,12 @@ export const getCandlesGroupDataEpic = (action$, state$) => {
         .map(historical => {
           return updateGroupCandles(historical)
         })
+        .catch(() => {
+          return Observable.of({
+            type: QUEUE_ERROR_NOTIFICATION,
+            payload: 'Error fetching candles data.'
+          })
+        })
       // Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: false } }),
     )
   })
@@ -246,9 +252,15 @@ export const getPricesEpic = (action$, state$) =>
           .map(payload => ({ type: TOKENS_TICKERS_UPDATE, payload }))
           .catch(() => {
             return Observable.of({
-              type: ADD_ERROR_NOTIFICATION,
+              type: QUEUE_ERROR_NOTIFICATION,
               payload: 'Error fetching tickers data.'
             })
           })
+      })
+      .catch(() => {
+        return Observable.of({
+          type: QUEUE_ERROR_NOTIFICATION,
+          payload: 'Error fetching tickers data.'
+        })
       })
   })

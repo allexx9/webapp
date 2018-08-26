@@ -504,7 +504,7 @@ export const monitorAccountsEpic = (action$, state$) =>
     return monitorAccounts$(action.payload.web3, action.payload.api, state$)
       .takeUntil(action$.ofType(TYPE_.MONITOR_ACCOUNTS_STOP))
       .do(val => {
-        console.log(val)
+        // console.log(val)
         return val
       })
       .flatMap(accountsUpdate => {
@@ -533,13 +533,12 @@ export const monitorAccountsEpic = (action$, state$) =>
               )
             )
           : null
-        console.log(observablesArray)
         return Observable.concat(...observablesArray)
       })
       .catch(error => {
         console.log(error)
         return Observable.of({
-          type: TYPE_.ADD_ERROR_NOTIFICATION,
+          type: TYPE_.QUEUE_ERROR_NOTIFICATION,
           payload: 'Error: cannot update accounts balance.'
         })
       })
@@ -573,7 +572,7 @@ export const getAccountsTransactionsEpic = (action$, state$) =>
       })
       .catch(() => {
         return Observable.of({
-          type: TYPE_.ADD_ERROR_NOTIFICATION,
+          type: TYPE_.QUEUE_ERROR_NOTIFICATION,
           payload: 'Error fetching account transactions.'
         })
       })

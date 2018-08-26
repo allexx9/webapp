@@ -59,7 +59,7 @@ const notificationsMiddleWare = store => next => action => {
       return
     })
   }
-  if (action.type === ACTIONS.ADD_ERROR_NOTIFICATION) {
+  if (action.type === ACTIONS.QUEUE_ERROR_NOTIFICATION) {
     utils.notificationError(
       state.notifications.engine,
       serializeError(action.payload),
