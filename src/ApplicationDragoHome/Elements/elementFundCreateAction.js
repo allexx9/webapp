@@ -1,4 +1,3 @@
-import * as Colors from 'material-ui/styles/colors'
 import { Actions } from '../../_redux/actions'
 import { Col, Row } from 'react-flexbox-grid'
 import {
@@ -261,10 +260,6 @@ class ElementFundCreateAction extends React.Component {
   render() {
     const { endpoint } = this.props
     const { openAuth, authMsg, authAccount, dragoDetails } = this.state
-    const labelStyle = {
-      color: '#FFFFFF',
-      fontWeight: 700
-    }
     const titleStyle = {
       padding: 0,
       lineHeight: '20px',

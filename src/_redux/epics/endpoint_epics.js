@@ -248,12 +248,14 @@ export const attacheInterfaceEpic = action$ =>
 //
 
 export const updateAccounts = async (api, blockNumber, state$) => {
-  const { endpoint } = state$.getState()
+  const currentState = state$.getState()
+  const { endpoint } = currentState
   let newEndpoint = {}
   const prevBlockNumber = endpoint.prevBlockNumber
   let newBlockNumber = new BigNumber(0)
   let notifications = Array(0)
-  console.log(state$.getState())
+  let fetchTransactions = false
+  console.log(currentState)
   // Checking if blockNumber is passed by Parity Api or Web3
   if (typeof blockNumber.number !== 'undefined') {
     newBlockNumber = new BigNumber(blockNumber.number)
@@ -308,6 +310,7 @@ export const updateAccounts = async (api, blockNumber, state$) => {
           prevBlockNumber !== 0
         ) {
           console.log(`${account.name} balance changed.`)
+          fetchTransactions = true
           let secondaryText = []
           let balDifference = prevEthBalance.minus(newEthBalance)
           // console.log(prevEthBalance.toFixed(), newEthBalance.toFixed())
@@ -351,6 +354,7 @@ export const updateAccounts = async (api, blockNumber, state$) => {
           prevBlockNumber !== 0
         ) {
           console.log(`${account.name} balance changed.`)
+          fetchTransactions = false
           let secondaryText = []
           let balDifference = prevGrgBalance.minus(newgrgBalance)
           if (balDifference.gt(new BigNumber(0))) {
@@ -409,7 +413,7 @@ export const updateAccounts = async (api, blockNumber, state$) => {
           })
         )
       }
-      return [newEndpoint, notifications]
+      return [newEndpoint, notifications, fetchTransactions]
     } catch (error) {
       console.log(`endpoint_epic -> ${error}`)
       // Setting the balances to 0 if receiving an error from the endpoint. It happens with Infura.
@@ -428,13 +432,13 @@ export const updateAccounts = async (api, blockNumber, state$) => {
         // })
         // )
       }
-      return [...newEndpoint, notifications]
+      return [...newEndpoint, notifications, fetchTransactions]
     }
   } else {
     const newEndpoint = { ...endpoint }
     newEndpoint.loading = false
     newEndpoint.prevBlockNumber = newBlockNumber.toFixed()
-    return [newEndpoint, notifications]
+    return [newEndpoint, notifications, fetchTransactions]
   }
 }
 
@@ -503,15 +507,35 @@ export const monitorAccountsEpic = (action$, state$) =>
         console.log(val)
         return val
       })
-      .flatMap(accountsUpdate =>
-        Observable.concat(
-          Observable.of(Actions.endpoint.updateInterface(accountsUpdate[0])),
+      .flatMap(accountsUpdate => {
+        const observablesArray = Array(0)
+        let options = state$.getState().user.isManager
+          ? { balance: false, supply: true, limit: 10, trader: false }
+          : { balance: true, supply: false, limit: 10, trader: true }
+        observablesArray.push(
+          Observable.of(Actions.endpoint.updateInterface(accountsUpdate[0]))
+        )
+        observablesArray.push(
           Observable.of({
             type: TYPE_.ADD_ACCOUNT_NOTIFICATION,
             payload: accountsUpdate[1]
           })
         )
-      )
+        accountsUpdate[2]
+          ? observablesArray.push(
+              Observable.of(
+                Actions.endpoint.getAccountsTransactions(
+                  action.payload.api,
+                  null,
+                  accountsUpdate[0].accounts,
+                  options
+                )
+              )
+            )
+          : null
+        console.log(observablesArray)
+        return Observable.concat(...observablesArray)
+      })
       .catch(error => {
         console.log(error)
         return Observable.of({
