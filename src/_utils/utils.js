@@ -37,10 +37,6 @@ class NotificationAlert extends Component {
 }
 
 class utilities {
-  constructor() {
-    // var oldConsoleLog = null;
-  }
-
   formatFromWei = number => {
     const web3 = new Web3()
     try {

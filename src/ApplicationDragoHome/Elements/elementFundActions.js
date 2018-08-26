@@ -38,7 +38,7 @@ function mapStateToProps(state) {
 class ElementFundActions extends React.Component {
   constructor(props) {
     super(props)
-    if (this.props.actionSelected.action == 'buy') {
+    if (this.props.actionSelected.action === 'buy') {
       this.state = {
         open: props.actionSelected.open,
         action: 'buy',
@@ -205,11 +205,13 @@ class ElementFundActions extends React.Component {
   }
 
   handleCancel = () => {
-    this.setState({
-      open: false,
-      ...this.resetState
-    }),
-      this.props.onTransactionSent()
+    this.setState(
+      {
+        open: false,
+        ...this.resetState
+      },
+      this.props.onTransactionSent
+    )
   }
 
   handleSubmit = () => {
@@ -400,6 +402,8 @@ class ElementFundActions extends React.Component {
           return action === 'buy'
             ? new BigNumber(amount).div(ratio)
             : new BigNumber(amount)
+        default:
+          return null
       }
     }
     // First: checking if any error in the account or amount. If error then return.
@@ -443,6 +447,8 @@ class ElementFundActions extends React.Component {
           this.calculateBalance()
         }
         break
+      default:
+        return null
     }
   }
 
@@ -648,6 +654,8 @@ class ElementFundActions extends React.Component {
       case 'sell':
         this.onSendSell()
         break
+      default:
+        return null
     }
   }
 
@@ -655,10 +663,10 @@ class ElementFundActions extends React.Component {
     const { dragoDetails } = this.props
     this.setState({
       switchButton: {
-        label: this.state.switchButton.label == 'Units' ? 'Amount' : 'Units',
-        hint: this.state.switchButton.hint == 'Units' ? 'Amount' : 'Units',
+        label: this.state.switchButton.label === 'Units' ? 'Amount' : 'Units',
+        hint: this.state.switchButton.hint === 'Units' ? 'Amount' : 'Units',
         denomination:
-          this.state.switchButton.denomination == 'ETH'
+          this.state.switchButton.denomination === 'ETH'
             ? dragoDetails.symbol
             : 'ETH'
       },
@@ -668,7 +676,7 @@ class ElementFundActions extends React.Component {
 
   buyFields = () => {
     const floatingLabelTextAmount =
-      this.state.switchButton.denomination == 'ETH'
+      this.state.switchButton.denomination === 'ETH'
         ? 'Amount in ' + this.state.switchButton.denomination
         : 'Units of ' + this.state.switchButton.denomination
     return (
@@ -715,7 +723,7 @@ class ElementFundActions extends React.Component {
 
   sellFields = () => {
     const floatingLabelTextAmount =
-      this.state.switchButton.denomination == 'ETH'
+      this.state.switchButton.denomination === 'ETH'
         ? 'Amount in ' + this.state.switchButton.denomination
         : 'Units of ' + this.state.switchButton.denomination
     return (
@@ -864,7 +872,7 @@ class ElementFundActions extends React.Component {
                     </span>
                     &nbsp;
                     {dragoDetails.symbol}{' '}
-                    {this.state.action == 'buy'
+                    {this.state.action === 'buy'
                       ? dragoDetails.buyPrice
                       : dragoDetails.sellPrice}
                   </h2>
@@ -883,7 +891,7 @@ class ElementFundActions extends React.Component {
             </Row>
             <Row>
               <Col xs={6}>{this.holding()}</Col>
-              {this.state.action == 'buy'
+              {this.state.action === 'buy'
                 ? this.buyFields()
                 : this.sellFields()}
             </Row>

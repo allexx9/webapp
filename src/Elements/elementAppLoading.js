@@ -2,7 +2,6 @@ import * as Colors from 'material-ui/styles/colors'
 import { Col, Row } from 'react-flexbox-grid'
 import LinearProgress from 'material-ui/LinearProgress'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
-import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import styles from './elementAppLoading.module.css'
@@ -25,7 +24,11 @@ class AppLoading extends Component {
           <Col xs={12}>
             <Row>
               <Col xs={12} style={{ textAlign: 'center' }}>
-                <img src="/img/rb-logo-final.png" className={styles.logoImg} />
+                <img
+                  src="/img/rb-logo-final.png"
+                  className={styles.logoImg}
+                  alt=""
+                />
                 <LinearProgress
                   mode="indeterminate"
                   color={Colors.blueGrey900}

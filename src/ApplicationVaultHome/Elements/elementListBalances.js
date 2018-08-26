@@ -59,7 +59,6 @@ class ElementListBalances extends PureComponent {
 
   UNSAFE_componentWillReceiveProps(nextProps) {
     const { list } = nextProps
-    const sortBy = 'symbol'
     const sortDirection = SortDirection.ASC
     const sortedList = list
       .sortBy(item => item.symbol)
@@ -80,16 +79,13 @@ class ElementListBalances extends PureComponent {
       disableHeader,
       headerHeight,
       height,
-      hideIndexRow,
       overscanRowCount,
       rowHeight,
       rowCount,
       scrollToIndex,
-      sortBy,
       sortDirection,
       sortedList,
-      useDynamicRowHeight,
-      list
+      useDynamicRowHeight
     } = this.state
 
     const rowGetter = ({ index }) => this._getDatum(sortedList, index)
@@ -101,7 +97,6 @@ class ElementListBalances extends PureComponent {
             <AutoSizer disableHeight>
               {({ width }) => (
                 <Table
-                  ref="Table"
                   id={'fundBalances-table'}
                   disableHeader={disableHeader}
                   headerClassName={styles.headerColumn}

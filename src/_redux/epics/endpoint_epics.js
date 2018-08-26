@@ -11,11 +11,10 @@ import {
   mergeMap,
   retryWhen,
   switchMap,
-  tap,
   timeout
 } from 'rxjs/operators'
-import { of, throwError, timer } from 'rxjs'
 import { ofType } from 'redux-observable'
+import { timer } from 'rxjs'
 // import 'rxjs/add/observable/dom/webSocket';
 import 'rxjs/add/observable/concat'
 import 'rxjs/add/observable/defer'
@@ -82,6 +81,7 @@ export const isConnectedToNode$ = api => {
       return nodeStatus
     }),
     catchError(error => {
+      console.log(error)
       nodeStatus.isConnected = false
       nodeStatus.isSyncing = false
       nodeStatus.syncStatus = {}
@@ -299,7 +299,7 @@ export const updateAccounts = async (api, blockNumber, state$) => {
       const ethBalances = await Promise.all(ethQueries)
       const grgBalances = await Promise.all(grgQueries)
       const prevAccounts = [].concat(endpoint.accounts)
-      prevAccounts.map((account, index) => {
+      prevAccounts.forEach(function(account, index) {
         // Checking ETH balance
         const newEthBalance = new BigNumber(ethBalances[index])
         const prevEthBalance = new BigNumber(account.ethBalanceWei)

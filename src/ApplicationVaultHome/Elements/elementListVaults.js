@@ -68,14 +68,13 @@ class ElementListVaults extends PureComponent {
   UNSAFE_componentWillReceiveProps(nextProps) {
     // Updating the list
     const rowCount = nextProps.list.size
-    const { list, sortDirection, sortBy } = nextProps
+    const { list, sortDirection } = nextProps
     const sortedList = list
       .sortBy(item => item.params.symbol.value)
       .update(
         list => (sortDirection === SortDirection.DESC ? list.reverse() : list)
       )
     this.setState({
-      sortedList,
       sortedList,
       rowCount: rowCount,
       list: nextProps.list
@@ -87,7 +86,6 @@ class ElementListVaults extends PureComponent {
       disableHeader,
       headerHeight,
       height,
-      hideIndexRow,
       overscanRowCount,
       rowHeight,
       rowCount,
@@ -95,12 +93,11 @@ class ElementListVaults extends PureComponent {
       sortBy,
       sortDirection,
       sortedList,
-      useDynamicRowHeight,
-      list
+      useDynamicRowHeight
     } = this.state
 
     const rowGetter = ({ index }) => this._getDatum(sortedList, index)
-    const label = this.props.poolType === 'vault' ? 'VAULT CODE' : 'FUND CODE'
+    // const label = this.props.poolType === 'vault' ? 'VAULT CODE' : 'FUND CODE'
 
     return (
       <Row>
@@ -108,7 +105,7 @@ class ElementListVaults extends PureComponent {
           <AutoSizer disableHeight>
             {({ width }) => (
               <Table
-                ref="Table"
+                // ref={"Table"}
                 disableHeader={disableHeader}
                 headerClassName={styles.headerColumn}
                 headerHeight={headerHeight}

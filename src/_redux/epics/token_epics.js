@@ -73,8 +73,8 @@ const candlesGroupWebsocket$ = (relay, networkId, symbols) => {
       '1m'
     )
     symbols.push('tETHUSD')
-    websocket.addEventListener('open', () => {
-      symbols.map(symbol => {
+    websocket.addEventListener('open', function() {
+      symbols.forEach(function(symbol) {
         let msg = JSON.stringify({
           event: `subscribe`,
           channel: `candles`,

@@ -56,6 +56,7 @@ const notificationsMiddleWare = store => next => action => {
         notification,
         'info'
       )
+      return
     })
   }
   if (action.type === ACTIONS.ADD_ERROR_NOTIFICATION) {

@@ -43,6 +43,8 @@ export const formatOrdersFromERCdEX = (orders, orderType) => {
           web3.utils.fromWei(order.takerTokenAmount, 'ether')
         ).toFixed(5)
         break
+      default:
+        return null
     }
     let orderHash = ZeroEx.getOrderHashHex(order)
     let orderObject = {
@@ -145,10 +147,11 @@ export const aggregatedOrders = {
     }
   },
   [Ethfinex]: orders => {
-    let bids = new Array()
-    let asks = new Array()
+    let bids = new Array(0)
+    let asks = new Array(0)
     orders.map(order => {
       order[2] > 0 ? bids.push(order) : asks.push(order)
+      return
     })
     const bidsOrders = formatOrdersFromAggregateEthfinex(bids, 'bids')
     const asksOrders = formatOrdersFromAggregateEthfinex(asks.reverse(), 'asks')
@@ -177,10 +180,11 @@ export const orders = {
     }
   },
   [Ethfinex]: orders => {
-    let bids = new Array()
-    let asks = new Array()
+    let bids = new Array(0)
+    let asks = new Array(0)
     orders.map(order => {
       order[2] > 0 ? bids.push(order) : asks.push(order)
+      return
     })
     const bidsOrders = formatOrdersFromAggregateEthfinex(bids, 'bids')
     const asksOrders = formatOrdersFromAggregateEthfinex(asks.reverse(), 'asks')

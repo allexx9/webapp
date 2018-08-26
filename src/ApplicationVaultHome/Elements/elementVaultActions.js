@@ -40,7 +40,7 @@ function mapStateToProps(state) {
 class ElementVaultActions extends React.Component {
   constructor(props) {
     super(props)
-    if (this.props.actionSelected.action == 'deposit') {
+    if (this.props.actionSelected.action === 'deposit') {
       this.state = {
         open: props.actionSelected.open,
         action: 'deposit',
@@ -104,7 +104,8 @@ class ElementVaultActions extends React.Component {
     actionSelected: PropTypes.object.isRequired,
     accounts: PropTypes.array.isRequired,
     onTransactionSent: PropTypes.func.isRequired,
-    dispatch: PropTypes.func.isRequired
+    dispatch: PropTypes.func.isRequired,
+    snackBar: PropTypes.func.isRequired
   }
 
   static defaultProps = {
@@ -154,7 +155,7 @@ class ElementVaultActions extends React.Component {
   UNSAFE_componentWillReceiveProps(nextProps) {
     console.log(nextProps)
     if (this.props.actionSelected.action !== nextProps.actionSelected.action) {
-      nextProps.actionSelected.action == 'deposit'
+      nextProps.actionSelected.action === 'deposit'
         ? this.handleBuyAction()
         : this.handleSellAction()
     }
@@ -181,11 +182,13 @@ class ElementVaultActions extends React.Component {
   }
 
   handleCancel = () => {
-    this.setState({
-      open: false,
-      ...this.resetState
-    }),
-      this.props.onTransactionSent()
+    this.setState(
+      {
+        open: false,
+        ...this.resetState
+      },
+      this.props.onTransactionSent
+    )
   }
 
   handleSubmit = () => {
@@ -296,31 +299,31 @@ class ElementVaultActions extends React.Component {
     const buyPrice = new BigNumber(vaultDetails.buyPrice)
     const sellPrice = new BigNumber(vaultDetails.sellPrice)
     const buyRatio =
-      this.state.switchButton.label == 'Units'
+      this.state.switchButton.label === 'Units'
         ? new BigNumber(1).div(buyPrice)
         : new BigNumber(1).times(buyPrice)
     const sellRatio =
-      this.state.switchButton.label == 'Units'
+      this.state.switchButton.label === 'Units'
         ? new BigNumber(1).div(sellPrice)
         : new BigNumber(1).times(sellPrice)
     const drgCurrent = new BigNumber(drgBalance)
-    const ratio = action == 'deposit' ? buyRatio : sellRatio
+    const ratio = action === 'deposit' ? buyRatio : sellRatio
     const getAmounts = (action, amount) => {
       let orderAmount = null
-      if (amount.length == 0) {
+      if (amount.length === 0) {
         orderAmount = new BigNumber(0)
       } else {
         orderAmount = isNaN(amount) ? new BigNumber(0) : new BigNumber(amount)
       }
       // Checking if the amount is expressed in ETH
-      if (this.state.switchButton.label == 'Units') {
+      if (this.state.switchButton.label === 'Units') {
         // Buy in ETH amount
         let amountDRG = orderAmount.times(ratio)
         let amountETH = new BigNumber(amount)
         return { amountETH: amountETH, amountDRG: amountDRG }
       }
       // Checking if the amount is expressed in DRG
-      if (this.state.switchButton.label == 'Amount') {
+      if (this.state.switchButton.label === 'Amount') {
         // Buy in DRG units
         let amountDRG = orderAmount
         let amountETH = new BigNumber(amount).times(ratio)
@@ -340,7 +343,7 @@ class ElementVaultActions extends React.Component {
 
     // Second: updating the state with the new balances
     let newDrgBalance =
-      action == 'deposit'
+      action === 'deposit'
         ? getAmounts(action, amount).amountDRG.plus(drgCurrent)
         : drgCurrent.minus(getAmounts(action, amount).amountDRG)
     this.setState({
@@ -377,17 +380,19 @@ class ElementVaultActions extends React.Component {
     const sellPrice = new BigNumber(vaultDetails.sellPrice)
     const buyRatio = new BigNumber(1).div(buyPrice)
     const sellRatio = new BigNumber(1).div(sellPrice)
-    const ratio = action == 'deposit' ? buyRatio : sellRatio
+    const ratio = action === 'deposit' ? buyRatio : sellRatio
     const calculateAmount = amount => {
       switch (this.state.switchButton.label) {
         case 'Units':
-          return action == 'deposit'
+          return action === 'deposit'
             ? new BigNumber(amount)
             : new BigNumber(amount).times(ratio)
         case 'Amount':
-          return action == 'deposit'
+          return action === 'deposit'
             ? new BigNumber(amount).div(ratio)
             : new BigNumber(amount)
+        default:
+          return null
       }
     }
     // First: checking if any error in the account or amount. If error then return.
@@ -431,6 +436,8 @@ class ElementVaultActions extends React.Component {
           this.calculateBalance()
         }
         break
+      default:
+        return null
     }
   }
 
@@ -633,6 +640,8 @@ class ElementVaultActions extends React.Component {
       case 'withdraw':
         this.onSendSell()
         break
+      default:
+        return null
     }
   }
 
@@ -640,10 +649,10 @@ class ElementVaultActions extends React.Component {
     const { vaultDetails } = this.props
     this.setState({
       switchButton: {
-        label: this.state.switchButton.label == 'Units' ? 'Amount' : 'Units',
-        hint: this.state.switchButton.hint == 'Units' ? 'Amount' : 'Units',
+        label: this.state.switchButton.label === 'Units' ? 'Amount' : 'Units',
+        hint: this.state.switchButton.hint === 'Units' ? 'Amount' : 'Units',
         denomination:
-          this.state.switchButton.denomination == 'ETH'
+          this.state.switchButton.denomination === 'ETH'
             ? vaultDetails.symbol
             : 'ETH'
       },
@@ -653,7 +662,7 @@ class ElementVaultActions extends React.Component {
 
   buyFields = () => {
     const floatingLabelTextAmount =
-      this.state.switchButton.denomination == 'ETH'
+      this.state.switchButton.denomination === 'ETH'
         ? 'Amount in ' + this.state.switchButton.denomination
         : 'Units of ' + this.state.switchButton.denomination
     return (
@@ -700,7 +709,7 @@ class ElementVaultActions extends React.Component {
 
   sellFields = () => {
     const floatingLabelTextAmount =
-      this.state.switchButton.denomination == 'ETH'
+      this.state.switchButton.denomination === 'ETH'
         ? 'Amount in ' + this.state.switchButton.denomination
         : 'Units of ' + this.state.switchButton.denomination
     return (
@@ -878,7 +887,7 @@ class ElementVaultActions extends React.Component {
             </Row>
             <Row>
               <Col xs={6}>{this.holding()}</Col>
-              {this.state.action == 'deposit'
+              {this.state.action === 'deposit'
                 ? this.buyFields()
                 : this.sellFields()}
             </Row>

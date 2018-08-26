@@ -13,7 +13,7 @@ export default class ElementVaultActionsList extends Component {
   static propTypes = {
     accounts: PropTypes.array.isRequired,
     vaultDetails: PropTypes.object.isRequired,
-    snackBar: PropTypes.func
+    snackBar: PropTypes.func.isRequired
   }
 
   state = {
@@ -58,7 +58,7 @@ export default class ElementVaultActionsList extends Component {
     const { vaultDetails } = this.props
     // Selectiong only the account which is the owner of the Drago
     const accounts = this.props.accounts.filter(account => {
-      return account.address == vaultDetails.addressOwner
+      return account.address === vaultDetails.addressOwner
     })
     return (
       <div>
