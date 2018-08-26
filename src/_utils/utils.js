@@ -582,7 +582,7 @@ class utilities {
             const getTimestamp = logs => {
               return logs.map(log => {
                 return api.eth
-                  .getBlockByNumber(log.blockNumber.c[0])
+                  .getBlockByNumber(new BigNumber(log.blockNumber.c[0]).toFixed(0))
                   .then(block => {
                     log.timestamp = block.timestamp
                     return log
@@ -999,7 +999,7 @@ class utilities {
             const getTimestamp = logs => {
               return logs.map(log => {
                 return api.eth
-                  .getBlockByNumber(log.blockNumber.c[0])
+                  .getBlockByNumber(new BigNumber(log.blockNumber.c[0]).toFixed(0))
                   .then(block => {
                     log.timestamp = block.timestamp
                     return log

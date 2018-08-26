@@ -21,8 +21,6 @@ import PropTypes from 'prop-types'
 import RaisedButton from 'material-ui/RaisedButton'
 import React, { Component } from 'react'
 
-const NAME_ID = ' '
-
 function mapStateToProps(state) {
   return state
 }
@@ -36,9 +34,7 @@ class ElementFundActionWrapETH extends Component {
     accounts: PropTypes.array.isRequired,
     dragoDetails: PropTypes.object.isRequired,
     openActionForm: PropTypes.func.isRequired,
-    snackBar: PropTypes.func,
-    onClose: PropTypes.func,
-    dispatch: PropTypes.func
+    dispatch: PropTypes.func.isRequired
   }
 
   state = {
@@ -189,8 +185,6 @@ class ElementFundActionWrapETH extends Component {
               fullWidth
               hintText={amountLabel}
               errorText={this.state.amountError}
-              name={NAME_ID}
-              id={NAME_ID}
               value={this.state.amount}
               onChange={this.onChangeAmount}
             />
@@ -345,9 +339,11 @@ class ElementFundActionWrapETH extends Component {
         }
       })
       .catch(error => {
-        console.log(error)
+        console.warn(error)
         const errorArray = error.message.split(/\r?\n/)
-        this.props.snackBar(errorArray[0])
+        this.props.dispatch(
+          Actions.notifications.queueWarningNotification(errorArray[0])
+        )
         transactionDetails.status = 'error'
         transactionDetails.error = errorArray[0]
         this.props.dispatch(
@@ -369,43 +365,6 @@ class ElementFundActionWrapETH extends Component {
       },
       this.handleSubmit
     )
-
-    // if(this.state.account.source === 'MetaMask') {
-    //   const web3 = window.web3
-    //   poolApi = new PoolApi(web3)
-    //   console.log(poolApi)
-    //   poolApi.contract.drago.init(dragoDetails.address)
-    //   poolApi.contract.drago.withdrawFromExchange(WETHaddress, account.address, api.util.toWei(this.state.amount))
-    //   .then ((result) =>{
-    //     console.log(result)
-    //     this.setState({
-    //       sending: false
-    //     });
-    //   })
-    //   .catch((error) => {
-    //     console.error('error', error)
-    //     this.setState({
-    //       sending: false
-    //     })
-    //   })
-    //   this.onClose()
-    //   this.props.snackBar('Un-wrapping awaiting for authorization')
-    // } else {
-    //   poolApi = new PoolApi(api)
-    //   poolApi.contract.drago.init(dragoDetails.address)
-    //   poolApi.contract.drago.withdrawFromExchange(WETHaddress, account.address, api.util.toWei(this.state.amount))
-    //   .then((result) => {
-    //     console.log(result)
-    //     this.onClose()
-    //     this.props.snackBar('Un-wrapping awaiting for authorization')
-    //   })
-    //   .catch((error) => {
-    //     console.error('error', error);
-    //     this.setState({
-    //       sending: false
-    //     })
-    //   })
-    // }
   }
 
   onSendWrap = () => {
@@ -478,7 +437,9 @@ class ElementFundActionWrapETH extends Component {
       .catch(error => {
         console.log(error)
         const errorArray = error.message.split(/\r?\n/)
-        this.props.snackBar(errorArray[0])
+        this.props.dispatch(
+          Actions.notifications.queueWarningNotification(errorArray[0])
+        )
         transactionDetails.status = 'error'
         transactionDetails.error = errorArray[0]
         this.props.dispatch(

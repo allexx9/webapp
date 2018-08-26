@@ -8,7 +8,6 @@ export default class AssetsPieChart extends Component {
   }
 
   render() {
-    console.log(this.props.data)
     return (
       <div
         style={{

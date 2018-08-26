@@ -15,9 +15,14 @@ export default class ElementActionAuthorization extends Component {
 
   static propTypes = {
     account: PropTypes.object.isRequired,
-    onClose: PropTypes.func,
-    authMsg: PropTypes.string,
+    onClose: PropTypes.func.isRequired,
+    authMsg: PropTypes.string.isRequired,
     tokenDetails: PropTypes.object
+  }
+
+  static defaultProps = {
+    onClose: null,
+    tokenDetails: null
   }
 
   state = {
@@ -32,7 +37,7 @@ export default class ElementActionAuthorization extends Component {
 
   handleClose = () => {
     // Executing onClose function passed by parent if exists, otherwise setting state.
-    if (typeof this.props.onClose !== 'undefined') {
+    if (this.props.onClose !== null) {
       this.props.onClose()
     } else {
       this.setState({
@@ -61,6 +66,7 @@ export default class ElementActionAuthorization extends Component {
       lineHeight: '20px',
       fontSize: 16
     }
+    console.log(this.props)
     const actions = [
       <FlatButton
         key="CloseButton"

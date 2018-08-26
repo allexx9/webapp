@@ -1,6 +1,7 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
 import * as Colors from 'material-ui/styles/colors'
+import { Actions } from '../../_redux/actions'
 import { Col, Row } from 'react-flexbox-grid'
 import { Dialog, FlatButton, TextField } from 'material-ui'
 import {
@@ -8,6 +9,7 @@ import {
   validateAccount,
   validatePositiveNumber
 } from '../../_utils/validation'
+import { connect } from 'react-redux'
 import AccountSelector from '../../Elements/elementAccountSelector'
 import ActionsDialogHeader from '../../_atomic/molecules/actionsDialogHeader'
 import AppBar from 'material-ui/AppBar'
@@ -19,7 +21,11 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import styles from './elementFundActionSetPrice.module.css'
 
-export default class ElementFundActionSetPrice extends Component {
+function mapStateToProps(state) {
+  return state
+}
+
+class ElementFundActionSetPrice extends Component {
   static contextTypes = {
     api: PropTypes.object.isRequired
   }
@@ -28,7 +34,7 @@ export default class ElementFundActionSetPrice extends Component {
     accounts: PropTypes.array.isRequired,
     dragoDetails: PropTypes.object.isRequired,
     openActionForm: PropTypes.func.isRequired,
-    snackBar: PropTypes.func
+    dispatch: PropTypes.func.isRequired
   }
 
   state = {
@@ -50,11 +56,6 @@ export default class ElementFundActionSetPrice extends Component {
     marginTop: 12,
     marginBottom: 12,
     color: 'white'
-  }
-
-  componentDidMount() {
-    const { api } = this.context
-    console.log(api)
   }
 
   render() {
@@ -348,23 +349,76 @@ export default class ElementFundActionSetPrice extends Component {
     const { dragoDetails } = this.props
     const { buyPrice, sellPrice } = this.state
     let poolApi = null
-    let provider = this.state.account.source === 'MetaMask' ? window.web3 : api
     this.setState({
       sending: true
     })
+    let provider = this.state.account.source === 'MetaMask' ? window.web3 : api
+    const { account } = this.state
+
+    // Initializing transaction variables
+    const transactionId = api.util.sha3(new Date() + account.address)
+    let transactionDetails = {
+      status: account.source === 'MetaMask' ? 'pending' : 'authorization',
+      hash: '',
+      parityId: null,
+      timestamp: new Date(),
+      account: account,
+      error: false,
+      action: 'SetPrice',
+      symbol: dragoDetails.symbol,
+      amount: '0'
+    }
+    this.props.dispatch(
+      Actions.transactions.addTransactionToQueueAction(
+        transactionId,
+        transactionDetails
+      )
+    )
 
     poolApi = new PoolApi(provider)
     poolApi.contract.drago.init(dragoDetails.address)
     poolApi.contract.drago
-      .setPrices(this.state.account.address, buyPrice, sellPrice)
-      .then(result => {
-        console.log(result)
+      .setPrices(account.address, buyPrice, sellPrice)
+      .then(receipt => {
+        console.log(receipt)
+        if (account.source === 'MetaMask') {
+          transactionDetails.status = 'executed'
+          transactionDetails.receipt = receipt
+          transactionDetails.hash = receipt.transactionHash
+          transactionDetails.timestamp = new Date()
+          this.props.dispatch(
+            Actions.transactions.addTransactionToQueueAction(
+              transactionId,
+              transactionDetails
+            )
+          )
+        } else {
+          transactionDetails.parityId = receipt
+          this.props.dispatch(
+            Actions.transactions.addTransactionToQueueAction(
+              transactionId,
+              transactionDetails
+            )
+          )
+        }
         this.setState({
           sending: false
         })
       })
       .catch(error => {
-        console.error('error', error)
+        console.warn(error)
+        const errorArray = error.message.split(/\r?\n/)
+        this.props.dispatch(
+          Actions.notifications.queueWarningNotification(errorArray[0])
+        )
+        transactionDetails.status = 'error'
+        transactionDetails.error = errorArray[0]
+        this.props.dispatch(
+          Actions.transactions.addTransactionToQueueAction(
+            transactionId,
+            transactionDetails
+          )
+        )
         this.setState({
           sending: false
         })
@@ -377,9 +431,11 @@ export default class ElementFundActionSetPrice extends Component {
         ' ETH. SELL price set to ' +
         sellPrice +
         ' ETH',
-      authAccount: { ...this.state.account }
+      authAccount: { ...account }
     })
     // this.onClose()
     // this.props.snackBar('Instruction awaiting for authorization')
   }
 }
+
+export default connect(mapStateToProps)(ElementFundActionSetPrice)

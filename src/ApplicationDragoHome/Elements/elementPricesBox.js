@@ -1,6 +1,5 @@
 import * as Colors from 'material-ui/styles/colors'
 import { Col, Row } from 'react-flexbox-grid'
-import AppBar from 'material-ui/AppBar'
 import FlatButton from 'material-ui/FlatButton'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
@@ -9,9 +8,12 @@ import styles from './elementPricesBox.module.css'
 export default class ElementPriceBox extends Component {
   static propTypes = {
     dragoDetails: PropTypes.object.isRequired,
-    accounts: PropTypes.array,
     handleBuySellButtons: PropTypes.func,
-    isManager: PropTypes.bool
+    isManager: PropTypes.bool.isRequired
+  }
+
+  static defaultProps = {
+    handleBuySellButtons: input => input
   }
 
   buttonBuyClick = () => {

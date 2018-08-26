@@ -1,7 +1,7 @@
 import { Actions } from '../../_redux/actions'
 import { Col, Grid, Row } from 'react-flexbox-grid'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
-import { ENDPOINTS, PROD } from '../../_utils/const'
+import { ENDPOINTS, Ethfinex, PROD } from '../../_utils/const'
 import { Link, withRouter } from 'react-router-dom'
 import { Tab, Tabs } from 'material-ui/Tabs'
 import { connect } from 'react-redux'
@@ -57,51 +57,49 @@ class PageFundDetailsDragoManager extends Component {
   }
 
   state = {
-    dragoDetails: {
-      address: null,
-      name: null,
-      symbol: null,
-      dragoId: null,
-      addressOwner: null,
-      addressGroup: null,
-      dragoETHBalance: null
-    },
     loading: true,
     snackBar: false,
     snackBarMsg: ''
   }
 
-  subTitle = account => {
-    return account.address
-  }
+  componentDidMount = async () => {
+    const { api } = this.context
+    const relay = {
+      name: Ethfinex
+    }
+    // Getting Drago details
+    let dragoDetails = await this.getDragoDetails()
 
-  componentDidMount() {
-    this.initDrago()
-  }
-
-  initDrago = async () => {
-    const poolApi = new PoolApi(this.context.api)
-    const dragoId = this.props.match.params.dragoid
-
-    // Getting drago details from Id
-    const dragoDetails = await utils.getDragoDetailsFromId(
-      dragoId,
-      this.context.api
+    // Getting Drago assets
+    this.props.dispatch(
+      Actions.drago.getTokenBalancesDrago(dragoDetails, api, relay)
     )
-    await utils.getDragoDetails(dragoDetails, this.props, this.context.api)
-    this.setState({
-      loading: false
-    })
-
-    // Getting drago transaction list
-    await this.getTransactions(dragoDetails, this.context.api)
+    // await this.getPortfolioDetails(dragoDetails)
+    const poolApi = new PoolApi(api)
     await poolApi.contract.dragoeventful.init()
     this.subscribeToEvents(poolApi.contract.dragoeventful)
   }
 
+  getDragoDetails = async () => {
+    const { api } = this.context
+    const relay = {
+      name: Ethfinex
+    }
+    const dragoId = this.props.match.params.dragoid
+    const dragoDetails = await utils.getDragoDetailsFromId(dragoId, api)
+    await utils.getDragoDetails(dragoDetails, this.props, api, relay)
+    this.setState({
+      loading: false
+    })
+    await this.getTransactions(dragoDetails, api, this.props.endpoint.accounts)
+    return dragoDetails
+  }
+
   componentWillUnmount() {
     const { contractSubscription } = this.state
-    // this.props.dispatch({type: TOKEN_PRICE_TICKERS_FETCH_STOP})
+
+    this.props.dispatch(Actions.tokens.priceTickersStop())
+    this.props.dispatch(Actions.exchange.getPortfolioChartDataStop())
     try {
       contractSubscription.unsubscribe(function(error, success) {
         if (success) {
@@ -116,14 +114,21 @@ class PageFundDetailsDragoManager extends Component {
     }
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps = async nextProps => {
     // Updating the lists on each new block if the accounts balances have changed
     // Doing this this to improve performances by avoiding useless re-rendering
-    // console.log(nextProps)
+    //
+    const { api } = this.context
+    const relay = {
+      name: Ethfinex
+    }
     const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
     const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
     if (!currentBalance.eq(nextBalance)) {
-      this.initDrago()
+      let dragoDetails = await this.getDragoDetails()
+      this.props.dispatch(
+        Actions.drago.getTokenBalancesDrago(dragoDetails, api, relay)
+      )
       console.log(
         `${
           this.constructor.name
@@ -135,6 +140,7 @@ class PageFundDetailsDragoManager extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
+    //
     let stateUpdate = true
     let propsUpdate = true
     // const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
@@ -142,11 +148,7 @@ class PageFundDetailsDragoManager extends Component {
     stateUpdate = !utils.shallowEqual(this.state, nextState)
     propsUpdate = !utils.shallowEqual(this.props, nextProps)
     if (stateUpdate || propsUpdate) {
-      console.log(
-        `${
-          this.constructor.name
-        } -> shouldComponentUpdate -> Proceedding with rendering.`
-      )
+      // console.log(`${this.constructor.name} -> shouldComponentUpdate -> Proceedding with rendering.`);
     }
     return stateUpdate || propsUpdate
   }
@@ -167,7 +169,7 @@ class PageFundDetailsDragoManager extends Component {
       <CopyToClipboard
         text={text}
         key={'address' + text}
-        onCopy={() => this.snackBar('Copied to clilpboard')}
+        onCopy={() => this.snackBar('Copied to clipboard')}
       >
         <Link to={'#'} key={'addresslink' + text}>
           <CopyContent className={styles.copyAddress} />
@@ -290,6 +292,15 @@ class PageFundDetailsDragoManager extends Component {
     if (dragoDetails.address === '0x0000000000000000000000000000000000000000') {
       return <ElementFundNotFound />
     }
+
+    // Checking if the user is the account manager
+    let metaMaskAccountIndex = accounts.findIndex(account => {
+      return account.address === dragoDetails.addressOwner
+    })
+    if (metaMaskAccountIndex === -1) {
+      return <ElementNoAdminAccess />
+    }
+
     if (
       dragoAssetsList.length !== 0 &&
       Object.keys(this.props.exchange.prices).length !== 0
@@ -326,14 +337,6 @@ class PageFundDetailsDragoManager extends Component {
       }
     }
 
-    // Checking if the user is the account manager
-    let metaMaskAccountIndex = accounts.findIndex(account => {
-      return account.address === dragoDetails.addressOwner
-    })
-    if (metaMaskAccountIndex === -1) {
-      return <ElementNoAdminAccess />
-    }
-
     return (
       <Row>
         <Col xs={12}>
@@ -347,7 +350,6 @@ class PageFundDetailsDragoManager extends Component {
                     <ElementFundActionsList
                       accounts={accounts}
                       dragoDetails={dragoDetails}
-                      snackBar={this.snackBar}
                     />
                   }
                 />
@@ -614,7 +616,7 @@ class PageFundDetailsDragoManager extends Component {
         if (!error) {
           console.log(`${this.constructor.name} -> New contract event.`)
           console.log(events)
-          this.initDrago()
+          this.getDragoDetails()
         }
       }
     )
@@ -717,7 +719,7 @@ class PageFundDetailsDragoManager extends Component {
         // For additional refernce: https://stackoverflow.com/questions/39452083/using-promise-function-inside-javascript-array-map
         let promises = dragoTransactionsLog.map(log => {
           return api.eth
-            .getBlockByNumber(log.blockNumber.c[0])
+            .getBlockByNumber(new BigNumber(log.blockNumber.c[0]).toFixed(0))
             .then(block => {
               log.timestamp = block.timestamp
               return log

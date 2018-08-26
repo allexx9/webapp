@@ -7,14 +7,14 @@ import React, { Component } from 'react'
 class ActionsDialogHeader extends Component {
   static propTypes = {
     primaryText: PropTypes.string.isRequired,
-    tokenDetails: PropTypes.object.isRequired,
+    tokenDetails: PropTypes.object,
     fundType: PropTypes.string.isRequired
   }
 
   static defaultProps = {
     primaryText: 'Null',
     fundType: 'drago',
-    tokenDetails: defaultDragoDetails
+    tokenDetails: null
   }
 
   render() {
@@ -24,7 +24,7 @@ class ActionsDialogHeader extends Component {
           primaryText={this.props.primaryText}
           fundType={this.props.fundType}
         />
-        {typeof tokenDetails !== 'undefined' ? (
+        {this.props.tokenDetails !== null ? (
           <ElementDialogAddressTitle
             tokenDetails={this.props.tokenDetails}
             fundType={this.props.fundType}

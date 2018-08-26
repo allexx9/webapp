@@ -11,13 +11,13 @@ import styles from './fundHeader.module.css'
 export default class FundHeader extends Component {
   static propTypes = {
     fundDetails: PropTypes.object.isRequired,
-    // actions: PropTypes.object,
+    actions: PropTypes.object,
     fundType: PropTypes.string.isRequired
   }
 
   static defaultProps = {
-    fundType: 'drago'
-    // actions: ''
+    fundType: 'drago',
+    actions: <noscript />
   }
 
   render() {
@@ -43,11 +43,11 @@ export default class FundHeader extends Component {
         className={styles.detailsToolbar}
         style={headerStyle[fundType].toolBar}
       >
-        {/* {actions
-          ? <div className={styles.managerButtonContainer}>
-            {actions}
+        {this.props.actions ? (
+          <div className={styles.managerButtonContainer}>
+            {this.props.actions}
           </div>
-          : null} */}
+        ) : null}
         <ToolbarGroup className={styles.detailsToolbarGroup}>
           <Row className={styles.detailsToolbarGroup}>
             <div className={styles.identityIconContainer}>

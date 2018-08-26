@@ -57,7 +57,6 @@ class PageFundDetailsDragoTrader extends Component {
   }
 
   state = {
-    dragoTransactionsLogs: [],
     loading: true,
     snackBar: false,
     snackBarMsg: '',
@@ -79,7 +78,6 @@ class PageFundDetailsDragoTrader extends Component {
     this.props.dispatch(
       Actions.drago.getTokenBalancesDrago(dragoDetails, api, relay)
     )
-    // await this.getPortfolioDetails(dragoDetails)
     const poolApi = new PoolApi(api)
     await poolApi.contract.dragoeventful.init()
     this.subscribeToEvents(poolApi.contract.dragoeventful)
@@ -101,13 +99,37 @@ class PageFundDetailsDragoTrader extends Component {
     return dragoDetails
   }
 
-  // getPortfolioDetails = async (dragoDetails) => {
-  //   const { api } = this.context
-  //   const relay = {
-  //     name: Ethfinex
-  //   }
-  //   this.props.dispatch(Actions.drago.getTokenBalancesDrago(dragoDetails, api, relay))
-  // }
+  subscribeToEvents = contract => {
+    const networkName = this.props.endpoint.networkInfo.name
+    let WsSecureUrl = ''
+    const eventfullContracAddress = contract.contract.address[0]
+    if (PROD) {
+      WsSecureUrl = ENDPOINTS.rigoblock.wss[networkName].prod
+    } else {
+      WsSecureUrl = ENDPOINTS.rigoblock.wss[networkName].dev
+    }
+    const web3 = new Web3(WsSecureUrl)
+    const eventfullContract = new web3.eth.Contract(
+      contract.abi,
+      eventfullContracAddress
+    )
+    const subscription = eventfullContract.events.allEvents(
+      {
+        fromBlock: 'latest',
+        topics: [null, null, null, null]
+      },
+      (error, events) => {
+        if (!error) {
+          console.log(`${this.constructor.name} -> New contract event.`)
+          console.log(events)
+          this.getDragoDetails()
+        }
+      }
+    )
+    this.setState({
+      contractSubscription: subscription
+    })
+  }
 
   componentWillUnmount() {
     const { contractSubscription } = this.state
@@ -172,7 +194,7 @@ class PageFundDetailsDragoTrader extends Component {
       <CopyToClipboard
         text={text}
         key={'address' + text}
-        onCopy={() => this.snackBar('Copied to clilpboard')}
+        onCopy={() => this.snackBar('Copied to clipboard')}
       >
         <Link to={'#'} key={'addresslink' + text}>
           <CopyContent className={styles.copyAddress} />
@@ -279,8 +301,6 @@ class PageFundDetailsDragoTrader extends Component {
     ]
     let estimatedPrice = 'N/A'
 
-    console.log(this.props.exchange.prices)
-
     // Waiting until getDragoDetails returns the drago details
     if (loading || Object.keys(dragoDetails).length === 0) {
       return (
@@ -292,7 +312,7 @@ class PageFundDetailsDragoTrader extends Component {
     if (dragoDetails.address === '0x0000000000000000000000000000000000000000') {
       return <ElementFundNotFound />
     }
-    console.log(dragoAssetsList)
+    // console.log(dragoAssetsList)
     if (
       dragoAssetsList.length !== 0 &&
       Object.keys(this.props.exchange.prices).length !== 0
@@ -580,38 +600,6 @@ class PageFundDetailsDragoTrader extends Component {
     )
   }
 
-  subscribeToEvents = contract => {
-    const networkName = this.props.endpoint.networkInfo.name
-    let WsSecureUrl = ''
-    const eventfullContracAddress = contract.contract.address[0]
-    if (PROD) {
-      WsSecureUrl = ENDPOINTS.rigoblock.wss[networkName].prod
-    } else {
-      WsSecureUrl = ENDPOINTS.rigoblock.wss[networkName].dev
-    }
-    const web3 = new Web3(WsSecureUrl)
-    const eventfullContract = new web3.eth.Contract(
-      contract.abi,
-      eventfullContracAddress
-    )
-    const subscription = eventfullContract.events.allEvents(
-      {
-        fromBlock: 'latest',
-        topics: [null, null, null, null]
-      },
-      (error, events) => {
-        if (!error) {
-          console.log(`${this.constructor.name} -> New contract event.`)
-          console.log(events)
-          this.getDragoDetails()
-        }
-      }
-    )
-    this.setState({
-      contractSubscription: subscription
-    })
-  }
-
   // Getting last transactions
   getTransactions = async (dragoDetails, api, accounts) => {
     const dragoAddress = dragoDetails[0][0]
@@ -710,7 +698,7 @@ class PageFundDetailsDragoTrader extends Component {
         // For additional refernce: https://stackoverflow.com/questions/39452083/using-promise-function-inside-javascript-array-map
         let promises = dragoTransactionsLog.map(log => {
           return api.eth
-            .getBlockByNumber(log.blockNumber.c[0])
+            .getBlockByNumber(new BigNumber(log.blockNumber.c[0]).toFixed(0))
             .then(block => {
               log.timestamp = block.timestamp
               return log

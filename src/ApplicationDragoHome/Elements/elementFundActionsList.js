@@ -12,8 +12,7 @@ import Subheader from 'material-ui/Subheader'
 export default class ElementFundActionsList extends Component {
   static propTypes = {
     accounts: PropTypes.array.isRequired,
-    dragoDetails: PropTypes.object.isRequired,
-    snackBar: PropTypes.func
+    dragoDetails: PropTypes.object.isRequired
   }
 
   state = {
@@ -125,7 +124,6 @@ export default class ElementFundActionsList extends Component {
             accounts={accounts}
             dragoDetails={dragoDetails}
             openActionForm={this.openActionForm}
-            snackBar={this.props.snackBar}
           />
         ) : null}
         {this.state.showActionMenuItem.setPrice ? (
@@ -133,7 +131,6 @@ export default class ElementFundActionsList extends Component {
             accounts={accounts}
             dragoDetails={dragoDetails}
             openActionForm={this.openActionForm}
-            snackBar={this.props.snackBar}
           />
         ) : null}
       </div>

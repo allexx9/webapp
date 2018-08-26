@@ -280,6 +280,16 @@ class ElementNotificationsDrawer extends Component {
             secondaryText[1] = timeStamp
             eventStatus = value.status
             break
+          case 'SetPrice':
+            symbol = value.symbol
+            primaryText = 'Set price ' + symbol
+            secondaryText[0] =
+              'Status: ' +
+              value.status.charAt(0).toUpperCase() +
+              value.status.slice(1)
+            secondaryText[1] = timeStamp
+            eventStatus = value.status
+            break
         }
         return (
           <ElementNotification

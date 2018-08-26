@@ -666,7 +666,7 @@ class PageVaultDetailsVaultManager extends Component {
         // For additional refernce: https://stackoverflow.com/questions/39452083/using-promise-function-inside-javascript-array-map
         let promises = vaultTransactionsLog.map(log => {
           return api.eth
-            .getBlockByNumber(log.blockNumber.c[0])
+            .getBlockByNumber(new BigNumber(log.blockNumber.c[0]).toFixed(0))
             .then(block => {
               log.timestamp = block.timestamp
               return log

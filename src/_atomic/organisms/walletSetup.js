@@ -39,7 +39,6 @@ class WalletSetup extends Component {
   }
 
   render() {
-    console.log(this.props)
     return (
       <div>
         {this.props.location.pathname !== '/app/web/home' && (

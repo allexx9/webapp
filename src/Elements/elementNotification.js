@@ -62,10 +62,6 @@ const transactionStyle = {
 }
 
 export default class ElementNotification extends Component {
-  static contextTypes = {
-    ethereumNetworkName: PropTypes.string.isRequired
-  }
-
   static propTypes = {
     // accountName: PropTypes.string.isRequired,
     primaryText: PropTypes.string.isRequired,
@@ -76,8 +72,11 @@ export default class ElementNotification extends Component {
     networkName: PropTypes.string.isRequired
   }
 
+  static defaultProps = {
+    networkName: ''
+  }
+
   etherscanLink = () => {
-    const { ethereumNetworkName } = this.context
     const { txHash } = this.props
     return (
       <a
@@ -122,7 +121,7 @@ export default class ElementNotification extends Component {
     const showProgressBar = ['pending', 'authorization']
     return (
       <div style={transactionStyle[eventStatus]}>
-        {this.transactionMenu()}
+        {this.props.networkName ? this.transactionMenu() : null}
         <ListItem
           disabled={true}
           primaryText={primaryText}
