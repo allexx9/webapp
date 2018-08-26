@@ -1,7 +1,7 @@
 import { Redirect, Route, Switch, withRouter } from 'react-router-dom'
 import PageDashboardDragoTrader from './pageDashboardDragoTrader'
 import PageFundDetailsDragoTrader from './pageFundDetailsDragoTrader'
-import PageFundsDragoTrader from './pageFundsDragoTrader'
+import PageFundsDragoTrader from './pageSearchDragoTrader'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 

@@ -14,7 +14,7 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import utils from '../../_utils/utils'
 
-import styles from './pageFundsDragoTrader.module.css'
+import styles from './pageSearchDragoTrader.module.css'
 
 function mapStateToProps(state) {
   return state

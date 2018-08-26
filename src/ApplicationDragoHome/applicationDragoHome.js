@@ -98,21 +98,19 @@ class ApplicationDragoHome extends Component {
     }
 
     return (
-      <div>
+      <div style={{ height: '100%' }} ref={node => (this.node = node)}>
         {user.isManager && (
-          <div ref={node => (this.node = node)}>
-            <Row className={styles.maincontainer}>
-              <Col xs={2}>
-                <LeftSideDrawerFunds
-                  location={location}
-                  isManager={user.isManager}
-                />
-              </Col>
-              <Col xs={10}>
-                <ApplicationDragoManager />
-              </Col>
-            </Row>
-          </div>
+          <Row className={styles.maincontainer}>
+            <Col xs={2}>
+              <LeftSideDrawerFunds
+                location={location}
+                isManager={user.isManager}
+              />
+            </Col>
+            <Col xs={10}>
+              <ApplicationDragoManager />
+            </Col>
+          </Row>
         )}
         {!user.isManager && (
           <Row className={styles.maincontainer}>

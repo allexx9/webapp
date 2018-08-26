@@ -41,7 +41,6 @@ class PageDashboardVaultManager extends Component {
   static propTypes = {
     location: PropTypes.object.isRequired,
     endpoint: PropTypes.object.isRequired,
-    accounts: PropTypes.array.isRequired,
     dispatch: PropTypes.func.isRequired,
     transactionsVault: PropTypes.object.isRequired
   }
@@ -52,7 +51,7 @@ class PageDashboardVaultManager extends Component {
   }
 
   componentDidMount() {
-    const { accounts } = this.props
+    const { accounts } = this.props.endpoint
     this.getTransactions(null, accounts)
   }
 
@@ -61,7 +60,7 @@ class PageDashboardVaultManager extends Component {
   UNSAFE_componentWillReceiveProps(nextProps) {
     // Updating the lists on each new block if the accounts balances have changed
     // Doing this this to improve performances by avoiding useless re-rendering
-    const { accounts } = this.props
+    const { accounts } = this.props.endpoint
 
     console.log(
       `${
@@ -152,7 +151,7 @@ class PageDashboardVaultManager extends Component {
   }
 
   render() {
-    const { accounts } = this.props
+    const { accounts } = this.props.endpoint
     const vaultTransactionsLogs = this.props.transactionsVault.manager.logs
     const vaultList = this.props.transactionsVault.manager.list
 

@@ -14,7 +14,7 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import utils from '../../_utils/utils'
 
-import styles from './pageVaultsVaultTrader.module.css'
+import styles from './pageSearchVaultTrader.module.css'
 
 function mapStateToProps(state) {
   return state
@@ -32,8 +32,7 @@ class PageFundsVaultTrader extends Component {
 
   static propTypes = {
     location: PropTypes.object.isRequired,
-    endpoint: PropTypes.object.isRequired,
-    accounts: PropTypes.array.isRequired
+    endpoint: PropTypes.object.isRequired
   }
 
   state = {

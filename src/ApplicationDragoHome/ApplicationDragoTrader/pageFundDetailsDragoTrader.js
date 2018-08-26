@@ -301,6 +301,11 @@ class PageFundDetailsDragoTrader extends Component {
     ]
     let estimatedPrice = 'N/A'
 
+    return (
+      <div style={{ paddingTop: '10px' }}>
+        <Loading />
+      </div>
+    )
     // Waiting until getDragoDetails returns the drago details
     if (loading || Object.keys(dragoDetails).length === 0) {
       return (

@@ -40,7 +40,6 @@ class PageDashboardVaultTrader extends Component {
   static propTypes = {
     location: PropTypes.object.isRequired,
     endpoint: PropTypes.object.isRequired,
-    accounts: PropTypes.array.isRequired,
     dispatch: PropTypes.func.isRequired,
     transactionsVault: PropTypes.object.isRequired
   }
@@ -53,14 +52,14 @@ class PageDashboardVaultTrader extends Component {
   componentDidMount() {}
 
   UNSAFE_componentWillMount() {
-    const { accounts } = this.props
+    const { accounts } = this.props.endpoint
     this.getTransactions(null, accounts)
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
     // Updating the lists on each new block if the accounts balances have changed
     // Doing this this to improve performances by avoiding useless re-rendering
-    const { accounts } = this.props
+    const { accounts } = this.props.endpoint
     console.log(
       `${
         this.constructor.name
@@ -142,6 +141,7 @@ class PageDashboardVaultTrader extends Component {
       <a
         href={this.props.endpoint.networkInfo.etherscan + type + '/' + text}
         target="_blank"
+        rel="noopener noreferrer"
       >
         <Search className={styles.copyAddress} />
       </a>
@@ -149,7 +149,7 @@ class PageDashboardVaultTrader extends Component {
   }
 
   render() {
-    const { accounts } = this.props
+    const { accounts } = this.props.endpoint
     const vaultTransactionsLogs = this.props.transactionsVault.holder.logs
     const vaultBalances = this.props.transactionsVault.holder.balances
     const tabButtons = {

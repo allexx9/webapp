@@ -11,6 +11,7 @@ import LeftSideDrawerVaults from '../Elements/leftSideDrawerVaults'
 import Loading from '../_atomic/atoms/loading'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
+import WalletSetup from '../_atomic/organisms/walletSetup'
 import utils from '../_utils/utils'
 
 import styles from './applicationVaultHome.module.css'
@@ -88,7 +89,6 @@ class ApplicationVaultHome extends Component {
   }
 
   render() {
-    const { blockNumber } = this.state
     const {
       user,
       location,
@@ -100,28 +100,9 @@ class ApplicationVaultHome extends Component {
       return <Loading />
     }
 
-    // if (endpoint.ethBalance === null) {
-    //   console.log('ethBalance = null')
-    //   return null
-    // }
-
-    if (endpoint.accounts.length === 0 || !endpoint.metaMaskNetworkCorrect) {
-      return (
-        <span>
-          <CheckAuthPage warnMsg={endpoint.warnMsg} location={location} />
-          <ElementBottomStatusBar
-            blockNumber={endpoint.prevBlockNumber}
-            networkName={endpoint.networkInfo.name}
-            networkError={endpoint.networkError}
-            networkStatus={endpoint.networkStatus}
-          />
-        </span>
-      )
-    }
-
-    if (user.isManager) {
-      return (
-        <div ref={node => (this.node = node)}>
+    return (
+      <div style={{ height: '100%' }} ref={node => (this.node = node)}>
+        {user.isManager && (
           <Row className={styles.maincontainer}>
             <Col xs={2}>
               <LeftSideDrawerVaults
@@ -130,38 +111,11 @@ class ApplicationVaultHome extends Component {
               />
             </Col>
             <Col xs={10}>
-              <ApplicationVaultManager
-                blockNumber={blockNumber}
-                accounts={endpoint.accounts}
-                ethBalance={endpoint.ethBalance}
-                accountsInfo={endpoint.accountsInfo}
-                isManager={user.isManager}
-              />
+              <ApplicationVaultManager />
             </Col>
-            <Row>
-              <Col xs={12}>
-                {notificationsOpen ? (
-                  <ElementNotificationsDrawer
-                    handleToggleNotifications={handleToggleNotifications}
-                    notificationsOpen={notificationsOpen}
-                  />
-                ) : null}
-              </Col>
-            </Row>
           </Row>
-          <ElementBottomStatusBar
-            blockNumber={endpoint.prevBlockNumber}
-            networkName={endpoint.networkInfo.name}
-            networkError={endpoint.networkError}
-            networkStatus={endpoint.networkStatus}
-          />
-        </div>
-      )
-    }
-
-    if (!user.isManager) {
-      return (
-        <div ref={node => (this.node = node)}>
+        )}
+        {!user.isManager && (
           <Row className={styles.maincontainer}>
             <Col xs={2}>
               <LeftSideDrawerVaults
@@ -170,34 +124,29 @@ class ApplicationVaultHome extends Component {
               />
             </Col>
             <Col xs={10}>
-              <ApplicationVaultTrader
-                blockNumber={blockNumber}
-                accounts={endpoint.accounts}
-                ethBalance={endpoint.ethBalance}
-                accountsInfo={endpoint.accountsInfo}
-                isManager={user.isManager}
+              <ApplicationVaultTrader />
+            </Col>
+          </Row>
+        )}
+        <Row>
+          <Col xs={12}>
+            {notificationsOpen ? (
+              <ElementNotificationsDrawer
+                handleToggleNotifications={handleToggleNotifications}
+                notificationsOpen={notificationsOpen}
               />
-            </Col>
-          </Row>
-          <Row>
-            <Col xs={12}>
-              {notificationsOpen ? (
-                <ElementNotificationsDrawer
-                  handleToggleNotifications={handleToggleNotifications}
-                  notificationsOpen={notificationsOpen}
-                />
-              ) : null}
-            </Col>
-          </Row>
-          <ElementBottomStatusBar
-            blockNumber={endpoint.prevBlockNumber}
-            networkName={endpoint.networkInfo.name}
-            networkError={endpoint.networkError}
-            networkStatus={endpoint.networkStatus}
-          />
-        </div>
-      )
-    }
+            ) : null}
+          </Col>
+        </Row>
+        <ElementBottomStatusBar
+          blockNumber={endpoint.prevBlockNumber}
+          networkName={endpoint.networkInfo.name}
+          networkError={endpoint.networkError}
+          networkStatus={endpoint.networkStatus}
+        />
+        <WalletSetup />
+      </div>
+    )
   }
 }
 
