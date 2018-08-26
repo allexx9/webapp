@@ -99,8 +99,6 @@ class PageDashboardDragoTrader extends Component {
     return stateUpdate || propsUpdate
   }
 
-  componentDidUpdate() {}
-
   snackBar = msg => {
     this.setState({
       snackBar: true,
@@ -161,7 +159,8 @@ class PageDashboardDragoTrader extends Component {
       tabItemContainerStyle: {
         margin: 'auto',
         width: 300,
-        backgroundColor: '#FFFFFF'
+        backgroundColor: '#FFFFFF',
+        zIndex: 1000
       }
     }
     console.log(this.props)

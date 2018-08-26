@@ -53,7 +53,7 @@ class PageDashboardDragoManager extends Component {
   componentDidMount() {
     const { accounts } = this.props.endpoint
     const { api } = this.context
-    const options = { balance: true, supply: false, limit: 10, trader: true }
+    const options = { balance: false, supply: true, limit: 10, trader: false }
     console.log('componentDidMount')
     this.props.dispatch(
       Actions.endpoint.getAccountsTransactions(api, null, accounts, options)
@@ -63,23 +63,21 @@ class PageDashboardDragoManager extends Component {
   UNSAFE_componentWillReceiveProps(nextProps) {
     // Updating the lists on each new block if the accounts balances have changed
     // Doing this this to improve performances by avoiding useless re-rendering
-    const { endpoint } = this.props
-    console.log(
-      `${
-        this.constructor.name
-      } -> UNSAFE_componentWillReceiveProps-> nextProps received.`
-    )
+    // const { accounts } = this.props.endpoint
+    // const { api } = this.context
+    // const options = { balance: true, supply: false, limit: 10, trader: true }
+    // console.log(`${this.constructor.name} -> UNSAFE_componentWillReceiveProps-> nextProps received.`);
     // Updating the transaction list if there have been a change in total accounts balance and the previous balance is
     // different from 0 (balances are set to 0 on app loading)
     const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
     const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
     if (!currentBalance.eq(nextBalance) && !currentBalance.eq(0)) {
-      this.getTransactions(null, endpoint.accounts)
       console.log(
         `${
           this.constructor.name
         } -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`
       )
+      // this.props.dispatch(Actions.endpoint.getAccountsTransactions(api, null, accounts, options))
     }
   }
 
@@ -91,12 +89,14 @@ class PageDashboardDragoManager extends Component {
     if (stateUpdate || propsUpdate) {
       // console.log('State updated ', stateUpdate)
       // console.log('Props updated ', propsUpdate)
-      // console.log(`${this.constructor.name} -> shouldComponentUpdate -> Proceedding with rendering.`);
+      console.log(
+        `${
+          this.constructor.name
+        } -> shouldComponentUpdate -> Proceeding with rendering.`
+      )
     }
     return stateUpdate || propsUpdate
   }
-
-  componentDidUpdate() {}
 
   snackBar = msg => {
     this.setState({
@@ -146,7 +146,6 @@ class PageDashboardDragoManager extends Component {
 
   render() {
     const { accounts } = this.props.endpoint
-    // const { dragoTransactionsLogs, dragoList } = this.state
     const dragoTransactionsLogs = this.props.transactionsDrago.manager.logs
     const dragoList = this.props.transactionsDrago.manager.list
     const tabButtons = {
@@ -328,30 +327,6 @@ class PageDashboardDragoManager extends Component {
         />
       </Row>
     )
-  }
-
-  // Getting last transactions
-  getTransactions = (dragoAddress, accounts) => {
-    const { api } = this.context
-    // const options = {balance: false, supply: true}
-    const options = { balance: false, supply: true, limit: 10, trader: false }
-    utils
-      .getTransactionsDragoOptV2(api, dragoAddress, accounts, options)
-      .then(results => {
-        const createdLogs = results[1].filter(event => {
-          return event.type !== 'BuyDrago' && event.type !== 'SellDrago'
-        })
-        results[1] = createdLogs
-        this.props.dispatch(
-          Actions.drago.updateTransactionsDragoManagerAction(results)
-        )
-        this.setState({
-          loading: false
-        })
-      })
-      .catch(error => {
-        console.log(error)
-      })
   }
 }
 

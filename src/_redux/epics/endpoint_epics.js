@@ -531,7 +531,7 @@ const getAccountsTransactions$ = (api, dragoAddress, accounts, options) => {
   )
 }
 
-export const getAccountsTransactionsEpic = action$ =>
+export const getAccountsTransactionsEpic = (action$, state$) =>
   action$.ofType(TYPE_.GET_ACCOUNTS_TRANSACTIONS).mergeMap(action => {
     return getAccountsTransactions$(
       action.payload.api,
@@ -541,6 +541,10 @@ export const getAccountsTransactionsEpic = action$ =>
     )
       .map(results => {
         console.log(results)
+        const currentState = state$.getState()
+        if (currentState.user.isManager) {
+          return Actions.drago.updateTransactionsDragoManagerAction(results)
+        }
         return Actions.drago.updateTransactionsDragoHolderAction(results)
       })
       .catch(() => {
@@ -645,12 +649,17 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
         currentState.endpoint
       )
         .filter(val => {
-          console.log(val)
+          // console.log(val)
           return Object.keys(val).length !== 0
         })
-        .flatMap(newEndpoint =>
-          // Concat 2 observables so they fire sequentially
-          Observable.concat(
+        .flatMap(newEndpoint => {
+          let options
+          if (currentState.user.isManager) {
+            options = { balance: false, supply: true, limit: 10, trader: false }
+          } else {
+            options = { balance: true, supply: false, limit: 10, trader: true }
+          }
+          return Observable.concat(
             Observable.of(Actions.endpoint.updateInterface(newEndpoint)),
             Observable.of(
               Actions.endpoint.getAccountsTransactions(
@@ -661,7 +670,7 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
               )
             )
           )
-        )
+        })
         .catch(error => {
           console.log(error)
           // return Observable.of({

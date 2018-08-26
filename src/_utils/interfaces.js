@@ -121,7 +121,7 @@ class Interfaces {
       // Check if MetaMask is connected to the same network as the endpoint
       let accounts = await web3.eth.getAccounts()
       let metaMaskLocked = accounts.length === 0 ? true : false
-      console.log(metaMaskLocked)
+      // console.log(metaMaskLocked)
       let metaMaskNetworkId = await web3.eth.net.getId()
       let currentState = this._success
       if (metaMaskNetworkId !== parityNetworkId) {
