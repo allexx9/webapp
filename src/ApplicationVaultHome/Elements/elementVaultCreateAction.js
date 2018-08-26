@@ -36,8 +36,7 @@ class ElementVaultCreateAction extends React.Component {
   static propTypes = {
     // vaultDetails: PropTypes.object.isRequired,
     accounts: PropTypes.array.isRequired,
-    dispatch: PropTypes.func.isRequired,
-    snackBar: PropTypes.func
+    dispatch: PropTypes.func.isRequired
   }
 
   state = {
@@ -104,7 +103,7 @@ class ElementVaultCreateAction extends React.Component {
 
   onChangeName = (event, vaultName) => {
     this.setState({
-      vaultName: vaultName.toLowerCase(),
+      vaultName: vaultName,
       vaultNameError: validateNewName(vaultName)
     })
   }
@@ -186,7 +185,9 @@ class ElementVaultCreateAction extends React.Component {
         })
         .catch(error => {
           const errorArray = error.message.split(/\r?\n/)
-          this.props.snackBar(errorArray[0])
+          this.props.dispatch(
+            Actions.notifications.queueWarningNotification(errorArray[0])
+          )
           transactionDetails.status = 'error'
           transactionDetails.error = errorArray[0]
           console.log(error)
@@ -263,25 +264,13 @@ class ElementVaultCreateAction extends React.Component {
       fontSize: 16
     }
 
-    const buttonAccountType = {
-      border: '1px solid',
-      borderColor: Colors.blueGrey500
-      // width: "140px"
-    }
     const nameLabel = 'The name of your brand new vault'
     const symbolLabel = 'The symbol of your brand new vault'
 
     if (openAuth) {
       return (
         <div>
-          <FlatButton
-            label="Deploy"
-            primary={true}
-            onClick={this.handleOpen}
-            labelStyle={labelStyle}
-            backgroundColor={Colors.blueGrey500}
-            hoverColor={Colors.blueGrey300}
-          />
+          <ButtonDeployPool handleOpen={this.handleOpen} fundType="vault" />
           <ElementFundActionAuthorization
             vaultDetails={vaultDetails}
             authMsg={authMsg}

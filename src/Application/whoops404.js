@@ -49,10 +49,7 @@ class Whoops404 extends Component {
   }
 
   static contextTypes = {
-    api: PropTypes.object.isRequired,
-    isConnected: PropTypes.bool.isRequired,
-    isSyncing: PropTypes.bool.isRequired,
-    syncStatus: PropTypes.object.isRequired
+    api: PropTypes.object.isRequired
   }
 
   UNSAFE_componentWillMount() {}
@@ -60,7 +57,8 @@ class Whoops404 extends Component {
   componentWillUnmount() {}
 
   static propTypes = {
-    location: PropTypes.object.isRequired
+    location: PropTypes.object.isRequired,
+    app: PropTypes.object.isRequired
   }
 
   handleToggleNotifications = () => {
@@ -69,6 +67,7 @@ class Whoops404 extends Component {
 
   render() {
     const { location } = this.props
+    const { isSyncing, syncStatus, isConnected } = this.props.app
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
         <Grid fluid className={styles.maincontainer}>
@@ -84,7 +83,7 @@ class Whoops404 extends Component {
           </Row>
           <Row className={classNames(styles.content)}>
             <Col xs={12}>
-              {this.context.isConnected && !this.context.isSyncing ? (
+              {isConnected && !isSyncing ? (
                 // {false ? (
                 <div className="">
                   <h1>
@@ -93,8 +92,8 @@ class Whoops404 extends Component {
                 </div>
               ) : (
                 <ElementNotConnected
-                  isSyncing={this.context.isSyncing}
-                  syncStatus={this.context.syncStatus}
+                  isSyncing={isSyncing}
+                  syncStatus={syncStatus}
                 />
               )}
             </Col>

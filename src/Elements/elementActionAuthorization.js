@@ -15,7 +15,7 @@ export default class ElementActionAuthorization extends Component {
 
   static propTypes = {
     account: PropTypes.object.isRequired,
-    onClose: PropTypes.func.isRequired,
+    onClose: PropTypes.func,
     authMsg: PropTypes.string.isRequired,
     tokenDetails: PropTypes.object
   }

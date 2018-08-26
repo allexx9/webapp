@@ -61,14 +61,12 @@ class ApplicationDragoPage extends Component {
   }
 
   static contextTypes = {
-    api: PropTypes.object.isRequired,
-    isConnected: PropTypes.bool.isRequired,
-    isSyncing: PropTypes.bool.isRequired,
-    syncStatus: PropTypes.object.isRequired
+    api: PropTypes.object.isRequired
   }
 
   static propTypes = {
-    location: PropTypes.object
+    location: PropTypes.object.isRequired,
+    app: PropTypes.object.isRequired
   }
 
   UNSAFE_componentWillMount() {}
@@ -82,7 +80,7 @@ class ApplicationDragoPage extends Component {
   render() {
     const { notificationsOpen } = this.state
     const { location } = this.props
-    // console.log('is Manager = '+this.state.isManager)
+    const { isSyncing, syncStatus, isConnected } = this.props.app
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
         <Grid fluid className={styles.maincontainer}>
@@ -99,22 +97,17 @@ class ApplicationDragoPage extends Component {
           <MuiThemeProvider muiTheme={muiThemeVault}>
             <Row className={classNames(styles.content)}>
               <Col xs={12}>
-                {/* {this.context.isConnected && !this.context.isSyncing ? (
-                  // {false ? (
-                  <ApplicationVaultHome
-                    location={location}
-                    notificationsOpen={notificationsOpen}
-                    handleToggleNotifications={this.handleToggleNotifications}
-                  />
-                ) : (
-                    <ElementNotConnected/>
-                  )} */}
-
                 <ApplicationVaultHome
                   location={location}
                   notificationsOpen={notificationsOpen}
                   handleToggleNotifications={this.handleToggleNotifications}
                 />
+                {isConnected && !isSyncing ? null : (
+                  <ElementNotConnected
+                    isSyncing={isSyncing}
+                    syncStatus={syncStatus}
+                  />
+                )}
               </Col>
             </Row>
           </MuiThemeProvider>
