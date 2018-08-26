@@ -276,14 +276,7 @@ class ElementFundCreateAction extends React.Component {
     if (openAuth) {
       return (
         <div>
-          <FlatButton
-            label="Deploy"
-            primary={true}
-            onClick={this.handleOpen}
-            labelStyle={labelStyle}
-            backgroundColor={'#054186'}
-            hoverColor={Colors.blue300}
-          />
+          <ButtonDeployPool handleOpen={this.handleOpen} fundType="drago" />
           <ElementFundActionAuthorization
             dragoDetails={dragoDetails}
             authMsg={authMsg}
