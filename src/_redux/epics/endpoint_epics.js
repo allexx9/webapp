@@ -638,7 +638,6 @@ const checkMetaMaskIsUnlocked$ = (api, web3, endpoint) => {
 }
 
 export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
-  const options = { balance: true, supply: false, limit: 10, trader: true }
   return action$.ofType(TYPE_.CHECK_METAMASK_IS_UNLOCKED).mergeMap(action => {
     return Observable.timer(0, 1000).exhaustMap(() => {
       const currentState = state$.getState()
@@ -674,7 +673,7 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
         .catch(error => {
           console.log(error)
           // return Observable.of({
-          //   type: TYPE_.ADD_WARNING_NOTIFICATION,
+          //   type: TYPE_.QUEUE_WARNING_NOTIFICATION,
           //   payload: 'Unable to fetch accounts from MetaMask. Is it unlocket?'
           // })
         })

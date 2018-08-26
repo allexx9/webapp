@@ -1,7 +1,6 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
 import {
-  INIT_NOTIFICATION,
   IS_MANAGER,
   UPDATE_SELECTED_VAULT_DETAILS,
   UPDATE_TRANSACTIONS_VAULT_HOLDER,
@@ -11,6 +10,7 @@ import app from './app_actions'
 import drago from './drago_actions'
 import endpoint from './endpoint_actions'
 import exchange from './exchange'
+import notifications from './notifications_actions'
 import tokens from './tokens'
 import transactions from './transactions'
 
@@ -22,6 +22,8 @@ class actions {
   exchange = exchange
 
   endpoint = endpoint
+
+  notifications = notifications
 
   transactions = transactions
 
@@ -51,15 +53,6 @@ class actions {
       return {
         type: IS_MANAGER,
         payload: isManager
-      }
-    }
-  }
-
-  notifications = {
-    initNotificationsSystemAction: notificationSystem => {
-      return {
-        type: INIT_NOTIFICATION,
-        payload: notificationSystem
       }
     }
   }

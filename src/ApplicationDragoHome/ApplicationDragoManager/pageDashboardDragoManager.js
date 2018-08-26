@@ -106,6 +106,7 @@ class PageDashboardDragoManager extends Component {
   }
 
   handlesnackBarRequestClose = () => {
+    console.log('click snack')
     this.setState({
       snackBar: false,
       snackBarMsg: ''

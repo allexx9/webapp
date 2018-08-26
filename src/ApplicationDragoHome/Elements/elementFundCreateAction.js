@@ -39,6 +39,7 @@ class ElementFundCreateAction extends React.Component {
   static propTypes = {
     // dragoDetails: PropTypes.object.isRequired,
     accounts: PropTypes.array.isRequired,
+    endpoint: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired
   }
 
@@ -162,7 +163,6 @@ class ElementFundCreateAction extends React.Component {
         .createDrago(dragoName, dragoSymbol, this.state.account.address)
         .then(receipt => {
           console.log(receipt)
-          // this.props.snackBar('Deploy awaiting for authorization')
           if (account.source === 'MetaMask') {
             transactionDetails.status = 'executed'
             transactionDetails.receipt = receipt
@@ -191,7 +191,9 @@ class ElementFundCreateAction extends React.Component {
         .catch(error => {
           console.log(error)
           const errorArray = error.message.split(/\r?\n/)
-          this.props.snackBar(errorArray[0])
+          this.props.dispatch(
+            Actions.notifications.queueWarningNotification(errorArray[0])
+          )
           transactionDetails.status = 'error'
           transactionDetails.error = errorArray[0]
           console.log(error)
@@ -259,7 +261,6 @@ class ElementFundCreateAction extends React.Component {
   render() {
     const { endpoint } = this.props
     const { openAuth, authMsg, authAccount, dragoDetails } = this.state
-    const hasError = !!(this.state.accountError || this.state.amountError)
     const labelStyle = {
       color: '#FFFFFF',
       fontWeight: 700
