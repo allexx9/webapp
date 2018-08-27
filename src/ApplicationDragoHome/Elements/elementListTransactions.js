@@ -22,7 +22,7 @@ import BigNumber from 'bignumber.js'
 
 class ElementListTransactions extends PureComponent {
   static propTypes = {
-    list: PropTypes.object.isRequired,
+    list: PropTypes.array.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
     renderCopyButton: PropTypes.func.isRequired,
@@ -34,11 +34,7 @@ class ElementListTransactions extends PureComponent {
     const { list } = this.props
     const sortDirection = SortDirection.ASC
     const sortedList = list
-      .sortBy(item => item.timestamp)
-      .update(
-        list => (sortDirection === SortDirection.DESC ? list : list.reverse())
-      )
-    const rowCount = list.size
+    const rowCount = list.length
 
     this.state = {
       disableHeader: false,
@@ -66,13 +62,8 @@ class ElementListTransactions extends PureComponent {
 
   UNSAFE_componentWillReceiveProps(nextProps) {
     const { list } = nextProps
-    const sortDirection = SortDirection.ASC
     const sortedList = list
-      .sortBy(item => item.timestamp)
-      .update(
-        list => (sortDirection === SortDirection.DESC ? list : list.reverse())
-      )
-    const rowCount = list.size
+    const rowCount = list.length
     this.setState({
       sortedList: sortedList,
       rowCount: rowCount
@@ -86,7 +77,6 @@ class ElementListTransactions extends PureComponent {
       disableHeader,
       headerHeight,
       height,
-      hideIndexRow,
       overscanRowCount,
       rowHeight,
       rowCount,
@@ -94,8 +84,7 @@ class ElementListTransactions extends PureComponent {
       sortBy,
       sortDirection,
       sortedList,
-      useDynamicRowHeight,
-      list
+      useDynamicRowHeight
     } = this.state
 
     const rowGetter = ({ index }) => this._getDatum(sortedList, index)
@@ -108,7 +97,6 @@ class ElementListTransactions extends PureComponent {
               {({ width }) => (
                 <Table
                   id={'transactions-table'}
-                  ref="Table"
                   disableHeader={disableHeader}
                   headerClassName={styles.headerColumn}
                   headerHeight={headerHeight}
@@ -290,13 +278,12 @@ class ElementListTransactions extends PureComponent {
   }
 
   _getDatum(list, index) {
-    return list.get(index % list.size)
+    return list[index]
   }
 
   _getRowHeight({ index }) {
     const { list } = this.state
-
-    return this._getDatum(list, index).size
+    return this._getDatum(list, index).length
   }
 
   _headerRenderer({ dataKey, sortBy, sortDirection }) {

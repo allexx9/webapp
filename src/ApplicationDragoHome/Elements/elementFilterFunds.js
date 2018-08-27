@@ -4,30 +4,27 @@ import TextField from 'material-ui/TextField'
 
 class FilterFunds extends Component {
   static propTypes = {
-    list: PropTypes.object,
-    filterList: PropTypes.func
+    list: PropTypes.array.isRequired,
+    filterList: PropTypes.func.isRequired
   }
 
   static defaultProps = {
-    list: {},
+    list: [],
     filterList: val => val
   }
 
   filterFunds = (event, newValue) => {
-    const { list, filterList } = this.props
+    const { list } = this.props
     const inputValue = newValue.trim().toLowerCase()
     const inputLength = inputValue.length
-    const funds = list.toJS()
     const filteredFunds = () => {
       return inputLength === 0
-        ? list.toJS()
-        : funds.filter(
-            fund =>
-              fund.params.name.value.toLowerCase().slice(0, inputLength) ===
-              inputValue
+        ? list
+        : list.filter(
+            item => item.name.toLowerCase().slice(0, inputLength) === inputValue
           )
     }
-    filterList(filteredFunds())
+    this.props.filterList(filteredFunds())
   }
 
   render() {

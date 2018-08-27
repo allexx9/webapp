@@ -10,7 +10,6 @@ import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import Web3 from 'web3'
-import rp from 'request-promise'
 import styles from './exchangeBox.module.css'
 import utils from '../../_utils/utils'
 

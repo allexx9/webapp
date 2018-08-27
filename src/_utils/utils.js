@@ -650,7 +650,16 @@ class utilities {
                   .then(() => {
                     let logs = getSymbols()
                     return Promise.all(getTimestamp(logs)).then(logs => {
-                      let results = [balancesList, logs, supply]
+                      const balancesListSorted = balancesList.sort(function(
+                        a,
+                        b
+                      ) {
+                        if (a.symbol < b.symbol) return -1
+                        if (a.symbol > b.symbol) return 1
+                        return 0
+                      })
+                      let results = [balancesListSorted, logs, supply]
+                      console.log(results)
                       return results
                     })
                   })
@@ -726,7 +735,6 @@ class utilities {
         // } else {
         //   symbol = params.symbol.value
         // }
-        console.log(params)
         const dragoData = {
           symbol: params.symbol.value,
           dragoId: null,
@@ -913,7 +921,6 @@ class utilities {
                   poolApi.contract.dragoregistry
                     .fromAddress(k)
                     .then(dragoDetails => {
-                      console.log(dragoDetails)
                       const dragoData = {
                         symbol: dragoDetails[2].trim(),
                         dragoId: dragoDetails[3].toFixed(),
@@ -1088,6 +1095,17 @@ class utilities {
                   .then(() => {
                     let logs = getSymbols()
                     return Promise.all(getTimestamp(logs)).then(logs => {
+                      balancesList.sort(function(a, b) {
+                        if (a.symbol < b.symbol) return -1
+                        if (a.symbol > b.symbol) return 1
+                        return 0
+                      })
+                      logs.reverse()
+                      supply.sort(function(a, b) {
+                        if (a.symbol < b.symbol) return -1
+                        if (a.symbol > b.symbol) return 1
+                        return 0
+                      })
                       let results = [balancesList, logs, supply]
                       return results
                     })

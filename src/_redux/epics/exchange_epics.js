@@ -22,8 +22,6 @@ import 'rxjs/observable/timer'
 import { Observable } from 'rxjs/Observable'
 // import { timer } from 'rxjs/observable/timer'
 import 'rxjs/add/observable/forkJoin'
-
-// import rp from 'request-promise'
 import {
   // getHistoricalPricesDataFromERCdEX,
   getTradeHistoryLogsFromRelayERCdEX

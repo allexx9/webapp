@@ -296,12 +296,14 @@ class PageDashboardDragoTrader extends Component {
                     <div className={styles.sectionParagraph}>
                       Your last 20 transactions:
                     </div>
-
                     <ElementListWrapper
                       list={dragoTransactionsLogs}
                       renderCopyButton={this.renderCopyButton}
                       renderEtherscanButton={this.renderEtherscanButton}
-                      // loading={this.state.loading}
+                      pagination={{
+                        display: 10,
+                        number: 1
+                      }}
                     >
                       <ElementListTransactions />
                     </ElementListWrapper>

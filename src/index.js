@@ -13,7 +13,7 @@ import ReactDOM from 'react-dom'
 // import logger from 'redux-logger'
 
 import registerServiceWorker from './registerServiceWorker'
-import thunkMiddleware from 'redux-thunk'
+// import thunkMiddleware from 'redux-thunk'
 // import { composeWithDevTools } from 'redux-devtools-extension';
 import * as ACTIONS from './_redux/actions/const'
 import { PersistGate } from 'redux-persist/integration/react'
@@ -77,7 +77,7 @@ const notificationsMiddleWare = store => next => action => {
 }
 
 const middlewares = [
-  thunkMiddleware,
+  // thunkMiddleware,
   epicMiddleware,
   relayActionsMiddleWare,
   notificationsMiddleWare

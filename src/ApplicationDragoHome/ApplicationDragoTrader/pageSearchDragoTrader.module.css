@@ -1,4 +1,4 @@
-.paperContainer {
+.pageContainer {
   margin-top: 10px;
   display: 'inline-block';
 }
@@ -28,6 +28,13 @@
 .transactionsStyle {
   height: 100%;
   width: 100%;
-  padding: 20px;
+  padding: 45px 20px 20px 20px;
+  display: 'inline-block';
+}
+
+.filterBox {
+  height: 100%;
+  width: 100%;
+  padding: 45px 20px 20px 20px;
   display: 'inline-block';
 }

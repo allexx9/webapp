@@ -10,12 +10,14 @@ import styles from './userDashboardHeader.module.css'
 export default class UserDashboardHeader extends Component {
   static propTypes = {
     fundType: PropTypes.string.isRequired,
-    userType: PropTypes.string.isRequired
+    userType: PropTypes.string.isRequired,
+    icon: PropTypes.object
   }
 
   static defaultProps = {
     fundType: 'drago',
-    userType: 'holder'
+    userType: 'holder',
+    icon: <ActionHome />
   }
 
   render() {
@@ -64,7 +66,7 @@ export default class UserDashboardHeader extends Component {
             <div className={styles.identityIconContainer}>
               <Avatar
                 size={60}
-                icon={<ActionHome />}
+                icon={this.props.icon}
                 className={styles.avatar}
               />
             </div>
