@@ -555,7 +555,7 @@ class ElementFundActions extends React.Component {
     const DIVISOR = 10 ** 6 //dragos are divisible by 1 million
     const { account } = this.state
     const amount = new BigNumber(this.state.unitsSummary)
-      .mul(DIVISOR)
+      .times(DIVISOR)
       .toFixed(0)
     const authMsg =
       'You sold ' +

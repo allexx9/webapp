@@ -17,7 +17,8 @@ import PoolApi from '../../PoolsApi/src'
 
 import {
   GET_TOKEN_BALANCES_DRAGO,
-  QUEUE_ERROR_NOTIFICATION
+  QUEUE_ERROR_NOTIFICATION,
+  UPDATE_ELEMENT_LOADING
 } from '../actions/const'
 
 import { BigNumber } from '../../../node_modules/bignumber.js/bignumber'
@@ -73,6 +74,24 @@ const getTokensBalances$ = (dragoDetails, api) => {
       } else {
       }
     }
+    // test = Object.assign(dragoAssets)
+    // test.sort(function(a, b) {
+    //   let symbolA = a.symbol.toUpperCase()
+    //   let symbolB = b.symbol.toUpperCase()
+    //   if (symbolA < symbolB) {
+    //     return -1
+    //   }
+    //   if (symbolA > symbolB) {
+    //     return 1
+    //   }
+    //   // names must be equal
+    //   return 0
+    // })
+    // dragoAssets.sort(function(a, b) {
+    //   if (a.symbol < b.symbol) return -1
+    //   if (a.symbol > b.symbol) return 1
+    //   return 0
+    // })
     return dragoAssets
   }
   return Observable.fromPromise(
@@ -85,6 +104,15 @@ const getTokensBalances$ = (dragoDetails, api) => {
 export const getTokensBalancesEpic = action$ => {
   return action$.ofType(GET_TOKEN_BALANCES_DRAGO).mergeMap(action => {
     return getTokensBalances$(action.payload.dragoDetails, action.payload.api)
+      .map(dragoAssets => {
+        const ordered = {}
+        Object.keys(dragoAssets)
+          .sort()
+          .forEach(function(key) {
+            ordered[key] = dragoAssets[key]
+          })
+        return ordered
+      })
       .mergeMap(dragoAssets =>
         Observable.concat(
           // Observable.of(
@@ -94,6 +122,10 @@ export const getTokensBalancesEpic = action$ => {
           //     ERC20_TOKENS['kovan'].WETH.address
           //   )
           // ),
+          // Observable.of({
+          //   type: UPDATE_ELEMENT_LOADING,
+          //   payload: { marketBox: true }
+          // }),
           Observable.of(
             Actions.drago.updateSelectedDragoAction({
               assets: Object.values(dragoAssets)
@@ -111,9 +143,14 @@ export const getTokensBalancesEpic = action$ => {
               action.payload.api._rb.network.id
             )
           )
+          // Observable.of({
+          //   type: UPDATE_ELEMENT_LOADING,
+          //   payload: { marketBox: false }
+          // })
         )
       )
-      .catch(() => {
+      .catch(error => {
+        console.log(error)
         return Observable.of({
           type: QUEUE_ERROR_NOTIFICATION,
           payload: 'Error fetching fund assets balances.'

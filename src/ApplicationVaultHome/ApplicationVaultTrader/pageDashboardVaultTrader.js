@@ -305,6 +305,10 @@ class PageDashboardVaultTrader extends Component {
                       list={vaultTransactionsLogs}
                       renderCopyButton={this.renderCopyButton}
                       renderEtherscanButton={this.renderEtherscanButton}
+                      pagination={{
+                        display: 10,
+                        number: 1
+                      }}
                     >
                       <ElementListTransactions />
                     </ElementListWrapper>

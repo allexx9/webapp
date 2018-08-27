@@ -7,21 +7,22 @@ import {
 } from 'react-virtualized'
 import { Col, Row } from 'react-flexbox-grid'
 import { Link, withRouter } from 'react-router-dom'
-import BigNumber from 'bignumber.js'
 import FlatButton from 'material-ui/FlatButton'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
+
 import utils from '../../_utils/utils'
 
 import styles from './elementListTransactions.module.css'
 
 import * as Colors from 'material-ui/styles/colors'
+import BigNumber from 'bignumber.js'
 
 // const list = Immutable.List(generateRandomList());
 
 class ElementListTransactions extends PureComponent {
   static propTypes = {
-    list: PropTypes.object.isRequired,
+    list: PropTypes.array.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
     renderCopyButton: PropTypes.func.isRequired,
@@ -31,10 +32,9 @@ class ElementListTransactions extends PureComponent {
   constructor(props, context) {
     super(props, context)
     const { list } = this.props
-    const sortBy = 'symbol'
     const sortDirection = SortDirection.ASC
-    const sortedList = this._sortList({ sortBy, sortDirection })
-    const rowCount = list.size
+    const sortedList = list
+    const rowCount = list.length
 
     this.state = {
       disableHeader: false,
@@ -46,7 +46,6 @@ class ElementListTransactions extends PureComponent {
       rowHeight: 40,
       rowCount: rowCount,
       scrollToIndex: undefined,
-      sortBy,
       sortDirection,
       sortedList,
       useDynamicRowHeight: false
@@ -63,14 +62,8 @@ class ElementListTransactions extends PureComponent {
 
   UNSAFE_componentWillReceiveProps(nextProps) {
     const { list } = nextProps
-    const sortBy = 'symbol'
-    const sortDirection = SortDirection.ASC
     const sortedList = list
-      .sortBy(item => item.timestamp)
-      .update(
-        list => (sortDirection === SortDirection.DESC ? list : list.reverse())
-      )
-    const rowCount = list.size
+    const rowCount = list.length
     this.setState({
       sortedList: sortedList,
       rowCount: rowCount
@@ -84,7 +77,6 @@ class ElementListTransactions extends PureComponent {
       disableHeader,
       headerHeight,
       height,
-      hideIndexRow,
       overscanRowCount,
       rowHeight,
       rowCount,
@@ -92,8 +84,7 @@ class ElementListTransactions extends PureComponent {
       sortBy,
       sortDirection,
       sortedList,
-      useDynamicRowHeight,
-      list
+      useDynamicRowHeight
     } = this.state
 
     const rowGetter = ({ index }) => this._getDatum(sortedList, index)
@@ -106,7 +97,6 @@ class ElementListTransactions extends PureComponent {
               {({ width }) => (
                 <Table
                   id={'transactions-table'}
-                  ref="Table"
                   disableHeader={disableHeader}
                   headerClassName={styles.headerColumn}
                   headerHeight={headerHeight}
@@ -157,7 +147,7 @@ class ElementListTransactions extends PureComponent {
                   {/* <Column
                     width={100}
                     disableSort
-                    label="Symbol"
+                    label="SYMBOL"
                     cellDataGetter={({rowData}) => rowData}
                     dataKey="symbol"
                     cellRenderer={({cellData}) => this.renderSymbol(cellData)}
@@ -235,7 +225,7 @@ class ElementListTransactions extends PureComponent {
   }
 
   renderSymbol(input) {
-    return <div>{input.symbol}</div>
+    return <div>{input.symbol.toUpperCase()}</div>
   }
 
   renderEthValue(ethValue) {
@@ -305,19 +295,18 @@ class ElementListTransactions extends PureComponent {
     return (
       <div>
         {new BigNumber(rowData.drgvalue).toFixed(4)}{' '}
-        <small>{rowData.symbol.toUpperCase()}</small>
+        <small>{rowData.symbol}</small>
       </div>
     )
   }
 
   _getDatum(list, index) {
-    return list.get(index % list.size)
+    return list[index]
   }
 
   _getRowHeight({ index }) {
     const { list } = this.state
-
-    return this._getDatum(list, index).size
+    return this._getDatum(list, index).length
   }
 
   _headerRenderer({ dataKey, sortBy, sortDirection }) {

@@ -148,7 +148,7 @@ export const orderBookEpic = (action$, state$) => {
     .bufferCount(1)
     .map(ticker => {
       console.log(RELAY_MSG_FROM_WEBSOCKET)
-      const currentState = state$.getState()
+      const currentState = state$.value
       const lastItem = ticker[0].pop()
       return [lastItem, currentState]
     })

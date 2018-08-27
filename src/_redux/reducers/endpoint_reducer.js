@@ -10,8 +10,7 @@ function endpointsReducer(state = initialState.endpoint, action) {
       console.log(endpoint)
       return {
         ...state,
-        ...action.payload,
-        pino: 'ok'
+        ...action.payload
       }
 
     default:

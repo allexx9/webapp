@@ -1,7 +1,7 @@
 import { Redirect, Route, Switch, withRouter } from 'react-router-dom'
 import PageDashboardVaultTrader from './pageDashboardVaultTrader'
+import PageSearchVaultTrader from './pageSearchVaultTrader'
 import PageVaultDetailsVaultTrader from './pageVaultDetailsVaultTrader'
-import PageVaultsVaultTrader from './pageSearchVaultTrader'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
@@ -22,7 +22,7 @@ class ApplicationVaultTrader extends Component {
         <Route
           exact
           path={match.path + '/pools'}
-          render={props => <PageVaultsVaultTrader {...props} />}
+          render={props => <PageSearchVaultTrader {...props} />}
         />
         <Route
           path={match.path + '/pools/:dragoid/:dragocode'}

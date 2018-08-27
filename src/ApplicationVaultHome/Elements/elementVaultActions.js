@@ -153,7 +153,6 @@ class ElementVaultActions extends React.Component {
   UNSAFE_componentWillMount() {}
 
   UNSAFE_componentWillReceiveProps(nextProps) {
-    console.log(nextProps)
     if (this.props.actionSelected.action !== nextProps.actionSelected.action) {
       nextProps.actionSelected.action === 'deposit'
         ? this.handleBuyAction()
@@ -540,7 +539,7 @@ class ElementVaultActions extends React.Component {
     const DIVISOR = 10 ** 6 //dragos are divisible by 1 million
     const accountAddress = this.state.account.address
     const amount = new BigNumber(this.state.unitsSummary)
-      .mul(DIVISOR)
+      .times(DIVISOR)
       .toFixed(0)
     const authMsg =
       'You withdrew ' +
@@ -784,7 +783,7 @@ class ElementVaultActions extends React.Component {
             </TableRowColumn>
             <TableRowColumn className={styles.detailsTableCell2}>
               {new BigNumber(
-                String((drgOrder * vaultDetails.price) / 100)
+                String((drgOrder * vaultDetails.fee) / 100)
               ).toFixed(4)}{' '}
               ETH
             </TableRowColumn>
@@ -795,7 +794,7 @@ class ElementVaultActions extends React.Component {
             </TableRowColumn>
             <TableRowColumn className={styles.detailsTableCell2}>
               {new BigNumber(
-                String(newDrgBalance - (drgOrder * vaultDetails.price) / 100)
+                String(newDrgBalance - (drgOrder * vaultDetails.fee) / 100)
               ).toFixed(4)}{' '}
               ETH
             </TableRowColumn>
@@ -869,8 +868,8 @@ class ElementVaultActions extends React.Component {
                       {this.state.action.toUpperCase()}
                     </span>
                     &nbsp;FEE&nbsp;
-                    <span className={styles.summary}>{vaultDetails.price}</span>
-                    %
+                    <span className={styles.summary}>{vaultDetails.fee}</span>
+                    &nbsp;%
                   </h2>
                 </Col>
               </Row>

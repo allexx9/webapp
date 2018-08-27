@@ -70,7 +70,7 @@ class ElementNotConnected extends Component {
   // }
 
   renderSyncing = () => {
-    // const progressWarp = new BigNumber(this.context.syncStatus.warpChunksProcessed).div(new BigNumber(this.context.syncStatus.warpChunksAmount)).mul(100).toFixed(2)
+    // const progressWarp = new BigNumber(this.context.syncStatus.warpChunksProcessed).div(new BigNumber(this.context.syncStatus.warpChunksAmount)).times(100).toFixed(2)
     return (
       <Dialog
         open={true}
@@ -172,19 +172,20 @@ class ElementNotConnected extends Component {
   }
 
   renderTitle = () => {
-    return (
-      <Row className={styles.modalHeader}>
-        <Col xs={12}>
-          <Row className={styles.modalHeaderActions} middle="xs" center="xs">
-            <Col xs>
-              <div>
-                <img src="img/Logo-RigoblockRGB-OUT-01.png" alt="logo" />
-              </div>
-            </Col>
-          </Row>
-        </Col>
-      </Row>
-    )
+    return null
+    // return (
+    //   <Row className={styles.modalHeader}>
+    //     <Col xs={12}>
+    //       <Row className={styles.modalHeaderActions} middle="xs" center="xs">
+    //         <Col xs>
+    //           <div>
+    //             <img src="img/Logo-RigoblockRGB-OUT-01.png" alt="logo" />
+    //           </div>
+    //         </Col>
+    //       </Row>
+    //     </Col>
+    //   </Row>
+    // )
   }
 
   render() {

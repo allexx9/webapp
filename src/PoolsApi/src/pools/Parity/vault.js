@@ -76,7 +76,7 @@ class VaultParity {
     }
     // return instance.buyVault.postTransaction(options, [])
     return instance.buyVault.estimateGas(options, []).then(gasEstimate => {
-      options.gas = gasEstimate.mul(1.2).toFixed(0)
+      options.gas = gasEstimate.times(1.2).toFixed(0)
       console.log(
         `Buy Vault: gas estimated as ${gasEstimate.toFixed(0)} setting to ${
           options.gas
@@ -116,7 +116,7 @@ class VaultParity {
       from: accountAddress
     }
     return instance.sellVault.estimateGas(options, values).then(gasEstimate => {
-      options.gas = gasEstimate.mul(1.2).toFixed(0)
+      options.gas = gasEstimate.times(1.2).toFixed(0)
       console.log(
         `Sell Vault: gas estimated as ${gasEstimate.toFixed(0)} setting to ${
           options.gas
@@ -145,7 +145,7 @@ class VaultParity {
     return instance.setTransactionFee
       .estimateGas(options, values)
       .then(gasEstimate => {
-        options.gas = gasEstimate.mul(1.2).toFixed(0)
+        options.gas = gasEstimate.times(1.2).toFixed(0)
         console.log(
           `setTransactionFee Vault: gas estimated as ${gasEstimate.toFixed(
             0

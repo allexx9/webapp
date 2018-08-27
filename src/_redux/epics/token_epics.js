@@ -178,7 +178,7 @@ export const getCandlesGroupDataEpic = (action$, state$) => {
         action.payload.relay,
         action.payload.networkId,
         utils.ethfinexTickersToArray(
-          state$.getState().transactionsDrago.selectedDrago.assets
+          state$.value.transactionsDrago.selectedDrago.assets
         ),
         action.payload.startDate
       )
@@ -195,7 +195,8 @@ export const getCandlesGroupDataEpic = (action$, state$) => {
         .map(historical => {
           return updateGroupCandles(historical)
         })
-        .catch(() => {
+        .catch(error => {
+          console.warn(error)
           return Observable.of({
             type: QUEUE_ERROR_NOTIFICATION,
             payload: 'Error fetching candles data.'
@@ -225,7 +226,7 @@ export const getPricesEpic = (action$, state$) =>
     return Observable.timer(0, 10000)
       .takeUntil(action$.ofType(TOKEN_PRICE_TICKERS_FETCH_STOP))
       .exhaustMap(() => {
-        const currentState = state$.getState()
+        const currentState = state$.value
         const tickersString = utils
           .ethfinexTickersToArray(
             currentState.transactionsDrago.selectedDrago.assets

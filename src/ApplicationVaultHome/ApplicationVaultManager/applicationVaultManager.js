@@ -10,7 +10,6 @@ import { Redirect, Switch } from 'react-router-dom'
 class applicationVaultManager extends Component {
   static propTypes = {
     location: PropTypes.object.isRequired,
-    accounts: PropTypes.array.isRequired,
     match: PropTypes.object.isRequired
   }
 

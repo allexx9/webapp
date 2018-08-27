@@ -47,7 +47,7 @@ class OrderSummary extends Component {
     fee = new BigNumber(
       web3.utils.fromWei(order.details.order.takerFee, 'ether')
     ).toFixed(5)
-    total = new BigNumber(price()).mul(amount()).toFixed(5)
+    total = new BigNumber(price()).times(amount()).toFixed(5)
 
     order.takerOrder
       ? (action = order.orderType === 'asks' ? 'buy' : 'sell')

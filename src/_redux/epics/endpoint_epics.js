@@ -248,7 +248,7 @@ export const attacheInterfaceEpic = action$ =>
 //
 
 export const updateAccounts = async (api, blockNumber, state$) => {
-  const currentState = state$.getState()
+  const currentState = state$.value
   const { endpoint } = currentState
   let newEndpoint = {}
   const prevBlockNumber = endpoint.prevBlockNumber
@@ -394,11 +394,11 @@ export const updateAccounts = async (api, blockNumber, state$) => {
         networkStatus: MSG_NETWORK_STATUS_OK,
         accountsBalanceError: false,
         grgBalance: grgBalances.reduce(
-          (total, balance) => total.add(balance),
+          (total, balance) => total.plus(balance),
           new BigNumber(0)
         ),
         ethBalance: ethBalances.reduce(
-          (total, balance) => total.add(balance),
+          (total, balance) => total.plus(balance),
           new BigNumber(0)
         ),
         accounts: [].concat(
@@ -443,7 +443,7 @@ export const updateAccounts = async (api, blockNumber, state$) => {
 }
 
 const monitorAccounts$ = (web3, api, state$) => {
-  // const currentState = state$.getState()
+  // const currentState = state$.value
   // const networkName = currentState.endpoint.networkInfo.name
 
   return Observable.create(observer => {
@@ -509,7 +509,7 @@ export const monitorAccountsEpic = (action$, state$) =>
       })
       .flatMap(accountsUpdate => {
         const observablesArray = Array(0)
-        let options = state$.getState().user.isManager
+        let options = state$.value.user.isManager
           ? { balance: false, supply: true, limit: 10, trader: false }
           : { balance: true, supply: false, limit: 10, trader: true }
         observablesArray.push(
@@ -564,7 +564,7 @@ export const getAccountsTransactionsEpic = (action$, state$) =>
     )
       .map(results => {
         console.log(results)
-        const currentState = state$.getState()
+        const currentState = state$.value
         if (currentState.user.isManager) {
           return Actions.drago.updateTransactionsDragoManagerAction(results)
         }
@@ -619,7 +619,6 @@ const checkMetaMaskIsUnlocked$ = (api, web3, endpoint) => {
               const networkId = endpoint.networkInfo.id
               const blockchain = new Interfaces(api, networkId)
               return blockchain.attachInterfaceInfuraV2().then(result => {
-                console.log(result)
                 if (result.accounts.length !== 0) {
                   newAccounts.push(result.accounts[0])
                 }
@@ -627,11 +626,11 @@ const checkMetaMaskIsUnlocked$ = (api, web3, endpoint) => {
                 newEndpoint.accounts = newAccounts
                 // Update total ETH and GRG balance
                 newEndpoint.ethBalance = newEndpoint.accounts.reduce(
-                  (total, account) => total.add(account.ethBalanceWei),
+                  (total, account) => total.plus(account.ethBalanceWei),
                   new BigNumber(0)
                 )
                 newEndpoint.grgBalance = newEndpoint.accounts.reduce(
-                  (total, account) => total.add(account.grgBalanceWei),
+                  (total, account) => total.plus(account.grgBalanceWei),
                   new BigNumber(0)
                 )
                 return newEndpoint
@@ -663,7 +662,8 @@ const checkMetaMaskIsUnlocked$ = (api, web3, endpoint) => {
 export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
   return action$.ofType(TYPE_.CHECK_METAMASK_IS_UNLOCKED).mergeMap(action => {
     return Observable.timer(0, 1000).exhaustMap(() => {
-      const currentState = state$.getState()
+      console.log(state$.value)
+      const currentState = state$.value
       // console.log(currentState)
       return checkMetaMaskIsUnlocked$(
         action.payload.api,

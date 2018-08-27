@@ -12,10 +12,6 @@ import React, { Component } from 'react'
 import WalletSetup from '../_atomic/organisms/walletSetup'
 import styles from './applicationHome.module.css'
 
-import injectTapEventPlugin from 'react-tap-event-plugin'
-
-injectTapEventPlugin()
-
 function mapStateToProps(state) {
   return state
 }

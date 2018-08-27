@@ -307,12 +307,12 @@ export const signOrder = async (order, ZeroExConfig) => {
   switch (order.orderType) {
     case 'asks':
       makerTokenAmount = new BigNumber(order.orderFillAmount)
-      takerTokenAmount = new BigNumber(makerTokenAmount).mul(
+      takerTokenAmount = new BigNumber(makerTokenAmount).times(
         new BigNumber(order.orderPrice)
       )
       break
     case 'bids':
-      makerTokenAmount = new BigNumber(order.orderFillAmount).mul(
+      makerTokenAmount = new BigNumber(order.orderFillAmount).times(
         new BigNumber(order.orderPrice)
       )
       takerTokenAmount = new BigNumber(order.orderFillAmount)
@@ -903,10 +903,10 @@ class Exchange {
   //   switch (order.orderType) {
   //     case "asks":
   //       makerTokenAmount = new BigNumber(order.orderFillAmount)
-  //       takerTokenAmount = new BigNumber(makerTokenAmount).mul(new BigNumber(order.orderPrice))
+  //       takerTokenAmount = new BigNumber(makerTokenAmount).times(new BigNumber(order.orderPrice))
   //       break;
   //     case "bids":
-  //       makerTokenAmount = new BigNumber(order.orderFillAmount).mul(new BigNumber(order.orderPrice))
+  //       makerTokenAmount = new BigNumber(order.orderFillAmount).times(new BigNumber(order.orderPrice))
   //       takerTokenAmount = new BigNumber(order.orderFillAmount)
   //       break;
   //   }

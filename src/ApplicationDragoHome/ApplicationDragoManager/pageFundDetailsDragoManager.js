@@ -733,6 +733,9 @@ class PageFundDetailsDragoManager extends Component {
             })
         })
         Promise.all(promises).then(results => {
+          results.sort(function(x, y) {
+            return y.timestamp - x.timestamp
+          })
           this.props.dispatch(
             Actions.drago.updateSelectedDragoAction({ transactions: results })
           )

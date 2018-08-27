@@ -1,3 +1,4 @@
+import * as Colors from 'material-ui/styles/colors'
 import {
   AutoSizer,
   Column,
@@ -7,53 +8,50 @@ import {
 } from 'react-virtualized'
 import { Col, Row } from 'react-flexbox-grid'
 import { Link, withRouter } from 'react-router-dom'
+import { toUnitAmount } from '../../_utils/format'
 import BigNumber from 'bignumber.js'
+import BlokiesIcon from '../../_atomic/atoms/blokiesIcon'
 import FlatButton from 'material-ui/FlatButton'
-
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
+import styles from './elementListBalances.module.css'
 import utils from '../../_utils/utils'
 
-import styles from './elementListVaults.module.css'
+// import ChartBox from '../../_atomic/organisms/chartBox'
 
-class ElementListVaults extends PureComponent {
+// const list = Immutable.List(generateRandomList());
+
+class ElementListFunds extends PureComponent {
   static propTypes = {
-    list: PropTypes.object.isRequired,
+    list: PropTypes.array.isRequired,
     location: PropTypes.object.isRequired,
-    match: PropTypes.object.isRequired,
-    poolType: PropTypes.string.isRequired
+    match: PropTypes.object.isRequired
+    // renderCopyButton: PropTypes.func.isRequired,
+    // renderEtherscanButton: PropTypes.func.isRequired,
+    // dragoDetails: PropTypes.object.isRequired,
+    // assetsPrices: PropTypes.object.isRequired,
+    // assetsChart: PropTypes.object.isRequired
   }
 
   constructor(props, context) {
     super(props, context)
     const { list } = this.props
-
-    // Saving the list in the state
-    this.state = {
-      list: list
-    }
-
-    // Preparing the sorted list to be displayed
-    const sortBy = 'symbol'
-    const sortDirection = SortDirection.ASC
-    const sortedList = this._sortList({ sortBy, sortDirection })
-    const rowCount = list.size
-
-    // Initializing the state
+    const sortDirection = SortDirection.DESC
+    const sortedList = list
+    const rowCount = list.length
     this.state = {
       disableHeader: false,
       headerHeight: 30,
-      height: 600,
+      height: 650,
+      width: 600,
       hideIndexRow: false,
       overscanRowCount: 10,
-      rowHeight: 40,
+      rowHeight: 60,
       rowCount: rowCount,
       scrollToIndex: undefined,
-      sortBy,
       sortDirection,
       sortedList,
-      useDynamicRowHeight: false,
-      list: list
+      useDynamicRowHeight: false
     }
 
     this._getRowHeight = this._getRowHeight.bind(this)
@@ -66,19 +64,14 @@ class ElementListVaults extends PureComponent {
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
-    // Updating the list
-    const rowCount = nextProps.list.size
-    const { list, sortDirection } = nextProps
+    const { list } = nextProps
     const sortedList = list
-      .sortBy(item => item.params.symbol.value)
-      .update(
-        list => (sortDirection === SortDirection.DESC ? list.reverse() : list)
-      )
+    const rowCount = list.length
     this.setState({
-      sortedList,
-      rowCount: rowCount,
-      list: nextProps.list
+      sortedList: sortedList,
+      rowCount: rowCount
     })
+    // console.log(`${this.constructor.name} -> UNSAFE_componentWillReceiveProps`);
   }
 
   render() {
@@ -97,142 +90,326 @@ class ElementListVaults extends PureComponent {
     } = this.state
 
     const rowGetter = ({ index }) => this._getDatum(sortedList, index)
-    // const label = this.props.poolType === 'vault' ? 'VAULT CODE' : 'FUND CODE'
 
     return (
       <Row>
         <Col xs={12}>
-          <AutoSizer disableHeight>
-            {({ width }) => (
-              <Table
-                // ref={"Table"}
-                disableHeader={disableHeader}
-                headerClassName={styles.headerColumn}
-                headerHeight={headerHeight}
-                height={height}
-                noRowsRenderer={this._noRowsRenderer}
-                overscanRowCount={overscanRowCount}
-                rowClassName={this._rowClassName}
-                rowHeight={useDynamicRowHeight ? this._getRowHeight : rowHeight}
-                rowGetter={rowGetter}
-                rowCount={rowCount}
-                scrollToIndex={scrollToIndex}
-                sort={this._sort}
-                sortBy={sortBy}
-                sortDirection={sortDirection}
-                width={width}
-              >
-                {/* {!hideIndexRow && (
+          <div style={{ flex: '1 1 auto' }}>
+            <AutoSizer disableHeight>
+              {({ width }) => (
+                <Table
+                  id={'assets-table'}
+                  disableHeader={disableHeader}
+                  headerClassName={styles.headerColumn}
+                  headerHeight={headerHeight}
+                  height={height}
+                  noRowsRenderer={this._noRowsRenderer}
+                  overscanRowCount={overscanRowCount}
+                  rowClassName={this._rowClassName}
+                  rowHeight={
+                    useDynamicRowHeight ? this._getRowHeight : rowHeight
+                  }
+                  rowGetter={rowGetter}
+                  rowCount={rowCount}
+                  scrollToIndex={scrollToIndex}
+                  sort={this._sort}
+                  sortBy={sortBy}
+                  sortDirection={sortDirection}
+                  width={width}
+                >
                   <Column
-                    label="Index"
-                    cellDataGetter={({rowData}) => rowData.params.dragoId.value.c}
-                    dataKey="index"
-                    // disableSort={!this._isSortEnabled()}
-                    width={60}
+                    width={50}
+                    disableSort
+                    label="&nbsp;"
+                    cellDataGetter={({ rowData }) => rowData.address}
+                    dataKey="symbol"
+                    className={styles.exampleColumn}
+                    cellRenderer={({ rowData }) => this.renderIcon(rowData)}
+                    flexShrink={1}
                   />
-                )} */}
-                {/* <Column
-                  width={100}
-                  disableSort
-                  label="Blocknumber"
-                  cellDataGetter={({rowData}) => rowData.blockNumber.c[0]}
-                  dataKey="blocknumber"
-                  className={styles.exampleColumn}
-                  cellRenderer={({cellData}) => cellData}
-                /> */}
-                <Column
-                  width={100}
-                  disableSort
-                  label="VAULT CODE"
-                  cellDataGetter={({ rowData }) => rowData.params.symbol.value}
-                  dataKey="vaultcode"
-                  className={styles.exampleColumn}
-                  cellRenderer={({ rowData }) => this.renderISIN(rowData)}
-                  flexGrow={1}
-                />
-                {/* <Column
-                  width={100}
-                  label="SYMBOL"
-                  cellDataGetter={({rowData}) => rowData.params.symbol.value.toUpperCase()}
-                  dataKey="symbol"
-                  className={styles.exampleColumn}
-                  cellRenderer={({cellData}) => cellData}
-                /> */}
-                <Column
-                  width={210}
-                  disableSort
-                  label="NAME"
-                  cellDataGetter={({ rowData }) => rowData.params.name.value}
-                  dataKey="name"
-                  className={styles.exampleColumn}
-                  cellRenderer={({ rowData }) =>
-                    this.renderName(rowData.params.name.value)
-                  }
-                  flexGrow={1}
-                />
-                <Column
-                  width={210}
-                  disableSort
-                  label="ACTIONS"
-                  cellDataGetter={({ rowData }) => rowData.params.symbol.value}
-                  dataKey="actions"
-                  className={styles.exampleColumn}
-                  cellRenderer={({ cellData, rowData }) =>
-                    this.actionButton(rowData)
-                  }
-                  flexShrink={1}
-                />
-              </Table>
-            )}
-          </AutoSizer>
+                  <Column
+                    width={200}
+                    disableSort
+                    label="NAME"
+                    cellDataGetter={({ rowData }) => rowData.name}
+                    dataKey="name"
+                    className={styles.exampleColumn}
+                    cellRenderer={({ rowData }) => this.renderName(rowData)}
+                    flexShrink={1}
+                  />
+                  <Column
+                    width={150}
+                    disableSort
+                    label="CODE"
+                    cellDataGetter={({ rowData }) => rowData}
+                    dataKey="code"
+                    className={styles.exampleColumn}
+                    cellRenderer={({ rowData }) => this.renderISIN(rowData)}
+                    flexShrink={1}
+                  />
+                  {/* <Column
+                    width={30}
+                    disableSort
+                    label="TX"
+                    cellDataGetter={({ rowData }) => rowData}
+                    dataKey="tx"
+                    className={styles.exampleColumn}
+                    cellRenderer={({ rowData }) => this.renderTx(rowData)}
+                    flexShrink={1}
+                  /> */}
+                  {/* <Column
+                    width={100}
+                    disableSort
+                    label="PRICE ETH"
+                    cellDataGetter={({ rowData }) => rowData}
+                    dataKey="prices"
+                    className={styles.exampleColumn}
+                    cellRenderer={({ rowData }) => this.renderPrice(rowData)}
+                    flexGrow={1}
+                  /> */}
+                  {/* <Column
+                    width={150}
+                    disableSort
+                    label="UNITS"
+                    cellDataGetter={({ rowData }) => rowData.balance}
+                    dataKey="drg"
+                    className={styles.exampleColumn}
+                    cellRenderer={({ rowData }) => this.renderValue(rowData)}
+                    flexGrow={1}
+                  /> */}
+                  <Column
+                    width={210}
+                    disableSort
+                    label="ACTIONS"
+                    cellDataGetter={({ rowData }) => rowData.symbol}
+                    dataKey="actions"
+                    headerStyle={{ textAlign: 'right', paddingRight: '25px' }}
+                    className={styles.exampleColumn}
+                    cellRenderer={({ cellData, rowData }) =>
+                      this.actionButton(cellData, rowData)
+                    }
+                    flexGrow={1}
+                  />
+                </Table>
+              )}
+            </AutoSizer>
+          </div>
         </Col>
       </Row>
     )
   }
 
-  renderISIN(rowData) {
-    console.log(rowData)
-    const vaultId = new BigNumber(rowData.params.vaultId.value).toFixed()
-    const symbol = rowData.params.symbol.value
-    return utils.dragoISIN(symbol, vaultId)
+  renderISIN = rowData => {
+    return utils.dragoISIN(rowData.symbol, rowData.vaultId)
   }
 
-  actionButton(rowData) {
+  actionButton(cellData, rowData) {
     const { match } = this.props
-    const vaultId = new BigNumber(rowData.params.vaultId.value).toFixed()
-    const symbol = rowData.params.symbol.value
-    console.log(match.path)
-    const url = vaultId + '/' + utils.dragoISIN(symbol, vaultId)
+    const url =
+      rowData.vaultId + '/' + utils.dragoISIN(cellData, rowData.vaultId)
+    let poolType = match.path.includes('drago') ? 'drago' : 'vault'
     return (
-      <FlatButton
-        label="View"
-        primary={true}
-        containerElement={<Link to={match.path + '/' + url} />}
-      />
+      <div className={styles.actionButtonContainer}>
+        <FlatButton
+          label="View"
+          primary={true}
+          containerElement={
+            <Link
+              to={utils.rootPath(match.path) + '/' + poolType + '/pools/' + url}
+            />
+          }
+        />
+      </div>
     )
   }
 
-  renderLabel(rowData) {
-    console.log(rowData)
-    if (typeof rowData.params.vaultId !== 'undefined') {
-      return 'bla'
-    }
-    return <div>DRAGO CODE</div>
+  // renderChart(token) {
+  //   // const data = this.props.assetsChart[token.symbol].data
+  //   return <div className={styles.noDataChart}>No data</div>
+  // }
+
+  // actionButton(cellData, rowData) {
+  //   const { match } = this.props
+  //   const url =
+  //     rowData.params.vaultId.value.c +
+  //     '/' +
+  //     utils.dragoISIN(cellData, rowData.params.vaultId.value.c)
+  //   return (
+  //     <FlatButton
+  //       label="View"
+  //       primary={true}
+  //       containerElement={<Link to={match.path + '/' + url} />}
+  //     />
+  //   )
+  // }
+
+  renderIcon(input) {
+    return (
+      <div className={styles.fundIcon}>
+        <BlokiesIcon seed={input.name} size={12} scale={3} />
+      </div>
+    )
   }
 
-  renderName(drgname) {
-    const name = drgname.trim()
-    return <div>{name.charAt(0).toUpperCase() + name.slice(1)}</div>
+  renderName(fund) {
+    return (
+      <Row>
+        <Col xs={12} className={styles.symbolText}>
+          {fund.symbol.toUpperCase()}
+        </Col>
+        <Col xs={12} className={styles.nameText}>
+          {fund.name}
+        </Col>
+      </Row>
+    )
+  }
+
+  renderEthValue(ethValue) {
+    return (
+      <div>
+        {new BigNumber(ethValue).toFixed(4)} <small>ETH</small>
+      </div>
+    )
+  }
+
+  renderHolding(fund) {
+    return (
+      <Row>
+        <Col xs={12}>
+          <Row>
+            <Col xs={12}>
+              <div className={styles.holdingTitleText}>Amount</div>
+            </Col>
+            <Col xs={12}>
+              {fund.balance}
+              {/* <small className={styles.symbolLegendText}>
+                {fund.symbol.toUpperCase()}
+              </small> */}
+            </Col>
+          </Row>
+        </Col>
+
+        <Col xs={12}>
+          <Row>
+            {/* <Col xs={12}>
+              <div className={styles.holdingTitleText}>Price</div>
+            </Col>
+            <Col xs={12}>
+              {typeof this.props.assetsPrices[token.symbol] !== 'undefined' ? (
+                new BigNumber(
+                  this.props.assetsPrices[token.symbol].priceEth
+                ).toFixed(5)
+              ) : (
+                <small>N/A</small>
+              )}{' '}
+              <small className={styles.symbolLegendText}>ETH</small>
+            </Col> */}
+          </Row>
+        </Col>
+      </Row>
+    )
+  }
+
+  renderBalance(token) {
+    return (
+      <div>
+        {toUnitAmount(new BigNumber(token.balance), token.decimals).toFixed(4)}{' '}
+        <small>{token.symbol.toUpperCase()}</small>
+      </div>
+    )
+  }
+
+  renderTx(token) {
+    return (
+      <span>
+        {this.props.renderEtherscanButton(
+          'token',
+          token.address,
+          this.props.dragoDetails.address
+        )}
+      </span>
+    )
+  }
+
+  renderPrice(token) {
+    if (typeof this.props.assetsPrices[token.symbol] !== 'undefined') {
+      return (
+        <div>
+          {new BigNumber(
+            this.props.assetsPrices[token.symbol].priceEth
+          ).toFixed(7)}
+        </div>
+      )
+    }
+    return (
+      <div>
+        <small>N/A</small>
+      </div>
+    )
+  }
+
+  renderValue(fund) {
+    // if (typeof this.props.assetsPrices[token.symbol] !== 'undefined') {
+    //   return (
+    //     <div className={styles.valueText}>
+    //       {new BigNumber(this.props.assetsPrices[token.symbol].priceEth)
+    //         .times(
+    //           toUnitAmount(
+    //             new BigNumber(token.balances.total),
+    //             token.decimals
+    //           ).toFixed(5)
+    //         )
+    //         .toFixed(5)}{' '}
+    //       <small className={styles.symbolLegendText}>ETH</small>
+    //     </div>
+    //   )
+    // }
+    return (
+      <div className={styles.valueText}>
+        <small>N/A</small>
+      </div>
+    )
+  }
+
+  renderAction(action) {
+    switch (action) {
+      case 'BuyDrago':
+        return (
+          <span style={{ color: Colors.green300, fontWeight: 600 }}>BUY</span>
+        )
+      case 'SellDrago':
+        return (
+          <span style={{ color: Colors.red300, fontWeight: 600 }}>SELL</span>
+        )
+      case 'DragoCreated':
+        return (
+          <span style={{ color: Colors.blue300, fontWeight: 600 }}>
+            CREATED
+          </span>
+        )
+    }
+  }
+
+  renderTime(timestamp) {
+    return <span>{utils.dateFromTimeStamp(timestamp)}</span>
+  }
+
+  renderDrgValue(rowData) {
+    return (
+      <div>
+        {new BigNumber(rowData.drgvalue).toFixed(4)}{' '}
+        <small>{rowData.symbol}</small>
+      </div>
+    )
   }
 
   _getDatum(list, index) {
-    return list.get(index % list.size)
+    return list[index]
   }
 
   _getRowHeight({ index }) {
     const { list } = this.state
-
-    return this._getDatum(list, index).size
+    return this._getDatum(list, index).length
   }
 
   _headerRenderer({ dataKey, sortBy, sortDirection }) {
@@ -245,7 +422,7 @@ class ElementListVaults extends PureComponent {
   }
 
   _isSortEnabled() {
-    const { list } = this.state
+    const { list } = this.props
     const { rowCount } = this.state
 
     return rowCount <= list.size
@@ -283,19 +460,15 @@ class ElementListVaults extends PureComponent {
   _sort({ sortBy, sortDirection }) {
     const sortedList = this._sortList({ sortBy, sortDirection })
 
-    this.setState({
-      sortBy,
-      sortDirection,
-      sortedList
-    })
+    this.setState({ sortBy, sortDirection, sortedList })
   }
 
   _sortList({ sortBy, sortDirection }) {
-    const { list } = this.state
+    const { list } = this.props
     return list
-      .sortBy(item => item.params.symbol.value)
+      .sortBy(item => item.timestamp)
       .update(
-        list => (sortDirection === SortDirection.DESC ? list.reverse() : list)
+        list => (sortDirection === SortDirection.DESC ? list : list.reverse())
       )
   }
 
@@ -306,4 +479,4 @@ class ElementListVaults extends PureComponent {
   }
 }
 
-export default withRouter(ElementListVaults)
+export default withRouter(ElementListFunds)

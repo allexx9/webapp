@@ -47,7 +47,6 @@ class PageVaultDetailsVaultManager extends Component {
   static propTypes = {
     location: PropTypes.object.isRequired,
     endpoint: PropTypes.object.isRequired,
-    accounts: PropTypes.array.isRequired,
     match: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
     user: PropTypes.object.isRequired,
@@ -186,7 +185,8 @@ class PageVaultDetailsVaultManager extends Component {
   }
 
   render() {
-    const { accounts, user, endpoint } = this.props
+    const { user, endpoint } = this.props
+    const { accounts } = this.props.endpoint
     const { loading } = this.state
     const vaultDetails = this.props.transactionsVault.selectedVault.details
     const vaultTransactionsList = this.props.transactionsVault.selectedVault
@@ -392,6 +392,10 @@ class PageVaultDetailsVaultManager extends Component {
                       renderCopyButton={this.renderCopyButton}
                       renderEtherscanButton={this.renderEtherscanButton}
                       loading={loading}
+                      pagination={{
+                        display: 10,
+                        number: 1
+                      }}
                     >
                       <ElementListTransactions />
                     </ElementListWrapper>
@@ -586,7 +590,7 @@ class PageVaultDetailsVaultManager extends Component {
         type
       } = log
       let ethvalue =
-        log.event === 'SellVault'
+        log.event === 'BuyVault'
           ? formatEth(params.amount.value, null, api)
           : formatEth(params.revenue.value, null, api)
       let drgvalue =
@@ -680,6 +684,9 @@ class PageVaultDetailsVaultManager extends Component {
             })
         })
         Promise.all(promises).then(results => {
+          results.sort(function(x, y) {
+            return y.timestamp - x.timestamp
+          })
           this.props.dispatch(
             Actions.vault.updateSelectedVaultAction({ transactions: results })
           )

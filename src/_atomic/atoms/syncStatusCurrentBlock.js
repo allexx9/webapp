@@ -12,7 +12,7 @@ export default class SyncStatusCurrentBlock extends Component {
       try {
         return new BigNumber(this.props.syncStatus.currentBlock)
           .div(new BigNumber(this.props.syncStatus.highestBlock))
-          .mul(100)
+          .times(100)
           .toFixed(2)
       } catch (error) {
         return 'n/a'

@@ -2,7 +2,7 @@
 
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
-// import BigNumber from 'bignumber.js';
+import styles from './tokenIcon.module.css'
 
 export default class TokenIcon extends Component {
   static propTypes = {
@@ -18,6 +18,7 @@ export default class TokenIcon extends Component {
   render() {
     return (
       <img
+        className={styles.iconImg}
         style={{ verticalAlign: 'middle' }}
         height={'' + this.props.size + 'px'}
         alt="token-icon"

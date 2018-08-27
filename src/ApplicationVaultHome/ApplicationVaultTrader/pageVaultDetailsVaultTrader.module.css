@@ -165,3 +165,34 @@
 .detailsSectionContainer{
   padding-bottom: 5px;
 }
+
+@-webkit-keyframes green-fade {
+  from {
+    color: #4CAF50;
+  }
+  to {
+    color: #000;
+  }
+}
+@-moz-keyframes green-fade {
+  from {
+    color: #4CAF50;
+  }
+  to {
+    color: #000;
+  }
+}
+@keyframes green-fade {
+  from {
+    color: #4CAF50;
+  }
+  to {
+    color: #000;
+  }
+}
+.fadeNewHolding {
+  -webkit-animation: green-fade 2s ease-in-out 0s;
+  -moz-animation: green-fade 2s ease-in-out 0s;
+  -o-animation: green-fade 2s ease-in-out 0s;
+  animation: green-fade 2s ease-in-out 0s;
+}

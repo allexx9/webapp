@@ -30,8 +30,6 @@ export default class ElementFeesBox extends Component {
       borderColor: Colors.blueGrey200,
       width: '140px'
     }
-
-    console.log(isManager)
     if (!isManager) {
       return (
         <div>

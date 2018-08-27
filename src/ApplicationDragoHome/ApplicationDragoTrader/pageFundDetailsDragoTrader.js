@@ -567,6 +567,10 @@ class PageFundDetailsDragoTrader extends Component {
                       renderCopyButton={this.renderCopyButton}
                       renderEtherscanButton={this.renderEtherscanButton}
                       loading={loading}
+                      pagination={{
+                        display: 10,
+                        number: 1
+                      }}
                     >
                       <ElementListTransactions />
                     </ElementListWrapper>
@@ -698,7 +702,7 @@ class PageFundDetailsDragoTrader extends Component {
         // For additional refernce: https://stackoverflow.com/questions/39452083/using-promise-function-inside-javascript-array-map
         let promises = dragoTransactionsLog.map(log => {
           return api.eth
-            .getBlockByNumber(new BigNumber(log.blockNumber.c[0]).toFixed(0))
+            .getBlockByNumber(new BigNumber(log.blockNumber).toFixed(0))
             .then(block => {
               log.timestamp = block.timestamp
               return log
@@ -712,8 +716,13 @@ class PageFundDetailsDragoTrader extends Component {
             })
         })
         Promise.all(promises).then(results => {
+          results.sort(function(x, y) {
+            return y.timestamp - x.timestamp
+          })
           this.props.dispatch(
-            Actions.drago.updateSelectedDragoAction({ transactions: results })
+            Actions.drago.updateSelectedDragoAction({
+              transactions: results
+            })
           )
           console.log(`${this.constructor.name} -> Transactions list loaded`)
           this.setState({

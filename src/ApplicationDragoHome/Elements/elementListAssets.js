@@ -27,7 +27,7 @@ import TokenIcon from '../../_atomic/atoms/tokenIcon'
 
 class ElementListAssets extends PureComponent {
   static propTypes = {
-    list: PropTypes.object.isRequired,
+    list: PropTypes.array.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
     renderCopyButton: PropTypes.func.isRequired,
@@ -42,11 +42,7 @@ class ElementListAssets extends PureComponent {
     const { list } = this.props
     const sortDirection = SortDirection.DESC
     const sortedList = list
-      .sortBy(item => item.symbol)
-      .update(
-        list => (sortDirection === SortDirection.DESC ? list : list.reverse())
-      )
-    const rowCount = list.size
+    const rowCount = list.length
     this.state = {
       disableHeader: false,
       headerHeight: 30,
@@ -73,13 +69,8 @@ class ElementListAssets extends PureComponent {
 
   UNSAFE_componentWillReceiveProps(nextProps) {
     const { list } = nextProps
-    const sortDirection = SortDirection.DESC
     const sortedList = list
-      .sortBy(item => item.symbol)
-      .update(
-        list => (sortDirection === SortDirection.DESC ? list : list.reverse())
-      )
-    const rowCount = list.size
+    const rowCount = list.length
     this.setState({
       sortedList: sortedList,
       rowCount: rowCount
@@ -355,7 +346,7 @@ class ElementListAssets extends PureComponent {
       return (
         <div className={styles.valueText}>
           {new BigNumber(this.props.assetsPrices[token.symbol].priceEth)
-            .mul(
+            .times(
               toUnitAmount(
                 new BigNumber(token.balances.total),
                 token.decimals
@@ -406,13 +397,12 @@ class ElementListAssets extends PureComponent {
   }
 
   _getDatum(list, index) {
-    return list.get(index % list.size)
+    return list[index]
   }
 
   _getRowHeight({ index }) {
     const { list } = this.state
-
-    return this._getDatum(list, index).size
+    return this._getDatum(list, index).length
   }
 
   _headerRenderer({ dataKey, sortBy, sortDirection }) {

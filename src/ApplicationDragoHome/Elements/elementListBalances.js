@@ -349,7 +349,7 @@ class ElementListBalances extends PureComponent {
     //   return (
     //     <div className={styles.valueText}>
     //       {new BigNumber(this.props.assetsPrices[token.symbol].priceEth)
-    //         .mul(
+    //         .times(
     //           toUnitAmount(
     //             new BigNumber(token.balances.total),
     //             token.decimals

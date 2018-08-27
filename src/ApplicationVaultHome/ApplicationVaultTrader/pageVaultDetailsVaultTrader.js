@@ -46,7 +46,6 @@ class PageFundDetailsVaultTrader extends Component {
   static propTypes = {
     location: PropTypes.object.isRequired,
     endpoint: PropTypes.object.isRequired,
-    accounts: PropTypes.array.isRequired,
     match: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
     user: PropTypes.object.isRequired,
@@ -61,15 +60,18 @@ class PageFundDetailsVaultTrader extends Component {
     openBuySellDialog: {
       open: false,
       action: 'deposit'
-    }
+    },
+    prevProps: {}
   }
 
-  componentDidMount() {
+  componentDidMount = async () => {
     this.initVault()
+    // const poolApi = new PoolApi(this.context.api)
+    // await poolApi.contract.vaulteventful.init()
+    // this.subscribeToEvents(poolApi.contract.vaulteventful)
   }
 
   initVault = async () => {
-    const poolApi = new PoolApi(this.context.api)
     const dragoId = this.props.match.params.dragoid
     const vaultDetails = await utils.getDragoDetailsFromId(
       dragoId,
@@ -84,8 +86,6 @@ class PageFundDetailsVaultTrader extends Component {
       this.context.api,
       this.props.endpoint.accounts
     )
-    await poolApi.contract.vaulteventful.init()
-    this.subscribeToEvents(poolApi.contract.vaulteventful)
   }
 
   componentWillUnmount() {
@@ -106,7 +106,7 @@ class PageFundDetailsVaultTrader extends Component {
     }
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps = nextProps => {
     // Updating the lists on each new block if the accounts balances have changed
     // Doing this this to improve performances by avoiding useless re-rendering
 
@@ -114,6 +114,9 @@ class PageFundDetailsVaultTrader extends Component {
     const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
     if (!currentBalance.eq(nextBalance)) {
       this.initVault()
+      this.setState({
+        prevProps: this.props
+      })
       console.log(
         `${
           this.constructor.name
@@ -123,6 +126,15 @@ class PageFundDetailsVaultTrader extends Component {
       null
     }
   }
+
+  // static getDerivedStateFromProps(props) {
+  //   return {
+  //     // Since this method fires on both props and state changes, local updates
+  //     // to the controlled value will be ignored, because the props version
+  //     // always overrides it. Oops!
+  //     prevProps: props
+  //   }
+  // }
 
   shouldComponentUpdate(nextProps, nextState) {
     let stateUpdate = true
@@ -176,6 +188,7 @@ class PageFundDetailsVaultTrader extends Component {
         key={'addressether' + text}
         href={this.props.endpoint.networkInfo.etherscan + type + '/' + text}
         target="_blank"
+        rel="noopener noreferrer"
       >
         <Search className={styles.copyAddress} />
       </a>
@@ -207,7 +220,8 @@ class PageFundDetailsVaultTrader extends Component {
   }
 
   render() {
-    const { accounts, user } = this.props
+    const { user } = this.props
+    const { accounts } = this.props.endpoint
     const { loading } = this.state
     const vaultDetails = this.props.transactionsVault.selectedVault.details
     const vaultTransactionsList = this.props.transactionsVault.selectedVault
@@ -255,6 +269,16 @@ class PageFundDetailsVaultTrader extends Component {
     if (vaultDetails.address === '0x0000000000000000000000000000000000000000') {
       return <ElementFundNotFound />
     }
+
+    const holdingFadeStyle =
+      Object.keys(this.state.prevProps).length !== 0 &&
+      this.state.prevProps.transactionsVault.selectedVault.details
+        .balanceDRG !== vaultDetails.balanceDRG
+        ? styles.fadeNewHolding
+        : styles.noFadeNewHolding
+
+    console.log(this.props)
+    console.log(this.state)
     return (
       <Row>
         <Col xs={12}>
@@ -343,7 +367,9 @@ class PageFundDetailsVaultTrader extends Component {
                                 Your total holding:
                               </div>
                               <div className={styles.holdings}>
-                                <span>{vaultDetails.balanceDRG}</span>{' '}
+                                <span className={holdingFadeStyle}>
+                                  {vaultDetails.balanceDRG}
+                                </span>{' '}
                                 <small className={styles.myPositionTokenSymbol}>
                                   {vaultDetails.symbol.toUpperCase()}
                                 </small>
@@ -414,6 +440,10 @@ class PageFundDetailsVaultTrader extends Component {
                       renderCopyButton={this.renderCopyButton}
                       renderEtherscanButton={this.renderEtherscanButton}
                       loading={loading}
+                      pagination={{
+                        display: 10,
+                        number: 1
+                      }}
                     >
                       <ElementListTransactions />
                     </ElementListWrapper>
@@ -497,7 +527,7 @@ class PageFundDetailsVaultTrader extends Component {
         type
       } = log
       let ethvalue =
-        log.event === 'SellVault'
+        log.event === 'BuyVault'
           ? formatEth(params.amount.value, null, api)
           : formatEth(params.revenue.value, null, api)
       let drgvalue =
@@ -590,7 +620,7 @@ class PageFundDetailsVaultTrader extends Component {
         // For additional refernce: https://stackoverflow.com/questions/39452083/using-promise-function-inside-javascript-array-map
         let promises = vaultTransactionsLog.map(log => {
           return api.eth
-            .getBlockByNumber(new BigNumber(log.blockNumber.c[0]).toFixed(0))
+            .getBlockByNumber(new BigNumber(log.blockNumber).toFixed(0))
             .then(block => {
               log.timestamp = block.timestamp
               return log
@@ -604,8 +634,13 @@ class PageFundDetailsVaultTrader extends Component {
             })
         })
         Promise.all(promises).then(results => {
+          results.sort(function(x, y) {
+            return y.timestamp - x.timestamp
+          })
           this.props.dispatch(
-            Actions.vault.updateSelectedVaultAction({ transactions: results })
+            Actions.vault.updateSelectedVaultAction({
+              transactions: results
+            })
           )
           console.log(`${this.constructor.name} -> Transactions list loaded`)
           this.setState({

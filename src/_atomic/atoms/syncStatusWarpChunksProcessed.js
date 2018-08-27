@@ -12,7 +12,7 @@ export default class SyncStatusWarpChunksProcessed extends Component {
       try {
         return new BigNumber(this.props.syncStatus.warpChunksProcessed)
           .div(new BigNumber(this.props.syncStatus.warpChunksAmount))
-          .mul(100)
+          .times(100)
           .toFixed(2)
       } catch (error) {
         return 'n/a'

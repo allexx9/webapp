@@ -1,17 +1,16 @@
-import { Col, Row } from 'react-flexbox-grid'
-import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar'
+import { Col, Grid, Row } from 'react-flexbox-grid'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
-import Avatar from 'material-ui/Avatar'
 import BigNumber from 'bignumber.js'
-import ElementListVaults from '../Elements/elementListVaults'
+import ElementListFunds from '../Elements/elementListVaults'
 import ElementListWrapper from '../../Elements/elementListWrapper'
-import FilterVaults from '../Elements/elementFilterVaults'
+import FilterFunds from '../Elements/elementFilterFunds'
 import Paper from 'material-ui/Paper'
 import PoolApi from '../../PoolsApi/src'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
+import UserDashboardHeader from '../../_atomic/atoms/userDashboardHeader'
 import utils from '../../_utils/utils'
 
 import styles from './pageSearchVaultTrader.module.css'
@@ -20,12 +19,7 @@ function mapStateToProps(state) {
   return state
 }
 
-class PageFundsVaultTrader extends Component {
-  constructor() {
-    super()
-    this.filterList = this.filterList.bind(this)
-  }
-
+class PageSearchVaultTrader extends Component {
   static contextTypes = {
     api: PropTypes.object.isRequired
   }
@@ -37,13 +31,13 @@ class PageFundsVaultTrader extends Component {
 
   state = {
     vaultCreatedLogs: [],
-    vaultFilteredList: []
+    dragoFilteredList: []
   }
 
   scrollPosition = 0
 
   componentDidMount() {
-    this.getVaults()
+    this.getDragos()
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
@@ -53,7 +47,7 @@ class PageFundsVaultTrader extends Component {
     const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
     const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
     if (!currentBalance.eq(nextBalance)) {
-      this.getVaults()
+      this.getDragos()
       console.log(
         `${
           this.constructor.name
@@ -83,107 +77,77 @@ class PageFundsVaultTrader extends Component {
 
   componentDidUpdate() {}
 
-  filterList(filteredList) {
+  filterList = filteredList => {
     this.setState({
-      vaultFilteredList: filteredList
+      dragoFilteredList: filteredList
     })
   }
 
   render() {
     let { location } = this.props
-    const { vaultCreatedLogs, vaultFilteredList } = this.state
-    // const vaultSearchList = Immutable.List(vaultCreatedLogs)
-    // const vaultList = Immutable.List(vaultFilteredList)
-    console.log(vaultCreatedLogs)
-    console.log(vaultFilteredList)
+    const { vaultCreatedLogs, dragoFilteredList } = this.state
     const detailsBox = {
       padding: 20
     }
-
     return (
       <Row>
         <Col xs={12}>
-          <Paper className={styles.paperContainer} zDepth={1}>
-            <Toolbar className={styles.detailsToolbar}>
-              <ToolbarGroup className={styles.detailsToolbarGroup}>
-                <Row className={styles.detailsToolbarGroup}>
-                  <Col xs={12} md={1} className={styles.dragoTitle}>
-                    <h2>
-                      <Avatar size={50} icon={<ActionShowChart />} />
-                    </h2>
-                  </Col>
-                  <Col xs={12} md={11} className={styles.dragoTitle}>
-                    <p>Vaults</p>
-                    <small />
-                  </Col>
-                </Row>
-              </ToolbarGroup>
-              <ToolbarGroup>
-                <p>&nbsp;</p>
-              </ToolbarGroup>
-            </Toolbar>
-            <Row className={styles.transactionsStyle}>
-              <Col xs>
-                <Paper style={detailsBox} zDepth={1}>
-                  <ElementListWrapper
-                    list={vaultCreatedLogs}
-                    filterList={this.filterList}
-                    poolType="vault"
-                  >
-                    <FilterVaults />
-                  </ElementListWrapper>
-                </Paper>
-                <p />
-              </Col>
-            </Row>
-            <Row className={styles.transactionsStyle}>
-              <Col xs>
-                <ElementListWrapper
-                  list={vaultFilteredList}
-                  location={location}
-                  poolType="vault"
-                >
-                  <ElementListVaults />
-                </ElementListWrapper>
-              </Col>
-            </Row>
-          </Paper>
+          <div className={styles.pageContainer}>
+            <Paper zDepth={1}>
+              <UserDashboardHeader
+                fundType="vault"
+                userType="vaults"
+                icon={<ActionShowChart />}
+              />
+            </Paper>
+            <Paper zDepth={1}>
+              <div className={styles.detailsBoxContainer}>
+                <Grid fluid>
+                  <Row className={styles.filterBox}>
+                    <Col xs={12}>
+                      <Paper style={detailsBox} zDepth={1}>
+                        <FilterFunds
+                          list={vaultCreatedLogs}
+                          filterList={this.filterList}
+                        />
+                      </Paper>
+                    </Col>
+                  </Row>
+                  <Row className={styles.transactionsStyle}>
+                    <Col xs={12}>
+                      <ElementListWrapper
+                        list={dragoFilteredList}
+                        location={location}
+                        pagination={{
+                          display: 10,
+                          number: 1
+                        }}
+                      >
+                        <ElementListFunds />
+                      </ElementListWrapper>
+                    </Col>
+                  </Row>
+                </Grid>
+              </div>
+            </Paper>
+          </div>
         </Col>
       </Row>
     )
   }
 
-  getVaults() {
+  getDragos() {
     const { api } = this.context
     const poolApi = new PoolApi(api)
     const logToEvent = log => {
-      const key = api.util.sha3(JSON.stringify(log))
-      const {
-        blockNumber,
-        logIndex,
-        transactionHash,
-        transactionIndex,
-        params,
-        type
-      } = log
-      console.log(log)
+      // const key = api.util.sha3(JSON.stringify(log))
+      const { params } = log
       return {
-        type: log.event,
-        state: type,
-        blockNumber,
-        logIndex,
-        transactionHash,
-        transactionIndex,
-        params,
-        key
+        symbol: params.symbol.value,
+        vaultId: params.vaultId.value.toFixed(),
+        name: params.name.value
       }
     }
-
-    // const options = {
-    //   fromBlock: 0,
-    //   toBlock: 'pending',
-    //   limit: 50
-    // };
 
     // Getting all DragoCreated events since block 0.
     // dragoFactoryEventsSignatures accesses the contract ABI, gets all the events and for each creates a hex signature
@@ -196,12 +160,18 @@ class PageFundsVaultTrader extends Component {
         })
         .then(vaultCreatedLogs => {
           const logs = vaultCreatedLogs.map(logToEvent)
+          logs.sort(function(a, b) {
+            if (a.symbol < b.symbol) return -1
+            if (a.symbol > b.symbol) return 1
+            return 0
+          })
           this.setState({
             vaultCreatedLogs: logs,
-            vaultFilteredList: logs
+            dragoFilteredList: logs
           })
         })
     })
   }
 }
-export default withRouter(connect(mapStateToProps)(PageFundsVaultTrader))
+
+export default withRouter(connect(mapStateToProps)(PageSearchVaultTrader))

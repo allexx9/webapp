@@ -133,7 +133,9 @@ class utilities {
       // console.log(asset.symbol)
       if (typeof assetsPrices[asset.symbol] !== 'undefined') {
         if (typeof assetsPrices[asset.symbol].priceEth !== 'undefined') {
-          const value = new BigNumber(assetsPrices[asset.symbol].priceEth).mul(
+          const value = new BigNumber(
+            assetsPrices[asset.symbol].priceEth
+          ).times(
             toUnitAmount(
               new BigNumber(asset.balances.total),
               asset.decimals
@@ -158,7 +160,9 @@ class utilities {
     const data = dragoAssetsList.map(asset => {
       if (typeof assetsPrices[asset.symbol] !== 'undefined') {
         if (typeof assetsPrices[asset.symbol].priceEth !== 'undefined') {
-          const value = new BigNumber(assetsPrices[asset.symbol].priceEth).mul(
+          const value = new BigNumber(
+            assetsPrices[asset.symbol].priceEth
+          ).times(
             toUnitAmount(
               new BigNumber(asset.balances.total),
               asset.decimals
@@ -617,7 +621,7 @@ class utilities {
                               symbol: balance.symbol,
                               vaultId: balance.vaultId,
                               name: balance.name,
-                              balance: dragoBalance.add(balance.balance)
+                              balance: dragoBalance.plus(balance.balance)
                             })
                           } else {
                             balancesRegistry.set(balance.vaultId, {
@@ -650,15 +654,18 @@ class utilities {
                   .then(() => {
                     let logs = getSymbols()
                     return Promise.all(getTimestamp(logs)).then(logs => {
-                      const balancesListSorted = balancesList.sort(function(
-                        a,
-                        b
-                      ) {
+                      balancesList.sort(function(a, b) {
                         if (a.symbol < b.symbol) return -1
                         if (a.symbol > b.symbol) return 1
                         return 0
                       })
-                      let results = [balancesListSorted, logs, supply]
+                      logs.reverse()
+                      supply.sort(function(a, b) {
+                        if (a.symbol < b.symbol) return -1
+                        if (a.symbol > b.symbol) return 1
+                        return 0
+                      })
+                      let results = [balancesList, logs, supply]
                       console.log(results)
                       return results
                     })
@@ -1062,7 +1069,7 @@ class utilities {
                               symbol: balance.symbol,
                               dragoId: balance.dragoId,
                               name: balance.name,
-                              balance: dragoBalance.add(balance.balance)
+                              balance: dragoBalance.plus(balance.balance)
                             })
                           } else {
                             balancesRegistry.set(balance.dragoId, {
@@ -1213,11 +1220,6 @@ class utilities {
       dragoWETHBalance
     }
 
-    // dispatch(Actions.drago.updateSelectedDragoAction({
-    //   details
-    // })
-    // )
-
     //
     // Getting balance for each user account
     //
@@ -1225,7 +1227,7 @@ class utilities {
     await Promise.all(
       accounts.map(async account => {
         const balance = await poolApi.contract.drago.balanceOf(account.address)
-        balanceDRG = balanceDRG.add(balance)
+        balanceDRG = balanceDRG.plus(balance)
       })
     )
     balanceDRG = formatCoins(balanceDRG, 5, api)
@@ -1312,12 +1314,6 @@ class utilities {
       fee
     }
 
-    dispatch(
-      Actions.vault.updateSelectedVaultAction({
-        details
-      })
-    )
-
     //
     // Getting balance for each user account
     //
@@ -1325,7 +1321,7 @@ class utilities {
     await Promise.all(
       accounts.map(async account => {
         const balance = await poolApi.contract.vault.balanceOf(account.address)
-        balanceDRG = balanceDRG.add(balance)
+        balanceDRG = balanceDRG.plus(balance)
       })
     )
     balanceDRG = formatCoins(balanceDRG, 4, api)

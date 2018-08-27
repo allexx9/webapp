@@ -90,7 +90,7 @@ class DragoParity {
       value: amount
     }
     return instance.buyDrago.estimateGas(options, []).then(gasEstimate => {
-      options.gas = gasEstimate.mul(1.2).toFixed(0)
+      options.gas = gasEstimate.times(1.2).toFixed(0)
       console.log(
         `Buy Drago: gas estimated as ${gasEstimate.toFixed(0)} setting to ${
           options.gas
@@ -126,7 +126,7 @@ class DragoParity {
       .estimateGas(options, values)
       .then(gasEstimate => {
         console.log(gasEstimate.toFormat())
-        options.gas = gasEstimate.mul(1.2).toFixed(0)
+        options.gas = gasEstimate.times(1.2).toFixed(0)
         return instance.cancelOrderCFDExchange.postTransaction(options, values)
       })
       .catch(error => {
@@ -154,7 +154,7 @@ class DragoParity {
       .estimateGas(options, values)
       .then(gasEstimate => {
         console.log(gasEstimate.toFormat())
-        options.gas = gasEstimate.mul(1.2).toFixed(0)
+        options.gas = gasEstimate.times(1.2).toFixed(0)
         return instance.depositToExchange.postTransaction(options, values)
       })
       .catch(error => {
@@ -205,7 +205,7 @@ class DragoParity {
       .estimateGas(options, values)
       .then(gasEstimate => {
         console.log(gasEstimate.toFormat())
-        options.gas = gasEstimate.mul(1.2).toFixed(0)
+        options.gas = gasEstimate.times(1.2).toFixed(0)
         return instance.depositToExchange.postTransaction(options, values)
       })
       .catch(error => {
@@ -228,7 +228,7 @@ class DragoParity {
     console.log(options)
     console.log(values)
     return instance.sellDrago.estimateGas(options, values).then(gasEstimate => {
-      options.gas = gasEstimate.mul(1.2).toFixed(0)
+      options.gas = gasEstimate.times(1.2).toFixed(0)
       console.log(
         `Sell Drago: gas estimated as ${gasEstimate.toFixed(0)} setting to ${
           options.gas
@@ -258,7 +258,7 @@ class DragoParity {
       from: accountAddress
     }
     return instance.setPrices.estimateGas(options, values).then(gasEstimate => {
-      options.gas = gasEstimate.mul(1.2).toFixed(0)
+      options.gas = gasEstimate.times(1.2).toFixed(0)
       console.log(
         `setPrices Drago: gas estimated as ${gasEstimate.toFixed(
           0

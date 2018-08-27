@@ -25,8 +25,6 @@ import utils from './_utils/utils'
 
 import './index.module.css'
 
-const epicMiddleware = createEpicMiddleware(rootEpic)
-
 const relayActionsMiddleWare = store => next => action => {
   const state = store.getState()
   // console.log("relayActionsMiddleWare triggered:", action)
@@ -76,6 +74,8 @@ const notificationsMiddleWare = store => next => action => {
   next(action)
 }
 
+const epicMiddleware = createEpicMiddleware()
+
 const middlewares = [
   // thunkMiddleware,
   epicMiddleware,
@@ -115,6 +115,8 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 const enhancer = composeEnhancers(applyMiddleware(...middlewares))
 
 let store = createStore(persistedReducer, enhancer)
+epicMiddleware.run(rootEpic)
+
 let persistor = persistStore(store)
 
 ReactDOM.render(

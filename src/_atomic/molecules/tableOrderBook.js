@@ -96,7 +96,7 @@ class TableOrderBook extends Component {
 
       const relativeToTotal = new BigNumber(amount)
         .dividedBy(new BigNumber(max.orderAmount))
-        .mul(100)
+        .times(100)
         .toFixed(0)
 
       const browser = detect()

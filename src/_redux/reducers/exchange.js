@@ -177,7 +177,7 @@ function exchangeReducer(state = initialState.exchange, action) {
           ticker.variation = currentPrice
             .sub(previousPrice)
             .div(previousPrice)
-            .mul(100)
+            .times(100)
             .toFixed(4)
         } else {
           ticker.variation = 0
