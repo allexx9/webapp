@@ -6,6 +6,7 @@
   "dependencies": {
     "0x.js": "^0.38.6",
     "@parity/api": "^2.1.20",
+    "babel-plugin-transform-remove-console": "^6.9.4",
     "bignumber.js": "^7.2.1",
     "chart.js": "^2.7.2",
     "classnames": "^2.2.6",

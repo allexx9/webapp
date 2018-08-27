@@ -17,16 +17,16 @@ pipeline {
                 sh 'yarn install --frozen-lockfile' 
             }
         }
-        stage('Test') { 
-            agent {
-                docker {
-                    image 'node:6' 
-                    args '-p 3000:3000' 
-                }
-            }
-            steps {
-                sh 'yarn test' 
-            }
+        // stage('Test') { 
+        //     agent {
+        //         docker {
+        //             image 'node:6' 
+        //             args '-p 3000:3000' 
+        //         }
+        //     }
+        //     steps {
+        //         sh 'yarn test' 
+        //     }
         }
         stage('Build') { 
             agent {
