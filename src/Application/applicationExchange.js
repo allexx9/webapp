@@ -61,10 +61,7 @@ class ApplicationExchangePage extends Component {
   }
 
   static contextTypes = {
-    api: PropTypes.object.isRequired,
-    isConnected: PropTypes.bool.isRequired,
-    isSyncing: PropTypes.bool.isRequired,
-    syncStatus: PropTypes.object.isRequired
+    api: PropTypes.object.isRequired
   }
 
   UNSAFE_componentWillMount() {}
@@ -98,7 +95,12 @@ class ApplicationExchangePage extends Component {
           <MuiThemeProvider muiTheme={muiThemeExchange}>
             <Row className={classNames(styles.content)}>
               <Col xs={12}>
-                {this.context.isConnected && !this.context.isSyncing ? (
+                <div style={{ textAlign: 'center', marginTop: '25px' }}>
+                  Coming soon.
+                </div>
+              </Col>
+              {/* <Col xs={12}>
+                {this.props.isConnected && !this.props.isSyncing ? (
                   // {false ? (
                   <ApplicationExchangeHome
                     location={location}
@@ -107,11 +109,11 @@ class ApplicationExchangePage extends Component {
                   />
                 ) : (
                   <ElementNotConnected
-                    isSyncing={this.context.isSyncing}
-                    syncStatus={this.context.syncStatus}
+                    isSyncing={this.props.isSyncing}
+                    syncStatus={this.props.syncStatus}
                   />
                 )}
-              </Col>
+              </Col> */}
             </Row>
           </MuiThemeProvider>
         </Grid>

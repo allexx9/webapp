@@ -1,6 +1,6 @@
 #!/bin/bash
 CWD=$(pwd)
-DEST_DIR=/home/rigoblock/html/beta.endpoint.network/app/
+DEST_DIR=.app_build/
 # DEST_DIR=/home/rigoblock/html/beta.rigoblock.com/app/
 if [ ! -d "$DEST_DIR" ]; then
   echo "Destination build directory does not exist. Exiting."
@@ -13,10 +13,10 @@ cp -Rp $CWD/. $DEST_DIR
 echo "Deleting previous build..."
 cd src
 echo "Removing debug logs..."
-find ./ -type f | xargs sed -i -E 's/^\s*console.(log|debug|info|)\((.*)\);?//gm'
+find ./ -type f | xargs sed -i -E 's/^\s*console.(log|debug|info|warn|)\((.*)\);?//gm'
 cd ..
 echo "Building app..."
-echo "z build-beta"
+echo "build-beta"
 yarn build-beta
 echo "Done."
 cd $CWD
