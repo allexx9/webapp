@@ -140,11 +140,11 @@ class ElementListFunds extends PureComponent {
                   <Column
                     width={150}
                     disableSort
-                    label="HOLDING"
+                    label="CODE"
                     cellDataGetter={({ rowData }) => rowData}
-                    dataKey="holding"
+                    dataKey="code"
                     className={styles.exampleColumn}
-                    cellRenderer={({ rowData }) => this.renderHolding(rowData)}
+                    cellRenderer={({ rowData }) => this.renderISIN(rowData)}
                     flexShrink={1}
                   />
                   {/* <Column
@@ -197,6 +197,10 @@ class ElementListFunds extends PureComponent {
         </Col>
       </Row>
     )
+  }
+
+  renderISIN = rowData => {
+    return utils.dragoISIN(rowData.symbol, rowData.dragoId)
   }
 
   actionButton(cellData, rowData) {
