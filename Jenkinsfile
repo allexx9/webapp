@@ -27,7 +27,7 @@ pipeline {
         //     steps {
         //         sh 'yarn test' 
         //     }
-        }
+        // }
         stage('Build') { 
             agent {
                 docker {
