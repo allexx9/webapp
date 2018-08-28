@@ -25,6 +25,14 @@ import utils from './_utils/utils'
 
 import './index.module.css'
 
+function noop() {}
+
+if (process.env.NODE_ENV !== 'development') {
+  console.log = noop
+  console.warn = noop
+  console.error = noop
+}
+
 const relayActionsMiddleWare = store => next => action => {
   const state = store.getState()
   // console.log("relayActionsMiddleWare triggered:", action)

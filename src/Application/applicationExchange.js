@@ -69,7 +69,8 @@ class ApplicationExchangePage extends Component {
   componentWillUnmount() {}
 
   static propTypes = {
-    location: PropTypes.object.isRequired
+    location: PropTypes.object.isRequired,
+    app: PropTypes.object.isRequired
   }
 
   handleToggleNotifications = () => {
@@ -94,13 +95,13 @@ class ApplicationExchangePage extends Component {
           </Row>
           <MuiThemeProvider muiTheme={muiThemeExchange}>
             <Row className={classNames(styles.content)}>
-              <Col xs={12}>
+              {/* <Col xs={12}>
                 <div style={{ textAlign: 'center', marginTop: '25px' }}>
                   Coming soon.
                 </div>
-              </Col>
-              {/* <Col xs={12}>
-                {this.props.isConnected && !this.props.isSyncing ? (
+              </Col> */}
+              <Col xs={12}>
+                {this.props.app.isConnected && !this.props.app.isSyncing ? (
                   // {false ? (
                   <ApplicationExchangeHome
                     location={location}
@@ -109,11 +110,11 @@ class ApplicationExchangePage extends Component {
                   />
                 ) : (
                   <ElementNotConnected
-                    isSyncing={this.props.isSyncing}
-                    syncStatus={this.props.syncStatus}
+                    isSyncing={this.props.app.isSyncing}
+                    syncStatus={this.props.app.syncStatus}
                   />
                 )}
-              </Col> */}
+              </Col>
             </Row>
           </MuiThemeProvider>
         </Grid>
