@@ -37,6 +37,93 @@ class DragoWeb3 {
     return instance.getData.call({})
   }
 
+  operateOnExchangeEFX = async (
+    managerAccountAddress,
+    exchangeContractAddress,
+    tokenAddress,
+    tokenWrapper,
+    toBeWrapped,
+    time
+  ) => {
+    if (!managerAccountAddress) {
+      throw new Error('accountAddress needs to be provided')
+    }
+    if (!exchangeContractAddress) {
+      throw new Error('exchangeContractAddress needs to be provided')
+    }
+    // if (!tokenAddress) {
+    //   throw new Error('tokenAddress needs to be provided')
+    // }
+    if (!tokenWrapper) {
+      throw new Error('tokenWrapper needs to be provided')
+    }
+    if (!toBeWrapped) {
+      throw new Error('toBeWrapped needs to be provided')
+    }
+    if (!time) {
+      throw new Error('time need to be provided')
+    }
+    console.log(`managerAccountAddress ${managerAccountAddress}`)
+    console.log(`exchangeContractAddres ${exchangeContractAddress}`)
+    console.log(`tokenAddress ${tokenAddress}`)
+    console.log(`tokenWrapper ${tokenWrapper}`)
+    console.log(`toBeWrapped ${toBeWrapped}`)
+    console.log(`time ${time}`)
+    const instance = this._instance
+    const api = this._api
+    let options = {
+      from: managerAccountAddress
+    }
+    // const contractMethod = abis.zeroExExchange.find(
+    //   method => method.name === 'cancelOrder'
+    // )
+    const contractMethod = {
+      name: 'wrapToEfx',
+      type: 'function',
+      inputs: [
+        {
+          type: 'address',
+          name: '_token'
+        },
+        {
+          type: 'address',
+          name: '_wrapper'
+        },
+        {
+          type: 'uint256',
+          name: '_value'
+        },
+        {
+          type: 'uint256',
+          name: '_forTime'
+        }
+      ]
+    }
+    const encodedABI = await api.eth.abi.encodeFunctionCall(contractMethod, [
+      tokenAddress,
+      tokenWrapper,
+      toBeWrapped,
+      time
+    ])
+
+    console.log(encodedABI)
+
+    // const encodedABI = '0xbc61394a00000000000000000000000040584e290e5c56114c8bcf72fa3d403d1166b3d700000000000000000000000000000000000000000000000000000000000000000000000000000000000000001dad4783cf3fe3085c1426157ab175a6119a04ba000000000000000000000000d0a1e359811322d97991e03f863a0c30c2cf029c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002386f26fc10000000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001638384d81aace3db94ad2d6f00aaa892a70c34850dcb894fde0f5eb1c50fd50b4320c16df400000000000000000000000000000000000000000000000000000000000003e80000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000001c969d3a50aab834aee8f7ee57a885746502933168c63071c6c270848ad502032b466238fa9e7bc9f9a5dd3e0ca738512b0ba16ecf770f12369d65a4cd293a6fac'
+
+    return instance.methods
+      .operateOnExchange(exchangeContractAddress, encodedABI)
+      .estimateGas(options)
+      .then(gasEstimate => {
+        console.log(gasEstimate)
+        options.gas = gasEstimate
+      })
+      .then(() => {
+        return instance.methods
+          .operateOnExchange(exchangeContractAddress, encodedABI)
+          .send(options)
+      })
+  }
+
   setInfiniteAllowaceOnExchange = (
     accountAddress,
     tokenAddress,
@@ -324,7 +411,13 @@ class DragoWeb3 {
     const buyPriceWei = api.utils.toWei(buyPrice, 'ether')
     const sellPriceWei = api.utils.toWei(sellPrice, 'ether')
     return instance.methods
-      .setPrices(sellPriceWei, buyPriceWei)
+      .setPrices(
+        sellPriceWei,
+        buyPriceWei,
+        1,
+        api.utils.fromAscii('random'),
+        api.utils.fromAscii('random')
+      )
       .estimateGas(options)
       .then(gasEstimate => {
         console.log(gasEstimate)
@@ -332,7 +425,13 @@ class DragoWeb3 {
         options.gas = gasEstimate
         console.log(instance)
         return instance.methods
-          .setPrices(sellPriceWei, buyPriceWei)
+          .setPrices(
+            sellPriceWei,
+            buyPriceWei,
+            1,
+            api.utils.fromAscii('random'),
+            api.utils.fromAscii('random')
+          )
           .send(options)
       })
     // .catch((error) => {

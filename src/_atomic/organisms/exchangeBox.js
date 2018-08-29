@@ -6,7 +6,9 @@ import BigNumber from 'bignumber.js'
 import BoxTitle from '../atoms/boxTitle'
 import ButtonAuthenticate from '../atoms/buttonAuthenticate'
 import ExchangeSelector from '../molecules/exchangeSelector'
+import FlatButton from 'material-ui/FlatButton'
 import Paper from 'material-ui/Paper'
+import PoolApi from '../../PoolsApi/src'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import Web3 from 'web3'
@@ -184,9 +186,65 @@ class ExchangeBox extends Component {
     }
   }
 
+  buttonLockClick = async () => {
+    console.log(this.props)
+
+    // ETH
+    // const tokenAddress = null //Ether has address 0x0
+    // const tokenWrapper = '0x965808e7f815cfffd4c018ef2ba4c5a65eba087e'
+
+    // GRG
+    // const tokenAddress = '0x6FA8590920c5966713b1a86916f7b0419411e474'
+    // const tokenWrapper = '0x5959f2036608d693B4d085020ACAdBBf664C793E'
+
+    // USDT
+    const tokenAddress = '0x0736d0c130b2eAD47476cC262dbed90D7C4eeABD'
+    const tokenWrapper = '0x83E42e6d1ac009285376340ef64BaC1C7d106C89'
+
+    // ZRX
+    // const tokenAddress = '0xA8E9Fa8f91e5Ae138C74648c9C304F1C75003A8D'
+    // const tokenWrapper = '0xFF32E76EAdc11Fc816A727980E92805D237CDB28'
+    const toBeWrapped = 1e16 // 10 finney
+    const time = 1 // 1 hour lockup (the minimum)
+
+    const exchangeContractAddress = '0x67799a5e640bc64ca24d3e6813842754e546d7b1' // ETX
+    // const exchangeContractAddress = '0x8965a813fb43a141d7741320cd16cc1898af97fb' // RigoBlock
+    // const exchangeContractAddress = '0x68CE3E415adCF280b5456Ec82142030Af54FDa58'
+    const managerAccount = '0xc8dcd42e846466f2d2b89f3c54eba37bf738019b'
+
+    const { selectedFund } = this.props.exchange.selectedFund
+
+    const poolApi = new PoolApi(window.web3)
+    poolApi.contract.drago.init('0x972897D7806769895d258f15d791725Aee0bf688')
+    await poolApi.contract.drago.operateOnExchangeEFX(
+      managerAccount.toLocaleLowerCase(),
+      exchangeContractAddress.toLocaleLowerCase(),
+      tokenAddress === null ? null : tokenAddress.toLocaleLowerCase(),
+      tokenWrapper.toLocaleLowerCase(),
+      toBeWrapped,
+      time
+    )
+    // const wethBalance = await baseContracts['WrapperLockEth'].balanceOf(
+    //   dragoAddress
+    // )
+  }
+
   render() {
     // console.log(this.props.fundOrders)
     // console.log(this.props.exchange)
+
+    const buttonBuyStyle = {
+      border: '1px solid',
+      // borderColor: (this.props.selected ? Colors.green400 : Colors.grey400),
+      // backgroundColor: (this.props.selected ? Colors.green400 : 'white'),
+      width: '100%'
+    }
+
+    const labelStyle = {
+      fontWeight: 700,
+      fontSize: '18px'
+      // color:  (this.props.selected ? 'white' : Colors.grey400 )
+    }
 
     return (
       <Row>
@@ -206,6 +264,18 @@ class ExchangeBox extends Component {
                   </Col>
                   <Col xs={12}>
                     <ButtonAuthenticate onAuthEF={this.onAuthEF} />
+                  </Col>
+                  <Col xs={12}>
+                    <div>
+                      <FlatButton
+                        primary={true}
+                        label="Lock"
+                        labelStyle={labelStyle}
+                        onClick={this.buttonLockClick}
+                        style={buttonBuyStyle}
+                        // hoverColor={Colors.lightGreen50}
+                      />
+                    </div>
                   </Col>
                 </Row>
               </Paper>

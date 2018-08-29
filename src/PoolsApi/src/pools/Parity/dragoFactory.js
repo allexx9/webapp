@@ -65,7 +65,7 @@ class DragoFactoryParity {
     const options = {
       from: accountAddress
     }
-    const values = [dragoName, dragoSymbol, accountAddress]
+    const values = [dragoName.toLower(), dragoSymbol, accountAddress]
     return instance.createDrago
       .estimateGas(options, values)
       .then(gasEstimate => {

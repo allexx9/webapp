@@ -38,7 +38,7 @@ import {
   UPDATE_FUND_LIQUIDITY,
   UPDATE_SELECTED_FUND
 } from '../_redux/actions/const'
-import { getAvailableAddresses, getTokenAllowance } from '../_utils/exchange'
+import { getAvailableAccounts, getTokenAllowance } from '../_utils/exchange'
 import ExchangeBox from '../_atomic/organisms/exchangeBox'
 import styles from './applicationExchangeHome.module.css'
 import utils from '../_utils/utils'
@@ -59,16 +59,6 @@ class ApplicationExchangeHome extends Component {
     api: PropTypes.object.isRequired
   }
 
-  static childContextTypes = {
-    exchangeUtils: PropTypes.object
-  }
-
-  getChildContext() {
-    return {
-      exchangeUtils: this.state.exchangeUtils
-    }
-  }
-
   static propTypes = {
     location: PropTypes.object.isRequired,
     endpoint: PropTypes.object.isRequired,
@@ -81,7 +71,6 @@ class ApplicationExchangeHome extends Component {
   }
 
   state = {
-    exchangeUtils: {},
     chartData: [],
     managerHasNoFunds: false
   }
@@ -147,9 +136,8 @@ class ApplicationExchangeHome extends Component {
 
   UNSAFE_componentWillMount() {}
 
-  componentDidMount() {
+  componentDidMount = async () => {
     const { api } = this.context
-    const { accounts } = this.props.endpoint
     const { selectedExchange } = this.props.exchange
     const defaultRelay = RELAYS[DEFAULT_RELAY[api._rb.network.name]]
     const defaultTokensPair = {
@@ -162,77 +150,83 @@ class ApplicationExchangeHome extends Component {
           defaultRelay.defaultTokensPair.quoteTokenSymbol
         ]
     }
-    this.getSelectedFundDetails(null, accounts)
+    // console.log(accounts)
+    // this.getSelectedFundDetails(null, accounts)
     // this.connectToRadarRelay()
-
-    getAvailableAddresses(selectedExchange)
-      .then(addresses => {
-        this.props.dispatch({
-          type: 'SET_MAKER_ADDRESS',
-          payload: addresses[0]
-        })
+    try {
+      const address = await getAvailableAccounts(selectedExchange)
+      this.props.dispatch({
+        type: 'SET_MAKER_ADDRESS',
+        payload: address[0]
       })
-      .catch(err => {
-        console.log(err)
-      })
+      const accounts = [
+        {
+          address: address[0]
+        }
+      ]
 
-    // Set available relays
-    this.props.dispatch(
-      Actions.exchange.updateAvailableRelays(
-        utils.availableRelays(RELAYS, api._rb.network.id)
+      this.getSelectedFundDetails(null, accounts)
+
+      // Set available relays
+      this.props.dispatch(
+        Actions.exchange.updateAvailableRelays(
+          utils.availableRelays(RELAYS, api._rb.network.id)
+        )
       )
-    )
 
-    // Updating selected relay
-    this.props.dispatch(
-      Actions.exchange.updateSelectedRelayAction(defaultRelay)
-    )
-
-    // Set available trade tokens pairs
-    this.props.dispatch(
-      Actions.exchange.updateAvailableTradeTokensPairs(
-        utils.availableTradeTokensPair(TRADE_TOKENS_PAIRS, defaultRelay.name)
+      // Updating selected relay
+      this.props.dispatch(
+        Actions.exchange.updateSelectedRelayAction(defaultRelay)
       )
-    )
 
-    // Updating selected tokens pair
-    this.props.dispatch(
-      Actions.exchange.updateSelectedTradeTokensPair(defaultTokensPair)
-    )
-
-    this.connectToExchange(defaultRelay, defaultTokensPair)
-
-    // Getting trade history logs
-    this.props.dispatch(
-      Actions.exchange.getTradeHistoryLogs(
-        defaultRelay,
-        api._rb.network.id,
-        defaultTokensPair.baseToken.address,
-        defaultTokensPair.quoteToken.address
+      // Set available trade tokens pairs
+      this.props.dispatch(
+        Actions.exchange.updateAvailableTradeTokensPairs(
+          utils.availableTradeTokensPair(TRADE_TOKENS_PAIRS, defaultRelay.name)
+        )
       )
-    )
 
-    // // Getting history logs
-    // this.props.dispatch(this.getTradeHistoryLogs(
-    //   this.props.exchange.relay.networkId,
-    //   this.props.exchange.selectedTokensPair.baseToken.address,
-    //   this.props.exchange.selectedTokensPair.quoteToken.address,
-    // )
-    // )
-
-    // Getting chart data
-    let tsYesterday = new Date(
-      (Math.floor(Date.now() / 1000) - 86400 * 7) * 1000
-    ).toISOString()
-    this.props.dispatch(
-      Actions.exchange.getChartData(
-        defaultRelay,
-        api._rb.network.id,
-        defaultTokensPair.baseToken,
-        defaultTokensPair.quoteToken,
-        tsYesterday
+      // Updating selected tokens pair
+      this.props.dispatch(
+        Actions.exchange.updateSelectedTradeTokensPair(defaultTokensPair)
       )
-    )
+
+      this.connectToExchange(defaultRelay, defaultTokensPair)
+
+      // Getting trade history logs
+      this.props.dispatch(
+        Actions.exchange.getTradeHistoryLogs(
+          defaultRelay,
+          api._rb.network.id,
+          defaultTokensPair.baseToken.address,
+          defaultTokensPair.quoteToken.address
+        )
+      )
+
+      // // Getting history logs
+      // this.props.dispatch(this.getTradeHistoryLogs(
+      //   this.props.exchange.relay.networkId,
+      //   this.props.exchange.selectedTokensPair.baseToken.address,
+      //   this.props.exchange.selectedTokensPair.quoteToken.address,
+      // )
+      // )
+
+      // Getting chart data
+      let tsYesterday = new Date(
+        (Math.floor(Date.now() / 1000) - 86400 * 7) * 1000
+      ).toISOString()
+      this.props.dispatch(
+        Actions.exchange.getChartData(
+          defaultRelay,
+          api._rb.network.id,
+          defaultTokensPair.baseToken,
+          defaultTokensPair.quoteToken,
+          tsYesterday
+        )
+      )
+    } catch (error) {
+      console.warn(error)
+    }
   }
 
   componentWillUnmount = () => {
@@ -261,15 +255,6 @@ class ApplicationExchangeHome extends Component {
 
   connectToExchange = async (defaultRelay, defaultTokensPair) => {
     const { api } = this.context
-    // const networkInfo = api._rb.network
-    // const endpoints = this.props.endpoint.endpointInfo
-    // var exchangeUtils = new Exchange(endpoints, networkInfo, tradeTokensPair)
-    // var contract = exchangeUtils.init()
-    // const subscription = contract.events.allEvents({
-    //   fromBlock: 0,
-    //   toBlock: 'latest'
-    // }, this.onNewEventZeroExExchange)
-
     this.props.dispatch(
       Actions.exchange.relayGetOrders(
         defaultRelay,
@@ -698,6 +683,7 @@ class ApplicationExchangeHome extends Component {
 
   // Getting last transactions
   async getSelectedFundDetails(dragoAddress, accounts) {
+    console.log(dragoAddress, accounts)
     const { api } = this.context
     // const options = {balance: false, supply: true}
     const options = { balance: false, supply: true, limit: 10, trader: false }

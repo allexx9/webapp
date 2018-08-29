@@ -55,7 +55,6 @@ class OrderBox extends Component {
   }
 
   static contextTypes = {
-    exchangeUtils: PropTypes.object.isRequired,
     api: PropTypes.object.isRequired
   }
 

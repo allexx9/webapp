@@ -437,9 +437,9 @@ export const setTokenAllowance = async (
   )
 }
 
-export const getAvailableAddresses = async ZeroExConfig => {
+export const getAvailableAccounts = async ZeroExConfig => {
   const zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig)
-  return zeroEx.getAvailableAddressesAsync()
+  return await zeroEx.getAvailableAddressesAsync()
 }
 
 export const getMarketTakerOrder = async (

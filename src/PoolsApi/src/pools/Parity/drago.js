@@ -253,7 +253,7 @@ class DragoParity {
     const buyPriceWei = api.util.toWei(buyPrice, 'ether')
     const sellPriceWei = api.util.toWei(sellPrice, 'ether')
     const instance = this._instance
-    const values = [sellPriceWei, buyPriceWei]
+    const values = [sellPriceWei, buyPriceWei, null, null, null]
     const options = {
       from: accountAddress
     }

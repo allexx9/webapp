@@ -121,7 +121,7 @@ class Registry {
     let isMetaMask = false
     const contract = this._getContractAddressFromRegister(contractName).then(
       address => {
-        if (address[0] == '0x0000000000000000000000000000000000000000') {
+        if (address[0] === '0x0000000000000000000000000000000000000000') {
           throw new Error('The contract address was not found in the Register.')
         }
         if (!api) {
