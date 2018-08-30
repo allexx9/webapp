@@ -5,12 +5,14 @@ import { Observable } from 'rxjs/Observable'
 import {
   catchError,
   delay,
+  exhaustMap,
   finalize,
   flatMap,
   map,
   mergeMap,
   retryWhen,
   switchMap,
+  tap,
   timeout
 } from 'rxjs/operators'
 import { ofType } from 'redux-observable'
@@ -90,60 +92,61 @@ export const isConnectedToNode$ = api => {
   )
 }
 
-export const isConnectedToNodeEpic = (action$, state$) =>
+export const isConnectedToNodeEpic = action$ =>
   action$.ofType(TYPE_.CHECK_APP_IS_CONNECTED).switchMap(action => {
-    return Observable.timer(0, 2000).exhaustMap(() => {
-      return isConnectedToNode$(action.payload.api)
-        .do(result => {
-          return result
-        })
-        .flatMap(result => {
-          let actionsArray = Array(0)
-          actionsArray = [
-            Observable.of(Actions.app.updateAppStatus({ ...result }))
-          ]
-          return Observable.concat(...actionsArray)
-        })
-        .retryWhen(error => {
-          let scalingDuration = 1000
-          state$.dispatch(
-            Actions.app.updateAppStatus({
-              isConnected: false,
-              isSyncing: false,
-              syncStatus: {},
-              retryTimeInterval: 1000,
-              connectionRetries: 0
-            })
-          )
-          return error.pipe(
-            mergeMap((error, i) => {
-              const retryAttempt = i + 1
-              // if maximum number of retries have been met
-              // or response is a status code we don't wish to retry, throw error
-              // if (
-              //   retryAttempt > maxRetryAttempts ||
-              //   excludedStatusCodes.find(e => e === error.status)
-              // ) {
-              //   throw(error);
-              // }
-              let timeInterval
-              retryAttempt > 5
-                ? (timeInterval = scalingDuration * 5)
-                : (timeInterval = scalingDuration * retryAttempt)
-              state$.dispatch(
+    let scalingDuration = 1000
+    let timeInterval = 0
+    let retryAttempt = 0
+    return Observable.timer(0, 2000).pipe(
+      exhaustMap(() => {
+        return isConnectedToNode$(action.payload.api).pipe(
+          tap(result => {
+            return result
+          }),
+          flatMap(result => {
+            retryAttempt = 0
+            timeInterval = 0
+            let actionsArray = Array(0)
+            actionsArray = [
+              Observable.of(Actions.app.updateAppStatus({ ...result }))
+            ]
+            return Observable.concat(...actionsArray)
+          }),
+          catchError(() => {
+            console.warn('Connection error to node. Retrying.')
+            retryAttempt++
+            retryAttempt > 5
+              ? (timeInterval = scalingDuration * 5)
+              : (timeInterval = scalingDuration * retryAttempt)
+            return Observable.concat(
+              // Observable.of(
+              //   Actions.app.updateAppStatus({
+              //     isConnected: false,
+              //     isSyncing: false,
+              //     syncStatus: {},
+              //     connectionRetries: retryAttempt
+              //   })
+              // ),
+              Observable.of(
                 Actions.app.updateAppStatus({
+                  isConnected: false,
+                  isSyncing: false,
+                  // syncStatus: {},
                   retryTimeInterval: timeInterval,
                   connectionRetries: retryAttempt
                 })
               )
-              console.log(`Attempt ${retryAttempt}`)
-              // retry after 1s, 2s, etc...
-              return timer(timeInterval)
-            }),
-            finalize(() => console.log('We are done!'))
-          )
-        })
-    })
+              // .pipe(
+              //   map(result => {
+              //     return result
+              //   }),
+              //   delay(timeInterval)
+              // )
+            )
+          })
+        )
+      })
+    )
   })
 
 //

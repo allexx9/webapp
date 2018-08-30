@@ -147,11 +147,12 @@ class ElementNotConnected extends Component {
                 </p>
                 {/* <p>Trying to establish a new connection in {this.state.counter} seconds... </p> */}
                 <p>Trying to establish a new connection... </p>
-                <p>
+                {/* <p>
                   Attempt {this.props.app.connectionRetries}: retrying in{' '}
                   {this.props.app.retryTimeInterval}
                   ms
-                </p>
+                </p> */}
+                <p>Attempt {this.props.app.connectionRetries}.</p>
                 <p>
                   Please contact our support or{' '}
                   {

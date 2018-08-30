@@ -43,7 +43,8 @@ class DragoWeb3 {
     tokenAddress,
     tokenWrapper,
     toBeWrapped,
-    time
+    time,
+    isOldERC20
   ) => {
     if (!managerAccountAddress) {
       throw new Error('accountAddress needs to be provided')
@@ -63,12 +64,16 @@ class DragoWeb3 {
     if (!time) {
       throw new Error('time need to be provided')
     }
+    if (typeof isOldERC20 === 'undefined') {
+      throw new Error('isOldERC20 need to be provided')
+    }
     console.log(`managerAccountAddress ${managerAccountAddress}`)
     console.log(`exchangeContractAddres ${exchangeContractAddress}`)
     console.log(`tokenAddress ${tokenAddress}`)
     console.log(`tokenWrapper ${tokenWrapper}`)
     console.log(`toBeWrapped ${toBeWrapped}`)
     console.log(`time ${time}`)
+    console.log(`isOldERC20 ${isOldERC20}`)
     const instance = this._instance
     const api = this._api
     let options = {
@@ -83,19 +88,23 @@ class DragoWeb3 {
       inputs: [
         {
           type: 'address',
-          name: '_token'
+          name: 'token'
         },
         {
           type: 'address',
-          name: '_wrapper'
+          name: 'wrapper'
         },
         {
           type: 'uint256',
-          name: '_value'
+          name: 'value'
         },
         {
           type: 'uint256',
-          name: '_forTime'
+          name: 'forTime'
+        },
+        {
+          type: 'bool',
+          name: 'erc20Old'
         }
       ]
     }
@@ -103,7 +112,8 @@ class DragoWeb3 {
       tokenAddress,
       tokenWrapper,
       toBeWrapped,
-      time
+      time,
+      isOldERC20
     ])
 
     console.log(encodedABI)
