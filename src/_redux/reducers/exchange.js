@@ -175,9 +175,9 @@ function exchangeReducer(state = initialState.exchange, action) {
         let previousPrice = new BigNumber(ticker.previous.price)
         if (!previousPrice.eq(0)) {
           ticker.variation = currentPrice
-            .sub(previousPrice)
-            .div(previousPrice)
-            .times(100)
+            .minus(previousPrice)
+            .dividedBy(previousPrice)
+            .multipliedBy(100)
             .toFixed(4)
         } else {
           ticker.variation = 0

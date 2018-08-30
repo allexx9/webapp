@@ -21,8 +21,8 @@ class Exchange {
       throw new Error('Network not supported on this exchange: ' + networkId)
     }
     this._exchange = exchange
-    this._network = networkId
-    // this._network = 1
+    // this._network = networkId
+    this._network = 1
     this._transport = transport
     this._exchangeProperties = SupportedExchanges[exchange]
     this._call = {
