@@ -33,7 +33,7 @@ import TokenTradeSelector from '../_atomic/molecules/tokenTradeSelector'
 
 import {
   CANCEL_SELECTED_ORDER,
-  FETCH_FUND_ORDERS,
+  FETCH_ACCOUNT_ORDERS,
   RELAY_CLOSE_WEBSOCKET,
   UPDATE_FUND_LIQUIDITY,
   UPDATE_SELECTED_FUND
@@ -113,7 +113,7 @@ class ApplicationExchangeHome extends Component {
     }
     console.log(payload)
     return {
-      type: FETCH_FUND_ORDERS,
+      type: FETCH_ACCOUNT_ORDERS,
       payload: payload
     }
   }
@@ -165,6 +165,7 @@ class ApplicationExchangeHome extends Component {
         }
       ]
 
+      // Get funds details (balance, transactions)
       this.getSelectedFundDetails(null, accounts)
 
       // Set available relays
@@ -191,17 +192,31 @@ class ApplicationExchangeHome extends Component {
         Actions.exchange.updateSelectedTradeTokensPair(defaultTokensPair)
       )
 
+      // Getting chart data
+      // let tsYesterday = new Date(
+      //   (Math.floor(Date.now() / 1000) - 86400 * 7) * 1000
+      // ).toISOString()
+      // this.props.dispatch(
+      //   Actions.exchange.fetchCandleDataSingle(
+      //     defaultRelay,
+      //     api._rb.network.id,
+      //     defaultTokensPair.baseToken,
+      //     defaultTokensPair.quoteToken,
+      //     tsYesterday
+      //   )
+      // )
+
       this.connectToExchange(defaultRelay, defaultTokensPair)
 
       // Getting trade history logs
-      this.props.dispatch(
-        Actions.exchange.getTradeHistoryLogs(
-          defaultRelay,
-          api._rb.network.id,
-          defaultTokensPair.baseToken.address,
-          defaultTokensPair.quoteToken.address
-        )
-      )
+      // this.props.dispatch(
+      //   Actions.exchange.getTradeHistoryLogs(
+      //     defaultRelay,
+      //     api._rb.network.id,
+      //     defaultTokensPair.baseToken.address,
+      //     defaultTokensPair.quoteToken.address
+      //   )
+      // )
 
       // // Getting history logs
       // this.props.dispatch(this.getTradeHistoryLogs(
@@ -216,7 +231,7 @@ class ApplicationExchangeHome extends Component {
         (Math.floor(Date.now() / 1000) - 86400 * 7) * 1000
       ).toISOString()
       this.props.dispatch(
-        Actions.exchange.getChartData(
+        Actions.exchange.fetchCandleDataSingle(
           defaultRelay,
           api._rb.network.id,
           defaultTokensPair.baseToken,
@@ -397,18 +412,18 @@ class ApplicationExchangeHome extends Component {
       this.connectToExchange(tradeTokensPair)
 
       // Getting chart data
-      let tsYesterday = new Date(
-        (Math.floor(Date.now() / 1000) - 86400 * 7) * 1000
-      ).toISOString()
-      this.props.dispatch(
-        Actions.exchange.getChartData(
-          this.props.exchange.selectedRelay,
-          this.props.exchange.relay.networkId,
-          this.props.exchange.selectedTokensPair.baseToken,
-          this.props.exchange.selectedTokensPair.quoteToken,
-          tsYesterday
-        )
-      )
+      // let tsYesterday = new Date(
+      //   (Math.floor(Date.now() / 1000) - 86400 * 7) * 1000
+      // ).toISOString()
+      // this.props.dispatch(
+      //   Actions.exchange.fetchCandleDataSingle(
+      //     this.props.exchange.selectedRelay,
+      //     this.props.exchange.relay.networkId,
+      //     this.props.exchange.selectedTokensPair.baseToken,
+      //     this.props.exchange.selectedTokensPair.quoteToken,
+      //     tsYesterday
+      //   )
+      // )
     } catch (error) {
       console.log(error)
     }

@@ -1339,6 +1339,7 @@ class utilities {
     const dragoETHBalance = await poolApi.contract.drago.getBalance()
     const dragoWETHBalance = await poolApi.contract.drago.getBalanceWETH()
     const dragoZRXBalance = await poolApi.contract.drago.getBalanceZRX()
+    console.log(dragoETHBalance, dragoWETHBalance, dragoZRXBalance)
     return [dragoETHBalance, dragoWETHBalance, dragoZRXBalance]
   }
 

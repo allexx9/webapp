@@ -122,22 +122,26 @@ class ExchangeBox extends Component {
       console.log(token)
       let result = await web3.eth.personal.sign(
         token,
-        '0xc8dcd42e846466f2d2b89f3c54eba37bf738019b'
+        this.props.exchange.walletSelectedAddress
       )
       // .then((result) => {
       //   console.log(result)
       // })
       console.log(result)
-      const account = {
+      const accountSignature = {
         signature: result,
         nonce: token
       }
       // Fetch active orders
       this.props.dispatch(
+        Actions.exchange.updateAccountSignature(accountSignature)
+      )
+      // Fetch active orders
+      this.props.dispatch(
         Actions.exchange.getAccountOrders(
           this.props.exchange.selectedRelay,
           api._rb.network.id,
-          account,
+          accountSignature,
           this.props.exchange.selectedTokensPair.baseToken,
           this.props.exchange.selectedTokensPair.quoteToken
         )

@@ -1,37 +1,18 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-import {
-  CANCEL_SELECTED_ORDER,
-  CHART_MARKET_DATA_ADD_DATAPOINT,
-  CHART_MARKET_DATA_INIT,
-  CHART_MARKET_DATA_UPDATE,
-  ORDERBOOK_INIT,
-  ORDERBOOK_UPDATE,
-  SET_MAKER_ADDRESS,
-  SET_ORDERBOOK_AGGREGATE_ORDERS,
-  TOKENS_TICKERS_UPDATE,
-  UPDATE_AVAILABLE_RELAYS,
-  UPDATE_AVAILABLE_TRADE_TOKENS_PAIRS,
-  UPDATE_CURRENT_TOKEN_PRICE,
-  UPDATE_ELEMENT_LOADING,
-  UPDATE_FUND_ORDERS,
-  UPDATE_SELECTED_FUND,
-  UPDATE_SELECTED_ORDER,
-  UPDATE_SELECTED_RELAY,
-  UPDATE_TRADE_TOKENS_PAIR
-} from '../actions/const'
+import * as TYPE_ from '../actions/const'
 import BigNumber from 'bignumber.js'
 import initialState from './initialState'
 
 function exchangeReducer(state = initialState.exchange, action) {
   switch (action.type) {
-    case UPDATE_FUND_ORDERS:
+    case TYPE_.UPDATE_FUND_ORDERS:
       return {
         ...state,
         fundOrders: { ...state.fundOrders, ...action.payload }
       }
 
-    case CHART_MARKET_DATA_UPDATE:
+    case TYPE_.CHART_MARKET_DATA_UPDATE:
       if (action.payload !== '') {
         return {
           ...state,
@@ -43,7 +24,7 @@ function exchangeReducer(state = initialState.exchange, action) {
         }
       }
 
-    case CHART_MARKET_DATA_INIT:
+    case TYPE_.CHART_MARKET_DATA_INIT:
       if (action.payload !== '') {
         return {
           ...state,
@@ -55,7 +36,7 @@ function exchangeReducer(state = initialState.exchange, action) {
         }
       }
 
-    case CHART_MARKET_DATA_ADD_DATAPOINT:
+    case TYPE_.CHART_MARKET_DATA_ADD_DATAPOINT:
       let newChartData = [...state.chartData]
       if (
         action.payload.epoch === newChartData[newChartData.length - 1].epoch
@@ -84,26 +65,26 @@ function exchangeReducer(state = initialState.exchange, action) {
         chartData: newChartData
       }
 
-    case UPDATE_ELEMENT_LOADING:
+    case TYPE_.UPDATE_ELEMENT_LOADING:
       const elementLoading = action.payload
       return {
         ...state,
         loading: { ...state.loading, ...elementLoading }
       }
 
-    case UPDATE_SELECTED_FUND:
+    case TYPE_.UPDATE_SELECTED_FUND:
       return {
         ...state,
         selectedFund: { ...state.selectedFund, ...action.payload }
       }
 
-    case UPDATE_SELECTED_RELAY:
+    case TYPE_.UPDATE_SELECTED_RELAY:
       return {
         ...state,
         selectedRelay: { ...state.selectedRelay, ...action.payload }
       }
 
-    case UPDATE_SELECTED_ORDER:
+    case TYPE_.UPDATE_SELECTED_ORDER:
       let orderDetails = action.payload
       let selectedOrder = { ...state.selectedOrder, ...orderDetails }
       return {
@@ -111,60 +92,67 @@ function exchangeReducer(state = initialState.exchange, action) {
         selectedOrder: selectedOrder
       }
 
-    case UPDATE_TRADE_TOKENS_PAIR:
+    case TYPE_.UPDATE_TRADE_TOKENS_PAIR:
       return {
         ...state,
         selectedTokensPair: { ...state.selectedTokensPair, ...action.payload }
       }
 
-    case UPDATE_AVAILABLE_TRADE_TOKENS_PAIRS:
+    case TYPE_.UPDATE_AVAILABLE_TRADE_TOKENS_PAIRS:
       return {
         ...state,
         availableTradeTokensPairs: { ...action.payload }
       }
 
-    case UPDATE_AVAILABLE_RELAYS:
+    case TYPE_.UPDATE_AVAILABLE_RELAYS:
       return {
         ...state,
         availableRelays: action.payload
       }
 
-    case SET_MAKER_ADDRESS:
+    case TYPE_.UPDATE_ACCOUNT_SIGNATURE:
       return {
         ...state,
-        makerAddress: action.payload
+        accountSignature: { ...state.accountSignature, ...action.payload }
       }
 
-    case CANCEL_SELECTED_ORDER:
+    case TYPE_.SET_MAKER_ADDRESS:
+      return {
+        ...state,
+        makerAddress: action.payload,
+        walletSelectedAddress: action.payload
+      }
+
+    case TYPE_.CANCEL_SELECTED_ORDER:
       return {
         ...state,
         selectedOrder: initialState.exchange.selectedOrder
       }
 
-    case SET_ORDERBOOK_AGGREGATE_ORDERS:
+    case TYPE_.SET_ORDERBOOK_AGGREGATE_ORDERS:
       return {
         ...state,
         orderBookAggregated: action.payload
       }
 
-    case ORDERBOOK_INIT:
+    case TYPE_.ORDERBOOK_INIT:
       const newOrderBook = { ...state.orderBook, ...action.payload }
       return {
         ...state,
         orderBook: newOrderBook
       }
 
-    case ORDERBOOK_UPDATE:
+    case TYPE_.ORDERBOOK_UPDATE:
       return { ...state, webSocket: { ...action.payload } }
 
-    case TOKENS_TICKERS_UPDATE:
+    case TYPE_.TOKENS_TICKERS_UPDATE:
       let prices = {
         ...action.payload,
         previous: { ...state.prices }
       }
       return { ...state, prices }
 
-    case UPDATE_CURRENT_TOKEN_PRICE:
+    case TYPE_.UPDATE_CURRENT_TOKEN_PRICE:
       let ticker
       if (typeof action.payload.current !== 'undefined') {
         ticker = {

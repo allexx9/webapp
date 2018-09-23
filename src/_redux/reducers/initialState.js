@@ -96,7 +96,13 @@ const initialState = {
       },
       managerAccount: ''
     },
+    accountSignature: {
+      signature: '',
+      nonce: '',
+      valid: false
+    },
     makerAddress: '',
+    walletSelectedAddress: '',
     selectedExchange: EXCHANGES.zeroEx[NETWORK_NAME],
     selectedRelay: RELAYS[ERCdEX],
     availableRelays: {},

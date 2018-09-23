@@ -9,7 +9,7 @@ import {
 import app from './app_actions'
 import drago from './drago_actions'
 import endpoint from './endpoint_actions'
-import exchange from './exchange'
+import exchange from './exchange_actions'
 import notifications from './notifications_actions'
 import tokens from './tokens'
 import transactions from './transactions'

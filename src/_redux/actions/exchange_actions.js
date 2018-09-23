@@ -12,11 +12,17 @@ const exchange = {
       quoteToken
     }
     return {
-      type: TYPE_.FETCH_FUND_ORDERS,
+      type: TYPE_.FETCH_ACCOUNT_ORDERS,
       payload: payload
     }
   },
-  getChartData: (relay, networkId, baseToken, quoteToken, startDate) => {
+  fetchCandleDataSingle: (
+    relay,
+    networkId,
+    baseToken,
+    quoteToken,
+    startDate
+  ) => {
     const payload = {
       relay,
       networkId,
@@ -114,6 +120,12 @@ const exchange = {
   updateAvailableRelays: payload => {
     return {
       type: TYPE_.UPDATE_AVAILABLE_RELAYS,
+      payload: payload
+    }
+  },
+  updateAccountSignature: payload => {
+    return {
+      type: TYPE_.UPDATE_ACCOUNT_SIGNATURE,
       payload: payload
     }
   }

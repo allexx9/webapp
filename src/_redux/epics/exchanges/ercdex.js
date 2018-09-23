@@ -38,7 +38,7 @@ import {
   CHART_MARKET_DATA_UPDATE,
   FETCH_ASSETS_PRICE_DATA,
   FETCH_CANDLES_DATA_SINGLE,
-  FETCH_FUND_ORDERS,
+  FETCH_ACCOUNT_ORDERS,
   RELAY_CLOSE_WEBSOCKET,
   RELAY_GET_ORDERS,
   RELAY_MSG_FROM_WEBSOCKET,
@@ -254,7 +254,7 @@ const getAccountOrdersFromRelay$ = (
 
 export const getAccountOrdersEpic = action$ => {
   return action$
-    .ofType(customRelayAction(FETCH_FUND_ORDERS))
+    .ofType(customRelayAction(FETCH_ACCOUNT_ORDERS))
     .mergeMap(action => {
       return Observable.concat(
         // Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: true }}),

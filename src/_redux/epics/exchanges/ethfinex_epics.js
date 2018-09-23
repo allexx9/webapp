@@ -26,7 +26,7 @@ import 'rxjs/observable/fromEvent'
 import 'rxjs/observable/timer'
 // import { timer } from 'rxjs/observable/timer'
 import 'rxjs/add/observable/forkJoin'
-import Exchange from '../../../_utils/exchange/src/index'
+import Exchange from '../../../_utils/exchange/src'
 import utils from '../../../_utils/utils'
 // import { catchError } from 'rxjs/operators';
 // import { catchError } from 'rxjs/operators';
@@ -38,17 +38,17 @@ import {
   CHART_MARKET_DATA_ADD_DATAPOINT,
   CHART_MARKET_DATA_INIT,
   FETCH_CANDLES_DATA_SINGLE,
-  FETCH_FUND_ORDERS,
+  FETCH_ACCOUNT_ORDERS,
   // UPDATE_ELEMENT_LOADING,
   // CHART_MARKET_DATA_UPDATE,
-  FETCH_FUND_ORDERS_STOP,
+  FETCH_ACCOUNT_ORDERS_STOP,
   RELAY_CLOSE_WEBSOCKET,
   RELAY_GET_ORDERS,
   RELAY_MSG_FROM_WEBSOCKET,
   RELAY_OPEN_WEBSOCKET,
   UPDATE_CURRENT_TOKEN_PRICE,
   UPDATE_FUND_ORDERS
-} from '../../../_redux/actions/const'
+} from '../../actions/const'
 
 const customRelayAction = action => {
   // console.log(`${Ethfinex.toUpperCase()}_${action}`)
@@ -187,6 +187,12 @@ export const getCandlesSingleDataEpic = action$ => {
           .map(historical => {
             return updateSingleCandles(historical)
           })
+          .catch(() => {
+            return Observable.of({
+              type: QUEUE_ERROR_NOTIFICATION,
+              payload: 'Error fetching candles data.'
+            })
+          })
         // Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: false } }),
       )
     })
@@ -323,6 +329,7 @@ const getAccountOrdersFromRelay$ = (
   quoteToken
 ) => {
   const exchange = new Exchange(relay.name, networkId)
+  console.log('orders open')
   return Observable.fromPromise(
     exchange.getAccountOrders(account, baseToken, quoteToken)
   )
@@ -330,13 +337,17 @@ const getAccountOrdersFromRelay$ = (
 
 export const getAccountOrdersEpic = action$ => {
   return action$
-    .ofType(customRelayAction(FETCH_FUND_ORDERS))
+    .ofType(customRelayAction(FETCH_ACCOUNT_ORDERS))
     .mergeMap(action => {
+      console.log('orders')
+      console.log(customRelayAction(FETCH_ACCOUNT_ORDERS))
       return Observable.concat(
         // Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: true }}),
 
         Observable.timer(0, 5000)
-          .takeUntil(action$.ofType(customRelayAction(FETCH_FUND_ORDERS_STOP)))
+          .takeUntil(
+            action$.ofType(customRelayAction(FETCH_ACCOUNT_ORDERS_STOP))
+          )
           .exhaustMap(() =>
             getAccountOrdersFromRelay$(
               action.payload.relay,
