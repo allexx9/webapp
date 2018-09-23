@@ -28,9 +28,8 @@ import {
 } from '../../_utils/exchange'
 // import io from 'socket.io-client'
 //import ReconnectingWebSocket from 'reconnecting-websocket/dist/reconnecting-websocket-cjs'
-import Exchange from '../../_utils/exchange/src/index'
-import utils from '../../_utils/utils'
-
+import * as ERRORS from '../../_const/errors'
+import * as TYPE_ from '../actions/const'
 import {
   FETCH_HISTORY_TRANSACTION_LOGS,
   ORDERBOOK_INIT,
@@ -40,6 +39,8 @@ import {
   UPDATE_HISTORY_TRANSACTION_LOGS,
   UPDATE_SELECTED_FUND
 } from '../actions/const'
+import Exchange from '../../_utils/exchange/src/index'
+import utils from '../../_utils/utils'
 
 export * from './exchanges'
 
@@ -83,10 +84,18 @@ export const getOrderBookFromRelayEpic = action$ => {
       action.payload.baseToken,
       action.payload.quoteToken,
       action.payload.aggregated
-    ).map(payload => {
-      // const aggregate = { aggregated: action.payload.aggregated }
-      return { type: ORDERBOOK_INIT, payload: { ...payload } }
-    })
+    )
+      .map(payload => {
+        // const aggregate = { aggregated: action.payload.aggregated }
+        return { type: ORDERBOOK_INIT, payload: { ...payload } }
+      })
+      .catch(error => {
+        console.log(error)
+        return Observable.of({
+          type: TYPE_.QUEUE_ERROR_NOTIFICATION,
+          payload: ERRORS.E001
+        })
+      })
   })
 }
 

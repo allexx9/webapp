@@ -146,10 +146,10 @@ class TableOrderBook extends Component {
                 }}
               />
               <Col xs={5} style={orderStylePrice[orderType]}>
-                {amount}
+                {Number(amount).toFixed(3)}
               </Col>
               <Col xs={5} style={orderStylePrice[orderType]}>
-                {price}
+                {Number(price).toFixed(5)}
               </Col>
             </Row>
           </Col>

@@ -29,7 +29,7 @@ class PageNetworkConfig extends Component {
   constructor(props) {
     super(props)
     let selectedEndpoint = INFURA
-    let selectedNetwork = KOVAN
+    let selectedNetwork = ROPSTEN
     let disabledRemote = false
     let disabledLocal = true
     switch (this.props.endpoint.endpointInfo.name) {

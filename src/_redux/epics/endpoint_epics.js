@@ -351,7 +351,7 @@ export const updateAccounts = async (api, blockNumber, state$) => {
         // Checking GRG balance
         const newgrgBalance = new BigNumber(grgBalances[index])
         const prevGrgBalance = new BigNumber(account.grgBalanceWei)
-        console.log(newgrgBalance, prevGrgBalance)
+        // console.log(newgrgBalance, prevGrgBalance)
         if (
           !new BigNumber(newgrgBalance).eq(prevGrgBalance) &&
           prevBlockNumber !== 0
@@ -507,7 +507,7 @@ export const monitorAccountsEpic = (action$, state$) =>
     return monitorAccounts$(action.payload.web3, action.payload.api, state$)
       .takeUntil(action$.ofType(TYPE_.MONITOR_ACCOUNTS_STOP))
       .do(val => {
-        console.log(val)
+        // console.log(val)
         return val
       })
       .flatMap(accountsUpdate => {
@@ -566,7 +566,7 @@ export const getAccountsTransactionsEpic = (action$, state$) =>
       action.payload.options
     )
       .map(results => {
-        console.log(results)
+        // console.log(results)
         const currentState = state$.value
         if (currentState.user.isManager) {
           return Actions.drago.updateTransactionsDragoManagerAction(results)
@@ -665,7 +665,6 @@ const checkMetaMaskIsUnlocked$ = (api, web3, endpoint) => {
 export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
   return action$.ofType(TYPE_.CHECK_METAMASK_IS_UNLOCKED).mergeMap(action => {
     return Observable.timer(0, 1000).exhaustMap(() => {
-      console.log(state$.value)
       const currentState = state$.value
       // console.log(currentState)
       return checkMetaMaskIsUnlocked$(

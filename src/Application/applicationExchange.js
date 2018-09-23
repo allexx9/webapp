@@ -95,13 +95,13 @@ class ApplicationExchangePage extends Component {
           </Row>
           <MuiThemeProvider muiTheme={muiThemeExchange}>
             <Row className={classNames(styles.content)}>
-              <Col xs={12}>
+              {/* <Col xs={12}>
                 <div style={{ textAlign: 'center', marginTop: '25px' }}>
                   Coming soon.
                 </div>
-              </Col>
+              </Col> */}
               <Col xs={12}>
-                {/* {this.props.app.isConnected && !this.props.app.isSyncing ? (
+                {this.props.app.isConnected && !this.props.app.isSyncing ? (
                   // {false ? (
                   <ApplicationExchangeHome
                     location={location}
@@ -113,7 +113,7 @@ class ApplicationExchangePage extends Component {
                     isSyncing={this.props.app.isSyncing}
                     syncStatus={this.props.app.syncStatus}
                   />
-                )} */}
+                )}
               </Col>
             </Row>
           </MuiThemeProvider>
