@@ -2,14 +2,14 @@
  * Generate random data for use in examples.
  */
 export function generateRandomList() {
-  const list = [];
+  const list = []
 
-  for (var i = 0; i < 50000; i++) {
-    const random = loremIpsum[i % loremIpsum.length];
-    const randoms = [random];
+  for (let i = 0; i < 50000; i++) {
+    const random = loremIpsum[i % loremIpsum.length]
+    const randoms = [random]
 
     for (let j = Math.round(Math.random() * 10); j--; ) {
-      randoms.push(loremIpsum[(i * j) % loremIpsum.length]);
+      randoms.push(loremIpsum[(i * j) % loremIpsum.length])
     }
 
     list.push({
@@ -18,11 +18,11 @@ export function generateRandomList() {
       name: NAMES[i % NAMES.length],
       random,
       randomLong: randoms.join(' '),
-      size: ROW_HEIGHTS[Math.floor(Math.random() * ROW_HEIGHTS.length)],
-    });
+      size: ROW_HEIGHTS[Math.floor(Math.random() * ROW_HEIGHTS.length)]
+    })
   }
 
-  return list;
+  return list
 }
 
 const BADGE_COLORS = [
@@ -40,8 +40,8 @@ const BADGE_COLORS = [
   '#673ab7',
   '#ffeb3b',
   '#cddc39',
-  '#795548',
-];
+  '#795548'
+]
 const NAMES = [
   'Peter Brimer',
   'Tera Gaona',
@@ -142,9 +142,9 @@ const NAMES = [
   'Allene Seto',
   'Margery Caves',
   'Nelly Moudy',
-  'Felix Sailer',
-];
-const ROW_HEIGHTS = [50, 75, 100];
+  'Felix Sailer'
+]
+const ROW_HEIGHTS = [50, 75, 100]
 
 const loremIpsum = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
@@ -222,5 +222,5 @@ const loremIpsum = [
   'Nullam a sapien leo.',
   'Praesent cursus semper purus, vitae gravida risus dapibus mattis.',
   'Sed pellentesque nulla lorem, in commodo arcu feugiat sed.',
-  'Phasellus blandit arcu non diam varius ornare.',
-];
+  'Phasellus blandit arcu non diam varius ornare.'
+]

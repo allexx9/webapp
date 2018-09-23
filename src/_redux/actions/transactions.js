@@ -1,8 +1,6 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
-import {
-  ADD_TRANSACTION,
-} from './const'
+import { ADD_TRANSACTION } from './const'
 
 const transactions = {
   addTransactionToQueueAction: (transactionId, transactionDetails) => {
@@ -13,4 +11,4 @@ const transactions = {
   }
 }
 
-export default transactions;
+export default transactions

@@ -1,30 +1,27 @@
 import * as Colors from 'material-ui/styles/colors'
-import AppBar from 'material-ui/AppBar';
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { Row, Col } from 'react-flexbox-grid';
+import { Col, Row } from 'react-flexbox-grid'
+import AppBar from 'material-ui/AppBar'
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
 
 export default class ElementBoxAppBar extends Component {
-
   static propTypes = {
-    title: PropTypes.string.isRequired,
-  };
-
-
+    title: PropTypes.string.isRequired
+  }
 
   render() {
     const priceBoxHeader = {
       marketPrice: {
         backgroundColor: '#054186',
         fontWeight: 500
-      },
+      }
     }
 
     const priceBoxHeaderTitleStyle = {
       padding: 0,
       textAlign: 'center',
       fontSize: 20,
-      fontWeight: 500,
+      fontWeight: 500
     }
 
     return (
@@ -40,7 +37,6 @@ export default class ElementBoxAppBar extends Component {
           </Col>
         </Row>
       </div>
-    );
+    )
   }
-
 }

@@ -1,17 +1,19 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import BigNumber from 'bignumber.js';
+import BigNumber from 'bignumber.js'
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
 
 export default class SyncStatusCurrentBlock extends Component {
-
   static propTypes = {
-    syncStatus: PropTypes.object.isRequired,
-  };
+    syncStatus: PropTypes.object.isRequired
+  }
 
   render() {
     const progressBlocks = () => {
       try {
-        return new BigNumber(this.props.syncStatus.currentBlock).div(new BigNumber(this.props.syncStatus.highestBlock)).mul(100).toFixed(2)
+        return new BigNumber(this.props.syncStatus.currentBlock)
+          .div(new BigNumber(this.props.syncStatus.highestBlock))
+          .times(100)
+          .toFixed(2)
       } catch (error) {
         return 'n/a'
       }
@@ -31,7 +33,10 @@ export default class SyncStatusCurrentBlock extends Component {
       }
     }
     return (
-      <span>Block sync {currentBlock()} of {highestBlock()} ({progressBlocks()}%)</span>
+      <span>
+        Block sync {currentBlock()} of {highestBlock()} ({progressBlocks()}
+        %)
+      </span>
     )
   }
 }

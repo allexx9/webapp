@@ -34,3 +34,27 @@ color: #4CAF50;
   color:#757575;
   font-size: 16px;
 }
+
+.symbol {
+  /* padding: 4px 0 !important; */
+  display: inline-block;
+}
+
+.name {
+  display: inline-block;
+  text-transform: uppercase;
+  width: 120px;
+}
+
+.details {
+  display: inline-block;
+}
+
+.image {
+  display: inline-block;
+  width: 50px;
+}
+
+.image img {
+  margin-top: 16px;
+}

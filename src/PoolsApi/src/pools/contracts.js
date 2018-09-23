@@ -7,9 +7,9 @@ import DragoFactoryWeb3 from './Web3/dragoFactory'
 import DragoParity from './Parity/drago'
 import DragoRegistryParity from './Parity/dragoRegistry'
 import DragoWeb3 from './Web3/drago'
-import EthusdParity from './Parity/ethusd'
 import EtherParity from './Parity/ether'
 import EtherWeb3 from './Web3/ether'
+import EthusdParity from './Parity/ethusd'
 import FundProxyWeb3 from './Web3/fundProxy'
 // import FundProxyParity from './Parity/fundProxy'
 import ExchangeParity from './Parity/exchange'
@@ -24,7 +24,7 @@ import VaultWeb3 from './Web3/vault'
 
 class Contract {
   constructor(api) {
-    var isMetaMask = false
+    let isMetaMask = false
     if (!api) {
       throw new Error('API instance needs to be provided to Contract')
     }

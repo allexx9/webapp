@@ -1,10 +1,11 @@
 /* Copyright 2016 Rigo Investment Sagl. */
 
-.body {
+/* .body {
   background-size: cover;
   background-repeat: no-repeat;
   width: 100%;
-}
+
+} */
 
 .headline {
   font-size: 24;
@@ -37,8 +38,10 @@
   display: flex !important;
   min-height: 100vh !important;
   flex-direction: column !important;
+  height: 100%;
 }
 
 .content {
   flex: 1 0 auto !important;
+  height: 100%;
 }

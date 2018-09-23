@@ -1,7 +1,7 @@
 {
-  "presets": [
-    "latest",
-    "react",
-    "stage-1"
-  ]
+  "env": {
+    "production": {
+      "plugins": ["transform-remove-console"]
+    }
+  }
 }

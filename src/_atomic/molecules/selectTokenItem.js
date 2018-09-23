@@ -1,37 +1,36 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-import React, { Component } from 'react';
+import { ETH, GRG } from '../../_utils/const'
 import ImgETH from '../atoms/imgETH'
 import ImgGRG from '../atoms/imgGRG'
-import { ETH, GRG } from '../../_utils/const'
+import React, { Component } from 'react'
 
-import styles from './selectTokenItem.module.css';
+import styles from './selectTokenItem.module.css'
 
-import PropTypes from 'prop-types';
+import PropTypes from 'prop-types'
 
 export default class SelectTokenItem extends Component {
-
   static propTypes = {
     account: PropTypes.object.isRequired,
     token: PropTypes.string.isRequired
-  };
+  }
 
   render() {
-    const { account, token } = this.props;
+    const { account, token } = this.props
 
-    let balance;
-    let tokenName;
+    let balance
+    let tokenName
     switch (token) {
       case ETH:
-        balance = account.ethBalance;
+        balance = account.ethBalance
         tokenName = 'Ethereum'
-        break;
+        break
       case GRG:
-        balance = account.rigoTokenBalance;
+        balance = account.grgBalance
         tokenName = 'RigoBlock'
-        break;
+        break
       default:
-        balance = account.ethBalance;
+        balance = account.ethBalance
         tokenName = 'Ethereum'
     }
 
@@ -42,14 +41,13 @@ export default class SelectTokenItem extends Component {
           {token === 'ETH' ? <ImgETH /> : <ImgGRG />}
         </div>
         <div className={styles.details}>
-          <div className={styles.name}>
-            {tokenName}
-          </div>
+          <div className={styles.name}>{tokenName}</div>
           <div className={styles.balance}>
-            {balance}<small> {token}</small>
+            {balance}
+            <small> {token}</small>
           </div>
         </div>
       </div>
-    );
+    )
   }
 }

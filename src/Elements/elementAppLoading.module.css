@@ -43,7 +43,6 @@
 }
 
 .titlePrimaryText {
-  font-family: gill sans,sans-serif;
   font-weight: 700;
   text-transform: uppercase;
   font-size: 40px;
@@ -51,7 +50,6 @@
 }
 
 .titleSecondaryText {
-  font-family: gill sans,sans-serif;
   font-weight: 700;
   text-transform: uppercase;
   font-size: 12px;

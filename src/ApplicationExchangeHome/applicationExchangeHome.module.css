@@ -102,3 +102,7 @@
   display: inline-block !important;
   width: auto !important;
 }
+
+.tokenPriceContainer{
+  text-align: right;
+}

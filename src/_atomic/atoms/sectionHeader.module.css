@@ -1,11 +1,21 @@
 .title {
   font-size: 22px;
-  background-color: #054186;
+  /* background-color: #054186; */
   color: #ffffff;
   margin-bottom: 2px;
   padding-left: 5px;
   padding-bottom: 2px;
   padding-top: 2px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 5px 5px;
+  border-radius: 4px 4px 0px 0px;
+}
+
+.drago {
+  background: linear-gradient(135deg,rgb(5, 65, 134),rgb(1, 17, 36));
+}
+
+.vault {
+  background: linear-gradient(135deg,rgb(96, 125, 139),rgb(40, 41, 41));
 }
 
 .container {
@@ -19,4 +29,10 @@
   position: absolute;
   right: 0;
   top: -10px;
+}
+
+.help {
+  position: absolute;
+  right: 5px;
+  top: 5px;
 }

@@ -1,32 +1,40 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-import BigNumber from 'bignumber.js';
-import { Dialog, FlatButton, TextField } from 'material-ui';
-import AppBar from 'material-ui/AppBar';
-import Paper from 'material-ui/Paper';
-import * as Colors from 'material-ui/styles/colors';
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { Col, Row } from 'react-flexbox-grid';
-import AccountSelector from '../../Elements/elementAccountSelector';
-import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization';
+import * as Colors from 'material-ui/styles/colors'
+import { Actions } from '../../_redux/actions'
+import { Col, Row } from 'react-flexbox-grid'
+import { Dialog, FlatButton, TextField } from 'material-ui'
+import {
+  ERRORS,
+  validateAccount,
+  validatePositiveNumber
+} from '../../_utils/validation'
+import { connect } from 'react-redux'
+import AccountSelector from '../../Elements/elementAccountSelector'
 import ActionsDialogHeader from '../../_atomic/molecules/actionsDialogHeader'
-import PoolApi from '../../PoolsApi/src';
-import { ERRORS, validateAccount, validatePositiveNumber } from '../../_utils/validation';
-import styles from './elementFundActionSetPrice.module.css';
+import AppBar from 'material-ui/AppBar'
+import BigNumber from 'bignumber.js'
+import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization'
+import Paper from 'material-ui/Paper'
+import PoolApi from '../../PoolsApi/src'
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
+import styles from './elementFundActionSetPrice.module.css'
 
+function mapStateToProps(state) {
+  return state
+}
 
-export default class ElementFundActionSetPrice extends Component {
-
+class ElementFundActionSetPrice extends Component {
   static contextTypes = {
-    api: PropTypes.object.isRequired,
-  };
+    api: PropTypes.object.isRequired
+  }
 
   static propTypes = {
     accounts: PropTypes.array.isRequired,
     dragoDetails: PropTypes.object.isRequired,
     openActionForm: PropTypes.func.isRequired,
-    snackBar: PropTypes.func
+    dispatch: PropTypes.func.isRequired
   }
 
   state = {
@@ -41,27 +49,21 @@ export default class ElementFundActionSetPrice extends Component {
     sellPrice: this.props.dragoDetails.sellPrice,
     pricesError: ERRORS.invalidPrices,
     sending: false,
-    complete: false,
+    complete: false
   }
 
   buttonsStyle = {
     marginTop: 12,
     marginBottom: 12,
-    color: 'white',
-  }
-
-  componentDidMount() {
-    const { api } = this.context
-    console.log(api)
+    color: 'white'
   }
 
   render() {
-
-    const { complete, openAuth, authMsg, authAccount } = this.state;
+    const { complete, openAuth, authMsg, authAccount } = this.state
     const { dragoDetails } = this.props
 
     if (complete) {
-      return null;
+      return null
     }
 
     const titleStyle = {
@@ -84,72 +86,81 @@ export default class ElementFundActionSetPrice extends Component {
     }
 
     return (
-      <div key='setPriceDialoDiv'>
-        <Dialog key='setPriceDialog'
+      <div key="setPriceDialoDiv">
+        <Dialog
+          key="setPriceDialog"
           title={this.renderHeader()}
           titleStyle={titleStyle}
           modal
           open={true}
-          actions={this.renderActions()}>
+          actions={this.renderActions()}
+        >
           {this.renderFields()}
         </Dialog>
       </div>
-    );
+    )
   }
 
   renderHeader = () => {
     const { dragoDetails } = this.props
     return (
-      <div key='dialogHeader'>
+      <div key="dialogHeader">
         <ActionsDialogHeader
-          primaryText='Set Price'
-          fundType='drago'
+          primaryText="Set Price"
+          fundType="drago"
           tokenDetails={dragoDetails}
         />
       </div>
     )
   }
 
-
-
-  onClose = (event) => {
+  onClose = event => {
     // Calling callback function passed by parent in order to show/hide this dialog
     this.props.openActionForm(event, 'setPrice')
   }
 
   renderActions = () => {
-    const { complete } = this.state;
+    const { complete } = this.state
 
     if (complete) {
       return (
-        <FlatButton key='dialoButton1'
-          label='Done'
+        <FlatButton
+          key="dialoButton1"
+          label="Done"
           primary
-          onClick={this.props.onClose} />
-      );
+          onClick={this.props.onClose}
+        />
+      )
     }
 
-    const { accountError, amountErrorBuy, amountErrorSell, sending } = this.state;
-    const hasError = !!(amountErrorBuy || amountErrorSell || accountError);
+    const {
+      accountError,
+      amountErrorBuy,
+      amountErrorSell,
+      sending
+    } = this.state
+    const hasError = !!(amountErrorBuy || amountErrorSell || accountError)
 
-    return ([
+    return [
       <FlatButton
-        key='dialoButton1'
-        label='Cancel'
-        name='setPrice'
+        key="dialoButton1"
+        label="Cancel"
+        name="setPrice"
         primary
-        onClick={this.onClose} />,
+        onClick={this.onClose}
+      />,
       <FlatButton
-        key='dialoButton2'
-        label='Save'
+        key="dialoButton2"
+        label="Save"
         primary
         disabled={hasError || sending}
-        onClick={this.onSend} />
-    ]);
+        onClick={this.onSend}
+      />
+    ]
   }
 
   renderFields = () => {
-    const amountLabel = 'Please enter a value';
+    const amountLabel = 'Please enter a value'
     const priceBoxHeader = {
       buy: {
         backgroundColor: Colors.green300
@@ -163,20 +174,20 @@ export default class ElementFundActionSetPrice extends Component {
       padding: 0,
       textAlign: 'center',
       fontSize: 25,
-      fontWeight: 600,
+      fontWeight: 600
     }
 
-
     return (
-      <div key='inputFields'>
+      <div key="inputFields">
         <AccountSelector
-          key='accountSelector'
+          key="accountSelector"
           accounts={this.props.accounts}
           account={this.state.account}
           errorText={this.state.accountError}
-          floatingLabelText='From account'
-          hintText='The account the transaction will be made from'
-          onSelect={this.onChangeAddress} />
+          floatingLabelText="From account"
+          hintText="The account the transaction will be made from"
+          onSelect={this.onChangeAddress}
+        />
         <Row>
           <Col xs={12}>
             <Paper zDepth={1}>
@@ -194,23 +205,23 @@ export default class ElementFundActionSetPrice extends Component {
                 </Col>
                 <Col xs={8}>
                   <TextField
-                    key='setFundBuyPriceField'
-                    autoComplete='off'
+                    key="setFundBuyPriceField"
+                    autoComplete="off"
                     floatingLabelFixed
-                    floatingLabelText='The BUY price for this Drago'
+                    floatingLabelText="The BUY price for this Drago"
                     fullWidth
                     hintText={amountLabel}
                     errorText={this.state.amountErrorBuy}
-                    name='setFundBuyPriceField'
-                    id='setFundBuyPriceField'
+                    name="setFundBuyPriceField"
+                    id="setFundBuyPriceField"
                     value={this.state.buyPrice}
-                    onChange={this.onChangeBuyPrice} />
+                    onChange={this.onChangeBuyPrice}
+                  />
                 </Col>
               </Row>
             </Paper>
             <Paper zDepth={1}>
               <Row>
-
                 <Col xs={4}>
                   <AppBar
                     title="SELL"
@@ -221,48 +232,47 @@ export default class ElementFundActionSetPrice extends Component {
                   <div className={styles.currentPriceText}>
                     {this.state.sellPrice} ETH
                   </div>
-
                 </Col>
                 <Col xs={8}>
                   <TextField
-                    key='setFundSellPriceField'
-                    autoComplete='off'
+                    key="setFundSellPriceField"
+                    autoComplete="off"
                     floatingLabelFixed
-                    floatingLabelText='The SELL price for this Drago'
+                    floatingLabelText="The SELL price for this Drago"
                     fullWidth
                     hintText={amountLabel}
                     errorText={this.state.amountErrorSell}
-                    name='setFundSellPriceField'
-                    id='setFundSellPriceField'
+                    name="setFundSellPriceField"
+                    id="setFundSellPriceField"
                     value={this.state.sellPrice}
-                    onChange={this.onChangeSellPrice} />
+                    onChange={this.onChangeSellPrice}
+                  />
                 </Col>
-
               </Row>
             </Paper>
           </Col>
         </Row>
       </div>
-    );
+    )
   }
 
-  onChangeAddress = (account) => {
-    const { api } = this.context;
+  onChangeAddress = account => {
+    const { api } = this.context
     this.setState({
       account,
       accountError: validateAccount(account, api)
-    });
+    })
   }
 
   onChangeBuyPrice = (event, buyPrice) => {
-    const { sellPrice } = this.state;
+    const { sellPrice } = this.state
     const error = validatePositiveNumber(buyPrice)
     console.log(buyPrice)
     if (buyPrice === '') {
       this.setState({
         buyPrice: '',
         amountErrorBuy: error
-      });
+      })
       return
     }
     // Checking if a valid positive number
@@ -270,7 +280,7 @@ export default class ElementFundActionSetPrice extends Component {
       this.setState({
         buyPrice: buyPrice,
         amountErrorBuy: error
-      });
+      })
     } else {
       if (validatePositiveNumber(sellPrice)) {
         this.setState({
@@ -295,14 +305,14 @@ export default class ElementFundActionSetPrice extends Component {
   }
 
   onChangeSellPrice = (event, sellPrice) => {
-    const { buyPrice } = this.state;
+    const { buyPrice } = this.state
     const error = validatePositiveNumber(sellPrice)
     console.log(sellPrice)
     if (sellPrice === '') {
       this.setState({
         sellPrice: '',
         amountErrorSell: error
-      });
+      })
       return
     }
     // Checking if a valid positive number
@@ -310,7 +320,7 @@ export default class ElementFundActionSetPrice extends Component {
       this.setState({
         sellPrice: sellPrice,
         amountErrorSell: error
-      });
+      })
     } else {
       if (validatePositiveNumber(buyPrice)) {
         this.setState({
@@ -335,36 +345,97 @@ export default class ElementFundActionSetPrice extends Component {
   }
 
   onSend = () => {
-    const { api } = this.context;
+    const { api } = this.context
     const { dragoDetails } = this.props
     const { buyPrice, sellPrice } = this.state
-    var poolApi = null;
-    var provider = this.state.account.source === 'MetaMask' ? window.web3 : api
+    let poolApi = null
     this.setState({
       sending: true
-    });
+    })
+    let provider = this.state.account.source === 'MetaMask' ? window.web3 : api
+    const { account } = this.state
+
+    // Initializing transaction variables
+    const transactionId = api.util.sha3(new Date() + account.address)
+    let transactionDetails = {
+      status: account.source === 'MetaMask' ? 'pending' : 'authorization',
+      hash: '',
+      parityId: null,
+      timestamp: new Date(),
+      account: account,
+      error: false,
+      action: 'SetPrice',
+      symbol: dragoDetails.symbol,
+      amount: '0'
+    }
+    this.props.dispatch(
+      Actions.transactions.addTransactionToQueueAction(
+        transactionId,
+        transactionDetails
+      )
+    )
 
     poolApi = new PoolApi(provider)
     poolApi.contract.drago.init(dragoDetails.address)
-    poolApi.contract.drago.setPrices(this.state.account.address, buyPrice, sellPrice)
-      .then((result) => {
-        console.log(result)
+    poolApi.contract.drago
+      .setPrices(account.address, buyPrice, sellPrice)
+      .then(receipt => {
+        console.log(receipt)
+        if (account.source === 'MetaMask') {
+          transactionDetails.status = 'executed'
+          transactionDetails.receipt = receipt
+          transactionDetails.hash = receipt.transactionHash
+          transactionDetails.timestamp = new Date()
+          this.props.dispatch(
+            Actions.transactions.addTransactionToQueueAction(
+              transactionId,
+              transactionDetails
+            )
+          )
+        } else {
+          transactionDetails.parityId = receipt
+          this.props.dispatch(
+            Actions.transactions.addTransactionToQueueAction(
+              transactionId,
+              transactionDetails
+            )
+          )
+        }
         this.setState({
           sending: false
-        });
+        })
       })
-      .catch((error) => {
-        console.error('error', error)
+      .catch(error => {
+        console.warn(error)
+        const errorArray = error.message.split(/\r?\n/)
+        this.props.dispatch(
+          Actions.notifications.queueWarningNotification(errorArray[0])
+        )
+        transactionDetails.status = 'error'
+        transactionDetails.error = errorArray[0]
+        this.props.dispatch(
+          Actions.transactions.addTransactionToQueueAction(
+            transactionId,
+            transactionDetails
+          )
+        )
         this.setState({
           sending: false
         })
       })
     this.setState({
       openAuth: true,
-      authMsg: "BUY price set to " + buyPrice + " ETH. SELL price set to " + sellPrice + " ETH",
-      authAccount: { ...this.state.account }
+      authMsg:
+        'BUY price set to ' +
+        buyPrice +
+        ' ETH. SELL price set to ' +
+        sellPrice +
+        ' ETH',
+      authAccount: { ...account }
     })
     // this.onClose()
     // this.props.snackBar('Instruction awaiting for authorization')
   }
 }
+
+export default connect(mapStateToProps)(ElementFundActionSetPrice)

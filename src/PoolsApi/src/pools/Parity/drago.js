@@ -2,8 +2,8 @@
 // This file is part of RigoBlock.
 
 import * as abis from '../../contracts/abi'
-import Registry from '../registry'
 import { WETH_ADDRESSES, ZRX_ADDRESSES } from '../../utils/const'
+import Registry from '../registry'
 
 class DragoParity {
   constructor(api) {
@@ -60,14 +60,20 @@ class DragoParity {
   getBalanceWETH = () => {
     const api = this._api
     const instance = this._instance
-    const wethInstance = api.newContract(abis.weth, WETH_ADDRESSES[api._rb.network.id]).instance
+    const wethInstance = api.newContract(
+      abis.weth,
+      WETH_ADDRESSES[api._rb.network.id]
+    ).instance
     return wethInstance.balanceOf.call({}, [instance.address])
   }
 
   getBalanceZRX = () => {
     const api = this._api
     const instance = this._instance
-    const wethInstance = api.newContract(abis.weth, ZRX_ADDRESSES[api._rb.network.id]).instance
+    const wethInstance = api.newContract(
+      abis.weth,
+      ZRX_ADDRESSES[api._rb.network.id]
+    ).instance
     return wethInstance.balanceOf.call({}, [instance.address])
   }
 
@@ -84,7 +90,7 @@ class DragoParity {
       value: amount
     }
     return instance.buyDrago.estimateGas(options, []).then(gasEstimate => {
-      options.gas = gasEstimate.mul(1.2).toFixed(0)
+      options.gas = gasEstimate.times(1.2).toFixed(0)
       console.log(
         `Buy Drago: gas estimated as ${gasEstimate.toFixed(0)} setting to ${
           options.gas
@@ -120,7 +126,7 @@ class DragoParity {
       .estimateGas(options, values)
       .then(gasEstimate => {
         console.log(gasEstimate.toFormat())
-        options.gas = gasEstimate.mul(1.2).toFixed(0)
+        options.gas = gasEstimate.times(1.2).toFixed(0)
         return instance.cancelOrderCFDExchange.postTransaction(options, values)
       })
       .catch(error => {
@@ -128,11 +134,7 @@ class DragoParity {
       })
   }
 
-  depositToExchange = (
-    accountAddress,
-    exchangeAddress,
-    amount
-  ) => {
+  depositToExchange = (accountAddress, exchangeAddress, amount) => {
     if (!accountAddress) {
       throw new Error('accountAddress needs to be provided')
     }
@@ -152,7 +154,7 @@ class DragoParity {
       .estimateGas(options, values)
       .then(gasEstimate => {
         console.log(gasEstimate.toFormat())
-        options.gas = gasEstimate.mul(1.2).toFixed(0)
+        options.gas = gasEstimate.times(1.2).toFixed(0)
         return instance.depositToExchange.postTransaction(options, values)
       })
       .catch(error => {
@@ -203,7 +205,7 @@ class DragoParity {
       .estimateGas(options, values)
       .then(gasEstimate => {
         console.log(gasEstimate.toFormat())
-        options.gas = gasEstimate.mul(1.2).toFixed(0)
+        options.gas = gasEstimate.times(1.2).toFixed(0)
         return instance.depositToExchange.postTransaction(options, values)
       })
       .catch(error => {
@@ -226,7 +228,7 @@ class DragoParity {
     console.log(options)
     console.log(values)
     return instance.sellDrago.estimateGas(options, values).then(gasEstimate => {
-      options.gas = gasEstimate.mul(1.2).toFixed(0)
+      options.gas = gasEstimate.times(1.2).toFixed(0)
       console.log(
         `Sell Drago: gas estimated as ${gasEstimate.toFixed(0)} setting to ${
           options.gas
@@ -251,12 +253,12 @@ class DragoParity {
     const buyPriceWei = api.util.toWei(buyPrice, 'ether')
     const sellPriceWei = api.util.toWei(sellPrice, 'ether')
     const instance = this._instance
-    const values = [sellPriceWei, buyPriceWei]
+    const values = [sellPriceWei, buyPriceWei, null, null, null]
     const options = {
       from: accountAddress
     }
     return instance.setPrices.estimateGas(options, values).then(gasEstimate => {
-      options.gas = gasEstimate.mul(1.2).toFixed(0)
+      options.gas = gasEstimate.times(1.2).toFixed(0)
       console.log(
         `setPrices Drago: gas estimated as ${gasEstimate.toFixed(
           0
@@ -271,17 +273,14 @@ class DragoParity {
     return instance.totalSupply.call({}, [])
   }
 
-  getTokenBalance = ( tokenAddress ) =>{
+  getTokenBalance = tokenAddress => {
     const api = this._api
     const instance = this._instance
     const erc20Instance = api.newContract(abis.erc20, tokenAddress).instance
     return erc20Instance.balanceOf.call({}, [instance.address])
   }
 
-  getAssets = () =>{
-
-  }
-
+  getAssets = () => {}
 }
 
 export default DragoParity

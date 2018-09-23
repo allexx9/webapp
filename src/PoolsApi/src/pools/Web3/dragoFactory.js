@@ -2,8 +2,8 @@
 // This file is part of RigoBlock.
 
 import * as abis from '../../contracts/abi'
-import Registry from '../registry'
 import { DRAGOFACTORY } from '../../utils/const'
+import Registry from '../registry'
 
 class DragoFactoryWeb3 {
   constructor(api) {
@@ -53,7 +53,7 @@ class DragoFactoryWeb3 {
     }
     instance.options.from = accountAddress
     return instance.methods
-      .createDrago(dragoName, dragoSymbol)
+      .createDrago(dragoName.toLowerCase(), dragoSymbol)
       .estimateGas(options)
       .then(function(gasAmount) {
         instance.options.gas = gasAmount

@@ -1,18 +1,18 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
+import { ADD_TRANSACTION, UPDATE_TRANSACTIONS } from '../actions/const'
 import initialState from './initialState'
-import {
-  ADD_TRANSACTION,
-  UPDATE_TRANSACTIONS,
-} from '../../_utils/const'
 
 function transactionsReducer(state = initialState.transactions, action) {
-  var pendingTransactions = 0
+  let pendingTransactions = 0
   switch (action.type) {
     case ADD_TRANSACTION:
-      var transactions = Object.assign({}, state)
-      transactions.queue.set(action.payload.transactionId, action.payload.transactionDetails)
-      transactions.queue.forEach((value) => {
+      let transactions = Object.assign({}, state)
+      transactions.queue.set(
+        action.payload.transactionId,
+        action.payload.transactionDetails
+      )
+      transactions.queue.forEach(value => {
         if (value.status !== 'executed' && value.status !== 'error') {
           pendingTransactions = pendingTransactions + 1
         }
@@ -20,12 +20,12 @@ function transactionsReducer(state = initialState.transactions, action) {
       transactions.pending = pendingTransactions
       return {
         ...state,
-        ...transactions,
-      };
+        ...transactions
+      }
     case UPDATE_TRANSACTIONS:
       pendingTransactions = 0
       transactions = new Map(action.transactions)
-      transactions.forEach((value) => {
+      transactions.forEach(value => {
         if (value.status !== 'executed' && value.status !== 'error') {
           pendingTransactions = pendingTransactions + 1
         }
@@ -34,8 +34,9 @@ function transactionsReducer(state = initialState.transactions, action) {
         ...state,
         queue: new Map(action.transactions),
         pending: pendingTransactions
-      };
-    default: return state;
+      }
+    default:
+      return state
   }
 }
 

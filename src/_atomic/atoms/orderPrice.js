@@ -1,14 +1,13 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-import styles from './orderAmount.module.css';
-import { Row, Col } from 'react-flexbox-grid';
-import { TextField } from 'material-ui';
-import React, { Component} from 'react';
-import PropTypes from 'prop-types';
-import BigNumber from 'bignumber.js';
+import { Col, Row } from 'react-flexbox-grid'
+import { TextField } from 'material-ui'
+import BigNumber from 'bignumber.js'
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
+import styles from './orderAmount.module.css'
 
 export default class OrderPrice extends Component {
-
   static propTypes = {
     orderPrice: PropTypes.string.isRequired,
     onChangePrice: PropTypes.func,
@@ -27,27 +26,26 @@ export default class OrderPrice extends Component {
     priceError: ''
   }
 
-  onChangePrice = (event) =>{
+  onChangePrice = event => {
     // Checking valid positive number
     console.log(event.target.value)
     try {
-      if(!new BigNumber(event.target.value).gt(0)) {
+      if (!new BigNumber(event.target.value).gt(0)) {
         this.setState({
-          amountError: 'Please enter a valid positive number',
-        });
+          amountError: 'Please enter a valid positive number'
+        })
         this.error = true
         this.props.onChangePrice(event.target.value, true)
         return
       } else {
+        this.setState({
+          amountError: ''
+        })
+      }
+    } catch (error) {
       this.setState({
-        amountError: '',
-      });
-    }
-    }
-    catch (error) {
-      this.setState({
-        amountError: 'Please enter a valid positive number',
-      });
+        amountError: 'Please enter a valid positive number'
+      })
       this.error = true
       this.props.onChangePrice(event.target.value, true)
       return
@@ -55,26 +53,26 @@ export default class OrderPrice extends Component {
     this.props.onChangePrice(event.target.value, false)
   }
 
-  render () {
+  render() {
     // const amount = Math.min(orderFillAmount, orderMaxAmount)
     return (
       <Row bottom="xs">
-        <Col xs={12} >
+        <Col xs={12}>
           <TextField
-            key='orderAmount'
-            autoComplete='off'
+            key="orderAmount"
+            autoComplete="off"
             floatingLabelFixed
-            floatingLabelText='Price'
+            floatingLabelText="Price"
             fullWidth
             errorText={this.state.priceError}
-            name='orderAmount'
-            id='orderPrice'
+            name="orderAmount"
+            id="orderPrice"
             value={this.props.orderPrice}
             onChange={this.onChangePrice}
             disabled={this.props.disabled}
-            />
+          />
         </Col>
       </Row>
-    );
+    )
   }
 }

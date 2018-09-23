@@ -1,31 +1,29 @@
-
-import { Row, Col, Grid } from 'react-flexbox-grid'
+import { Col, Grid, Row } from 'react-flexbox-grid'
 import { withRouter } from 'react-router-dom'
-import AppBar from 'material-ui/AppBar';
+import AppBar from 'material-ui/AppBar'
 import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
-import styles from './elementNoAdminAccess.module.css';
+import styles from './elementNoAdminAccess.module.css'
 
-import { connect } from 'react-redux';
+import { connect } from 'react-redux'
 
 function mapStateToProps(state) {
   return state
 }
 
 class ElementNoAdminAccess extends Component {
-
   // Checking the type of the context variable that we receive by the parent
   static contextTypes = {
-    api: PropTypes.object.isRequired,
-  };
+    api: PropTypes.object.isRequired
+  }
 
   render() {
     return (
       <Grid fluid>
-      <Row>
+        <Row>
           <Col xs={12} className={styles.detailsTabContent}>
-            <Paper zDepth={1} >
+            <Paper zDepth={1}>
               <AppBar
                 title="DETAILS"
                 showMenuIconButton={false}
@@ -36,7 +34,7 @@ class ElementNoAdminAccess extends Component {
               </div>
             </Paper>
           </Col>
-      </Row>
+        </Row>
       </Grid>
     )
   }

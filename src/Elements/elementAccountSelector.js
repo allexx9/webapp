@@ -1,14 +1,14 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-import AccountItem from './elementAccountItem';
+import AccountItem from './elementAccountItem'
 
-import BigNumber from 'bignumber.js';
-import React, { Component } from 'react';
-import { MenuItem, SelectField } from 'material-ui';
-import PropTypes from 'prop-types';
+import { MenuItem, SelectField } from 'material-ui'
+import BigNumber from 'bignumber.js'
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
 
-const NAME_ID = ' ';
-let lastSelectedAccount = {};
+const NAME_ID = ' '
+let lastSelectedAccount = {}
 
 export default class AccountSelect extends Component {
   static propTypes = {
@@ -22,66 +22,73 @@ export default class AccountSelect extends Component {
     hintText: PropTypes.string
   }
 
-  componentDidMount () {
+  componentDidMount() {
     // this.props.onSelect(lastSelectedAccount);
   }
 
-  render () {
-    const { account, accounts, anyAccount, errorText, floatingLabelText, gabBalance, hintText } = this.props;
+  render() {
+    const {
+      account,
+      accounts,
+      anyAccount,
+      errorText,
+      floatingLabelText,
+      gabBalance,
+      hintText
+    } = this.props
     return (
       <SelectField
-        autoComplete='off'
+        autoComplete="off"
         floatingLabelFixed
-        floatingLabelText={ floatingLabelText }
+        floatingLabelText={floatingLabelText}
         fullWidth
-        hintText={ hintText }
-        errorText={ errorText }
-        name={ NAME_ID }
-        id={ NAME_ID }
-        value={ account }
-        onChange={ this.onSelect }
-        style={{height: 90}}>
-        { renderAccounts(accounts, { anyAccount, gabBalance }) }
-        
+        hintText={hintText}
+        errorText={errorText}
+        name={NAME_ID}
+        id={NAME_ID}
+        value={account}
+        onChange={this.onSelect}
+        style={{ height: 90 }}
+      >
+        {renderAccounts(accounts, { anyAccount, gabBalance })}
       </SelectField>
-    );
+    )
   }
 
   onSelect = (event, idx, account) => {
-    lastSelectedAccount = account || {};
-    
-    this.props.onSelect(lastSelectedAccount);
+    lastSelectedAccount = account || {}
+
+    this.props.onSelect(lastSelectedAccount)
   }
 }
 
-
-function isPositive (numberStr) {
-  return new BigNumber(numberStr.replace(/,/g, '')).gt(0);
+function isPositive(numberStr) {
+  return new BigNumber(numberStr.replace(/,/g, '')).gt(0)
 }
 
-export function renderAccounts (accounts, options = {}) {
+export function renderAccounts(accounts, options = {}) {
   return accounts
-    .filter((account) => {
+    .filter(account => {
       if (options.anyAccount) {
-        return true;
+        return true
       }
-      return isPositive(account[options.gabBalance ? 'gabBalance' : 'ethBalance']);
+      return isPositive(
+        account[options.gabBalance ? 'gabBalance' : 'ethBalance']
+      )
     })
-    .map((account) => {
+    .map(account => {
       const item = (
         <AccountItem
-          account={ account }
-          key={ account.address }
-          gabBalance={ options.gabBalance || false } />
-      );
+          account={account}
+          key={account.address}
+          gabBalance={options.gabBalance || false}
+        />
+      )
 
       return (
-        <MenuItem
-          key={ account.address }
-          value={ account }
-          label={ item }>
-          { item }
+        <MenuItem key={account.address} value={account} label={item}>
+          {item}
         </MenuItem>
-      );
-    });
+      )
+    })
 }

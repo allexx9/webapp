@@ -1,30 +1,29 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-import BigNumber from 'bignumber.js';
 import {
-  MSG_NO_SUPPORTED_NETWORK,
   MSG_NETWORK_STATUS_ERROR,
+  MSG_NO_SUPPORTED_NETWORK,
   NETWORK_WARNING
 } from './const'
+import BigNumber from 'bignumber.js'
 import PoolsApi from '../PoolsApi/src'
+import utils from '../_utils/utils'
 
 class Interfaces {
-
-  constructor (api, networkId) {
+  constructor(api, networkId) {
     this._api = api
     this._parityNetworkId = networkId
     this._success = {}
     this._error = {}
     this._isConnected = {}
-    this._sourceLogClass = this.constructor.name
   }
 
-  get success () {
-    return this._success;
+  get success() {
+    return this._success
   }
 
-  get error () {
-    return this._error;
+  get error() {
+    return this._error
   }
 
   isConnected = () => {
@@ -34,7 +33,7 @@ class Interfaces {
       // console.log(api.isConnected)
       this._error = {
         networkError: NETWORK_WARNING,
-        networkStatus: MSG_NETWORK_STATUS_ERROR,
+        networkStatus: MSG_NETWORK_STATUS_ERROR
       }
       return false
     }
@@ -42,325 +41,351 @@ class Interfaces {
   }
 
   getAccountsParity() {
-    console.log(`${this._sourceLogClass} -> getAccountsParity`)
+    console.log(`${this.constructor.name} -> getAccountsParity`)
     const api = this._api
-    var accounts = {}
-    var arrayPromises = []
-    return api.parity
-      .accountsInfo()
-      .then((accountsInfo) => {
-        // var poolsApi = new PoolsApi(api)
-        // console.log(poolsApi.contract)
-        // poolsApi.contract.rigotoken.init()
-        // .then(() =>{
-        //   poolsApi.contract.rigotoken.balanceOf('0x00791547B03F5541971B199a2d347446eB8Dc9bE')
-        //   .then((rigoTokenBalance) => {
-        //     console.log(api.util.fromWei(rigoTokenBalance).toFormat(3))
-        //   })
-        //   .catch((error) =>{
-        //     console.log(error)
-        //   })
-        // })
-        // const rigoTokenContract = api.newContract(rigotoken, GRG_ADDRESS_KV)
-        const poolsApi = new PoolsApi(this._api)
-        poolsApi.contract.rigotoken.init()
-        Object.keys(accountsInfo).forEach(function (k) {
-          // Getting accounts ETH balance
-          accounts[k] = {}
-          arrayPromises.push(api.eth.getBalance(k)
-            .then((balance) => {
-              accounts[k].ethBalance = api.util.fromWei(balance).toFormat(3)
-              accounts[k].name = accountsInfo[k].name
-              accounts[k].source = "parity"
-              return accounts
-            })
-          )
-          // Getting accounts GRG balance
-          arrayPromises.push(poolsApi.contract.rigotoken.balanceOf(k)
-            .then((rigoTokenBalance) => {
-              accounts[k].rigoTokenBalance = api.util.fromWei(rigoTokenBalance).toFormat(3)
-              return accounts
-            })
-          )
-          // arrayPromises.push(rigoTokenContract.instance.balanceOf.call({}, [k])
-          //   .then((rigoTokenBalance) => {
-          //     accounts[k].rigoTokenBalance = api.util.fromWei(rigoTokenBalance).toFormat(3)
-          //     return accounts
-          //   })
-          // )
-          // Getting transactions count
-          arrayPromises.push(api.eth.getTransactionCount(k)
-            .then((result) => {
-              accounts[k].nonce = new BigNumber(result).toFixed()
-              return accounts
-            })
-          )
+    let accounts = {}
+    let arrayPromises = []
+    return (
+      api.parity
+        .accountsInfo()
+        // .allAccountsInfo()
+        .then(accountsParity => {
+          // console.log(accountsParity)
+          const poolsApi = new PoolsApi(this._api)
+          poolsApi.contract.rigotoken.init()
+          Object.keys(accountsParity).forEach(function(k) {
+            // Getting accounts ETH balance
+            accounts[k] = {}
+            arrayPromises.push(
+              api.eth
+                .getBalance(k)
+                .then(balance => {
+                  accounts[k].ethBalance = utils.formatFromWei(balance)
+                  accounts[k].ethBalanceWei = balance
+                  accounts[k].name = accountsParity[k].name
+                  accounts[k].source = 'parity'
+                  return accounts
+                })
+                .catch(() => {
+                  throw new Error(`Cannot get ETH balance of account ${k}`)
+                })
+            )
+            // Getting accounts GRG balance
+            arrayPromises.push(
+              poolsApi.contract.rigotoken
+                .balanceOf(k)
+                .then(grgBalance => {
+                  accounts[k].grgBalance = utils.formatFromWei(grgBalance)
+                  accounts[k].grgBalanceWei = grgBalance
+                  return accounts
+                })
+                .catch(() => {
+                  throw new Error(`Cannot get GRG balance of account ${k}`)
+                })
+            )
+            // Getting transactions count
+            arrayPromises
+              .push(
+                api.eth.getTransactionCount(k).then(result => {
+                  accounts[k].nonce = new BigNumber(result).toFixed()
+                  return accounts
+                })
+              )
+              .catch(() => {
+                throw new Error(`Cannot get transactions count of account ${k}`)
+              })
+          })
+          return Promise.all(arrayPromises).then(() => {
+            console.log('Parity getAccounts', accounts)
+            // const accountsData = {...results}
+            // console.log(accountsData)
+            return accounts
+          })
         })
-        return Promise
-        .all(arrayPromises)
-        .then(() => {
-          console.log('Parity getAccounts', accounts)
-          // const accountsData = {...results}
-          // console.log(accountsData)
-          return accounts
+        .catch(error => {
+          console.log('getAccounts', error)
+          return {}
         })
-      })
-      .catch((error) => {
-        console.warn('getAccounts', error);
-        return {}
-      })
+    )
   }
 
-  getAccountsMetamask() {
-    // console.log(`${this._sourceLogClass} -> getAccountsMetamask`)
-    const api = this._api
+  getAccountsMetamask = async () => {
+    // console.log(`${this.constructor.name} -> getAccountsMetamask`)
     const web3 = window.web3
     const parityNetworkId = this._parityNetworkId
-    var accountsMetaMask = {}
+    let accountsMetaMask = {}
     if (typeof web3 === 'undefined') {
-      return;
+      return
     }
-
-    // Checking if MetaMask is connected to the same network as the endpoint
-    return web3.eth.net.getId()
-      .then((metaMaskNetworkId) => {
-        var currentState = this._success
-        if (metaMaskNetworkId !== parityNetworkId) {
-          const stateUpdate = {
-            networkCorrect: false,
-            warnMsg: MSG_NO_SUPPORTED_NETWORK
-          }
-          this._success = { ...currentState, ...stateUpdate }
-          return accountsMetaMask
-        } else {
-          const stateUpdate = {
-            networkCorrect: true,
-            warnMsg: ''
-          }
-          this._success = { ...currentState, ...stateUpdate }
-          return web3.eth.getAccounts()
-          .then(accounts => {
-            // Returning empty object if MetaMask is locked.
-            if (accounts.length === 0) {
-              return {}
-            }
-            return web3.eth.getBalance(accounts[0])
-              .then((ethBalance) => {
-                // const rigoTokenContract = api.newContract(rigotoken, GRG_ADDRESS_KV)
-                // return rigoTokenContract.instance.balanceOf.call({}, [accounts[0]])
-                var poolsApi = new PoolsApi(web3)
-                poolsApi.contract.rigotoken.init()
-                return poolsApi.contract.rigotoken.balanceOf(accounts[0])
-                  .then((rigoTokenBalance) => {
-                    accountsMetaMask = {
-                      [accounts[0]]: {
-                        ethBalance: api.util.fromWei(ethBalance).toFormat(3),
-                        rigoTokenBalance: api.util.fromWei(rigoTokenBalance).toFormat(3),
-                        name: "MetaMask",
-                        source: "MetaMask"
-                      }
-                    }
-                    return accountsMetaMask;
-                  })
-              })
-              .catch((error) => {
-                console.warn(error)
-                return {}
-              })
-          })
-          .catch((error) => {
-            console.warn(error)
-            return {}
-          })
+    try {
+      // Check if MetaMask is connected to the same network as the endpoint
+      let accounts = await web3.eth.getAccounts()
+      let metaMaskLocked = accounts.length === 0 ? true : false
+      // console.log(metaMaskLocked)
+      let metaMaskNetworkId = await web3.eth.net.getId()
+      let currentState = this._success
+      if (metaMaskNetworkId !== parityNetworkId) {
+        const stateUpdate = {
+          metaMaskNetworkCorrect: false,
+          metaMaskLocked,
+          warnMsg: MSG_NO_SUPPORTED_NETWORK
+        }
+        this._success = { ...currentState, ...stateUpdate }
+        return accountsMetaMask
+      } else {
+        // Get MetaMask accounts
+        const stateUpdate = {
+          metaMaskNetworkCorrect: true,
+          warnMsg: '',
+          metaMaskLocked
+        }
+        this._success = { ...currentState, ...stateUpdate }
+        // Return empty object if MetaMask is locked.
+        if (accounts.length === 0) {
+          return {}
+        }
+        // Get ETH balance
+        let ethBalance
+        try {
+          ethBalance = await web3.eth.getBalance(accounts[0])
+        } catch (err) {
+          throw new Error(`Cannot get ETH balance of account ${accounts[0]}`)
         }
 
-      })
-      // Getting ETH and GRG balances
-      // .then(() => {
-      //   return web3.eth.getAccounts()
-      //     .then(accounts => {
-      //       // Returning empty object if MetaMask is locked.
-      //       if (accounts.length === 0) {
-      //         return {}
-      //       }
-      //       console.log('not locked')
-      //       return web3.eth.getBalance(accounts[0])
-      //         .then((ethBalance) => {
-      //           // const rigoTokenContract = api.newContract(rigotoken, GRG_ADDRESS_KV)
-      //           // return rigoTokenContract.instance.balanceOf.call({}, [accounts[0]])
-      //           var poolsApi = new PoolsApi(web3)
-      //           poolsApi.contract.rigotoken.init()
-      //           return poolsApi.contract.rigotoken.balanceOf(accounts[0])
-      //             .then((rigoTokenBalance) => {
-      //               accountsMetaMask = {
-      //                 [accounts[0]]: {
-      //                   ethBalance: api.util.fromWei(ethBalance).toFormat(3),
-      //                   rigoTokenBalance: api.util.fromWei(rigoTokenBalance).toFormat(3),
-      //                   name: "MetaMask",
-      //                   source: "MetaMask"
-      //                 }
-      //               }
-      //               return accountsMetaMask;
-      //             })
-      //         })
-      //         .catch((error) => {
-      //           console.warn(error)
-      //           return {}
-      //         })
-      //     })
-      //     .catch((error) => {
-      //       console.warn(error)
-      //       return {}
-      //     })
-      // })
+        let poolsApi = new PoolsApi(web3)
+        poolsApi.contract.rigotoken.init()
+        // Get GRG balance
+        let grgBalance
+        try {
+          grgBalance = await poolsApi.contract.rigotoken.balanceOf(accounts[0])
+        } catch (err) {
+          throw new Error(`Cannot get GRG balance of account ${accounts[0]}`)
+        }
+        // Getting transactions count
+        let nonce
+        try {
+          nonce = await web3.eth.getTransactionCount(accounts[0])
+        } catch (err) {
+          throw new Error(
+            `Cannot get transactions count of account ${accounts[0]}`
+          )
+        }
+
+        let accountsMetaMask = {
+          [accounts[0]]: {
+            ethBalance: utils.formatFromWei(ethBalance),
+            ethBalanceWei: ethBalance,
+            grgBalance: utils.formatFromWei(grgBalance),
+            grgBalanceWei: grgBalance,
+            name: 'MetaMask',
+            source: 'MetaMask',
+            nonce: nonce
+          }
+        }
+        return accountsMetaMask
+      }
+    } catch (error) {
+      console.log(error)
+      return {}
+    }
   }
 
-  async attachInterfaceInfuraV2() {
-    // console.log(`${this._sourceLogClass} -> Interface Infura`)
+  attachInterfaceInfuraV2 = async () => {
+    // console.log(`${this.constructor.name} -> Interface Infura`)
     const api = this._api
     try {
       const accountsMetaMask = await this.getAccountsMetamask(api)
-      const allAccounts = {...accountsMetaMask}
+      const allAccounts = { ...accountsMetaMask }
       console.log('Metamask account loaded: ', accountsMetaMask)
+      const blockNumber = await api.eth.blockNumber()
       const stateUpdate = {
-        // accountsInfo: accountsMetaMask,
         loading: false,
-        accounts: Object
-          .keys(allAccounts)
-          .map((address) => {
-            const info = allAccounts[address] || {};
-            return {
-              address,
-              name: info.name,
-              source: info.source,
-              ethBalance: info.ethBalance,
-              rigoTokenBalance: info.rigoTokenBalance
-            };
-          })
-        }
-        const result = {...this._success, ...stateUpdate}
-        this._success = result
-        return result
-    } catch(error) {
-      var currentState = this._error
+        prevBlockNumber: blockNumber.toFixed(),
+        accounts: Object.keys(allAccounts).map(address => {
+          const info = allAccounts[address] || {}
+          return {
+            address,
+            name: info.name,
+            source: info.source,
+            ethBalance: info.ethBalance,
+            ethBalanceWei: info.ethBalanceWei,
+            grgBalance: info.grgBalance,
+            grgBalanceWei: info.grgBalanceWei,
+            nonce: info.nonce
+          }
+        })
+      }
+      const result = { ...this._success, ...stateUpdate }
+      this._success = result
+      return result
+    } catch (error) {
+      let currentState = this._error
       const stateUpdate = {
         networkError: NETWORK_WARNING,
-        networkStatus: MSG_NETWORK_STATUS_ERROR,
+        networkStatus: MSG_NETWORK_STATUS_ERROR
       }
-      this._error = {...currentState, ...stateUpdate}
-      console.warn('attachInterface', error)
+      this._error = { ...currentState, ...stateUpdate }
+      console.log('attachInterface', error)
+      throw this._error
     }
   }
 
-  attachInterfaceRigoBlockV2 = () => {
-    console.log(`${this._sourceLogClass} -> Interface RigoBlock`)
+  attachInterfaceRigoBlockV2 = async () => {
+    console.log(`${this.constructor.name} -> Interface RigoBlock`)
     const api = this._api
-    // Checking if the parity node is running in --public-mode
-    return api.parity.nodeKind()
-      .then(result => {
-        if (result.availability === 'public') {
-          console.log(result.availability)
-          // if Parity in --public-node then getting only MetaMask accounts
-          // return [this.getAccountsMetamask(api)]
-          return [this.getAccountsParity(api), this.getAccountsMetamask(api)]
-        }
-        else {
-          // if Parity NOT in --public-node then getting both Parity and MetaMask accounts
-          console.log(result.availability)
-          return [this.getAccountsParity(api), this.getAccountsMetamask(api)]
-        }
-      })
-      .then((getAccounts) => {
-        return Promise
-          .all(getAccounts)
-          .then(([accountsInfo, accountsMetaMask]) => {
-            const allAccounts = { ...accountsInfo, ...accountsMetaMask }
-            console.log('Parity accounts loaded: ', accountsInfo)
-            console.log('MetaMask account loaded: ', accountsMetaMask)
-            console.log(Object.keys(allAccounts).length)
-            const stateUpdate = {
-              loading: false,
-              ethBalance: new BigNumber(0),
-              accounts: Object.keys(allAccounts).length !== 0
-                ? Object
-                  .keys(allAccounts)
-                  .map((address) => {
-                    const info = allAccounts[address] || {};
-                    console.log(info)
-                    return {
-                      address,
-                      name: info.name,
-                      source: info.source,
-                      ethBalance: info.ethBalance,
-                      rigoTokenBalance: info.rigoTokenBalance,
-                      nonce: info.nonce
-                    };
-                  })
-                : []
-            }
-            console.log(stateUpdate)
-            const result = {...this._success, ...stateUpdate}
-            this._success = result
-            console.log(result.accounts)
-            return result
-          })
-          .catch((error) => {
-            var currentState = this._error
-            const stateUpdate = {
-              networkError: NETWORK_WARNING,
-              networkStatus: MSG_NETWORK_STATUS_ERROR,
-            }
-            this._error = {...currentState, ...stateUpdate}
-            console.log('attachInterfaceRigoBlock', error)
-            return this._error
-            
-          });
-      })
-      .catch((error) => {
-        var currentState = this._error
-        const stateUpdate = {
-          networkError: NETWORK_WARNING,
-          networkStatus: MSG_NETWORK_STATUS_ERROR,
-        }
-        this._error = {...currentState, ...stateUpdate}
-        console.log('attachInterfaceRigoBlock', error)
-        return this._error
-      });
+    let accountsParity = {}
+    let accountsMetaMask = {}
+    try {
+      // Check if the parity node is running in --public-mode
+      let nodeKind = await api.parity.nodeKind()
+      if (nodeKind.availability === 'public') {
+        // if Parity in --public-node then getting only MetaMask accounts
+        accountsMetaMask = await this.getAccountsMetamask()
+      } else {
+        // if Parity NOT in --public-node then getting both Parity and MetaMask accounts
+        accountsMetaMask = await this.getAccountsMetamask()
+        accountsParity = await this.getAccountsParity()
+      }
+      const blockNumber = await api.eth.blockNumber()
+      console.log('Parity accounts loaded: ', accountsParity)
+      console.log('MetaMask account loaded: ', accountsMetaMask)
+      const allAccounts = { ...accountsParity, ...accountsMetaMask }
+      const stateUpdate = {
+        loading: false,
+        prevBlockNumber: blockNumber.toFixed(),
+        ethBalance: new BigNumber(0),
+        accounts:
+          Object.keys(allAccounts).length !== 0
+            ? Object.keys(allAccounts).map(address => {
+                const info = allAccounts[address] || {}
+                return {
+                  address,
+                  name: info.name,
+                  source: info.source,
+                  ethBalance: info.ethBalance,
+                  ethBalanceWei: info.ethBalanceWei,
+                  grgBalance: info.grgBalance,
+                  grgBalanceWei: info.grgBalanceWei,
+                  nonce: info.nonce
+                }
+              })
+            : []
+      }
+      const result = { ...this._success, ...stateUpdate }
+      this._success = result
+      return result
+    } catch (error) {
+      let currentState = this._error
+      const stateUpdate = {
+        networkError: NETWORK_WARNING,
+        networkStatus: MSG_NETWORK_STATUS_ERROR
+      }
+      this._error = { ...currentState, ...stateUpdate }
+      console.log('Error attachInterfaceRigoBlock', error)
+      throw new Error(this._error)
+    }
+
+    // Check if the parity node is running in --public-mode
+    // return api.parity.nodeKind()
+    //   .then(result => {
+    //     if (result.availability === 'public') {
+    //       // if Parity in --public-node then getting only MetaMask accounts
+    //       return [this.getAccountsMetamask(api)]
+    //       // return [this.getAccountsParity(api), this.getAccountsMetamask(api)]
+    //     }
+    //     else {
+    //       // if Parity NOT in --public-node then getting both Parity and MetaMask accounts
+    //       return [this.getAccountsParity(api), this.getAccountsMetamask(api)]
+    //     }
+    //   })
+    //   .then((getAccounts) => {
+    //     return Promise
+    //       .all(getAccounts)
+    //       .then(([accountsParity, accountsMetaMask]) => {
+    //         const allAccounts = { ...accountsParity, ...accountsMetaMask }
+    //         console.log('Parity accounts loaded: ', accountsParity)
+    //         console.log('MetaMask account loaded: ', accountsMetaMask)
+    //         const stateUpdate = {
+    //           loading: false,
+    //           ethBalance: new BigNumber(0),
+    //           accounts: Object.keys(allAccounts).length !== 0
+    //             ? Object
+    //               .keys(allAccounts)
+    //               .map((address) => {
+    //                 const info = allAccounts[address] || {};
+    //                 return {
+    //                   address,
+    //                   name: info.name,
+    //                   source: info.source,
+    //                   ethBalance: info.ethBalance,
+    //                   ethBalanceWei: info.ethBalanceWei,
+    //                   grgBalance: info.grgBalance,
+    //                   grgBalanceWei: info.grgBalanceWei,
+    //                   nonce: info.nonce
+    //                 };
+    //               })
+    //             : []
+    //         }
+    //         const result = { ...this._success, ...stateUpdate }
+    //         this._success = result
+    //         return result
+    //       })
+    //       .catch((error) => {
+    //         let currentState = this._error
+    //         const stateUpdate = {
+    //           networkError: NETWORK_WARNING,
+    //           networkStatus: MSG_NETWORK_STATUS_ERROR,
+    //         }
+    //         this._error = { ...currentState, ...stateUpdate }
+    //         console.log('attachInterfaceRigoBlock', error)
+    //         return this._error
+
+    //       });
+    //   })
+    //   .catch((error) => {
+    //     let currentState = this._error
+    //     const stateUpdate = {
+    //       networkError: NETWORK_WARNING,
+    //       networkStatus: MSG_NETWORK_STATUS_ERROR,
+    //     }
+    //     this._error = { ...currentState, ...stateUpdate }
+    //     console.log('attachInterfaceRigoBlock', error)
+    //     return this._error
+    //   });
   }
 
   detachInterface = (api, subscriptionData) => {
-    var sourceLogClass = this.constructor.name
     if (typeof subscriptionData === 'object') {
       console.log(subscriptionData)
       try {
-        subscriptionData.unsubscribe(function (error, success) {
+        subscriptionData.unsubscribe(function(error, success) {
           if (success) {
-            console.log(`${sourceLogClass}: Successfully unsubscribed from eth_blockNumber.`);
+            console.log(`Successfully unsubscribed from eth_blockNumber.`)
           }
           if (error) {
-            console.warn(`${sourceLogClass}: Unsubscribe error ${error}.`)
+            console.log(`Unsubscribe error ${error}.`)
           }
-        });
+        })
       } catch (error) {
         console.log(error)
       }
-
     } else {
       try {
-        api.unsubscribe(subscriptionData)
-        .then((result) => {
-          console.log(result)
-          console.log(`${sourceLogClass}: Successfully unsubscribed from eth_blockNumber -> Subscription ID: ${subscriptionData}.`);
-        })
-        .catch((error) => {
-          console.warn(`${sourceLogClass}: Unsubscribe error ${error}.`)
-        });
+        api
+          .unsubscribe(subscriptionData)
+          .then(() => {
+            console.log(
+              `Successfully unsubscribed from eth_blockNumber -> Subscription ID: ${subscriptionData}.`
+            )
+          })
+          .catch(error => {
+            console.log(`Unsubscribe error ${error}.`)
+          })
       } catch (error) {
         console.log(error)
       }
     }
-  } 
+  }
 }
 
-export {Interfaces};
-
+export { Interfaces }

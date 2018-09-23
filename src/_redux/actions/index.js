@@ -1,37 +1,46 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
 import {
-  UPDATE_INTERFACE,
-  UPDATE_SELECTED_VAULT_DETAILS,
   IS_MANAGER,
+  UPDATE_SELECTED_VAULT_DETAILS,
   UPDATE_TRANSACTIONS_VAULT_HOLDER,
-  UPDATE_TRANSACTIONS_VAULT_MANAGER,
-  INIT_NOTIFICATION,
-  TOKEN_PRICE_TICKER_OPEN_WEBSOCKET
+  UPDATE_TRANSACTIONS_VAULT_MANAGER
 } from './const'
-import drago from './drago'
+import app from './app_actions'
+import drago from './drago_actions'
+import endpoint from './endpoint_actions'
+import exchange from './exchange'
+import notifications from './notifications_actions'
+import tokens from './tokens'
 import transactions from './transactions'
 
 class actions {
+  app = app
 
   drago = drago
+
+  exchange = exchange
+
+  endpoint = endpoint
+
+  notifications = notifications
 
   transactions = transactions
 
   vault = {
-    updateSelectedVaultAction: (results) => {
+    updateSelectedVaultAction: results => {
       return {
         type: UPDATE_SELECTED_VAULT_DETAILS,
         payload: results
       }
     },
-    updateTransactionsVaultHolderAction: (results) => {
+    updateTransactionsVaultHolderAction: results => {
       return {
         type: UPDATE_TRANSACTIONS_VAULT_HOLDER,
         payload: results
       }
     },
-    updateTransactionsVaultManagerAction: (results) => {
+    updateTransactionsVaultManagerAction: results => {
       return {
         type: UPDATE_TRANSACTIONS_VAULT_MANAGER,
         payload: results
@@ -39,17 +48,8 @@ class actions {
     }
   }
 
-  endpoint = {
-    updateInterfaceAction: (endpoint) => {
-      return {
-        type: UPDATE_INTERFACE,
-        payload: endpoint
-      }
-    }
-  }
-
   users = {
-    isManagerAction: (isManager) => {
+    isManagerAction: isManager => {
       return {
         type: IS_MANAGER,
         payload: isManager
@@ -57,24 +57,8 @@ class actions {
     }
   }
 
-  notifications = {
-    initNotificationsSystemAction: (notificationSystem) => {
-      return {
-        type: INIT_NOTIFICATION,
-        payload: notificationSystem
-      }
-    }
-  }
-
-  tokens = {
-    priceTickerOpenWsAction: () => {
-      return {
-        type: TOKEN_PRICE_TICKER_OPEN_WEBSOCKET,
-      }
-    }
-  }
-
+  tokens = tokens
 }
 
-var Actions = new actions();
-export { Actions };
+let Actions = new actions()
+export { Actions }

@@ -2,9 +2,9 @@
 // This file is part of RigoBlock.
 
 import * as abis from '../../contracts/abi'
-import Registry from '../registry'
-import { toHex } from '../../utils'
 import { EXCHANGE } from '../../utils/const'
+import { toHex } from '../../utils'
+import Registry from '../registry'
 
 class exchangeParity {
   constructor(api) {

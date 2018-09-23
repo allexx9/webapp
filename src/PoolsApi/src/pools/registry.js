@@ -118,10 +118,10 @@ class Registry {
       throw new Error('contractName needs to be provided to Registry')
     }
     const api = this._api
-    var isMetaMask = false
+    let isMetaMask = false
     const contract = this._getContractAddressFromRegister(contractName).then(
       address => {
-        if (address[0] == '0x0000000000000000000000000000000000000000') {
+        if (address[0] === '0x0000000000000000000000000000000000000000') {
           throw new Error('The contract address was not found in the Register.')
         }
         if (!api) {

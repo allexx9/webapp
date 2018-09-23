@@ -37,7 +37,110 @@ class DragoWeb3 {
     return instance.getData.call({})
   }
 
-  setInfiniteAllowaceOnExchange = (accountAddress, tokenAddress, ownerAddress, spenderAddress, amount) => {
+  operateOnExchangeEFX = async (
+    managerAccountAddress,
+    exchangeContractAddress,
+    tokenAddress,
+    tokenWrapper,
+    toBeWrapped,
+    time,
+    isOldERC20
+  ) => {
+    if (!managerAccountAddress) {
+      throw new Error('accountAddress needs to be provided')
+    }
+    if (!exchangeContractAddress) {
+      throw new Error('exchangeContractAddress needs to be provided')
+    }
+    // if (!tokenAddress) {
+    //   throw new Error('tokenAddress needs to be provided')
+    // }
+    if (!tokenWrapper) {
+      throw new Error('tokenWrapper needs to be provided')
+    }
+    if (!toBeWrapped) {
+      throw new Error('toBeWrapped needs to be provided')
+    }
+    if (!time) {
+      throw new Error('time need to be provided')
+    }
+    if (typeof isOldERC20 === 'undefined') {
+      throw new Error('isOldERC20 need to be provided')
+    }
+    console.log(`managerAccountAddress ${managerAccountAddress}`)
+    console.log(`exchangeContractAddres ${exchangeContractAddress}`)
+    console.log(`tokenAddress ${tokenAddress}`)
+    console.log(`tokenWrapper ${tokenWrapper}`)
+    console.log(`toBeWrapped ${toBeWrapped}`)
+    console.log(`time ${time}`)
+    console.log(`isOldERC20 ${isOldERC20}`)
+    const instance = this._instance
+    const api = this._api
+    let options = {
+      from: managerAccountAddress
+    }
+    // const contractMethod = abis.zeroExExchange.find(
+    //   method => method.name === 'cancelOrder'
+    // )
+    const contractMethod = {
+      name: 'wrapToEfx',
+      type: 'function',
+      inputs: [
+        {
+          type: 'address',
+          name: 'token'
+        },
+        {
+          type: 'address',
+          name: 'wrapper'
+        },
+        {
+          type: 'uint256',
+          name: 'value'
+        },
+        {
+          type: 'uint256',
+          name: 'forTime'
+        },
+        {
+          type: 'bool',
+          name: 'erc20Old'
+        }
+      ]
+    }
+    const encodedABI = await api.eth.abi.encodeFunctionCall(contractMethod, [
+      tokenAddress,
+      tokenWrapper,
+      toBeWrapped,
+      time,
+      isOldERC20
+    ])
+
+    console.log(encodedABI)
+
+    // const encodedABI = '0xbc61394a00000000000000000000000040584e290e5c56114c8bcf72fa3d403d1166b3d700000000000000000000000000000000000000000000000000000000000000000000000000000000000000001dad4783cf3fe3085c1426157ab175a6119a04ba000000000000000000000000d0a1e359811322d97991e03f863a0c30c2cf029c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002386f26fc10000000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001638384d81aace3db94ad2d6f00aaa892a70c34850dcb894fde0f5eb1c50fd50b4320c16df400000000000000000000000000000000000000000000000000000000000003e80000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000001c969d3a50aab834aee8f7ee57a885746502933168c63071c6c270848ad502032b466238fa9e7bc9f9a5dd3e0ca738512b0ba16ecf770f12369d65a4cd293a6fac'
+
+    return instance.methods
+      .operateOnExchange(exchangeContractAddress, encodedABI)
+      .estimateGas(options)
+      .then(gasEstimate => {
+        console.log(gasEstimate)
+        options.gas = gasEstimate
+      })
+      .then(() => {
+        return instance.methods
+          .operateOnExchange(exchangeContractAddress, encodedABI)
+          .send(options)
+      })
+  }
+
+  setInfiniteAllowaceOnExchange = (
+    accountAddress,
+    tokenAddress,
+    ownerAddress,
+    spenderAddress,
+    amount
+  ) => {
     if (!accountAddress) {
       throw new Error('accountAddress needs to be provided')
     }
@@ -55,15 +158,14 @@ class DragoWeb3 {
     }
     const instance = this._instance
     const api = this._api
-    var options = {
-      from: accountAddress,
+    let options = {
+      from: accountAddress
     }
-    const contractMethod = abis.erc20.find(
-      method => method.name === 'approve'
-    );
-    const encodedABI = api.eth.abi.encodeFunctionCall(
-      contractMethod,
-      [spenderAddress, amount])
+    const contractMethod = abis.erc20.find(method => method.name === 'approve')
+    const encodedABI = api.eth.abi.encodeFunctionCall(contractMethod, [
+      spenderAddress,
+      amount
+    ])
     console.log(encodedABI)
     console.log('tokenAddress ', tokenAddress)
     console.log('ownerAddress ', ownerAddress)
@@ -106,7 +208,9 @@ class DragoWeb3 {
       throw new Error('amount needs to be provided')
     }
     if (!shouldThrowOnInsufficientBalanceOrAllowance) {
-      throw new Error('shouldThrowOnInsufficientBalanceOrAllowance needs to be provided')
+      throw new Error(
+        'shouldThrowOnInsufficientBalanceOrAllowance needs to be provided'
+      )
     }
     if (!v || !r || !s) {
       throw new Error('v r s need to be provided')
@@ -116,15 +220,21 @@ class DragoWeb3 {
     }
     const instance = this._instance
     const api = this._api
-    var options = {
-      from: managerAccount,
+    let options = {
+      from: managerAccount
     }
     const contractMethod = abis.zeroExExchange.find(
       method => method.name === 'fillOrder'
-    );
-    const encodedABI = api.eth.abi.encodeFunctionCall(
-      contractMethod,
-      [orderAddresses, orderValues, amount, shouldThrowOnInsufficientBalanceOrAllowance, v, r, s])
+    )
+    const encodedABI = api.eth.abi.encodeFunctionCall(contractMethod, [
+      orderAddresses,
+      orderValues,
+      amount,
+      shouldThrowOnInsufficientBalanceOrAllowance,
+      v,
+      r,
+      s
+    ])
 
     // const encodedABI = '0xbc61394a00000000000000000000000040584e290e5c56114c8bcf72fa3d403d1166b3d700000000000000000000000000000000000000000000000000000000000000000000000000000000000000001dad4783cf3fe3085c1426157ab175a6119a04ba000000000000000000000000d0a1e359811322d97991e03f863a0c30c2cf029c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002386f26fc10000000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001638384d81aace3db94ad2d6f00aaa892a70c34850dcb894fde0f5eb1c50fd50b4320c16df400000000000000000000000000000000000000000000000000000000000003e80000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000001c969d3a50aab834aee8f7ee57a885746502933168c63071c6c270848ad502032b466238fa9e7bc9f9a5dd3e0ca738512b0ba16ecf770f12369d65a4cd293a6fac'
 
@@ -132,13 +242,22 @@ class DragoWeb3 {
     console.log('orderAddresses ', orderAddresses)
     console.log('orderValues ', orderValues)
     console.log('amount ', amount)
-    console.log('shouldThrowOnInsufficientBalanceOrAllowance ', shouldThrowOnInsufficientBalanceOrAllowance)
+    console.log(
+      'shouldThrowOnInsufficientBalanceOrAllowance ',
+      shouldThrowOnInsufficientBalanceOrAllowance
+    )
     console.log('v ', v)
     console.log('r ', r)
     console.log('s ', s)
-    console.log('ZeroExConfig.exchangeContractAddress    ', ZeroExConfig.exchangeContractAddress)
+    console.log(
+      'ZeroExConfig.exchangeContractAddress    ',
+      ZeroExConfig.exchangeContractAddress
+    )
     return instance.methods
-      .operateOnExchangeDirectly(ZeroExConfig.exchangeContractAddress, encodedABI)
+      .operateOnExchangeDirectly(
+        ZeroExConfig.exchangeContractAddress,
+        encodedABI
+      )
       .estimateGas(options)
       .then(gasEstimate => {
         console.log(gasEstimate)
@@ -146,7 +265,10 @@ class DragoWeb3 {
       })
       .then(() => {
         return instance.methods
-          .operateOnExchangeDirectly(ZeroExConfig.exchangeContractAddress, encodedABI)
+          .operateOnExchangeDirectly(
+            ZeroExConfig.exchangeContractAddress,
+            encodedABI
+          )
           .send(options)
       })
   }
@@ -175,15 +297,17 @@ class DragoWeb3 {
     }
     const instance = this._instance
     const api = this._api
-    var options = {
-      from: managerAccount,
+    let options = {
+      from: managerAccount
     }
     const contractMethod = abis.zeroExExchange.find(
       method => method.name === 'cancelOrder'
-    );
-    const encodedABI = api.eth.abi.encodeFunctionCall(
-      contractMethod,
-      [orderAddresses, orderValues, cancelTakerTokenAmount])
+    )
+    const encodedABI = api.eth.abi.encodeFunctionCall(contractMethod, [
+      orderAddresses,
+      orderValues,
+      cancelTakerTokenAmount
+    ])
 
     // const encodedABI = '0xbc61394a00000000000000000000000040584e290e5c56114c8bcf72fa3d403d1166b3d700000000000000000000000000000000000000000000000000000000000000000000000000000000000000001dad4783cf3fe3085c1426157ab175a6119a04ba000000000000000000000000d0a1e359811322d97991e03f863a0c30c2cf029c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002386f26fc10000000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001638384d81aace3db94ad2d6f00aaa892a70c34850dcb894fde0f5eb1c50fd50b4320c16df400000000000000000000000000000000000000000000000000000000000003e80000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000001c969d3a50aab834aee8f7ee57a885746502933168c63071c6c270848ad502032b466238fa9e7bc9f9a5dd3e0ca738512b0ba16ecf770f12369d65a4cd293a6fac'
 
@@ -206,7 +330,7 @@ class DragoWeb3 {
       })
   }
 
-  setInfiniteAllowace = (accountAddress,spenderAddress, tokenAddress) => {
+  setInfiniteAllowace = (accountAddress, spenderAddress, tokenAddress) => {
     if (!accountAddress) {
       throw new Error('accountAddress needs to be provided')
     }
@@ -217,8 +341,8 @@ class DragoWeb3 {
       throw new Error('spenderAddress needs to be provided')
     }
     const instance = this._instance
-    var options = {
-      from: accountAddress,
+    let options = {
+      from: accountAddress
     }
     console.log(spenderAddress)
     console.log(tokenAddress)
@@ -238,7 +362,7 @@ class DragoWeb3 {
 
   buyDrago = (accountAddress, amount) => {
     const instance = this._instance
-    var options = {
+    let options = {
       from: accountAddress,
       value: amount
     }
@@ -254,7 +378,6 @@ class DragoWeb3 {
       })
   }
 
-
   sellDrago = (accountAddress, amount) => {
     if (!accountAddress) {
       throw new Error('accountAddress needs to be provided')
@@ -263,7 +386,7 @@ class DragoWeb3 {
       throw new Error('amount needs to be provided')
     }
     const instance = this._instance
-    var options = {
+    let options = {
       from: accountAddress
     }
     console.log(amount)
@@ -290,7 +413,7 @@ class DragoWeb3 {
       throw new Error('sellPrice needs to be provided')
     }
     const instance = this._instance
-    var options = {
+    let options = {
       from: accountAddress
     }
     instance.options.from = accountAddress
@@ -298,7 +421,13 @@ class DragoWeb3 {
     const buyPriceWei = api.utils.toWei(buyPrice, 'ether')
     const sellPriceWei = api.utils.toWei(sellPrice, 'ether')
     return instance.methods
-      .setPrices(sellPriceWei, buyPriceWei)
+      .setPrices(
+        sellPriceWei,
+        buyPriceWei,
+        1,
+        api.utils.fromAscii('random'),
+        api.utils.fromAscii('random')
+      )
       .estimateGas(options)
       .then(gasEstimate => {
         console.log(gasEstimate)
@@ -306,7 +435,13 @@ class DragoWeb3 {
         options.gas = gasEstimate
         console.log(instance)
         return instance.methods
-          .setPrices(sellPriceWei, buyPriceWei)
+          .setPrices(
+            sellPriceWei,
+            buyPriceWei,
+            1,
+            api.utils.fromAscii('random'),
+            api.utils.fromAscii('random')
+          )
           .send(options)
       })
     // .catch((error) => {
@@ -318,7 +453,6 @@ class DragoWeb3 {
     const instance = this._instance
     return instance.methods.totalSupply.call({})
   }
-  
 
   depositToExchange = (exchangeAddress, fromAddress, amount) => {
     if (!fromAddress) {
@@ -343,7 +477,9 @@ class DragoWeb3 {
         options.gas = gasEstimate
       })
       .then(() => {
-        return instance.methods.depositToExchange(exchangeAddress, amount).send(options)
+        return instance.methods
+          .depositToExchange(exchangeAddress, amount)
+          .send(options)
       })
   }
 
@@ -370,10 +506,11 @@ class DragoWeb3 {
         options.gas = gasEstimate
       })
       .then(() => {
-        return instance.methods.withdrawFromExchange(exchangeAddress, amount).send(options)
+        return instance.methods
+          .withdrawFromExchange(exchangeAddress, amount)
+          .send(options)
       })
   }
-
 }
 
 export default DragoWeb3

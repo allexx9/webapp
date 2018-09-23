@@ -1,30 +1,34 @@
 // Copyright 2017 Rigo Investment Sagl.
 // This file is part of RigoBlock.
 
+import { INFURA, KOVAN, PROD, WS } from './const'
 import Api from '@parity/api'
 import Web3 from 'web3'
-import {
-  INFURA,
-  KOVAN,
-  PROD,
-  WS
-} from './const'
 
 class Endpoint {
-
-  constructor(endpointInfo, networkInfo = { name: KOVAN }, prod = PROD, ws = WS) {
+  constructor(
+    endpointInfo,
+    networkInfo = { name: KOVAN },
+    prod = PROD,
+    ws = WS
+  ) {
     if (!endpointInfo) {
-      throw new Error('endpointInfo connection data needs to be provided to Endpoint')
+      throw new Error(
+        'endpointInfo connection data needs to be provided to Endpoint'
+      )
     }
     if (!networkInfo) {
       throw new Error('network name needs to be provided to Endpoint')
     }
-    this._timeout = 5000
+    this._timeout = 10000
     this._endpoint = endpointInfo
     this._network = networkInfo
     this._prod = prod
     // Infura does not support WebSocket on Kovan network yet. Disabling.
-    this._onWs = (this._network.name === KOVAN && this._endpoint.name === INFURA) ? false : ws
+    this._onWs =
+      this._network.name === KOVAN && this._endpoint.name === INFURA
+        ? false
+        : ws
     // Setting production or development endpoints
     if (prod) {
       this._https = endpointInfo.https[this._network.name].prod
@@ -36,7 +40,7 @@ class Endpoint {
   }
 
   get timeout() {
-    return this._timeout;
+    return this._timeout
   }
 
   set timeout(timeout) {
@@ -66,6 +70,7 @@ class Endpoint {
 
   connect = () => {
     this._checkWeb3()
+    let api
     if (this._checkLocal()) {
       console.log(`Endpoint: local`)
       window.parity.api._rb = {}
@@ -73,34 +78,35 @@ class Endpoint {
       return window.parity.api
     }
     if (this._onWs) {
-      var api
       try {
-        console.log("Network: ", this._network.name)
-        console.log("Connecting to WebSocket: ", this._wss)
+        console.log('Network: ', this._network.name)
+        console.log('Connecting to WebSocket: ', this._wss)
         const transport = new Api.Provider.WsSecure(this._wss)
         api = new Api(transport)
         api._rb = {}
         api._rb.network = this._network
+        console.log(api)
         return api
       } catch (error) {
-        console.warn('Connection error: ', error)
+        console.log('Connection error: ', error)
         return error
       }
     } else {
       try {
-        console.log("Network: ", this._network.name)
-        console.log("Connecting to HTTPS: ", this._https)
+        console.log('Network: ', this._network.name)
+        console.log('Connecting to HTTPS: ', this._https)
         const transport = new Api.Provider.Http(this._https, this._timeout)
         api = new Api(transport)
         api._rb = {}
         api._rb.network = this._network
+        console.log(api)
         return api
       } catch (error) {
-        console.warn('Connection error: ', error)
+        console.log('Connection error: ', error)
         return error
       }
     }
   }
 }
 
-export default Endpoint;
+export default Endpoint

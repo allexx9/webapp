@@ -2,8 +2,8 @@
 // This file is part of RigoBlock.
 
 import * as abis from '../../contracts/abi'
-import Registry from '../registry'
 import { WETH_ADDRESSES } from '../../utils/const'
+import Registry from '../registry'
 
 class VaultParity {
   constructor(api) {
@@ -50,7 +50,10 @@ class VaultParity {
   getBalanceWETH = () => {
     const api = this._api
     const instance = this._instance
-    const wethInstance = api.newContract(abis.weth, WETH_ADDRESSES[api._rb.network.id]).instance
+    const wethInstance = api.newContract(
+      abis.weth,
+      WETH_ADDRESSES[api._rb.network.id]
+    ).instance
     return wethInstance.balanceOf.call({}, [instance.address])
   }
 
@@ -73,7 +76,7 @@ class VaultParity {
     }
     // return instance.buyVault.postTransaction(options, [])
     return instance.buyVault.estimateGas(options, []).then(gasEstimate => {
-      options.gas = gasEstimate.mul(1.2).toFixed(0)
+      options.gas = gasEstimate.times(1.2).toFixed(0)
       console.log(
         `Buy Vault: gas estimated as ${gasEstimate.toFixed(0)} setting to ${
           options.gas
@@ -93,7 +96,7 @@ class VaultParity {
     return instance.getAdminData.call({})
   }
 
-  getTokenBalance = ( tokenAddress ) =>{
+  getTokenBalance = tokenAddress => {
     const api = this._api
     const instance = this._instance
     const erc20Instance = api.newContract(abis.erc20, tokenAddress).instance
@@ -113,7 +116,7 @@ class VaultParity {
       from: accountAddress
     }
     return instance.sellVault.estimateGas(options, values).then(gasEstimate => {
-      options.gas = gasEstimate.mul(1.2).toFixed(0)
+      options.gas = gasEstimate.times(1.2).toFixed(0)
       console.log(
         `Sell Vault: gas estimated as ${gasEstimate.toFixed(0)} setting to ${
           options.gas
@@ -142,7 +145,7 @@ class VaultParity {
     return instance.setTransactionFee
       .estimateGas(options, values)
       .then(gasEstimate => {
-        options.gas = gasEstimate.mul(1.2).toFixed(0)
+        options.gas = gasEstimate.times(1.2).toFixed(0)
         console.log(
           `setTransactionFee Vault: gas estimated as ${gasEstimate.toFixed(
             0

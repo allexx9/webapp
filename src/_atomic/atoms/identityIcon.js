@@ -1,20 +1,18 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-import styles from './identityIcon.module.css';
-import React, { Component} from 'react';
-import PropTypes from 'prop-types';
-import  * as Colors from 'material-ui/styles/colors'
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
+import styles from './identityIcon.module.css'
 
 export default class IdentityIcon extends Component {
-
   static propTypes = {
     address: PropTypes.string.isRequired,
     size: PropTypes.string,
-    customStyle: PropTypes.object,
+    customStyle: PropTypes.object
   }
 
   static defaultProps = {
-    size: "40px",
+    size: '40px',
     customStyle: {}
   }
 
@@ -22,15 +20,16 @@ export default class IdentityIcon extends Component {
     api: PropTypes.object.isRequired
   }
 
-  render () {
-    const { address, size } = this.props;
-    const { api } = this.context;
+  render() {
+    const { address, size } = this.props
+    const { api } = this.context
 
     return (
       <img
-        className={ styles.icon }
-        style={{width: size, height: size, ...this.props.customStyle}}
-        src={ api.util.createIdentityImg(address, 4) } />
-    );
+        className={styles.icon}
+        style={{ width: size, height: size, ...this.props.customStyle }}
+        src={api.util.createIdentityImg(address, 4)}
+      />
+    )
   }
 }
