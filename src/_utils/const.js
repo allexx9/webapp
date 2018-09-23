@@ -94,11 +94,11 @@ export const EP_RIGOBLOCK_RP_DEV_WS = 'wss://ropsten.dev.endpoint.network/ws'
 export const EP_RIGOBLOCK_RP_PROD = 'https://ropsten.dev.endpoint.network/rpc'
 export const EP_RIGOBLOCK_RP_PROD_WS = 'wss://ropsten.dev.endpoint.network/ws'
 
-// Parity on ports 87xx
-export const EP_RIGOBLOCK_MN_DEV = 'https://srv03.endpoint.network:8745'
-export const EP_RIGOBLOCK_MN_DEV_WS = 'wss://srv03.endpoint.network:8746'
-export const EP_RIGOBLOCK_MN_PROD = 'https://mainnet.endpoint.network:8745'
-export const EP_RIGOBLOCK_MN_PROD_WS = 'wss://mainnet.endpoint.network:8746'
+// Parity - Mainnet
+export const EP_RIGOBLOCK_MN_DEV = 'https://mainnet.dev.endpoint.network/rpc'
+export const EP_RIGOBLOCK_MN_DEV_WS = 'wss://mainnet.dev.endpoint.network/ws'
+export const EP_RIGOBLOCK_MN_PROD = 'https://mainnet.dev.endpoint.network/rpc'
+export const EP_RIGOBLOCK_MN_PROD_WS = 'wss://ropsten.dev.endpoint.network/ws'
 
 // Allowed endpoints in config section
 export const INFURA = 'infura'
@@ -183,8 +183,8 @@ export const ENDPOINTS = {
         prod: EP_RIGOBLOCK_RP_PROD
       },
       mainnet: {
-        dev: 'wss://mainnet.endpoint.network:8945',
-        prod: 'https://mainnet.endpoint.network:8945'
+        dev: EP_RIGOBLOCK_MN_DEV,
+        prod: EP_RIGOBLOCK_MN_PROD
       }
     },
     wss: {
@@ -197,8 +197,8 @@ export const ENDPOINTS = {
         prod: EP_RIGOBLOCK_RP_PROD_WS
       },
       mainnet: {
-        dev: 'wss://mainnet.endpoint.network:8946',
-        prod: 'wss://mainnet.endpoint.network:8946'
+        dev: EP_RIGOBLOCK_MN_DEV_WS,
+        prod: EP_RIGOBLOCK_MN_PROD_WS
       }
     }
   },

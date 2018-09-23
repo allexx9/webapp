@@ -156,6 +156,7 @@ class ElementFundCreateAction extends React.Component {
     this.setState({
       sending: true
     })
+    console.log(dragoName)
     poolApi = new PoolApi(provider)
     poolApi.contract.dragofactory.init().then(() => {
       poolApi.contract.dragofactory

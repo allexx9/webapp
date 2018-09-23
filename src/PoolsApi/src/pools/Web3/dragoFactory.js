@@ -53,7 +53,7 @@ class DragoFactoryWeb3 {
     }
     instance.options.from = accountAddress
     return instance.methods
-      .createDrago(dragoName.toLower(), dragoSymbol)
+      .createDrago(dragoName.toLowerCase(), dragoSymbol)
       .estimateGas(options)
       .then(function(gasAmount) {
         instance.options.gas = gasAmount
