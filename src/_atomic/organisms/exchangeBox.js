@@ -11,6 +11,7 @@ import Paper from 'material-ui/Paper'
 import PoolApi from '../../PoolsApi/src'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
+import TokensLockBox from '../../_atomic/organisms/tockensLockBox'
 import Web3 from 'web3'
 import styles from './exchangeBox.module.css'
 import utils from '../../_utils/utils'
@@ -102,18 +103,6 @@ class ExchangeBox extends Component {
 
   onAuthEF = async () => {
     const { api } = this.context
-    // metamask will take care of the 3rd parameter, "password"
-    //   if (web3.currentProvider.isMetaMask) {
-    //     return web3.eth.personal.sign(toSign, efx.get('account'))
-    //   } else {
-    //     return web3.eth.sign(toSign, efx.get('account'))
-    //   }
-    // const token = ((Date.now() / 1000) + 30) + ''
-
-    // web3.eth.sign(token, address, (err, res) => {
-    //       if (err) { reject(err) }
-    //       signature = res.signature
-    //     })
     console.log('auth')
     try {
       // var provider = account.source === 'MetaMask' ? window.web3 : api
@@ -130,7 +119,8 @@ class ExchangeBox extends Component {
       console.log(result)
       const accountSignature = {
         signature: result,
-        nonce: token
+        nonce: token,
+        valid: true
       }
       // Fetch active orders
       this.props.dispatch(
@@ -146,45 +136,6 @@ class ExchangeBox extends Component {
           this.props.exchange.selectedTokensPair.quoteToken
         )
       )
-
-      // rp(
-      //   {
-      //     method: 'POST',
-      //     url: `https://test.ethfinex.com/trustless/v1/r/orders`,
-      //     body: {
-      //       signature: result,
-      //       nonce: token,
-      //       protocol: '0x'
-      //     },
-      //     json: true
-      //   }
-      // )
-      // .then(results => {
-      //   console.log(results)
-      //   // console.log(formatFunction)
-      //   // console.log(formatFunction(results))
-      //   // console.log('formatting')
-      // })
-      // .catch(err => {
-      //   return err
-      // })
-
-      // let signature = web3.eth.sign("Hello world", '0xc8dcd42e846466f2d2b89f3c54eba37bf738019b', (err, res) => {
-      //   if (err) return console.error(err)
-      //   console.log(res)
-      //   return res.signature
-      // })
-      // console.log(signature)
-      // web3.eth.sign("Hello world", "0xc8dcd42e846466f2d2b89f3c54eba37bf738019b")
-      // .then((result) => {
-      //   console.log(result)
-      // })
-      //     web3.eth.sign("Hello world", "0xc8dcd42e846466f2d2b89f3c54eba37bf738019b")
-      // .then(console.log);
-      // .catch((error) =>{
-      //   console.log(error)
-      // })
-      // this.props.dispatch(this.updateSelectedTradeTokensPair('base', true))
     } catch (error) {
       console.log(error)
     }
@@ -288,22 +239,6 @@ class ExchangeBox extends Component {
   }
 
   render() {
-    // console.log(this.props.fundOrders)
-    // console.log(this.props.exchange)
-
-    const buttonBuyStyle = {
-      border: '1px solid',
-      // borderColor: (this.props.selected ? Colors.green400 : Colors.grey400),
-      // backgroundColor: (this.props.selected ? Colors.green400 : 'white'),
-      width: '100%'
-    }
-
-    const labelStyle = {
-      fontWeight: 700,
-      fontSize: '18px'
-      // color:  (this.props.selected ? 'white' : Colors.grey400 )
-    }
-
     return (
       <Row>
         <Col xs={12}>
@@ -321,19 +256,13 @@ class ExchangeBox extends Component {
                     />
                   </Col>
                   <Col xs={12}>
-                    <ButtonAuthenticate onAuthEF={this.onAuthEF} />
+                    <ButtonAuthenticate
+                      onAuthEF={this.onAuthEF}
+                      disabled={this.props.exchange.accountSignature.valid}
+                    />
                   </Col>
                   <Col xs={12}>
-                    <div>
-                      <FlatButton
-                        primary={true}
-                        label="Lock"
-                        labelStyle={labelStyle}
-                        onClick={this.buttonLockClick}
-                        style={buttonBuyStyle}
-                        // hoverColor={Colors.lightGreen50}
-                      />
-                    </div>
+                    <TokensLockBox />
                   </Col>
                 </Row>
               </Paper>

@@ -31,17 +31,18 @@ import utils from '../../../_utils/utils'
 // import { catchError } from 'rxjs/operators';
 // import { catchError } from 'rxjs/operators';
 
+import { Actions } from '../../actions/'
 import { Ethfinex } from '../../../_utils/const'
 
 import {
-  QUEUE_ERROR_NOTIFICATION,
   CHART_MARKET_DATA_ADD_DATAPOINT,
   CHART_MARKET_DATA_INIT,
-  FETCH_CANDLES_DATA_SINGLE,
   FETCH_ACCOUNT_ORDERS,
+  FETCH_ACCOUNT_ORDERS_STOP,
+  FETCH_CANDLES_DATA_SINGLE,
   // UPDATE_ELEMENT_LOADING,
   // CHART_MARKET_DATA_UPDATE,
-  FETCH_ACCOUNT_ORDERS_STOP,
+  QUEUE_ERROR_NOTIFICATION,
   RELAY_CLOSE_WEBSOCKET,
   RELAY_GET_ORDERS,
   RELAY_MSG_FROM_WEBSOCKET,
@@ -366,10 +367,15 @@ export const getAccountOrdersEpic = action$ => {
                 }
               })
               .catch(() => {
-                return Observable.of({
-                  type: QUEUE_ERROR_NOTIFICATION,
-                  payload: 'Error fetching account orders.'
-                })
+                return Observable.concat(
+                  Observable.of({
+                    type: QUEUE_ERROR_NOTIFICATION,
+                    payload: 'Error fetching account orders.'
+                  }),
+                  Observable.of(
+                    Actions.exchange.updateAccountSignature({ valid: false })
+                  )
+                )
               })
           )
         // Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: false }}),
