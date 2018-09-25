@@ -1,7 +1,7 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 import 'babel-polyfill'
 import 'react-virtualized/styles.css'
-import { DEFAULT_NETWORK_NAME, PROD } from './_utils/const'
+import { PROD } from './_utils/const'
 import { Redirect, Route, Router, Switch } from 'react-router-dom'
 import ApplicationConfigPage from './Application/applicationConfig'
 import ApplicationDragoPage from './Application/applicationDrago'
@@ -124,15 +124,6 @@ export class App extends Component {
       )
     }
   }
-
-  UNSAFE_componentWillMount() {
-    // Starting connection checking. this is not necessary runnin inside Parity UI
-    // because the checki is done by Parity and a messagge will be displayed by the client
-  }
-
-  componentWillUnmount() {}
-
-  UNSAFE_componentWillUpdate() {}
 
   render() {
     let notificationStyle = {

@@ -117,6 +117,17 @@ const exchange = {
       payload: payload
     }
   },
+
+  updateLiquidityAndTokenBalances: (api, dragoAddress) => {
+    return {
+      type: TYPE_.UPDATE_LIQUIDITY_AND_TOKENS_BALANCE,
+      payload: {
+        api
+        // dragoAddress
+      }
+    }
+  },
+
   updateAvailableRelays: payload => {
     return {
       type: TYPE_.UPDATE_AVAILABLE_RELAYS,

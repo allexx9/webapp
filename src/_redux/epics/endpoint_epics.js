@@ -284,21 +284,21 @@ export const updateAccounts = async (api, blockNumber, state$) => {
       poolsApi.contract.rigotoken.init()
       // Checking GRG balance
       const grgQueries = accounts.map(account => {
-        console.log(
-          `endpoint_epic -> API call getBalance RigoToken-> applicationDragoHome: Getting balance of account ${
-            account.address
-          }`
-        )
+        // console.log(
+        //   `endpoint_epic -> API call getBalance RigoToken-> applicationDragoHome: Getting balance of account ${
+        //     account.address
+        //   }`
+        // )
         return poolsApi.contract.rigotoken.balanceOf(account.address)
       })
 
       // Checking ETH balance
       const ethQueries = accounts.map(account => {
-        console.log(
-          `endpoint_epic -> API call getBalance -> applicationDragoHome: Getting balance of account ${
-            account.address
-          }`
-        )
+        // console.log(
+        //   `endpoint_epic -> API call getBalance -> applicationDragoHome: Getting balance of account ${
+        //     account.address
+        //   }`
+        // )
         return api.eth.getBalance(account.address, newBlockNumber)
       })
       const ethBalances = await Promise.all(ethQueries)

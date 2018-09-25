@@ -1,6 +1,6 @@
 import * as TYPE_ from '../actions/const'
 import deepFreeze from 'deep-freeze'
-import exchangeReducer from './exchange_reducers'
+import exchangeReducer from './exchange_reducer'
 
 describe('exchange reducer', () => {
   it(`${TYPE_.UPDATE_CURRENT_TOKEN_PRICE} init success`, () => {

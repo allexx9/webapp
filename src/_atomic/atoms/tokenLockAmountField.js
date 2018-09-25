@@ -5,12 +5,12 @@ import { TextField } from 'material-ui'
 import BigNumber from 'bignumber.js'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
-import styles from './orderAmountInputField.module.css'
+import styles from './tokenLockAmountField.module.css'
 
-export default class OrderPrice extends Component {
+export default class TokenAmountInputField extends Component {
   static propTypes = {
-    orderPrice: PropTypes.string.isRequired,
-    onChangePrice: PropTypes.func,
+    lockMaxAmount: PropTypes.number.isRequired,
+    onChangeAmount: PropTypes.func.isRequired,
     disabled: PropTypes.bool
   }
 
@@ -23,10 +23,10 @@ export default class OrderPrice extends Component {
   }
 
   state = {
-    priceError: ''
+    amountError: ''
   }
 
-  onChangePrice = event => {
+  onChangeAmount = event => {
     // Checking valid positive number
     console.log(event.target.value)
     try {
@@ -35,7 +35,7 @@ export default class OrderPrice extends Component {
           amountError: 'Please enter a valid positive number'
         })
         this.error = true
-        this.props.onChangePrice(event.target.value, true)
+        this.props.onChangeAmount(event.target.value, true)
         return
       } else {
         this.setState({
@@ -47,28 +47,42 @@ export default class OrderPrice extends Component {
         amountError: 'Please enter a valid positive number'
       })
       this.error = true
-      this.props.onChangePrice(event.target.value, true)
+      this.props.onChangeAmount(event.target.value, true)
       return
     }
-    this.props.onChangePrice(event.target.value, false)
+    if (
+      new BigNumber(event.target.value).gt(this.props.lockMaxAmount) &&
+      this.props.lockMaxAmount
+    ) {
+      this.setState({
+        amountError: 'Value exceeds available order amount'
+      })
+      this.props.onChangeAmount(event.target.value, true)
+      return
+    }
+
+    this.props.onChangeAmount(event.target.value, false)
   }
 
   render() {
+    // const { symbol, orderFillAmount } = this.props
     // const amount = Math.min(orderFillAmount, orderMaxAmount)
+    // console.log(orderFillAmount)
     return (
       <Row bottom="xs">
         <Col xs={12}>
           <TextField
-            key="orderAmount"
+            key="tokenLockAmount"
             autoComplete="off"
-            floatingLabelFixed
-            floatingLabelText="Price"
             fullWidth
-            errorText={this.state.priceError}
-            name="orderAmount"
-            id="orderPrice"
-            value={this.props.orderPrice}
-            onChange={this.onChangePrice}
+            // errorText={this.state.amountError}
+            name="tokenLockAmount"
+            id="tokenLockAmount"
+            value={0}
+            style={{ height: 'unset' }}
+            // underlineShow={false}
+            underlineStyle={{ bottom: '0px' }}
+            onChange={this.onChangeAmount}
             disabled={this.props.disabled}
           />
         </Col>

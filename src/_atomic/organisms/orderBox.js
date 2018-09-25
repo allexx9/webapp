@@ -7,7 +7,7 @@ import ButtonBuy from '../atoms/buttonBuy'
 import ButtonOrderCancel from '../atoms/buttonOrderCancel'
 import ButtonOrderSubmit from '../atoms/buttonOrderSubmit'
 import ButtonSell from '../atoms/buttonSell'
-import OrderAmount from '../atoms/orderAmount'
+import OrderAmountInputField from '../atoms/orderAmountInputField'
 import OrderPrice from '../atoms/orderPrice'
 import OrderRawDialog from '../molecules/orderRawDialog'
 import OrderSummary from '../molecules/orderSummary'
@@ -393,7 +393,7 @@ class OrderBox extends Component {
                     </Row>
                   </Col>
 
-                  <Col xs={12} className={styles.tokenNameSymbol}>
+                  {/* <Col xs={12} className={styles.tokenNameSymbol}>
                     <div className={styles.tokenSymbol}>
                       {selectedTokensPair.baseToken.symbol}
                     </div>
@@ -426,7 +426,7 @@ class OrderBox extends Component {
                         }
                       />
                     </div>
-                  </Col>
+                  </Col> */}
 
                   {/* <Col xs={12}>
                     <OrderTypeSelector
@@ -437,7 +437,7 @@ class OrderBox extends Component {
                   </Col> */}
 
                   <Col xs={12}>
-                    <OrderAmount
+                    <OrderAmountInputField
                       orderMaxAmount={Number(selectedOrder.orderMaxAmount)}
                       orderFillAmount={selectedOrder.orderFillAmount}
                       symbol={selectedOrder.selectedTokensPair.baseToken.symbol}

@@ -109,7 +109,11 @@ const initialState = {
     // selectedExchange: EXCHANGES.rigoBlock[DEFAULT_NETWORK_NAME],
     selectedTokensPair: {
       baseToken: BASE_TOKEN,
+      baseTokenLockedAmount: new BigNumber(0),
+      baseTokenAvailableAmount: new BigNumber(0),
       quoteToken: QUOTE_TOKEN,
+      quoteTokenLockedAmount: new BigNumber(0),
+      quoteTokenAvailableAmount: new BigNumber(0),
       baseTokenAllowance: false,
       quoteTokenAllowance: false,
       ticker: {

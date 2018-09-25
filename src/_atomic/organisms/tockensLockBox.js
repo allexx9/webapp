@@ -1,5 +1,6 @@
 import { Col, Row } from 'react-flexbox-grid'
 import BoxTitle from '../atoms/boxTitle'
+import LockedTokensInfo from '../molecules/lockedTokensInfo'
 import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
@@ -20,12 +21,7 @@ class TokensLockBox extends Component {
         <Col xs={12}>
           <Row className={styles.sectionTitle}>
             <Col xs={12}>
-              <BoxTitle titleText={'MARKET'} />
-              <Paper style={paperStyle} zDepth={1}>
-                <Row className={styles.marketBoxContainer}>
-                  <Col xs={12} />
-                </Row>
-              </Paper>
+              <LockedTokensInfo />
             </Col>
           </Row>
         </Col>

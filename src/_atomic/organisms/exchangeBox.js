@@ -11,6 +11,7 @@ import Paper from 'material-ui/Paper'
 import PoolApi from '../../PoolsApi/src'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
+import SectionTitleExchange from '../atoms/sectionTitleExchange'
 import TokensLockBox from '../../_atomic/organisms/tockensLockBox'
 import Web3 from 'web3'
 import styles from './exchangeBox.module.css'
@@ -244,11 +245,11 @@ class ExchangeBox extends Component {
         <Col xs={12}>
           <Row className={styles.sectionTitle}>
             <Col xs={12}>
-              <BoxTitle titleText={'EXCHANGES'} />
+              <BoxTitle titleText={'EXCHANGE'} />
               <Paper style={paperStyle} zDepth={1}>
                 <Row>
                   <Col xs={12}>
-                    <p className={styles.titleSection}>Exchanges</p>
+                    <SectionTitleExchange titleText="EXCHANGES" />
                     <ExchangeSelector
                       availableRelays={this.props.exchange.availableRelays}
                       selectedRelay={this.props.exchange.selectedRelay.name}
@@ -256,10 +257,12 @@ class ExchangeBox extends Component {
                     />
                   </Col>
                   <Col xs={12}>
-                    <ButtonAuthenticate
-                      onAuthEF={this.onAuthEF}
-                      disabled={this.props.exchange.accountSignature.valid}
-                    />
+                    <div className={styles.section}>
+                      <ButtonAuthenticate
+                        onAuthEF={this.onAuthEF}
+                        disabled={this.props.exchange.accountSignature.valid}
+                      />
+                    </div>
                   </Col>
                   <Col xs={12}>
                     <TokensLockBox />

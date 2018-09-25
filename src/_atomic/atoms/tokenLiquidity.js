@@ -43,10 +43,10 @@ export default class TokenLiquidity extends Component {
           {formatEth(liquidity.ETH, 4, api)} <small>ETH</small>
           <br />
         </Col>
-        <Col xs={12} style={{ fontSize: '14px' }}>
+        {/* <Col xs={12} style={{ fontSize: '14px' }}>
           {formatEth(liquidity.WETH, 4, api)} <small>WETH</small>
           <br />
-        </Col>
+        </Col> */}
         <Col xs={12} style={{ fontSize: '14px' }}>
           {formatEth(liquidity.ZRX, 4, api)} <small>ZRX</small>
           <br />

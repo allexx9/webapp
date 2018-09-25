@@ -27,6 +27,7 @@ import FundSelector from '../_atomic/molecules/fundSelector'
 import OrderBook from '../_atomic/organisms/orderBook'
 import OrderBox from '../_atomic/organisms/orderBox'
 import OrdersHistoryBox from '../_atomic/organisms/ordersHistoryBox'
+import TokenBalances from '../_atomic/atoms/tokenBalances'
 import TokenLiquidity from '../_atomic/atoms/tokenLiquidity'
 import TokenPrice from '../_atomic/atoms/tokenPrice'
 import TokenTradeSelector from '../_atomic/molecules/tokenTradeSelector'
@@ -151,8 +152,6 @@ class ApplicationExchangeHome extends Component {
         ]
     }
     // console.log(accounts)
-    // this.getSelectedFundDetails(null, accounts)
-    // this.connectToRadarRelay()
     try {
       const address = await getAvailableAccounts(selectedExchange)
       this.props.dispatch({
@@ -192,19 +191,8 @@ class ApplicationExchangeHome extends Component {
         Actions.exchange.updateSelectedTradeTokensPair(defaultTokensPair)
       )
 
-      // Getting chart data
-      // let tsYesterday = new Date(
-      //   (Math.floor(Date.now() / 1000) - 86400 * 7) * 1000
-      // ).toISOString()
-      // this.props.dispatch(
-      //   Actions.exchange.fetchCandleDataSingle(
-      //     defaultRelay,
-      //     api._rb.network.id,
-      //     defaultTokensPair.baseToken,
-      //     defaultTokensPair.quoteToken,
-      //     tsYesterday
-      //   )
-      // )
+      // Updating selected tokens pair balances and fund liquidity (ETH, ZRX)
+      this.props.dispatch(Actions.exchange.updateLiquidityAndTokenBalances(api))
 
       this.connectToExchange(defaultRelay, defaultTokensPair)
 
@@ -323,7 +311,7 @@ class ApplicationExchangeHome extends Component {
       )
 
       // Getting drago liquidity
-      this.props.dispatch(this.updateSelectedFundLiquidity(fund.address, api))
+      // this.props.dispatch(this.updateSelectedFundLiquidity(fund.address, api))
 
       // Getting allowances
       const allowanceBaseToken = await getTokenAllowance(
@@ -578,13 +566,13 @@ class ApplicationExchangeHome extends Component {
                       onSelectFund={this.onSelectFund}
                     />
                   </Col>
-                  <Col xs={2}>
+                  {/* <Col xs={2}>
                     <TokenLiquidity
                       liquidity={exchange.selectedFund.liquidity}
                       loading={exchange.loading.liquidity}
                     />
-                  </Col>
-                  <Col xs={2}>
+                  </Col> */}
+                  <Col xs={4}>
                     <TokenTradeSelector
                       tradableTokens={exchange.availableTradeTokensPairs}
                       selectedTradeTokensPair={exchange.selectedTokensPair}
@@ -596,6 +584,15 @@ class ApplicationExchangeHome extends Component {
                       selectedTradeTokensPair={exchange.selectedTokensPair}
                       tokenPrice={currentPrice.toFixed(4)}
                       priceVariation={priceVariation}
+                    />
+                  </Col>
+                </Row>
+                <Row>
+                  <Col xs={12}>
+                    <TokenBalances
+                      liquidity={exchange.selectedFund.liquidity}
+                      selectedTradeTokensPair={exchange.selectedTokensPair}
+                      // loading={exchange.loading.liquidity}
                     />
                   </Col>
                 </Row>
@@ -735,6 +732,7 @@ class ApplicationExchangeHome extends Component {
         //   this.props.exchange.selectedTokensPair.quoteToken.address,
         // )
         // )
+        console.log(`Selecting fund ${results[2][0].address.toLowerCase()}`)
         this.onSelectFund(results[2][0])
       } else {
         this.setState({
