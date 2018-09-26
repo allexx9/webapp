@@ -151,7 +151,6 @@ export const updateLiquidityAndTokenBalancesEpic = (action$, state$) => {
     switchMap(action => {
       return Observable.timer(0, 5000).pipe(
         tap(val => {
-          console.log(state$.value.exchange.selectedFund)
           return val
         }),
         skipWhile(
@@ -160,7 +159,6 @@ export const updateLiquidityAndTokenBalancesEpic = (action$, state$) => {
             'undefined'
         ),
         exhaustMap(() => {
-          console.log(action)
           const currentState = state$.value
           return updateLiquidityAndTokenBalances$(
             action.payload.api,
@@ -168,8 +166,8 @@ export const updateLiquidityAndTokenBalancesEpic = (action$, state$) => {
             currentState
           ).pipe(
             map(liquidity => {
-              console.log(liquidity)
               const payload = {
+                loading: false,
                 liquidity: {
                   ETH: liquidity.dragoETHBalance,
                   ZRX: liquidity.dragoZRXBalance,

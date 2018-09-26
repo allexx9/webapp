@@ -80,7 +80,6 @@ class DragoParity {
   getBalanceToken = tokenAddress => {
     const api = this._api
     const instance = this._instance
-    console.log(tokenAddress)
     const tokenInstance = api.newContract(abis.erc20, tokenAddress).instance
     return tokenInstance.balanceOf.call({}, [instance.address])
   }

@@ -90,9 +90,18 @@ const initialState = {
     selectedFund: {
       details: {},
       liquidity: {
+        loading: true,
         ETH: new BigNumber(0),
         WETH: new BigNumber(0),
-        ZRX: new BigNumber(0)
+        ZRX: new BigNumber(0),
+        baseToken: {
+          balance: new BigNumber(0),
+          balanceWrapper: new BigNumber(0)
+        },
+        quoteToken: {
+          balance: new BigNumber(0),
+          balanceWrapper: new BigNumber(0)
+        }
       },
       managerAccount: ''
     },
@@ -206,6 +215,7 @@ const initialState = {
     networkError: NETWORK_OK,
     networkStatus: MSG_NETWORK_STATUS_OK,
     prevBlockNumber: '0',
+    prevNonce: '0',
     grgBalance: null,
     warnMsg: '',
     metaMaskNetworkCorrect: false,

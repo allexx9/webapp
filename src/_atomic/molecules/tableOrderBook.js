@@ -74,8 +74,8 @@ class TableOrderBook extends Component {
     }
 
     const progressBarAmountColor = {
-      asks: Colors.red100,
-      bids: Colors.green100
+      asks: '#ff7f7f',
+      bids: '#95cf95'
     }
 
     // var arr = [1,2,3];

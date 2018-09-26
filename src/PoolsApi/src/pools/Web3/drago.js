@@ -37,8 +37,22 @@ class DragoWeb3 {
     return instance.getData.call({})
   }
 
-  operateOnExchangeEFX = async (
+  /**
+   *  Requests are proxied through the fund smart contract. The exchange has to be approved.
+   *
+   * @param {*} managerAccountAddress     The address of the owner of the fund
+   * @param {*} dragoAddress              The address of the fund.
+   * @param {*} exchangeContractAddress   The address of the exchange (Ethfinex for example)
+   * @param {*} tokenAddress              The address of the token to be un-locked.
+   * @param {*} tokenWrapper              The address of the token wrapper.
+   * @param {*} toBeWrapped               The amount in base units to be unwrapped. A baseUnit is defined as the smallest denomination of a token.
+   * @param {*} time                      Lock time (1 for 1h)
+   * @param {*} isOldERC20                True for non standard ERC20 tokens su as USDT.
+   * @returns                             A promise resolving the smart contract method called.
+   */
+  operateOnExchangeEFXLock = async (
     managerAccountAddress,
+    dragoAddress,
     exchangeContractAddress,
     tokenAddress,
     tokenWrapper,
@@ -48,6 +62,9 @@ class DragoWeb3 {
   ) => {
     if (!managerAccountAddress) {
       throw new Error('accountAddress needs to be provided')
+    }
+    if (!dragoAddress) {
+      throw new Error('dragoAddress needs to be provided')
     }
     if (!exchangeContractAddress) {
       throw new Error('exchangeContractAddress needs to be provided')
@@ -67,21 +84,23 @@ class DragoWeb3 {
     if (typeof isOldERC20 === 'undefined') {
       throw new Error('isOldERC20 need to be provided')
     }
+    if (tokenAddress === '0x0') {
+      tokenAddress = '0x0000000000000000000000000000000000000000'
+    }
     console.log(`managerAccountAddress ${managerAccountAddress}`)
+    console.log(`dragoAddress ${dragoAddress}`)
     console.log(`exchangeContractAddres ${exchangeContractAddress}`)
     console.log(`tokenAddress ${tokenAddress}`)
     console.log(`tokenWrapper ${tokenWrapper}`)
     console.log(`toBeWrapped ${toBeWrapped}`)
     console.log(`time ${time}`)
     console.log(`isOldERC20 ${isOldERC20}`)
+
     const instance = this._instance
     const api = this._api
     let options = {
       from: managerAccountAddress
     }
-    // const contractMethod = abis.zeroExExchange.find(
-    //   method => method.name === 'cancelOrder'
-    // )
     const contractMethod = {
       name: 'wrapToEfx',
       type: 'function',
@@ -111,15 +130,125 @@ class DragoWeb3 {
     const encodedABI = await api.eth.abi.encodeFunctionCall(contractMethod, [
       tokenAddress,
       tokenWrapper,
-      toBeWrapped,
+      toBeWrapped.toString(),
       time,
       isOldERC20
     ])
-
     console.log(encodedABI)
+    return instance.methods
+      .operateOnExchange(exchangeContractAddress, encodedABI)
+      .estimateGas(options)
+      .then(gasEstimate => {
+        console.log(gasEstimate)
+        options.gas = gasEstimate
+      })
+      .then(() => {
+        return instance.methods
+          .operateOnExchange(exchangeContractAddress, encodedABI)
+          .send(options)
+      })
+  }
 
-    // const encodedABI = '0xbc61394a00000000000000000000000040584e290e5c56114c8bcf72fa3d403d1166b3d700000000000000000000000000000000000000000000000000000000000000000000000000000000000000001dad4783cf3fe3085c1426157ab175a6119a04ba000000000000000000000000d0a1e359811322d97991e03f863a0c30c2cf029c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002386f26fc10000000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001638384d81aace3db94ad2d6f00aaa892a70c34850dcb894fde0f5eb1c50fd50b4320c16df400000000000000000000000000000000000000000000000000000000000003e80000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000001c969d3a50aab834aee8f7ee57a885746502933168c63071c6c270848ad502032b466238fa9e7bc9f9a5dd3e0ca738512b0ba16ecf770f12369d65a4cd293a6fac'
+  /**
+   * Requests are proxied through the fund smart contract. The exchange has to be approved.
+   *
+   * @param {*} managerAccountAddress   The address of the owner of the fund
+   * @param {*} dragoAddress            The address of the fund.
+   * @param {*} exchangeContractAddress The address of the exchange (Ethfinex for example)
+   * @param {*} tokenAddress            The address of the token to be un-locked.
+   * @param {*} tokenWrapper            The address of the token wrapper.
+   * @param {*} toBeUnwrapped           The amount in base units to be unwrapped. A baseUnit is defined as the smallest denomination of a token.
+   * @returns                           A promise resolving the smart contract method called.
+   */
+  operateOnExchangeEFXUnlock = async (
+    managerAccountAddress,
+    dragoAddress,
+    exchangeContractAddress,
+    tokenAddress,
+    tokenWrapper,
+    toBeUnwrapped
+  ) => {
+    if (!managerAccountAddress) {
+      throw new Error('accountAddress needs to be provided')
+    }
+    if (!dragoAddress) {
+      throw new Error('dragoAddress needs to be provided')
+    }
+    if (!exchangeContractAddress) {
+      throw new Error('exchangeContractAddress needs to be provided')
+    }
+    if (!tokenWrapper) {
+      throw new Error('tokenWrapper needs to be provided')
+    }
+    if (!toBeUnwrapped) {
+      throw new Error('toBeUnWrapped needs to be provided')
+    }
 
+    console.log(`managerAccountAddress ${managerAccountAddress}`)
+    console.log(`dragoAddress ${dragoAddress}`)
+    console.log(`exchangeContractAddres ${exchangeContractAddress}`)
+    console.log(`tokenAddress ${tokenAddress}`)
+    console.log(`tokenWrapper ${tokenWrapper}`)
+    console.log(`toBeUnWrapped ${toBeUnwrapped}`)
+    const instance = this._instance
+    const api = this._api
+    let options = {
+      from: managerAccountAddress
+    }
+
+    if (tokenAddress === '0x0') {
+      tokenAddress = '0x0000000000000000000000000000000000000000'
+    }
+    const contractMethod = {
+      name: 'unwrap',
+      type: 'function',
+      inputs: [
+        {
+          type: 'address',
+          name: 'token'
+        },
+        {
+          type: 'address',
+          name: 'wrapper'
+        },
+        {
+          type: 'uint256',
+          name: 'value'
+        },
+        {
+          type: 'uint8',
+          name: 'v'
+        },
+        {
+          type: 'bytes32',
+          name: 'r'
+        },
+        {
+          type: 'bytes32',
+          name: 's'
+        },
+        {
+          type: 'uint256',
+          name: 'signatureValidUntilBlock'
+        }
+      ]
+    }
+    const v = 1
+    const r =
+      '0xfa39c1a29cab1aa241b62c2fd067a6602a9893c2afe09aaea371609e11cbd92d' // mock bytes32
+    const s =
+      '0xfa39c1a29cab1aa241b62c2fd067a6602a9893c2afe09aaea371609e11cbd92d' // mock bytes32
+    const validUntil = 1
+    const encodedABI = await api.eth.abi.encodeFunctionCall(contractMethod, [
+      tokenAddress,
+      tokenWrapper,
+      toBeUnwrapped.toString(),
+      v,
+      r,
+      s,
+      validUntil
+    ])
+    console.log(encodedABI)
     return instance.methods
       .operateOnExchange(exchangeContractAddress, encodedABI)
       .estimateGas(options)

@@ -255,6 +255,7 @@ export const updateAccounts = async (api, blockNumber, state$) => {
   const { endpoint } = currentState
   let newEndpoint = {}
   const prevBlockNumber = endpoint.prevBlockNumber
+  const prevNonce = endpoint.prevNonce
   let newBlockNumber = new BigNumber(0)
   let notifications = Array(0)
   let fetchTransactions = false
@@ -267,6 +268,8 @@ export const updateAccounts = async (api, blockNumber, state$) => {
   }
   console.log(`endpoint_epic -> Last block: ` + prevBlockNumber)
   console.log(`endpoint_epic -> New block: ` + newBlockNumber.toFixed())
+  console.log(`endpoint_epic -> Last nonce: ` + prevNonce)
+  console.log(`endpoint_epic -> New nonce: ` + endpoint.accounts[0].nonce)
   if (new BigNumber(prevBlockNumber).gte(new BigNumber(newBlockNumber))) {
     console.log(
       `endpoint_epic -> Detected prevBlockNumber > currentBlockNumber. Skipping accounts update.`
@@ -299,7 +302,7 @@ export const updateAccounts = async (api, blockNumber, state$) => {
         //     account.address
         //   }`
         // )
-        return api.eth.getBalance(account.address, newBlockNumber)
+        return api.eth.getBalance(account.address, 'latest')
       })
       const ethBalances = await Promise.all(ethQueries)
       const grgBalances = await Promise.all(grgQueries)
@@ -308,6 +311,12 @@ export const updateAccounts = async (api, blockNumber, state$) => {
         // Checking ETH balance
         const newEthBalance = new BigNumber(ethBalances[index])
         const prevEthBalance = new BigNumber(account.ethBalanceWei)
+        console.log(
+          `Old balance at block ${prevBlockNumber} -> ${prevEthBalance.toFixed()}`
+        )
+        console.log(
+          `New balance at block ${newBlockNumber} -> ${newEthBalance.toFixed()}`
+        )
         if (
           !new BigNumber(newEthBalance).eq(prevEthBalance) &&
           prevBlockNumber !== 0
@@ -392,6 +401,7 @@ export const updateAccounts = async (api, blockNumber, state$) => {
       })
       newEndpoint = {
         prevBlockNumber: newBlockNumber.toFixed(),
+        prevNonce: endpoint.accounts[0].nonce,
         loading: false,
         networkError: NETWORK_OK,
         networkStatus: MSG_NETWORK_STATUS_OK,

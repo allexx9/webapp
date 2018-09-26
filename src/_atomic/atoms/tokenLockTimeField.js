@@ -7,18 +7,15 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 // import styles from './tokenLockAmountField.module.css'
 
-export default class TokenAmountInputField extends Component {
+export default class TokenLockTimeField extends Component {
   static propTypes = {
-    lockMaxAmount: PropTypes.object.isRequired,
     isBaseToken: PropTypes.bool.isRequired,
-    onChangeAmount: PropTypes.func.isRequired,
-    amount: PropTypes.string.isRequired,
-    disabled: PropTypes.bool
+    onChangeTime: PropTypes.func.isRequired,
+    amount: PropTypes.string.isRequired
   }
 
   static defaultProps = {
-    disabled: false,
-    amount: 0,
+    amount: 1,
     baseToken: true
   }
 
@@ -30,7 +27,7 @@ export default class TokenAmountInputField extends Component {
     amountError: ''
   }
 
-  onChangeAmount = event => {
+  onChangeTime = event => {
     // Checking valid positive number
     console.log(event.target.value)
     let amountError = 'Please enter a valid positive number'
@@ -40,7 +37,7 @@ export default class TokenAmountInputField extends Component {
           amountError: 'Please enter a valid positive number'
         })
         this.error = true
-        this.props.onChangeAmount(
+        this.props.onChangeTime(
           event.target.value,
           this.props.isBaseToken,
           amountError
@@ -56,7 +53,7 @@ export default class TokenAmountInputField extends Component {
         amountError: 'Please enter a valid positive number'
       })
       this.error = true
-      this.props.onChangeAmount(
+      this.props.onChangeTime(
         event.target.value,
         this.props.isBaseToken,
         amountError
@@ -64,7 +61,7 @@ export default class TokenAmountInputField extends Component {
       return
     }
     console.log('ok')
-    this.props.onChangeAmount(event.target.value, this.props.isBaseToken, '')
+    this.props.onChangeTime(event.target.value, this.props.isBaseToken, '')
   }
 
   render() {
@@ -74,22 +71,23 @@ export default class TokenAmountInputField extends Component {
           <TextField
             key={
               this.props.isBaseToken
-                ? 'baseTokenFieldKey'
-                : 'quoteTokenFieldKey'
+                ? 'baseTokenTimeFieldKey'
+                : 'quoteTokenTimeFieldKey'
             }
             autoComplete="off"
             fullWidth
             // errorText={this.state.amountError}
             name="tokenLockAmount"
             id={
-              this.props.isBaseToken ? 'baseTokenFieldId' : 'quoteTokenFieldId'
+              this.props.isBaseToken
+                ? 'baseTokenTimeFieldId'
+                : 'quoteTokenTimeFieldId'
             }
             value={this.props.amount}
             style={{ height: 'unset' }}
             // underlineShow={false}
             underlineStyle={{ bottom: '0px' }}
-            onChange={this.onChangeAmount}
-            disabled={this.props.disabled}
+            onChange={this.onChangeTime}
           />
         </Col>
       </Row>

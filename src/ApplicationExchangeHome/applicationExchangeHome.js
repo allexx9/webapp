@@ -606,21 +606,27 @@ class ApplicationExchangeHome extends Component {
                 <Col xs={3}>
                   <Row>
                     <Col xs={12}>
-                      <ExchangeBox />
+                      <div className={styles.boxContainer}>
+                        <ExchangeBox />
+                      </div>
                     </Col>
                     <Col xs={12}>
-                      <OrderBox />
+                      <div className={styles.boxContainer}>
+                        <OrderBox />
+                      </div>
                     </Col>
                   </Row>
                 </Col>
                 <Col xs={7}>
                   <Row>
                     <Col xs={12}>
-                      <ChartBox
-                        data={chartData}
-                        // loading={exchange.loading.marketBox}
-                        loading={false}
-                      />
+                      <div className={styles.boxContainer}>
+                        <ChartBox
+                          data={chartData}
+                          // loading={exchange.loading.marketBox}
+                          loading={false}
+                        />
+                      </div>
                     </Col>
                     <Col xs={12}>
                       <OrdersHistoryBox fundOrders={fundOrders} />

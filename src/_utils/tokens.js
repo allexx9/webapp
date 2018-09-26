@@ -96,7 +96,7 @@ export const ERC20_TOKENS = {
       symbolTicker: {
         Ethfinex: 'ETH'
       },
-      address: '0x',
+      address: '0x0',
       decimals: 18,
       name: 'Ether',
       wrappers: {
@@ -165,6 +165,7 @@ export const ERC20_TOKENS = {
     },
     ZRX: {
       symbol: 'ZRX',
+      isOldERC20: false,
       symbolTicker: {
         Ethfinex: 'ZRX'
       },
@@ -188,10 +189,11 @@ export const ERC20_TOKENS = {
     },
     ETH: {
       symbol: 'ETH',
+      isOldERC20: false,
       symbolTicker: {
         Ethfinex: 'ETH'
       },
-      address: '0x',
+      address: '0x0',
       decimals: 18,
       name: 'Ether',
       wrappers: {
@@ -205,6 +207,7 @@ export const ERC20_TOKENS = {
     },
     USDT: {
       symbol: 'USDT',
+      isOldERC20: true,
       symbolTicker: {
         Ethfinex: 'USD'
       },
@@ -222,6 +225,7 @@ export const ERC20_TOKENS = {
     },
     GRG: {
       symbol: 'GRG',
+      isOldERC20: false,
       symbolTicker: {
         Ethfinex: 'GRG'
       },

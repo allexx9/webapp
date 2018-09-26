@@ -265,7 +265,7 @@ export const EXCHANGES = {
     },
     ropsten: {
       tokenTransferProxyAddress: '0x4e9aad8184de8833365fea970cd9149372fdf1e6',
-      exchangeContractAddress: '0x479cc461fecd078f766ecc58533d6f69580cf3ac',
+      exchangeContractAddress: '0x67799a5e640bc64ca24d3e6813842754e546d7b1',
       networkId: 3
     },
     mainnet: {}

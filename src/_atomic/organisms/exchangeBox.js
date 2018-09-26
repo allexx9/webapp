@@ -10,7 +10,7 @@ import FlatButton from 'material-ui/FlatButton'
 import Paper from 'material-ui/Paper'
 import PoolApi from '../../PoolsApi/src'
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import SectionTitleExchange from '../atoms/sectionTitleExchange'
 import TokensLockBox from '../../_atomic/organisms/tockensLockBox'
 import Web3 from 'web3'
@@ -29,7 +29,7 @@ function mapStateToProps(state) {
   return state
 }
 
-class ExchangeBox extends Component {
+class ExchangeBox extends PureComponent {
   static contextTypes = {
     api: PropTypes.object.isRequired
   }
@@ -240,6 +240,14 @@ class ExchangeBox extends Component {
   }
 
   render() {
+    const {
+      availableRelays,
+      selectedRelay,
+      accountSignature,
+      selectedFund,
+      selectedTokensPair,
+      selectedExchange
+    } = this.props.exchange
     return (
       <Row>
         <Col xs={12}>
@@ -251,8 +259,8 @@ class ExchangeBox extends Component {
                   <Col xs={12}>
                     <SectionTitleExchange titleText="EXCHANGES" />
                     <ExchangeSelector
-                      availableRelays={this.props.exchange.availableRelays}
-                      selectedRelay={this.props.exchange.selectedRelay.name}
+                      availableRelays={availableRelays}
+                      selectedRelay={selectedRelay.name}
                       onSelectExchange={this.onSelectExchange}
                     />
                   </Col>
@@ -260,12 +268,17 @@ class ExchangeBox extends Component {
                     <div className={styles.section}>
                       <ButtonAuthenticate
                         onAuthEF={this.onAuthEF}
-                        disabled={this.props.exchange.accountSignature.valid}
+                        disabled={accountSignature.valid}
                       />
                     </div>
                   </Col>
                   <Col xs={12}>
-                    <TokensLockBox />
+                    <TokensLockBox
+                      selectedFund={selectedFund}
+                      selectedTokensPair={selectedTokensPair}
+                      selectedExchange={selectedExchange}
+                      selectedRelay={selectedRelay}
+                    />
                   </Col>
                 </Row>
               </Paper>

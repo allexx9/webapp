@@ -6,6 +6,9 @@
   width: 100%;
 } */
 
+.boxContainer {
+  padding-bottom: 8px;
+}
 
 /* applicationDragoHome */
 
@@ -38,11 +41,6 @@
 
 .button {
   margin: 0 0.5em;
-}
-
-.vault {
-  float: left;
-  padding-left: 0.5cm;
 }
 
 .button button {

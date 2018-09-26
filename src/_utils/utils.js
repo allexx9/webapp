@@ -1351,12 +1351,11 @@ class utilities {
   ) => {
     const poolApi = new PoolApi(api)
     poolApi.contract.drago.init(dragoAddress)
-    console.log(tokens)
     // console.log(dragoETHBalance, dragoWETHBalance, dragoZRXBalance)
     const liquidity = {
       dragoETHBalance: await poolApi.contract.drago.getBalance(),
       dragoZRXBalance: await poolApi.contract.drago.getBalanceZRX(),
-      baseTokenBalance: await (tokens.baseToken.address !== '0x'
+      baseTokenBalance: await (tokens.baseToken.address !== '0x0'
         ? await poolApi.contract.drago.getBalanceToken(tokens.baseToken.address)
         : await poolApi.contract.drago.getBalance()),
 
