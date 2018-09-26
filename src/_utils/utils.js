@@ -1,3 +1,4 @@
+import * as abis from '../PoolsApi/src/contracts/abi'
 import { APP, DS } from './const'
 import { DRG_ISIN } from './const'
 import { ERCdEX, Ethfinex } from './const'
@@ -1333,6 +1334,14 @@ class utilities {
     )
   }
 
+  updateTokenWrapperLockTime = async (api, tokenAddress, accountAddress) => {
+    const poolApi = new PoolApi(api)
+    await poolApi.contract.tokenwrapper.init(tokenAddress)
+    return (await poolApi.contract.tokenwrapper.depositLock(
+      accountAddress
+    )).toFixed()
+  }
+
   getDragoLiquidity = async (dragoAddress, api) => {
     const poolApi = new PoolApi(api)
     poolApi.contract.drago.init(dragoAddress)
@@ -1346,29 +1355,61 @@ class utilities {
   fetchDragoLiquidityAndTokenBalances = async (
     dragoAddress,
     api,
-    tokens,
+    selectedTokensPair,
     exchange
   ) => {
-    const poolApi = new PoolApi(api)
+    // We update the expire epoch time if current time > expire lock tim
+    // let baseTokenLockWrapExpire = selectedTokensPair.baseTokenLockWrapExpire
+    // let quoteTokenLockWrapExpire = selectedTokensPair.quoteTokenLockWrapExpire
+    let provider = api
+    const poolApi = new PoolApi(provider)
+    // const now = Math.floor(Date.now() / 1000)
+    // console.log(`now ${now}`)
+    // console.log(baseTokenLockWrapExpire)
+    // console.log(quoteTokenLockWrapExpire)
+    // if (now > baseTokenLockWrapExpire) {
+    //   await poolApi.contract.tokenwrapper.init(
+    //     selectedTokensPair.baseToken.wrappers[exchange].address
+    //   )
+    //   baseTokenLockWrapExpire = (await poolApi.contract.tokenwrapper.depositLock(
+    //     dragoAddress
+    //   )).toFixed()
+    //   console.log(baseTokenLockWrapExpire)
+    // }
+    // if (now > quoteTokenLockWrapExpire) {
+    //   await poolApi.contract.tokenwrapper.init(
+    //     selectedTokensPair.quoteToken.wrappers[exchange].address
+    //   )
+    //   quoteTokenLockWrapExpire = (await poolApi.contract.tokenwrapper.depositLock(
+    //     dragoAddress
+    //   )).toFixed()
+    //   console.log(quoteTokenLockWrapExpire)
+    // }
+
     poolApi.contract.drago.init(dragoAddress)
-    // console.log(dragoETHBalance, dragoWETHBalance, dragoZRXBalance)
+
     const liquidity = {
       dragoETHBalance: await poolApi.contract.drago.getBalance(),
       dragoZRXBalance: await poolApi.contract.drago.getBalanceZRX(),
-      baseTokenBalance: await (tokens.baseToken.address !== '0x0'
-        ? await poolApi.contract.drago.getBalanceToken(tokens.baseToken.address)
+      baseTokenBalance: await (selectedTokensPair.baseToken.address !== '0x0'
+        ? await poolApi.contract.drago.getBalanceToken(
+            selectedTokensPair.baseToken.address
+          )
         : await poolApi.contract.drago.getBalance()),
 
       baseTokenWrapperBalance: await poolApi.contract.drago.getBalanceToken(
-        tokens.baseToken.wrappers[exchange].address
+        selectedTokensPair.baseToken.wrappers[exchange].address
       ),
       quoteTokenBalance: await poolApi.contract.drago.getBalanceToken(
-        tokens.quoteToken.address
+        selectedTokensPair.quoteToken.address
       ),
       quoteTokenWrapperBalance: await poolApi.contract.drago.getBalanceToken(
-        tokens.quoteToken.wrappers[exchange].address
+        selectedTokensPair.quoteToken.wrappers[exchange].address
       )
+      // baseTokenLockWrapExpire,
+      // quoteTokenLockWrapExpire
     }
+    console.log(liquidity)
     return liquidity
   }
 

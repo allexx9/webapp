@@ -46,6 +46,8 @@ export const UPDATE_INTERFACE = 'UPDATE_INTERFACE'
 
 // EXCHANGE
 
+// Trading pair
+
 // Relays
 export const UPDATE_AVAILABLE_RELAYS = 'UPDATE_AVAILABLE_RELAYS'
 

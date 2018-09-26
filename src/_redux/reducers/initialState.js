@@ -125,6 +125,8 @@ const initialState = {
       quoteTokenAvailableAmount: new BigNumber(0),
       baseTokenAllowance: false,
       quoteTokenAllowance: false,
+      baseTokenLockWrapExpire: '0',
+      quoteTokenLockWrapExpire: '0',
       ticker: {
         current: {
           price: '0'

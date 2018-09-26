@@ -1,4 +1,6 @@
+import { Actions } from '../../_redux/actions'
 import { Col, Row } from 'react-flexbox-grid'
+import { connect } from 'react-redux'
 import { formatEth } from '../../_utils/format'
 import { toBaseUnitAmount } from '../../_utils/format'
 import BigNumber from 'bignumber.js'
@@ -10,15 +12,19 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import SectionTitleExchange from '../atoms/sectionTitleExchange'
 import TokenAmountInputField from '../atoms/tokenLockAmountField'
+import TokenLockBalance from '../atoms/tokenLockBalance'
 import TokenLockTimeField from '../atoms/tokenLockTimeField'
+
 import styles from './tokenLockInfo.module.css'
+import utils from '../../_utils/utils'
 
 class TokenLockInfo extends PureComponent {
   static propTypes = {
     selectedFund: PropTypes.object.isRequired,
     selectedExchange: PropTypes.object.isRequired,
     selectedTokensPair: PropTypes.object.isRequired,
-    selectedRelay: PropTypes.object.isRequired
+    selectedRelay: PropTypes.object.isRequired,
+    dispatch: PropTypes.func.isRequired
   }
 
   static defaultProps = {}
@@ -40,6 +46,8 @@ class TokenLockInfo extends PureComponent {
   isBalanceSufficient = (amount, liquidity) => {
     return new BigNumber(liquidity).gte(new BigNumber(amount))
   }
+
+  componentDidMount = async () => {}
 
   onLockTocken = async action => {
     const {
@@ -147,7 +155,7 @@ class TokenLockInfo extends PureComponent {
   render() {
     const { api } = this.context
     const { selectedFund, selectedTokensPair } = this.props
-    console.log(selectedFund)
+
     const baseTokenWrappedBalance = formatEth(
       selectedFund.liquidity.baseToken.balanceWrapper,
       4,
@@ -158,8 +166,9 @@ class TokenLockInfo extends PureComponent {
       4,
       api
     )
-
-    console.log(Number(this.state.quoteTokenLockAmount))
+    // console.log(selectedFund)
+    console.log(selectedTokensPair.baseTokenLockWrapExpire)
+    console.log(selectedTokensPair.quoteTokenLockWrapExpire)
     return (
       <div key="lockedTokenInfo">
         <Row>
@@ -194,7 +203,12 @@ class TokenLockInfo extends PureComponent {
                   <small>{selectedTokensPair.baseToken.symbol}</small>
                 </span>
               </Col>
-              <Col xs={3}>{baseTokenWrappedBalance}</Col>
+              <Col xs={3}>
+                <TokenLockBalance
+                  balance={baseTokenWrappedBalance}
+                  lockTime={selectedTokensPair.baseTokenLockWrapExpire}
+                />
+              </Col>
               <Col xs={4}>
                 <TokenAmountInputField
                   key="baseTokenField"
@@ -235,7 +249,12 @@ class TokenLockInfo extends PureComponent {
                   <small>{selectedTokensPair.quoteToken.symbol}</small>
                 </span>
               </Col>
-              <Col xs={3}>{quoteTokenWrappedBalance}</Col>
+              <Col xs={3}>
+                <TokenLockBalance
+                  balance={quoteTokenWrappedBalance}
+                  lockTime={selectedTokensPair.quoteTokenLockWrapExpire}
+                />
+              </Col>
               <Col xs={4}>
                 <TokenAmountInputField
                   key="quoteTokenField"
@@ -284,4 +303,4 @@ class TokenLockInfo extends PureComponent {
   }
 }
 
-export default TokenLockInfo
+export default connect()(TokenLockInfo)

@@ -21,8 +21,16 @@ import 'rxjs/observable/fromEvent'
 import 'rxjs/observable/timer'
 import * as ERRORS from '../../_const/errors'
 import * as TYPE_ from '../actions/const'
+import { Actions } from '../actions/'
 import { Observable } from 'rxjs/Observable'
-import { exhaustMap, map, skipWhile, switchMap, tap } from 'rxjs/operators'
+import {
+  exhaustMap,
+  map,
+  mergeMap,
+  skipWhile,
+  switchMap,
+  tap
+} from 'rxjs/operators'
 import {
   // getHistoricalPricesDataFromERCdEX,
   getTradeHistoryLogsFromRelayERCdEX
@@ -89,6 +97,36 @@ export const getOrderBookFromRelayEpic = action$ => {
 }
 
 //
+// UPDATE TOKEN WRAPPER LOCK TIME
+//
+
+// const updateTokenWrapperLockTime$ = (fundAddress, api) =>
+//   Observable.fromPromise(utils.getDragoLiquidity(fundAddress, api)).map(
+//     liquidity => {
+//       const payload = {
+//         liquidity: {
+//           ETH: liquidity[0],
+//           WETH: liquidity[1],
+//           ZRX: liquidity[2]
+//         }
+//       }
+//       return {
+//         type: TYPE_.UPDATE_SELECTED_FUND,
+//         payload: payload
+//       }
+//     }
+//   )
+
+// export const updateTokenWrapperLockTimeEpic = action$ => {
+//   return action$.pipe(
+//     ofType(TYPE_.UPDATE_TOKEN_WRAPPER_LOCK_TIME),
+//     switchMap(action => {
+//       return updateTokenWrapperLockTime$(action.payload.api, action.payload.api)
+//     })
+//   )
+// }
+
+//
 // UPDATE FUND LIQUIDITY
 //
 
@@ -130,16 +168,19 @@ export const updateFundLiquidityEpic = action$ => {
 //
 
 const updateLiquidityAndTokenBalances$ = (api, fundAddress, currentState) => {
-  const tokens = {
-    baseToken: currentState.exchange.selectedTokensPair.baseToken,
-    quoteToken: currentState.exchange.selectedTokensPair.quoteToken
-  }
-  const exchange = currentState.exchange.selectedRelay.name
+  // const tokens = {
+  //   baseToken: currentState.exchange.selectedTokensPair.baseToken,
+  //   quoteToken: currentState.exchange.selectedTokensPair.quoteToken
+  // }
+  const exchange = Object.assign(currentState.exchange.selectedRelay.name)
+  const selectedTokensPair = Object.assign(
+    currentState.exchange.selectedTokensPair
+  )
   return Observable.fromPromise(
     utils.fetchDragoLiquidityAndTokenBalances(
       fundAddress,
       api,
-      tokens,
+      selectedTokensPair,
       exchange
     )
   )
@@ -149,7 +190,7 @@ export const updateLiquidityAndTokenBalancesEpic = (action$, state$) => {
   return action$.pipe(
     ofType(TYPE_.UPDATE_LIQUIDITY_AND_TOKENS_BALANCE),
     switchMap(action => {
-      return Observable.timer(0, 5000).pipe(
+      return Observable.timer(0, 2000).pipe(
         tap(val => {
           return val
         }),
@@ -165,7 +206,7 @@ export const updateLiquidityAndTokenBalancesEpic = (action$, state$) => {
             currentState.exchange.selectedFund.details.address,
             currentState
           ).pipe(
-            map(liquidity => {
+            mergeMap(liquidity => {
               const payload = {
                 loading: false,
                 liquidity: {
@@ -181,10 +222,18 @@ export const updateLiquidityAndTokenBalancesEpic = (action$, state$) => {
                   }
                 }
               }
-              return {
-                type: TYPE_.UPDATE_SELECTED_FUND,
-                payload
-              }
+              return Observable.concat(
+                Observable.of({
+                  type: TYPE_.UPDATE_SELECTED_FUND,
+                  payload
+                })
+                // Observable.of(
+                //   Actions.exchange.updateSelectedTradeTokensPair({
+                //     baseTokenLockWrapExpire: liquidity.baseTokenLockWrapExpire,
+                //     quoteTokenLockWrapExpire: liquidity.quoteTokenLockWrapExpire
+                //   })
+                // )
+              )
             })
           )
         })

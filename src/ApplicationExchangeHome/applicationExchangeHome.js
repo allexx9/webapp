@@ -135,8 +135,6 @@ class ApplicationExchangeHome extends Component {
     return stateUpdate || propsUpdate
   }
 
-  UNSAFE_componentWillMount() {}
-
   componentDidMount = async () => {
     const { api } = this.context
     const { selectedExchange } = this.props.exchange
@@ -293,7 +291,11 @@ class ApplicationExchangeHome extends Component {
 
   onSelectFund = async fund => {
     const { api } = this.context
-    const { selectedTokensPair, selectedExchange } = this.props.exchange
+    const {
+      selectedTokensPair,
+      selectedExchange,
+      selectedRelay
+    } = this.props.exchange
 
     // Resetting current order
     this.props.dispatch({
@@ -324,12 +326,30 @@ class ApplicationExchangeHome extends Component {
         fund.address,
         selectedExchange
       )
-      const tokensAllowance = {
+
+      // Getting token wrapper lock time
+      const baseTokenLockWrapExpire = await utils.updateTokenWrapperLockTime(
+        api,
+        selectedTokensPair.baseToken.wrappers[selectedRelay.name].address,
+        fund.address
+      )
+      const quoteTokenLockWrapExpire = await utils.updateTokenWrapperLockTime(
+        api,
+        selectedTokensPair.quoteToken.wrappers[selectedRelay.name].address,
+        fund.address
+      )
+
+      const payload = {
         baseTokenAllowance: new BigNumber(allowanceBaseToken).gt(0),
-        quoteTokenAllowance: new BigNumber(allowanceQuoteToken).gt(0)
+        quoteTokenAllowance: new BigNumber(allowanceQuoteToken).gt(0),
+        baseTokenLockWrapExpire: baseTokenLockWrapExpire,
+        quoteTokenLockWrapExpire: quoteTokenLockWrapExpire
       }
+
+      console.log(payload)
+
       this.props.dispatch(
-        Actions.exchange.updateSelectedTradeTokensPair(tokensAllowance)
+        Actions.exchange.updateSelectedTradeTokensPair(payload)
       )
       // Getting fund orders
       // this.props.dispatch(this.getFundOrders(

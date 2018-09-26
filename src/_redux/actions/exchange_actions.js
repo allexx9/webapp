@@ -127,7 +127,6 @@ const exchange = {
       }
     }
   },
-
   updateAvailableRelays: payload => {
     return {
       type: TYPE_.UPDATE_AVAILABLE_RELAYS,
