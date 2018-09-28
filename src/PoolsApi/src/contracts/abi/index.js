@@ -11,6 +11,7 @@ import exchange from './v2/exchange.json'
 import fundproxy from './v2/fundProxy.json'
 import parityregister from './v2/parityRegister.json'
 import rigotoken from './v2/rigoToken-v2.json'
+import rigotokenfaucet from './v2/rigoTokenFaucet-v2.json'
 import tokenWrapper from './v2/tokenWrapper-v2.json'
 import vault from './v2/vault-v2.json'
 import vaulteventful from './v2/vaultEventful-v2.json'
@@ -51,6 +52,7 @@ export {
   vaulteventful,
   parityregister,
   rigotoken,
+  rigotokenfaucet,
   weth,
   zeroExExchange
 }

@@ -248,6 +248,11 @@ class NavLinks extends Component {
                   />
                 }
               />
+              <MenuItem
+                leftIcon={<Help />}
+                value="community"
+                primaryText="Community"
+              />
               <MenuItem leftIcon={<Help />} value="help" primaryText="Help" />
             </IconMenu>
             {transactions.pending > 0 ? (

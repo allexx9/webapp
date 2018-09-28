@@ -586,7 +586,6 @@ class ApplicationExchangeHome extends Component {
 
     if (user.isManager) {
       const { bids, asks, spread } = this.props.exchange.orderBook
-      console.log(asks)
       const asksOrderNormalized = asks.slice(0, 20)
       const bidsOrderNormalized = bids.slice(0, 20)
       // console.log(this.props.exchange.selectedExchange)

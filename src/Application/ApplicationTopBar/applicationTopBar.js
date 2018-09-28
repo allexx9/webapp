@@ -45,7 +45,22 @@ class ApplicationTopBar extends Component {
                 </a>
               </li>
               <li>
-                <a href="#">Help</a>
+                <a
+                  href="https://community.rigoblock.com/"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  Community
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://help.rigoblock.com/"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  Help
+                </a>
               </li>
             </ul>
           </div>

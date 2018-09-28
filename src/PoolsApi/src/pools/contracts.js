@@ -14,6 +14,8 @@ import FundProxyWeb3 from './Web3/fundProxy'
 // import FundProxyParity from './Parity/fundProxy'
 import ExchangeParity from './Parity/exchange'
 import RegistryParity from './registry'
+import RigoTokenFaucetParity from './Parity/rigoTokenFaucet'
+import RigoTokenFaucetWeb3 from './Web3/rigoTokenFaucet'
 import RigoTokenParity from './Parity/rigoToken'
 import RigoTokenWeb3 from './Web3/rigoToken'
 import TokenWrapperParity from './Parity/tokenWrapper'
@@ -42,6 +44,7 @@ class Contract {
       this._vault = new VaultWeb3(api)
       this._vaultfactory = new VaultFactoryWeb3(api)
       this._rigotoken = new RigoTokenWeb3(api)
+      this._rigotokenfaucet = new RigoTokenFaucetWeb3(api)
       this._tokenwrapper = new TokenWrapperWeb3(api)
       this._fundproxy = new FundProxyWeb3(api)
     } else {
@@ -54,6 +57,7 @@ class Contract {
       this._exchange = new ExchangeParity(api)
       this._registry = new RegistryParity(api)
       this._rigotoken = new RigoTokenParity(api)
+      this._rigotokenfaucet = new RigoTokenFaucetParity(api)
       this._tokenwrapper = new TokenWrapperParity(api)
       // this._fundproxy = new RigoTokenParity(api)
       this._vault = new VaultParity(api)
@@ -100,6 +104,10 @@ class Contract {
 
   get rigotoken() {
     return this._rigotoken
+  }
+
+  get rigotokenfaucet() {
+    return this._rigotokenfaucet
   }
 
   get tokenwrapper() {

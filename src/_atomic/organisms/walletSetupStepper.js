@@ -1,10 +1,13 @@
+import { ERC20_TOKENS } from '../../_utils/tokens'
 import { Step, StepContent, StepLabel, Stepper } from 'material-ui/Stepper'
 import { connect } from 'react-redux'
 import Dialog from 'material-ui/Dialog'
 import FlatButton from 'material-ui/FlatButton'
 import Looks3 from 'material-ui/svg-icons/image/looks-3'
+import Looks4 from 'material-ui/svg-icons/image/looks-4'
 import LooksOne from 'material-ui/svg-icons/image/looks-one'
 import LooksTwo from 'material-ui/svg-icons/image/looks-two'
+import PoolApi from '../../PoolsApi/src'
 import PropTypes from 'prop-types'
 import RaisedButton from 'material-ui/RaisedButton'
 import React, { Component } from 'react'
@@ -15,25 +18,23 @@ function mapStateToProps(state) {
   return state
 }
 
-/**
- * Horizontal steppers are ideal when the contents of one step depend on an earlier step.
- * Avoid using long step names in horizontal steppers.
- *
- * Linear steppers require users to complete one step in order to move on to the next.
- */
-
 class WalletSetupStepper extends Component {
   static propTypes = {
     endpoint: PropTypes.object.isRequired,
     open: PropTypes.bool.isRequired,
     handleClose: PropTypes.func.isRequired
   }
+  static contextTypes = {
+    api: PropTypes.object.isRequired
+  }
 
   state = {
     open: false,
     locked: this.props.endpoint.isMetaMaskLocked,
     correctNetwork: this.props.endpoint.isMetaMaskNetworkCorrect,
+    holdsTokens: this.props.endpoint.grgBalance.eq(0),
     finished: false,
+    errorMsg: '',
     steps: [
       {
         index: 0,
@@ -53,6 +54,12 @@ class WalletSetupStepper extends Component {
         success: false,
         successIcon: '',
         errorIcon: ''
+      },
+      {
+        index: 3,
+        success: false,
+        successIcon: '',
+        errorIcon: ''
       }
     ],
     stepIndex: 0,
@@ -62,13 +69,20 @@ class WalletSetupStepper extends Component {
   static getDerivedStateFromProps(props, state) {
     const locked = props.endpoint.isMetaMaskLocked
     const correctNetwork = props.endpoint.isMetaMaskNetworkCorrect
+    const holdsTokens = !props.endpoint.grgBalance.eq(0)
+    console.log(props.endpoint.grgBalance)
+    console.log(holdsTokens)
     if (locked !== state.locked) {
       return {
         locked: locked,
-        correctNetwork: correctNetwork
+        correctNetwork: correctNetwork,
+        holdsTokens: holdsTokens
+      }
+    } else {
+      return {
+        holdsTokens: holdsTokens
       }
     }
-    return null
   }
 
   handleNext = () => {
@@ -91,9 +105,23 @@ class WalletSetupStepper extends Component {
     this.props.handleClose()
   }
 
+  getGRGFromFaucet = async () => {
+    const { api } = this.context
+    const faucetAddress = ERC20_TOKENS[api._rb.network.name].GRG.faucetAddress
+    const accounts = await window.web3.eth.getAccounts()
+    const poolApi = new PoolApi(window.web3)
+    await poolApi.contract.rigotokenfaucet.init(faucetAddress)
+    try {
+      await poolApi.contract.rigotokenfaucet.drip1Token(accounts[0])
+    } catch (error) {
+      console.log(error)
+      this.setState({ errorMsg: 'You can request 0.5 tokens every 48 hours.' })
+    }
+  }
+
   renderStepActions(step) {
     const { stepIndex } = this.state
-    const { locked, correctNetwork } = this.state
+    const { locked, correctNetwork, holdsTokens } = this.state
     const buttonDisable = () => {
       switch (step) {
         case 0:
@@ -101,7 +129,9 @@ class WalletSetupStepper extends Component {
         case 1:
           return !correctNetwork || locked
         case 2:
-          return !correctNetwork || locked
+          return !correctNetwork || locked || !holdsTokens
+        case 3:
+          return !correctNetwork || locked || !holdsTokens
       }
     }
     return (
@@ -118,7 +148,8 @@ class WalletSetupStepper extends Component {
         )}
 
         {step >= 0 &&
-          step < 2 && (
+          step < 3 &&
+          step !== 2 && (
             <RaisedButton
               label={'Next'}
               disabled={buttonDisable(step)}
@@ -129,7 +160,32 @@ class WalletSetupStepper extends Component {
               style={{ marginRight: 12 }}
             />
           )}
-        {step === 2 && (
+        {step === 2 &&
+          !holdsTokens && (
+            <RaisedButton
+              label={'Get GRG'}
+              disableTouchRipple={true}
+              disableFocusRipple={true}
+              primary={true}
+              onClick={this.getGRGFromFaucet}
+              style={{ marginRight: 12 }}
+            />
+          )}
+
+        {step === 2 &&
+          holdsTokens && (
+            <RaisedButton
+              label={'Next'}
+              disabled={buttonDisable(step)}
+              disableTouchRipple={true}
+              disableFocusRipple={true}
+              primary={true}
+              onClick={this.handleNext}
+              style={{ marginRight: 12 }}
+            />
+          )}
+
+        {step === 3 && (
           <RaisedButton
             label={'Go'}
             disabled={buttonDisable(step)}
@@ -174,6 +230,7 @@ class WalletSetupStepper extends Component {
   renderIcon = (style, number) => {
     const lockedColor = this.state.locked ? '#FF9800' : '#4CAF50'
     const networkColor = !this.state.correctNetwork ? '#FF9800' : '#4CAF50'
+    const tokenColor = !this.state.holdsTokens ? '#FF9800' : '#4CAF50'
     switch (number) {
       case 0:
         return (
@@ -190,7 +247,13 @@ class WalletSetupStepper extends Component {
       case 2:
         return (
           <div style={style.container}>
-            <Looks3 style={style} color="#054186" />
+            <Looks3 style={style} color={tokenColor} />
+          </div>
+        )
+      case 3:
+        return (
+          <div style={style.container}>
+            <Looks4 style={style} color="#054186" />
           </div>
         )
     }
@@ -198,7 +261,7 @@ class WalletSetupStepper extends Component {
 
   render() {
     const { stepIndex } = this.state
-    const { locked, correctNetwork } = this.state
+    const { locked, correctNetwork, holdsTokens } = this.state
     const { networkInfo } = this.props.endpoint
     // console.log(this.props.app)
     // console.log(this.setActive(0).iconStyle)
@@ -303,11 +366,36 @@ class WalletSetupStepper extends Component {
             </Step>
             <Step className={this.setActive(2).labelClass}>
               <StepLabel icon={this.renderIcon(this.setActive(2).iconStyle, 2)}>
+                <span className={styles.titleStep}>Get GRG tokens</span>
+              </StepLabel>
+              <StepContent>
+                {holdsTokens && (
+                  <div>
+                    <p>
+                      Great, you hold the minimum GRG amount to access our
+                      platform!
+                    </p>
+                  </div>
+                )}
+                {!holdsTokens && (
+                  <div>
+                    <p>
+                      You need at least 0.5 GRG tokens to access our platform.
+                      Get some by clicking the button below!
+                    </p>
+                  </div>
+                )}
+                {this.renderStepActions(2)}
+                <div className={styles.errorMsg}>{this.state.errorMsg}</div>
+              </StepContent>
+            </Step>
+            <Step className={this.setActive(3).labelClass}>
+              <StepLabel icon={this.renderIcon(this.setActive(3).iconStyle, 3)}>
                 <span className={styles.titleStep}>Done!</span>
               </StepLabel>
               <StepContent>
                 <p>You are all set.</p>
-                {this.renderStepActions(2)}
+                {this.renderStepActions(3)}
               </StepContent>
             </Step>
           </Stepper>

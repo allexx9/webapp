@@ -4,7 +4,6 @@ import { Col, Row } from 'react-flexbox-grid'
 import { connect } from 'react-redux'
 import ApplicationVaultManager from './ApplicationVaultManager'
 import ApplicationVaultTrader from './ApplicationVaultTrader'
-import CheckAuthPage from '../Elements/checkAuthPage'
 import ElementBottomStatusBar from '../Elements/elementBottomStatusBar'
 import ElementNotificationsDrawer from '../Elements/elementNotificationsDrawer'
 import LeftSideDrawerVaults from '../Elements/leftSideDrawerVaults'
@@ -104,11 +103,11 @@ class ApplicationVaultHome extends Component {
     if (endpoint.loading) {
       return <Loading />
     }
-
+    const showApp = !openWalletSetup && !endpoint.grgBalance.eq(0)
     return (
       <div style={{ height: '100%' }} ref={node => (this.node = node)}>
         {user.isManager &&
-          !openWalletSetup && (
+          showApp && (
             <Row className={styles.maincontainer}>
               <Col xs={2}>
                 <LeftSideDrawerVaults
@@ -122,7 +121,7 @@ class ApplicationVaultHome extends Component {
             </Row>
           )}
         {!user.isManager &&
-          !openWalletSetup && (
+          showApp && (
             <Row className={styles.maincontainer}>
               <Col xs={2}>
                 <LeftSideDrawerVaults
