@@ -5,6 +5,7 @@ import { Toolbar, ToolbarGroup, ToolbarSeparator } from 'material-ui/Toolbar'
 import { connect } from 'react-redux'
 import AccountIcon from 'material-ui/svg-icons/action/account-circle'
 import ArrowDropDown from 'material-ui/svg-icons/navigation/arrow-drop-down'
+import Chat from 'material-ui/svg-icons/communication/chat'
 import FlatButton from 'material-ui/FlatButton'
 import Help from 'material-ui/svg-icons/action/help'
 import IconButton from 'material-ui/IconButton'
@@ -249,11 +250,33 @@ class NavLinks extends Component {
                 }
               />
               <MenuItem
-                leftIcon={<Help />}
+                leftIcon={<Chat />}
                 value="community"
                 primaryText="Community"
+                containerElement={
+                  <a
+                    href="https://community.rigoblock.com/"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    Community
+                  </a>
+                }
               />
-              <MenuItem leftIcon={<Help />} value="help" primaryText="Help" />
+              <MenuItem
+                leftIcon={<Help />}
+                value="help"
+                primaryText="Help"
+                containerElement={
+                  <a
+                    href="https://help.rigoblock.com/"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    Community
+                  </a>
+                }
+              />
             </IconMenu>
             {transactions.pending > 0 ? (
               <div className={this.state.transactionsDrawerNetworkButtonStyle}>

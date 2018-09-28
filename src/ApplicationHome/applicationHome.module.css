@@ -1,5 +1,10 @@
 /* Copyright 2016 Rigo Investment Sagl. */
 
+.communityButton {
+  padding-right: 2px;
+  padding-left: 2px;
+}
+
 .socialsContainer {
   text-align: right;
   padding-right: 16px;
@@ -71,6 +76,7 @@
 .cardtitle {
   background-color: #054186;
   color: white !important;
+  font-weight: 700;
 }
 
 .column {

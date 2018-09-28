@@ -4,6 +4,7 @@ import { Card, CardActions, CardText, CardTitle } from 'material-ui/Card'
 import { Col, Row } from 'react-flexbox-grid'
 import { Link, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
+import Chat from 'material-ui/svg-icons/communication/chat'
 import ElementBottomStatusBar from '../Elements/elementBottomStatusBar'
 import FlatButton from 'material-ui/FlatButton'
 import PropTypes from 'prop-types'
@@ -59,6 +60,7 @@ class ApplicationHome extends Component {
                       href="https://t.me/rigoblockprotocol"
                       target="_blank"
                       rel="noopener noreferrer"
+                      className={styles.communityButton}
                     >
                       <FlatButton
                         labelPosition="before"
@@ -70,8 +72,33 @@ class ApplicationHome extends Component {
                         }}
                         style={buttonTelegram}
                         icon={
-                          <img src="/img/social/telegram.svg" height="30px" />
+                          <img
+                            src="/img/iconmonstr-telegram-1.svg"
+                            // style={{ fill: '#ffca57' }}
+                            height="24px"
+                            className={styles.telegramIcon}
+                          />
                         }
+                        // hoverColor={Colors.blue300}
+                      />
+                    </a>
+
+                    <a
+                      href="https://t.me/rigoblockprotocol"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={styles.communityButton}
+                    >
+                      <FlatButton
+                        labelPosition="before"
+                        label="Join our Community"
+                        labelStyle={{
+                          color: '#054186',
+                          fontWeight: '600',
+                          fontSize: '20px'
+                        }}
+                        style={buttonTelegram}
+                        icon={<Chat color="#ffca57" />}
                         // hoverColor={Colors.blue300}
                       />
                     </a>
