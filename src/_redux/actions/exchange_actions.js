@@ -99,9 +99,15 @@ const exchange = {
       payload: isInputChecked
     }
   },
-  updateSelectedRelayAction: payload => {
+  updateSelectedRelay: payload => {
     return {
       type: TYPE_.UPDATE_SELECTED_RELAY,
+      payload: payload
+    }
+  },
+  updateSelectedExchange: payload => {
+    return {
+      type: TYPE_.UPDATE_SELECTED_EXCHANGE,
       payload: payload
     }
   },
@@ -118,13 +124,32 @@ const exchange = {
     }
   },
 
-  updateLiquidityAndTokenBalances: (api, dragoAddress) => {
-    return {
-      type: TYPE_.UPDATE_LIQUIDITY_AND_TOKENS_BALANCE,
-      payload: {
-        api
-        // dragoAddress
-      }
+  updateLiquidityAndTokenBalances: (api, task, dragoAddress) => {
+    switch (task) {
+      case 'START':
+        return {
+          type: TYPE_.UPDATE_LIQUIDITY_AND_TOKENS_BALANCE_START,
+          payload: {
+            api
+            // dragoAddress
+          }
+        }
+      case 'STOP':
+        return {
+          type: TYPE_.UPDATE_LIQUIDITY_AND_TOKENS_BALANCE_STOP,
+          payload: {
+            api
+            // dragoAddress
+          }
+        }
+      default:
+        return {
+          type: TYPE_.UPDATE_LIQUIDITY_AND_TOKENS_BALANCE,
+          payload: {
+            api,
+            dragoAddress
+          }
+        }
     }
   },
   updateAvailableRelays: payload => {

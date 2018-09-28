@@ -1,7 +1,7 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
 // import { Observable } from 'rxjs';
-import { Observable } from 'rxjs/Observable'
+import { Observable } from 'rxjs'
 import {
   catchError,
   delay,
@@ -62,7 +62,7 @@ import utils from '../../_utils/utils'
 // CHECK IF THE APP If NETWORK IS UP AND THERE IS A CONNECTION TO A NODE
 //
 
-export const isConnectedToNode$ = api => {
+export const isConnectedToNode$ = (api, $state) => {
   let nodeStatus = {
     isConnected: false,
     isSyncing: false,
@@ -92,14 +92,14 @@ export const isConnectedToNode$ = api => {
   )
 }
 
-export const isConnectedToNodeEpic = action$ =>
+export const isConnectedToNodeEpic = (action$, $state) =>
   action$.ofType(TYPE_.CHECK_APP_IS_CONNECTED).switchMap(action => {
     let scalingDuration = 1000
     let timeInterval = 0
     let retryAttempt = 0
     return Observable.timer(0, 2000).pipe(
       exhaustMap(() => {
-        return isConnectedToNode$(action.payload.api).pipe(
+        return isConnectedToNode$(action.payload.api, $state).pipe(
           tap(result => {
             return result
           }),
@@ -269,7 +269,7 @@ export const updateAccounts = async (api, blockNumber, state$) => {
   console.log(`endpoint_epic -> Last block: ` + prevBlockNumber)
   console.log(`endpoint_epic -> New block: ` + newBlockNumber.toFixed())
   console.log(`endpoint_epic -> Last nonce: ` + prevNonce)
-  console.log(`endpoint_epic -> New nonce: ` + endpoint.accounts[0].nonce)
+
   if (new BigNumber(prevBlockNumber).gte(new BigNumber(newBlockNumber))) {
     console.log(
       `endpoint_epic -> Detected prevBlockNumber > currentBlockNumber. Skipping accounts update.`
@@ -282,6 +282,7 @@ export const updateAccounts = async (api, blockNumber, state$) => {
 
   const accounts = [].concat(endpoint.accounts)
   if (accounts.length !== 0) {
+    console.log(`endpoint_epic -> New nonce: ` + endpoint.accounts[0].nonce)
     try {
       const poolsApi = new PoolsApi(api)
       poolsApi.contract.rigotoken.init()
@@ -576,10 +577,11 @@ export const getAccountsTransactionsEpic = (action$, state$) =>
       action.payload.options
     )
       .map(results => {
-        // console.log(results)
         const currentState = state$.value
         if (currentState.user.isManager) {
-          return Actions.drago.updateTransactionsDragoManagerAction(results)
+          return Actions.drago.updateTransactionsDragoManagerAction(
+            results.length === 0 ? [Array(0), Array(0), Array(0)] : results
+          )
         }
         return Actions.drago.updateTransactionsDragoHolderAction(results)
       })
@@ -605,7 +607,7 @@ const checkMetaMaskIsUnlocked$ = (api, web3, endpoint) => {
           const accountsMetaMask = await web3.eth.getAccounts()
           // If MetaMask is unlocked then remove from accounts list.
           if (accountsMetaMask.length === 0) {
-            // newEndpoint.metaMaskLocked = true
+            // newEndpoint.isMetaMaskLocked = true
             // Check if MetaMask was already locked in order to avoid unnecessary update of the state
             let metaMaskAccountIndex = endpoint.accounts.findIndex(account => {
               return account.source === 'MetaMask'
@@ -614,7 +616,8 @@ const checkMetaMaskIsUnlocked$ = (api, web3, endpoint) => {
               console.log('was NOT locket')
               newAccounts.splice(metaMaskAccountIndex, 1)
               newEndpoint.accounts = newAccounts
-              newEndpoint.metaMaskLocked = true
+              newEndpoint.isMetaMaskLocked = true
+              newEndpoint.lastMetaMaskUpdateTime = new Date().getTime()
             }
           } else {
             // Check if a MetaMask account is already in accounts list.
@@ -650,9 +653,10 @@ const checkMetaMaskIsUnlocked$ = (api, web3, endpoint) => {
               })
             }
           }
-          if (!endpoint.metaMaskNetworkCorrect) {
+          if (!endpoint.isMetaMaskNetworkCorrect) {
             newEndpoint.accounts = Array(0)
-            newEndpoint.metaMaskLocked = true
+            newEndpoint.isMetaMaskLocked = true
+            newEndpoint.lastMetaMaskUpdateTime = new Date().getTime()
           }
           return newEndpoint
         } catch (error) {

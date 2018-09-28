@@ -5,6 +5,7 @@ import {
   // relayWebSocketEpic,
   getOrderBookFromRelayEpic,
   getTradeHistoryLogsFromRelayERCdEXEpic,
+  getLiquidityAndTokenBalancesEpic,
   updateFundLiquidityEpic,
   updateLiquidityAndTokenBalancesEpic
   // getAssetsPricesDataFromERCdEXEpic
@@ -52,6 +53,7 @@ export const rootEpic = combineEpics(
   ...Tokens_Epics,
   getTokensBalancesEpic,
   getOrderBookFromRelayEpic,
+  getLiquidityAndTokenBalancesEpic,
   updateLiquidityAndTokenBalancesEpic,
   updateFundLiquidityEpic,
   getTradeHistoryLogsFromRelayERCdEXEpic

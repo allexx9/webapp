@@ -23,6 +23,7 @@ export const REGISTRY_KOVAN = '0xfAb104398BBefbd47752E7702D9fE23047E1Bca3'
 
 export const GRG = 'GRG'
 export const ETH = 'ETH'
+export const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
 
 export * from './tokens'
 export * from '../_const/helpMsg'
@@ -38,7 +39,8 @@ export const RELAYS = {
       baseTokenSymbol: 'ZRX',
       quoteTokenSymbol: 'WETH'
     },
-    supportedNetworks: ['1', '42']
+    supportedNetworks: ['42'],
+    isTokenWrapper: false
   },
   Radarrelay: {
     name: 'Radarrelay',
@@ -50,7 +52,8 @@ export const RELAYS = {
       baseTokenSymbol: 'ZRX',
       quoteTokenSymbol: 'WETH'
     },
-    supportedNetworks: ['1', '3']
+    supportedNetworks: ['42'],
+    isTokenWrapper: false
   },
   Ethfinex: {
     name: 'Ethfinex',
@@ -62,7 +65,8 @@ export const RELAYS = {
       baseTokenSymbol: 'ETH',
       quoteTokenSymbol: 'USDT'
     },
-    supportedNetworks: ['1', '3']
+    supportedNetworks: ['1', '3'],
+    isTokenWrapper: true
   }
 }
 
@@ -257,26 +261,58 @@ export const NETWORKS = {
 }
 
 export const EXCHANGES = {
-  zeroEx: {
+  ERCdEX: {
     kovan: {
       tokenTransferProxyAddress: '0x087eed4bc1ee3de49befbd66c662b434b15d49d4',
       exchangeContractAddress: '0x90fe2af704b34e0224bf2299c838e04d4dcf1364',
-      networkId: 42
+      feeRecipient: '',
+      networkId: 42,
+      name: 'ERCdEX',
+      taker: 'NULL_ADDRESS'
     },
     ropsten: {
       tokenTransferProxyAddress: '0x4e9aad8184de8833365fea970cd9149372fdf1e6',
       exchangeContractAddress: '0x67799a5e640bc64ca24d3e6813842754e546d7b1',
-      networkId: 3
+      feeRecipient: '',
+      networkId: 3,
+      name: 'ERCdEX',
+      taker: 'NULL_ADDRESS'
     },
     mainnet: {}
   },
-  rigoBlock: {
+  Rigoblock: {
     kovan: {
       tokenTransferProxy: '0xcc040edf6e508c4372a62b1a902c69dcc52ceb1d',
       exchangeContractAddress: '0xf307de6528fa16473d8f6509b7b1d8851320dba5',
-      networkId: 42
+      feeRecipient: '',
+      networkId: 42,
+      name: 'Rigoblock',
+      taker: 'NULL_ADDRESS'
     },
     mainnet: {}
+  },
+  Ethfinex: {
+    ropsten: {
+      // Old contracts
+      // tokenTransferProxy: '0xcc040edf6e508c4372a62b1a902c69dcc52ceb1d'
+      // exchangeContractAddress: '0x67799a5e640bc64ca24d3e6813842754e546d7b1',
+
+      // Rigoblock ammended contract for EFX
+      tokenTransferProxy: '0xeea64eebd1f2dc273cfc79cbdda23b69c6b5588',
+      exchangeContractAddress: '0x1d8643aae25841322ecde826862a9fa922770981',
+      feeRecipient: '0x9faf5515f177f3a8a845d48c19032b33cc54c09c',
+      networkId: 3,
+      name: 'Ethfinex',
+      taker: '0x9faf5515f177f3a8a845d48c19032b33cc54c09c'
+    },
+    mainnet: {
+      tokenTransferProxy: '0x7e03d2b8edc3585ecd8a5807661fff0830a0b603',
+      exchangeContractAddress: '0xdcDb42C9a256690bd153A7B409751ADFC8Dd5851',
+      feeRecipient: '',
+      networkId: 1,
+      name: 'Ethfinex',
+      taker: 'NULL_ADDRESS'
+    }
   }
 }
 

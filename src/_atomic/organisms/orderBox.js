@@ -28,7 +28,8 @@ import {
   newMakerOrder,
   setAllowaceOnExchangeThroughDrago,
   signOrder,
-  submitOrderToRelay
+  submitOrderToRelay,
+  submitOrderToRelayEFX
 } from '../../_utils/exchange'
 import { sha3_512 } from 'js-sha3'
 import ToggleSwitch from '../atoms/toggleSwitch'
@@ -111,6 +112,7 @@ class OrderBox extends Component {
       orderAmountError: error,
       orderFillAmount: amount
     }
+    console.log(amount)
     this.props.dispatch(this.updateSelectedOrder(payload))
   }
 
@@ -119,14 +121,48 @@ class OrderBox extends Component {
       orderPriceError: error,
       orderPrice: amount
     }
+    console.log(amount)
     this.props.dispatch(this.updateSelectedOrder(payload))
   }
+
+  // onSendOrder = async () => {
+  //   const { selectedOrder } = this.props.exchange
+  //   submitOrderToRelay(selectedOrder.details.order.signedOrder)
+  //     .then(parsedBody => {
+  //       // transactionDetails.status = 'executed'
+  //       // transactionDetails.timestamp = new Date()
+  //       // this.props.dispatch(
+  //       //   Actions.transactions.addTransactionToQueueAction(
+  //       //     transactionId,
+  //       //     transactionDetails
+  //       //   )
+  //       // )
+  //       console.log(parsedBody)
+  //     })
+  //     .catch(error => {
+  //       // const errorArray = serializeError(error).message.split(/\r?\n/)
+  //       // transactionDetails.status = 'error'
+  //       // transactionDetails.error = errorArray[0]
+  //       // this.props.dispatch(
+  //       //   Actions.transactions.addTransactionToQueueAction(
+  //       //     transactionId,
+  //       //     transactionDetails
+  //       //   )
+  //       // )
+  //       console.log(error)
+  //       utils.notificationError(
+  //         this.props.notifications.engine,
+  //         serializeError(error).message
+  //       )
+  //     })
+  // }
 
   onSubmitOrder = async () => {
     const {
       selectedOrder,
       selectedExchange,
-      selectedFund
+      selectedFund,
+      walletAddress
     } = this.props.exchange
 
     const transactionId = sha3_512(new Date() + selectedFund.managerAccount)
@@ -206,7 +242,11 @@ class OrderBox extends Component {
         symbol: selectedOrder.selectedTokensPair.baseToken.symbol.toUpperCase(),
         amount: selectedOrder.orderFillAmount
       }
-      let signedOrder = await signOrder(selectedOrder, selectedExchange)
+      let signedOrder = await signOrder(
+        selectedOrder,
+        selectedExchange,
+        walletAddress
+      )
       console.log(signedOrder)
       const payload = {
         details: { order: signedOrder }
@@ -215,7 +255,19 @@ class OrderBox extends Component {
       this.setState({
         orderRawDialogOpen: true
       })
-      submitOrderToRelay(signedOrder)
+      const efxOrder = {
+        type: 'EXCHANGE LIMIT',
+        symbol: 'tETHUSD',
+        amount:
+          selectedOrder.orderType === 'asks'
+            ? selectedOrder.orderFillAmount
+            : -Math.abs(selectedOrder.orderFillAmount),
+        price: selectedOrder.orderPrice,
+        meta: signedOrder,
+        protocol: '0x'
+      }
+      console.log(selectedOrder)
+      submitOrderToRelayEFX(efxOrder)
         .then(parsedBody => {
           transactionDetails.status = 'executed'
           transactionDetails.timestamp = new Date()
@@ -248,8 +300,6 @@ class OrderBox extends Component {
 
   onCancelOrder = () => {
     this.props.dispatch(this.cancelSelectedOrder())
-
-    // this.props.dispatch(this.addNotification('test'))
   }
 
   onSelectOrderType = () => {}
@@ -331,16 +381,17 @@ class OrderBox extends Component {
     const {
       selectedTokensPair,
       selectedExchange,
-      selectedFund
+      selectedFund,
+      selectedRelay
     } = this.props.exchange
     const order = await newMakerOrder(
       orderType,
-      selectedTokensPair.baseToken.address,
-      selectedTokensPair.quoteToken.address,
+      selectedTokensPair,
       selectedExchange,
-      selectedFund
+      selectedFund,
+      selectedRelay.isTokenWrapper
     )
-    const payload = {
+    const makerOrder = {
       details: {
         order: order,
         orderAmount: 0,
@@ -356,7 +407,11 @@ class OrderBox extends Component {
       takerOrder: false,
       selectedTokensPair: selectedTokensPair
     }
-    this.props.dispatch(this.updateSelectedOrder(payload))
+    console.log(makerOrder)
+    this.props.dispatch(this.updateSelectedOrder(makerOrder))
+    // this.setState({
+    //   orderRawDialogOpen: true
+    // })
   }
 
   render() {

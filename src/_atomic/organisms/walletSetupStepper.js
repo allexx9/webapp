@@ -31,8 +31,8 @@ class WalletSetupStepper extends Component {
 
   state = {
     open: false,
-    locked: this.props.endpoint.metaMaskLocked,
-    correctNetwork: this.props.endpoint.metaMaskNetworkCorrect,
+    locked: this.props.endpoint.isMetaMaskLocked,
+    correctNetwork: this.props.endpoint.isMetaMaskNetworkCorrect,
     finished: false,
     steps: [
       {
@@ -60,8 +60,8 @@ class WalletSetupStepper extends Component {
   }
 
   static getDerivedStateFromProps(props, state) {
-    const locked = props.endpoint.metaMaskLocked
-    const correctNetwork = props.endpoint.metaMaskNetworkCorrect
+    const locked = props.endpoint.isMetaMaskLocked
+    const correctNetwork = props.endpoint.isMetaMaskNetworkCorrect
     if (locked !== state.locked) {
       return {
         locked: locked,

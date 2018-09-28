@@ -89,7 +89,7 @@ class ExchangeBox extends PureComponent {
 
     // Updating selected relay
     this.props.dispatch(
-      Actions.exchange.updateSelectedRelayAction(selectedRelay)
+      Actions.exchange.updateSelectedRelay(selectedRelay)
     )
 
     // Updating available tokens pair

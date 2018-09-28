@@ -2,6 +2,12 @@
 
 }
 
+.amountText {
+font-weight: 700;
+border-bottom: 1px dotted #A9A9A9;
+text-decoration: none;
+}
+
 .balancesContainer {
   text-align: right;
   padding-top: 5px;

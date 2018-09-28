@@ -1,6 +1,5 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-import * as Colors from 'material-ui/styles/colors'
 import ApplicationExchangeHome from '../ApplicationExchangeHome'
 import ApplicationTopBar from './ApplicationTopBar'
 import PropTypes from 'prop-types'
@@ -10,8 +9,9 @@ import { Col, Grid, Row } from 'react-flexbox-grid'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 
 import { connect } from 'react-redux'
-import ElementNotConnected from '../Elements/elementNotConnected'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+// import TestComponent from '../_atomic/atoms/testComponent'
+import WalletSetup from '../_atomic/organisms/walletSetup'
 import classNames from 'classnames'
 import styles from './application.module.css'
 
@@ -64,12 +64,11 @@ class ApplicationExchangePage extends Component {
     api: PropTypes.object.isRequired
   }
 
-  UNSAFE_componentWillMount() {}
-
   componentWillUnmount() {}
 
   static propTypes = {
     location: PropTypes.object.isRequired,
+    endpoint: PropTypes.object.isRequired,
     app: PropTypes.object.isRequired
   }
 
@@ -79,7 +78,7 @@ class ApplicationExchangePage extends Component {
 
   render() {
     const { notificationsOpen } = this.state
-    const { location } = this.props
+    const { location, endpoint } = this.props
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
         <Grid fluid className={styles.maincontainer}>
@@ -100,19 +99,23 @@ class ApplicationExchangePage extends Component {
                   Coming soon.
                 </div>
               </Col> */}
+
               <Col xs={12}>
-                {this.props.app.isConnected && !this.props.app.isSyncing ? (
-                  // {false ? (
-                  <ApplicationExchangeHome
-                    location={location}
-                    notificationsOpen={notificationsOpen}
-                    handleToggleNotifications={this.handleToggleNotifications}
-                  />
+                {endpoint.accounts.length === 0 ||
+                !endpoint.isMetaMaskNetworkCorrect ? (
+                  <WalletSetup />
                 ) : (
-                  <ElementNotConnected
-                    isSyncing={this.props.app.isSyncing}
-                    syncStatus={this.props.app.syncStatus}
-                  />
+                  <div>
+                    {/* <TestComponent
+                      key={'test' + endpoint.lastMetaMaskUpdateTime}
+                    /> */}
+                    <ApplicationExchangeHome
+                      key={'Exchange' + endpoint.lastMetaMaskUpdateTime}
+                      location={location}
+                      notificationsOpen={notificationsOpen}
+                      handleToggleNotifications={this.handleToggleNotifications}
+                    />
+                  </div>
                 )}
               </Col>
             </Row>

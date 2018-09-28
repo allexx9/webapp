@@ -120,14 +120,14 @@ class Interfaces {
     try {
       // Check if MetaMask is connected to the same network as the endpoint
       let accounts = await web3.eth.getAccounts()
-      let metaMaskLocked = accounts.length === 0 ? true : false
-      // console.log(metaMaskLocked)
+      let isMetaMaskLocked = accounts.length === 0 ? true : false
+      // console.log(isMetaMaskLocked)
       let metaMaskNetworkId = await web3.eth.net.getId()
       let currentState = this._success
       if (metaMaskNetworkId !== parityNetworkId) {
         const stateUpdate = {
-          metaMaskNetworkCorrect: false,
-          metaMaskLocked,
+          isMetaMaskNetworkCorrect: false,
+          isMetaMaskLocked,
           warnMsg: MSG_NO_SUPPORTED_NETWORK
         }
         this._success = { ...currentState, ...stateUpdate }
@@ -135,9 +135,9 @@ class Interfaces {
       } else {
         // Get MetaMask accounts
         const stateUpdate = {
-          metaMaskNetworkCorrect: true,
+          isMetaMaskNetworkCorrect: true,
           warnMsg: '',
-          metaMaskLocked
+          isMetaMaskLocked
         }
         this._success = { ...currentState, ...stateUpdate }
         // Return empty object if MetaMask is locked.

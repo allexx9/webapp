@@ -12,8 +12,8 @@ function mapStateToProps(state) {
 class WalletSetup extends Component {
   state = {
     openWalletSetup:
-      this.props.endpoint.metaMaskLocked ||
-      !this.props.endpoint.metaMaskNetworkCorrect
+      this.props.endpoint.isMetaMaskLocked ||
+      !this.props.endpoint.isMetaMaskNetworkCorrect
         ? true
         : false
   }
@@ -24,8 +24,8 @@ class WalletSetup extends Component {
   }
 
   static getDerivedStateFromProps(props) {
-    return props.endpoint.metaMaskLocked ||
-      !props.endpoint.metaMaskNetworkCorrect
+    return props.endpoint.isMetaMaskLocked ||
+      !props.endpoint.isMetaMaskNetworkCorrect
       ? {
           openWalletSetup: true
         }

@@ -110,9 +110,9 @@ const initialState = {
       nonce: '',
       valid: false
     },
-    makerAddress: '',
+    walletAddress: '',
     walletSelectedAddress: '',
-    selectedExchange: EXCHANGES.zeroEx[NETWORK_NAME],
+    selectedExchange: EXCHANGES.ERCdEX[NETWORK_NAME],
     selectedRelay: RELAYS[ERCdEX],
     availableRelays: {},
     // selectedExchange: EXCHANGES.rigoBlock[DEFAULT_NETWORK_NAME],
@@ -220,8 +220,9 @@ const initialState = {
     prevNonce: '0',
     grgBalance: null,
     warnMsg: '',
-    metaMaskNetworkCorrect: false,
-    metaMaskLocked: true,
+    isMetaMaskNetworkCorrect: false,
+    isMetaMaskLocked: true,
+    lastMetaMaskUpdateTime: 0,
     openWalletSetup: false
   },
   user: {

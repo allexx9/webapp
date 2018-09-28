@@ -84,6 +84,12 @@ function exchangeReducer(state = initialState.exchange, action) {
         selectedRelay: { ...state.selectedRelay, ...action.payload }
       }
 
+    case TYPE_.UPDATE_SELECTED_EXCHANGE:
+      return {
+        ...state,
+        selectedExchange: { ...state.selectedExchange, ...action.payload }
+      }
+
     case TYPE_.UPDATE_SELECTED_ORDER:
       let orderDetails = action.payload
       let selectedOrder = { ...state.selectedOrder, ...orderDetails }
@@ -119,7 +125,7 @@ function exchangeReducer(state = initialState.exchange, action) {
     case TYPE_.SET_MAKER_ADDRESS:
       return {
         ...state,
-        makerAddress: action.payload,
+        walletAddress: action.payload,
         walletSelectedAddress: action.payload
       }
 

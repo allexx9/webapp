@@ -1,6 +1,6 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-import { eventfulDragoReducer, eventfulVaultReducer } from './eventful'
+import { eventfulDragoReducer, eventfulVaultReducer } from './eventful_reducer'
 import appReducer from './app_reducer'
 import endpointsReducer from './endpoint_reducer'
 import exchangeReducer from './exchange_reducer'

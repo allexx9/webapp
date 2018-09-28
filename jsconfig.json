@@ -3,6 +3,6 @@
       "target": "ES6"
   },
   "include": [
-      "src/**/*"
+      "src/**/*", "node_modules/@rigoblock/exchange-connector/src/index.ts", "node_modules/@rigoblock/exchange-connector/src/index.ts"
   ]
 }

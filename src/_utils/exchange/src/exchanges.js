@@ -31,7 +31,7 @@ export const getAggregatedOrders = {
       method: 'GET',
       url: `${
         SupportedExchanges.Ethfinex.http[NETWORKS_ID[networkId]]
-      }/v2/book/t${baseToken}${quoteToken}/P0`,
+      }/v2/book/t${baseToken}${quoteToken}/P2`,
       qs: {},
       json: true
     }

@@ -24,7 +24,7 @@ class OrderRawDialog extends Component {
     const actions = [
       <FlatButton
         key="close"
-        label="Close"
+        label="Send"
         primary={true}
         onClick={this.handleClose}
       />
@@ -40,7 +40,7 @@ class OrderRawDialog extends Component {
           onRequestClose={this.handleClose}
           contentStyle={customContentStyle}
         >
-          {JSON.stringify(this.props.order)}
+          <div>{JSON.stringify(this.props.order, null, 4)}</div>
         </Dialog>
       </div>
     )

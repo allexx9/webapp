@@ -35,7 +35,7 @@ class OrderBook extends Component {
     const ordersAsksSorted = [].concat(this.props.asksOrders)
     const ordersBidsSorted = [].concat(this.props.bidsOrders)
     const spread = this.props.spread
-
+    // console.log(ordersAsksSorted, ordersBidsSorted)
     // const aggregatedTogglestyles = {
     //   block: {
     //     maxWidth: 250,

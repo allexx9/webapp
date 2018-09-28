@@ -22,13 +22,15 @@ import 'rxjs/observable/timer'
 import * as ERRORS from '../../_const/errors'
 import * as TYPE_ from '../actions/const'
 import { Actions } from '../actions/'
-import { Observable } from 'rxjs/Observable'
+import { Observable } from 'rxjs'
 import {
+  concat,
   exhaustMap,
   map,
   mergeMap,
   skipWhile,
   switchMap,
+  takeUntil,
   tap
 } from 'rxjs/operators'
 import {
@@ -135,9 +137,9 @@ const updateFundLiquidity$ = (fundAddress, api) =>
     liquidity => {
       const payload = {
         liquidity: {
-          ETH: liquidity[0],
-          WETH: liquidity[1],
-          ZRX: liquidity[2]
+          ETH: liquidity[0]
+          // WETH: liquidity[1],
+          // ZRX: liquidity[2]
         }
       }
       return {
@@ -183,17 +185,65 @@ const updateLiquidityAndTokenBalances$ = (api, fundAddress, currentState) => {
       selectedTokensPair,
       exchange
     )
+  ).pipe(
+    mergeMap(liquidity => {
+      const payload = {
+        loading: false,
+        liquidity: {
+          ETH: liquidity.dragoETHBalance,
+          // ZRX: liquidity.dragoZRXBalance,
+          baseToken: {
+            balance: liquidity.baseTokenBalance,
+            balanceWrapper: liquidity.baseTokenWrapperBalance
+          },
+          quoteToken: {
+            balance: liquidity.quoteTokenBalance,
+            balanceWrapper: liquidity.quoteTokenWrapperBalance
+          }
+        }
+      }
+      return Observable.concat(
+        Observable.of({
+          type: TYPE_.UPDATE_SELECTED_FUND,
+          payload
+        })
+        // Observable.of(
+        //   Actions.exchange.updateSelectedTradeTokensPair({
+        //     baseTokenLockWrapExpire: liquidity.baseTokenLockWrapExpire,
+        //     quoteTokenLockWrapExpire: liquidity.quoteTokenLockWrapExpire
+        //   })
+        // )
+      )
+    })
+  )
+}
+
+export const getLiquidityAndTokenBalancesEpic = (action$, state$) => {
+  return action$.pipe(
+    ofType(TYPE_.UPDATE_LIQUIDITY_AND_TOKENS_BALANCE),
+    exhaustMap(action => {
+      const currentState = state$.value
+      return updateLiquidityAndTokenBalances$(
+        action.payload.api,
+        action.payload.dragoAddress,
+        currentState
+      )
+    })
   )
 }
 
 export const updateLiquidityAndTokenBalancesEpic = (action$, state$) => {
   return action$.pipe(
-    ofType(TYPE_.UPDATE_LIQUIDITY_AND_TOKENS_BALANCE),
+    ofType(TYPE_.UPDATE_LIQUIDITY_AND_TOKENS_BALANCE_START),
     switchMap(action => {
-      return Observable.timer(0, 2000).pipe(
+      return Observable.timer(0, 10000).pipe(
         tap(val => {
+          console.log('update liquidity')
           return val
         }),
+        takeUntil(
+          action$.pipe(ofType(TYPE_.UPDATE_LIQUIDITY_AND_TOKENS_BALANCE_STOP))
+        ),
         skipWhile(
           () =>
             typeof state$.value.exchange.selectedFund.details.address ===
@@ -205,36 +255,6 @@ export const updateLiquidityAndTokenBalancesEpic = (action$, state$) => {
             action.payload.api,
             currentState.exchange.selectedFund.details.address,
             currentState
-          ).pipe(
-            mergeMap(liquidity => {
-              const payload = {
-                loading: false,
-                liquidity: {
-                  ETH: liquidity.dragoETHBalance,
-                  ZRX: liquidity.dragoZRXBalance,
-                  baseToken: {
-                    balance: liquidity.baseTokenBalance,
-                    balanceWrapper: liquidity.baseTokenWrapperBalance
-                  },
-                  quoteToken: {
-                    balance: liquidity.quoteTokenBalance,
-                    balanceWrapper: liquidity.quoteTokenWrapperBalance
-                  }
-                }
-              }
-              return Observable.concat(
-                Observable.of({
-                  type: TYPE_.UPDATE_SELECTED_FUND,
-                  payload
-                })
-                // Observable.of(
-                //   Actions.exchange.updateSelectedTradeTokensPair({
-                //     baseTokenLockWrapExpire: liquidity.baseTokenLockWrapExpire,
-                //     quoteTokenLockWrapExpire: liquidity.quoteTokenLockWrapExpire
-                //   })
-                // )
-              )
-            })
           )
         })
       )

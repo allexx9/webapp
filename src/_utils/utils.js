@@ -1346,10 +1346,11 @@ class utilities {
     const poolApi = new PoolApi(api)
     poolApi.contract.drago.init(dragoAddress)
     const dragoETHBalance = await poolApi.contract.drago.getBalance()
-    const dragoWETHBalance = await poolApi.contract.drago.getBalanceWETH()
-    const dragoZRXBalance = await poolApi.contract.drago.getBalanceZRX()
-    console.log(dragoETHBalance, dragoWETHBalance, dragoZRXBalance)
-    return [dragoETHBalance, dragoWETHBalance, dragoZRXBalance]
+    // const dragoWETHBalance = await poolApi.contract.drago.getBalanceWETH()
+    // const dragoZRXBalance = await poolApi.contract.drago.getBalanceZRX()
+    // console.log(dragoETHBalance, dragoWETHBalance, dragoZRXBalance)
+    // return [dragoETHBalance, dragoWETHBalance, dragoZRXBalance]
+    return [dragoETHBalance]
   }
 
   fetchDragoLiquidityAndTokenBalances = async (
@@ -1387,10 +1388,10 @@ class utilities {
     // }
 
     poolApi.contract.drago.init(dragoAddress)
-
+    console.log('fetchDragoLiquidityAndTokenBalances ')
     const liquidity = {
       dragoETHBalance: await poolApi.contract.drago.getBalance(),
-      dragoZRXBalance: await poolApi.contract.drago.getBalanceZRX(),
+      // dragoZRXBalance: await poolApi.contract.drago.getBalanceZRX(),
       baseTokenBalance: await (selectedTokensPair.baseToken.address !== '0x0'
         ? await poolApi.contract.drago.getBalanceToken(
             selectedTokensPair.baseToken.address
@@ -1409,7 +1410,7 @@ class utilities {
       // baseTokenLockWrapExpire,
       // quoteTokenLockWrapExpire
     }
-    console.log(liquidity)
+    // console.log(liquidity)
     return liquidity
   }
 

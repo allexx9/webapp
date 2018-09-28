@@ -35,7 +35,7 @@ if (process.env.NODE_ENV !== 'development') {
 
 const relayActionsMiddleWare = store => next => action => {
   const state = store.getState()
-  // console.log("relayActionsMiddleWare triggered:", action)
+  // console.log('relayActionsMiddleWare triggered:', action)
   // console.log(state.exchange.selectedRelay.name)
   // console.log(ACTIONS.CUSTOM_EXCHANGE_ACTIONS)
   if (ACTIONS.CUSTOM_EXCHANGE_ACTIONS.includes(action.type)) {

@@ -14,7 +14,7 @@ export default class SectionTitleExchange extends Component {
   }
 
   static defaultProps = {
-    textStyle: { fontSize: '14px' },
+    textStyle: { fontSize: '14px', fontWeight: '700' },
     help: false,
     helpText: '',
     helpReadMoreLink: ''

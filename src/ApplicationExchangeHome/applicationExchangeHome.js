@@ -3,22 +3,20 @@
 import { Col, Row } from 'react-flexbox-grid'
 import { connect } from 'react-redux'
 import BigNumber from 'bignumber.js'
-import CheckAuthPage from '../Elements/checkAuthPage'
 import ElementBottomStatusBar from '../Elements/elementBottomStatusBar'
 import ElementNotificationsDrawer from '../Elements/elementNotificationsDrawer'
 import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 // import FlatButton from 'material-ui/FlatButton'
-import PoolApi from '../PoolsApi/src'
-// import ApplicationDragoManager from './ApplicationDragoManager'
-// import ApplicationDragoTrader from './ApplicationDragoTrader'
 import Loading from '../_atomic/atoms/loading'
+import PoolApi from '../PoolsApi/src'
 // import DragoComingSoon from '../Elements/elementDragoComingSoon'
 import { Actions } from '../_redux/actions'
 import {
   DEFAULT_RELAY,
   ERC20_TOKENS,
+  EXCHANGES,
   RELAYS,
   TRADE_TOKENS_PAIRS
 } from '../_utils/const'
@@ -138,7 +136,10 @@ class ApplicationExchangeHome extends Component {
   componentDidMount = async () => {
     const { api } = this.context
     const { selectedExchange } = this.props.exchange
+    const { endpoint } = this.props
+
     const defaultRelay = RELAYS[DEFAULT_RELAY[api._rb.network.name]]
+    const defaultExchange = EXCHANGES[defaultRelay.name][api._rb.network.name]
     const defaultTokensPair = {
       baseToken:
         ERC20_TOKENS[api._rb.network.name][
@@ -149,18 +150,31 @@ class ApplicationExchangeHome extends Component {
           defaultRelay.defaultTokensPair.quoteTokenSymbol
         ]
     }
-    // console.log(accounts)
+    console.log('***** MOUNT *****')
     try {
-      const address = await getAvailableAccounts(selectedExchange)
+      // const address = await getAvailableAccounts(selectedExchange)
+      // this.props.dispatch({
+      //   type: 'SET_MAKER_ADDRESS',
+      //   payload: address[0]
+      // })
+      // const accounts = [
+      //   {
+      //     address: address[0]
+      //   }
+      // ]
+      const walletAddress = endpoint.accounts.find(
+        account => account.source === 'MetaMask'
+      )
       this.props.dispatch({
         type: 'SET_MAKER_ADDRESS',
-        payload: address[0]
+        payload: walletAddress.address
       })
       const accounts = [
         {
-          address: address[0]
+          address: walletAddress.address
         }
       ]
+      console.log(walletAddress.address)
 
       // Get funds details (balance, transactions)
       this.getSelectedFundDetails(null, accounts)
@@ -171,11 +185,14 @@ class ApplicationExchangeHome extends Component {
           utils.availableRelays(RELAYS, api._rb.network.id)
         )
       )
+      console.log(defaultExchange)
+      // Updating selected exchange
+      this.props.dispatch(
+        Actions.exchange.updateSelectedExchange(defaultExchange)
+      )
 
       // Updating selected relay
-      this.props.dispatch(
-        Actions.exchange.updateSelectedRelayAction(defaultRelay)
-      )
+      this.props.dispatch(Actions.exchange.updateSelectedRelay(defaultRelay))
 
       // Set available trade tokens pairs
       this.props.dispatch(
@@ -190,7 +207,9 @@ class ApplicationExchangeHome extends Component {
       )
 
       // Updating selected tokens pair balances and fund liquidity (ETH, ZRX)
-      this.props.dispatch(Actions.exchange.updateLiquidityAndTokenBalances(api))
+      this.props.dispatch(
+        Actions.exchange.updateLiquidityAndTokenBalances(api, 'START')
+      )
 
       this.connectToExchange(defaultRelay, defaultTokensPair)
 
@@ -232,7 +251,11 @@ class ApplicationExchangeHome extends Component {
 
   componentWillUnmount = () => {
     console.log('***** UNMOUNT *****')
+    const { api } = this.context
     this.props.dispatch(Actions.exchange.relayCloseWs())
+    this.props.dispatch(
+      Actions.exchange.updateLiquidityAndTokenBalances(api, 'STOP')
+    )
   }
 
   UNSAFE_componentWillUpdate() {
@@ -314,6 +337,11 @@ class ApplicationExchangeHome extends Component {
 
       // Getting drago liquidity
       // this.props.dispatch(this.updateSelectedFundLiquidity(fund.address, api))
+
+      // Updating selected tokens pair balances and fund liquidity (ETH, ZRX)
+      this.props.dispatch(
+        Actions.exchange.updateLiquidityAndTokenBalances(api, '', fund.address)
+      )
 
       // Getting allowances
       const allowanceBaseToken = await getTokenAllowance(
@@ -511,10 +539,9 @@ class ApplicationExchangeHome extends Component {
     //   )
     // }
 
-    if (endpoint.accounts.length === 0 || !endpoint.metaMaskNetworkCorrect) {
+    if (endpoint.accounts.length === 0 || !endpoint.isMetaMaskNetworkCorrect) {
       return (
         <span>
-          <CheckAuthPage warnMsg={endpoint.warnMsg} location={location} />
           <ElementBottomStatusBar
             blockNumber={endpoint.prevBlockNumber}
             networkName={endpoint.networkInfo.name}
@@ -559,12 +586,12 @@ class ApplicationExchangeHome extends Component {
 
     if (user.isManager) {
       const { bids, asks, spread } = this.props.exchange.orderBook
-      const asksOrderNormalized = asks.slice(asks.length - 20, asks.length)
+      console.log(asks)
+      const asksOrderNormalized = asks.slice(0, 20)
       const bidsOrderNormalized = bids.slice(0, 20)
       // console.log(this.props.exchange.selectedExchange)
       // const bidsOrderNormalizedFilled = [ ...Array(20 - bidsOrderNormalized.length).fill(null), ...bidsOrderNormalized ]
       // const asksOrderNormalizedFilled = [ ...Array(20 - asksOrderNormalized.length).fill(null), ...asksOrderNormalized]
-      // console.log(this.props.transactionsDrago.manager.list)
       const { chartData, fundOrders } = this.props.exchange
       const currentPrice = new BigNumber(
         this.props.exchange.selectedTokensPair.ticker.current.price
@@ -720,7 +747,7 @@ class ApplicationExchangeHome extends Component {
   // }
 
   // Getting last transactions
-  async getSelectedFundDetails(dragoAddress, accounts) {
+  getSelectedFundDetails = async (dragoAddress, accounts) => {
     console.log(dragoAddress, accounts)
     const { api } = this.context
     // const options = {balance: false, supply: true}

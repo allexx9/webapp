@@ -45,7 +45,7 @@ const getTokensBalances$ = (dragoDetails, api) => {
         wrappers: {},
         total: new BigNumber(0)
       }
-      if (allowedTokens[token].address !== '0x') {
+      if (allowedTokens[token].address !== '0x0') {
         let total = new BigNumber(0)
         try {
           balances.token = await poolApi.contract.drago.getTokenBalance(

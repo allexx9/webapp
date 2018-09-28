@@ -1,7 +1,7 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
 import { Col, Row } from 'react-flexbox-grid'
-import { formatEth } from '../../_utils/format'
+import { formatEth, toUnitAmount } from '../../_utils/format'
 import BigNumber from 'bignumber.js'
 import ContentLoader from 'react-content-loader'
 import PropTypes from 'prop-types'
@@ -24,55 +24,50 @@ export default class TokenBalances extends Component {
   }
 
   renderAmount = amount => {
-    const { api } = this.context
-    return this.props.liquidity.loading
-      ? // <div style={{ width: '100px' }}>
-        //   <ContentLoader
-        //     height={15}
-        //     width={100}
-        //     speed={2}
-        //     primaryColor="#f3f3f3"
-        //     secondaryColor="#ecebeb"
-        //   >
-        //     {/* <rect x="0" y="0" rx="5" ry="5" width="30" height="5" /> */}
-        //   </ContentLoader>
-        // </div>
-        formatEth(0, 4, api)
-      : amount
+    return amount
+    // return this.props.liquidity.loading
+    //   ? // <div style={{ width: '100px' }}>
+    //     //   <ContentLoader
+    //     //     height={15}
+    //     //     width={100}
+    //     //     speed={2}
+    //     //     primaryColor="#f3f3f3"
+    //     //     secondaryColor="#ecebeb"
+    //     //   >
+    //     //     {/* <rect x="0" y="0" rx="5" ry="5" width="30" height="5" /> */}
+    //     //   </ContentLoader>
+    //     // </div>
+    //     formatEth(0, 4, api)
+    //   : amount
   }
 
   render() {
     const { liquidity, selectedTradeTokensPair } = this.props
-    const { api } = this.context
-    // console.log(liquidity)
     return (
       <div className={styles.balancesContainer}>
-        {/* <Row>
-          <Col xs={3}>
-            <div>BALANCES: </div>
-          </Col>
-          <Col xs={3}>
-            {this.renderAmount(formatEth(liquidity.baseToken.balance, 4, api))}{' '}
-            <small>{selectedTradeTokensPair.baseToken.symbol}</small>{' '}
-          </Col>
-          <Col xs={3}>
-            {this.renderAmount(formatEth(liquidity.quoteToken.balance, 4, api))}{' '}
-            <small>{selectedTradeTokensPair.quoteToken.symbol}</small>{' '}
-          </Col>
-          <Col xs={3}>
-            {this.renderAmount(formatEth(liquidity.ZRX, 4, api))}{' '}
-            <small>ZRX</small>
-          </Col>
-        </Row> */}
         <Row>
           <Col xs={12}>
             BALANCES:{' '}
-            {this.renderAmount(formatEth(liquidity.baseToken.balance, 4, api))}{' '}
+            <span className={styles.amountText}>
+              {toUnitAmount(
+                new BigNumber(liquidity.baseToken.balance),
+                selectedTradeTokensPair.baseToken.decimals
+              ).toFixed(4)}{' '}
+            </span>
             <small>{selectedTradeTokensPair.baseToken.symbol}</small>{' '}
-            {this.renderAmount(formatEth(liquidity.quoteToken.balance, 4, api))}{' '}
-            <small>{selectedTradeTokensPair.quoteToken.symbol}</small>{' '}
-            {this.renderAmount(formatEth(liquidity.ZRX, 4, api))}{' '}
-            <small>ZRX</small>
+            <span className={styles.amountText}>
+              {toUnitAmount(
+                new BigNumber(liquidity.quoteToken.balance),
+                selectedTradeTokensPair.quoteToken.decimals
+              ).toFixed(4)}{' '}
+            </span>
+            <small className={styles.symbolText}>
+              {selectedTradeTokensPair.quoteToken.symbol}
+            </small>{' '}
+            {/* <span className={styles.amountText}>
+              {toUnitAmount(new BigNumber(liquidity.ZRX), 18).toFixed(4)}{' '}
+            </span>
+            <small>ZRX</small> */}
           </Col>
         </Row>
       </div>

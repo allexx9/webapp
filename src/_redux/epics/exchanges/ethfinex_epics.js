@@ -1,7 +1,7 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
 // import { Observable } from 'rxjs';
-import { Observable } from 'rxjs/Observable'
+import { Observable } from 'rxjs'
 // import 'rxjs/add/observable/dom/webSocket';
 import 'rxjs/add/operator/bufferCount'
 import 'rxjs/add/operator/bufferTime'
