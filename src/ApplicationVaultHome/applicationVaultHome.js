@@ -96,38 +96,45 @@ class ApplicationVaultHome extends Component {
       notificationsOpen,
       endpoint
     } = this.props
+    const openWalletSetup =
+      this.props.endpoint.isMetaMaskLocked ||
+      !this.props.endpoint.isMetaMaskNetworkCorrect
+        ? true
+        : false
     if (endpoint.loading) {
       return <Loading />
     }
 
     return (
       <div style={{ height: '100%' }} ref={node => (this.node = node)}>
-        {user.isManager && (
-          <Row className={styles.maincontainer}>
-            <Col xs={2}>
-              <LeftSideDrawerVaults
-                location={location}
-                isManager={user.isManager}
-              />
-            </Col>
-            <Col xs={10}>
-              <ApplicationVaultManager />
-            </Col>
-          </Row>
-        )}
-        {!user.isManager && (
-          <Row className={styles.maincontainer}>
-            <Col xs={2}>
-              <LeftSideDrawerVaults
-                location={location}
-                isManager={user.isManager}
-              />
-            </Col>
-            <Col xs={10}>
-              <ApplicationVaultTrader />
-            </Col>
-          </Row>
-        )}
+        {user.isManager &&
+          !openWalletSetup && (
+            <Row className={styles.maincontainer}>
+              <Col xs={2}>
+                <LeftSideDrawerVaults
+                  location={location}
+                  isManager={user.isManager}
+                />
+              </Col>
+              <Col xs={10}>
+                <ApplicationVaultManager />
+              </Col>
+            </Row>
+          )}
+        {!user.isManager &&
+          !openWalletSetup && (
+            <Row className={styles.maincontainer}>
+              <Col xs={2}>
+                <LeftSideDrawerVaults
+                  location={location}
+                  isManager={user.isManager}
+                />
+              </Col>
+              <Col xs={10}>
+                <ApplicationVaultTrader />
+              </Col>
+            </Row>
+          )}
         <Row>
           <Col xs={12}>
             {notificationsOpen ? (

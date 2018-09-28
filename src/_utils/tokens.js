@@ -231,6 +231,7 @@ export const ERC20_TOKENS = {
       },
       address: '0x6FA8590920c5966713b1a86916f7b0419411e474',
       decimals: 18,
+      faucet: '0x756519e3A48d5E4A02e0a6197A0cBb783ff06738',
       name: 'GRG Token',
       wrappers: {
         Ethfinex: {
