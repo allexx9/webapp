@@ -141,7 +141,7 @@ export default class ElementBottomStatusBar extends Component {
     return (
       <Row className={styles.networkStatus} between="xs">
         <Col xs={6} className={styles.copyright}>
-          ©2018 Rigo Investment Sagl. All rights reserved. {APP_VERSION}
+          ©2018 RigoBlock. All rights reserved. {APP_VERSION}
         </Col>
         <Col xs={6} className={styles.networkStatusCounter}>
           <div className={styles.networkDataContainer}>
