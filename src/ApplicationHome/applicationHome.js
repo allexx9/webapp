@@ -84,7 +84,7 @@ class ApplicationHome extends Component {
                     </a>
 
                     <a
-                      href="https://t.me/rigoblockprotocol"
+                      href="https://community.rigoblock.com"
                       target="_blank"
                       rel="noopener noreferrer"
                       className={styles.communityButton}
