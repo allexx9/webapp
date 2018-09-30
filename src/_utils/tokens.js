@@ -53,6 +53,7 @@ export const ERC20_TOKENS = {
       symbolTicker: {
         Ethfinex: 'GRG'
       },
+      faucetAddress: '0x22974713439f6b74a1ea247ce6d42b285d12c8e0',
       address: '0x9F121AFBc98A7a133fbb31fE975205f39e8f08D2',
       decimals: 6,
       name: 'GRG Token'
