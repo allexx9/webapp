@@ -143,11 +143,11 @@ class ApplicationExchangeHome extends Component {
     const defaultTokensPair = {
       baseToken:
         ERC20_TOKENS[api._rb.network.name][
-          defaultRelay.defaultTokensPair.baseTokenSymbol
+        defaultRelay.defaultTokensPair.baseTokenSymbol
         ],
       quoteToken:
         ERC20_TOKENS[api._rb.network.name][
-          defaultRelay.defaultTokensPair.quoteTokenSymbol
+        defaultRelay.defaultTokensPair.quoteTokenSymbol
         ]
     }
     console.log('***** MOUNT *****')
@@ -586,6 +586,8 @@ class ApplicationExchangeHome extends Component {
 
     if (user.isManager) {
       const { bids, asks, spread } = this.props.exchange.orderBook
+      // console.log(asks)
+      // console.log(bids)
       const asksOrderNormalized = asks.slice(0, 20)
       const bidsOrderNormalized = bids.slice(0, 20)
       // console.log(this.props.exchange.selectedExchange)
@@ -638,7 +640,7 @@ class ApplicationExchangeHome extends Component {
                     <TokenBalances
                       liquidity={exchange.selectedFund.liquidity}
                       selectedTradeTokensPair={exchange.selectedTokensPair}
-                      // loading={exchange.loading.liquidity}
+                    // loading={exchange.loading.liquidity}
                     />
                   </Col>
                 </Row>
@@ -763,7 +765,7 @@ class ApplicationExchangeHome extends Component {
       })
       // console.log(results)
       results[1] = createdLogs
-      results[2].sort(function(a, b) {
+      results[2].sort(function (a, b) {
         let keyA = a.symbol,
           keyB = b.symbol
         // Compare the 2 dates

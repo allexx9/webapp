@@ -15,6 +15,8 @@ export default class TokenLockBalance extends Component {
   }
   render() {
     const now = Math.floor(Date.now() / 1000)
+    console.log(now)
+    console.log(this.props.lockTime)
     return now > Number(this.props.lockTime) ? (
       <span style={{ color: 'red' }}>{this.props.balance}</span>
     ) : (
