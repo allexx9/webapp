@@ -6,7 +6,7 @@ import styles from './buttonOrder.module.css'
 
 class ButtonOrderSubmit extends Component {
   static propTypes = {
-    onSubmitOrder: PropTypes.func.isRequired,
+    onClick: PropTypes.func.isRequired,
     disabled: PropTypes.bool.isRequired
   }
 
@@ -18,9 +18,9 @@ class ButtonOrderSubmit extends Component {
     return this.props.disabled ? (
       <div className={styles.buttonContainer}>
         <FlatButton
-          label="Submit"
+          label="Confirm"
           labelStyle={{ fontWeight: 700, fontSize: '18px' }}
-          onClick={this.props.onSubmitOrder}
+          onClick={this.props.onClick}
           style={buttonOrderSubmitStyle}
           disabled={this.props.disabled}
         />
@@ -29,9 +29,9 @@ class ButtonOrderSubmit extends Component {
       <div className={styles.buttonContainer}>
         <FlatButton
           primary={true}
-          label="Submit"
+          label="Confirm"
           labelStyle={{ fontWeight: 700, fontSize: '18px', color: '#ffffff' }}
-          onClick={this.props.onSubmitOrder}
+          onClick={this.props.onClick}
           style={buttonOrderSubmitStyle}
           hoverColor={Colors.blue400}
           backgroundColor={'#054186'}

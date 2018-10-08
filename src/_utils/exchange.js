@@ -300,16 +300,17 @@ export const formatOrders = (orders, orderType) => {
 }
 
 export const signOrder = async (order, selectedExchange, walletAddress) => {
-  const DECIMALS = 18
   const baseTokenDecimals = order.selectedTokensPair.baseToken.decimals
   const quoteTokenDecimals = order.selectedTokensPair.quoteToken.decimals
+  console.log(baseTokenDecimals, quoteTokenDecimals)
   let makerTokenAmount, takerTokenAmount
   const zeroEx = new ZeroEx(window.web3.currentProvider, selectedExchange)
-
+  console.log(order.orderFillAmount, order.orderPrice)
   switch (order.orderType) {
     case 'asks':
+      console.log('asks')
       makerTokenAmount = new BigNumber(order.orderFillAmount)
-      takerTokenAmount = new BigNumber(makerTokenAmount).times(
+      takerTokenAmount = new BigNumber(order.orderFillAmount).times(
         new BigNumber(order.orderPrice)
       )
       makerTokenAmount = ZeroEx.toBaseUnitAmount(
@@ -320,7 +321,9 @@ export const signOrder = async (order, selectedExchange, walletAddress) => {
         takerTokenAmount,
         quoteTokenDecimals
       )
+      break
     case 'bids':
+      console.log('bids')
       makerTokenAmount = new BigNumber(order.orderFillAmount).times(
         new BigNumber(order.orderPrice)
       )
@@ -513,7 +516,7 @@ export const newMakerOrder = async (
   isTokenWrapper
 ) => {
   let makerTokenAddress, takerTokenAddress
-  let web3 = new Web3(Web3.currentProvider)
+  // let web3 = new Web3(Web3.currentProvider)
   const defaultExpiry = ''
   if (isTokenWrapper) {
     makerTokenAddress =

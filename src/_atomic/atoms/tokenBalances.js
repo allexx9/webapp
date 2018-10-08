@@ -1,14 +1,14 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
 import { Col, Row } from 'react-flexbox-grid'
-import { formatEth, toUnitAmount } from '../../_utils/format'
+import { toUnitAmount } from '../../_utils/format'
 import BigNumber from 'bignumber.js'
 import ContentLoader from 'react-content-loader'
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import styles from './tokenBalances.module.css'
 
-export default class TokenBalances extends Component {
+export default class TokenBalances extends PureComponent {
   static propTypes = {
     liquidity: PropTypes.object.isRequired,
     selectedTradeTokensPair: PropTypes.object.isRequired,

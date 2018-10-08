@@ -3,14 +3,14 @@
 import { Col, Row } from 'react-flexbox-grid'
 import { MenuItem, SelectField } from 'material-ui'
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import SelectFundItem from './selectFundItem.js'
 import styles from './fundSelector.module.css'
 
-export default class FundSelector extends Component {
+export default class FundSelector extends PureComponent {
   static propTypes = {
     funds: PropTypes.array.isRequired,
-    onSelectFund: PropTypes.func
+    onSelectFund: PropTypes.func.isRequired
   }
 
   state = {

@@ -115,15 +115,11 @@ class ApplicationExchangePage extends Component {
                     />
                   </div>
                 )}
-                {/* <div>
-                  <img src="/img/ex.png" className={styles.comingSoonBlur} />
-                </div> */}
               </Col>
-
-              {/* <TestComponent
+            </Row>
+            {/* <TestComponent
                       key={'test' + endpoint.lastMetaMaskUpdateTime}
                     /> */}
-            </Row>
           </MuiThemeProvider>
         </Grid>
       </MuiThemeProvider>

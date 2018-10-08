@@ -3,13 +3,13 @@
 import { BigNumber } from 'bignumber.js'
 import { Col, Row } from 'react-flexbox-grid'
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import classNames from 'classnames'
 import styles from './tokenPrice.module.css'
 
 import TokenIcon from './tokenIcon'
 
-export default class TokenPrice extends Component {
+export default class TokenPrice extends PureComponent {
   static propTypes = {
     selectedTradeTokensPair: PropTypes.object.isRequired,
     tokenPrice: PropTypes.string,

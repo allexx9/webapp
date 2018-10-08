@@ -5,6 +5,7 @@ import React, { Component } from 'react'
 import BoxTitle from '../atoms/boxTitle'
 import ButtonBuy from '../atoms/buttonBuy'
 import ButtonOrderCancel from '../atoms/buttonOrderCancel'
+import ButtonOrderConfirm from '../atoms/buttonOrderConfirm'
 import ButtonOrderSubmit from '../atoms/buttonOrderSubmit'
 import ButtonSell from '../atoms/buttonSell'
 import OrderAmountInputField from '../atoms/orderAmountInputField'
@@ -32,7 +33,7 @@ import {
   submitOrderToRelayEFX
 } from '../../_utils/exchange'
 import { sha3_512 } from 'js-sha3'
-import ToggleSwitch from '../atoms/toggleSwitch'
+// import ToggleSwitch from '../atoms/toggleSwitch'
 import serializeError from 'serialize-error'
 import utils from '../../_utils/utils'
 
@@ -78,15 +79,15 @@ class OrderBox extends Component {
     }
   }
 
-  updateSelectedFundLiquidity = (fundAddress, api) => {
-    return {
-      type: UPDATE_FUND_LIQUIDITY,
-      payload: {
-        fundAddress,
-        api
-      }
-    }
-  }
+  // updateSelectedFundLiquidity = (fundAddress, api) => {
+  //   return {
+  //     type: UPDATE_FUND_LIQUIDITY,
+  //     payload: {
+  //       fundAddress,
+  //       api
+  //     }
+  //   }
+  // }
 
   onCloseOrderRawDialog = open => {
     this.setState({
@@ -164,6 +165,7 @@ class OrderBox extends Component {
       selectedFund,
       walletAddress
     } = this.props.exchange
+    const { api } = this.context
 
     const transactionId = sha3_512(new Date() + selectedFund.managerAccount)
     let transactionDetails = {
@@ -206,11 +208,16 @@ class OrderBox extends Component {
         )
 
         // Updating drago liquidity
-        this.props.dispatch(
-          this.updateSelectedFundLiquidity(
-            selectedFund.details.address,
-            this.context.api
-          )
+        // this.props.dispatch(
+        //   this.updateSelectedFundLiquidity(
+        //     selectedFund.details.address,
+        //     this.context.api
+        //   )
+        // )
+        Actions.updateLiquidityAndTokenBalances(
+          api,
+          '',
+          selectedFund.details.address
         )
       } catch (error) {
         console.log(serializeError(error))
@@ -255,18 +262,21 @@ class OrderBox extends Component {
       this.setState({
         orderRawDialogOpen: true
       })
+      let efxSymbol = `t${selectedOrder.selectedTokensPair.baseToken.symbol.toUpperCase()}${selectedOrder.selectedTokensPair.quoteToken.symbolTicker.Ethfinex.toUpperCase()}`
+      let efxAmount =
+        selectedOrder.orderType === 'asks'
+          ? (-Math.abs(selectedOrder.orderFillAmount)).toString()
+          : selectedOrder.orderFillAmount
       const efxOrder = {
         type: 'EXCHANGE LIMIT',
-        symbol: 'tETHUSD',
-        amount:
-          selectedOrder.orderType === 'asks'
-            ? selectedOrder.orderFillAmount
-            : -Math.abs(selectedOrder.orderFillAmount),
+        symbol: efxSymbol,
+        amount: efxAmount,
         price: selectedOrder.orderPrice,
         meta: signedOrder,
         protocol: '0x'
       }
-      console.log(selectedOrder)
+      console.log(efxSymbol, efxAmount, selectedOrder.orderPrice)
+      console.log(efxOrder)
       submitOrderToRelayEFX(efxOrder)
         .then(parsedBody => {
           transactionDetails.status = 'executed'
@@ -546,6 +556,7 @@ class OrderBox extends Component {
           order={selectedOrder.details.order}
           onClose={this.onCloseOrderRawDialog}
           open={this.state.orderRawDialogOpen}
+          // open={true}
         />
       </Row>
     )

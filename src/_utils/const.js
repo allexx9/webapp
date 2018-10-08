@@ -299,7 +299,7 @@ export const EXCHANGES = {
 
       // Rigoblock ammended contract for EFX
       tokenTransferProxy: '0xeea64eebd1f2dc273cfc79cbdda23b69c6b5588',
-      exchangeContractAddress: '0x1d8643aae25841322ecde826862a9fa922770981',
+      exchangeContractAddress: '0x67799a5e640bc64ca24d3e6813842754e546d7b1',
       feeRecipient: '0x9faf5515f177f3a8a845d48c19032b33cc54c09c',
       networkId: 3,
       name: 'Ethfinex',

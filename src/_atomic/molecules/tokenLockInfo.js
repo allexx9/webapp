@@ -66,7 +66,7 @@ class TokenLockInfo extends PureComponent {
       baseTokenLockAmount,
       quoteTokenLockAmount
     } = this.state
-    const {api} = this.context
+    const { api } = this.context
     console.log(this.props)
     console.log(selectedRelay)
     const tokenSymbol = baseTokenSelected
@@ -149,7 +149,7 @@ class TokenLockInfo extends PureComponent {
         )
         try {
           await poolApi.contract.drago.init(selectedFund.details.address)
-          await poolApi.contract.drago.operateOnExchangeEFXLock(
+          receipt = await poolApi.contract.drago.operateOnExchangeEFXLock(
             selectedFund.managerAccount,
             selectedFund.details.address,
             selectedExchange.exchangeContractAddress,
@@ -159,8 +159,18 @@ class TokenLockInfo extends PureComponent {
             time,
             isOldERC20
           )
+          console.log('executed')
+          console.log(receipt)
+          transactionDetails.status = 'executed'
+          transactionDetails.receipt = receipt
+          transactionDetails.hash = receipt.transactionHash
+          transactionDetails.timestamp = new Date()
           this.props.dispatch(
-            Actions.exchange.updateLiquidityAndTokenBalances(api, '')
+            Actions.exchange.updateLiquidityAndTokenBalances(
+              api,
+              '',
+              selectedFund.details.address
+            )
           )
           this.props.dispatch(
             Actions.transactions.addTransactionToQueueAction(
@@ -169,6 +179,8 @@ class TokenLockInfo extends PureComponent {
             )
           )
         } catch (error) {
+          console.log(error)
+          console.log('error')
           errorArray = serializeError(error).message.split(/\r?\n/)
           transactionDetails.status = 'error'
           transactionDetails.error = errorArray[0]
@@ -178,9 +190,8 @@ class TokenLockInfo extends PureComponent {
               transactionDetails
             )
           )
-          utils.notificationError(
-            this.props.notifications.engine,
-            serializeError(error).message
+          this.props.dispatch(
+            Actions.app.queueErrorNotification(serializeError(error).message)
           )
         }
 
@@ -243,7 +254,11 @@ class TokenLockInfo extends PureComponent {
           transactionDetails.timestamp = new Date()
           // Updating selected tokens pair balances and fund liquidity (ETH, ZRX)
           this.props.dispatch(
-            Actions.exchange.updateLiquidityAndTokenBalances(api, '')
+            Actions.exchange.updateLiquidityAndTokenBalances(
+              api,
+              '',
+              selectedFund.details.address
+            )
           )
           this.props.dispatch(
             Actions.transactions.addTransactionToQueueAction(
@@ -261,9 +276,8 @@ class TokenLockInfo extends PureComponent {
               transactionDetails
             )
           )
-          utils.notificationError(
-            this.props.notifications.engine,
-            serializeError(error).message
+          this.props.dispatch(
+            Actions.app.queueErrorNotification(serializeError(error).message)
           )
         }
 

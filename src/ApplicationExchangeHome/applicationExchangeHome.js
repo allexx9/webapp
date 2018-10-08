@@ -29,6 +29,11 @@ import TokenBalances from '../_atomic/atoms/tokenBalances'
 import TokenLiquidity from '../_atomic/atoms/tokenLiquidity'
 import TokenPrice from '../_atomic/atoms/tokenPrice'
 import TokenTradeSelector from '../_atomic/molecules/tokenTradeSelector'
+import exchangeConnector, {
+  NETWORKS,
+  exchanges,
+  supportedExchanges
+} from '@rigoblock/exchange-connector'
 
 import {
   CANCEL_SELECTED_ORDER,
@@ -143,11 +148,11 @@ class ApplicationExchangeHome extends Component {
     const defaultTokensPair = {
       baseToken:
         ERC20_TOKENS[api._rb.network.name][
-        defaultRelay.defaultTokensPair.baseTokenSymbol
+          defaultRelay.defaultTokensPair.baseTokenSymbol
         ],
       quoteToken:
         ERC20_TOKENS[api._rb.network.name][
-        defaultRelay.defaultTokensPair.quoteTokenSymbol
+          defaultRelay.defaultTokensPair.quoteTokenSymbol
         ]
     }
     console.log('***** MOUNT *****')
@@ -445,7 +450,7 @@ class ApplicationExchangeHome extends Component {
       })
 
       // Reconnecting to the exchange
-      this.connectToExchange(tradeTokensPair)
+      this.connectToExchange(selectedExchange, tradeTokensPair)
 
       // Getting chart data
       // let tsYesterday = new Date(
@@ -464,33 +469,6 @@ class ApplicationExchangeHome extends Component {
       console.log(error)
     }
   }
-
-  // onButtonTest = () => {
-  //   console.log('open')
-  //   var filter = {
-  //     networkId: this.props.exchange.relay.networkId,
-  //     baseTokenAddress: this.props.exchange.selectedTokensPair.baseToken.address,
-  //     quoteTokenAddress: this.props.exchange.selectedTokensPair.quoteToken.address,
-  //     aggregated: this.props.exchange.orderBook.aggregated
-  //   }
-  //   this.props.dispatch(this.relayGetOrders(filter))
-  //   // this.props.dispatch({ type: 'RELAY_SUBSCRIBE_WEBSOCKET', payload: { sub: 'sub:ticker2' }})
-  // }
-
-  // onButtonTest2 = () => {
-  //   console.log('subscribe')
-  //   getMarketTakerOrder(
-  //     this.props.exchange.selectedTokensPair.baseToken.address,
-  //     this.props.exchange.selectedTokensPair.quoteToken.address,
-  //     this.props.exchange.selectedTokensPair.baseToken.address,
-  //     '95000000000000000000',
-  //     this.props.exchange.relay.networkId,
-  //     "0x57072759Ba54479669CAdF1A25528a472Af95cEF".toLowerCase()
-  //   )
-  //     .then(results => {
-  //       console.log(results)
-  //     })
-  // }
 
   render() {
     const {
@@ -640,7 +618,7 @@ class ApplicationExchangeHome extends Component {
                     <TokenBalances
                       liquidity={exchange.selectedFund.liquidity}
                       selectedTradeTokensPair={exchange.selectedTokensPair}
-                    // loading={exchange.loading.liquidity}
+                      // loading={exchange.loading.liquidity}
                     />
                   </Col>
                 </Row>
@@ -765,7 +743,7 @@ class ApplicationExchangeHome extends Component {
       })
       // console.log(results)
       results[1] = createdLogs
-      results[2].sort(function (a, b) {
+      results[2].sort(function(a, b) {
         let keyA = a.symbol,
           keyB = b.symbol
         // Compare the 2 dates

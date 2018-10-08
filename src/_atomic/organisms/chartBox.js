@@ -7,6 +7,7 @@ import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import styles from './chartBox.module.css'
+import utils from '../../_utils/utils'
 
 const paperStyle = {
   // paddingLeft: "12px"
@@ -23,7 +24,13 @@ class ChartBox extends Component {
     loading: true
   }
 
+  shouldComponentUpdate(nextProps) {
+    let propsUpdate = !utils.shallowEqual(this.props.data, nextProps.data)
+    return propsUpdate
+  }
+
   render() {
+    console.log('render chart')
     if (this.props.data.length === 0 || this.props.loading) {
       return (
         <Row>

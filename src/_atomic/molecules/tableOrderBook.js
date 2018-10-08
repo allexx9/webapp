@@ -8,6 +8,7 @@ import { UPDATE_SELECTED_ORDER } from '../../_redux/actions/const'
 import { connect } from 'react-redux'
 import { detect } from 'detect-browser'
 import styles from './tableOrderBook.module.css'
+import utils from '../../_utils/utils'
 
 function mapStateToProps(state) {
   return state
@@ -25,6 +26,11 @@ class TableOrderBook extends Component {
 
   static contextTypes = {
     api: PropTypes.object.isRequired
+  }
+
+  shouldComponentUpdate(nextProps) {
+    let propsUpdate = !utils.shallowEqual(this.props.orders, nextProps.orders)
+    return propsUpdate
   }
 
   updateSelectedOrder = order => {
@@ -160,8 +166,7 @@ class TableOrderBook extends Component {
 
   render() {
     const { orders } = this.props
-    // console.log(orders)
-
+    console.log('*** Render Oders ***')
     return (
       <Row className={styles.containerOrders}>
         <Col xs={12}>{this.renderRows(orders)}</Col>

@@ -34,6 +34,7 @@ import utils from '../../../_utils/utils'
 import { Actions } from '../../actions/'
 import { Ethfinex } from '../../../_utils/const'
 
+
 import {
   CHART_MARKET_DATA_ADD_DATAPOINT,
   CHART_MARKET_DATA_INIT,

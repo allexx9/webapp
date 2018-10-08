@@ -2,7 +2,6 @@ import * as Colors from 'material-ui/styles/colors'
 import FlatButton from 'material-ui/FlatButton'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
-import styles from './buyButton.module.css'
 
 class ButtonSell extends Component {
   static propTypes = {
@@ -33,7 +32,7 @@ class ButtonSell extends Component {
     }
 
     return (
-      <div className={styles.actionButton}>
+      <div>
         <FlatButton
           primary={true}
           label="Sell"

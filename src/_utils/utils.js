@@ -80,9 +80,9 @@ class utilities {
   notificationError = (notificationEngine, message, level = 'error') => {
     const messageFirstLine = message.split(/\r?\n/)
     notificationEngine.addNotification({
-      title: level.charAt(0).toUpperCase() + level.slice(1),
-      message: messageFirstLine[0],
       level: level,
+      title: level.toUpperCase(),
+      message: messageFirstLine[0],
       position: 'br',
       autoDismiss: 10
     })
@@ -92,6 +92,7 @@ class utilities {
     let comp = new NotificationAlert([message])
     notificationEngine.addNotification({
       level: level,
+      title: level,
       position: 'br',
       autoDismiss: 10,
       children: comp.render(
@@ -1435,7 +1436,7 @@ class utilities {
     let keysB = Object.keys(objB)
 
     if (keysA.length !== keysB.length) {
-      // console.log(`${this.constructor.name} -> keysA.length`);
+      // console.log(`${this.constructor.name} -> keysA.length`)
       return false
     }
 
@@ -1443,7 +1444,10 @@ class utilities {
     let bHasOwnProperty = hasOwnProperty.bind(objB)
     for (let i = 0; i < keysA.length; i++) {
       if (!bHasOwnProperty(keysA[i]) || objA[keysA[i]] !== objB[keysA[i]]) {
-        // console.log(`${this.constructor.name} -> Test for A's keys different from B`)
+        // console.log(objA[keysA[i]], objB[keysA[i]])
+        // console.log(
+        //   `${this.constructor.name} -> Test for A's keys different from B`
+        // )
         return false
       }
     }

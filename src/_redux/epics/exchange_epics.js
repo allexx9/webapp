@@ -3,7 +3,7 @@
 import 'rxjs/add/observable/concat'
 import 'rxjs/add/observable/dom/webSocket'
 import 'rxjs/add/observable/forkJoin'
-import 'rxjs/add/observable/fromPromise'
+// import 'rxjs/add/observable/fromPromise'
 import 'rxjs/add/observable/of'
 import 'rxjs/add/operator/bufferCount'
 import 'rxjs/add/operator/bufferTime'
@@ -22,8 +22,9 @@ import 'rxjs/observable/timer'
 import * as ERRORS from '../../_const/errors'
 import * as TYPE_ from '../actions/const'
 import { Actions } from '../actions/'
-import { Observable } from 'rxjs'
+import { Observable, from } from 'rxjs'
 import {
+  catchError,
   concat,
   exhaustMap,
   map,
@@ -39,6 +40,11 @@ import {
 } from '../../_utils/exchange'
 import { ofType } from 'redux-observable'
 import Exchange from '../../_utils/exchange/src/index'
+import exchangeConnector, {
+  NETWORKS,
+  exchanges,
+  supportedExchanges
+} from '@rigoblock/exchange-connector'
 import utils from '../../_utils/utils'
 
 export * from './exchanges'
@@ -55,9 +61,21 @@ const getOrderBookFromRelay$ = (
   quoteToken,
   aggregated
 ) => {
+  // const ethfinex = exchangeConnector(supportedExchanges.ETHFINEX, {
+  //   networkId: NETWORKS.ROPSTEN
+  // })
+  // ethfinex.http
+  //   .getOrders({
+  //     symbols: 'ETHUSD',
+  //     precision: exchanges[supportedExchanges.ETHFINEX_RAW].OrderPrecisions.P2
+  //   })
+  //   .then(orders => {
+  //     console.log(orders)
+  //   })
+
   if (aggregated) {
     const exchange = new Exchange(relay.name, networkId)
-    return Observable.fromPromise(
+    return from(
       exchange.getAggregatedOrders(
         utils.getTockenSymbolForRelay(relay.name, baseToken),
         utils.getTockenSymbolForRelay(relay.name, quoteToken)
@@ -65,7 +83,7 @@ const getOrderBookFromRelay$ = (
     )
   } else {
     const exchange = new Exchange(relay.name, networkId)
-    return Observable.fromPromise(
+    return from(
       exchange.getOrders(
         utils.getTockenSymbolForRelay(relay.name, baseToken),
         utils.getTockenSymbolForRelay(relay.name, quoteToken)
@@ -83,18 +101,20 @@ export const getOrderBookFromRelayEpic = action$ => {
       action.payload.baseToken,
       action.payload.quoteToken,
       action.payload.aggregated
-    )
-      .map(payload => {
+    ).pipe(
+      map(payload => {
         // const aggregate = { aggregated: action.payload.aggregated }
+        console.log(payload)
         return { type: TYPE_.ORDERBOOK_INIT, payload: { ...payload } }
-      })
-      .catch(error => {
+      }),
+      catchError(error => {
         console.log(error)
         return Observable.of({
           type: TYPE_.QUEUE_ERROR_NOTIFICATION,
           payload: ERRORS.E001
         })
       })
+    )
   })
 }
 

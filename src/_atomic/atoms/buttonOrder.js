@@ -4,10 +4,21 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import styles from './buttonOrder.module.css'
 
-class ButtonOrderSubmit extends Component {
+class ButtonOrder extends Component {
   static propTypes = {
-    onSubmitOrder: PropTypes.func.isRequired,
-    disabled: PropTypes.bool.isRequired
+    onClick: PropTypes.func.isRequired,
+    disabled: PropTypes.bool.isRequired,
+    label: PropTypes.string.isRequired,
+    selected: PropTypes.bool,
+    labelStyle: 
+  }
+
+  static defaultProps = {
+    selected: false
+  }
+
+  onClick = event => {
+    this.props.onClick(event)
   }
 
   render() {
@@ -20,7 +31,7 @@ class ButtonOrderSubmit extends Component {
         <FlatButton
           label="Submit"
           labelStyle={{ fontWeight: 700, fontSize: '18px' }}
-          onClick={this.props.onSubmitOrder}
+          onClick={this.onClick}
           style={buttonOrderSubmitStyle}
           disabled={this.props.disabled}
         />
@@ -31,7 +42,7 @@ class ButtonOrderSubmit extends Component {
           primary={true}
           label="Submit"
           labelStyle={{ fontWeight: 700, fontSize: '18px', color: '#ffffff' }}
-          onClick={this.props.onSubmitOrder}
+          onClick={this.onClick}
           style={buttonOrderSubmitStyle}
           hoverColor={Colors.blue400}
           backgroundColor={'#054186'}
@@ -42,4 +53,4 @@ class ButtonOrderSubmit extends Component {
   }
 }
 
-export default ButtonOrderSubmit
+export default ButtonOrder
