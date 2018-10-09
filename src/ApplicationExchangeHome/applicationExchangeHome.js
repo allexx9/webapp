@@ -190,7 +190,7 @@ class ApplicationExchangeHome extends Component {
           utils.availableRelays(RELAYS, api._rb.network.id)
         )
       )
-      console.log(defaultExchange)
+
       // Updating selected exchange
       this.props.dispatch(
         Actions.exchange.updateSelectedExchange(defaultExchange)

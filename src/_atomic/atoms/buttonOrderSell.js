@@ -3,7 +3,7 @@ import FlatButton from 'material-ui/FlatButton'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
-class ButtonBuy extends Component {
+class ButtonOrderSell extends Component {
   static propTypes = {
     onBuySell: PropTypes.func.isRequired,
     selected: PropTypes.bool
@@ -13,15 +13,15 @@ class ButtonBuy extends Component {
     selected: false
   }
 
-  buttonBuyClick = () => {
-    this.props.onBuySell('bids')
+  buttonSellClick = () => {
+    this.props.onBuySell('asks')
   }
 
   render() {
-    const buttonBuyStyle = {
+    const buttonSellStyle = {
       border: '1px solid',
-      borderColor: this.props.selected ? Colors.green400 : Colors.grey400,
-      backgroundColor: this.props.selected ? Colors.green400 : 'white',
+      borderColor: this.props.selected ? Colors.red400 : Colors.grey400,
+      backgroundColor: this.props.selected ? Colors.red400 : 'white',
       width: '100%'
     }
 
@@ -35,15 +35,15 @@ class ButtonBuy extends Component {
       <div>
         <FlatButton
           primary={true}
-          label="Buy"
+          label="Sell"
           labelStyle={labelStyle}
-          onClick={this.buttonBuyClick}
-          style={buttonBuyStyle}
-          hoverColor={Colors.lightGreen50}
+          onClick={this.buttonSellClick}
+          style={buttonSellStyle}
+          hoverColor={Colors.red50}
         />
       </div>
     )
   }
 }
 
-export default ButtonBuy
+export default ButtonOrderSell

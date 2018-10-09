@@ -7,19 +7,22 @@ import ButtonOrderCancel from '../atoms/buttonOrderCancel'
 import ButtonOrderSubmit from '../atoms/buttonOrderSubmit'
 import Dialog from 'material-ui/Dialog'
 import OrderJsonView from './orderJsonView'
+import OrderSummary from '../molecules/orderSummary'
 import utils from '../../_utils/utils'
 
 import styles from './orderRawDialog.module.css'
 
 const customContentStyle = {
   height: '400px',
+  width: '600px',
   wordWrap: 'break-word'
 }
 
 class OrderRawDialog extends Component {
   static propTypes = {
-    order: PropTypes.object,
+    order: PropTypes.object.isRequired,
     onClose: PropTypes.func.isRequired,
+    onSubmitOrder: PropTypes.func.isRequired,
     open: PropTypes.bool.isRequired
   }
 
@@ -33,6 +36,7 @@ class OrderRawDialog extends Component {
   }
 
   render() {
+    const { order } = this.props
     const orderJson = {
       maker: '0x22e8c59b5855aed91411d17ba7092e17effc5340',
       taker: '0x9faf5515f177f3a8a845d48c19032b33cc54c09c',
@@ -58,15 +62,19 @@ class OrderRawDialog extends Component {
       <div>
         {/* <RaisedButton label="Alert" onClick={this.handleOpen} /> */}
         <Dialog
-          title={<BoxTitle titleText={'ORDER'} />}
-          modal={false}
+          title={<BoxTitle titleText={'CONFIRM ORDER'} />}
+          modal={true}
           open={this.props.open}
           onRequestClose={this.handleClose}
           contentStyle={customContentStyle}
           autoDetectWindowHeight={false}
         >
+          <div className={styles.summaryContainer}>
+            <OrderSummary order={order} />
+          </div>
+
           <div className={styles.orderContainer}>
-            <OrderJsonView orderJson={orderJson} />
+            <OrderJsonView orderJson={order.details.order} />
           </div>
           <Row center="xs">
             <Col xs={6}>
@@ -77,7 +85,7 @@ class OrderRawDialog extends Component {
             </Col>
             <Col xs={6}>
               <ButtonOrderSubmit
-                onSubmitOrder={this.onSubmitOrder}
+                onClick={this.props.onSubmitOrder}
                 disabled={false}
               />
             </Col>

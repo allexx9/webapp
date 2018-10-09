@@ -1,12 +1,14 @@
 import { Card, CardHeader, CardText } from 'material-ui/Card'
 import JsonView from '../atoms/jsonView'
 import PropTypes from 'prop-types'
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
+
+import styles from './orderJsonView.module.css'
 import utils from '../../_utils/utils'
 
-class OrderJsonView extends PureComponent {
+class OrderJsonView extends Component {
   static propTypes = {
-    orderJson: PropTypes.object.isRequired
+    orderJson: PropTypes.object
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -23,7 +25,9 @@ class OrderJsonView extends PureComponent {
           showExpandableButton={true}
         />
         <CardText expandable={true}>
-          <JsonView orderJson={this.props.orderJson} />
+          <div className={styles.orderContainer}>
+            <JsonView orderJson={this.props.orderJson} />
+          </div>
         </CardText>
       </Card>
     )

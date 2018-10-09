@@ -3,11 +3,10 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 // import * as Colors from 'material-ui/styles/colors'
 import BoxTitle from '../atoms/boxTitle'
-import ButtonBuy from '../atoms/buttonBuy'
-import ButtonOrderCancel from '../atoms/buttonOrderCancel'
+import ButtonOrderBuy from '../atoms/buttonOrderBuy'
 import ButtonOrderConfirm from '../atoms/buttonOrderConfirm'
-import ButtonOrderSubmit from '../atoms/buttonOrderSubmit'
-import ButtonSell from '../atoms/buttonSell'
+import ButtonOrderReset from '../atoms/buttonOrderReset'
+import ButtonOrderSell from '../atoms/buttonOrderSell'
 import OrderAmountInputField from '../atoms/orderAmountInputField'
 import OrderPrice from '../atoms/orderPrice'
 import OrderRawDialog from '../molecules/orderRawDialog'
@@ -158,6 +157,13 @@ class OrderBox extends Component {
   //     })
   // }
 
+  onConfirmOrder = async () => {
+    this.setState({
+      orderRawDialogOpen: true
+    })
+    console.log(this.props.exchange.selectedOrder)
+  }
+
   onSubmitOrder = async () => {
     const {
       selectedOrder,
@@ -259,9 +265,9 @@ class OrderBox extends Component {
         details: { order: signedOrder }
       }
       this.props.dispatch(this.updateSelectedOrder(payload))
-      this.setState({
-        orderRawDialogOpen: true
-      })
+      // this.setState({
+      //   orderRawDialogOpen: true
+      // })
       let efxSymbol = `t${selectedOrder.selectedTokensPair.baseToken.symbol.toUpperCase()}${selectedOrder.selectedTokensPair.quoteToken.symbolTicker.Ethfinex.toUpperCase()}`
       let efxAmount =
         selectedOrder.orderType === 'asks'
@@ -309,6 +315,9 @@ class OrderBox extends Component {
   }
 
   onCancelOrder = () => {
+    this.setState({
+      orderRawDialogOpen: false
+    })
     this.props.dispatch(this.cancelSelectedOrder())
   }
 
@@ -444,13 +453,13 @@ class OrderBox extends Component {
                   <Col xs={12}>
                     <Row className={styles.sectionHeaderOrderTable}>
                       <Col xs={6} className={styles.buyButton}>
-                        <ButtonBuy
+                        <ButtonOrderBuy
                           selected={buySelected}
                           onBuySell={this.onBuySell}
                         />
                       </Col>
                       <Col xs={6} className={styles.sellButton}>
-                        <ButtonSell
+                        <ButtonOrderSell
                           selected={sellSelected}
                           onBuySell={this.onBuySell}
                         />
@@ -524,16 +533,16 @@ class OrderBox extends Component {
                   <Col xs={12}>
                     <Row center="xs">
                       <Col xs={6}>
-                        <ButtonOrderCancel
-                          onCancelOrder={this.onCancelOrder}
+                        <ButtonOrderReset
+                          onClick={this.onCancelOrder}
                           disabled={
                             Object.keys(selectedOrder.details).length === 0
                           }
                         />
                       </Col>
                       <Col xs={6}>
-                        <ButtonOrderSubmit
-                          onSubmitOrder={this.onSubmitOrder}
+                        <ButtonOrderConfirm
+                          onClick={this.onConfirmOrder}
                           disabled={
                             selectedOrder.orderAmountError ||
                             selectedOrder.orderPriceError
@@ -553,7 +562,8 @@ class OrderBox extends Component {
           </Row>
         </Col>
         <OrderRawDialog
-          order={selectedOrder.details.order}
+          order={selectedOrder}
+          onSubmitOrder={this.onSubmitOrder}
           onClose={this.onCloseOrderRawDialog}
           open={this.state.orderRawDialogOpen}
           // open={true}

@@ -166,7 +166,7 @@ class TableOrderBook extends Component {
 
   render() {
     const { orders } = this.props
-    console.log('*** Render Oders ***')
+    console.log('*** Render Orders ***')
     return (
       <Row className={styles.containerOrders}>
         <Col xs={12}>{this.renderRows(orders)}</Col>

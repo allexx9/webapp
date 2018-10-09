@@ -1,5 +1,4 @@
 import { Col, Row } from 'react-flexbox-grid'
-import { toBaseUnitAmount } from '../../_utils/format'
 import BigNumber from 'bignumber.js'
 import Divider from 'material-ui/Divider'
 import PropTypes from 'prop-types'
@@ -105,22 +104,25 @@ class OrderSummary extends PureComponent {
             </Col>
           </Row>
         </Col>
-        <Col xs={12} className={styles.summaryRow}>
-          <div>Fee</div>
-        </Col>
-        <Col xs={12} className={styles.summaryRow}>
-          <Row>
-            <Col xs={2}>
-              <div>
-                <small>ZRX</small>
-              </div>
-            </Col>
+        <div>
+          {/* <Col xs={12} className={styles.summaryRow}>
+            <div>Fee</div>
+          </Col>
+          <Col xs={12} className={styles.summaryRow}>
+            <Row>
+              <Col xs={2}>
+                <div>
+                  <small>ZRX</small>
+                </div>
+              </Col>
 
-            <Col xs={10}>
-              <div className={styles.amount}>{fee}</div>
-            </Col>
-          </Row>
-        </Col>
+              <Col xs={10}>
+                <div className={styles.amount}>{fee}</div>
+              </Col>
+            </Row>
+          </Col> */}
+        </div>
+
         <Col xs={12} className={styles.summaryRow}>
           <Divider />
         </Col>

@@ -1,4 +1,9 @@
 .orderContainer{
-  margin-top: 15px;
+  margin-top: 8px;
   overflow: overlay;
+}
+
+.summaryContainer {
+  padding-right: 16px;
+  padding-left: 16px;
 }

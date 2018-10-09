@@ -34,7 +34,6 @@ import utils from '../../../_utils/utils'
 import { Actions } from '../../actions/'
 import { Ethfinex } from '../../../_utils/const'
 
-
 import {
   CHART_MARKET_DATA_ADD_DATAPOINT,
   CHART_MARKET_DATA_INIT,
@@ -51,6 +50,8 @@ import {
   UPDATE_CURRENT_TOKEN_PRICE,
   UPDATE_FUND_ORDERS
 } from '../../actions/const'
+
+import exchangeConnector from '@rigoblock/exchange-connector'
 
 const customRelayAction = action => {
   // console.log(`${Ethfinex.toUpperCase()}_${action}`)
@@ -203,30 +204,102 @@ export const getCandlesSingleDataEpic = action$ => {
 //
 // CONNECTING TO WS AND GETTING UPDATES FOR A SPECIFIC TRADING PAIR
 //
+// THIS EPIC IS CALLED WHEN THE EXCHANGE IS INITALIZED
+//
+
+// const reconnectingWebsocket$ = (relay, networkId, baseToken, quoteToken) => {
+//   return Observable.create(observer => {
+//     const exchange = new Exchange(relay.name, networkId, 'ws')
+//     const websocket = exchange.getTicker(
+//       utils.getTockenSymbolForRelay(relay.name, baseToken),
+//       utils.getTockenSymbolForRelay(relay.name, quoteToken)
+//     )
+//     websocket.onmessage = msg => {
+//       // console.log('WebSocket message.');
+//       // console.log(msg)
+//       return observer.next(msg.data)
+//     }
+//     websocket.onclose = msg => {
+//       // websocket.send(`unsub:ticker`);
+//       console.log(msg)
+//       return msg.wasClean ? observer.complete() : null
+//     }
+//     websocket.onerror = error => {
+//       console.log(error)
+//       console.log('WebSocket error.')
+//       return observer.error(error)
+//     }
+//     // const ethfinex = exchangeConnector(relay.name, {
+//     //   networkId: networkId
+//     // })
+
+//     // ethfinex.ws
+//     //   .getTickers(
+//     //     { symbols: 'ETHUSD' },
+//     //     (error, data) => (error ? console.error(error) : console.log(data))
+//     //   )
+//     //   .then(unsubscribe => {
+//     //     console.log(unsubscribe)
+//     //   })
+
+//     return () => websocket.close(1000, 'Closed by client', { keepClosed: true })
+//   })
+// }
 
 const reconnectingWebsocket$ = (relay, networkId, baseToken, quoteToken) => {
   return Observable.create(observer => {
-    const exchange = new Exchange(relay.name, networkId, 'ws')
-    const websocket = exchange.getTicker(
-      utils.getTockenSymbolForRelay(relay.name, baseToken),
-      utils.getTockenSymbolForRelay(relay.name, quoteToken)
+    // const exchange = new Exchange(relay.name, networkId, 'ws')
+    // const websocket = exchange.getTicker(
+    //   utils.getTockenSymbolForRelay(relay.name, baseToken),
+    //   utils.getTockenSymbolForRelay(relay.name, quoteToken)
+    // )
+    // websocket.onmessage = msg => {
+    //   // console.log('WebSocket message.');
+    //   // console.log(msg)
+    //   return observer.next(msg.data)
+    // }
+    // websocket.onclose = msg => {
+    //   // websocket.send(`unsub:ticker`);
+    //   console.log(msg)
+    //   return msg.wasClean ? observer.complete() : null
+    // }
+    // websocket.onerror = error => {
+    //   console.log(error)
+    //   console.log('WebSocket error.')
+    //   return observer.error(error)
+    // }
+    const ethfinex = exchangeConnector(relay.name, {
+      networkId: networkId
+    })
+    const baseTokenSymbol = utils.getTockenSymbolForRelay(relay.name, baseToken)
+    const quoteTokenSymbol = utils.getTockenSymbolForRelay(
+      relay.name,
+      quoteToken
     )
-    websocket.onmessage = msg => {
-      // console.log('WebSocket message.');
-      // console.log(msg)
-      return observer.next(msg.data)
-    }
-    websocket.onclose = msg => {
-      // websocket.send(`unsub:ticker`);
-      console.log(msg)
-      return msg.wasClean ? observer.complete() : null
-    }
-    websocket.onerror = error => {
-      console.log(error)
-      console.log('WebSocket error.')
-      return observer.error(error)
-    }
-    return () => websocket.close(1000, 'Closed by client', { keepClosed: true })
+
+    return ethfinex.raw.ws
+      .getTickers(
+        { symbols: baseTokenSymbol + quoteTokenSymbol },
+        (error, msg) => {
+          if (error) {
+            return observer.error(error)
+          } else {
+            // console.log(msg)
+            if (Array.isArray(msg)) {
+              // console.log(msg)
+              return observer.next(msg)
+            }
+            return observer.next('')
+          }
+        }
+        // error ? observer.error(error) : observer.next(msg.data)
+      )
+      .then(unsubscribe => {
+        console.log(unsubscribe)
+        return () => ethfinex.ws.close()
+      })
+
+    // return () => ethfinex.ws.close()
   })
 }
 
@@ -255,8 +328,9 @@ export const initRelayWebSocketEpic = action$ =>
 // FETCHING THE ORDER BOOK AND UPDATING THE CURRENT PRICE FOR A SPECIFIC TRADING PAIR
 //
 
-const updateCurrentTokenPrice = tickerOutput => {
-  let ticker = JSON.parse(tickerOutput)
+const updateCurrentTokenPrice = ticker => {
+  // console.log(tickerOutput)
+  // let ticker = JSON.parse(tickerOutput)
   // console.log(ticker)
   if (Array.isArray(ticker[1])) {
     let current = {
@@ -282,6 +356,7 @@ export const orderBookEpic = (action$, state$) => {
     .map(action => action.payload)
     .bufferTime(1000)
     .filter(value => {
+      // console.log(value)
       return value.length !== 0
     })
     .bufferCount(1)
