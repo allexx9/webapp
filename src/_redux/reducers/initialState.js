@@ -157,7 +157,7 @@ const initialState = {
         quoteToken: QUOTE_TOKEN
       }
     },
-    orderBookAggregated: RELAYS[ERCdEX].onlyAggregateOrderbook,
+    orderBookAggregated: true,
     orderBook: {
       asks: [],
       bids: [],

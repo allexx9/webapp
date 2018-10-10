@@ -72,7 +72,8 @@ export const RELAYS = {
 
 export const DEFAULT_RELAY = {
   kovan: 'ERCdEX',
-  ropsten: 'Ethfinex'
+  ropsten: 'Ethfinex',
+  mainnet: 'Ethfinex'
 }
 
 // export const ERCdEX = "ERCdEX"
@@ -308,10 +309,10 @@ export const EXCHANGES = {
     mainnet: {
       tokenTransferProxy: '0x7e03d2b8edc3585ecd8a5807661fff0830a0b603',
       exchangeContractAddress: '0xdcDb42C9a256690bd153A7B409751ADFC8Dd5851',
-      feeRecipient: '',
+      feeRecipient: '0x61b9898c9b60a159fc91ae8026563cd226b7a0c1',
       networkId: 1,
       name: 'Ethfinex',
-      taker: 'NULL_ADDRESS'
+      taker: '0x61b9898c9b60a159fc91ae8026563cd226b7a0c1'
     }
   }
 }

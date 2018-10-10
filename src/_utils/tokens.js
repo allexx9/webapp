@@ -81,7 +81,7 @@ export const ERC20_TOKENS = {
         Ethfinex: {
           symbol: 'ZRXW',
           decimals: 18,
-          address: '0xd7a7afe4b20611f2c839ec5cd340f27fe08c949c',
+          address: '0xCf67d7A481CEEca0a77f658991A00366FED558F7',
           name: 'ZRX Wrapper'
         }
       }
@@ -104,7 +104,7 @@ export const ERC20_TOKENS = {
         Ethfinex: {
           symbol: 'ETHW',
           decimals: 18,
-          address: '0x768C42FF6F5805bD2631AC7Cc9eaBE3AF17b4b41',
+          address: '0xaa7427d8f17d87a28f5e1ba3adbb270badbe1011',
           name: 'ETH Wrapper'
         }
       }
@@ -139,7 +139,7 @@ export const ERC20_TOKENS = {
         Ethfinex: {
           symbol: 'USDT',
           decimals: 6,
-          address: '0x4c24a4dfb0c67916d47b4726958eb66b63bdd268',
+          address: '0x1a9B2d827F26B7d7C18fEC4c1B27c1E8dEeBa26e',
           name: 'USDTWrapper'
         }
       }
@@ -149,7 +149,7 @@ export const ERC20_TOKENS = {
       symbolTicker: {
         Ethfinex: 'GRG'
       },
-      address: '0xD34cf65739954EB99D284fD20aB4f88c64e4d67D',
+      address: '0xd56b064c185b8e057a9ff3cf022323276441f8df',
       decimals: 18,
       name: 'GRG Token'
     }

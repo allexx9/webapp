@@ -35,37 +35,44 @@ const getOrderBookFromRelay$ = (
   quoteToken,
   aggregated
 ) => {
+  console.log(aggregated)
   if (aggregated) {
-    // const exchange = new Exchange(relay.name, networkId)
-    // return from(
-    //   exchange.getAggregatedOrders(
-    //     utils.getTockenSymbolForRelay(relay.name, baseToken),
-    //     utils.getTockenSymbolForRelay(relay.name, quoteToken)
-    //   )
-    // )
+    const exchange = new Exchange(relay.name, networkId)
+    return from(
+      exchange.getAggregatedOrders(
+        utils.getTockenSymbolForRelay(relay.name, baseToken),
+        utils.getTockenSymbolForRelay(relay.name, quoteToken)
+      )
+    )
     // console.log(supportedExchanges.ETHFINEX)
     // console.log(supportedExchanges.ETHFINEX_RAW)
     // console.log(relay.name)
-    const baseTokenSymbol = utils.getTockenSymbolForRelay(relay.name, baseToken)
-    const quoteTokenSymbol = utils.getTockenSymbolForRelay(
-      relay.name,
-      quoteToken
-    )
-    const ethfinex = exchangeConnector(relay.name, {
-      networkId: networkId
-    })
-    return from(
-      ethfinex.http
-        .getOrders({
-          symbols: baseTokenSymbol + quoteTokenSymbol,
-          precision: exchanges[relay.name + 'Raw'].OrderPrecisions.P2
-        })
-        .then(orders => {
-          console.log(orders)
-        })
-    )
+
+    // const baseTokenSymbol = utils.getTockenSymbolForRelay(relay.name, baseToken)
+    // const quoteTokenSymbol = utils.getTockenSymbolForRelay(
+    //   relay.name,
+    //   quoteToken
+    // )
+    // const ethfinex = exchangeConnector(relay.name, {
+    //   networkId: networkId
+    // })
+    // return from(
+    //   ethfinex.http
+    //     .getOrders({
+    //       symbols: baseTokenSymbol + quoteTokenSymbol,
+    //       precision: exchanges[relay.name + 'Raw'].OrderPrecisions.P2
+    //     })
+    //     .then(orders => {
+    //       console.log(orders)
+    //     })
+    //     .catch(error => {
+    //       console.log('error')
+    //       console.log(error)
+    //     })
+    // )
   } else {
     const exchange = new Exchange(relay.name, networkId)
+    console.log('not aggregated')
     return from(
       exchange.getOrders(
         utils.getTockenSymbolForRelay(relay.name, baseToken),
@@ -88,6 +95,7 @@ export const getOrderBookFromRelayEpic = action$ => {
         action.payload.aggregated
       ).pipe(
         map(payload => {
+          console.log(payload)
           return { type: TYPE_.ORDERBOOK_INIT, payload: { ...payload } }
         }),
         catchError(error => {

@@ -82,9 +82,20 @@ const exchange = {
       }
     }
   },
-  relayOpenWs: (relay, networkId, baseToken, quoteToken) => {
+  relayOpenWsTicker: (relay, networkId, baseToken, quoteToken) => {
     return {
-      type: TYPE_.RELAY_OPEN_WEBSOCKET,
+      type: TYPE_.RELAY_OPEN_WEBSOCKET_TICKER,
+      payload: {
+        relay,
+        networkId,
+        baseToken,
+        quoteToken
+      }
+    }
+  },
+  relayOpenWsBook: (relay, networkId, baseToken, quoteToken) => {
+    return {
+      type: TYPE_.RELAY_OPEN_WEBSOCKET_BOOK,
       payload: {
         relay,
         networkId,

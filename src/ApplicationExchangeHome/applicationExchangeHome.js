@@ -144,6 +144,9 @@ class ApplicationExchangeHome extends Component {
     const { endpoint } = this.props
 
     const defaultRelay = RELAYS[DEFAULT_RELAY[api._rb.network.name]]
+    // console.log(EXCHANGES)
+    // console.log(api._rb.network.name)
+    // console.log(defaultRelay)
     const defaultExchange = EXCHANGES[defaultRelay.name][api._rb.network.name]
     const defaultTokensPair = {
       baseToken:
@@ -284,17 +287,26 @@ class ApplicationExchangeHome extends Component {
 
   connectToExchange = async (defaultRelay, defaultTokensPair) => {
     const { api } = this.context
+    console.log(defaultRelay)
+    // this.props.dispatch(
+    //   Actions.exchange.relayGetOrders(
+    //     defaultRelay,
+    //     api._rb.network.id,
+    //     defaultTokensPair.baseToken,
+    //     defaultTokensPair.quoteToken,
+    //     defaultRelay.initOrdeBookAggregated
+    //   )
+    // )
     this.props.dispatch(
-      Actions.exchange.relayGetOrders(
+      Actions.exchange.relayOpenWsTicker(
         defaultRelay,
         api._rb.network.id,
         defaultTokensPair.baseToken,
-        defaultTokensPair.quoteToken,
-        defaultRelay.initOrdeBookAggregated
+        defaultTokensPair.quoteToken
       )
     )
     this.props.dispatch(
-      Actions.exchange.relayOpenWs(
+      Actions.exchange.relayOpenWsBook(
         defaultRelay,
         api._rb.network.id,
         defaultTokensPair.baseToken,
@@ -566,7 +578,7 @@ class ApplicationExchangeHome extends Component {
       const { bids, asks, spread } = this.props.exchange.orderBook
       // console.log(asks)
       // console.log(bids)
-      const asksOrderNormalized = asks.slice(0, 20)
+      const asksOrderNormalized = asks.slice(-20)
       const bidsOrderNormalized = bids.slice(0, 20)
       // console.log(this.props.exchange.selectedExchange)
       // const bidsOrderNormalizedFilled = [ ...Array(20 - bidsOrderNormalized.length).fill(null), ...bidsOrderNormalized ]

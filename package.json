@@ -11,8 +11,9 @@
     "bignumber.js": "^7.2.1",
     "chart.js": "^2.7.2",
     "classnames": "^2.2.6",
+    "crc-32": "^1.2.0",
     "css-loader": "^1.0.0",
-    "custom-react-scripts": "^0.2.0",
+    "custom-react-scripts": "^0.2.2",
     "d3-dsv": "^1.0.8",
     "detect-browser": "^3.0.0",
     "is-number": "^7.0.0",
@@ -20,6 +21,7 @@
     "jss": "^9.0.0",
     "material-ui": "^0.20.2",
     "material-ui-pagination": "^1.1.6",
+    "moment": "^2.22.2",
     "node-fetch": "^2.2.0",
     "node-noop": "^1.0.0",
     "node-sass": "^4.0.0",
@@ -102,10 +104,7 @@
     "eslint-plugin-standard": "^3.0.1",
     "eslint-watch": "^4.0.2",
     "jest-extended": "^0.8.1",
-    "prettier": "^1.14.0",
-    "redux-devtools-extension": "^2.13.5",
-    "regenerator-runtime": "^0.12.1",
-    "source-map-explorer": "^1.5.0"
+    "prettier": "^1.14.0"
   },
   "jest": {
     "collectCoverageFrom": [

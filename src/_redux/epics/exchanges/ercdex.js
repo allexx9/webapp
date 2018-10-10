@@ -36,13 +36,13 @@ import { ERCdEX } from '../../../_utils/const'
 
 import {
   CHART_MARKET_DATA_UPDATE,
+  FETCH_ACCOUNT_ORDERS,
   FETCH_ASSETS_PRICE_DATA,
   FETCH_CANDLES_DATA_SINGLE,
-  FETCH_ACCOUNT_ORDERS,
   RELAY_CLOSE_WEBSOCKET,
   RELAY_GET_ORDERS,
   RELAY_MSG_FROM_WEBSOCKET,
-  RELAY_OPEN_WEBSOCKET,
+  RELAY_OPEN_WEBSOCKET_TICKER,
   UPDATE_CURRENT_TOKEN_PRICE,
   UPDATE_ELEMENT_LOADING,
   UPDATE_FUND_ORDERS,
@@ -88,9 +88,9 @@ const reconnectingWebsocket$ = (relay, networkId, baseToken, quoteToken) => {
   })
 }
 
-export const initRelayWebSocketEpic = action$ => {
+export const initRelayWebSocketTickerEpic = action$ => {
   return action$
-    .ofType(customRelayAction(RELAY_OPEN_WEBSOCKET))
+    .ofType(customRelayAction(RELAY_OPEN_WEBSOCKET_TICKER))
     .mergeMap(action => {
       return reconnectingWebsocket$(
         action.payload.relay,

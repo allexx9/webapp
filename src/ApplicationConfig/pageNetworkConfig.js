@@ -170,9 +170,9 @@ class PageNetworkConfig extends Component {
                 <MenuItem value={0} primaryText="Ethereum Kovan" />
                 <MenuItem value={1} primaryText="Ethereum Ropsten" />
                 <MenuItem
-                  disabled={true}
-                  value={2}
                   // disabled={true}
+                  value={2}
+                  disabled={false}
                   primaryText="Ethereum Mainnet"
                 />
               </DropDownMenu>
