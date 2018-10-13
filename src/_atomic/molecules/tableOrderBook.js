@@ -58,6 +58,23 @@ class TableOrderBook extends Component {
     }
   }
 
+  formatPrice = price => {
+    const number = Number(price)
+    if (number < 100) {
+      return number.toFixed(5)
+    }
+    if (number < 1000) {
+      return number.toFixed(4)
+    }
+    if (number < 10000) {
+      return number.toFixed(3)
+    }
+    if (number < 100000) {
+      return number.toFixed(2)
+    }
+    return number.toFixed(5)
+  }
+
   renderRows = ordersSorted => {
     const { orderType } = this.props
     let price, amount
@@ -152,10 +169,10 @@ class TableOrderBook extends Component {
                 }}
               />
               <Col xs={5} style={orderStylePrice[orderType]}>
-                {Number(amount).toFixed(3)}
+                {Number(amount).toFixed(2)}
               </Col>
               <Col xs={5} style={orderStylePrice[orderType]}>
-                {Number(price).toFixed(5)}
+                {this.formatPrice(price)}
               </Col>
             </Row>
           </Col>

@@ -3,7 +3,7 @@
 import * as ERRORS from '../../_const/errors'
 import * as TYPE_ from '../actions/const'
 import { Actions } from '../actions/'
-import { Observable, from } from 'rxjs'
+import { Observable, from, timer } from 'rxjs'
 import {
   catchError,
   concat,
@@ -195,7 +195,7 @@ const updateLiquidityAndTokenBalances$ = (api, fundAddress, currentState) => {
   const selectedTokensPair = Object.assign(
     currentState.exchange.selectedTokensPair
   )
-  return Observable.from(
+  return from(
     utils.fetchDragoLiquidityAndTokenBalances(
       fundAddress,
       api,
@@ -253,7 +253,7 @@ export const updateLiquidityAndTokenBalancesEpic = (action$, state$) => {
   return action$.pipe(
     ofType(TYPE_.UPDATE_LIQUIDITY_AND_TOKENS_BALANCE_START),
     switchMap(action => {
-      return Observable.timer(0, 10000).pipe(
+      return timer(0, 10000).pipe(
         tap(val => {
           console.log('update liquidity')
           return val

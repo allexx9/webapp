@@ -1,46 +1,6 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
 // import { Observable } from 'rxjs';
-import { Observable } from 'rxjs'
-import {
-  catchError,
-  delay,
-  exhaustMap,
-  finalize,
-  flatMap,
-  map,
-  mergeMap,
-  retryWhen,
-  switchMap,
-  tap,
-  timeout
-} from 'rxjs/operators'
-import { ofType } from 'redux-observable'
-import { timer } from 'rxjs'
-// import 'rxjs/add/observable/dom/webSocket';
-import 'rxjs/add/observable/concat'
-import 'rxjs/add/observable/defer'
-import 'rxjs/add/observable/fromPromise'
-import 'rxjs/add/observable/of'
-import 'rxjs/add/operator/bufferCount'
-import 'rxjs/add/operator/bufferTime'
-import 'rxjs/add/operator/catch'
-import 'rxjs/add/operator/delay'
-import 'rxjs/add/operator/filter'
-import 'rxjs/add/operator/last'
-import 'rxjs/add/operator/map'
-import 'rxjs/add/operator/mapTo'
-import 'rxjs/add/operator/mergeMap'
-import 'rxjs/add/operator/reduce'
-import 'rxjs/add/operator/retryWhen'
-import 'rxjs/add/operator/skip'
-import 'rxjs/add/operator/switchMap'
-import 'rxjs/add/operator/takeLast'
-import 'rxjs/add/operator/takeUntil'
-import 'rxjs/observable/fromEvent'
-import 'rxjs/observable/timer'
-// import 'rxjs/add/observable/throwError'
-import 'rxjs/add/observable/forkJoin'
 import * as TYPE_ from '../actions/const'
 import { Actions } from '../actions/'
 import {
@@ -53,6 +13,23 @@ import {
   RIGOBLOCK
 } from '../../_utils/const'
 import { Interfaces } from '../../_utils/interfaces'
+import { Observable, defer, from, timer } from 'rxjs'
+import {
+  catchError,
+  delay,
+  exhaustMap,
+  filter,
+  finalize,
+  flatMap,
+  map,
+  mergeMap,
+  retryWhen,
+  switchMap,
+  takeUntil,
+  tap,
+  timeout
+} from 'rxjs/operators'
+import { ofType } from 'redux-observable'
 import BigNumber from 'bignumber.js'
 import PoolsApi from '../../PoolsApi/src'
 import utils from '../../_utils/utils'
@@ -68,7 +45,7 @@ export const isConnectedToNode$ = (api, $state) => {
     isSyncing: false,
     syncStatus: {}
   }
-  return Observable.defer(() => api.eth.syncing()).pipe(
+  return defer(() => api.eth.syncing()).pipe(
     timeout(2500),
     map(result => {
       if (result !== false) {
@@ -97,7 +74,7 @@ export const isConnectedToNodeEpic = (action$, $state) =>
     let scalingDuration = 1000
     let timeInterval = 0
     let retryAttempt = 0
-    return Observable.timer(0, 2000).pipe(
+    return timer(0, 2000).pipe(
       exhaustMap(() => {
         return isConnectedToNode$(action.payload.api, $state).pipe(
           tap(result => {
@@ -182,7 +159,7 @@ export const attachInterfacePromise = async (api, endpoint) => {
 }
 
 const attachInterface$ = (api, endpoint) => {
-  return Observable.defer(() => attachInterfacePromise(api, endpoint))
+  return defer(() => attachInterfacePromise(api, endpoint))
 }
 
 export const delayShowAppEpic = action$ =>
@@ -221,27 +198,27 @@ export const attacheInterfaceEpic = action$ =>
               )
             )
           )
-        }),
-        retryWhen(error => {
-          let scalingDuration = 1000
-          return error.pipe(
-            mergeMap((error, i) => {
-              const retryAttempt = i + 1
-              // if maximum number of retries have been met
-              // or response is a status code we don't wish to retry, throw error
-              // if (
-              //   retryAttempt > maxRetryAttempts ||
-              //   excludedStatusCodes.find(e => e === error.status)
-              // ) {
-              //   throw(error);
-              // }
-              console.log(`Attempt ${retryAttempt}`)
-              // retry after 1s, 2s, etc...
-              return timer(scalingDuration)
-            }),
-            finalize(() => console.log('We are done!'))
-          )
         })
+      )
+    }),
+    retryWhen(error => {
+      let scalingDuration = 1000
+      return error.pipe(
+        mergeMap((error, i) => {
+          const retryAttempt = i + 1
+          // if maximum number of retries have been met
+          // or response is a status code we don't wish to retry, throw error
+          // if (
+          //   retryAttempt > maxRetryAttempts ||
+          //   excludedStatusCodes.find(e => e === error.status)
+          // ) {
+          //   throw(error);
+          // }
+          console.log(`Attempt ${retryAttempt}`)
+          // retry after 1s, 2s, etc...
+          return timer(scalingDuration)
+        }),
+        finalize(() => console.log('We are done!'))
       )
     })
   )
@@ -514,49 +491,55 @@ const monitorAccounts$ = (web3, api, state$) => {
 }
 
 export const monitorAccountsEpic = (action$, state$) =>
-  action$.ofType(TYPE_.MONITOR_ACCOUNTS_START).mergeMap(action => {
-    return monitorAccounts$(action.payload.web3, action.payload.api, state$)
-      .takeUntil(action$.ofType(TYPE_.MONITOR_ACCOUNTS_STOP))
-      .do(val => {
-        // console.log(val)
-        return val
-      })
-      .flatMap(accountsUpdate => {
-        const observablesArray = Array(0)
-        let options = state$.value.user.isManager
-          ? { balance: false, supply: true, limit: 10, trader: false }
-          : { balance: true, supply: false, limit: 10, trader: true }
-        observablesArray.push(
-          Observable.of(Actions.endpoint.updateInterface(accountsUpdate[0]))
-        )
-        observablesArray.push(
-          Observable.of({
-            type: TYPE_.QUEUE_ACCOUNT_NOTIFICATION,
-            payload: accountsUpdate[1]
-          })
-        )
-        accountsUpdate[2]
-          ? observablesArray.push(
-              Observable.of(
-                Actions.endpoint.getAccountsTransactions(
-                  action.payload.api,
-                  null,
-                  accountsUpdate[0].accounts,
-                  options
-                )
-              )
+  action$.pipe(
+    ofType(TYPE_.MONITOR_ACCOUNTS_START),
+    mergeMap(action => {
+      return (
+        monitorAccounts$(action.payload.web3, action.payload.api, state$).pipe(
+          takeUntil(action$.pipe(ofType(TYPE_.MONITOR_ACCOUNTS_STOP))),
+          tap(val => {
+            // console.log(val)
+            return val
+          }),
+          flatMap(accountsUpdate => {
+            const observablesArray = Array(0)
+            let options = state$.value.user.isManager
+              ? { balance: false, supply: true, limit: 10, trader: false }
+              : { balance: true, supply: false, limit: 10, trader: true }
+            observablesArray.push(
+              Observable.of(Actions.endpoint.updateInterface(accountsUpdate[0]))
             )
-          : null
-        return Observable.concat(...observablesArray)
-      })
-      .catch(error => {
-        console.log(error)
-        return Observable.of({
-          type: TYPE_.QUEUE_ERROR_NOTIFICATION,
-          payload: 'Error: cannot update accounts balance.'
+            observablesArray.push(
+              Observable.of({
+                type: TYPE_.QUEUE_ACCOUNT_NOTIFICATION,
+                payload: accountsUpdate[1]
+              })
+            )
+            accountsUpdate[2]
+              ? observablesArray.push(
+                  Observable.of(
+                    Actions.endpoint.getAccountsTransactions(
+                      action.payload.api,
+                      null,
+                      accountsUpdate[0].accounts,
+                      options
+                    )
+                  )
+                )
+              : null
+            return Observable.concat(...observablesArray)
+          })
+        ),
+        catchError(error => {
+          console.log(error)
+          return Observable.of({
+            type: TYPE_.QUEUE_ERROR_NOTIFICATION,
+            payload: 'Error: cannot update accounts balance.'
+          })
         })
-      })
-  })
+      )
+    })
+  )
 
 //
 // FETCH ACCOUNT TRANSACTIONS
@@ -600,7 +583,7 @@ export const getAccountsTransactionsEpic = (action$, state$) =>
 const checkMetaMaskIsUnlocked$ = (api, web3, endpoint) => {
   let newEndpoint = {}
   let newAccounts = [].concat(endpoint.accounts)
-  return Observable.fromPromise(
+  return from(
     new Promise(resolve => {
       const getAccounts = async () => {
         try {
@@ -678,44 +661,57 @@ const checkMetaMaskIsUnlocked$ = (api, web3, endpoint) => {
 
 export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
   return action$.ofType(TYPE_.CHECK_METAMASK_IS_UNLOCKED).mergeMap(action => {
-    return Observable.timer(0, 1000).exhaustMap(() => {
-      const currentState = state$.value
-      // console.log(currentState)
-      return checkMetaMaskIsUnlocked$(
-        action.payload.api,
-        action.payload.web3,
-        currentState.endpoint
-      )
-        .filter(val => {
-          // console.log(val)
-          return Object.keys(val).length !== 0
-        })
-        .flatMap(newEndpoint => {
-          let options
-          if (currentState.user.isManager) {
-            options = { balance: false, supply: true, limit: 10, trader: false }
-          } else {
-            options = { balance: true, supply: false, limit: 10, trader: true }
-          }
-          return Observable.concat(
-            Observable.of(Actions.endpoint.updateInterface(newEndpoint)),
-            Observable.of(
-              Actions.endpoint.getAccountsTransactions(
-                action.payload.api,
-                null,
-                newEndpoint.accounts,
-                options
+    return timer(0, 1000).pipe(
+      exhaustMap(() => {
+        const currentState = state$.value
+        // console.log(currentState)
+        return checkMetaMaskIsUnlocked$(
+          action.payload.api,
+          action.payload.web3,
+          currentState.endpoint
+        ).pipe(
+          filter(val => {
+            // console.log(val)
+            return Object.keys(val).length !== 0
+          }),
+          flatMap(newEndpoint => {
+            let options
+            if (currentState.user.isManager) {
+              options = {
+                balance: false,
+                supply: true,
+                limit: 10,
+                trader: false
+              }
+            } else {
+              options = {
+                balance: true,
+                supply: false,
+                limit: 10,
+                trader: true
+              }
+            }
+            return Observable.concat(
+              Observable.of(Actions.endpoint.updateInterface(newEndpoint)),
+              Observable.of(
+                Actions.endpoint.getAccountsTransactions(
+                  action.payload.api,
+                  null,
+                  newEndpoint.accounts,
+                  options
+                )
               )
             )
-          )
-        })
-        .catch(error => {
-          console.log(error)
-          // return Observable.of({
-          //   type: TYPE_.QUEUE_WARNING_NOTIFICATION,
-          //   payload: 'Unable to fetch accounts from MetaMask. Is it unlocket?'
-          // })
-        })
-    })
+          }),
+          catchError(error => {
+            console.log(error)
+            // return Observable.of({
+            //   type: TYPE_.QUEUE_WARNING_NOTIFICATION,
+            //   payload: 'Unable to fetch accounts from MetaMask. Is it unlocket?'
+            // })
+          })
+        )
+      })
+    )
   })
 }

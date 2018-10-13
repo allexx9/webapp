@@ -204,7 +204,7 @@ class NavLinks extends Component {
                     <div>
                       <div className={styles.menuItemPrimaryText}>HOLDER</div>
                       <div>
-                        <small>Invest in funds</small>
+                        <small>Look for a Drago</small>
                       </div>
                     </div>
                   }
@@ -215,7 +215,7 @@ class NavLinks extends Component {
                     <div>
                       <div className={styles.menuItemPrimaryText}>WIZARD</div>
                       <div>
-                        <small>Manage your funds</small>
+                        <small>Manage your Dragos</small>
                       </div>
                     </div>
                   }
@@ -273,7 +273,7 @@ class NavLinks extends Component {
                     rel="noopener noreferrer"
                     target="_blank"
                   >
-                    Community
+                    Help
                   </a>
                 }
               />

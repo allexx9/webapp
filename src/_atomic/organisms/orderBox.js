@@ -158,10 +158,27 @@ class OrderBox extends Component {
   // }
 
   onConfirmOrder = async () => {
+    const {
+      selectedOrder,
+      selectedExchange,
+      walletAddress
+    } = this.props.exchange
+    if (!selectedOrder.takerOrder) {
+    }
+    console.log(`Selected order: ${selectedOrder}`)
+    let signedOrder = await signOrder(
+      selectedOrder,
+      selectedExchange,
+      walletAddress
+    )
+    console.log(`Signed order: ${signedOrder}`)
+    const payload = {
+      details: { order: signedOrder }
+    }
+    this.props.dispatch(this.updateSelectedOrder(payload))
     this.setState({
       orderRawDialogOpen: true
     })
-    console.log(this.props.exchange.selectedOrder)
   }
 
   onSubmitOrder = async () => {
@@ -169,8 +186,9 @@ class OrderBox extends Component {
       selectedOrder,
       selectedExchange,
       selectedFund,
-      walletAddress
+      selectedRelay
     } = this.props.exchange
+    const { endpoint } = this.props
     const { api } = this.context
 
     const transactionId = sha3_512(new Date() + selectedFund.managerAccount)
@@ -243,48 +261,29 @@ class OrderBox extends Component {
       }
     } else {
       console.log(selectedOrder)
-      const transactionId = sha3_512(new Date() + selectedFund.managerAccount)
-      transactionDetails = {
-        status: 'pending',
-        hash: '',
-        parityId: null,
-        timestamp: new Date(),
-        account: selectedFund.details.address,
-        error: false,
-        action: selectedOrder.orderType === 'asks' ? 'BuyToken' : 'SellToken',
-        symbol: selectedOrder.selectedTokensPair.baseToken.symbol.toUpperCase(),
-        amount: selectedOrder.orderFillAmount
-      }
-      let signedOrder = await signOrder(
-        selectedOrder,
-        selectedExchange,
-        walletAddress
-      )
-      console.log(signedOrder)
-      const payload = {
-        details: { order: signedOrder }
-      }
-      this.props.dispatch(this.updateSelectedOrder(payload))
-      // this.setState({
-      //   orderRawDialogOpen: true
-      // })
-      let efxSymbol = `t${selectedOrder.selectedTokensPair.baseToken.symbol.toUpperCase()}${selectedOrder.selectedTokensPair.quoteToken.symbolTicker.Ethfinex.toUpperCase()}`
-      let efxAmount =
-        selectedOrder.orderType === 'asks'
-          ? (-Math.abs(selectedOrder.orderFillAmount)).toString()
-          : selectedOrder.orderFillAmount
-      const efxOrder = {
-        type: 'EXCHANGE LIMIT',
-        symbol: efxSymbol,
-        amount: efxAmount,
-        price: selectedOrder.orderPrice,
-        meta: signedOrder,
-        protocol: '0x'
-      }
-      console.log(efxSymbol, efxAmount, selectedOrder.orderPrice)
-      console.log(efxOrder)
-      submitOrderToRelayEFX(efxOrder)
-        .then(parsedBody => {
+      let signedOrder = selectedOrder.details.order
+      try {
+        if (selectedRelay.name === 'Ethfinex') {
+          console.log('Ethfinex order')
+          let efxSymbol = `t${selectedOrder.selectedTokensPair.baseToken.symbol.toUpperCase()}${selectedOrder.selectedTokensPair.quoteToken.symbolTicker.Ethfinex.toUpperCase()}`
+          let efxAmount =
+            selectedOrder.orderType === 'asks'
+              ? (-Math.abs(selectedOrder.orderFillAmount)).toString()
+              : selectedOrder.orderFillAmount
+          const efxOrder = {
+            type: 'EXCHANGE LIMIT',
+            symbol: efxSymbol,
+            amount: efxAmount,
+            price: selectedOrder.orderPrice,
+            meta: signedOrder,
+            protocol: '0x'
+          }
+          console.log(efxSymbol, efxAmount, selectedOrder.orderPrice)
+          console.log(efxOrder)
+          let parsedBody = await submitOrderToRelayEFX(
+            efxOrder,
+            endpoint.networkInfo.id
+          )
           transactionDetails.status = 'executed'
           transactionDetails.timestamp = new Date()
           this.props.dispatch(
@@ -294,23 +293,23 @@ class OrderBox extends Component {
             )
           )
           console.log(parsedBody)
-        })
-        .catch(error => {
-          const errorArray = serializeError(error).message.split(/\r?\n/)
-          transactionDetails.status = 'error'
-          transactionDetails.error = errorArray[0]
-          this.props.dispatch(
-            Actions.transactions.addTransactionToQueueAction(
-              transactionId,
-              transactionDetails
-            )
+        }
+      } catch (error) {
+        const errorArray = serializeError(error).message.split(/\r?\n/)
+        transactionDetails.status = 'error'
+        transactionDetails.error = errorArray[0]
+        this.props.dispatch(
+          Actions.transactions.addTransactionToQueueAction(
+            transactionId,
+            transactionDetails
           )
-          console.log(error)
-          utils.notificationError(
-            this.props.notifications.engine,
-            serializeError(error).message
-          )
-        })
+        )
+        console.log(error)
+        utils.notificationError(
+          this.props.notifications.engine,
+          serializeError(error).message
+        )
+      }
     }
   }
 
@@ -452,13 +451,13 @@ class OrderBox extends Component {
                 <Row className={styles.orderBookContainer}>
                   <Col xs={12}>
                     <Row className={styles.sectionHeaderOrderTable}>
-                      <Col xs={6} className={styles.buyButton}>
+                      <Col sm={12} md={6} className={styles.buyButton}>
                         <ButtonOrderBuy
                           selected={buySelected}
                           onBuySell={this.onBuySell}
                         />
                       </Col>
-                      <Col xs={6} className={styles.sellButton}>
+                      <Col sm={12} md={6} className={styles.sellButton}>
                         <ButtonOrderSell
                           selected={sellSelected}
                           onBuySell={this.onBuySell}
@@ -532,7 +531,7 @@ class OrderBox extends Component {
                   </Col>
                   <Col xs={12}>
                     <Row center="xs">
-                      <Col xs={6}>
+                      <Col sm={12} md={6}>
                         <ButtonOrderReset
                           onClick={this.onCancelOrder}
                           disabled={
@@ -540,7 +539,7 @@ class OrderBox extends Component {
                           }
                         />
                       </Col>
-                      <Col xs={6}>
+                      <Col sm={12} md={6}>
                         <ButtonOrderConfirm
                           onClick={this.onConfirmOrder}
                           disabled={

@@ -121,7 +121,7 @@ class Exchange {
         //   return this._call[this._transport].getAccountOrders[this._exchange](this._network, baseToken, quoteToken)
         case Ethfinex:
           return this._call[this._transport].getAccountOrders[this._exchange](
-            3,
+            this._network,
             account
           )
         default:

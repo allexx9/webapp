@@ -140,103 +140,6 @@ class ExchangeBox extends PureComponent {
     }
   }
 
-  buttonLockClick = async () => {
-    console.log(this.props)
-
-    let tokenAddress
-    let tokenWrapper
-    let isOldERC20
-    // ETH
-    // tokenAddress = null //Ether has address 0x0
-    // tokenWrapper = '0x965808e7f815cfffd4c018ef2ba4c5a65eba087e'
-
-    // GRG
-    // const tokenAddress = '0x6FA8590920c5966713b1a86916f7b0419411e474'
-    // const tokenWrapper = '0x5959f2036608d693B4d085020ACAdBBf664C793E'
-
-    // USDT
-    // const tokenAddress = '0x0736d0c130b2eAD47476cC262dbed90D7C4eeABD'
-    // const tokenWrapper = '0x83E42e6d1ac009285376340ef64BaC1C7d106C89'
-
-    // ZRX
-    // const tokenAddress = '0xA8E9Fa8f91e5Ae138C74648c9C304F1C75003A8D'
-    // const tokenWrapper = '0xFF32E76EAdc11Fc816A727980E92805D237CDB28'
-    const toBeWrapped = 1e16 // 10 finney
-    const time = 1 // 1 hour lockup (the minimum)
-
-    const exchangeContractAddress = '0x67799a5e640bc64ca24d3e6813842754e546d7b1' // ETX
-    // const exchangeContractAddress = '0x8965a813fb43a141d7741320cd16cc1898af97fb' // RigoBlock
-    // const exchangeContractAddress = '0x68CE3E415adCF280b5456Ec82142030Af54FDa58'
-    const managerAccount = '0xc8dcd42e846466f2d2b89f3c54eba37bf738019b'
-
-    // const { selectedFund } = this.props.exchange.selectedFund
-
-    const poolApi = new PoolApi(window.web3)
-    poolApi.contract.drago.init('0x972897D7806769895d258f15d791725Aee0bf688')
-
-    // ETH
-    // console.log('ETH Lock')
-    // tokenAddress = null //Ether has address 0x0
-    // tokenWrapper = '0x965808e7f815cfffd4c018ef2ba4c5a65eba087e'
-    // isOldERC20 = false
-    // await poolApi.contract.drago.operateOnExchangeEFX(
-    //   managerAccount.toLocaleLowerCase(),
-    //   exchangeContractAddress.toLocaleLowerCase(),
-    //   tokenAddress === null ? null : tokenAddress.toLocaleLowerCase(),
-    //   tokenWrapper.toLocaleLowerCase(),
-    //   toBeWrapped,
-    //   time,
-    //   isOldERC20
-    // )
-
-    // // GRG
-    // console.log('GRG Lock')
-    // tokenAddress = '0x6FA8590920c5966713b1a86916f7b0419411e474'
-    // tokenWrapper = '0x5959f2036608d693B4d085020ACAdBBf664C793E'
-    // isOldERC20 = false
-    // await poolApi.contract.drago.operateOnExchangeEFX(
-    //   managerAccount.toLocaleLowerCase(),
-    //   exchangeContractAddress.toLocaleLowerCase(),
-    //   tokenAddress === null ? null : tokenAddress.toLocaleLowerCase(),
-    //   tokenWrapper.toLocaleLowerCase(),
-    //   toBeWrapped,
-    //   time,
-    //   isOldERC20
-    // )
-    // // USDT
-    console.log('USDT Lock')
-    tokenAddress = '0x0736d0c130b2eAD47476cC262dbed90D7C4eeABD'
-    tokenWrapper = '0x83E42e6d1ac009285376340ef64BaC1C7d106C89'
-    isOldERC20 = true
-    await poolApi.contract.drago.operateOnExchangeEFX(
-      managerAccount.toLocaleLowerCase(),
-      exchangeContractAddress.toLocaleLowerCase(),
-      tokenAddress === null ? null : tokenAddress.toLocaleLowerCase(),
-      tokenWrapper.toLocaleLowerCase(),
-      toBeWrapped,
-      time,
-      isOldERC20
-    )
-    // // ZRX
-    // console.log('ZRX Lock')
-    // tokenAddress = '0xA8E9Fa8f91e5Ae138C74648c9C304F1C75003A8D'
-    // tokenWrapper = '0xFF32E76EAdc11Fc816A727980E92805D237CDB28'
-    // isOldERC20 = false
-    // await poolApi.contract.drago.operateOnExchangeEFX(
-    //   managerAccount.toLocaleLowerCase(),
-    //   exchangeContractAddress.toLocaleLowerCase(),
-    //   tokenAddress === null ? null : tokenAddress.toLocaleLowerCase(),
-    //   tokenWrapper.toLocaleLowerCase(),
-    //   toBeWrapped,
-    //   time,
-    //   isOldERC20
-    // )
-
-    // const wethBalance = await baseContracts['WrapperLockEth'].balanceOf(
-    //   dragoAddress
-    // )
-  }
-
   render() {
     const {
       availableRelays,
@@ -251,11 +154,11 @@ class ExchangeBox extends PureComponent {
         <Col xs={12}>
           <Row className={styles.sectionTitle}>
             <Col xs={12}>
-              <BoxTitle titleText={'EXCHANGE'} />
+              <BoxTitle titleText={'RELAY'} />
               <Paper style={paperStyle} zDepth={1}>
                 <Row>
                   <Col xs={12}>
-                    <SectionTitleExchange titleText="EXCHANGES" />
+                    <SectionTitleExchange titleText="RELAYS" />
                     <ExchangeSelector
                       availableRelays={availableRelays}
                       selectedRelay={selectedRelay.name}

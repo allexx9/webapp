@@ -264,7 +264,7 @@ export const NETWORKS = {
 export const EXCHANGES = {
   ERCdEX: {
     kovan: {
-      tokenTransferProxyAddress: '0x087eed4bc1ee3de49befbd66c662b434b15d49d4',
+      tokenTransferProxy: '0x087eed4bc1ee3de49befbd66c662b434b15d49d4',
       exchangeContractAddress: '0x90fe2af704b34e0224bf2299c838e04d4dcf1364',
       feeRecipient: '',
       networkId: 42,
@@ -272,7 +272,7 @@ export const EXCHANGES = {
       taker: 'NULL_ADDRESS'
     },
     ropsten: {
-      tokenTransferProxyAddress: '0x4e9aad8184de8833365fea970cd9149372fdf1e6',
+      tokenTransferProxy: '0x4e9aad8184de8833365fea970cd9149372fdf1e6',
       exchangeContractAddress: '0x67799a5e640bc64ca24d3e6813842754e546d7b1',
       feeRecipient: '',
       networkId: 3,
@@ -308,7 +308,7 @@ export const EXCHANGES = {
     },
     mainnet: {
       tokenTransferProxy: '0x7e03d2b8edc3585ecd8a5807661fff0830a0b603',
-      exchangeContractAddress: '0xdcDb42C9a256690bd153A7B409751ADFC8Dd5851',
+      exchangeContractAddress: '0xdcdb42c9a256690bd153a7b409751adfc8dd5851',
       feeRecipient: '0x61b9898c9b60a159fc91ae8026563cd226b7a0c1',
       networkId: 1,
       name: 'Ethfinex',

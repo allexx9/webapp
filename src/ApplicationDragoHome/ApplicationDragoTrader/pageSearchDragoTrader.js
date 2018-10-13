@@ -3,9 +3,9 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
 import BigNumber from 'bignumber.js'
-import ElementListFunds from '../Elements/elementListFunds'
+import ElementListFunds from '../../Elements/elementListFunds'
 import ElementListWrapper from '../../Elements/elementListWrapper'
-import FilterFunds from '../Elements/elementFilterFunds'
+import FilterFunds from '../../Elements/elementFilterFunds'
 import Paper from 'material-ui/Paper'
 import PoolApi from '../../PoolsApi/src'
 import PropTypes from 'prop-types'
@@ -75,7 +75,42 @@ class PageFundsDragoTrader extends Component {
     return stateUpdate || propsUpdate
   }
 
-  componentDidUpdate() {}
+  getDragos() {
+    const { api } = this.context
+    const poolApi = new PoolApi(api)
+    const logToEvent = log => {
+      // const key = api.util.sha3(JSON.stringify(log))
+      const { params } = log
+      return {
+        symbol: params.symbol.value,
+        dragoId: params.dragoId.value.toFixed(),
+        name: params.name.value
+      }
+    }
+
+    // Getting all DragoCreated events since block 0.
+    // dragoFactoryEventsSignatures accesses the contract ABI, gets all the events and for each creates a hex signature
+    // to be passed to getAllLogs. Events are indexed and filtered by topics
+    // more at: http://solidity.readthedocs.io/en/develop/contracts.html?highlight=event#events
+    poolApi.contract.dragoeventful.init().then(() => {
+      poolApi.contract.dragoeventful
+        .getAllLogs({
+          topics: [poolApi.contract.dragoeventful.hexSignature.DragoCreated]
+        })
+        .then(dragoCreatedLogs => {
+          const logs = dragoCreatedLogs.map(logToEvent)
+          logs.sort(function(a, b) {
+            if (a.symbol < b.symbol) return -1
+            if (a.symbol > b.symbol) return 1
+            return 0
+          })
+          this.setState({
+            dragoCreatedLogs: logs,
+            dragoFilteredList: logs
+          })
+        })
+    })
+  }
 
   filterList = filteredList => {
     this.setState({
@@ -134,43 +169,6 @@ class PageFundsDragoTrader extends Component {
         </Col>
       </Row>
     )
-  }
-
-  getDragos() {
-    const { api } = this.context
-    const poolApi = new PoolApi(api)
-    const logToEvent = log => {
-      // const key = api.util.sha3(JSON.stringify(log))
-      const { params } = log
-      return {
-        symbol: params.symbol.value,
-        dragoId: params.dragoId.value.toFixed(),
-        name: params.name.value
-      }
-    }
-
-    // Getting all DragoCreated events since block 0.
-    // dragoFactoryEventsSignatures accesses the contract ABI, gets all the events and for each creates a hex signature
-    // to be passed to getAllLogs. Events are indexed and filtered by topics
-    // more at: http://solidity.readthedocs.io/en/develop/contracts.html?highlight=event#events
-    poolApi.contract.dragoeventful.init().then(() => {
-      poolApi.contract.dragoeventful
-        .getAllLogs({
-          topics: [poolApi.contract.dragoeventful.hexSignature.DragoCreated]
-        })
-        .then(dragoCreatedLogs => {
-          const logs = dragoCreatedLogs.map(logToEvent)
-          logs.sort(function(a, b) {
-            if (a.symbol < b.symbol) return -1
-            if (a.symbol > b.symbol) return 1
-            return 0
-          })
-          this.setState({
-            dragoCreatedLogs: logs,
-            dragoFilteredList: logs
-          })
-        })
-    })
   }
 }
 

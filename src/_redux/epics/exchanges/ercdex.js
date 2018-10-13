@@ -19,7 +19,23 @@ import 'rxjs/add/operator/switchMap'
 import 'rxjs/add/operator/takeUntil'
 import 'rxjs/observable/fromEvent'
 import 'rxjs/observable/timer'
-import { Observable } from 'rxjs/Observable'
+import { Observable, timer } from 'rxjs'
+import {
+  bufferCount,
+  bufferTime,
+  catchError,
+  concat,
+  exhaustMap,
+  filter,
+  map,
+  mergeMap,
+  skip,
+  switchMap,
+  takeUntil,
+  tap,
+  throttleTime
+} from 'rxjs/operators'
+import { ofType } from 'redux-observable'
 // import { timer } from 'rxjs/observable/timer'
 import 'rxjs/add/observable/forkJoin'
 import { zip } from 'rxjs/observable/zip'
@@ -89,26 +105,29 @@ const reconnectingWebsocket$ = (relay, networkId, baseToken, quoteToken) => {
 }
 
 export const initRelayWebSocketTickerEpic = action$ => {
-  return action$
-    .ofType(customRelayAction(RELAY_OPEN_WEBSOCKET_TICKER))
-    .mergeMap(action => {
+  return action$.pipe(
+    ofType(customRelayAction(RELAY_OPEN_WEBSOCKET_TICKER)),
+    mergeMap(action => {
       return reconnectingWebsocket$(
         action.payload.relay,
         action.payload.networkId,
         action.payload.baseToken,
         action.payload.quoteToken
-      )
-        .takeUntil(
-          action$
-            .ofType(RELAY_CLOSE_WEBSOCKET)
-            .filter(closeAction => closeAction.ticker === action.ticker)
-        )
-        .do(() => {})
-        .map(payload => ({
+      ).pipe(
+        takeUntil(
+          action$.pipe(
+            ofType(RELAY_CLOSE_WEBSOCKET),
+            filter(closeAction => closeAction.ticker === action.ticker)
+          )
+        ),
+        tap(() => {}),
+        map(payload => ({
           type: customRelayAction(RELAY_MSG_FROM_WEBSOCKET),
           payload
         }))
+      )
     })
+  )
 }
 
 const updateCurrentTokenPrice = (tickerOutput, baseToken) => {
@@ -138,25 +157,25 @@ const updateCurrentTokenPrice = (tickerOutput, baseToken) => {
 }
 
 export const orderBookEpic = (action$, state$) => {
-  return action$
-    .ofType(customRelayAction(RELAY_MSG_FROM_WEBSOCKET))
-    .map(action => action.payload)
-    .bufferTime(1000)
-    .filter(value => {
+  return action$.pipe(
+    ofType(customRelayAction(RELAY_MSG_FROM_WEBSOCKET)),
+    map(action => action.payload),
+    bufferTime(1000),
+    filter(value => {
       return value.length !== 0
-    })
-    .bufferCount(1)
-    .map(ticker => {
+    }),
+    bufferCount(1),
+    map(ticker => {
       console.log(RELAY_MSG_FROM_WEBSOCKET)
       const currentState = state$.value
       const lastItem = ticker[0].pop()
       return [lastItem, currentState]
-    })
-    .do(val => {
+    }),
+    tap(val => {
       console.log(val)
       return val
-    })
-    .switchMap(ticker =>
+    }),
+    switchMap(ticker =>
       Observable.of(
         {
           type: RELAY_GET_ORDERS,
@@ -174,6 +193,7 @@ export const orderBookEpic = (action$, state$) => {
         )
       )
     )
+  )
 }
 
 //
@@ -204,9 +224,9 @@ const getCandlesData$ = (
 //   Observable.fromPromise(getHistoricalPricesDataFromERCdEX(networkId, baseToken.address, quoteToken.address, startDate))
 
 export const getCandlesSingleDataEpic = action$ => {
-  return action$
-    .ofType(customRelayAction(FETCH_CANDLES_DATA_SINGLE))
-    .mergeMap(action => {
+  return action$.pipe(
+    ofType(customRelayAction(FETCH_CANDLES_DATA_SINGLE)),
+    mergeMap(action => {
       console.log(action)
       return Observable.concat(
         Observable.of({
@@ -219,18 +239,21 @@ export const getCandlesSingleDataEpic = action$ => {
           action.payload.baseToken,
           action.payload.quoteToken,
           action.payload.startDate
-        ).map(historical => {
-          return {
-            type: CHART_MARKET_DATA_UPDATE,
-            payload: historical
-          }
-        }),
+        ).pipe(
+          map(historical => {
+            return {
+              type: CHART_MARKET_DATA_UPDATE,
+              payload: historical
+            }
+          })
+        ),
         Observable.of({
           type: UPDATE_ELEMENT_LOADING,
           payload: { marketBox: false }
         })
       )
     })
+  )
 }
 
 //

@@ -62,6 +62,7 @@ export const ERC20_TOKENS = {
   mainnet: {
     WETH: {
       symbol: 'WETH',
+      isOldERC20: false,
       symbolTicker: {
         [Ethfinex]: 'ETH'
       },
@@ -71,6 +72,7 @@ export const ERC20_TOKENS = {
     },
     ZRX: {
       symbol: 'ZRX',
+      isOldERC20: false,
       symbolTicker: {
         Ethfinex: 'ZRX'
       },
@@ -88,12 +90,14 @@ export const ERC20_TOKENS = {
     },
     ETHW: {
       symbol: 'WETH',
+      isOldERC20: false,
       address: '0x768C42FF6F5805bD2631AC7Cc9eaBE3AF17b4b41',
       decimals: 18,
       name: 'Wrapped Ether EFX'
     },
     ETH: {
       symbol: 'ETH',
+      isOldERC20: false,
       symbolTicker: {
         Ethfinex: 'ETH'
       },
@@ -111,6 +115,7 @@ export const ERC20_TOKENS = {
     },
     GNT: {
       symbol: 'GNT',
+      isOldERC20: false,
       symbolTicker: {
         Ethfinex: 'GNT'
       },
@@ -120,6 +125,7 @@ export const ERC20_TOKENS = {
     },
     MKR: {
       symbol: 'MKR',
+      isOldERC20: false,
       symbolTicker: {
         Ethfinex: 'MKR'
       },
@@ -129,6 +135,7 @@ export const ERC20_TOKENS = {
     },
     USDT: {
       symbol: 'USDT',
+      isOldERC20: true,
       symbolTicker: {
         Ethfinex: 'USD'
       },
@@ -146,6 +153,7 @@ export const ERC20_TOKENS = {
     },
     GRG: {
       symbol: 'GRG',
+      isOldERC20: false,
       symbolTicker: {
         Ethfinex: 'GRG'
       },

@@ -130,7 +130,7 @@ class NavLinksLeft extends Component {
       },
       { label: 'drago', to: 'drago', icon: <ActionShowChart color="white" /> },
       {
-        label: 'exchange',
+        label: 'market',
         to: 'exchange',
         icon: <ActionPolymer color="white" />
       }
@@ -148,7 +148,7 @@ class NavLinksLeft extends Component {
         icon: <ActionShowChart color="#054186" />
       },
       {
-        label: 'exchange',
+        label: 'market',
         to: 'exchange',
         icon: <ActionPolymer color="#054186" />
       }

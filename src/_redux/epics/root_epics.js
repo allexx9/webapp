@@ -33,7 +33,6 @@ const Ethfinex_Epics = [
   Ethfinex.getCandlesSingleDataEpic,
   Ethfinex.initRelayWebSocketTickerEpic,
   Ethfinex.initRelayWebSocketBookEpic,
-  Ethfinex.orderBookEpic,
   Ethfinex.getAccountOrdersEpic
 ]
 

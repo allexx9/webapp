@@ -1,17 +1,27 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-import 'rxjs/add/observable/timer'
-import 'rxjs/add/operator/bufferTime'
-import 'rxjs/add/operator/concat'
-import 'rxjs/add/operator/delay'
-import 'rxjs/add/operator/do'
-import 'rxjs/add/operator/exhaustMap'
-import 'rxjs/add/operator/map'
-import 'rxjs/add/operator/mapTo'
-import 'rxjs/add/operator/mergeMap'
-import { Observable } from 'rxjs/Observable'
-
-import 'rxjs/observable/timer'
+// import 'rxjs/add/observable/timer'
+// import 'rxjs/add/operator/bufferTime'
+// import 'rxjs/add/operator/concat'
+// import 'rxjs/add/operator/delay'
+// import 'rxjs/add/operator/do'
+// import 'rxjs/add/operator/exhaustMap'
+// import 'rxjs/add/operator/map'
+// import 'rxjs/add/operator/mapTo'
+// import 'rxjs/add/operator/mergeMap'
+import { Observable, from, timer } from 'rxjs'
+import {
+  catchError,
+  concat,
+  exhaustMap,
+  filter,
+  map,
+  mergeMap,
+  switchMap,
+  takeUntil,
+  tap
+} from 'rxjs/operators'
+import { ofType } from 'redux-observable'
 import { setTokenAllowance } from '../../_utils/exchange'
 // import { fromPromise } from 'rxjs/add/observable/fromPromise';
 import {
@@ -171,40 +181,40 @@ const updateGroupCandles = ticker => {
 }
 
 export const getCandlesGroupDataEpic = (action$, state$) => {
-  return action$.ofType(FETCH_CANDLES_DATA_PORTFOLIO_START).mergeMap(action => {
-    return Observable.concat(
-      // Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: true } }),
-      candlesGroupWebsocket$(
+  return action$.pipe(
+    ofType(FETCH_CANDLES_DATA_PORTFOLIO_START),
+    mergeMap(action => {
+      return candlesGroupWebsocket$(
         action.payload.relay,
         action.payload.networkId,
         utils.ethfinexTickersToArray(
           state$.value.transactionsDrago.selectedDrago.assets
         ),
         action.payload.startDate
-      )
-        .takeUntil(action$.ofType(FETCH_CANDLES_DATA_PORTFOLIO_STOP))
-        .filter(val => {
+      ).pipe(
+        takeUntil(action$.ofType(FETCH_CANDLES_DATA_PORTFOLIO_STOP)),
+        filter(val => {
           return val[1] !== 'hb'
-        })
-        .filter(val => {
+        }),
+        filter(val => {
           return val[1].length !== 0
-        })
-        .do(val => {
+        }),
+        tap(val => {
           return val
-        })
-        .map(historical => {
+        }),
+        map(historical => {
           return updateGroupCandles(historical)
-        })
-        .catch(error => {
+        }),
+        catchError(error => {
           console.warn(error)
           return Observable.of({
             type: QUEUE_ERROR_NOTIFICATION,
             payload: 'Error fetching candles data.'
           })
         })
-      // Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: false } }),
-    )
-  })
+      )
+    })
+  )
 }
 
 //
@@ -214,54 +224,55 @@ export const getCandlesGroupDataEpic = (action$, state$) => {
 
 const getTickers$ = (relay, networkId, tickersString) => {
   const exchange = new Exchange(relay.name, networkId)
-  return Observable.fromPromise(exchange.getTickers(tickersString))
-  // .catch((error) => {
-  //   console.log(error)
-  //   return Observable.of(Array(0))
-  // })
+  return from(exchange.getTickers(tickersString))
 }
 
 export const getPricesEpic = (action$, state$) =>
-  action$.ofType(TOKEN_PRICE_TICKERS_FETCH_START).switchMap(action => {
-    return Observable.timer(0, 10000)
-      .takeUntil(action$.ofType(TOKEN_PRICE_TICKERS_FETCH_STOP))
-      .exhaustMap(() => {
-        const currentState = state$.value
-        const tickersString = utils
-          .ethfinexTickersToArray(
-            currentState.transactionsDrago.selectedDrago.assets
-          )
-          .toString()
-        return getTickers$(
-          action.payload.relay,
-          action.payload.networkId,
-          tickersString
-        )
-          .map(message => {
-            try {
-              const arrayToObject = (arr, keyField) =>
-                Object.assign(
-                  {},
-                  ...arr.map(item => ({ [item[keyField]]: item }))
-                )
-              const tokenList = arrayToObject(message, 'symbol')
-              return tokenList
-            } catch (err) {
-              return {}
-            }
-          })
-          .map(payload => ({ type: TOKENS_TICKERS_UPDATE, payload }))
-          .catch(() => {
-            return Observable.of({
-              type: QUEUE_ERROR_NOTIFICATION,
-              payload: 'Error fetching tickers data.'
+  action$.pipe(
+    ofType(TOKEN_PRICE_TICKERS_FETCH_START),
+    switchMap(action => {
+      return timer(0, 10000).pipe(
+        takeUntil(action$.ofType(TOKEN_PRICE_TICKERS_FETCH_STOP)),
+        exhaustMap(() => {
+          const currentState = state$.value
+          const tickersString = utils
+            .ethfinexTickersToArray(
+              currentState.transactionsDrago.selectedDrago.assets
+            )
+            .toString()
+          return getTickers$(
+            action.payload.relay,
+            action.payload.networkId,
+            tickersString
+          ).pipe(
+            map(message => {
+              try {
+                const arrayToObject = (arr, keyField) =>
+                  Object.assign(
+                    {},
+                    ...arr.map(item => ({ [item[keyField]]: item }))
+                  )
+                const tokenList = arrayToObject(message, 'symbol')
+                return tokenList
+              } catch (err) {
+                return {}
+              }
+            }),
+            map(payload => ({ type: TOKENS_TICKERS_UPDATE, payload })),
+            catchError(() => {
+              return Observable.of({
+                type: QUEUE_ERROR_NOTIFICATION,
+                payload: 'Error fetching tickers data.'
+              })
             })
+          )
+        }),
+        catchError(() => {
+          return Observable.of({
+            type: QUEUE_ERROR_NOTIFICATION,
+            payload: 'Error fetching tickers data.'
           })
-      })
-      .catch(() => {
-        return Observable.of({
-          type: QUEUE_ERROR_NOTIFICATION,
-          payload: 'Error fetching tickers data.'
         })
-      })
-  })
+      )
+    })
+  )

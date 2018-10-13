@@ -439,31 +439,37 @@ class TokenLockInfo extends PureComponent {
                 />
               </Col>
             </Row>
-            <div className={styles.buttonsLock}>
+            <div className={styles.buttonsLockContainer}>
               <Row>
-                <Col xs={6}>
-                  <ButtonLock
-                    buttonAction={'unlock'}
-                    onLockTocken={this.onLockTocken}
-                    disabled={this.state.errorText !== ''}
-                  />
+                <Col sm={12} md={6}>
+                  <div className={styles.buttonsLock}>
+                    <ButtonLock
+                      buttonAction={'unlock'}
+                      onLockTocken={this.onLockTocken}
+                      disabled={this.state.errorText !== ''}
+                      className={styles.buttonsLock}
+                    />
+                  </div>
                 </Col>
-                <Col xs={6}>
-                  <ButtonLock
-                    buttonAction={'lock'}
-                    onLockTocken={this.onLockTocken}
-                    disabled={
-                      // this.state.errorText !== '' ||
-                      (new BigNumber(
-                        selectedFund.liquidity.baseToken.balance
-                      ).eq(0) &&
-                        this.state.baseTokenSelected) ||
-                      (new BigNumber(
-                        selectedFund.liquidity.quoteToken.balance
-                      ).eq(0) &&
-                        !this.state.baseTokenSelected)
-                    }
-                  />
+                <Col sm={12} md={6}>
+                  <div className={styles.buttonsLock}>
+                    <ButtonLock
+                      buttonAction={'lock'}
+                      onLockTocken={this.onLockTocken}
+                      className={styles.buttonsLock}
+                      disabled={
+                        // this.state.errorText !== '' ||
+                        (new BigNumber(
+                          selectedFund.liquidity.baseToken.balance
+                        ).eq(0) &&
+                          this.state.baseTokenSelected) ||
+                        (new BigNumber(
+                          selectedFund.liquidity.quoteToken.balance
+                        ).eq(0) &&
+                          !this.state.baseTokenSelected)
+                      }
+                    />
+                  </div>
                 </Col>
               </Row>
             </div>

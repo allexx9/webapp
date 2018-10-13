@@ -1182,9 +1182,19 @@ class utilities {
         ]
       }
       const dragoCreatedLog = await contract.getAllLogs(eventsFilterCreate)
-      const blockInfo = await api.eth.getBlockByNumber(
-        dragoCreatedLog[0].blockNumber.toFixed(0)
-      )
+      let blockInfo
+      if (dragoCreatedLog.length !== 0) {
+        try {
+          blockInfo = await api.eth.getBlockByNumber(
+            dragoCreatedLog[0].blockNumber.toFixed(0)
+          )
+        } catch (error) {
+          blockInfo = { timestamp: new Date(0) }
+        }
+      } else {
+        blockInfo = { timestamp: new Date(0) }
+      }
+
       return this.dateFromTimeStampHuman(blockInfo.timestamp)
     }
 
@@ -1278,10 +1288,19 @@ class utilities {
           null
         ]
       }
+      let blockInfo
       const vaultCreatedLog = await contract.getAllLogs(eventsFilterCreate)
-      const blockInfo = await api.eth.getBlockByNumber(
-        vaultCreatedLog[0].blockNumber.toFixed(0)
-      )
+      if (vaultCreatedLog.length !== 0) {
+        try {
+          blockInfo = await api.eth.getBlockByNumber(
+            vaultCreatedLog[0].blockNumber.toFixed(0)
+          )
+        } catch (error) {
+          blockInfo = { timestamp: new Date(0) }
+        }
+      } else {
+        blockInfo = { timestamp: new Date(0) }
+      }
       return this.dateFromTimeStampHuman(blockInfo.timestamp)
     }
 
