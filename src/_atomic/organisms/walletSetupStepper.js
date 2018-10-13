@@ -70,8 +70,8 @@ class WalletSetupStepper extends Component {
     const locked = props.endpoint.isMetaMaskLocked
     const correctNetwork = props.endpoint.isMetaMaskNetworkCorrect
     const holdsTokens = !props.endpoint.grgBalance.eq(0)
-    console.log(props.endpoint.grgBalance)
-    console.log(holdsTokens)
+    // console.log(props.endpoint.grgBalance)
+    // console.log(holdsTokens)
     if (locked !== state.locked) {
       return {
         locked: locked,

@@ -16,6 +16,7 @@ import registerServiceWorker from './registerServiceWorker'
 // import thunkMiddleware from 'redux-thunk'
 // import { composeWithDevTools } from 'redux-devtools-extension';
 import * as ACTIONS from './_redux/actions/const'
+// import * as pino from 'pino'
 import { PersistGate } from 'redux-persist/integration/react'
 import { createFilter } from 'redux-persist-transform-filter'
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2'
@@ -26,6 +27,19 @@ import utils from './_utils/utils'
 import './index.module.css'
 
 function noop() {}
+
+// function logger() = pino({
+//   prettyPrint: { colorize: true }
+// })
+
+// const logger = pino({
+//   prettyPrint: { colorize: true }
+// })
+
+// console.log(logger)
+// logger.info('hello world')
+
+// console.log = msg => logger.info('test ' + msg)
 
 if (process.env.NODE_ENV !== 'development') {
   console.log = noop

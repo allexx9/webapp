@@ -8,10 +8,12 @@
 }
 
 .sellButton {
+  padding-top: 4px;
   text-align: center;
 }
 
 .buyButton {
+  padding-top: 4px;
   text-align: center;
 }
 

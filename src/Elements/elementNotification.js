@@ -78,15 +78,11 @@ export default class ElementNotification extends Component {
 
   etherscanLink = () => {
     const { txHash } = this.props
-    return (
-      <a
-        href={
-          'https://' + this.props.networkName + '.etherscan.io/tx/' + txHash
-        }
-        rel="noopener noreferrer"
-        target="_blank"
-      />
-    )
+    const url =
+      this.props.networkName === 'mainnet'
+        ? 'https://etherscan.io/tx/' + txHash
+        : 'https://' + this.props.networkName + '.etherscan.io/tx/' + txHash
+    return <a href={url} rel="noopener noreferrer" target="_blank" />
   }
 
   transactionMenu = () => {

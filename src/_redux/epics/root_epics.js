@@ -18,7 +18,7 @@ import { getTokensBalancesEpic } from './drago_epics'
 
 const ERCdEX_Epics = [
   ERCdEX.getCandlesSingleDataEpic,
-  ERCdEX.initRelayWebSocketEpic,
+  ERCdEX.initRelayWebSocketTickerEpic,
   ERCdEX.orderBookEpic,
   ERCdEX.getAccountOrdersEpic
 ]
@@ -31,8 +31,8 @@ const Tokens_Epics = [
 
 const Ethfinex_Epics = [
   Ethfinex.getCandlesSingleDataEpic,
-  Ethfinex.initRelayWebSocketEpic,
-  Ethfinex.orderBookEpic,
+  Ethfinex.initRelayWebSocketTickerEpic,
+  Ethfinex.initRelayWebSocketBookEpic,
   Ethfinex.getAccountOrdersEpic
 ]
 

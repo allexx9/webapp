@@ -1,25 +1,12 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-import 'rxjs/add/observable/from'
-import 'rxjs/add/observable/timer'
-import 'rxjs/add/operator/bufferTime'
-import 'rxjs/add/operator/concat'
-import 'rxjs/add/operator/delay'
-import 'rxjs/add/operator/do'
-import 'rxjs/add/operator/exhaustMap'
-import 'rxjs/add/operator/map'
-import 'rxjs/add/operator/mapTo'
-import 'rxjs/add/operator/mergeMap'
-import 'rxjs/observable/timer'
 import { Actions } from '../actions/'
-import { Observable } from 'rxjs/Observable'
+import { Observable, from } from 'rxjs'
 import PoolApi from '../../PoolsApi/src'
 
-import {
-  GET_TOKEN_BALANCES_DRAGO,
-  QUEUE_ERROR_NOTIFICATION,
-  UPDATE_ELEMENT_LOADING
-} from '../actions/const'
+import * as TYPE_ from '../actions/const'
+import { catchError, map, mergeMap } from 'rxjs/operators'
+import { ofType } from 'redux-observable'
 
 import { BigNumber } from '../../../node_modules/bignumber.js/bignumber'
 import { ERC20_TOKENS } from '../../_utils/tokens'
@@ -94,7 +81,7 @@ const getTokensBalances$ = (dragoDetails, api) => {
     // })
     return dragoAssets
   }
-  return Observable.fromPromise(
+  return from(
     getTokensBalances().catch(err => {
       throw err
     })
@@ -102,59 +89,66 @@ const getTokensBalances$ = (dragoDetails, api) => {
 }
 
 export const getTokensBalancesEpic = action$ => {
-  return action$.ofType(GET_TOKEN_BALANCES_DRAGO).mergeMap(action => {
-    return getTokensBalances$(action.payload.dragoDetails, action.payload.api)
-      .map(dragoAssets => {
-        const ordered = {}
-        Object.keys(dragoAssets)
-          .sort()
-          .forEach(function(key) {
-            ordered[key] = dragoAssets[key]
-          })
-        return ordered
-      })
-      .mergeMap(dragoAssets =>
-        Observable.concat(
-          // Observable.of(
-          //   Actions.drago.getAssetsPriceDataAction(
-          //     dragoAssets,
-          //     42,
-          //     ERC20_TOKENS['kovan'].WETH.address
-          //   )
-          // ),
-          // Observable.of({
-          //   type: UPDATE_ELEMENT_LOADING,
-          //   payload: { marketBox: true }
-          // }),
-          Observable.of(
-            Actions.drago.updateSelectedDragoAction({
-              assets: Object.values(dragoAssets)
+  return action$.pipe(
+    ofType(TYPE_.GET_TOKEN_BALANCES_DRAGO),
+    mergeMap(action => {
+      return getTokensBalances$(
+        action.payload.dragoDetails,
+        action.payload.api
+      ).pipe(
+        map(dragoAssets => {
+          const ordered = {}
+          Object.keys(dragoAssets)
+            .sort()
+            .forEach(function(key) {
+              ordered[key] = dragoAssets[key]
             })
-          ),
-          Observable.of(
-            Actions.tokens.priceTickersStart(
-              action.payload.relay,
-              action.payload.api._rb.network.id
+          return ordered
+        }),
+        mergeMap(dragoAssets =>
+          Observable.concat(
+            // Observable.of(
+            //   Actions.drago.getAssetsPriceDataAction(
+            //     dragoAssets,
+            //     42,
+            //     ERC20_TOKENS['kovan'].WETH.address
+            //   )
+            // ),
+            // Observable.of({
+            //   type: UPDATE_ELEMENT_LOADING,
+            //   payload: { marketBox: true }
+            // }),
+            Observable.of(
+              Actions.drago.updateSelectedDragoAction({
+                assets: Object.values(dragoAssets)
+              })
+            ),
+            Observable.of(
+              Actions.tokens.priceTickersStart(
+                action.payload.relay,
+                action.payload.api._rb.network.id
+              )
+            ),
+            Observable.of(
+              Actions.exchange.getPortfolioChartDataStart(
+                action.payload.relay,
+                action.payload.api._rb.network.id
+              )
             )
-          ),
-          Observable.of(
-            Actions.exchange.getPortfolioChartDataStart(
-              action.payload.relay,
-              action.payload.api._rb.network.id
-            )
+            // Observable.of({
+            //   type: UPDATE_ELEMENT_LOADING,
+            //   payload: { marketBox: false }
+            // })
           )
-          // Observable.of({
-          //   type: UPDATE_ELEMENT_LOADING,
-          //   payload: { marketBox: false }
-          // })
-        )
-      )
-      .catch(error => {
-        console.log(error)
-        return Observable.of({
-          type: QUEUE_ERROR_NOTIFICATION,
-          payload: 'Error fetching fund assets balances.'
+        ),
+        catchError(error => {
+          console.log(error)
+          return Observable.of({
+            type: TYPE_.QUEUE_ERROR_NOTIFICATION,
+            payload: 'Error fetching fund assets balances.'
+          })
         })
-      })
-  })
+      )
+    })
+  )
 }

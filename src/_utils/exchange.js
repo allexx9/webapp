@@ -369,16 +369,24 @@ export const signOrder = async (order, selectedExchange, walletAddress) => {
   return signedOrder
 }
 
-export const submitOrderToRelayEFX = async efxOrder => {
+export const submitOrderToRelayEFX = async (efxOrder, networkId) => {
   console.log(efxOrder)
   // const ZeroExConfig = {
   //   networkId: 42
   //   // exchangeContractAddress: this._network.id
   // }
-  const relayerApiUrl = `https://test.ethfinex.com/trustless/v1/w/on`
-  // const relayerClient = new HttpClient(relayerApiUrl);
-  // const response = await relayerClient.submitOrderAsync(signedOrder);
-  // console.log(response)
+  let relayerApiUrl
+  switch (networkId) {
+    case 1:
+      relayerApiUrl = `https://api.ethfinex.com/trustless/v1/w/on`
+      break
+    case 3:
+      relayerApiUrl = `https://test.ethfinex.com/trustless/v1/w/on`
+      break
+    default:
+      relayerApiUrl = `https://test.ethfinex.com/trustless/v1/w/on`
+  }
+
   let options = {
     method: 'POST',
     uri: relayerApiUrl,
@@ -458,6 +466,8 @@ export const getTokenAllowance = async (token, ownerAddress, ZeroExConfig) => {
   if (token.symbol === 'ETH') {
     return true
   }
+  console.log(token.symbol)
+  console.log(ZeroExConfig)
   const zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig)
   return zeroEx.token.getProxyAllowanceAsync(token.address, ownerAddress)
 }

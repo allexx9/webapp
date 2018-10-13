@@ -42,7 +42,7 @@ export default class FundSelector extends PureComponent {
     return (
       <Row>
         <Col xs={12}>
-          <div className={styles.sectionTitle}>Fund</div>
+          <div className={styles.sectionTitle}>Drago</div>
         </Col>
         <Col xs={12}>
           <SelectField
