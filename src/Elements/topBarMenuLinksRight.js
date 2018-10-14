@@ -66,7 +66,11 @@ class NavLinks extends Component {
     user: PropTypes.object.isRequired,
     handleToggleNotifications: PropTypes.func.isRequired,
     transactions: PropTypes.object.isRequired,
-    match: PropTypes.object.isRequired
+    endpoint: PropTypes.object.isRequired
+  }
+
+  static contextTypes = {
+    api: PropTypes.object.isRequired
   }
 
   state = {
@@ -98,7 +102,19 @@ class NavLinks extends Component {
       false: false,
       true: true
     }
+
     this.props.dispatch(Actions.users.isManagerAction(accountType[value]))
+    // let options = accountType[value]
+    //   ? { balance: false, supply: true, limit: 20, trader: false }
+    //   : { balance: true, supply: false, limit: 20, trader: true }
+    // this.props.dispatch(
+    //   Actions.endpoint.getAccountsTransactions(
+    //     this.context.api,
+    //     null,
+    //     this.props.endpoint.accounts,
+    //     options
+    //   )
+    // )
   }
 
   componentDidMount() {

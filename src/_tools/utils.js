@@ -5,39 +5,38 @@ import { ERCdEX, Ethfinex } from './const'
 import { formatCoins, formatEth } from './format'
 import { toUnitAmount } from './format'
 import BigNumber from 'bignumber.js'
-import ElementNotification from '../Elements/elementNotification'
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+// import ElementNotification from '../Elements/elementNotification'
+// import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import PoolApi from '../PoolsApi/src'
 import Web3 from 'web3'
 import palette from './palete'
 
 import { Actions } from '../_redux/actions'
-import { CommunicationStopScreenShare } from 'material-ui/svg-icons'
-import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+// import PropTypes from 'prop-types'
+// import React, { Component } from 'react'
 import moment from 'moment'
 
-class NotificationAlert extends Component {
-  static propTypes = {
-    primaryText: PropTypes.string.isRequired,
-    secondaryText: PropTypes.string.isRequired,
-    eventType: PropTypes.string.isRequired
-  }
+// class NotificationAlert extends Component {
+//   static propTypes = {
+//     primaryText: PropTypes.string.isRequired,
+//     secondaryText: PropTypes.string.isRequired,
+//     eventType: PropTypes.string.isRequired
+//   }
 
-  render(primaryText, secondaryText, eventType) {
-    return (
-      <MuiThemeProvider>
-        <ElementNotification
-          primaryText={primaryText}
-          secondaryText={secondaryText}
-          eventType={eventType}
-          eventStatus="executed"
-          txHash=""
-        />
-      </MuiThemeProvider>
-    )
-  }
-}
+//   render(primaryText, secondaryText, eventType) {
+//     return (
+//       <MuiThemeProvider>
+//         <ElementNotification
+//           primaryText={primaryText}
+//           secondaryText={secondaryText}
+//           eventType={eventType}
+//           eventStatus="executed"
+//           txHash=""
+//         />
+//       </MuiThemeProvider>
+//     )
+//   }
+// }
 
 class utilities {
   formatFromWei = number => {
@@ -291,7 +290,6 @@ class utilities {
     let ethvalue = 0
     let drgvalue = 0
     let dragoSymbolRegistry = new Map()
-
     // console.log(options)
     console.log('getTransactionsVaultOptV2')
     console.log(
@@ -741,24 +739,7 @@ class utilities {
     let ethvalue = 0
     let drgvalue = 0
     let dragoSymbolRegistry = new Map()
-    let fromBlock
-    console.log(api._rb.network.id)
-    switch (api._rb.network.id) {
-      case 1:
-        fromBlock = '6000000'
-        break
-      case 42:
-        fromBlock = '7000000'
-        break
-      case 3:
-        fromBlock = '3000000'
-        break
-      default:
-        '3000000'
-    }
     console.log('getTransactionsDragoOptV2')
-    console.log(accounts)
-    console.log(options)
     console.log(
       `***** ${moment().format()} Utils: event fetching started *****`
     )
@@ -848,9 +829,7 @@ class utilities {
             null,
             null,
             hexAccounts
-          ],
-          fromBlock: fromBlock,
-          toBlock: 'latest'
+          ]
         }
         // Filter for buy events
         // const eventsFilterBuy = {
@@ -873,17 +852,7 @@ class utilities {
 
         // Filter for buy and sell events
         const eventsFilterBuySell = {
-          topics: [
-            [
-              poolApi.contract.dragoeventful.hexSignature.BuyDrago,
-              poolApi.contract.dragoeventful.hexSignature.SellDrago
-            ],
-            null,
-            hexAccounts,
-            null
-          ],
-          fromBlock: fromBlock,
-          toBlock: 'latest'
+          topics: [null, null, hexAccounts, null]
         }
 
         const createDragoEvents = () => {
@@ -908,6 +877,26 @@ class utilities {
             })
         }
 
+        // const buyDragoEvents = () => {
+        //   return poolApi.contract.dragoeventful
+        //     .getAllLogs(eventsFilterBuy)
+        //     .then((dragoTransactionsLog) => {
+        //       const buyLogs = dragoTransactionsLog.map(logToEvent)
+        //       return buyLogs
+        //     }
+        //     )
+        // }
+
+        // const sellDragoEvents = () => {
+        //   return poolApi.contract.dragoeventful
+        //     .getAllLogs(eventsFilterSell)
+        //     .then((dragoTransactionsLog) => {
+        //       const sellLogs = dragoTransactionsLog.map(logToEvent)
+        //       return sellLogs
+        //     }
+        //     )
+        // }
+
         const buySellDragoEvents = () => {
           let startTime = new Date()
           console.log(
@@ -930,92 +919,15 @@ class utilities {
             })
         }
 
-        const getChunkedEvents = topics => {
-          let arrayPromises = []
-          return api.eth.blockNumber().then(lastBlock => {
-            let chunck = 100000
-            let endBlock = lastBlock
-            let startBlock = lastBlock - chunck
-            // fromBlock = 1000000
-            while (fromBlock <= startBlock) {
-              // console.log(`from ${startBlock} to ${endBlock}`)
-
-              // Pushing chunk logs into array
-              let options = {
-                topics: topics,
-                fromBlock: startBlock,
-                toBlock: endBlock
-              }
-              arrayPromises.push(
-                poolApi.contract.dragoeventful.getAllLogs(options)
-              )
-
-              // Exit if reached fromBlok
-              if (fromBlock + 1 === startBlock) {
-                break
-              }
-
-              endBlock = startBlock - 1
-              startBlock =
-                startBlock - chunck < fromBlock
-                  ? fromBlock + 1
-                  : startBlock - chunck
-            }
-
-            return Promise.all(arrayPromises).then(results => {
-              if (options.trader) {
-                console.log('Trader transactions')
-                // console.log(topics)
-              } else {
-                console.log('Manager transactions')
-                // console.log(topics)
-              }
-              let dragoTransactionsLog = Array(0).concat(...results)
-              // console.log(dragoTransactionsLog)
-              const logs = dragoTransactionsLog.map(logToEvent)
-              console.log(logs)
-              return logs
-            })
-          })
-        }
-
-        let topicsBuySell = [
-          [
-            poolApi.contract.dragoeventful.hexSignature.BuyDrago,
-            poolApi.contract.dragoeventful.hexSignature.SellDrago
-          ],
-          null,
-          hexAccounts,
-          null
-        ]
-
-        // 0x19b85c898cf6ac07e2cd8c5e44f84c9146263ac6861bfef2ed01d419b37c2c36
-        console.log(poolApi.contract.dragoeventful.hexSignature.DragoCreated)
-        let topicsCreate = [
-          [poolApi.contract.dragoeventful.hexSignature.DragoCreated],
-          null,
-          null,
-          hexAccounts
-        ]
-
-        // console.log(getChunkedEvents(topicsBuySell))
-        // console.log(getChunkedEvents(topicsCreate))
         let promisesEvents = null
-        // if (options.trader) {
-        //   // promisesEvents = [buyDragoEvents(), sellDragoEvents()]
-        //   promisesEvents = [buySellDragoEvents()]
-        // } else {
-        //   promisesEvents = [createDragoEvents()]
-        // }
         if (options.trader) {
-          promisesEvents = [getChunkedEvents(topicsBuySell)]
+          // promisesEvents = [buyDragoEvents(), sellDragoEvents()]
+          promisesEvents = [buySellDragoEvents()]
         } else {
-          promisesEvents = [getChunkedEvents(topicsCreate)]
+          promisesEvents = [createDragoEvents()]
         }
         return Promise.all(promisesEvents)
           .then(results => {
-            console.log(results)
-            let allLogs = [...results[0]]
             // Creating an array of promises that will be executed to add timestamp and symbol to each entry
             // Doing so because for each entry we need to make an async call to the client
             // For additional refernce: https://stackoverflow.com/questions/39452083/using-promise-function-inside-javascript-array-map
@@ -1036,16 +948,17 @@ class utilities {
             }
 
             // var allLogs = options.trader ? [...results[0], ...results[1]] : [...results[0]]
+            let allLogs = [...results[0]]
             let supply = []
             let balances = []
             let balancesList = []
             allLogs.sort(compare)
             let dragoTransactionsLogs = allLogs.slice(
-              allLogs.length - options.limit,
+              allLogs.length - 20,
               allLogs.length
             )
-            // console.log(`***** ${moment().format()} Utils: events loaded *****`)
-            // console.log(results)
+            console.log(`***** ${moment().format()} Utils: events loaded *****`)
+            console.log(results)
 
             // This is an inefficient way to get the symbol for each transactions.
             // In the future the symbol will have to be saved in the eventful logs.
@@ -1152,13 +1065,11 @@ class utilities {
                         const symbol = dragoSymbolRegistry.get(k).symbol
                         const name = dragoSymbolRegistry.get(k).name.trim()
                         const dragoId = dragoSymbolRegistry.get(k).dragoId
-                        const address = dragoSymbolRegistry.get(k).address
                         balances[account][dragoId] = {
                           balance: dragoBalance,
                           name,
                           symbol: symbol,
-                          dragoId: dragoId,
-                          address: address
+                          dragoId: dragoId
                         }
                       })
                   )
@@ -1193,7 +1104,7 @@ class utilities {
                   .catch(() => {
                     // Sometimes Infura returns null for api.eth.getBlockByNumber, therefore we are assigning a fake timestamp to avoid
                     // other issues in the app.
-                    log.timestamp = new Date(0)
+                    log.timestamp = new Date()
                     return log
                   })
               })
@@ -1217,7 +1128,6 @@ class utilities {
                               symbol: balance.symbol,
                               dragoId: balance.dragoId,
                               name: balance.name,
-                              address: balance.address,
                               balance: dragoBalance.plus(balance.balance)
                             })
                           } else {
@@ -1225,44 +1135,38 @@ class utilities {
                               symbol: balance.symbol,
                               dragoId: balance.dragoId,
                               name: balance.name,
-                              address: balance.address,
                               balance: balance.balance
                             })
                           }
                         })
                       }
                       balancesRegistry.forEach((v, k) => {
-                        // Filtering empty balances
-                        if (balancesRegistry.get(k).balance.gt(0)) {
-                          tokenBalances.push({
-                            symbol: balancesRegistry.get(k).symbol,
-                            name: balancesRegistry.get(k).name,
-                            dragoId: balancesRegistry.get(k).dragoId,
-                            address: balancesRegistry.get(k).address,
-                            balance: formatCoins(
-                              balancesRegistry.get(k).balance,
-                              4,
-                              api
-                            )
-                          })
-                        }
+                        tokenBalances.push({
+                          symbol: balancesRegistry.get(k).symbol,
+                          name: balancesRegistry.get(k).name,
+                          dragoId: balancesRegistry.get(k).dragoId,
+                          balance: formatCoins(
+                            balancesRegistry.get(k).balance,
+                            4,
+                            api
+                          )
+                        })
                       })
-                      balancesList = tokenBalances
                       // Filtering empty balances
-                      // balancesList = tokenBalances.filter(balance => {
-                      //   return new BigNumber(balance.balance).gt(0)
-                      // })
+                      balancesList = tokenBalances.filter(balance => {
+                        return balance.balance !== 0
+                      })
                     }
                   })
                   .then(() => {
                     let logs = getSymbols()
-                    // console.log(
-                    //   `***** ${moment().format()} Utils: symbols loaded *****`
-                    // )
+                    console.log(
+                      `***** ${moment().format()} Utils: symbols loaded *****`
+                    )
                     return Promise.all(getTimestamp(logs)).then(logs => {
-                      // console.log(
-                      //   `***** ${moment().format()} Utils: events timestamp fetched *****`
-                      // )
+                      console.log(
+                        `***** ${moment().format()} Utils: events timestamp fetched *****`
+                      )
                       balancesList.sort(function(a, b) {
                         if (a.symbol < b.symbol) return -1
                         if (a.symbol > b.symbol) return 1
@@ -1286,17 +1190,9 @@ class utilities {
             let dif = startTime.getTime() - endTime.getTime()
             let Seconds_from_T1_to_T2 = dif / 1000
             let Seconds_Between_Dates = Math.abs(Seconds_from_T1_to_T2)
-            if (options.trader) {
-              console.log(
-                `***** Holder transactions loaded in ${Seconds_Between_Dates}s *****`
-              )
-              // console.log(topics)
-            } else {
-              console.log(
-                `***** Manager transactions loaded in ${Seconds_Between_Dates}s *****`
-              )
-              // console.log(topics)
-            }
+            console.log(
+              `***** Transactions loaded in ${Seconds_Between_Dates}s *****`
+            )
             console.log(results)
             return results
           })

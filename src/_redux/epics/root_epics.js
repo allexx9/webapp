@@ -40,6 +40,7 @@ const Endpoint_Epics = [
   Endpoint.checkMetaMaskIsUnlockedEpic,
   Endpoint.getAccountsTransactionsEpic,
   Endpoint.monitorAccountsEpic,
+  Endpoint.monitorEventfulEpic,
   Endpoint.isConnectedToNodeEpic,
   Endpoint.attacheInterfaceEpic,
   Endpoint.delayShowAppEpic

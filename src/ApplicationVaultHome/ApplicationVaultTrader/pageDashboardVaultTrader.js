@@ -49,9 +49,7 @@ class PageDashboardVaultTrader extends Component {
     snackBarMsg: ''
   }
 
-  componentDidMount() {}
-
-  UNSAFE_componentWillMount() {
+  componentDidMount = () => {
     const { accounts } = this.props.endpoint
     this.getTransactions(null, accounts)
   }
@@ -60,11 +58,11 @@ class PageDashboardVaultTrader extends Component {
     // Updating the lists on each new block if the accounts balances have changed
     // Doing this this to improve performances by avoiding useless re-rendering
     const { accounts } = this.props.endpoint
-    console.log(
-      `${
-        this.constructor.name
-      } -> UNSAFE_componentWillReceiveProps-> nextProps received.`
-    )
+    // console.log(
+    //   `${
+    //     this.constructor.name
+    //   } -> UNSAFE_componentWillReceiveProps-> nextProps received.`
+    // )
     // Updating the transaction list if there have been a change in total accounts balance and the previous balance is
     // different from 0 (balances are set to 0 on app loading)
     const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
@@ -88,13 +86,13 @@ class PageDashboardVaultTrader extends Component {
     propsUpdate = !utils.shallowEqual(this.props, nextProps)
     stateUpdate = !utils.shallowEqual(this.state, nextState)
     if (stateUpdate || propsUpdate) {
-      console.log('State updated ', stateUpdate)
-      console.log('Props updated ', propsUpdate)
-      console.log(
-        `${
-          this.constructor.name
-        } -> shouldComponentUpdate -> Proceedding with rendering.`
-      )
+      // console.log('State updated ', stateUpdate)
+      // console.log('Props updated ', propsUpdate)
+      // console.log(
+      //   `${
+      //     this.constructor.name
+      //   } -> shouldComponentUpdate -> Proceedding with rendering.`
+      // )
     }
     return stateUpdate || propsUpdate
   }
@@ -345,8 +343,8 @@ class PageDashboardVaultTrader extends Component {
   // Getting last transactions
   getTransactions = (dragoAddress, accounts) => {
     const { api } = this.context
-    const options = { balance: true, supply: false, limit: 10, trader: true }
-
+    const options = { balance: true, supply: false, limit: 20, trader: true }
+    let startTime = new Date()
     utils
       .getTransactionsVaultOptV2(api, dragoAddress, accounts, options)
       .then(results => {
@@ -354,6 +352,14 @@ class PageDashboardVaultTrader extends Component {
         // const buySellLogs = results[1].filter(event =>{
         //   return event.type !== 'DragoCreated'
         // })
+        let endTime = new Date()
+        let dif = startTime.getTime() - endTime.getTime()
+        let Seconds_from_T1_to_T2 = dif / 1000
+        let Seconds_Between_Dates = Math.abs(Seconds_from_T1_to_T2)
+        console.log(
+          `***** Transactions loaded in ${Seconds_Between_Dates}s *****`
+        )
+        console.log(results)
         this.props.dispatch(
           Actions.vault.updateTransactionsVaultHolderAction(results)
         )

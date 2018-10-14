@@ -54,7 +54,9 @@ const initialState = {
     syncStatus: {},
     appLoading: true,
     retryTimeInterval: 0,
-    connectinoRetries: 0
+    connectinoRetries: 0,
+    lastBlockNumberUpdate: 0,
+    accountsAddressHash: ''
   },
   notifications: {
     engine: ''

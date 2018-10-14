@@ -46,9 +46,9 @@ export function eventfulDragoReducer(
       }
 
     case UPDATE_SELECTED_DRAGO_DETAILS_CHART_ASSETS_MARKET_DATA_INIT: {
-      console.log(action)
+      // console.log(action)
       let selectedDrago = { ...state.selectedDrago }
-      console.log(selectedDrago)
+      // console.log(selectedDrago)
       selectedDrago.assetsCharts = {
         ...selectedDrago.assetsCharts,
         ...action.payload
@@ -61,17 +61,17 @@ export function eventfulDragoReducer(
 
     case UPDATE_SELECTED_DRAGO_DETAILS_CHART_ASSETS_MARKET_ADD_DATAPOINT: {
       let selectedDrago = { ...state.selectedDrago }
-      console.log(action)
-      console.log(Object.keys(action.payload)[0])
-      console.log(action.payload[Object.keys(action.payload)[0]])
+      // console.log(action)
+      // console.log(Object.keys(action.payload)[0])
+      // console.log(action.payload[Object.keys(action.payload)[0]])
       let symbol = Object.keys(action.payload)[0]
       let newTicker = action.payload[symbol].data
       let oldData = selectedDrago.assetsCharts[symbol].data
       // let newChartData = [...state.chartData]
-      console.log(newTicker.epoch, oldData[oldData.length - 1].epoch)
+      // console.log(newTicker.epoch, oldData[oldData.length - 1].epoch)
       if (newTicker.epoch === oldData[oldData.length - 1].epoch) {
         oldData[oldData.length - 1] = newTicker
-        console.log('first')
+        // console.log('first')
         return {
           ...state,
           selectedDrago: { ...state.selectedDrago, ...selectedDrago }
@@ -79,7 +79,7 @@ export function eventfulDragoReducer(
       }
       if (newTicker.epoch === oldData[oldData.length - 2].epoch) {
         oldData[oldData.length - 2] = newTicker
-        console.log('second')
+        // console.log('second')
         return {
           ...state,
           selectedDrago: { ...state.selectedDrago, ...selectedDrago }
@@ -87,7 +87,7 @@ export function eventfulDragoReducer(
       }
 
       // oldData.pop()
-      console.log('***** NEW *****')
+      // console.log('***** NEW *****')
       // console.log(action.payload)
       oldData.push(newTicker)
       selectedDrago.assetsCharts[symbol].data = oldData

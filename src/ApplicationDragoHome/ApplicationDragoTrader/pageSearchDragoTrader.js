@@ -98,6 +98,7 @@ class PageFundsDragoTrader extends Component {
           topics: [poolApi.contract.dragoeventful.hexSignature.DragoCreated]
         })
         .then(dragoCreatedLogs => {
+          console.log(logs)
           const logs = dragoCreatedLogs.map(logToEvent)
           logs.sort(function(a, b) {
             if (a.symbol < b.symbol) return -1

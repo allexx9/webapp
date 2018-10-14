@@ -28,19 +28,6 @@ import './index.module.css'
 
 function noop() {}
 
-// function logger() = pino({
-//   prettyPrint: { colorize: true }
-// })
-
-// const logger = pino({
-//   prettyPrint: { colorize: true }
-// })
-
-// console.log(logger)
-// logger.info('hello world')
-
-// console.log = msg => logger.info('test ' + msg)
-
 if (process.env.NODE_ENV !== 'development') {
   console.log = noop
   console.warn = noop
@@ -111,9 +98,15 @@ const middlewares = [
 // }
 
 // Redux Persist
-const saveSubsetFilter = createFilter('endpoint', [
+const saveSubsetFilterEndpoint = createFilter('endpoint', [
   'endpointInfo',
   'networkInfo'
+])
+const saveSubsetFilterApp = createFilter('app', [
+  'isConnected',
+  'isSyncing',
+  'lastBlockNumberUpdate',
+  'accountsAddressHash'
 ])
 //   const saveSubsetBlacklistFilter = createBlacklistFilter(
 //     'endpoint',
@@ -124,9 +117,11 @@ const persistConfig = {
   key: 'rigoblock',
   storage,
   stateReconciler: autoMergeLevel2,
-  whitelist: ['endpoint', 'user'],
+  whitelist: ['endpoint', 'user', 'app'],
   transforms: [
-    saveSubsetFilter
+    saveSubsetFilterEndpoint,
+    saveSubsetFilterApp
+    // saveSubsetFilterApp
     // saveSubsetBlacklistFilter
   ]
 }

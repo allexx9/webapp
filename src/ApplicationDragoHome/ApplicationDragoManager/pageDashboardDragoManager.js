@@ -53,11 +53,11 @@ class PageDashboardDragoManager extends Component {
   componentDidMount() {
     const { accounts } = this.props.endpoint
     const { api } = this.context
-    const options = { balance: false, supply: true, limit: 10, trader: false }
+    const options = { balance: false, supply: true, limit: 20, trader: false }
     console.log('componentDidMount')
-    this.props.dispatch(
-      Actions.endpoint.getAccountsTransactions(api, null, accounts, options)
-    )
+    // this.props.dispatch(
+    //   Actions.endpoint.getAccountsTransactions(api, null, accounts, options)
+    // )
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
@@ -65,7 +65,7 @@ class PageDashboardDragoManager extends Component {
     // Doing this this to improve performances by avoiding useless re-rendering
     // const { accounts } = this.props.endpoint
     // const { api } = this.context
-    // const options = { balance: true, supply: false, limit: 10, trader: true }
+    // const options = { balance: true, supply: false, limit: 20, trader: true }
     // console.log(`${this.constructor.name} -> UNSAFE_componentWillReceiveProps-> nextProps received.`);
     // Updating the transaction list if there have been a change in total accounts balance and the previous balance is
     // different from 0 (balances are set to 0 on app loading)

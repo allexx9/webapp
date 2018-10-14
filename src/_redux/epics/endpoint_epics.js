@@ -13,9 +13,10 @@ import {
   RIGOBLOCK
 } from '../../_utils/const'
 import { Interfaces } from '../../_utils/interfaces'
-import { Observable, defer, from, timer } from 'rxjs'
+import { Observable, defer, from, merge, timer } from 'rxjs'
 import {
   catchError,
+  concat,
   delay,
   exhaustMap,
   filter,
@@ -30,6 +31,7 @@ import {
   timeout
 } from 'rxjs/operators'
 import { ofType } from 'redux-observable'
+import { sha3_512 } from 'js-sha3'
 import BigNumber from 'bignumber.js'
 import PoolsApi from '../../PoolsApi/src'
 import utils from '../../_utils/utils'
@@ -181,7 +183,7 @@ export const attacheInterfaceEpic = action$ =>
         //   return result
         // }),
         flatMap(endpoint => {
-          // console.log(action.payload)
+          console.log(action.payload)
           return Observable.concat(
             Observable.of(
               Actions.app.updateAppStatus({
@@ -344,7 +346,7 @@ export const updateAccounts = async (api, blockNumber, state$) => {
           prevBlockNumber !== 0
         ) {
           console.log(`${account.name} balance changed.`)
-          fetchTransactions = false
+          fetchTransactions = true
           let secondaryText = []
           let balDifference = prevGrgBalance.minus(newgrgBalance)
           if (balDifference.gt(new BigNumber(0))) {
@@ -433,9 +435,167 @@ export const updateAccounts = async (api, blockNumber, state$) => {
   }
 }
 
+const monitorEventful$ = (web3, api, state$) => {
+  const currentState = state$.value
+  // const networkName = currentState.endpoint.networkInfo.name
+  console.log('monitorEventful$')
+  // let subscriptionCreate = web3.eth
+  //   .subscribe(
+  //     'logs',
+  //     {
+  //       address: '0x35d3ab6b7917d03050423f7E43d4D9Cff155a685'.toLocaleLowerCase(),
+  //       topics: [null, null, null, currentState.endpoint.accounts[0].address]
+  //     },
+  //     function(error, result) {
+  //       if (!error) console.log(result)
+  //     }
+  //   )
+  //   .on('data', function(log) {
+  //     console.log(log)
+  //   })
+
+  // unsubscribes the subscription
+  // console.log(subscription)
+  let hexAccounts = currentState.endpoint.accounts.map(account => {
+    const hexAccount =
+      '0x' +
+      account.address
+        .toLocaleLowerCase()
+        .substr(2)
+        .padStart(64, '0')
+    return hexAccount
+  })
+  console.log(hexAccounts)
+
+  const observableCreate = Observable.create(observer => {
+    let subscriptionCreate = web3.eth.subscribe(
+      'logs',
+      {
+        address: '0x35d3ab6b7917d03050423f7E43d4D9Cff155a685'.toLocaleLowerCase(),
+        topics: [null, null, null, hexAccounts]
+      },
+      function(error, result) {
+        if (!error) {
+          console.log(result)
+          return observer.next(result)
+        } else {
+          return observer.error(error)
+        }
+      }
+    )
+    return () => {
+      subscriptionCreate.unsubscribe(function(error, success) {
+        if (success) console.log('Successfully unsubscribed!')
+      })
+    }
+  })
+
+  const observableBuySell = Observable.create(observer => {
+    let subscriptionCreate = web3.eth.subscribe(
+      'logs',
+      {
+        address: '0x35d3ab6b7917d03050423f7E43d4D9Cff155a685'.toLocaleLowerCase(),
+        topics: [null, null, hexAccounts, null]
+      },
+      function(error, result) {
+        if (!error) {
+          console.log(result)
+          return observer.next(result)
+        } else {
+          return observer.error(error)
+        }
+      }
+    )
+    return () => {
+      subscriptionCreate.unsubscribe(function(error, success) {
+        if (success) console.log('Successfully unsubscribed!')
+      })
+    }
+  })
+
+  return merge(observableCreate, observableBuySell)
+}
+
+export const monitorEventfulEpic = (action$, state$) => {
+  return action$.pipe(
+    ofType(TYPE_.MONITOR_ACCOUNTS_START),
+    mergeMap(action => {
+      return monitorEventful$(
+        action.payload.web3,
+        action.payload.api,
+        state$
+      ).pipe(
+        takeUntil(action$.pipe(ofType(TYPE_.MONITOR_ACCOUNTS_STOP))),
+        tap(val => {
+          console.log(val)
+          return val
+        }),
+        flatMap(event => {
+          const observablesArray = Array(0)
+          const currentState = state$.value
+          console.log(event)
+          //   let options = state$.value.user.isManager
+          //   ? { balance: false, supply: true, limit: 20, trader: false }
+          //   : { balance: true, supply: false, limit: 20, trader: true }
+          // console.log(options)
+          console.log('transactions fetch trader')
+          observablesArray.push(
+            Observable.of(
+              Actions.endpoint.getAccountsTransactions(
+                action.payload.api,
+                null,
+                currentState.endpoint.accounts,
+                { balance: false, supply: true, limit: 20, trader: false }
+              )
+            )
+          )
+          console.log('transactions fetch manager')
+          observablesArray.push(
+            Observable.of(
+              Actions.endpoint.getAccountsTransactions(
+                action.payload.api,
+                null,
+                currentState.endpoint.accounts,
+                { balance: true, supply: false, limit: 20, trader: true }
+              )
+            )
+          )
+
+          return Observable.concat(...observablesArray)
+        }),
+        catchError(error => {
+          console.log(error)
+          return Observable.of({
+            type: TYPE_.QUEUE_ERROR_NOTIFICATION,
+            payload: 'Error: cannot subscribe to eventful.'
+          })
+        })
+      )
+    })
+  )
+}
+
 const monitorAccounts$ = (web3, api, state$) => {
   // const currentState = state$.value
   // const networkName = currentState.endpoint.networkInfo.name
+  console.log('newBlockHeaders')
+  // let subscription = web3.eth
+  //   .subscribe(
+  //     'logs',
+  //     {
+  //       address: '0x35d3ab6b7917d03050423f7E43d4D9Cff155a685'.toLocaleLowerCase(),
+  //       topics: [null, null, null, null]
+  //     },
+  //     function(error, result) {
+  //       if (!error) console.log(result)
+  //     }
+  //   )
+  //   .on('data', function(log) {
+  //     console.log(log)
+  //   })
+
+  // // unsubscribes the subscription
+  // console.log(subscription)
 
   return Observable.create(observer => {
     // It seems that Infura supports Websocket for Kovan, now.
@@ -469,67 +629,85 @@ const monitorAccounts$ = (web3, api, state$) => {
     //     }
     //   })
     // }
-
-    web3.eth.subscribe('newBlockHeaders', (_error, blockNumber) => {
-      if (!_error) {
-        updateAccounts(api, blockNumber, state$).then(result => {
-          return observer.next(result)
-        })
-      } else {
-        return observer.error(_error)
+    console.log('newBlockHeaders')
+    let subscription = web3.eth.subscribe(
+      'newBlockHeaders',
+      (_error, blockNumber) => {
+        if (!_error) {
+          updateAccounts(api, blockNumber, state$).then(result => {
+            return observer.next(result)
+          })
+        } else {
+          return observer.error(_error)
+        }
       }
-    })
+    )
 
     return () => {
-      // try {
-      //   Interfaces.detachInterface(this._api, subscriptionData)
-      // } catch (error) {
-      //   console.log(error)
-      // }
+      subscription.unsubscribe(function(error, success) {
+        if (success) console.log('Successfully unsubscribed!')
+      })
     }
   })
 }
 
-export const monitorAccountsEpic = (action$, state$) =>
-  action$.pipe(
+export const monitorAccountsEpic = (action$, state$) => {
+  return action$.pipe(
     ofType(TYPE_.MONITOR_ACCOUNTS_START),
     mergeMap(action => {
-      return (
-        monitorAccounts$(action.payload.web3, action.payload.api, state$).pipe(
-          takeUntil(action$.pipe(ofType(TYPE_.MONITOR_ACCOUNTS_STOP))),
-          tap(val => {
-            // console.log(val)
-            return val
-          }),
-          flatMap(accountsUpdate => {
-            const observablesArray = Array(0)
-            let options = state$.value.user.isManager
-              ? { balance: false, supply: true, limit: 10, trader: false }
-              : { balance: true, supply: false, limit: 10, trader: true }
-            observablesArray.push(
-              Observable.of(Actions.endpoint.updateInterface(accountsUpdate[0]))
-            )
-            observablesArray.push(
-              Observable.of({
-                type: TYPE_.QUEUE_ACCOUNT_NOTIFICATION,
-                payload: accountsUpdate[1]
-              })
-            )
-            accountsUpdate[2]
-              ? observablesArray.push(
-                  Observable.of(
-                    Actions.endpoint.getAccountsTransactions(
-                      action.payload.api,
-                      null,
-                      accountsUpdate[0].accounts,
-                      options
-                    )
-                  )
-                )
-              : null
-            return Observable.concat(...observablesArray)
-          })
-        ),
+      return monitorAccounts$(
+        action.payload.web3,
+        action.payload.api,
+        state$
+      ).pipe(
+        takeUntil(action$.pipe(ofType(TYPE_.MONITOR_ACCOUNTS_STOP))),
+        tap(val => {
+          console.log(val)
+          return val
+        }),
+        flatMap(accountsUpdate => {
+          const observablesArray = Array(0)
+
+          observablesArray.push(
+            Observable.of(Actions.endpoint.updateInterface(accountsUpdate[0]))
+          )
+          observablesArray.push(
+            Observable.of({
+              type: TYPE_.QUEUE_ACCOUNT_NOTIFICATION,
+              payload: accountsUpdate[1]
+            })
+          )
+          if (accountsUpdate[2]) {
+            //   let options = state$.value.user.isManager
+            //   ? { balance: false, supply: true, limit: 20, trader: false }
+            //   : { balance: true, supply: false, limit: 20, trader: true }
+            // console.log(options)
+            console.log('transactions fetch trader')
+            // observablesArray.push(
+            //   Observable.of(
+            //     Actions.endpoint.getAccountsTransactions(
+            //       action.payload.api,
+            //       null,
+            //       accountsUpdate[0].accounts,
+            //       { balance: false, supply: true, limit: 20, trader: false }
+            //     )
+            //   )
+            // )
+            console.log('transactions fetch manager')
+            // observablesArray.push(
+            //   Observable.of(
+            //     Actions.endpoint.getAccountsTransactions(
+            //       action.payload.api,
+            //       null,
+            //       accountsUpdate[0].accounts,
+            //       { balance: true, supply: false, limit: 20, trader: true }
+            //     )
+            //   )
+            // )
+          }
+
+          return Observable.concat(...observablesArray)
+        }),
         catchError(error => {
           console.log(error)
           return Observable.of({
@@ -540,12 +718,15 @@ export const monitorAccountsEpic = (action$, state$) =>
       )
     })
   )
+}
 
 //
 // FETCH ACCOUNT TRANSACTIONS
 //
 
 const getAccountsTransactions$ = (api, dragoAddress, accounts, options) => {
+  // console.log(accounts)
+  // console.log(dragoAddress)
   return Observable.fromPromise(
     utils.getTransactionsDragoOptV2(api, dragoAddress, accounts, options)
   )
@@ -560,8 +741,9 @@ export const getAccountsTransactionsEpic = (action$, state$) =>
       action.payload.options
     )
       .map(results => {
-        const currentState = state$.value
-        if (currentState.user.isManager) {
+        console.log(results)
+        // const currentState = state$.value
+        if (!action.payload.options.trader) {
           return Actions.drago.updateTransactionsDragoManagerAction(
             results.length === 0 ? [Array(0), Array(0), Array(0)] : results
           )
@@ -675,30 +857,63 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
             return Object.keys(val).length !== 0
           }),
           flatMap(newEndpoint => {
-            let options
-            if (currentState.user.isManager) {
-              options = {
-                balance: false,
-                supply: true,
-                limit: 10,
-                trader: false
-              }
-            } else {
-              options = {
-                balance: true,
-                supply: false,
-                limit: 10,
-                trader: true
-              }
+            let optionsManager = {
+              balance: false,
+              supply: true,
+              limit: 20,
+              trader: false
             }
+            let optionsHolder = {
+              balance: true,
+              supply: false,
+              limit: 20,
+              trader: true
+            }
+            // if (currentState.user.isManager) {
+            //   options = {
+            //     balance: false,
+            //     supply: true,
+            //     limit: 20,
+            //     trader: false
+            //   }
+            // } else {
+            //   options = {
+            //     balance: true,
+            //     supply: false,
+            //     limit: 20,
+            //     trader: true
+            //   }
+            // }
+            let accountsAddressHash
+            if (typeof newEndpoint.accounts !== 'undefined') {
+              let accounts = newEndpoint.accounts.map(element => {
+                return element.address
+              })
+              // console.log(sha3_512(accounts.toString()))
+              accountsAddressHash = sha3_512(accounts.toString())
+            }
+            // console.log(newEndpoint)
             return Observable.concat(
+              Observable.of(
+                Actions.app.updateAppStatus({
+                  accountsAddressHash: accountsAddressHash
+                })
+              ),
               Observable.of(Actions.endpoint.updateInterface(newEndpoint)),
               Observable.of(
                 Actions.endpoint.getAccountsTransactions(
                   action.payload.api,
                   null,
                   newEndpoint.accounts,
-                  options
+                  optionsHolder
+                )
+              ),
+              Observable.of(
+                Actions.endpoint.getAccountsTransactions(
+                  action.payload.api,
+                  null,
+                  newEndpoint.accounts,
+                  optionsManager
                 )
               )
             )
