@@ -54,7 +54,9 @@ const initialState = {
     syncStatus: {},
     appLoading: true,
     retryTimeInterval: 0,
-    connectinoRetries: 0
+    connectinoRetries: 0,
+    lastBlockNumberUpdate: 0,
+    accountsAddressHash: ''
   },
   notifications: {
     engine: ''
@@ -157,7 +159,7 @@ const initialState = {
         quoteToken: QUOTE_TOKEN
       }
     },
-    orderBookAggregated: RELAYS[ERCdEX].onlyAggregateOrderbook,
+    orderBookAggregated: true,
     orderBook: {
       asks: [],
       bids: [],
@@ -211,6 +213,7 @@ const initialState = {
     accounts: [],
     accountsBalanceError: false,
     ethBalance: new BigNumber(0),
+    grgBalance: new BigNumber(0),
     endpointInfo: ENDPOINTS[DEFAULT_ENDPOINT],
     networkInfo: NETWORKS[DEFAULT_NETWORK_NAME],
     loading: true,
@@ -218,7 +221,6 @@ const initialState = {
     networkStatus: MSG_NETWORK_STATUS_OK,
     prevBlockNumber: '0',
     prevNonce: '0',
-    grgBalance: null,
     warnMsg: '',
     isMetaMaskNetworkCorrect: false,
     isMetaMaskLocked: true,

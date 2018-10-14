@@ -8,6 +8,7 @@ import { UPDATE_SELECTED_ORDER } from '../../_redux/actions/const'
 import { connect } from 'react-redux'
 import { detect } from 'detect-browser'
 import styles from './tableOrderBook.module.css'
+import utils from '../../_utils/utils'
 
 function mapStateToProps(state) {
   return state
@@ -25,6 +26,11 @@ class TableOrderBook extends Component {
 
   static contextTypes = {
     api: PropTypes.object.isRequired
+  }
+
+  shouldComponentUpdate(nextProps) {
+    let propsUpdate = !utils.shallowEqual(this.props.orders, nextProps.orders)
+    return propsUpdate
   }
 
   updateSelectedOrder = order => {
@@ -50,6 +56,23 @@ class TableOrderBook extends Component {
     if (!this.props.aggregated && !this.props.onlyAggregated) {
       this.props.dispatch(this.updateSelectedOrder(this.props.orders[id]))
     }
+  }
+
+  formatPrice = price => {
+    const number = Number(price)
+    if (number < 100) {
+      return number.toFixed(5)
+    }
+    if (number < 1000) {
+      return number.toFixed(4)
+    }
+    if (number < 10000) {
+      return number.toFixed(3)
+    }
+    if (number < 100000) {
+      return number.toFixed(2)
+    }
+    return number.toFixed(5)
   }
 
   renderRows = ordersSorted => {
@@ -146,10 +169,10 @@ class TableOrderBook extends Component {
                 }}
               />
               <Col xs={5} style={orderStylePrice[orderType]}>
-                {Number(amount).toFixed(3)}
+                {Number(amount).toFixed(2)}
               </Col>
               <Col xs={5} style={orderStylePrice[orderType]}>
-                {Number(price).toFixed(5)}
+                {this.formatPrice(price)}
               </Col>
             </Row>
           </Col>
@@ -160,8 +183,7 @@ class TableOrderBook extends Component {
 
   render() {
     const { orders } = this.props
-    // console.log(orders)
-
+    console.log('*** Render Orders ***')
     return (
       <Row className={styles.containerOrders}>
         <Col xs={12}>{this.renderRows(orders)}</Col>

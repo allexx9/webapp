@@ -2,3 +2,8 @@
   text-align: right;
   padding-bottom: 5px;
 }
+
+.loadingText {
+  text-align: center;
+  font-weight: 700
+}

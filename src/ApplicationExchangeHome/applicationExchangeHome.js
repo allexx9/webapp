@@ -29,6 +29,11 @@ import TokenBalances from '../_atomic/atoms/tokenBalances'
 import TokenLiquidity from '../_atomic/atoms/tokenLiquidity'
 import TokenPrice from '../_atomic/atoms/tokenPrice'
 import TokenTradeSelector from '../_atomic/molecules/tokenTradeSelector'
+import exchangeConnector, {
+  NETWORKS,
+  exchanges,
+  supportedExchanges
+} from '@rigoblock/exchange-connector'
 
 import {
   CANCEL_SELECTED_ORDER,
@@ -139,6 +144,9 @@ class ApplicationExchangeHome extends Component {
     const { endpoint } = this.props
 
     const defaultRelay = RELAYS[DEFAULT_RELAY[api._rb.network.name]]
+    // console.log(EXCHANGES)
+    // console.log(api._rb.network.name)
+    // console.log(defaultRelay)
     const defaultExchange = EXCHANGES[defaultRelay.name][api._rb.network.name]
     const defaultTokensPair = {
       baseToken:
@@ -185,7 +193,7 @@ class ApplicationExchangeHome extends Component {
           utils.availableRelays(RELAYS, api._rb.network.id)
         )
       )
-      console.log(defaultExchange)
+
       // Updating selected exchange
       this.props.dispatch(
         Actions.exchange.updateSelectedExchange(defaultExchange)
@@ -279,17 +287,26 @@ class ApplicationExchangeHome extends Component {
 
   connectToExchange = async (defaultRelay, defaultTokensPair) => {
     const { api } = this.context
+    console.log(defaultRelay)
+    // this.props.dispatch(
+    //   Actions.exchange.relayGetOrders(
+    //     defaultRelay,
+    //     api._rb.network.id,
+    //     defaultTokensPair.baseToken,
+    //     defaultTokensPair.quoteToken,
+    //     defaultRelay.initOrdeBookAggregated
+    //   )
+    // )
     this.props.dispatch(
-      Actions.exchange.relayGetOrders(
+      Actions.exchange.relayOpenWsTicker(
         defaultRelay,
         api._rb.network.id,
         defaultTokensPair.baseToken,
-        defaultTokensPair.quoteToken,
-        defaultRelay.initOrdeBookAggregated
+        defaultTokensPair.quoteToken
       )
     )
     this.props.dispatch(
-      Actions.exchange.relayOpenWs(
+      Actions.exchange.relayOpenWsBook(
         defaultRelay,
         api._rb.network.id,
         defaultTokensPair.baseToken,
@@ -343,29 +360,41 @@ class ApplicationExchangeHome extends Component {
         Actions.exchange.updateLiquidityAndTokenBalances(api, '', fund.address)
       )
 
-      // Getting allowances
-      const allowanceBaseToken = await getTokenAllowance(
-        selectedTokensPair.baseToken,
-        fund.address,
-        selectedExchange
-      )
-      const allowanceQuoteToken = await getTokenAllowance(
-        selectedTokensPair.quoteToken,
-        fund.address,
-        selectedExchange
-      )
+      console.log(selectedRelay)
 
-      // Getting token wrapper lock time
-      const baseTokenLockWrapExpire = await utils.updateTokenWrapperLockTime(
-        api,
-        selectedTokensPair.baseToken.wrappers[selectedRelay.name].address,
-        fund.address
-      )
-      const quoteTokenLockWrapExpire = await utils.updateTokenWrapperLockTime(
-        api,
-        selectedTokensPair.quoteToken.wrappers[selectedRelay.name].address,
-        fund.address
-      )
+      let allowanceBaseToken,
+        allowanceQuoteToken = 0
+
+      if (!selectedRelay.isTokenWrapper) {
+        // Getting allowances
+        allowanceBaseToken = await getTokenAllowance(
+          selectedTokensPair.baseToken,
+          fund.address,
+          selectedExchange
+        )
+        allowanceQuoteToken = await getTokenAllowance(
+          selectedTokensPair.quoteToken,
+          fund.address,
+          selectedExchange
+        )
+      }
+
+      let baseTokenLockWrapExpire,
+        quoteTokenLockWrapExpire = '0'
+
+      if (selectedRelay.isTokenWrapper) {
+        // Getting token wrapper lock time
+        baseTokenLockWrapExpire = await utils.updateTokenWrapperLockTime(
+          api,
+          selectedTokensPair.baseToken.wrappers[selectedRelay.name].address,
+          fund.address
+        )
+        quoteTokenLockWrapExpire = await utils.updateTokenWrapperLockTime(
+          api,
+          selectedTokensPair.quoteToken.wrappers[selectedRelay.name].address,
+          fund.address
+        )
+      }
 
       const payload = {
         baseTokenAllowance: new BigNumber(allowanceBaseToken).gt(0),
@@ -445,7 +474,7 @@ class ApplicationExchangeHome extends Component {
       })
 
       // Reconnecting to the exchange
-      this.connectToExchange(tradeTokensPair)
+      this.connectToExchange(selectedExchange, tradeTokensPair)
 
       // Getting chart data
       // let tsYesterday = new Date(
@@ -464,33 +493,6 @@ class ApplicationExchangeHome extends Component {
       console.log(error)
     }
   }
-
-  // onButtonTest = () => {
-  //   console.log('open')
-  //   var filter = {
-  //     networkId: this.props.exchange.relay.networkId,
-  //     baseTokenAddress: this.props.exchange.selectedTokensPair.baseToken.address,
-  //     quoteTokenAddress: this.props.exchange.selectedTokensPair.quoteToken.address,
-  //     aggregated: this.props.exchange.orderBook.aggregated
-  //   }
-  //   this.props.dispatch(this.relayGetOrders(filter))
-  //   // this.props.dispatch({ type: 'RELAY_SUBSCRIBE_WEBSOCKET', payload: { sub: 'sub:ticker2' }})
-  // }
-
-  // onButtonTest2 = () => {
-  //   console.log('subscribe')
-  //   getMarketTakerOrder(
-  //     this.props.exchange.selectedTokensPair.baseToken.address,
-  //     this.props.exchange.selectedTokensPair.quoteToken.address,
-  //     this.props.exchange.selectedTokensPair.baseToken.address,
-  //     '95000000000000000000',
-  //     this.props.exchange.relay.networkId,
-  //     "0x57072759Ba54479669CAdF1A25528a472Af95cEF".toLowerCase()
-  //   )
-  //     .then(results => {
-  //       console.log(results)
-  //     })
-  // }
 
   render() {
     const {
@@ -586,8 +588,9 @@ class ApplicationExchangeHome extends Component {
 
     if (user.isManager) {
       const { bids, asks, spread } = this.props.exchange.orderBook
-      console.log(asks)
-      const asksOrderNormalized = asks.slice(0, 20)
+      // console.log(asks)
+      // console.log(bids)
+      const asksOrderNormalized = asks.slice(-20)
       const bidsOrderNormalized = bids.slice(0, 20)
       // console.log(this.props.exchange.selectedExchange)
       // const bidsOrderNormalizedFilled = [ ...Array(20 - bidsOrderNormalized.length).fill(null), ...bidsOrderNormalized ]
@@ -607,7 +610,7 @@ class ApplicationExchangeHome extends Component {
             <Col xs={12}>
               <Paper className={styles.paperTopBarContainer} zDepth={1}>
                 <Row>
-                  <Col xs={4}>
+                  <Col xs={12} sm={4}>
                     <FundSelector
                       funds={this.props.transactionsDrago.manager.list}
                       onSelectFund={this.onSelectFund}
@@ -619,14 +622,14 @@ class ApplicationExchangeHome extends Component {
                       loading={exchange.loading.liquidity}
                     />
                   </Col> */}
-                  <Col xs={4}>
+                  <Col xs={12} sm={4}>
                     <TokenTradeSelector
                       tradableTokens={exchange.availableTradeTokensPairs}
                       selectedTradeTokensPair={exchange.selectedTokensPair}
                       onSelectTokenTrade={this.onSelectTokenTrade}
                     />
                   </Col>
-                  <Col xs={4} className={styles.tokenPriceContainer}>
+                  <Col xs={12} sm={4} className={styles.tokenPriceContainer}>
                     <TokenPrice
                       selectedTradeTokensPair={exchange.selectedTokensPair}
                       tokenPrice={currentPrice.toFixed(4)}
@@ -650,7 +653,7 @@ class ApplicationExchangeHome extends Component {
             </Col> */}
             <Col xs={12}>
               <Row>
-                <Col xs={3}>
+                <Col xs={12} md={12} lg={3}>
                   <Row>
                     <Col xs={12}>
                       <div className={styles.boxContainer}>
@@ -664,7 +667,7 @@ class ApplicationExchangeHome extends Component {
                     </Col>
                   </Row>
                 </Col>
-                <Col xs={7}>
+                <Col xs={12} md={12} lg={7}>
                   <Row>
                     <Col xs={12}>
                       <div className={styles.boxContainer}>
@@ -676,21 +679,25 @@ class ApplicationExchangeHome extends Component {
                       </div>
                     </Col>
                     <Col xs={12}>
-                      <OrdersHistoryBox fundOrders={fundOrders} />
+                      <div className={styles.boxContainer}>
+                        <OrdersHistoryBox fundOrders={fundOrders} />
+                      </div>
                     </Col>
                   </Row>
                 </Col>
-                <Col xs={2}>
-                  <OrderBook
-                    bidsOrders={bidsOrderNormalized}
-                    asksOrders={asksOrderNormalized}
-                    spread={spread}
-                    aggregated={this.props.exchange.orderBookAggregated}
-                    onToggleAggregateOrders={this.onToggleAggregateOrders}
-                    onlyAggregated={
-                      this.props.exchange.selectedRelay.onlyAggregateOrderbook
-                    }
-                  />
+                <Col xs={12} md={12} lg={2}>
+                  <div className={styles.boxContainer}>
+                    <OrderBook
+                      bidsOrders={bidsOrderNormalized}
+                      asksOrders={asksOrderNormalized}
+                      spread={spread}
+                      aggregated={this.props.exchange.orderBookAggregated}
+                      onToggleAggregateOrders={this.onToggleAggregateOrders}
+                      onlyAggregated={
+                        this.props.exchange.selectedRelay.onlyAggregateOrderbook
+                      }
+                    />
+                  </div>
                 </Col>
               </Row>
             </Col>
@@ -751,7 +758,7 @@ class ApplicationExchangeHome extends Component {
     console.log(dragoAddress, accounts)
     const { api } = this.context
     // const options = {balance: false, supply: true}
-    const options = { balance: false, supply: true, limit: 10, trader: false }
+    const options = { balance: false, supply: true, limit: 20, trader: false }
     try {
       const results = await utils.getTransactionsDragoOptV2(
         api,

@@ -12,8 +12,10 @@ import Web3 from 'web3'
 import palette from './palete'
 
 import { Actions } from '../_redux/actions'
+import { CommunicationStopScreenShare } from 'material-ui/svg-icons'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
+import moment from 'moment'
 
 class NotificationAlert extends Component {
   static propTypes = {
@@ -80,9 +82,9 @@ class utilities {
   notificationError = (notificationEngine, message, level = 'error') => {
     const messageFirstLine = message.split(/\r?\n/)
     notificationEngine.addNotification({
-      title: level.charAt(0).toUpperCase() + level.slice(1),
-      message: messageFirstLine[0],
       level: level,
+      title: level.toUpperCase(),
+      message: messageFirstLine[0],
       position: 'br',
       autoDismiss: 10
     })
@@ -92,6 +94,7 @@ class utilities {
     let comp = new NotificationAlert([message])
     notificationEngine.addNotification({
       level: level,
+      title: level,
       position: 'br',
       autoDismiss: 10,
       children: comp.render(
@@ -288,7 +291,12 @@ class utilities {
     let ethvalue = 0
     let drgvalue = 0
     let dragoSymbolRegistry = new Map()
+
     // console.log(options)
+    console.log('getTransactionsVaultOptV2')
+    console.log(
+      `***** ${moment().format()} Utils: event fetching started *****`
+    )
     const logToEvent = log => {
       const key = api.util.sha3(JSON.stringify(log))
       const {
@@ -396,9 +404,15 @@ class utilities {
         }
 
         const createDragoEvents = () => {
+          console.log(
+            `***** ${moment().format()} Utils: create Events fetching started *****`
+          )
           return poolApi.contract.vaulteventful
             .getAllLogs(eventsFilterCreate)
             .then(dragoTransactionsLog => {
+              console.log(
+                `***** ${moment().format()} Utils: create Events fetching ended *****`
+              )
               console.log(dragoTransactionsLog)
               const createLogs = dragoTransactionsLog.map(logToEvent)
               return createLogs
@@ -426,9 +440,16 @@ class utilities {
         // }
 
         const buySellDragoEvents = () => {
+          console.log(
+            `***** ${moment().format()} Utils: buySell Events fetching started *****`
+          )
           return poolApi.contract.vaulteventful
             .getAllLogs(eventsFilterBuySell)
             .then(dragoTransactionsLog => {
+              console.log(
+                `***** ${moment().format()} Utils: buySell Events fetching ended *****`
+              )
+              console.log(dragoTransactionsLog)
               const buySellLogs = dragoTransactionsLog.map(logToEvent)
               return buySellLogs
             })
@@ -461,7 +482,6 @@ class utilities {
               }
               return comparison
             }
-            console.log(results)
             // var allLogs = options.trader ? [...results[0], ...results[1]] : [...results[0]]
             let allLogs = [...results[0]]
             let supply = []
@@ -472,6 +492,8 @@ class utilities {
               allLogs.length - 20,
               allLogs.length
             )
+            console.log(`***** ${moment().format()} Utils: events loaded *****`)
+            console.log(results)
             // console.log(allLogs)
 
             // This is an inefficient way to get the symbol for each transactions.
@@ -654,7 +676,13 @@ class utilities {
                   })
                   .then(() => {
                     let logs = getSymbols()
+                    console.log(
+                      `***** ${moment().format()} Utils: symbols loaded *****`
+                    )
                     return Promise.all(getTimestamp(logs)).then(logs => {
+                      console.log(
+                        `***** ${moment().format()} Utils: events timestamp fetched *****`
+                      )
                       balancesList.sort(function(a, b) {
                         if (a.symbol < b.symbol) return -1
                         if (a.symbol > b.symbol) return 1
@@ -667,7 +695,6 @@ class utilities {
                         return 0
                       })
                       let results = [balancesList, logs, supply]
-                      console.log(results)
                       return results
                     })
                   })
@@ -675,6 +702,7 @@ class utilities {
             })
           })
           .then(results => {
+            console.log(results)
             return results
           })
       })
@@ -705,6 +733,7 @@ class utilities {
   ) => {
     //
     // return Promise.reject(new Error('fail'))
+    let startTime = new Date()
     if (accounts.length === 0) {
       return Array(0), Array(0), Array(0)
     }
@@ -712,7 +741,27 @@ class utilities {
     let ethvalue = 0
     let drgvalue = 0
     let dragoSymbolRegistry = new Map()
+    let fromBlock
+    console.log(api._rb.network.id)
+    switch (api._rb.network.id) {
+      case 1:
+        fromBlock = '6000000'
+        break
+      case 42:
+        fromBlock = '7000000'
+        break
+      case 3:
+        fromBlock = '3000000'
+        break
+      default:
+        '3000000'
+    }
     console.log('getTransactionsDragoOptV2')
+    console.log(accounts)
+    console.log(options)
+    console.log(
+      `***** ${moment().format()} Utils: event fetching started *****`
+    )
     const logToEvent = log => {
       const key = api.util.sha3(JSON.stringify(log))
       const {
@@ -799,7 +848,9 @@ class utilities {
             null,
             null,
             hexAccounts
-          ]
+          ],
+          fromBlock: fromBlock,
+          toBlock: 'latest'
         }
         // Filter for buy events
         // const eventsFilterBuy = {
@@ -822,56 +873,149 @@ class utilities {
 
         // Filter for buy and sell events
         const eventsFilterBuySell = {
-          topics: [null, null, hexAccounts, null]
+          topics: [
+            [
+              poolApi.contract.dragoeventful.hexSignature.BuyDrago,
+              poolApi.contract.dragoeventful.hexSignature.SellDrago
+            ],
+            null,
+            hexAccounts,
+            null
+          ],
+          fromBlock: fromBlock,
+          toBlock: 'latest'
         }
 
         const createDragoEvents = () => {
+          let startTime = new Date()
+          console.log(
+            `***** ${moment().format()} Utils: create Events fetching started *****`
+          )
           return poolApi.contract.dragoeventful
             .getAllLogs(eventsFilterCreate)
             .then(dragoTransactionsLog => {
+              console.log(
+                `***** ${moment().format()} Utils: create Events fetching ended *****`
+              )
+              let endTime = new Date()
+              let dif = startTime.getTime() - endTime.getTime()
+              let Seconds_from_T1_to_T2 = dif / 1000
+              let Seconds_Between_Dates = Math.abs(Seconds_from_T1_to_T2)
+              console.log(`***** Loaded in ${Seconds_Between_Dates}s *****`)
+              console.log(dragoTransactionsLog)
               const createLogs = dragoTransactionsLog.map(logToEvent)
               return createLogs
             })
         }
 
-        // const buyDragoEvents = () => {
-        //   return poolApi.contract.dragoeventful
-        //     .getAllLogs(eventsFilterBuy)
-        //     .then((dragoTransactionsLog) => {
-        //       const buyLogs = dragoTransactionsLog.map(logToEvent)
-        //       return buyLogs
-        //     }
-        //     )
-        // }
-
-        // const sellDragoEvents = () => {
-        //   return poolApi.contract.dragoeventful
-        //     .getAllLogs(eventsFilterSell)
-        //     .then((dragoTransactionsLog) => {
-        //       const sellLogs = dragoTransactionsLog.map(logToEvent)
-        //       return sellLogs
-        //     }
-        //     )
-        // }
-
         const buySellDragoEvents = () => {
+          let startTime = new Date()
+          console.log(
+            `***** ${moment().format()} Utils: buySell Events fetching started *****`
+          )
           return poolApi.contract.dragoeventful
             .getAllLogs(eventsFilterBuySell)
             .then(dragoTransactionsLog => {
+              console.log(
+                `***** ${moment().format()} Utils: buySell Events fetching ended *****`
+              )
+              let endTime = new Date()
+              let dif = startTime.getTime() - endTime.getTime()
+              let Seconds_from_T1_to_T2 = dif / 1000
+              let Seconds_Between_Dates = Math.abs(Seconds_from_T1_to_T2)
+              console.log(`***** Loaded in ${Seconds_Between_Dates}s *****`)
+              console.log(dragoTransactionsLog)
               const buySellLogs = dragoTransactionsLog.map(logToEvent)
               return buySellLogs
             })
         }
 
+        const getChunkedEvents = topics => {
+          let arrayPromises = []
+          return api.eth.blockNumber().then(lastBlock => {
+            let chunck = 100000
+            let endBlock = lastBlock
+            let startBlock = lastBlock - chunck
+            // fromBlock = 1000000
+            while (fromBlock <= startBlock) {
+              // console.log(`from ${startBlock} to ${endBlock}`)
+
+              // Pushing chunk logs into array
+              let options = {
+                topics: topics,
+                fromBlock: startBlock,
+                toBlock: endBlock
+              }
+              arrayPromises.push(
+                poolApi.contract.dragoeventful.getAllLogs(options)
+              )
+
+              // Exit if reached fromBlok
+              if (fromBlock + 1 === startBlock) {
+                break
+              }
+
+              endBlock = startBlock - 1
+              startBlock =
+                startBlock - chunck < fromBlock
+                  ? fromBlock + 1
+                  : startBlock - chunck
+            }
+
+            return Promise.all(arrayPromises).then(results => {
+              if (options.trader) {
+                console.log('Trader transactions')
+                // console.log(topics)
+              } else {
+                console.log('Manager transactions')
+                // console.log(topics)
+              }
+              let dragoTransactionsLog = Array(0).concat(...results)
+              // console.log(dragoTransactionsLog)
+              const logs = dragoTransactionsLog.map(logToEvent)
+              console.log(logs)
+              return logs
+            })
+          })
+        }
+
+        let topicsBuySell = [
+          [
+            poolApi.contract.dragoeventful.hexSignature.BuyDrago,
+            poolApi.contract.dragoeventful.hexSignature.SellDrago
+          ],
+          null,
+          hexAccounts,
+          null
+        ]
+
+        // 0x19b85c898cf6ac07e2cd8c5e44f84c9146263ac6861bfef2ed01d419b37c2c36
+        console.log(poolApi.contract.dragoeventful.hexSignature.DragoCreated)
+        let topicsCreate = [
+          [poolApi.contract.dragoeventful.hexSignature.DragoCreated],
+          null,
+          null,
+          hexAccounts
+        ]
+
+        // console.log(getChunkedEvents(topicsBuySell))
+        // console.log(getChunkedEvents(topicsCreate))
         let promisesEvents = null
+        // if (options.trader) {
+        //   // promisesEvents = [buyDragoEvents(), sellDragoEvents()]
+        //   promisesEvents = [buySellDragoEvents()]
+        // } else {
+        //   promisesEvents = [createDragoEvents()]
+        // }
         if (options.trader) {
-          // promisesEvents = [buyDragoEvents(), sellDragoEvents()]
-          promisesEvents = [buySellDragoEvents()]
+          promisesEvents = [getChunkedEvents(topicsBuySell)]
         } else {
-          promisesEvents = [createDragoEvents()]
+          promisesEvents = [getChunkedEvents(topicsCreate)]
         }
         return Promise.all(promisesEvents)
           .then(results => {
+            console.log(results)
+            let allLogs = [...results[0]]
             // Creating an array of promises that will be executed to add timestamp and symbol to each entry
             // Doing so because for each entry we need to make an async call to the client
             // For additional refernce: https://stackoverflow.com/questions/39452083/using-promise-function-inside-javascript-array-map
@@ -890,17 +1034,18 @@ class utilities {
               }
               return comparison
             }
+
             // var allLogs = options.trader ? [...results[0], ...results[1]] : [...results[0]]
-            let allLogs = [...results[0]]
             let supply = []
             let balances = []
             let balancesList = []
             allLogs.sort(compare)
             let dragoTransactionsLogs = allLogs.slice(
-              allLogs.length - 20,
+              allLogs.length - options.limit,
               allLogs.length
             )
-            // console.log(allLogs)
+            // console.log(`***** ${moment().format()} Utils: events loaded *****`)
+            // console.log(results)
 
             // This is an inefficient way to get the symbol for each transactions.
             // In the future the symbol will have to be saved in the eventful logs.
@@ -1007,11 +1152,13 @@ class utilities {
                         const symbol = dragoSymbolRegistry.get(k).symbol
                         const name = dragoSymbolRegistry.get(k).name.trim()
                         const dragoId = dragoSymbolRegistry.get(k).dragoId
+                        const address = dragoSymbolRegistry.get(k).address
                         balances[account][dragoId] = {
                           balance: dragoBalance,
                           name,
                           symbol: symbol,
-                          dragoId: dragoId
+                          dragoId: dragoId,
+                          address: address
                         }
                       })
                   )
@@ -1046,7 +1193,7 @@ class utilities {
                   .catch(() => {
                     // Sometimes Infura returns null for api.eth.getBlockByNumber, therefore we are assigning a fake timestamp to avoid
                     // other issues in the app.
-                    log.timestamp = new Date()
+                    log.timestamp = new Date(0)
                     return log
                   })
               })
@@ -1070,6 +1217,7 @@ class utilities {
                               symbol: balance.symbol,
                               dragoId: balance.dragoId,
                               name: balance.name,
+                              address: balance.address,
                               balance: dragoBalance.plus(balance.balance)
                             })
                           } else {
@@ -1077,32 +1225,44 @@ class utilities {
                               symbol: balance.symbol,
                               dragoId: balance.dragoId,
                               name: balance.name,
+                              address: balance.address,
                               balance: balance.balance
                             })
                           }
                         })
                       }
                       balancesRegistry.forEach((v, k) => {
-                        tokenBalances.push({
-                          symbol: balancesRegistry.get(k).symbol,
-                          name: balancesRegistry.get(k).name,
-                          dragoId: balancesRegistry.get(k).dragoId,
-                          balance: formatCoins(
-                            balancesRegistry.get(k).balance,
-                            4,
-                            api
-                          )
-                        })
+                        // Filtering empty balances
+                        if (balancesRegistry.get(k).balance.gt(0)) {
+                          tokenBalances.push({
+                            symbol: balancesRegistry.get(k).symbol,
+                            name: balancesRegistry.get(k).name,
+                            dragoId: balancesRegistry.get(k).dragoId,
+                            address: balancesRegistry.get(k).address,
+                            balance: formatCoins(
+                              balancesRegistry.get(k).balance,
+                              4,
+                              api
+                            )
+                          })
+                        }
                       })
+                      balancesList = tokenBalances
                       // Filtering empty balances
-                      balancesList = tokenBalances.filter(balance => {
-                        return balance.balance !== 0
-                      })
+                      // balancesList = tokenBalances.filter(balance => {
+                      //   return new BigNumber(balance.balance).gt(0)
+                      // })
                     }
                   })
                   .then(() => {
                     let logs = getSymbols()
+                    // console.log(
+                    //   `***** ${moment().format()} Utils: symbols loaded *****`
+                    // )
                     return Promise.all(getTimestamp(logs)).then(logs => {
+                      // console.log(
+                      //   `***** ${moment().format()} Utils: events timestamp fetched *****`
+                      // )
                       balancesList.sort(function(a, b) {
                         if (a.symbol < b.symbol) return -1
                         if (a.symbol > b.symbol) return 1
@@ -1122,6 +1282,22 @@ class utilities {
             })
           })
           .then(results => {
+            let endTime = new Date()
+            let dif = startTime.getTime() - endTime.getTime()
+            let Seconds_from_T1_to_T2 = dif / 1000
+            let Seconds_Between_Dates = Math.abs(Seconds_from_T1_to_T2)
+            if (options.trader) {
+              console.log(
+                `***** Holder transactions loaded in ${Seconds_Between_Dates}s *****`
+              )
+              // console.log(topics)
+            } else {
+              console.log(
+                `***** Manager transactions loaded in ${Seconds_Between_Dates}s *****`
+              )
+              // console.log(topics)
+            }
+            console.log(results)
             return results
           })
       })
@@ -1181,9 +1357,19 @@ class utilities {
         ]
       }
       const dragoCreatedLog = await contract.getAllLogs(eventsFilterCreate)
-      const blockInfo = await api.eth.getBlockByNumber(
-        dragoCreatedLog[0].blockNumber.toFixed(0)
-      )
+      let blockInfo
+      if (dragoCreatedLog.length !== 0) {
+        try {
+          blockInfo = await api.eth.getBlockByNumber(
+            dragoCreatedLog[0].blockNumber.toFixed(0)
+          )
+        } catch (error) {
+          blockInfo = { timestamp: new Date(0) }
+        }
+      } else {
+        blockInfo = { timestamp: new Date(0) }
+      }
+
       return this.dateFromTimeStampHuman(blockInfo.timestamp)
     }
 
@@ -1277,10 +1463,19 @@ class utilities {
           null
         ]
       }
+      let blockInfo
       const vaultCreatedLog = await contract.getAllLogs(eventsFilterCreate)
-      const blockInfo = await api.eth.getBlockByNumber(
-        vaultCreatedLog[0].blockNumber.toFixed(0)
-      )
+      if (vaultCreatedLog.length !== 0) {
+        try {
+          blockInfo = await api.eth.getBlockByNumber(
+            vaultCreatedLog[0].blockNumber.toFixed(0)
+          )
+        } catch (error) {
+          blockInfo = { timestamp: new Date(0) }
+        }
+      } else {
+        blockInfo = { timestamp: new Date(0) }
+      }
       return this.dateFromTimeStampHuman(blockInfo.timestamp)
     }
 
@@ -1435,7 +1630,7 @@ class utilities {
     let keysB = Object.keys(objB)
 
     if (keysA.length !== keysB.length) {
-      // console.log(`${this.constructor.name} -> keysA.length`);
+      // console.log(`${this.constructor.name} -> keysA.length`)
       return false
     }
 
@@ -1443,7 +1638,10 @@ class utilities {
     let bHasOwnProperty = hasOwnProperty.bind(objB)
     for (let i = 0; i < keysA.length; i++) {
       if (!bHasOwnProperty(keysA[i]) || objA[keysA[i]] !== objB[keysA[i]]) {
-        // console.log(`${this.constructor.name} -> Test for A's keys different from B`)
+        // console.log(objA[keysA[i]], objB[keysA[i]])
+        // console.log(
+        //   `${this.constructor.name} -> Test for A's keys different from B`
+        // )
         return false
       }
     }

@@ -8,14 +8,14 @@ import {
 } from 'react-virtualized'
 import { Col, Row } from 'react-flexbox-grid'
 import { Link, withRouter } from 'react-router-dom'
-import { toUnitAmount } from '../../_utils/format'
+import { toUnitAmount } from '../_utils/format'
 import BigNumber from 'bignumber.js'
-import BlokiesIcon from '../../_atomic/atoms/blokiesIcon'
+import BlokiesIcon from '../_atomic/atoms/blokiesIcon'
 import FlatButton from 'material-ui/FlatButton'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
-import styles from './elementListBalances.module.css'
-import utils from '../../_utils/utils'
+import styles from './elementListFunds.module.css'
+import utils from '../_utils/utils'
 
 // import ChartBox from '../../_atomic/organisms/chartBox'
 
@@ -25,12 +25,19 @@ class ElementListFunds extends PureComponent {
   static propTypes = {
     list: PropTypes.array.isRequired,
     location: PropTypes.object.isRequired,
-    match: PropTypes.object.isRequired
+    match: PropTypes.object.isRequired,
+    tableHeight: PropTypes.number,
+    tableWidth: PropTypes.number
     // renderCopyButton: PropTypes.func.isRequired,
     // renderEtherscanButton: PropTypes.func.isRequired,
     // dragoDetails: PropTypes.object.isRequired,
     // assetsPrices: PropTypes.object.isRequired,
     // assetsChart: PropTypes.object.isRequired
+  }
+
+  static defaultProps = {
+    tableHeight: 650,
+    tableWidth: 600
   }
 
   constructor(props, context) {
@@ -42,8 +49,8 @@ class ElementListFunds extends PureComponent {
     this.state = {
       disableHeader: false,
       headerHeight: 30,
-      height: 650,
-      width: 600,
+      height: props.tableHeight,
+      width: props.tableWidth,
       hideIndexRow: false,
       overscanRowCount: 10,
       rowHeight: 60,

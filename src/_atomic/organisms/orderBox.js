@@ -3,10 +3,10 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 // import * as Colors from 'material-ui/styles/colors'
 import BoxTitle from '../atoms/boxTitle'
-import ButtonBuy from '../atoms/buttonBuy'
-import ButtonOrderCancel from '../atoms/buttonOrderCancel'
-import ButtonOrderSubmit from '../atoms/buttonOrderSubmit'
-import ButtonSell from '../atoms/buttonSell'
+import ButtonOrderBuy from '../atoms/buttonOrderBuy'
+import ButtonOrderConfirm from '../atoms/buttonOrderConfirm'
+import ButtonOrderReset from '../atoms/buttonOrderReset'
+import ButtonOrderSell from '../atoms/buttonOrderSell'
 import OrderAmountInputField from '../atoms/orderAmountInputField'
 import OrderPrice from '../atoms/orderPrice'
 import OrderRawDialog from '../molecules/orderRawDialog'
@@ -32,7 +32,7 @@ import {
   submitOrderToRelayEFX
 } from '../../_utils/exchange'
 import { sha3_512 } from 'js-sha3'
-import ToggleSwitch from '../atoms/toggleSwitch'
+// import ToggleSwitch from '../atoms/toggleSwitch'
 import serializeError from 'serialize-error'
 import utils from '../../_utils/utils'
 
@@ -78,15 +78,15 @@ class OrderBox extends Component {
     }
   }
 
-  updateSelectedFundLiquidity = (fundAddress, api) => {
-    return {
-      type: UPDATE_FUND_LIQUIDITY,
-      payload: {
-        fundAddress,
-        api
-      }
-    }
-  }
+  // updateSelectedFundLiquidity = (fundAddress, api) => {
+  //   return {
+  //     type: UPDATE_FUND_LIQUIDITY,
+  //     payload: {
+  //       fundAddress,
+  //       api
+  //     }
+  //   }
+  // }
 
   onCloseOrderRawDialog = open => {
     this.setState({
@@ -157,13 +157,39 @@ class OrderBox extends Component {
   //     })
   // }
 
+  onConfirmOrder = async () => {
+    const {
+      selectedOrder,
+      selectedExchange,
+      walletAddress
+    } = this.props.exchange
+    if (!selectedOrder.takerOrder) {
+    }
+    console.log(`Selected order: ${selectedOrder}`)
+    let signedOrder = await signOrder(
+      selectedOrder,
+      selectedExchange,
+      walletAddress
+    )
+    console.log(`Signed order: ${signedOrder}`)
+    const payload = {
+      details: { order: signedOrder }
+    }
+    this.props.dispatch(this.updateSelectedOrder(payload))
+    this.setState({
+      orderRawDialogOpen: true
+    })
+  }
+
   onSubmitOrder = async () => {
     const {
       selectedOrder,
       selectedExchange,
       selectedFund,
-      walletAddress
+      selectedRelay
     } = this.props.exchange
+    const { endpoint } = this.props
+    const { api } = this.context
 
     const transactionId = sha3_512(new Date() + selectedFund.managerAccount)
     let transactionDetails = {
@@ -206,11 +232,16 @@ class OrderBox extends Component {
         )
 
         // Updating drago liquidity
-        this.props.dispatch(
-          this.updateSelectedFundLiquidity(
-            selectedFund.details.address,
-            this.context.api
-          )
+        // this.props.dispatch(
+        //   this.updateSelectedFundLiquidity(
+        //     selectedFund.details.address,
+        //     this.context.api
+        //   )
+        // )
+        Actions.updateLiquidityAndTokenBalances(
+          api,
+          '',
+          selectedFund.details.address
         )
       } catch (error) {
         console.log(serializeError(error))
@@ -230,45 +261,29 @@ class OrderBox extends Component {
       }
     } else {
       console.log(selectedOrder)
-      const transactionId = sha3_512(new Date() + selectedFund.managerAccount)
-      transactionDetails = {
-        status: 'pending',
-        hash: '',
-        parityId: null,
-        timestamp: new Date(),
-        account: selectedFund.details.address,
-        error: false,
-        action: selectedOrder.orderType === 'asks' ? 'BuyToken' : 'SellToken',
-        symbol: selectedOrder.selectedTokensPair.baseToken.symbol.toUpperCase(),
-        amount: selectedOrder.orderFillAmount
-      }
-      let signedOrder = await signOrder(
-        selectedOrder,
-        selectedExchange,
-        walletAddress
-      )
-      console.log(signedOrder)
-      const payload = {
-        details: { order: signedOrder }
-      }
-      this.props.dispatch(this.updateSelectedOrder(payload))
-      this.setState({
-        orderRawDialogOpen: true
-      })
-      const efxOrder = {
-        type: 'EXCHANGE LIMIT',
-        symbol: 'tETHUSD',
-        amount:
-          selectedOrder.orderType === 'asks'
-            ? selectedOrder.orderFillAmount
-            : -Math.abs(selectedOrder.orderFillAmount),
-        price: selectedOrder.orderPrice,
-        meta: signedOrder,
-        protocol: '0x'
-      }
-      console.log(selectedOrder)
-      submitOrderToRelayEFX(efxOrder)
-        .then(parsedBody => {
+      let signedOrder = selectedOrder.details.order
+      try {
+        if (selectedRelay.name === 'Ethfinex') {
+          console.log('Ethfinex order')
+          let efxSymbol = `t${selectedOrder.selectedTokensPair.baseToken.symbol.toUpperCase()}${selectedOrder.selectedTokensPair.quoteToken.symbolTicker.Ethfinex.toUpperCase()}`
+          let efxAmount =
+            selectedOrder.orderType === 'asks'
+              ? (-Math.abs(selectedOrder.orderFillAmount)).toString()
+              : selectedOrder.orderFillAmount
+          const efxOrder = {
+            type: 'EXCHANGE LIMIT',
+            symbol: efxSymbol,
+            amount: efxAmount,
+            price: selectedOrder.orderPrice,
+            meta: signedOrder,
+            protocol: '0x'
+          }
+          console.log(efxSymbol, efxAmount, selectedOrder.orderPrice)
+          console.log(efxOrder)
+          let parsedBody = await submitOrderToRelayEFX(
+            efxOrder,
+            endpoint.networkInfo.id
+          )
           transactionDetails.status = 'executed'
           transactionDetails.timestamp = new Date()
           this.props.dispatch(
@@ -278,27 +293,30 @@ class OrderBox extends Component {
             )
           )
           console.log(parsedBody)
-        })
-        .catch(error => {
-          const errorArray = serializeError(error).message.split(/\r?\n/)
-          transactionDetails.status = 'error'
-          transactionDetails.error = errorArray[0]
-          this.props.dispatch(
-            Actions.transactions.addTransactionToQueueAction(
-              transactionId,
-              transactionDetails
-            )
+        }
+      } catch (error) {
+        const errorArray = serializeError(error).message.split(/\r?\n/)
+        transactionDetails.status = 'error'
+        transactionDetails.error = errorArray[0]
+        this.props.dispatch(
+          Actions.transactions.addTransactionToQueueAction(
+            transactionId,
+            transactionDetails
           )
-          console.log(error)
-          utils.notificationError(
-            this.props.notifications.engine,
-            serializeError(error).message
-          )
-        })
+        )
+        console.log(error)
+        utils.notificationError(
+          this.props.notifications.engine,
+          serializeError(error).message
+        )
+      }
     }
   }
 
   onCancelOrder = () => {
+    this.setState({
+      orderRawDialogOpen: false
+    })
     this.props.dispatch(this.cancelSelectedOrder())
   }
 
@@ -433,14 +451,14 @@ class OrderBox extends Component {
                 <Row className={styles.orderBookContainer}>
                   <Col xs={12}>
                     <Row className={styles.sectionHeaderOrderTable}>
-                      <Col xs={6} className={styles.buyButton}>
-                        <ButtonBuy
+                      <Col sm={12} md={6} className={styles.buyButton}>
+                        <ButtonOrderBuy
                           selected={buySelected}
                           onBuySell={this.onBuySell}
                         />
                       </Col>
-                      <Col xs={6} className={styles.sellButton}>
-                        <ButtonSell
+                      <Col sm={12} md={6} className={styles.sellButton}>
+                        <ButtonOrderSell
                           selected={sellSelected}
                           onBuySell={this.onBuySell}
                         />
@@ -513,17 +531,17 @@ class OrderBox extends Component {
                   </Col>
                   <Col xs={12}>
                     <Row center="xs">
-                      <Col xs={6}>
-                        <ButtonOrderCancel
-                          onCancelOrder={this.onCancelOrder}
+                      <Col sm={12} md={6}>
+                        <ButtonOrderReset
+                          onClick={this.onCancelOrder}
                           disabled={
                             Object.keys(selectedOrder.details).length === 0
                           }
                         />
                       </Col>
-                      <Col xs={6}>
-                        <ButtonOrderSubmit
-                          onSubmitOrder={this.onSubmitOrder}
+                      <Col sm={12} md={6}>
+                        <ButtonOrderConfirm
+                          onClick={this.onConfirmOrder}
                           disabled={
                             selectedOrder.orderAmountError ||
                             selectedOrder.orderPriceError
@@ -543,9 +561,11 @@ class OrderBox extends Component {
           </Row>
         </Col>
         <OrderRawDialog
-          order={selectedOrder.details.order}
+          order={selectedOrder}
+          onSubmitOrder={this.onSubmitOrder}
           onClose={this.onCloseOrderRawDialog}
           open={this.state.orderRawDialogOpen}
+          // open={true}
         />
       </Row>
     )

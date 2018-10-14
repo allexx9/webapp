@@ -66,6 +66,7 @@ class TokenLockInfo extends PureComponent {
       baseTokenLockAmount,
       quoteTokenLockAmount
     } = this.state
+    const { api } = this.context
     console.log(this.props)
     console.log(selectedRelay)
     const tokenSymbol = baseTokenSelected
@@ -78,7 +79,9 @@ class TokenLockInfo extends PureComponent {
       decimals,
       isOldERC20,
       transactionDetails,
-      receipt
+      receipt,
+      transactionId,
+      errorArray
     if (baseTokenSelected) {
       tokenAddress = selectedTokensPair.baseToken.address
       tokenWrapperAddress =
@@ -126,18 +129,72 @@ class TokenLockInfo extends PureComponent {
           time,
           isOldERC20
         )
-
-        await poolApi.contract.drago.init(selectedFund.details.address)
-        await poolApi.contract.drago.operateOnExchangeEFXLock(
-          selectedFund.managerAccount,
-          selectedFund.details.address,
-          selectedExchange.exchangeContractAddress,
-          tokenAddress,
-          tokenWrapperAddress,
-          toBaseUnitAmount(new BigNumber(amount), decimals),
-          time,
-          isOldERC20
+        transactionId = sha3_512(new Date() + selectedFund.managerAccount)
+        transactionDetails = {
+          status: 'pending',
+          hash: '',
+          parityId: null,
+          timestamp: new Date(),
+          account: selectedFund.details.address,
+          error: false,
+          action: action === 'lock' ? 'LockToken' : 'UnLockToken',
+          symbol: tokenSymbol.toUpperCase(),
+          amount: amount
+        }
+        this.props.dispatch(
+          Actions.transactions.addTransactionToQueueAction(
+            transactionId,
+            transactionDetails
+          )
         )
+        try {
+          await poolApi.contract.drago.init(selectedFund.details.address)
+          receipt = await poolApi.contract.drago.operateOnExchangeEFXLock(
+            selectedFund.managerAccount,
+            selectedFund.details.address,
+            selectedExchange.exchangeContractAddress,
+            tokenAddress,
+            tokenWrapperAddress,
+            toBaseUnitAmount(new BigNumber(amount), decimals),
+            time,
+            isOldERC20
+          )
+          console.log('executed')
+          console.log(receipt)
+          transactionDetails.status = 'executed'
+          transactionDetails.receipt = receipt
+          transactionDetails.hash = receipt.transactionHash
+          transactionDetails.timestamp = new Date()
+          this.props.dispatch(
+            Actions.exchange.updateLiquidityAndTokenBalances(
+              api,
+              '',
+              selectedFund.details.address
+            )
+          )
+          this.props.dispatch(
+            Actions.transactions.addTransactionToQueueAction(
+              transactionId,
+              transactionDetails
+            )
+          )
+        } catch (error) {
+          console.log(error)
+          console.log('error')
+          errorArray = serializeError(error).message.split(/\r?\n/)
+          transactionDetails.status = 'error'
+          transactionDetails.error = errorArray[0]
+          this.props.dispatch(
+            Actions.transactions.addTransactionToQueueAction(
+              transactionId,
+              transactionDetails
+            )
+          )
+          this.props.dispatch(
+            Actions.app.queueErrorNotification(serializeError(error).message)
+          )
+        }
+
         break
       case 'unlock':
         // Unloking
@@ -163,7 +220,7 @@ class TokenLockInfo extends PureComponent {
           tokenWrapperAddress,
           toBaseUnitAmount(new BigNumber(amount), decimals)
         )
-        const transactionId = sha3_512(new Date() + selectedFund.managerAccount)
+        transactionId = sha3_512(new Date() + selectedFund.managerAccount)
         transactionDetails = {
           status: 'pending',
           hash: '',
@@ -195,6 +252,14 @@ class TokenLockInfo extends PureComponent {
           transactionDetails.receipt = receipt
           transactionDetails.hash = receipt.transactionHash
           transactionDetails.timestamp = new Date()
+          // Updating selected tokens pair balances and fund liquidity (ETH, ZRX)
+          this.props.dispatch(
+            Actions.exchange.updateLiquidityAndTokenBalances(
+              api,
+              '',
+              selectedFund.details.address
+            )
+          )
           this.props.dispatch(
             Actions.transactions.addTransactionToQueueAction(
               transactionId,
@@ -202,7 +267,7 @@ class TokenLockInfo extends PureComponent {
             )
           )
         } catch (error) {
-          const errorArray = serializeError(error).message.split(/\r?\n/)
+          errorArray = serializeError(error).message.split(/\r?\n/)
           transactionDetails.status = 'error'
           transactionDetails.error = errorArray[0]
           this.props.dispatch(
@@ -211,9 +276,8 @@ class TokenLockInfo extends PureComponent {
               transactionDetails
             )
           )
-          utils.notificationError(
-            this.props.notifications.engine,
-            serializeError(error).message
+          this.props.dispatch(
+            Actions.app.queueErrorNotification(serializeError(error).message)
           )
         }
 
@@ -303,6 +367,7 @@ class TokenLockInfo extends PureComponent {
               </Col>
               <Col xs={3}>
                 <TokenLockBalance
+                  key="baseTokenBalance"
                   balance={baseTokenWrappedBalance}
                   lockTime={selectedTokensPair.baseTokenLockWrapExpire}
                 />
@@ -349,6 +414,7 @@ class TokenLockInfo extends PureComponent {
               </Col>
               <Col xs={3}>
                 <TokenLockBalance
+                  key="quoteTokenBalance"
                   balance={quoteTokenWrappedBalance}
                   lockTime={selectedTokensPair.quoteTokenLockWrapExpire}
                 />
@@ -373,31 +439,37 @@ class TokenLockInfo extends PureComponent {
                 />
               </Col>
             </Row>
-            <div className={styles.buttonsLock}>
+            <div className={styles.buttonsLockContainer}>
               <Row>
-                <Col xs={6}>
-                  <ButtonLock
-                    buttonAction={'unlock'}
-                    onLockTocken={this.onLockTocken}
-                    disabled={this.state.errorText !== ''}
-                  />
+                <Col sm={12} md={6}>
+                  <div className={styles.buttonsLock}>
+                    <ButtonLock
+                      buttonAction={'unlock'}
+                      onLockTocken={this.onLockTocken}
+                      disabled={this.state.errorText !== ''}
+                      className={styles.buttonsLock}
+                    />
+                  </div>
                 </Col>
-                <Col xs={6}>
-                  <ButtonLock
-                    buttonAction={'lock'}
-                    onLockTocken={this.onLockTocken}
-                    disabled={
-                      // this.state.errorText !== '' ||
-                      (new BigNumber(
-                        selectedFund.liquidity.baseToken.balance
-                      ).eq(0) &&
-                        this.state.baseTokenSelected) ||
-                      (new BigNumber(
-                        selectedFund.liquidity.quoteToken.balance
-                      ).eq(0) &&
-                        !this.state.baseTokenSelected)
-                    }
-                  />
+                <Col sm={12} md={6}>
+                  <div className={styles.buttonsLock}>
+                    <ButtonLock
+                      buttonAction={'lock'}
+                      onLockTocken={this.onLockTocken}
+                      className={styles.buttonsLock}
+                      disabled={
+                        // this.state.errorText !== '' ||
+                        (new BigNumber(
+                          selectedFund.liquidity.baseToken.balance
+                        ).eq(0) &&
+                          this.state.baseTokenSelected) ||
+                        (new BigNumber(
+                          selectedFund.liquidity.quoteToken.balance
+                        ).eq(0) &&
+                          !this.state.baseTokenSelected)
+                      }
+                    />
+                  </div>
                 </Col>
               </Row>
             </div>

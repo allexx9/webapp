@@ -26,7 +26,6 @@ class TokenWrapperWeb3 {
     const api = this._api
     const abi = this._abi
     this._instance = new api.eth.Contract(abi)
-    this._instance.options.address = address
     return this._instance
   }
 

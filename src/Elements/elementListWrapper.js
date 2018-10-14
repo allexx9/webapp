@@ -11,7 +11,8 @@ class ElementListWrapper extends Component {
     list: PropTypes.array.isRequired,
     children: PropTypes.object.isRequired,
     loading: PropTypes.bool,
-    pagination: PropTypes.object
+    pagination: PropTypes.object,
+    tableHeight: PropTypes.number
   }
 
   static defaultProps = {
@@ -20,7 +21,8 @@ class ElementListWrapper extends Component {
     pagination: {
       display: 5,
       number: 1
-    }
+    },
+    tableHeight: 650
   }
 
   state = {
@@ -46,7 +48,7 @@ class ElementListWrapper extends Component {
       this.setState({
         loading: false
       })
-    }, 3000)
+    }, 20000)
   }
 
   componentWillUnmount = () => {
@@ -65,24 +67,27 @@ class ElementListWrapper extends Component {
     // Exstracting the list form props
     // and checking if the list === null
     const { list, ...rest } = this.props
-    console.log(list)
+    // console.log(list)
     if (Object.keys(list).length === 0 && this.state.loading) {
       return (
-        <ContentLoader
-          height={100}
-          width={400}
-          speed={2}
-          primaryColor="#f3f3f3"
-          secondaryColor="#ecebeb"
-        >
-          <rect x="0" y="10" rx="5" ry="5" width="400" height="10" />
-          <rect x="0" y="25" rx="5" ry="5" width="400" height="10" />
-          <rect x="0" y="40" rx="5" ry="5" width="400" height="10" />
-          <rect x="0" y="55" rx="5" ry="5" width="400" height="10" />
-          <rect x="0" y="70" rx="5" ry="5" width="400" height="10" />
-          <rect x="0" y="85" rx="5" ry="5" width="400" height="10" />
-          <rect x="0" y="100" rx="5" ry="5" width="400" height="10" />
-        </ContentLoader>
+        <div className={styles.loadingText}>
+          Loading...
+          <ContentLoader
+            height={100}
+            width={400}
+            speed={2}
+            primaryColor="#f3f3f3"
+            secondaryColor="#ecebeb"
+          >
+            <rect x="0" y="10" rx="5" ry="5" width="400" height="10" />
+            <rect x="0" y="25" rx="5" ry="5" width="400" height="10" />
+            <rect x="0" y="40" rx="5" ry="5" width="400" height="10" />
+            <rect x="0" y="55" rx="5" ry="5" width="400" height="10" />
+            <rect x="0" y="70" rx="5" ry="5" width="400" height="10" />
+            <rect x="0" y="85" rx="5" ry="5" width="400" height="10" />
+            <rect x="0" y="100" rx="5" ry="5" width="400" height="10" />
+          </ContentLoader>
+        </div>
       )
     }
     const slicedList = list.slice(

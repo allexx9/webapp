@@ -102,7 +102,7 @@ class CandleStickChartWithMACDIndicator extends React.Component {
 
     return (
       <ChartCanvas
-        height={600}
+        height={550}
         width={width}
         ratio={ratio}
         margin={{ left: 70, right: 70, top: 20, bottom: 30 }}
@@ -116,7 +116,7 @@ class CandleStickChartWithMACDIndicator extends React.Component {
       >
         <Chart
           id={1}
-          height={400}
+          height={350}
           yExtents={[d => [d.high, d.low], ema26.accessor(), ema12.accessor()]}
           padding={{ top: 10, bottom: 20 }}
         >
@@ -213,12 +213,12 @@ class CandleStickChartWithMACDIndicator extends React.Component {
         </Chart>
         <Chart
           id={3}
-          height={150}
+          height={100}
           yExtents={macdCalculator.accessor()}
           origin={(w, h) => [0, h - 150]}
           padding={{ top: 10, bottom: 10 }}
         >
-          <XAxis axisAt="bottom" orient="bottom" />
+          <XAxis axisAt="bottom" orient="bottom" ticks={5} />
           <YAxis axisAt="right" orient="right" ticks={2} />
 
           <MouseCoordinateX

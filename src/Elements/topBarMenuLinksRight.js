@@ -5,6 +5,7 @@ import { Toolbar, ToolbarGroup, ToolbarSeparator } from 'material-ui/Toolbar'
 import { connect } from 'react-redux'
 import AccountIcon from 'material-ui/svg-icons/action/account-circle'
 import ArrowDropDown from 'material-ui/svg-icons/navigation/arrow-drop-down'
+import Chat from 'material-ui/svg-icons/communication/chat'
 import FlatButton from 'material-ui/FlatButton'
 import Help from 'material-ui/svg-icons/action/help'
 import IconButton from 'material-ui/IconButton'
@@ -65,7 +66,11 @@ class NavLinks extends Component {
     user: PropTypes.object.isRequired,
     handleToggleNotifications: PropTypes.func.isRequired,
     transactions: PropTypes.object.isRequired,
-    match: PropTypes.object.isRequired
+    endpoint: PropTypes.object.isRequired
+  }
+
+  static contextTypes = {
+    api: PropTypes.object.isRequired
   }
 
   state = {
@@ -97,7 +102,19 @@ class NavLinks extends Component {
       false: false,
       true: true
     }
+
     this.props.dispatch(Actions.users.isManagerAction(accountType[value]))
+    // let options = accountType[value]
+    //   ? { balance: false, supply: true, limit: 20, trader: false }
+    //   : { balance: true, supply: false, limit: 20, trader: true }
+    // this.props.dispatch(
+    //   Actions.endpoint.getAccountsTransactions(
+    //     this.context.api,
+    //     null,
+    //     this.props.endpoint.accounts,
+    //     options
+    //   )
+    // )
   }
 
   componentDidMount() {
@@ -203,7 +220,7 @@ class NavLinks extends Component {
                     <div>
                       <div className={styles.menuItemPrimaryText}>HOLDER</div>
                       <div>
-                        <small>Invest in funds</small>
+                        <small>Look for a Drago</small>
                       </div>
                     </div>
                   }
@@ -214,7 +231,7 @@ class NavLinks extends Component {
                     <div>
                       <div className={styles.menuItemPrimaryText}>WIZARD</div>
                       <div>
-                        <small>Manage your funds</small>
+                        <small>Manage your Dragos</small>
                       </div>
                     </div>
                   }
@@ -248,7 +265,34 @@ class NavLinks extends Component {
                   />
                 }
               />
-              <MenuItem leftIcon={<Help />} value="help" primaryText="Help" />
+              <MenuItem
+                leftIcon={<Chat />}
+                value="community"
+                primaryText="Community"
+                containerElement={
+                  <a
+                    href="https://community.rigoblock.com/"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    Community
+                  </a>
+                }
+              />
+              <MenuItem
+                leftIcon={<Help />}
+                value="help"
+                primaryText="Help"
+                containerElement={
+                  <a
+                    href="https://help.rigoblock.com/"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    Help
+                  </a>
+                }
+              />
             </IconMenu>
             {transactions.pending > 0 ? (
               <div className={this.state.transactionsDrawerNetworkButtonStyle}>

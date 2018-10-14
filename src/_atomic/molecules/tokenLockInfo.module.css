@@ -4,8 +4,11 @@
   padding-top: 5px;
 }
 
-.buttonsLock {
+.buttonsLockContainer {
   padding-top: 5px;
+}
+.buttonsLock {
+  padding-top: 4px;
 }
 
 .symbolText {

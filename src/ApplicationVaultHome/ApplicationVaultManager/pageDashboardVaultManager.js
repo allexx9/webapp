@@ -55,8 +55,6 @@ class PageDashboardVaultManager extends Component {
     this.getTransactions(null, accounts)
   }
 
-  UNSAFE_componentWillMount() {}
-
   UNSAFE_componentWillReceiveProps(nextProps) {
     // Updating the lists on each new block if the accounts balances have changed
     // Doing this this to improve performances by avoiding useless re-rendering
@@ -354,8 +352,8 @@ class PageDashboardVaultManager extends Component {
   getTransactions = (dragoAddress, accounts) => {
     const { api } = this.context
     // const options = {balance: false, supply: true}
-    const options = { balance: false, supply: true, limit: 10, trader: false }
-
+    const options = { balance: false, supply: true, limit: 20, trader: false }
+    let startTime = new Date()
     utils
       .getTransactionsVaultOptV2(api, dragoAddress, accounts, options)
       .then(results => {
@@ -363,6 +361,14 @@ class PageDashboardVaultManager extends Component {
         const createdLogs = results[1].filter(event => {
           return event.type !== 'BuyVault' && event.type !== 'SellVault'
         })
+        let endTime = new Date()
+        let dif = startTime.getTime() - endTime.getTime()
+        let Seconds_from_T1_to_T2 = dif / 1000
+        let Seconds_Between_Dates = Math.abs(Seconds_from_T1_to_T2)
+        console.log(
+          `***** Transactions loaded in ${Seconds_Between_Dates}s *****`
+        )
+        console.log(results)
         results[1] = createdLogs
         this.props.dispatch(
           Actions.vault.updateTransactionsVaultManagerAction(results)

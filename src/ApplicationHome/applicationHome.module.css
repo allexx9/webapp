@@ -1,18 +1,76 @@
 /* Copyright 2016 Rigo Investment Sagl. */
 
+@-webkit-keyframes slideInFromBottom {
+  0% {
+    opacity:0;
+    transform: translateX(-100%);
+  }
+  100% {
+    opacity:1;
+    transform: translateX(0);
+  }
+}
+@-moz-keyframes slideInFromBottom {
+  0% {
+    opacity:0;
+    transform: translateX(-100%);
+  }
+  100% {
+    opacity:1;
+    transform: translateX(0);
+  }
+}
+@keyframes slideInFromBottom {
+  0% {
+    opacity:0;
+    transform: translateX(-100%);
+  }
+  100% {
+    opacity:1;
+    transform: translateX(0);
+  }
+}
+
+.communityButton {
+  padding-right: 2px;
+  padding-left: 2px;
+}
+
 .socialsContainer {
   text-align: right;
   padding-right: 16px;
   padding-top: 8px;
+  position: absolute;
+  right: 5px;
+  overflow:hidden;
+
 }
 
 .socialsContainer img {
   padding-left: 5px;
 }
 
+
+
 .telegramButtonContainer {
+  /* opacity:0;  make things invisible upon start */
+  -webkit-animation:slideInFromBottom ease-in 1;  /* call our keyframe named slideInFromBottom, use animattion ease-in and repeat it only 1 time */
+  -moz-animation:slideInFromBottom ease-in 1;
+  animation:slideInFromBottom ease-in 1;
+
+  -webkit-animation-fill-mode:forwards;  /* this makes sure that after animation is done we remain at the last keyframe value (opacity: 1)*/
+  -moz-animation-fill-mode:forwards;
+  animation-fill-mode:forwards;
+
+  -webkit-animation-duration:1s;
+  -moz-animation-duration:1s;
+  animation-duration:1s;
+  opacity:0;  /* make things invisible upon start */
   padding-top: 24px;
   padding-bottom: 24px;
+  position: absolute;
+    right: 25px;
+    bottom: 15px;
 }
 
 .body {
@@ -46,12 +104,37 @@
   /* font-weight: 700;
   opacity: 0.9; */
   color: #054186;
-  font-size: 18px;
+  font-size: 40px;
+  text-transform: uppercase;
+  padding-top: 25px;
+  font-weight: 700;
+
+}
+
+.sloganContainer{
+  height: 100%;
+}
+
+.slogan{
+  margin: auto;
 }
 
 .subHeadline {
   font-size: 16px;
   padding-bottom: 8px;
+  color: #054186;
+  word-spacing: 2px;
+}
+
+.txtDottedYellow {
+  color: #ffae00;
+  text-decoration: underline dotted;
+  text-underline-position: under;
+}
+
+.txtDotted {
+  text-decoration: underline dotted;
+  text-underline-position: under;
 }
 
 .mainlogo {
@@ -71,6 +154,7 @@
 .cardtitle {
   background-color: #054186;
   color: white !important;
+  font-weight: 700;
 }
 
 .column {
@@ -98,8 +182,8 @@
   font-weight: 700;
 }
 
-.tabs {
-}
-
-.tab {
+.filterBox {
+  margin-right: 15px;
+  margin-left: 15px;
+  margin-bottom: 15px;
 }

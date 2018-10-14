@@ -93,22 +93,20 @@ class ApplicationExchangePage extends Component {
             </Col>
           </Row>
           <MuiThemeProvider muiTheme={muiThemeExchange}>
-            <Row className={classNames(styles.content)}>
-              {/* <Col xs={12}>
+            {/* <Row className={classNames(styles.content)}>
+              <Col xs={12}>
                 <div style={{ textAlign: 'center', marginTop: '25px' }}>
                   Coming soon.
                 </div>
-              </Col> */}
-
+              </Col>
+            </Row> */}
+            <Row>
               <Col xs={12}>
                 {endpoint.accounts.length === 0 ||
                 !endpoint.isMetaMaskNetworkCorrect ? (
                   <WalletSetup />
                 ) : (
                   <div>
-                    {/* <TestComponent
-                      key={'test' + endpoint.lastMetaMaskUpdateTime}
-                    /> */}
                     <ApplicationExchangeHome
                       key={'Exchange' + endpoint.lastMetaMaskUpdateTime}
                       location={location}
@@ -119,6 +117,9 @@ class ApplicationExchangePage extends Component {
                 )}
               </Col>
             </Row>
+            {/* <TestComponent
+                      key={'test' + endpoint.lastMetaMaskUpdateTime}
+                    /> */}
           </MuiThemeProvider>
         </Grid>
       </MuiThemeProvider>

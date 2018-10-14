@@ -55,9 +55,20 @@ class DragoEventfulParity {
     })
   }
 
-  getAllLogs = (topics = { topics: [null, null, null, null] }) => {
+  getAllLogs = (
+    options = {
+      topics: [null, null, null, null],
+      fromBlock: 0,
+      toBlock: 'latest'
+    }
+  ) => {
+    // console.log(options)
     const contract = this._contract
-    return contract.getAllLogs(topics)
+    // console.log(contract)
+    // return contract.getAllLogs(topics)
+    return this._api.eth.getLogs(options).then(function(logs) {
+      return contract.parseEventLogs(logs)
+    })
   }
 }
 

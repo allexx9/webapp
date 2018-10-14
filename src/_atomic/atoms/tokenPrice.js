@@ -2,14 +2,15 @@
 
 import { BigNumber } from 'bignumber.js'
 import { Col, Row } from 'react-flexbox-grid'
+import { Hidden, Visible } from 'react-grid-system'
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import classNames from 'classnames'
 import styles from './tokenPrice.module.css'
 
 import TokenIcon from './tokenIcon'
 
-export default class TokenPrice extends Component {
+export default class TokenPrice extends PureComponent {
   static propTypes = {
     selectedTradeTokensPair: PropTypes.object.isRequired,
     tokenPrice: PropTypes.string,
@@ -37,19 +38,11 @@ export default class TokenPrice extends Component {
   render() {
     const { tokenPrice, priceVariation, selectedTradeTokensPair } = this.props
     return (
-      <div className={styles.symbol}>
-        <div className={styles.image}>
+      <div>
+        <Visible xs>
           <div>
-            <TokenIcon
-              size={40}
-              symbol={selectedTradeTokensPair.baseToken.symbol}
-            />
-          </div>
-        </div>
-        <div className={styles.details}>
-          <div className={styles.name}>
-            <Row>
-              <Col xs={12}>
+            <Row middle="xs">
+              <Col xs={4}>
                 <div className={classNames(styles.tokenPair)}>
                   <span className={styles.baseToken}>
                     {selectedTradeTokensPair.baseToken.symbol}
@@ -59,12 +52,12 @@ export default class TokenPrice extends Component {
                   </span>
                 </div>
               </Col>
-              <Col xs={12}>
+              <Col xs={4}>
                 <div className={classNames(styles.tokenPrice)}>
                   {tokenPrice}
                 </div>
               </Col>
-              <Col xs={12}>
+              <Col xs={4}>
                 <div
                   className={classNames(
                     styles.priceVariation,
@@ -76,7 +69,50 @@ export default class TokenPrice extends Component {
               </Col>
             </Row>
           </div>
-        </div>
+        </Visible>
+        <Hidden xs>
+          <div className={styles.symbol}>
+            <div className={styles.image}>
+              <div>
+                <TokenIcon
+                  size={40}
+                  symbol={selectedTradeTokensPair.baseToken.symbol}
+                />
+              </div>
+            </div>
+            <div className={styles.details}>
+              <div className={styles.name}>
+                <Row>
+                  <Col xs={12}>
+                    <div className={classNames(styles.tokenPair)}>
+                      <span className={styles.baseToken}>
+                        {selectedTradeTokensPair.baseToken.symbol}
+                      </span>{' '}
+                      <span className={styles.quoteToken}>
+                        / {selectedTradeTokensPair.quoteToken.symbol}
+                      </span>
+                    </div>
+                  </Col>
+                  <Col xs={12}>
+                    <div className={classNames(styles.tokenPrice)}>
+                      {tokenPrice}
+                    </div>
+                  </Col>
+                  <Col xs={12}>
+                    <div
+                      className={classNames(
+                        styles.priceVariation,
+                        this.checkPrice()
+                      )}
+                    >
+                      {priceVariation + '%'}
+                    </div>
+                  </Col>
+                </Row>
+              </div>
+            </div>
+          </div>
+        </Hidden>
       </div>
     )
   }

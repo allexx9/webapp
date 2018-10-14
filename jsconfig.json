@@ -1,8 +1,0 @@
-{
-  "compilerOptions": {
-      "target": "ES6"
-  },
-  "include": [
-      "src/**/*", "node_modules/@rigoblock/exchange-connector/src/index.ts", "node_modules/@rigoblock/exchange-connector/src/index.ts"
-  ]
-}

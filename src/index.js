@@ -16,6 +16,7 @@ import registerServiceWorker from './registerServiceWorker'
 // import thunkMiddleware from 'redux-thunk'
 // import { composeWithDevTools } from 'redux-devtools-extension';
 import * as ACTIONS from './_redux/actions/const'
+// import * as pino from 'pino'
 import { PersistGate } from 'redux-persist/integration/react'
 import { createFilter } from 'redux-persist-transform-filter'
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2'
@@ -97,9 +98,15 @@ const middlewares = [
 // }
 
 // Redux Persist
-const saveSubsetFilter = createFilter('endpoint', [
+const saveSubsetFilterEndpoint = createFilter('endpoint', [
   'endpointInfo',
   'networkInfo'
+])
+const saveSubsetFilterApp = createFilter('app', [
+  'isConnected',
+  'isSyncing',
+  'lastBlockNumberUpdate',
+  'accountsAddressHash'
 ])
 //   const saveSubsetBlacklistFilter = createBlacklistFilter(
 //     'endpoint',
@@ -110,9 +117,11 @@ const persistConfig = {
   key: 'rigoblock',
   storage,
   stateReconciler: autoMergeLevel2,
-  whitelist: ['endpoint', 'user'],
+  whitelist: ['endpoint', 'user', 'app'],
   transforms: [
-    saveSubsetFilter
+    saveSubsetFilterEndpoint,
+    saveSubsetFilterApp
+    // saveSubsetFilterApp
     // saveSubsetBlacklistFilter
   ]
 }
