@@ -24,7 +24,6 @@ import scrollToElement from 'scroll-to-element'
 import utils from '../../_utils/utils'
 // import SectionTitle from '../../_atomic/atoms/sectionTitle';
 
-import { Actions } from '../../_redux/actions'
 import { HELP_ } from '../../_utils/const'
 import styles from './pageDashboardDragoTrader.module.css'
 
@@ -51,22 +50,14 @@ class PageDashboardDragoTrader extends Component {
     snackBarMsg: ''
   }
 
-  componentDidMount() {
-    const { accounts } = this.props.endpoint
-    const { api } = this.context
-    const options = { balance: true, supply: false, limit: 20, trader: true }
-    console.log('componentDidMount')
-    // this.props.dispatch(
-    //   Actions.endpoint.getAccountsTransactions(api, null, accounts, options)
-    // )
-  }
+  componentDidMount() {}
 
   UNSAFE_componentWillReceiveProps(nextProps) {
     // Updating the lists on each new block if the accounts balances have changed
     // Doing this this to improve performances by avoiding useless re-rendering
     // const { accounts } = this.props.endpoint
     // const { api } = this.context
-    // const options = { balance: true, supply: false, limit: 20, trader: true }
+    // const options = { balance: true, supply: false, limit: 20, trader: true, drago: true }
     // console.log(`${this.constructor.name} -> UNSAFE_componentWillReceiveProps-> nextProps received.`);
     // Updating the transaction list if there have been a change in total accounts balance and the previous balance is
     // different from 0 (balances are set to 0 on app loading)
@@ -78,7 +69,6 @@ class PageDashboardDragoTrader extends Component {
           this.constructor.name
         } -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`
       )
-      // this.props.dispatch(Actions.endpoint.getAccountsTransactions(api, null, accounts, options))
     }
   }
 
@@ -165,6 +155,7 @@ class PageDashboardDragoTrader extends Component {
     }
     // console.log(this.props)
     // console.log(this.props.endpoint.accounts[0].address)
+    console.log(this.props)
     const listAccounts = accounts.map((account, key) => {
       return (
         <Col xs={6} key={account.name + key}>

@@ -108,6 +108,9 @@ const saveSubsetFilterApp = createFilter('app', [
   'lastBlockNumberUpdate',
   'accountsAddressHash'
 ])
+const saveSubsetFilterTransactionsDrago = createFilter('transactionsDrago', [
+  'dragosList'
+])
 //   const saveSubsetBlacklistFilter = createBlacklistFilter(
 //     'endpoint',
 //     ['accounts']
@@ -121,6 +124,7 @@ const persistConfig = {
   transforms: [
     saveSubsetFilterEndpoint,
     saveSubsetFilterApp
+    // saveSubsetFilterTransactionsDrago
     // saveSubsetFilterApp
     // saveSubsetBlacklistFilter
   ]

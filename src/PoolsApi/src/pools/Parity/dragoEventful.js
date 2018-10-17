@@ -43,16 +43,21 @@ class DragoEventfulParity {
   init = () => {
     const contractAbi = this._abi
     const contractName = this._contractName
-    return this._registry.instance(contractAbi, contractName).then(contract => {
-      this._instance = contract.instance
-      this._contract = contract
-      const hexSignature = this._contract._events.reduce((events, event) => {
-        events[event._name] = toHex(event._signature)
-        return events
-      }, {})
-      this._hexSignature = hexSignature
-      return this._instance
-    })
+    return typeof this._instance !== 'undefined'
+      ? this._instance
+      : this._registry.instance(contractAbi, contractName).then(contract => {
+          this._instance = contract.instance
+          this._contract = contract
+          const hexSignature = this._contract._events.reduce(
+            (events, event) => {
+              events[event._name] = toHex(event._signature)
+              return events
+            },
+            {}
+          )
+          this._hexSignature = hexSignature
+          return this._instance
+        })
   }
 
   getAllLogs = (

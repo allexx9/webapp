@@ -83,7 +83,9 @@ class Contract {
   }
 
   get dragoeventful() {
-    return this._dragoeventful
+    return typeof this._dragoeventful !== 'undefined'
+      ? this._dragoeventful
+      : this._dragoeventful
   }
 
   get ether() {

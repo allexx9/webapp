@@ -3,15 +3,16 @@
 import { combineEpics } from 'redux-observable'
 import {
   // relayWebSocketEpic,
+  getLiquidityAndTokenBalancesEpic,
   getOrderBookFromRelayEpic,
   getTradeHistoryLogsFromRelayERCdEXEpic,
-  getLiquidityAndTokenBalancesEpic,
   updateFundLiquidityEpic,
   updateLiquidityAndTokenBalancesEpic
   // getAssetsPricesDataFromERCdEXEpic
 } from './exchange_epics'
 
 import * as Endpoint from './endpoint_epics'
+import * as Eventful from './eventful_epics'
 import * as Tokens from './token_epics'
 import { ERCdEX, Ethfinex } from './exchanges'
 import { getTokensBalancesEpic } from './drago_epics'
@@ -38,12 +39,17 @@ const Ethfinex_Epics = [
 
 const Endpoint_Epics = [
   Endpoint.checkMetaMaskIsUnlockedEpic,
-  Endpoint.getAccountsTransactionsEpic,
   Endpoint.monitorAccountsEpic,
   Endpoint.monitorEventfulEpic,
   Endpoint.isConnectedToNodeEpic,
   Endpoint.attacheInterfaceEpic,
   Endpoint.delayShowAppEpic
+]
+
+const Eventful_Epics = [
+  Eventful.getDragosListEpic,
+  Eventful.getAccountsTransactionsEpic,
+  Eventful.getPoolTransactionsEpic
 ]
 
 export const rootEpic = combineEpics(
@@ -52,6 +58,7 @@ export const rootEpic = combineEpics(
   ...ERCdEX_Epics,
   ...Ethfinex_Epics,
   ...Tokens_Epics,
+  ...Eventful_Epics,
   getTokensBalancesEpic,
   getOrderBookFromRelayEpic,
   getLiquidityAndTokenBalancesEpic,

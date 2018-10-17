@@ -283,7 +283,7 @@ class utilities {
     api,
     dragoAddress,
     accounts,
-    options = { balance: true, supply: false, limit: 20, trader: true }
+    options = { balance: true, supply: false, limit: 20, trader: true, drago: true }
   ) => {
     //
     const poolApi = new PoolApi(api)
@@ -727,7 +727,7 @@ class utilities {
     api,
     dragoAddress,
     accounts,
-    options = { balance: true, supply: false, limit: 20, trader: true }
+    options = { balance: true, supply: false, limit: 20, trader: true, drago: true }
   ) => {
     //
     // return Promise.reject(new Error('fail'))

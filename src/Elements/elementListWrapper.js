@@ -11,6 +11,7 @@ class ElementListWrapper extends Component {
     list: PropTypes.array.isRequired,
     children: PropTypes.object.isRequired,
     loading: PropTypes.bool,
+    autoLoading: PropTypes.bool,
     pagination: PropTypes.object,
     tableHeight: PropTypes.number
   }
@@ -18,6 +19,7 @@ class ElementListWrapper extends Component {
   static defaultProps = {
     list: [],
     loading: false,
+    autoLoading: true,
     pagination: {
       display: 5,
       number: 1
@@ -44,11 +46,12 @@ class ElementListWrapper extends Component {
   }
 
   componentDidMount = () => {
-    this.td = setTimeout(() => {
-      this.setState({
-        loading: false
-      })
-    }, 20000)
+    if (this.state.autoLoading)
+      this.td = setTimeout(() => {
+        this.setState({
+          loading: false
+        })
+      }, 5000)
   }
 
   componentWillUnmount = () => {
@@ -68,7 +71,11 @@ class ElementListWrapper extends Component {
     // and checking if the list === null
     const { list, ...rest } = this.props
     // console.log(list)
-    if (Object.keys(list).length === 0 && this.state.loading) {
+    if (
+      Object.keys(list).length === 0 &&
+      this.state.loading &&
+      this.props.autoLoading
+    ) {
       return (
         <div className={styles.loadingText}>
           Loading...

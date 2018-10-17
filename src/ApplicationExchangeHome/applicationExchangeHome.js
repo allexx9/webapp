@@ -758,7 +758,7 @@ class ApplicationExchangeHome extends Component {
     console.log(dragoAddress, accounts)
     const { api } = this.context
     // const options = {balance: false, supply: true}
-    const options = { balance: false, supply: true, limit: 20, trader: false }
+    const options = { balance: false, supply: true, limit: 20, trader: false, drago: true }
     try {
       const results = await utils.getTransactionsDragoOptV2(
         api,

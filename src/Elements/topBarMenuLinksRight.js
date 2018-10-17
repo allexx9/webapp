@@ -105,8 +105,8 @@ class NavLinks extends Component {
 
     this.props.dispatch(Actions.users.isManagerAction(accountType[value]))
     // let options = accountType[value]
-    //   ? { balance: false, supply: true, limit: 20, trader: false }
-    //   : { balance: true, supply: false, limit: 20, trader: true }
+    //   ? { balance: false, supply: true, limit: 20, trader: false, drago: true }
+    //   : { balance: true, supply: false, limit: 20, trader: true, drago: true }
     // this.props.dispatch(
     //   Actions.endpoint.getAccountsTransactions(
     //     this.context.api,

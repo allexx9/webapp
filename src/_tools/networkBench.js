@@ -63,6 +63,6 @@ export const WS = false
 let endpoint = new Endpoint(endpointInfo, NETWORKS.ropsten, PROD, WS)
 this._api = endpoint.connect()
 let accounts = [{ address: '0xc8DCd42e846466F2D2b89F3c54EBa37bf738019B' }]
-let options = { balance: true, supply: false, limit: 20, trader: true }
+let options = { balance: true, supply: false, limit: 20, trader: true, drago: true }
 let dragoAddress = null
 utils.getTransactionsDragoOptV2(api, dragoAddress, accounts, options)

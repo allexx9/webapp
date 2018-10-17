@@ -352,7 +352,7 @@ class PageDashboardVaultManager extends Component {
   getTransactions = (dragoAddress, accounts) => {
     const { api } = this.context
     // const options = {balance: false, supply: true}
-    const options = { balance: false, supply: true, limit: 20, trader: false }
+    const options = { balance: false, supply: true, limit: 20, trader: false, drago: true }
     let startTime = new Date()
     utils
       .getTransactionsVaultOptV2(api, dragoAddress, accounts, options)

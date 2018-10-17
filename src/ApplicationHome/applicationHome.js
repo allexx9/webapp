@@ -1,29 +1,30 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
+import { Actions } from '../_redux/actions'
 import { Card, CardActions, CardText, CardTitle } from 'material-ui/Card'
 import { Col, Row } from 'react-flexbox-grid'
 import { Link, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { width } from 'window-size'
 import Chat from 'material-ui/svg-icons/communication/chat'
 import ElementBottomStatusBar from '../Elements/elementBottomStatusBar'
 import ElementListFunds from '../Elements/elementListFunds'
 import ElementListWrapper from '../Elements/elementListWrapper'
 import FilterFunds from '../Elements/elementFilterFunds'
 import FlatButton from 'material-ui/FlatButton'
+import LinearProgress from 'material-ui/LinearProgress'
 import Paper from 'material-ui/Paper'
-import PoolApi from '../PoolsApi/src'
 import PropTypes from 'prop-types'
 import RaisedButton from 'material-ui/RaisedButton'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import WalletSetup from '../_atomic/organisms/walletSetup'
+import _ from 'lodash'
 import styles from './applicationHome.module.css'
 
 function mapStateToProps(state) {
   return state
 }
 
-class ApplicationHome extends Component {
+class ApplicationHome extends PureComponent {
   // We check the type of the context variable that we receive by the parent
   static contextTypes = {
     api: PropTypes.object.isRequired
@@ -31,53 +32,99 @@ class ApplicationHome extends Component {
 
   static propTypes = {
     endpoint: PropTypes.object.isRequired,
-    location: PropTypes.object.isRequired
+    location: PropTypes.object.isRequired,
+    transactionsDrago: PropTypes.object.isRequired,
+    dispatch: PropTypes.func.isRequired
   }
 
   state = {
-    dragoCreatedLogs: [],
-    dragoFilteredList: []
+    filter: '',
+    prevLastFetchRange: {
+      chunk: {
+        key: 0,
+        range: 0
+      },
+      startBlock: 0,
+      lastBlock: 0
+    },
+    lastFetchRange: {
+      chunk: {
+        key: 0,
+        range: 0
+      },
+      startBlock: 0,
+      lastBlock: 0
+    },
+    listLoadingProgress: 0
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    // Any time the current user changes,
+    // Reset any parts of state that are tied to that user.
+    // In this simple example, that's just the email.
+    if (
+      !_.isEqual(
+        props.transactionsDrago.dragosList.lastFetchRange,
+        state.prevLastFetchRange
+      )
+    ) {
+      const {
+        chunk,
+        lastBlock,
+        startBlock
+      } = props.transactionsDrago.dragosList.lastFetchRange
+      if (lastBlock === 0) return null
+      if (lastBlock === startBlock)
+        return {
+          prevLastFetchRange: props.transactionsDrago.dragosList.lastFetchRange,
+          listLoadingProgress: 100
+        }
+      let newProgress =
+        lastBlock !== state.prevLastFetchRange.lastBlock
+          ? ((chunk.toBlock - chunk.fromBlock) / (lastBlock - startBlock)) * 100
+          : state.listLoadingProgress +
+            ((chunk.toBlock - chunk.fromBlock) / (lastBlock - startBlock)) * 100
+      return {
+        prevLastFetchRange: props.transactionsDrago.dragosList.lastFetchRange,
+        listLoadingProgress: newProgress
+      }
+    }
+    return null
   }
 
   componentDidMount() {
-    this.getDragos()
+    let options = {
+      topics: [null, null, null, null],
+      fromBlock: 0,
+      toBlock: 'latest'
+    }
+    this.props.dispatch(
+      Actions.drago.getDragosSearchList(this.context.api, options)
+    )
   }
 
-  getDragos() {
-    const { api } = this.context
-    const poolApi = new PoolApi(api)
-    const logToEvent = log => {
-      // const key = api.util.sha3(JSON.stringify(log))
-      const { params } = log
-      return {
-        symbol: params.symbol.value,
-        dragoId: params.dragoId.value.toFixed(),
-        name: params.name.value
-      }
-    }
+  filter = filter => {
+    this.setState(
+      {
+        filter
+      },
+      this.filterFunds
+    )
+  }
 
-    // Getting all DragoCreated events since block 0.
-    // dragoFactoryEventsSignatures accesses the contract ABI, gets all the events and for each creates a hex signature
-    // to be passed to getAllLogs. Events are indexed and filtered by topics
-    // more at: http://solidity.readthedocs.io/en/develop/contracts.html?highlight=event#events
-    poolApi.contract.dragoeventful.init().then(() => {
-      poolApi.contract.dragoeventful
-        .getAllLogs({
-          topics: [poolApi.contract.dragoeventful.hexSignature.DragoCreated]
-        })
-        .then(dragoCreatedLogs => {
-          const logs = dragoCreatedLogs.map(logToEvent)
-          logs.sort(function(a, b) {
-            if (a.symbol < b.symbol) return -1
-            if (a.symbol > b.symbol) return 1
-            return 0
-          })
-          this.setState({
-            dragoCreatedLogs: logs,
-            dragoFilteredList: logs
-          })
-        })
-    })
+  filterFunds = () => {
+    const { transactionsDrago } = this.props
+    const { filter } = this.state
+    const list = transactionsDrago.dragosList.list
+    const filterValue = filter.trim().toLowerCase()
+    const filterLength = filterValue.length
+    return filterLength === 0
+      ? list
+      : list.filter(
+          item =>
+            item.name.toLowerCase().slice(0, filterLength) === filterValue ||
+            item.symbol.toLowerCase().slice(0, filterLength) === filterValue
+        )
   }
 
   render() {
@@ -86,7 +133,8 @@ class ApplicationHome extends Component {
       border: '2px solid',
       borderColor: '#054186',
       fontWeight: '600',
-      height: '45px'
+      height: '45px',
+      backgroundColor: 'white'
       // width: "140px"
     }
     const detailsBox = {
@@ -96,8 +144,6 @@ class ApplicationHome extends Component {
       marginLeft: `20px`
     }
     let { location } = this.props
-    const { dragoCreatedLogs, dragoFilteredList } = this.state
-    console.log(this.props)
     return (
       <div className={styles.body}>
         <div className={styles.socialsContainer}>
@@ -106,28 +152,28 @@ class ApplicationHome extends Component {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <img src="/img/social/telegram.svg" height="32px" />
+            <img src="/img/social/telegram.svg" height="32px" alt="" />
           </a>
           <a
             href="https://discordapp.com/channels/rigoblock"
             target="_blank"
             rel="noopener noreferrer"
           >
-            <img src="/img/social/discord.svg" height="32px" />
+            <img src="/img/social/discord.svg" height="32px" alt="" />
           </a>
           <a
             href="https://www.facebook.com/RigoBlocks"
             target="_blank"
             rel="noopener noreferrer"
           >
-            <img src="/img/social/facebook.svg" height="32px" />
+            <img src="/img/social/facebook.svg" height="32px" alt="" />
           </a>
           <a
             href="https://twitter.com/rigoblock"
             target="_blank"
             rel="noopener noreferrer"
           >
-            <img src="/img/social/twitter.svg" height="32px" />
+            <img src="/img/social/twitter.svg" height="32px" alt="" />
           </a>
         </div>
         <Row>
@@ -139,6 +185,7 @@ class ApplicationHome extends Component {
                     <img
                       style={{ height: '80px' }}
                       src="/img/Logo-RigoblockRGB-OUT-01.png"
+                      alt=""
                     />
                   </div>
                   {/* <h2 className={styles.headline}>
@@ -210,15 +257,20 @@ class ApplicationHome extends Component {
                       <Col xs={12}>
                         <div className={styles.filterBox}>
                           Search for pools
-                          <FilterFunds
-                            list={dragoCreatedLogs}
-                            filterList={this.filterList}
+                          <FilterFunds filter={this.filter} />
+                        </div>
+                      </Col>
+                      <Col xs={12}>
+                        <div className={styles.progressBarContainer}>
+                          <LinearProgress
+                            mode="determinate"
+                            value={this.state.listLoadingProgress}
                           />
                         </div>
                       </Col>
                       <Col xs={12}>
                         <ElementListWrapper
-                          list={dragoFilteredList}
+                          list={this.filterFunds()}
                           location={location}
                           pagination={{
                             display: 5,
@@ -233,62 +285,62 @@ class ApplicationHome extends Component {
                   </Row>
                 </Col>
               </Row>
-              {/* <Row className={styles.cards}>
-                <Col xs={6}>
-                  <Paper style={detailsBox} zDepth={1} />
-                </Col>
-                <Col xs={6}>
-                  <Card className={styles.column}>
-                    <CardTitle
-                      title="VAULT"
-                      className={styles.cardtitle}
-                      titleColor="white"
-                    />
-                    <CardText>
-                      <p className={styles.subHeadline}>
-                        Pools of ether and proof-of-stake mining
-                      </p>
-                    </CardText>
-                    <CardActions>
-                      <Link to="/vault">
-                        <RaisedButton
-                          label="New Vault"
-                          className={styles.exchangebutton}
-                          labelColor="white"
-                        />
-                      </Link>
-                    </CardActions>
-                  </Card>
-                </Col>
-                <Col xs={6}>
-                  <Card className={styles.column}>
-                    <CardTitle
-                      title="DRAGO"
-                      className={styles.cardtitle}
-                      titleColor="white"
-                    />
-                    <CardText>
-                      <p className={styles.subHeadline}>
-                        Pools of ether and trading on decentralized exchanges
-                      </p>
-                    </CardText>
-                    <CardActions>
-                      <Link to="/drago">
-                        <RaisedButton
-                          label="New Drago"
-                          className={styles.exchangebutton}
-                          labelColor="white"
-                        />
-                      </Link>
-                    </CardActions>
-                  </Card>
-                </Col>
-              </Row> */}
-              <Row>
-                <Col xs={12}>
-                  <p />
-                </Col>
-              </Row>
+              <div className={styles.actionsContainer}>
+                <Row className={styles.cards}>
+                  <Col xs={6}>
+                    <Card className={styles.column}>
+                      <CardTitle
+                        title="VAULT"
+                        className={styles.cardtitle}
+                        titleColor="white"
+                      />
+                      <CardText>
+                        <p className={styles.subHeadline}>
+                          Pools of ether and proof-of-stake mining
+                        </p>
+                      </CardText>
+                      <CardActions>
+                        <Link to="/vault">
+                          <RaisedButton
+                            label="New Vault"
+                            className={styles.exchangebutton}
+                            labelColor="white"
+                          />
+                        </Link>
+                      </CardActions>
+                    </Card>
+                  </Col>
+                  <Col xs={6}>
+                    <Card className={styles.column}>
+                      <CardTitle
+                        title="DRAGO"
+                        className={styles.cardtitle}
+                        titleColor="white"
+                      />
+                      <CardText>
+                        <p className={styles.subHeadline}>
+                          Pools of ether and trading on decentralized exchanges
+                        </p>
+                      </CardText>
+                      <CardActions>
+                        <Link to="/drago">
+                          <RaisedButton
+                            label="New Drago"
+                            className={styles.exchangebutton}
+                            labelColor="white"
+                          />
+                        </Link>
+                      </CardActions>
+                    </Card>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col xs={12}>
+                    <p />
+                  </Col>
+                </Row>
+              </div>
+
               {/* <Row>
                 <Col xs={12} className={styles.socialsContainer}>
                   <a
@@ -332,7 +384,7 @@ class ApplicationHome extends Component {
             />
           </Col>
         </Row>
-        {/* <div className={styles.telegramButtonContainer}>
+        <div className={styles.telegramButtonContainer}>
           <div>
             <a
               href="https://t.me/rigoblockprotocol"
@@ -355,6 +407,7 @@ class ApplicationHome extends Component {
                     // style={{ fill: '#ffca57' }}
                     height="24px"
                     className={styles.telegramIcon}
+                    alt=""
                   />
                 }
                 // hoverColor={Colors.blue300}
@@ -381,7 +434,7 @@ class ApplicationHome extends Component {
               />
             </a>
           </div>
-        </div> */}
+        </div>
         <WalletSetup />
       </div>
     )

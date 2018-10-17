@@ -1,15 +1,6 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-import {
-  UPDATE_SELECTED_DRAGO_DETAILS,
-  UPDATE_SELECTED_DRAGO_DETAILS_CHART_ASSETS_MARKET_ADD_DATAPOINT,
-  UPDATE_SELECTED_DRAGO_DETAILS_CHART_ASSETS_MARKET_DATA_INIT,
-  UPDATE_SELECTED_VAULT_DETAILS,
-  UPDATE_TRANSACTIONS_DRAGO_HOLDER,
-  UPDATE_TRANSACTIONS_DRAGO_MANAGER,
-  UPDATE_TRANSACTIONS_VAULT_HOLDER,
-  UPDATE_TRANSACTIONS_VAULT_MANAGER
-} from '../actions/const'
+import * as TYPE_ from '../actions/const'
 import initialState from './initialState'
 
 export function eventfulDragoReducer(
@@ -17,7 +8,22 @@ export function eventfulDragoReducer(
   action
 ) {
   switch (action.type) {
-    case UPDATE_TRANSACTIONS_DRAGO_HOLDER:
+    case TYPE_.UPDATE_DRAGOS_LIST:
+      let newList = state.dragosList.list.concat(action.payload.list)
+      newList.sort(function(a, b) {
+        if (a.symbol < b.symbol) return -1
+        if (a.symbol > b.symbol) return 1
+        return 0
+      })
+      return {
+        ...state,
+        dragosList: {
+          list: newList,
+          lastFetchRange: action.payload.lastFetchRange
+        }
+      }
+
+    case TYPE_.UPDATE_TRANSACTIONS_DRAGO_HOLDER:
       return {
         ...state,
         holder: {
@@ -26,7 +32,7 @@ export function eventfulDragoReducer(
         }
       }
 
-    case UPDATE_TRANSACTIONS_DRAGO_MANAGER:
+    case TYPE_.UPDATE_TRANSACTIONS_DRAGO_MANAGER:
       return {
         ...state,
         manager: {
@@ -36,7 +42,7 @@ export function eventfulDragoReducer(
         }
       }
 
-    case UPDATE_SELECTED_DRAGO_DETAILS:
+    case TYPE_.UPDATE_SELECTED_DRAGO_DETAILS:
       return {
         ...state,
         selectedDrago: {
@@ -45,7 +51,7 @@ export function eventfulDragoReducer(
         }
       }
 
-    case UPDATE_SELECTED_DRAGO_DETAILS_CHART_ASSETS_MARKET_DATA_INIT: {
+    case TYPE_.UPDATE_SELECTED_DRAGO_DETAILS_CHART_ASSETS_MARKET_DATA_INIT: {
       // console.log(action)
       let selectedDrago = { ...state.selectedDrago }
       // console.log(selectedDrago)
@@ -59,7 +65,7 @@ export function eventfulDragoReducer(
       }
     }
 
-    case UPDATE_SELECTED_DRAGO_DETAILS_CHART_ASSETS_MARKET_ADD_DATAPOINT: {
+    case TYPE_.UPDATE_SELECTED_DRAGO_DETAILS_CHART_ASSETS_MARKET_ADD_DATAPOINT: {
       let selectedDrago = { ...state.selectedDrago }
       // console.log(action)
       // console.log(Object.keys(action.payload)[0])
@@ -107,7 +113,16 @@ export function eventfulVaultReducer(
   action
 ) {
   switch (action.type) {
-    case UPDATE_TRANSACTIONS_VAULT_HOLDER:
+    case TYPE_.UPDATE_VAULTS_SEARCH_LIST:
+      let newList = state.dragosList.list.concat(action.payload.list)
+      return {
+        ...state,
+        dragosList: {
+          list: newList,
+          lastFetchRange: action.payload.lastFetchRange
+        }
+      }
+    case TYPE_.UPDATE_TRANSACTIONS_VAULT_HOLDER:
       return {
         ...state,
         holder: {
@@ -115,7 +130,7 @@ export function eventfulVaultReducer(
           logs: action.payload[1]
         }
       }
-    case UPDATE_TRANSACTIONS_VAULT_MANAGER:
+    case TYPE_.UPDATE_TRANSACTIONS_VAULT_MANAGER:
       return {
         ...state,
         manager: {
@@ -123,7 +138,7 @@ export function eventfulVaultReducer(
           logs: action.payload[1]
         }
       }
-    case UPDATE_SELECTED_VAULT_DETAILS:
+    case TYPE_.UPDATE_SELECTED_VAULT_DETAILS:
       return {
         ...state,
         selectedVault: {

@@ -81,11 +81,23 @@ class PageFundDetailsVaultTrader extends Component {
     this.setState({
       loading: false
     })
-    await this.getTransactions(
-      vaultDetails,
-      this.context.api,
-      this.props.endpoint.accounts
+    const address = vaultDetails[0][0]
+    let options = {
+      balance: true,
+      supply: false,
+      limit: 20,
+      allEvents: true,
+      trader: true,
+      drago: false
+    }
+    this.props.dispatch(
+      Actions.drago.getPoolTransactions(this.context.api, address, [], options)
     )
+    // await this.getTransactions(
+    //   vaultDetails,
+    //   this.context.api,
+    //   this.props.endpoint.accounts
+    // )
   }
 
   componentWillUnmount() {
@@ -117,11 +129,11 @@ class PageFundDetailsVaultTrader extends Component {
       this.setState({
         prevProps: this.props
       })
-      console.log(
-        `${
-          this.constructor.name
-        } -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`
-      )
+      // console.log(
+      //   `${
+      //     this.constructor.name
+      //   } -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`
+      // )
     } else {
       null
     }
@@ -144,11 +156,11 @@ class PageFundDetailsVaultTrader extends Component {
     stateUpdate = !utils.shallowEqual(this.state, nextState)
     propsUpdate = !utils.shallowEqual(this.props, nextProps)
     if (stateUpdate || propsUpdate) {
-      console.log(
-        `${
-          this.constructor.name
-        } -> shouldComponentUpdate -> Proceedding with rendering.`
-      )
+      // console.log(
+      //   `${
+      //     this.constructor.name
+      //   } -> shouldComponentUpdate -> Proceedding with rendering.`
+      // )
     }
     return stateUpdate || propsUpdate
   }
@@ -251,6 +263,7 @@ class PageFundDetailsVaultTrader extends Component {
       this.renderEtherscanButton('address', vaultDetails.addressOwner)
     ]
     const tableInfo = [
+      ['Created', vaultDetails.created, ''],
       ['Symbol', vaultDetails.symbol, ''],
       ['Name', vaultDetails.name, ''],
       ['Address', vaultDetails.address, tableButtonsVaultAddress],
@@ -277,8 +290,8 @@ class PageFundDetailsVaultTrader extends Component {
         ? styles.fadeNewHolding
         : styles.noFadeNewHolding
 
-    console.log(this.props)
-    console.log(this.state)
+    // console.log(this.props)
+    // console.log(this.state)
     return (
       <Row>
         <Col xs={12}>

@@ -8,7 +8,7 @@ class ElementFundNotFound extends Component {
     return (
       <div className={styles.warnMsgBox}>
         <h4>Drago not found.</h4>
-        <p>We could not find this Drago on the blackchain.</p>
+        <p>We could not find this Drago on the blockchain.</p>
         <p>Please make sure that your client is in sync.</p>
       </div>
     )

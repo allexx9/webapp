@@ -21,6 +21,7 @@
     "is-number": "^7.0.0",
     "js-sha3": "^0.8.0",
     "jss": "^9.0.0",
+    "lodash": "^4.17.11",
     "material-ui": "^0.20.2",
     "material-ui-pagination": "^1.1.6",
     "moment": "^2.22.2",

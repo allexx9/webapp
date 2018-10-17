@@ -8,6 +8,14 @@ export const UNLIMITED_ALLOWANCE_IN_BASE_UNITS = new BigNumber(2)
   .pow(256)
   .minus(1)
 
+export const DEBUGGING = {
+  initAccountsTransactionsInEpic: true,
+  DUMB_ACTION: {
+    type: 'DUMB',
+    payload: 'DUMB'
+  }
+}
+
 export const APP = 'app'
 export const DS = '/'
 export const DRG_ISIN = 'DR'

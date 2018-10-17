@@ -1,7 +1,7 @@
 // Copyright 2017 Rigo Investment Sagl.
 // This file is part of RigoBlock.
 
-import { INFURA, KOVAN, PROD, WS } from './const'
+import { ENDPOINTS, INFURA, KOVAN, PROD, WS } from './const'
 import Api from '@parity/api'
 import Web3 from 'web3'
 
@@ -60,9 +60,21 @@ class Endpoint {
     // Checking if Web3 has been injected by the browser (Mist/MetaMask)
     if (typeof window.web3 !== 'undefined') {
       console.log('Found MetaMask!')
-      window.web3 = new Web3(window.web3.currentProvider)
+      try {
+        console.log(window.web3)
+        let provider = window.web3.currentProvider
+        window.web3 = new Web3(window.web3.currentProvider)
+        // window.web3.providers.WebsocketProvider.prototype.on('error', e =>
+        //   console.log('WS Error', e)
+        // )
+        console.log(window.web3)
+      } catch (error) {
+        console.log(error)
+      }
       window.web3._rb = {}
       window.web3._rb.network = this._network
+      console.log(ENDPOINTS)
+      window.web3._rb.wss = ENDPOINTS.infura.wss[this._network.name].dev
     } else {
       console.log('No web3? You should consider trying MetaMask!')
     }

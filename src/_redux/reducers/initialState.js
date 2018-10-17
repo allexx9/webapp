@@ -56,7 +56,8 @@ const initialState = {
     retryTimeInterval: 0,
     connectinoRetries: 0,
     lastBlockNumberUpdate: 0,
-    accountsAddressHash: ''
+    accountsAddressHash: '',
+    errorEventfulSubscription: false
   },
   notifications: {
     engine: ''
@@ -176,6 +177,18 @@ const initialState = {
     pending: 0
   },
   transactionsDrago: {
+    dragosList: {
+      list: [],
+      lastFetchRange: {
+        chunk: {
+          key: 0,
+          toBlock: 0,
+          fromBlock: 0
+        },
+        startBlock: 0,
+        lastBlock: 0
+      }
+    },
     holder: {
       balances: [],
       logs: []
@@ -188,14 +201,18 @@ const initialState = {
       details: {},
       transactions: [],
       assets: [],
-      assetsCharts: {
-        GRG: {
-          data: fakeTicker()
-        }
-      }
+      assetsCharts: {}
     }
   },
   transactionsVault: {
+    vaultsList: {
+      list: [],
+      lastFetchRange: {
+        chunk: 0,
+        startBlock: 0,
+        lastBlock: 0
+      }
+    },
     holder: {
       balances: [],
       logs: []

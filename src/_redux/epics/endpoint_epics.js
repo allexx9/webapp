@@ -3,26 +3,18 @@
 // import { Observable } from 'rxjs';
 import * as TYPE_ from '../actions/const'
 import { Actions } from '../actions/'
-import {
-  INFURA,
-  LOCAL,
-  MSG_NETWORK_STATUS_ERROR,
-  MSG_NETWORK_STATUS_OK,
-  NETWORK_OK,
-  NETWORK_WARNING,
-  RIGOBLOCK
-} from '../../_utils/const'
+import { DEBUGGING, INFURA, LOCAL, RIGOBLOCK } from '../../_utils/const'
 import { Interfaces } from '../../_utils/interfaces'
 import { Observable, defer, from, merge, timer } from 'rxjs'
 import {
   catchError,
-  concat,
   delay,
   exhaustMap,
   filter,
   finalize,
   flatMap,
   map,
+  // merge,
   mergeMap,
   retryWhen,
   switchMap,
@@ -34,14 +26,14 @@ import { ofType } from 'redux-observable'
 import { sha3_512 } from 'js-sha3'
 import BigNumber from 'bignumber.js'
 import PoolsApi from '../../PoolsApi/src'
+import Web3 from 'web3'
 import utils from '../../_utils/utils'
-// import { race } from 'rxjs/observable/race';
 
 //
 // CHECK IF THE APP If NETWORK IS UP AND THERE IS A CONNECTION TO A NODE
 //
 
-export const isConnectedToNode$ = (api, $state) => {
+export const isConnectedToNode$ = api => {
   let nodeStatus = {
     isConnected: false,
     isSyncing: false,
@@ -50,10 +42,17 @@ export const isConnectedToNode$ = (api, $state) => {
   return defer(() => api.eth.syncing()).pipe(
     timeout(2500),
     map(result => {
+      // console.log(result)
       if (result !== false) {
-        nodeStatus.isConnected = true
-        nodeStatus.isSyncing = true
-        nodeStatus.syncStatus = result
+        if (result.highestBlock.minus(result.currentBlock).gt(2)) {
+          nodeStatus.isConnected = true
+          nodeStatus.isSyncing = true
+          nodeStatus.syncStatus = result
+        } else {
+          nodeStatus.isConnected = true
+          nodeStatus.isSyncing = false
+          nodeStatus.syncStatus = {}
+        }
       } else {
         nodeStatus.isConnected = true
         nodeStatus.isSyncing = false
@@ -80,6 +79,7 @@ export const isConnectedToNodeEpic = (action$, $state) =>
       exhaustMap(() => {
         return isConnectedToNode$(action.payload.api, $state).pipe(
           tap(result => {
+            console.log(result)
             return result
           }),
           flatMap(result => {
@@ -132,7 +132,7 @@ export const isConnectedToNodeEpic = (action$, $state) =>
 // CONNECT TO SOURCES OF ACCOUNTS AND POPULATE STATE WITH ACCOUNTS DATA
 //
 
-export const attachInterfacePromise = async (api, endpoint) => {
+const attachInterfacePromise = async (api, endpoint) => {
   const selectedEndpointName = endpoint.endpointInfo.name
   const networkId = endpoint.networkInfo.id
   const blockchain = new Interfaces(api, networkId)
@@ -226,237 +226,12 @@ export const attacheInterfaceEpic = action$ =>
   )
 
 //
-// SUBSCRIBE TO NEW BLOCK AND MONITOR ACCOUNTS
+// SUBSCRIBES TO EVENTFULL CONTRACTS AND EMIT NEW EVENTS
 //
 
-export const updateAccounts = async (api, blockNumber, state$) => {
-  const currentState = state$.value
-  const { endpoint } = currentState
-  let newEndpoint = {}
-  const prevBlockNumber = endpoint.prevBlockNumber
-  const prevNonce = endpoint.prevNonce
-  let newBlockNumber = new BigNumber(0)
-  let notifications = Array(0)
-  let fetchTransactions = false
-  console.log(currentState)
-  // Checking if blockNumber is passed by Parity Api or Web3
-  if (typeof blockNumber.number !== 'undefined') {
-    newBlockNumber = new BigNumber(blockNumber.number)
-  } else {
-    newBlockNumber = blockNumber
-  }
-  console.log(`endpoint_epic -> Last block: ` + prevBlockNumber)
-  console.log(`endpoint_epic -> New block: ` + newBlockNumber.toFixed())
-  console.log(`endpoint_epic -> Last nonce: ` + prevNonce)
-
-  if (new BigNumber(prevBlockNumber).gte(new BigNumber(newBlockNumber))) {
-    console.log(
-      `endpoint_epic -> Detected prevBlockNumber > currentBlockNumber. Skipping accounts update.`
-    )
-    newEndpoint = {
-      prevBlockNumber: prevBlockNumber
-    }
-    return [newEndpoint, notifications, fetchTransactions]
-  }
-
-  const accounts = [].concat(endpoint.accounts)
-  if (accounts.length !== 0) {
-    console.log(`endpoint_epic -> New nonce: ` + endpoint.accounts[0].nonce)
-    try {
-      const poolsApi = new PoolsApi(api)
-      poolsApi.contract.rigotoken.init()
-      // Checking GRG balance
-      const grgQueries = accounts.map(account => {
-        // console.log(
-        //   `endpoint_epic -> API call getBalance RigoToken-> applicationDragoHome: Getting balance of account ${
-        //     account.address
-        //   }`
-        // )
-        return poolsApi.contract.rigotoken.balanceOf(account.address)
-      })
-
-      // Checking ETH balance
-      const ethQueries = accounts.map(account => {
-        // console.log(
-        //   `endpoint_epic -> API call getBalance -> applicationDragoHome: Getting balance of account ${
-        //     account.address
-        //   }`
-        // )
-        return api.eth.getBalance(account.address, 'latest')
-      })
-      const ethBalances = await Promise.all(ethQueries)
-      const grgBalances = await Promise.all(grgQueries)
-      const prevAccounts = [].concat(endpoint.accounts)
-      prevAccounts.forEach(function(account, index) {
-        // Checking ETH balance
-        const newEthBalance = new BigNumber(ethBalances[index])
-        const prevEthBalance = new BigNumber(account.ethBalanceWei)
-        console.log(
-          `Old balance at block ${prevBlockNumber} -> ${prevEthBalance.toFixed()}`
-        )
-        console.log(
-          `New balance at block ${newBlockNumber} -> ${newEthBalance.toFixed()}`
-        )
-        if (
-          !new BigNumber(newEthBalance).eq(prevEthBalance) &&
-          prevBlockNumber !== 0
-        ) {
-          console.log(`${account.name} balance changed.`)
-          fetchTransactions = true
-          let secondaryText = []
-          let balDifference = prevEthBalance.minus(newEthBalance)
-          // console.log(prevEthBalance.toFixed(), newEthBalance.toFixed())
-          // console.log(balDifference.toFixed())
-          if (balDifference.gt(new BigNumber(0))) {
-            console.log(
-              `endpoint_epic -> You transferred ${utils.formatFromWei(
-                balDifference
-              )} ETH!`
-            )
-            secondaryText[0] = `You transferred ${utils.formatFromWei(
-              balDifference
-            )} ETH!`
-            secondaryText[1] = utils.dateFromTimeStamp(new Date())
-          } else {
-            console.log(
-              `endpoint_epic -> You received ${Math.abs(
-                utils.formatFromWei(balDifference)
-              )} ETH!`
-            )
-            secondaryText[0] = `You received ${Math.abs(
-              utils.formatFromWei(balDifference)
-            )} ETH!`
-            secondaryText[1] = utils.dateFromTimeStamp(new Date())
-          }
-          if (endpoint.accountsBalanceError === false) {
-            notifications.push({
-              primaryText: account.name,
-              secondaryText: secondaryText,
-              eventType: 'transfer'
-            })
-          }
-        }
-
-        // Checking GRG balance
-        const newgrgBalance = new BigNumber(grgBalances[index])
-        const prevGrgBalance = new BigNumber(account.grgBalanceWei)
-        // console.log(newgrgBalance, prevGrgBalance)
-        if (
-          !new BigNumber(newgrgBalance).eq(prevGrgBalance) &&
-          prevBlockNumber !== 0
-        ) {
-          console.log(`${account.name} balance changed.`)
-          fetchTransactions = true
-          let secondaryText = []
-          let balDifference = prevGrgBalance.minus(newgrgBalance)
-          if (balDifference.gt(new BigNumber(0))) {
-            console.log(
-              `endpoint_epic -> You transferred ${utils.formatFromWei(
-                balDifference
-              )} GRG!`
-            )
-            secondaryText[0] = `You transferred ${utils.formatFromWei(
-              balDifference
-            )} GRG!`
-            secondaryText[1] = utils.dateFromTimeStamp(new Date())
-          } else {
-            console.log(
-              `endpoint_epic -> You received ${Math.abs(
-                utils.formatFromWei(balDifference)
-              )} GRG!`
-            )
-            secondaryText[0] = `You received ${Math.abs(
-              utils.formatFromWei(balDifference)
-            )} GRG!`
-            secondaryText[1] = utils.dateFromTimeStamp(new Date())
-          }
-          if (endpoint.accountsBalanceError === false) {
-            notifications.push({
-              primaryText: account.name,
-              secondaryText: secondaryText,
-              eventType: 'transfer'
-            })
-          }
-        }
-      })
-      newEndpoint = {
-        prevBlockNumber: newBlockNumber.toFixed(),
-        prevNonce: endpoint.accounts[0].nonce,
-        loading: false,
-        networkError: NETWORK_OK,
-        networkStatus: MSG_NETWORK_STATUS_OK,
-        accountsBalanceError: false,
-        grgBalance: grgBalances.reduce(
-          (total, balance) => total.plus(balance),
-          new BigNumber(0)
-        ),
-        ethBalance: ethBalances.reduce(
-          (total, balance) => total.plus(balance),
-          new BigNumber(0)
-        ),
-        accounts: [].concat(
-          accounts.map((account, index) => {
-            const ethBalance = ethBalances[index]
-            account.ethBalance = utils.formatFromWei(ethBalance)
-            account.ethBalanceWei = new BigNumber(ethBalance)
-            const grgBalance = grgBalances[index]
-            account.grgBalance = utils.formatFromWei(grgBalance)
-            account.grgBalanceWei = new BigNumber(grgBalance)
-            return account
-          })
-        )
-      }
-      return [newEndpoint, notifications, fetchTransactions]
-    } catch (error) {
-      console.log(`endpoint_epic -> ${error}`)
-      // Setting the balances to 0 if receiving an error from the endpoint. It happens with Infura.
-      newEndpoint = {
-        prevBlockNumber: newBlockNumber.toFixed(),
-        loading: false,
-        networkError: NETWORK_WARNING,
-        networkStatus: MSG_NETWORK_STATUS_ERROR,
-        accountsBalanceError: true
-        // ethBalance: new BigNumber(0),
-        // grgBalance: new BigNumber(0),
-        // accounts: [].concat(accounts.map((account) => {
-        //   account.ethBalance = utils.formatFromWei(new BigNumber(0))
-        //   account.grgBalance = utils.formatFromWei(new BigNumber(0))
-        //   return account;
-        // })
-        // )
-      }
-      return [newEndpoint, notifications, fetchTransactions]
-    }
-  } else {
-    const newEndpoint = { ...endpoint }
-    newEndpoint.loading = false
-    newEndpoint.prevBlockNumber = newBlockNumber.toFixed()
-    return [newEndpoint, notifications, fetchTransactions]
-  }
-}
-
 const monitorEventful$ = (web3, api, state$) => {
-  const currentState = state$.value
-  // const networkName = currentState.endpoint.networkInfo.name
   console.log('monitorEventful$')
-  // let subscriptionCreate = web3.eth
-  //   .subscribe(
-  //     'logs',
-  //     {
-  //       address: '0x35d3ab6b7917d03050423f7E43d4D9Cff155a685'.toLocaleLowerCase(),
-  //       topics: [null, null, null, currentState.endpoint.accounts[0].address]
-  //     },
-  //     function(error, result) {
-  //       if (!error) console.log(result)
-  //     }
-  //   )
-  //   .on('data', function(log) {
-  //     console.log(log)
-  //   })
-
-  // unsubscribes the subscription
-  // console.log(subscription)
-  let hexAccounts = currentState.endpoint.accounts.map(account => {
+  let hexAccounts = state$.value.endpoint.accounts.map(account => {
     const hexAccount =
       '0x' +
       account.address
@@ -465,55 +240,117 @@ const monitorEventful$ = (web3, api, state$) => {
         .padStart(64, '0')
     return hexAccount
   })
-  console.log(hexAccounts)
+  const poolApi = new PoolsApi(api)
+  console.log(window.web3)
+  let web3New = new Web3(window.web3._rb.wss)
+  return merge(
+    Observable.create(observer => {
+      console.log('subscription Create event DRAGO')
 
-  const observableCreate = Observable.create(observer => {
-    let subscriptionCreate = web3.eth.subscribe(
-      'logs',
-      {
-        address: '0x35d3ab6b7917d03050423f7E43d4D9Cff155a685'.toLocaleLowerCase(),
-        topics: [null, null, null, hexAccounts]
-      },
-      function(error, result) {
-        if (!error) {
-          console.log(result)
-          return observer.next(result)
-        } else {
-          return observer.error(error)
+      // DRAGO
+      poolApi.contract.dragoeventful.init().then(() => {
+        let subscriptionCreate = web3New.eth.subscribe(
+          'logs',
+          {
+            address: poolApi.contract.dragoeventful._contract._address[0].toLocaleLowerCase(),
+            topics: [null, null, null, hexAccounts]
+          },
+          function(error, result) {
+            if (!error) {
+              console.log(result)
+              return observer.next(result)
+            } else {
+              return observer.error(error)
+            }
+          }
+        )
+        return () => {
+          subscriptionCreate.unsubscribe(function(error, success) {
+            if (success) console.log('Successfully unsubscribed!')
+          })
         }
-      }
-    )
-    return () => {
-      subscriptionCreate.unsubscribe(function(error, success) {
-        if (success) console.log('Successfully unsubscribed!')
       })
-    }
-  })
 
-  const observableBuySell = Observable.create(observer => {
-    let subscriptionCreate = web3.eth.subscribe(
-      'logs',
-      {
-        address: '0x35d3ab6b7917d03050423f7E43d4D9Cff155a685'.toLocaleLowerCase(),
-        topics: [null, null, hexAccounts, null]
-      },
-      function(error, result) {
-        if (!error) {
-          console.log(result)
-          return observer.next(result)
-        } else {
-          return observer.error(error)
+      console.log('subscription Create event VAULT')
+
+      // VAULT
+      poolApi.contract.vaulteventful.init().then(() => {
+        let subscriptionCreate = web3New.eth.subscribe(
+          'logs',
+          {
+            address: poolApi.contract.vaulteventful._contract._address[0].toLocaleLowerCase(),
+            topics: [null, null, null, hexAccounts]
+          },
+          function(error, result) {
+            if (!error) {
+              console.log(result)
+              return observer.next(result)
+            } else {
+              return observer.error(error)
+            }
+          }
+        )
+        return () => {
+          subscriptionCreate.unsubscribe(function(error, success) {
+            if (success) console.log('Successfully unsubscribed!')
+          })
         }
-      }
-    )
-    return () => {
-      subscriptionCreate.unsubscribe(function(error, success) {
-        if (success) console.log('Successfully unsubscribed!')
       })
-    }
-  })
+    }),
+    Observable.create(observer => {
+      console.log('subscription BuySell DRAGO events')
 
-  return merge(observableCreate, observableBuySell)
+      // DRAGO
+      poolApi.contract.dragoeventful.init().then(() => {
+        let subscriptionBuySell = web3New.eth.subscribe(
+          'logs',
+          {
+            address: poolApi.contract.dragoeventful._contract._address[0].toLocaleLowerCase(),
+            topics: [null, null, hexAccounts, null]
+          },
+          function(error, result) {
+            if (!error) {
+              console.log(result)
+              return observer.next(result)
+            } else {
+              return observer.error(error)
+            }
+          }
+        )
+        return () => {
+          subscriptionBuySell.unsubscribe(function(error, success) {
+            if (success) console.log('Successfully unsubscribed!')
+          })
+        }
+      })
+
+      console.log('subscription BuySell VAULT events')
+
+      // VAULT
+      poolApi.contract.vaulteventful.init().then(() => {
+        let subscriptionBuySell = web3New.eth.subscribe(
+          'logs',
+          {
+            address: poolApi.contract.vaulteventful._contract._address[0].toLocaleLowerCase(),
+            topics: [null, null, hexAccounts, null]
+          },
+          function(error, result) {
+            if (!error) {
+              console.log(result)
+              return observer.next(result)
+            } else {
+              return observer.error(error)
+            }
+          }
+        )
+        return () => {
+          subscriptionBuySell.unsubscribe(function(error, success) {
+            if (success) console.log('Successfully unsubscribed!')
+          })
+        }
+      })
+    })
+  )
 }
 
 export const monitorEventfulEpic = (action$, state$) => {
@@ -535,114 +372,141 @@ export const monitorEventfulEpic = (action$, state$) => {
           const currentState = state$.value
           console.log(event)
           //   let options = state$.value.user.isManager
-          //   ? { balance: false, supply: true, limit: 20, trader: false }
-          //   : { balance: true, supply: false, limit: 20, trader: true }
+          //   ? { balance: false, supply: true, limit: 20, trader: false, drago: true }
+          //   : { balance: true, supply: false, limit: 20, trader: true, drago: true }
           // console.log(options)
-          console.log('transactions fetch trader')
-          observablesArray.push(
-            Observable.of(
-              Actions.endpoint.getAccountsTransactions(
-                action.payload.api,
-                null,
-                currentState.endpoint.accounts,
-                { balance: false, supply: true, limit: 20, trader: false }
-              )
-            )
-          )
-          console.log('transactions fetch manager')
-          observablesArray.push(
-            Observable.of(
-              Actions.endpoint.getAccountsTransactions(
-                action.payload.api,
-                null,
-                currentState.endpoint.accounts,
-                { balance: true, supply: false, limit: 20, trader: true }
-              )
-            )
-          )
+          console.log('DRAGO transactions fetch trader')
+          observablesArray.push(Observable.of(DEBUGGING.DUMB_ACTION))
+          // observablesArray.push(
+          //   Observable.of(
+          //     Actions.endpoint.getAccountsTransactions(
+          //       action.payload.api,
+          //       null,
+          //       currentState.endpoint.accounts,
+          //       {
+          //         balance: false,
+          //         supply: true,
+          //         limit: 20,
+          //         trader: false,
+          //         drago: true
+          //       }
+          //     )
+          //   )
+          // )
+          console.log('DRAGO transactions fetch manager')
+          // observablesArray.push(
+          //   Observable.of(
+          //     Actions.endpoint.getAccountsTransactions(
+          //       action.payload.api,
+          //       null,
+          //       currentState.endpoint.accounts,
+          //       {
+          //         balance: true,
+          //         supply: false,
+          //         limit: 20,
+          //         trader: true,
+          //         drago: true
+          //       }
+          //     )
+          //   )
+          // )
+
+          console.log('VAULT transactions fetch trader')
+          observablesArray.push(Observable.of(DEBUGGING.DUMB_ACTION))
+          // observablesArray.push(
+          //   Observable.of(
+          //     Actions.endpoint.getAccountsTransactions(
+          //       action.payload.api,
+          //       null,
+          //       currentState.endpoint.accounts,
+          //       {
+          //         balance: false,
+          //         supply: true,
+          //         limit: 20,
+          //         trader: false,
+          //         drago: false
+          //       }
+          //     )
+          //   )
+          // )
+          console.log('VAULT transactions fetch manager')
+          // observablesArray.push(
+          //   Observable.of(
+          //     Actions.endpoint.getAccountsTransactions(
+          //       action.payload.api,
+          //       null,
+          //       currentState.endpoint.accounts,
+          //       {
+          //         balance: true,
+          //         supply: false,
+          //         limit: 20,
+          //         trader: true,
+          //         drago: false
+          //       }
+          //     )
+          //   )
+          // )
 
           return Observable.concat(...observablesArray)
         }),
-        catchError(error => {
+        retryWhen(error => {
           console.log(error)
-          return Observable.of({
-            type: TYPE_.QUEUE_ERROR_NOTIFICATION,
-            payload: 'Error: cannot subscribe to eventful.'
-          })
+          console.log('monitorEventfulEpic')
+          let scalingDuration = 3000
+          return error.pipe(
+            mergeMap((error, i) => {
+              const retryAttempt = i + 1
+              // if maximum number of retries have been met
+              // or response is a status code we don't wish to retry, throw error
+              // if (
+              //   retryAttempt > maxRetryAttempts ||
+              //   excludedStatusCodes.find(e => e === error.status)
+              // ) {
+              //   throw(error);
+              // }
+              // const _rb = window.web3._rb
+              // window.web3 = new Web3(window.web3.currentProvider)
+              // window.web3._rb = _rb
+              console.log(`monitorEventfulEpic Attempt ${retryAttempt}`)
+              // retry after 1s, 2s, etc...
+              return timer(scalingDuration)
+            }),
+            finalize(() => console.log('We are done!'))
+          )
         })
+        // catchError(error => {
+        //   console.log(error)
+        //   return Observable.of({
+        //     type: TYPE_.QUEUE_ERROR_NOTIFICATION,
+        //     payload: 'Error: cannot subscribe to eventful.'
+        //   })
+        // })
       )
     })
   )
 }
 
+//
+// SUBSCRIBE TO NEW BLOCK AND MONITOR ACCOUNTS
+//
+
 const monitorAccounts$ = (web3, api, state$) => {
-  // const currentState = state$.value
-  // const networkName = currentState.endpoint.networkInfo.name
-  console.log('newBlockHeaders')
-  // let subscription = web3.eth
-  //   .subscribe(
-  //     'logs',
-  //     {
-  //       address: '0x35d3ab6b7917d03050423f7E43d4D9Cff155a685'.toLocaleLowerCase(),
-  //       topics: [null, null, null, null]
-  //     },
-  //     function(error, result) {
-  //       if (!error) console.log(result)
-  //     }
-  //   )
-  //   .on('data', function(log) {
-  //     console.log(log)
-  //   })
-
-  // // unsubscribes the subscription
-  // console.log(subscription)
-
   return Observable.create(observer => {
-    // It seems that Infura supports Websocket for Kovan, now.
-    // Leaving the following legacy code commented for reference.
-
-    // if (networkName === KOVAN) {
-    //   api.subscribe('eth_blockNumber', (_error, blockNumber) => {
-    //     if (!_error) {
-    //       updateAccounts(api, blockNumber, state$)
-    //         .then(result => {
-    //           return observer.next(result)
-    //         })
-    //       // return observer.next(Observable.fromPromise(updateAccounts(api, blockNumber, state$)))
-    //     } else {
-    //       return observer.error(_error)
-    //     }
-    //   })
-    //     .then((result) => {
-    //       console.log(`Subscribed to eth_blockNumber -> Subscription ID: ${subscriptionData}`);
-    //       subscriptionData = result
-    //     })
-    // } else {
-    //   subscriptionData = web3.eth.subscribe('newBlockHeaders', (_error, blockNumber) => {
-    //     if (!_error) {
-    //       updateAccounts(api, blockNumber, state$)
-    //         .then(result => {
-    //           return observer.next(result)
-    //         })
-    //     } else {
-    //       return observer.error(_error)
-    //     }
-    //   })
-    // }
-    console.log('newBlockHeaders')
-    let subscription = web3.eth.subscribe(
+    let web3New = new Web3(window.web3._rb.wss)
+    let subscription = web3New.eth.subscribe(
       'newBlockHeaders',
       (_error, blockNumber) => {
         if (!_error) {
-          updateAccounts(api, blockNumber, state$).then(result => {
+          utils.updateAccounts(api, blockNumber, state$).then(result => {
             return observer.next(result)
           })
         } else {
+          // web3.setProvider(window.web3.currentProvider)
+          // window.web3 = new Web3(window.web3.currentProvider)
           return observer.error(_error)
         }
       }
     )
-
     return () => {
       subscription.unsubscribe(function(error, success) {
         if (success) console.log('Successfully unsubscribed!')
@@ -671,92 +535,94 @@ export const monitorAccountsEpic = (action$, state$) => {
           observablesArray.push(
             Observable.of(Actions.endpoint.updateInterface(accountsUpdate[0]))
           )
-          observablesArray.push(
-            Observable.of({
-              type: TYPE_.QUEUE_ACCOUNT_NOTIFICATION,
-              payload: accountsUpdate[1]
-            })
-          )
-          if (accountsUpdate[2]) {
-            //   let options = state$.value.user.isManager
-            //   ? { balance: false, supply: true, limit: 20, trader: false }
-            //   : { balance: true, supply: false, limit: 20, trader: true }
-            // console.log(options)
-            console.log('transactions fetch trader')
-            // observablesArray.push(
-            //   Observable.of(
-            //     Actions.endpoint.getAccountsTransactions(
-            //       action.payload.api,
-            //       null,
-            //       accountsUpdate[0].accounts,
-            //       { balance: false, supply: true, limit: 20, trader: false }
-            //     )
-            //   )
-            // )
-            console.log('transactions fetch manager')
-            // observablesArray.push(
-            //   Observable.of(
-            //     Actions.endpoint.getAccountsTransactions(
-            //       action.payload.api,
-            //       null,
-            //       accountsUpdate[0].accounts,
-            //       { balance: true, supply: false, limit: 20, trader: true }
-            //     )
-            //   )
-            // )
+          if (accountsUpdate[1].length !== 0)
+            observablesArray.push(
+              Observable.of({
+                type: TYPE_.QUEUE_ACCOUNT_NOTIFICATION,
+                payload: accountsUpdate[1]
+              })
+            )
+          if (DEBUGGING.initAccountsTransactionsInEpic) {
+            if (accountsUpdate[2]) {
+              //   let options = state$.value.user.isManager
+              //   ? { balance: false, supply: true, limit: 20, trader: false, drago: true }
+              //   : { balance: true, supply: false, limit: 20, trader: true, drago: true }
+              // console.log(options)
+              console.log('Transactions fetch trader')
+              // observablesArray.push(
+              //   Observable.of(
+              //     Actions.endpoint.getAccountsTransactions(
+              //       action.payload.api,
+              //       null,
+              //       accountsUpdate[0].accounts,
+              //       {
+              //         balance: false,
+              //         supply: true,
+              //         limit: 20,
+              //         trader: false,
+              //         drago: true
+              //       }
+              //     )
+              //   )
+              // )
+              console.log('Transactions fetch manager')
+              // observablesArray.push(
+              //   Observable.of(
+              //     Actions.endpoint.getAccountsTransactions(
+              //       action.payload.api,
+              //       null,
+              //       accountsUpdate[0].accounts,
+              //       {
+              //         balance: true,
+              //         supply: false,
+              //         limit: 20,
+              //         trader: true,
+              //         drago: true
+              //       }
+              //     )
+              //   )
+              // )
+            }
           }
 
           return Observable.concat(...observablesArray)
         }),
-        catchError(error => {
+        retryWhen(error => {
           console.log(error)
-          return Observable.of({
-            type: TYPE_.QUEUE_ERROR_NOTIFICATION,
-            payload: 'Error: cannot update accounts balance.'
-          })
+          console.log('monitorAccountsEpic')
+          let scalingDuration = 3000
+          return error.pipe(
+            mergeMap((error, i) => {
+              const retryAttempt = i + 1
+              // if maximum number of retries have been met
+              // or response is a status code we don't wish to retry, throw error
+              // if (
+              //   retryAttempt > maxRetryAttempts ||
+              //   excludedStatusCodes.find(e => e === error.status)
+              // ) {
+              //   throw(error);
+              // }
+              // const _rb = window.web3._rb
+              // window.web3 = new Web3(window.web3.currentProvider)
+              // window.web3._rb = _rb
+              console.log(` monitorAccountsEpic Attempt ${retryAttempt}`)
+              // retry after 1s, 2s, etc...
+              return timer(scalingDuration)
+            }),
+            finalize(() => console.log('We are done!'))
+          )
         })
+        // catchError(error => {
+        //   console.log(error)
+        //   return Observable.of({
+        //     type: TYPE_.QUEUE_ERROR_NOTIFICATION,
+        //     payload: 'Error: cannot update accounts balance.'
+        //   })
+        // })
       )
     })
   )
 }
-
-//
-// FETCH ACCOUNT TRANSACTIONS
-//
-
-const getAccountsTransactions$ = (api, dragoAddress, accounts, options) => {
-  // console.log(accounts)
-  // console.log(dragoAddress)
-  return Observable.fromPromise(
-    utils.getTransactionsDragoOptV2(api, dragoAddress, accounts, options)
-  )
-}
-
-export const getAccountsTransactionsEpic = (action$, state$) =>
-  action$.ofType(TYPE_.GET_ACCOUNTS_TRANSACTIONS).mergeMap(action => {
-    return getAccountsTransactions$(
-      action.payload.api,
-      action.payload.dragoAddress,
-      action.payload.accounts,
-      action.payload.options
-    )
-      .map(results => {
-        console.log(results)
-        // const currentState = state$.value
-        if (!action.payload.options.trader) {
-          return Actions.drago.updateTransactionsDragoManagerAction(
-            results.length === 0 ? [Array(0), Array(0), Array(0)] : results
-          )
-        }
-        return Actions.drago.updateTransactionsDragoHolderAction(results)
-      })
-      .catch(() => {
-        return Observable.of({
-          type: TYPE_.QUEUE_ERROR_NOTIFICATION,
-          payload: 'Error fetching account transactions.'
-        })
-      })
-  })
 
 //
 // CHECK THAT METAMASK IS UNLOCKED AND UPDATE ACTIVE ACCOUNT
@@ -861,29 +727,16 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
               balance: false,
               supply: true,
               limit: 20,
-              trader: false
+              trader: false,
+              drago: true
             }
             let optionsHolder = {
               balance: true,
               supply: false,
               limit: 20,
-              trader: true
+              trader: true,
+              drago: true
             }
-            // if (currentState.user.isManager) {
-            //   options = {
-            //     balance: false,
-            //     supply: true,
-            //     limit: 20,
-            //     trader: false
-            //   }
-            // } else {
-            //   options = {
-            //     balance: true,
-            //     supply: false,
-            //     limit: 20,
-            //     trader: true
-            //   }
-            // }
             let accountsAddressHash
             if (typeof newEndpoint.accounts !== 'undefined') {
               let accounts = newEndpoint.accounts.map(element => {
@@ -893,6 +746,42 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
               accountsAddressHash = sha3_512(accounts.toString())
             }
             // console.log(newEndpoint)
+            let arrayObservables = DEBUGGING.initAccountsTransactionsInEpic
+              ? [
+                  Observable.of(
+                    Actions.endpoint.getAccountsTransactions(
+                      action.payload.api,
+                      null,
+                      newEndpoint.accounts,
+                      optionsHolder
+                    )
+                  ),
+                  Observable.of(
+                    Actions.endpoint.getAccountsTransactions(
+                      action.payload.api,
+                      null,
+                      newEndpoint.accounts,
+                      optionsManager
+                    )
+                  )
+                  // Observable.of(
+                  //   Actions.endpoint.getAccountsTransactions(
+                  //     action.payload.api,
+                  //     null,
+                  //     newEndpoint.accounts,
+                  //     { ...optionsHolder, ...{ drago: false } }
+                  //   )
+                  // ),
+                  // Observable.of(
+                  //   Actions.endpoint.getAccountsTransactions(
+                  //     action.payload.api,
+                  //     null,
+                  //     newEndpoint.accounts,
+                  //     { ...optionsManager, ...{ drago: false } }
+                  //   )
+                  // )
+                ]
+              : []
             return Observable.concat(
               Observable.of(
                 Actions.app.updateAppStatus({
@@ -900,29 +789,15 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
                 })
               ),
               Observable.of(Actions.endpoint.updateInterface(newEndpoint)),
-              Observable.of(
-                Actions.endpoint.getAccountsTransactions(
-                  action.payload.api,
-                  null,
-                  newEndpoint.accounts,
-                  optionsHolder
-                )
-              ),
-              Observable.of(
-                Actions.endpoint.getAccountsTransactions(
-                  action.payload.api,
-                  null,
-                  newEndpoint.accounts,
-                  optionsManager
-                )
-              )
+              ...arrayObservables
             )
           }),
           catchError(error => {
-            console.log(error)
+            console.warn(error)
             // return Observable.of({
             //   type: TYPE_.QUEUE_WARNING_NOTIFICATION,
-            //   payload: 'Unable to fetch accounts from MetaMask. Is it unlocket?'
+            //   payload:
+            //     'Unable to fetch accounts from MetaMask. Is MetaMask unlocket?'
             // })
           })
         )
