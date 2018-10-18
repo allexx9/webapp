@@ -13,6 +13,12 @@ const drago = {
       }
     }
   },
+  getPoolDetails: (dragoId, api, options = { poolType: 'drago' }) => {
+    return {
+      type: TYPE_.GET_DRAGO_DETAILS,
+      payload: { dragoId, api, options }
+    }
+  },
   getPoolTransactions: (api, dragoAddress, accounts, options) => {
     return {
       type: TYPE_.GET_POOL_TRANSACTIONS,
@@ -24,7 +30,7 @@ const drago = {
       }
     }
   },
-  getAssetsPriceDataAction: (assets, networkId, quoteToken) => {
+  getAssetsPriceData: (assets, networkId, quoteToken) => {
     return {
       type: TYPE_.FETCH_ASSETS_PRICE_DATA,
       payload: {
@@ -50,7 +56,7 @@ const drago = {
       }
     }
   },
-  updateSelectedDragoAction: results => {
+  updateSelectedDrago: results => {
     return {
       type: TYPE_.UPDATE_SELECTED_DRAGO_DETAILS,
       payload: results
@@ -62,25 +68,25 @@ const drago = {
       payload: results
     }
   },
-  updateTransactionsDragoHolderAction: results => {
+  updateTransactionsDragoHolder: results => {
     return {
       type: TYPE_.UPDATE_TRANSACTIONS_DRAGO_HOLDER,
       payload: results
     }
   },
-  updateTransactionsDragoManagerAction: results => {
+  updateTransactionsDragoManager: results => {
     return {
       type: TYPE_.UPDATE_TRANSACTIONS_DRAGO_MANAGER,
       payload: results
     }
   },
-  updateTransactionsVaultHolderAction: results => {
+  updateTransactionsVaultHolder: results => {
     return {
       type: TYPE_.UPDATE_TRANSACTIONS_VAULT_HOLDER,
       payload: results
     }
   },
-  updateTransactionsVaultManagerAction: results => {
+  updateTransactionsVaultManager: results => {
     return {
       type: TYPE_.UPDATE_TRANSACTIONS_VAULT_MANAGER,
       payload: results

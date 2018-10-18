@@ -64,79 +64,17 @@ class PageFundDetailsDragoManager extends Component {
 
   componentDidMount = async () => {
     const { api } = this.context
-    const relay = {
-      name: Ethfinex
-    }
-    // Getting Drago details
-    let dragoDetails = await this.getDragoDetails()
-
-    // Getting Drago assets
-    this.props.dispatch(
-      Actions.drago.getTokenBalancesDrago(dragoDetails, api, relay)
-    )
-    // await this.getPortfolioDetails(dragoDetails)
-    const poolApi = new PoolApi(api)
-    await poolApi.contract.dragoeventful.init()
-    this.subscribeToEvents(poolApi.contract.dragoeventful)
-  }
-
-  getDragoDetails = async () => {
-    const { api } = this.context
-    const relay = {
-      name: Ethfinex
-    }
     const dragoId = this.props.match.params.dragoid
-    const dragoDetails = await utils.getDragoDetailsFromId(dragoId, api)
-    await utils.getDragoDetails(dragoDetails, this.props, api, relay)
-    this.setState({
-      loading: false
-    })
-    await this.getTransactions(dragoDetails, api, this.props.endpoint.accounts)
-    return dragoDetails
+
+    // Getting Drago details and transactions
+    this.props.dispatch(
+      Actions.drago.getPoolDetails(dragoId, api, { poolType: 'drago' })
+    )
   }
 
   componentWillUnmount() {
-    const { contractSubscription } = this.state
-
     this.props.dispatch(Actions.tokens.priceTickersStop())
     this.props.dispatch(Actions.exchange.getPortfolioChartDataStop())
-    try {
-      contractSubscription.unsubscribe(function(error, success) {
-        if (success) {
-          console.log(`Successfully unsubscribed from contract.`)
-        }
-        if (error) {
-          console.log(`Unsubscribe error ${error}.`)
-        }
-      })
-    } catch (error) {
-      console.log(`Unsubscribe error ${error}.`)
-    }
-  }
-
-  UNSAFE_componentWillReceiveProps = async nextProps => {
-    // Updating the lists on each new block if the accounts balances have changed
-    // Doing this this to improve performances by avoiding useless re-rendering
-    //
-    const { api } = this.context
-    const relay = {
-      name: Ethfinex
-    }
-    const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
-    const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
-    if (!currentBalance.eq(nextBalance)) {
-      let dragoDetails = await this.getDragoDetails()
-      this.props.dispatch(
-        Actions.drago.getTokenBalancesDrago(dragoDetails, api, relay)
-      )
-      console.log(
-        `${
-          this.constructor.name
-        } -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`
-      )
-    } else {
-      null
-    }
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -280,9 +218,16 @@ class PageFundDetailsDragoManager extends Component {
       ['Total', 'N/A', '']
     ]
     let estimatedPrice = 'N/A'
+    if (typeof dragoDetails.dragoETHBalance !== 'undefined') {
+      tableLiquidity[0] = [
+        'Liquidity',
+        dragoDetails.dragoETHBalance,
+        <small key="dragoLiqEth">ETH</small>
+      ]
+    }
 
     // Waiting until getDragoDetails returns the drago details
-    if (loading || Object.keys(dragoDetails).length === 0) {
+    if (Object.keys(dragoDetails).length === 0) {
       return (
         <div style={{ paddingTop: '10px' }}>
           <Loading />
@@ -560,6 +505,10 @@ class PageFundDetailsDragoManager extends Component {
                       renderCopyButton={this.renderCopyButton}
                       renderEtherscanButton={this.renderEtherscanButton}
                       loading={loading}
+                      pagination={{
+                        display: 10,
+                        number: 1
+                      }}
                     >
                       <ElementListTransactions />
                     </ElementListWrapper>
@@ -737,7 +686,7 @@ class PageFundDetailsDragoManager extends Component {
             return y.timestamp - x.timestamp
           })
           this.props.dispatch(
-            Actions.drago.updateSelectedDragoAction({ transactions: results })
+            Actions.drago.updateSelectedDrago({ transactions: results })
           )
           console.log(`${this.constructor.name} -> Transactions list loaded`)
           this.setState({

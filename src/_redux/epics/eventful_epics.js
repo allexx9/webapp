@@ -160,7 +160,7 @@ export const getDragosListEpic = (action$, state$) =>
 // FETCH ACCOUNT TRANSACTIONS
 //
 
-const getAccountsTransactions$ = (api, dragoAddress, accounts, options) => {
+const getPoolTransactions$ = (api, dragoAddress, accounts, options) => {
   return options.drago
     ? from(
         utils.getTransactionsDragoOptV2(api, dragoAddress, accounts, options)
@@ -174,8 +174,7 @@ export const getAccountsTransactionsEpic = action$ =>
   action$.pipe(
     ofType(TYPE_.GET_ACCOUNTS_TRANSACTIONS),
     mergeMap(action => {
-      console.log(action.payload)
-      return getAccountsTransactions$(
+      return getPoolTransactions$(
         action.payload.api,
         action.payload.dragoAddress,
         action.payload.accounts,
@@ -188,19 +187,19 @@ export const getAccountsTransactionsEpic = action$ =>
         map(results => {
           if (action.payload.options.drago) {
             if (!action.payload.options.trader) {
-              return Actions.drago.updateTransactionsDragoManagerAction(
+              return Actions.drago.updateTransactionsDragoManager(
                 results.length === 0 ? [Array(0), Array(0), Array(0)] : results
               )
             }
-            return Actions.drago.updateTransactionsDragoHolderAction(results)
+            return Actions.drago.updateTransactionsDragoHolder(results)
             // return DEBUGGING.DUMB_ACTION
           } else {
             // if (!action.payload.options.trader) {
-            //   return Actions.drago.updateTransactionsVaultManagerAction(
+            //   return Actions.drago.updateTransactionsVaultManager(
             //     results.length === 0 ? [Array(0), Array(0), Array(0)] : results
             //   )
             // }
-            // return Actions.drago.updateTransactionsVaultHolderAction(results)
+            // return Actions.drago.updateTransactionsVaultHolder(results)
             return DEBUGGING.DUMB_ACTION
           }
         }),
@@ -249,7 +248,7 @@ export const getPoolTransactionsEpic = action$ =>
     ofType(TYPE_.GET_POOL_TRANSACTIONS),
     mergeMap(action => {
       console.log(action.payload)
-      return getAccountsTransactions$(
+      return getPoolTransactions$(
         action.payload.api,
         action.payload.dragoAddress,
         action.payload.accounts,
@@ -260,29 +259,16 @@ export const getPoolTransactionsEpic = action$ =>
           return results
         }),
         map(results => {
-          // if (action.payload.options.drago) {
-          //   if (!action.payload.options.trader) {
-          //     return Actions.drago.updateTransactionsDragoManagerAction(
-          //       results.length === 0 ? [Array(0), Array(0), Array(0)] : results
-          //     )
-          //   }
-          //   return Actions.drago.updateTransactionsDragoHolderAction(results)
-          // } else {
-          //   if (!action.payload.options.trader) {
-          //     return Actions.drago.updateTransactionsVaultManagerAction(
-          //       results.length === 0 ? [Array(0), Array(0), Array(0)] : results
-          //     )
-          //   }
-          //   return Actions.drago.updateTransactionsVaultHolderAction(results)
-          // }
-          return DEBUGGING.DUMB_ACTION
-          // return action.payload.options.drago
-          //   ? Actions.drago.updateSelectedDragoAction({
-          //       transactions: results[1]
-          //     })
-          //   : Actions.vault.updateSelectedVaultAction({
-          //       transactions: results[1]
-          //     })
+          if (action.payload.options.drago) {
+            return Actions.drago.updateSelectedDrago({
+              transactions: results
+            })
+          } else {
+            return Actions.drago.updateSelectedVault({
+              transactions: results
+            })
+          }
+          // return DEBUGGING.DUMB_ACTION
         }),
         catchError(error => {
           console.warn(error)

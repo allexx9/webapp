@@ -34,13 +34,13 @@ class actions {
         payload: results
       }
     },
-    updateTransactionsVaultHolderAction: results => {
+    updateTransactionsVaultHolder: results => {
       return {
         type: UPDATE_TRANSACTIONS_VAULT_HOLDER,
         payload: results
       }
     },
-    updateTransactionsVaultManagerAction: results => {
+    updateTransactionsVaultManager: results => {
       return {
         type: UPDATE_TRANSACTIONS_VAULT_MANAGER,
         payload: results

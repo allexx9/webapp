@@ -78,7 +78,6 @@ class DragoFactoryParity {
     if (!accountAddress) {
       throw new Error('accountAddress needs to be provided')
     }
-    console.log(accountAddress)
     const instance = this._instance
     return instance.getDragosByAddress.call({}, [accountAddress.toLowerCase()])
   }

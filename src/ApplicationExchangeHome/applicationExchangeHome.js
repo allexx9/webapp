@@ -138,7 +138,29 @@ class ApplicationExchangeHome extends Component {
     return stateUpdate || propsUpdate
   }
 
+  getConf = () => {
+    let request = new XMLHttpRequest()
+
+    request.open('GET', 'http://test.ethfinex.com/trustless/v2/r/get/conf')
+
+    request.setRequestHeader('Content-Type', 'application/json')
+
+    request.onreadystatechange = function() {
+      if (this.readyState === 4) {
+        console.log('Status:', this.status)
+        console.log('Headers:', this.getAllResponseHeaders())
+        console.log('Body:', this.responseText)
+      }
+    }
+
+    let body = {}
+
+    request.send(JSON.stringify(body))
+  }
+
   componentDidMount = async () => {
+    // console.log(this.getConf())
+
     const { api } = this.context
     const { selectedExchange } = this.props.exchange
     const { endpoint } = this.props
@@ -408,6 +430,8 @@ class ApplicationExchangeHome extends Component {
       this.props.dispatch(
         Actions.exchange.updateSelectedTradeTokensPair(payload)
       )
+
+      console.log(fund)
       // Getting fund orders
       // this.props.dispatch(this.getFundOrders(
       //   this.props.exchange.relay.networkId,
@@ -429,9 +453,36 @@ class ApplicationExchangeHome extends Component {
       selectedFund
     } = this.props.exchange
     const selectedTokens = pair.split('-')
+    const baseToken = ERC20_TOKENS[api._rb.network.name][selectedTokens[0]]
+    const quoteToken = ERC20_TOKENS[api._rb.network.name][selectedTokens[1]]
+
+    // Reset balances
+    this.props.dispatch(
+      Actions.exchange.updateLiquidityAndTokenBalances(
+        api,
+        'RESET',
+        selectedFund.details.address
+      )
+    )
+    // Updating selected tokens pair
+    this.props.dispatch(
+      Actions.exchange.updateSelectedTradeTokensPair({
+        baseToken: baseToken,
+        quoteToken: quoteToken,
+        baseTokenAllowance: false,
+        quoteTokenAllowance: false,
+        ticker: {
+          current: {
+            price: '0'
+          },
+          previous: {
+            price: '0'
+          },
+          variation: 0
+        }
+      })
+    )
     try {
-      const baseToken = ERC20_TOKENS[api._rb.network.name][selectedTokens[0]]
-      const quoteToken = ERC20_TOKENS[api._rb.network.name][selectedTokens[1]]
       const allowanceBaseToken = await getTokenAllowance(
         selectedTokensPair.baseToken,
         selectedFund.details.address,
@@ -612,7 +663,7 @@ class ApplicationExchangeHome extends Component {
                 <Row>
                   <Col xs={12} sm={4}>
                     <FundSelector
-                      funds={this.props.transactionsDrago.manager.list}
+                      funds={this.props.exchange.availableFunds}
                       onSelectFund={this.onSelectFund}
                     />
                   </Col>
@@ -757,50 +808,67 @@ class ApplicationExchangeHome extends Component {
   getSelectedFundDetails = async (dragoAddress, accounts) => {
     console.log(dragoAddress, accounts)
     const { api } = this.context
-    // const options = {balance: false, supply: true}
-    const options = { balance: false, supply: true, limit: 20, trader: false, drago: true }
     try {
-      const results = await utils.getTransactionsDragoOptV2(
-        api,
-        dragoAddress,
-        accounts,
-        options
-      )
-      const createdLogs = results[1].filter(event => {
-        return event.type !== 'BuyDrago' && event.type !== 'SellDrago'
-      })
-      // console.log(results)
-      results[1] = createdLogs
-      results[2].sort(function(a, b) {
-        let keyA = a.symbol,
-          keyB = b.symbol
-        // Compare the 2 dates
-        if (keyA < keyB) return -1
-        if (keyA > keyB) return 1
-        return 0
-      })
-      this.props.dispatch(
-        Actions.drago.updateTransactionsDragoManagerAction(results)
-      )
+      let poolApi = new PoolApi(api)
+      await poolApi.contract.dragofactory.init()
+      await poolApi.contract.dragoregistry.init()
 
-      if (results[2].length !== 0) {
-        // Getting fund orders
-        // this.props.dispatch(this.getFundOrders(
-        //   this.props.exchange.relay.networkId,
-        //   results[2][0].address.toLowerCase(),
-        //   this.props.exchange.selectedTokensPair.baseToken.address,
-        //   this.props.exchange.selectedTokensPair.quoteToken.address,
-        // )
-        // )
-        console.log(`Selecting fund ${results[2][0].address.toLowerCase()}`)
-        this.onSelectFund(results[2][0])
-      } else {
+      const getDragoList = async () => {
+        let arrayPromises = accounts.map(async account => {
+          return poolApi.contract.dragofactory
+            .getDragosByAddress(account.address)
+            .then(results => {
+              return results
+            })
+            .catch(error => {
+              console.warn(error)
+              return error
+            })
+        })
+        return Promise.all(arrayPromises)
+      }
+
+      const getDragoDetails = async dragoList => {
+        let arrayPromises = dragoList.map(drago => {
+          return poolApi.contract.dragoregistry
+            .fromAddress(drago.value)
+            .then(dragoDetails => {
+              const dragoData = {
+                symbol: dragoDetails[2].trim(),
+                dragoId: dragoDetails[3].toFixed(),
+                name: dragoDetails[1].trim(),
+                address: drago.value
+              }
+              return dragoData
+            })
+            .catch(error => {
+              console.warn(error)
+              return error
+            })
+        })
+        return Promise.all(arrayPromises)
+      }
+
+      let dragoList = await getDragoDetails(...(await getDragoList()))
+      console.log(dragoList)
+      if (dragoList.lenght) {
         this.setState({
           managerHasNoFunds: true
         })
+      } else {
+        dragoList.sort(function(a, b) {
+          let keyA = a.symbol,
+            keyB = b.symbol
+          if (keyA < keyB) return -1
+          if (keyA > keyB) return 1
+          return 0
+        })
+
+        this.props.dispatch(Actions.exchange.updateAvailableFunds(dragoList))
+        this.onSelectFund(dragoList[1])
       }
     } catch (error) {
-      console.log(error)
+      console.warn(error)
     }
   }
 }

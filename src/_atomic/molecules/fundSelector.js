@@ -14,7 +14,7 @@ export default class FundSelector extends PureComponent {
   }
 
   state = {
-    value: 0
+    value: 1
   }
 
   onSelectFund = (event, key) => {
@@ -39,6 +39,7 @@ export default class FundSelector extends PureComponent {
   }
 
   render() {
+    console.log(this.props)
     return (
       <Row>
         <Col xs={12}>

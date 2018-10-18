@@ -371,7 +371,7 @@ class PageDashboardVaultManager extends Component {
         console.log(results)
         results[1] = createdLogs
         this.props.dispatch(
-          Actions.vault.updateTransactionsVaultManagerAction(results)
+          Actions.vault.updateTransactionsVaultManager(results)
         )
       })
       .catch(error => {

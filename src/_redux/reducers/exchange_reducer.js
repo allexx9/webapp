@@ -6,6 +6,12 @@ import initialState from './initialState'
 
 function exchangeReducer(state = initialState.exchange, action) {
   switch (action.type) {
+    case TYPE_.UPDATE_AVAILABLE_FUNDS:
+      return {
+        ...state,
+        availableFunds: [...action.payload]
+      }
+
     case TYPE_.UPDATE_FUND_ORDERS:
       return {
         ...state,

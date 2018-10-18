@@ -1,11 +1,11 @@
 import { Actions } from '../../_redux/actions'
 import { Col, Grid, Row } from 'react-flexbox-grid'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
-import { ENDPOINTS, Ethfinex, PROD } from '../../_utils/const'
+// import { ENDPOINTS, Ethfinex, PROD } from '../../_utils/const'
 import { Link, withRouter } from 'react-router-dom'
 import { Tab, Tabs } from 'material-ui/Tabs'
 import { connect } from 'react-redux'
-import { formatCoins, formatEth } from '../../_utils/format'
+// import { formatCoins, formatEth } from '../../_utils/format'
 import ActionAssessment from 'material-ui/svg-icons/action/assessment'
 import ActionList from 'material-ui/svg-icons/action/list'
 import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
@@ -22,7 +22,6 @@ import FundHeader from '../../_atomic/molecules/fundHeader'
 import InfoTable from '../../Elements/elementInfoTable'
 import Loading from '../../_atomic/atoms/loading'
 import Paper from 'material-ui/Paper'
-import PoolApi from '../../PoolsApi/src'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import Search from 'material-ui/svg-icons/action/search'
@@ -30,7 +29,7 @@ import SectionHeader from '../../_atomic/atoms/sectionHeader'
 import SectionTitle from '../../_atomic/atoms/sectionTitle'
 import Snackbar from 'material-ui/Snackbar'
 import Sticky from 'react-stickynode'
-import Web3 from 'web3'
+// import Web3 from 'web3'
 import scrollToElement from 'scroll-to-element'
 import styles from './pageFundDetailsDragoTrader.module.css'
 import utils from '../../_utils/utils'
@@ -68,100 +67,22 @@ class PageFundDetailsDragoTrader extends Component {
 
   componentDidMount = async () => {
     const { api } = this.context
-    const relay = {
-      name: Ethfinex
-    }
-    // Getting Drago details
-    let dragoDetails = await this.getDragoDetails()
+    const dragoId = this.props.match.params.dragoid
+
+    // Getting Drago details and transactions
+    this.props.dispatch(
+      Actions.drago.getPoolDetails(dragoId, api, { poolType: 'drago' })
+    )
 
     // Getting Drago assets
-    this.props.dispatch(
-      Actions.drago.getTokenBalancesDrago(dragoDetails, api, relay)
-    )
-    const poolApi = new PoolApi(api)
-    await poolApi.contract.dragoeventful.init()
-    this.subscribeToEvents(poolApi.contract.dragoeventful)
-  }
-
-  getDragoDetails = async () => {
-    const { api } = this.context
-    const relay = {
-      name: Ethfinex
-    }
-    const dragoId = this.props.match.params.dragoid
-    const dragoDetails = await utils.getDragoDetailsFromId(dragoId, api)
-    await utils.getDragoDetails(dragoDetails, this.props, api, relay)
-    this.setState({
-      loading: false
-    })
-    await this.getTransactions(dragoDetails, api, this.props.endpoint.accounts)
-    console.log(this.props)
-    return dragoDetails
-  }
-
-  subscribeToEvents = contract => {
-    const networkName = this.props.endpoint.networkInfo.name
-    let WsSecureUrl = ''
-    const eventfullContracAddress = contract.contract.address[0]
-    if (PROD) {
-      WsSecureUrl = ENDPOINTS.rigoblock.wss[networkName].prod
-    } else {
-      WsSecureUrl = ENDPOINTS.rigoblock.wss[networkName].dev
-    }
-    const web3 = new Web3(WsSecureUrl)
-    const eventfullContract = new web3.eth.Contract(
-      contract.abi,
-      eventfullContracAddress
-    )
-    const subscription = eventfullContract.events.allEvents(
-      {
-        fromBlock: 'latest',
-        topics: [null, null, null, null]
-      },
-      (error, events) => {
-        if (!error) {
-          console.log(`${this.constructor.name} -> New contract event.`)
-          console.log(events)
-          this.getDragoDetails()
-        }
-      }
-    )
-    this.setState({
-      contractSubscription: subscription
-    })
+    // this.props.dispatch(
+    //   Actions.drago.getTokenBalancesDrago(dragoDetails, api, relay)
+    // )
   }
 
   componentWillUnmount() {
-    const { contractSubscription } = this.state
-
     this.props.dispatch(Actions.tokens.priceTickersStop())
     this.props.dispatch(Actions.exchange.getPortfolioChartDataStop())
-    try {
-      contractSubscription.unsubscribe(function(error, success) {
-        if (success) {
-          console.log(`Successfully unsubscribed from contract.`)
-        }
-        if (error) {
-          console.log(`Unsubscribe error ${error}.`)
-        }
-      })
-    } catch (error) {
-      console.log(`Unsubscribe error ${error}.`)
-    }
-  }
-
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    // Updating the lists on each new block if the accounts balances have changed
-    // Doing this this to improve performances by avoiding useless re-rendering
-    //
-    const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
-    const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
-    if (!currentBalance.eq(nextBalance)) {
-      this.getDragoDetails()
-      // console.log(`${this.constructor.name} -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`);
-    } else {
-      null
-    }
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -300,9 +221,16 @@ class PageFundDetailsDragoTrader extends Component {
       ['Total', 'N/A', '']
     ]
     let estimatedPrice = 'N/A'
+    if (typeof dragoDetails.dragoETHBalance !== 'undefined') {
+      tableLiquidity[0] = [
+        'Liquidity',
+        dragoDetails.dragoETHBalance,
+        <small key="dragoLiqEth">ETH</small>
+      ]
+    }
 
     // Waiting until getDragoDetails returns the drago details
-    if (loading || Object.keys(dragoDetails).length === 0) {
+    if (Object.keys(dragoDetails).length === 0) {
       return (
         <div style={{ paddingTop: '10px' }}>
           <Loading />
@@ -352,7 +280,7 @@ class PageFundDetailsDragoTrader extends Component {
     return (
       <Row>
         <Col xs={12}>
-          <div className={styles.pageContainer}>
+          <div className={styles.pageContainer} key={dragoDetails.dragoId}>
             <Paper zDepth={1}>
               <Sticky enabled={true} innerZ={1}>
                 <FundHeader fundType="drago" fundDetails={dragoDetails} />
@@ -532,7 +460,7 @@ class PageFundDetailsDragoTrader extends Component {
                         renderCopyButton={this.renderCopyButton}
                         renderEtherscanButton={this.renderEtherscanButton}
                         dragoDetails={dragoDetails}
-                        loading={loading}
+                        autoLoading={false}
                         assetsPrices={this.props.exchange.prices}
                         assetsChart={assetsCharts}
                       >
@@ -602,134 +530,6 @@ class PageFundDetailsDragoTrader extends Component {
         />
       </Row>
     )
-  }
-
-  // Getting last transactions
-  getTransactions = async (dragoDetails, api, accounts) => {
-    const dragoAddress = dragoDetails[0][0]
-
-    const poolApi = new PoolApi(this.context.api)
-    await poolApi.contract.dragoeventful.init()
-    const contract = poolApi.contract.dragoeventful
-    const logToEvent = log => {
-      const key = api.util.sha3(JSON.stringify(log))
-      const {
-        blockNumber,
-        logIndex,
-        transactionHash,
-        transactionIndex,
-        params,
-        type
-      } = log
-      const ethvalue =
-        log.event === 'BuyDrago'
-          ? formatEth(params.amount.value, null, api)
-          : formatEth(params.revenue.value, null, api)
-      const drgvalue =
-        log.event === 'SellDrago'
-          ? formatCoins(params.amount.value, null, api)
-          : formatCoins(params.revenue.value, null, api)
-      return {
-        type: log.event,
-        state: type,
-        blockNumber,
-        logIndex,
-        transactionHash,
-        transactionIndex,
-        params,
-        key,
-        ethvalue,
-        drgvalue
-      }
-    }
-
-    // Getting all buyDrago and selDrago events since block 0.
-    // dragoFactoryEventsSignatures accesses the contract ABI, gets all the events and for each creates a hex signature
-    // to be passed to getAllLogs. Events are indexed and filtered by topics
-    // more at: http://solidity.readthedocs.io/en/develop/contracts.html?highlight=event#events
-
-    // The second param of the topics array is the drago address
-    // The third param of the topics array is the from address
-    // The third param of the topics array is the to address
-    //
-    //  https://github.com/RigoBlock/Books/blob/master/Solidity_01_Events.MD
-
-    const hexDragoAddress = '0x' + dragoAddress.substr(2).padStart(64, '0')
-    const hexAccounts = accounts.map(account => {
-      const hexAccount = '0x' + account.address.substr(2).padStart(64, '0')
-      return hexAccount
-    })
-    // const options = {
-    //   fromBlock: 0,
-    //   toBlock: 'pending',
-    // }
-    const eventsFilterBuy = {
-      topics: [
-        [contract.hexSignature.BuyDrago],
-        [hexDragoAddress],
-        hexAccounts,
-        null
-      ]
-    }
-    const eventsFilterSell = {
-      topics: [
-        [contract.hexSignature.SellDrago],
-        [hexDragoAddress],
-        hexAccounts,
-        null
-      ]
-    }
-    const buyDragoEvents = contract
-      .getAllLogs(eventsFilterBuy)
-      .then(dragoTransactionsLog => {
-        const buyLogs = dragoTransactionsLog.map(logToEvent)
-        return buyLogs
-      })
-    const sellDragoEvents = contract
-      .getAllLogs(eventsFilterSell)
-      .then(dragoTransactionsLog => {
-        const sellLogs = dragoTransactionsLog.map(logToEvent)
-        return sellLogs
-      })
-    Promise.all([buyDragoEvents, sellDragoEvents])
-      .then(logs => {
-        const allLogs = [...logs[0], ...logs[1]]
-        return allLogs
-      })
-      .then(dragoTransactionsLog => {
-        // Creating an array of promises that will be executed to add timestamp to each entry
-        // Doing so because for each entry we need to make an async call to the client
-        // For additional refernce: https://stackoverflow.com/questions/39452083/using-promise-function-inside-javascript-array-map
-        let promises = dragoTransactionsLog.map(log => {
-          return api.eth
-            .getBlockByNumber(new BigNumber(log.blockNumber).toFixed(0))
-            .then(block => {
-              log.timestamp = block.timestamp
-              return log
-            })
-            .catch(error => {
-              // Sometimes Infura returns null for api.eth.getBlockByNumber, therefore we are assigning a fake timestamp to avoid
-              // other issues in the app.
-              console.log(error)
-              log.timestamp = new Date()
-              return log
-            })
-        })
-        Promise.all(promises).then(results => {
-          results.sort(function(x, y) {
-            return y.timestamp - x.timestamp
-          })
-          this.props.dispatch(
-            Actions.drago.updateSelectedDragoAction({
-              transactions: results
-            })
-          )
-          console.log(`${this.constructor.name} -> Transactions list loaded`)
-          this.setState({
-            loading: false
-          })
-        })
-      })
   }
 }
 export default withRouter(connect(mapStateToProps)(PageFundDetailsDragoTrader))

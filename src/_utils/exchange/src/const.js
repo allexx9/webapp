@@ -20,7 +20,7 @@ export const SupportedExchanges = {
     http: {
       mainnet: 'https://api.ercdex.com/api',
       ropsten: 'https://api.ercdex.com/api',
-      kovan: 'https://api.ercdex.com/api'
+      kovan: 'https://kovan-staging.ercdex.com/api/v2'
     },
     ws: {
       mainnet: 'wss://api.ercdex.com',

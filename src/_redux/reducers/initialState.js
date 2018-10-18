@@ -89,6 +89,7 @@ const initialState = {
     //     epoch: 0
     //   }
     // ],
+    availableFunds: [],
     chartData: [],
     selectedFund: {
       details: {},

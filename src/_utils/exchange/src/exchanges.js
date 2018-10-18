@@ -116,7 +116,7 @@ export const getTickers = {
       method: 'GET',
       url: `${
         SupportedExchanges.ERCdEX.http[NETWORKS_ID[networkId]]
-      }/reports/ticker?networkId=${networkId}`,
+      }/ticker?networkId=${networkId}`,
       qs: {},
       json: true
     }

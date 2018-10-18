@@ -17,6 +17,7 @@ import {
 } from 'rxjs/operators'
 import { getTradeHistoryLogsFromRelayERCdEX } from '../../_utils/exchange'
 import { ofType } from 'redux-observable'
+import BigNumber from 'bignumber.js'
 import Exchange from '../../_utils/exchange/src/index'
 import exchangeConnector, { exchanges } from '@rigoblock/exchange-connector'
 import utils from '../../_utils/utils'
@@ -191,7 +192,7 @@ const updateLiquidityAndTokenBalances$ = (api, fundAddress, currentState) => {
   //   baseToken: currentState.exchange.selectedTokensPair.baseToken,
   //   quoteToken: currentState.exchange.selectedTokensPair.quoteToken
   // }
-  const exchange = Object.assign(currentState.exchange.selectedRelay.name)
+  const exchange = Object.assign(currentState.exchange.selectedRelay)
   const selectedTokensPair = Object.assign(
     currentState.exchange.selectedTokensPair
   )
@@ -244,6 +245,35 @@ export const getLiquidityAndTokenBalancesEpic = (action$, state$) => {
         action.payload.api,
         action.payload.dragoAddress,
         currentState
+      )
+    })
+  )
+}
+
+export const resetLiquidityAndTokenBalancesEpic = (action$, state$) => {
+  return action$.pipe(
+    ofType(TYPE_.UPDATE_LIQUIDITY_AND_TOKENS_BALANCE_RESET),
+    exhaustMap(action => {
+      const payload = {
+        loading: false,
+        liquidity: {
+          ETH: new BigNumber(0),
+          // ZRX: lnew BigNumber(0),
+          baseToken: {
+            balance: new BigNumber(0),
+            balanceWrapper: new BigNumber(0)
+          },
+          quoteToken: {
+            balance: new BigNumber(0),
+            balanceWrapper: new BigNumber(0)
+          }
+        }
+      }
+      return Observable.concat(
+        Observable.of({
+          type: TYPE_.UPDATE_SELECTED_FUND,
+          payload
+        })
       )
     })
   )

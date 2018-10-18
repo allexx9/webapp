@@ -273,5 +273,11 @@ export const TRADE_TOKENS_PAIRS = {
       symbol: 'ETH',
       exchanges: [Ethfinex]
     }
+  },
+  ETH: {
+    GRG: {
+      symbol: 'GRG',
+      exchanges: [Ethfinex]
+    }
   }
 }

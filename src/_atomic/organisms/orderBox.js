@@ -165,13 +165,13 @@ class OrderBox extends Component {
     } = this.props.exchange
     if (!selectedOrder.takerOrder) {
     }
-    console.log(`Selected order: ${selectedOrder}`)
     let signedOrder = await signOrder(
       selectedOrder,
       selectedExchange,
       walletAddress
     )
-    console.log(`Signed order: ${signedOrder}`)
+    console.log('Selected order', selectedOrder)
+    console.log('Signed order', signedOrder)
     const payload = {
       details: { order: signedOrder }
     }
@@ -278,6 +278,7 @@ class OrderBox extends Component {
             meta: signedOrder,
             protocol: '0x'
           }
+          efxOrder.meta.sigType = 'contract'
           console.log(efxSymbol, efxAmount, selectedOrder.orderPrice)
           console.log(efxOrder)
           let parsedBody = await submitOrderToRelayEFX(

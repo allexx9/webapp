@@ -169,6 +169,8 @@ class Exchange {
     if (!startDate) {
       throw new Error('startDate needs to be set')
     }
+    console.log(this._call[this._transport].getHistoricalPricesData)
+    console.log(this._exchange)
     return this.returnResults(() => {
       switch (this._exchange) {
         case ERCdEX:

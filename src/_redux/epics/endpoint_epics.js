@@ -79,7 +79,7 @@ export const isConnectedToNodeEpic = (action$, $state) =>
       exhaustMap(() => {
         return isConnectedToNode$(action.payload.api, $state).pipe(
           tap(result => {
-            console.log(result)
+            // console.log(result)
             return result
           }),
           flatMap(result => {
@@ -501,8 +501,6 @@ const monitorAccounts$ = (web3, api, state$) => {
             return observer.next(result)
           })
         } else {
-          // web3.setProvider(window.web3.currentProvider)
-          // window.web3 = new Web3(window.web3.currentProvider)
           return observer.error(_error)
         }
       }
@@ -594,17 +592,6 @@ export const monitorAccountsEpic = (action$, state$) => {
           return error.pipe(
             mergeMap((error, i) => {
               const retryAttempt = i + 1
-              // if maximum number of retries have been met
-              // or response is a status code we don't wish to retry, throw error
-              // if (
-              //   retryAttempt > maxRetryAttempts ||
-              //   excludedStatusCodes.find(e => e === error.status)
-              // ) {
-              //   throw(error);
-              // }
-              // const _rb = window.web3._rb
-              // window.web3 = new Web3(window.web3.currentProvider)
-              // window.web3._rb = _rb
               console.log(` monitorAccountsEpic Attempt ${retryAttempt}`)
               // retry after 1s, 2s, etc...
               return timer(scalingDuration)
