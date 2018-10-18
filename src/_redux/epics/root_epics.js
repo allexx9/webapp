@@ -48,7 +48,7 @@ const Endpoint_Epics = [
 ]
 
 const Eventful_Epics = [
-  Eventful.getDragosListEpic,
+  Eventful.getPoolsListEpic,
   Eventful.getAccountsTransactionsEpic,
   Eventful.getPoolTransactionsEpic
 ]

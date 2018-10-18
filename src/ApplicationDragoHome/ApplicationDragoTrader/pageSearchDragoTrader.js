@@ -10,14 +10,16 @@ import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import UserDashboardHeader from '../../_atomic/atoms/userDashboardHeader'
+import _ from 'lodash'
 
+import LinearProgress from 'material-ui/LinearProgress'
 import styles from './pageSearchDragoTrader.module.css'
 
 function mapStateToProps(state) {
   return state
 }
 
-class PageFundsDragoTrader extends Component {
+class PageSearchDragoTrader extends Component {
   static contextTypes = {
     api: PropTypes.object.isRequired
   }
@@ -30,19 +32,63 @@ class PageFundsDragoTrader extends Component {
   }
 
   state = {
-    filter: ''
+    filter: '',
+    prevLastFetchRange: {
+      chunk: {
+        key: 0,
+        range: 0
+      },
+      startBlock: 0,
+      lastBlock: 0
+    },
+    lastFetchRange: {
+      chunk: {
+        key: 0,
+        range: 0
+      },
+      startBlock: 0,
+      lastBlock: 0
+    },
+    listLoadingProgress: 0
   }
 
   scrollPosition = 0
+
+  static getDerivedStateFromProps(props, state) {
+    // Any time the current user changes,
+    // Reset any parts of state that are tied to that user.
+    // In this simple example, that's just the email.
+    const { lastFetchRange } = props.transactionsDrago.dragosList
+    if (!_.isEqual(lastFetchRange, state.prevLastFetchRange)) {
+      const { chunk, lastBlock, startBlock } = lastFetchRange
+      if (lastBlock === 0) return null
+      if (lastBlock === startBlock)
+        return {
+          prevLastFetchRange: lastFetchRange,
+          listLoadingProgress: 100
+        }
+      let newProgress =
+        lastBlock !== state.prevLastFetchRange.lastBlock
+          ? ((chunk.toBlock - chunk.fromBlock) / (lastBlock - startBlock)) * 100
+          : state.listLoadingProgress +
+            ((chunk.toBlock - chunk.fromBlock) / (lastBlock - startBlock)) * 100
+      return {
+        prevLastFetchRange: lastFetchRange,
+        listLoadingProgress: newProgress
+      }
+    }
+    return null
+  }
 
   componentDidMount() {
     let options = {
       topics: [null, null, null, null],
       fromBlock: 0,
-      toBlock: 'latest'
+      toBlock: 'latest',
+      poolType: 'drago'
     }
     this.props.dispatch(
-      Actions.drago.getDragosSearchList(this.context.api, options)
+      Actions.drago.getPoolsSearchList(this.context.api, options)
     )
   }
 
@@ -110,8 +156,6 @@ class PageFundsDragoTrader extends Component {
     const detailsBox = {
       padding: 20
     }
-    // let dragoList = transactionsDrago.dragoList.list.values()
-    // console.log(dragoList)
     return (
       <Row>
         <Col xs={12}>
@@ -131,6 +175,14 @@ class PageFundsDragoTrader extends Component {
                       <Paper style={detailsBox} zDepth={1}>
                         <FilterFunds filter={this.filter} />
                       </Paper>
+                    </Col>
+                    <Col xs={12}>
+                      <div className={styles.progressBarContainer}>
+                        <LinearProgress
+                          mode="determinate"
+                          value={this.state.listLoadingProgress}
+                        />
+                      </div>
                     </Col>
                   </Row>
                   <Row className={styles.transactionsStyle}>
@@ -158,4 +210,4 @@ class PageFundsDragoTrader extends Component {
   }
 }
 
-export default withRouter(connect(mapStateToProps)(PageFundsDragoTrader))
+export default withRouter(connect(mapStateToProps)(PageSearchDragoTrader))

@@ -40,16 +40,17 @@ const drago = {
       }
     }
   },
-  getDragosSearchList: (
+  getPoolsSearchList: (
     api,
     options = {
       topics: [null, null, null, null],
       fromBlock: 0,
-      toBlock: 'latest'
+      toBlock: 'latest',
+      poolType: 'drago'
     }
   ) => {
     return {
-      type: TYPE_.GET_DRAGOS_SEARCH_LIST,
+      type: TYPE_.GET_POOLS_SEARCH_LIST,
       payload: {
         api,
         options
@@ -65,6 +66,12 @@ const drago = {
   updateDragosSearchList: results => {
     return {
       type: TYPE_.UPDATE_DRAGOS_LIST,
+      payload: results
+    }
+  },
+  updateVaultsSearchList: results => {
+    return {
+      type: TYPE_.UPDATE_VAULTS_LIST,
       payload: results
     }
   },

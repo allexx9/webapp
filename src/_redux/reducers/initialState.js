@@ -209,7 +209,11 @@ const initialState = {
     vaultsList: {
       list: [],
       lastFetchRange: {
-        chunk: 0,
+        chunk: {
+          key: 0,
+          toBlock: 0,
+          fromBlock: 0
+        },
         startBlock: 0,
         lastBlock: 0
       }

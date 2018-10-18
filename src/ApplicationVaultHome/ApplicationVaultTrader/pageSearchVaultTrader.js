@@ -1,17 +1,17 @@
+import { Actions } from '../../_redux/actions'
 import { Col, Grid, Row } from 'react-flexbox-grid'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
-import BigNumber from 'bignumber.js'
 import ElementListFunds from '../Elements/elementListVaults'
 import ElementListWrapper from '../../Elements/elementListWrapper'
-import FilterFunds from '../Elements/elementFilterFunds'
+import FilterFunds from '../../Elements/elementFilterFunds'
+import LinearProgress from 'material-ui/LinearProgress'
 import Paper from 'material-ui/Paper'
-import PoolApi from '../../PoolsApi/src'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import UserDashboardHeader from '../../_atomic/atoms/userDashboardHeader'
-import utils from '../../_utils/utils'
+import _ from 'lodash'
 
 import styles from './pageSearchVaultTrader.module.css'
 
@@ -26,66 +26,98 @@ class PageSearchVaultTrader extends Component {
 
   static propTypes = {
     location: PropTypes.object.isRequired,
-    endpoint: PropTypes.object.isRequired
+    endpoint: PropTypes.object.isRequired,
+    transactionsVault: PropTypes.object.isRequired,
+    dispatch: PropTypes.func.isRequired
   }
 
   state = {
-    vaultCreatedLogs: [],
-    dragoFilteredList: []
+    filter: '',
+    prevLastFetchRange: {
+      chunk: {
+        key: 0,
+        range: 0
+      },
+      startBlock: 0,
+      lastBlock: 0
+    },
+    lastFetchRange: {
+      chunk: {
+        key: 0,
+        range: 0
+      },
+      startBlock: 0,
+      lastBlock: 0
+    },
+    listLoadingProgress: 0
   }
 
   scrollPosition = 0
 
+  static getDerivedStateFromProps(props, state) {
+    // Any time the current user changes,
+    // Reset any parts of state that are tied to that user.
+    // In this simple example, that's just the email.
+    const { lastFetchRange } = props.transactionsVault.vaultsList
+    if (!_.isEqual(lastFetchRange, state.prevLastFetchRange)) {
+      const { chunk, lastBlock, startBlock } = lastFetchRange
+      if (lastBlock === 0) return null
+      if (lastBlock === startBlock)
+        return {
+          prevLastFetchRange: lastFetchRange,
+          listLoadingProgress: 100
+        }
+      let newProgress =
+        lastBlock !== state.prevLastFetchRange.lastBlock
+          ? ((chunk.toBlock - chunk.fromBlock) / (lastBlock - startBlock)) * 100
+          : state.listLoadingProgress +
+            ((chunk.toBlock - chunk.fromBlock) / (lastBlock - startBlock)) * 100
+      return {
+        prevLastFetchRange: lastFetchRange,
+        listLoadingProgress: newProgress
+      }
+    }
+    return null
+  }
+
   componentDidMount() {
-    this.getDragos()
-  }
-
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    // Updating the lists on each new block if the accounts balances have changed
-    // Doing this this to improve performances by avoiding useless re-rendering
-
-    const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
-    const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
-    if (!currentBalance.eq(nextBalance)) {
-      this.getDragos()
-      console.log(
-        `${
-          this.constructor.name
-        } -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`
-      )
-    } else {
-      null
+    let options = {
+      topics: [null, null, null, null],
+      fromBlock: 0,
+      toBlock: 'latest',
+      poolType: 'vault'
     }
+    this.props.dispatch(
+      Actions.drago.getPoolsSearchList(this.context.api, options)
+    )
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    let stateUpdate = true
-    let propsUpdate = true
-    const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
-    const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
-    stateUpdate = !utils.shallowEqual(this.state, nextState)
-    propsUpdate = !currentBalance.eq(nextBalance)
-    if (stateUpdate || propsUpdate) {
-      console.log(
-        `${
-          this.constructor.name
-        } -> shouldComponentUpdate -> Proceedding with rendering.`
-      )
-    }
-    return stateUpdate || propsUpdate
+  filter = filter => {
+    this.setState(
+      {
+        filter
+      },
+      this.filterFunds
+    )
   }
 
-  componentDidUpdate() {}
-
-  filterList = filteredList => {
-    this.setState({
-      dragoFilteredList: filteredList
-    })
+  filterFunds = () => {
+    const { transactionsVault } = this.props
+    const { filter } = this.state
+    const list = transactionsVault.vaultsList.list
+    const filterValue = filter.trim().toLowerCase()
+    const filterLength = filterValue.length
+    return filterLength === 0
+      ? list
+      : list.filter(
+          item =>
+            item.name.toLowerCase().slice(0, filterLength) === filterValue ||
+            item.symbol.toLowerCase().slice(0, filterLength) === filterValue
+        )
   }
 
   render() {
     let { location } = this.props
-    const { vaultCreatedLogs, dragoFilteredList } = this.state
     const detailsBox = {
       padding: 20
     }
@@ -106,17 +138,23 @@ class PageSearchVaultTrader extends Component {
                   <Row className={styles.filterBox}>
                     <Col xs={12}>
                       <Paper style={detailsBox} zDepth={1}>
-                        <FilterFunds
-                          list={vaultCreatedLogs}
-                          filterList={this.filterList}
-                        />
+                        <FilterFunds filter={this.filter} />
                       </Paper>
+                    </Col>
+                    <Col xs={12}>
+                      <div className={styles.progressBarContainer}>
+                        <LinearProgress
+                          mode="determinate"
+                          value={this.state.listLoadingProgress}
+                        />
+                      </div>
                     </Col>
                   </Row>
                   <Row className={styles.transactionsStyle}>
                     <Col xs={12}>
                       <ElementListWrapper
-                        list={dragoFilteredList}
+                        list={this.filterFunds()}
+                        autoLoading={false}
                         location={location}
                         pagination={{
                           display: 10,
@@ -134,43 +172,6 @@ class PageSearchVaultTrader extends Component {
         </Col>
       </Row>
     )
-  }
-
-  getDragos() {
-    const { api } = this.context
-    const poolApi = new PoolApi(api)
-    const logToEvent = log => {
-      // const key = api.util.sha3(JSON.stringify(log))
-      const { params } = log
-      return {
-        symbol: params.symbol.value,
-        vaultId: params.vaultId.value.toFixed(),
-        name: params.name.value
-      }
-    }
-
-    // Getting all DragoCreated events since block 0.
-    // dragoFactoryEventsSignatures accesses the contract ABI, gets all the events and for each creates a hex signature
-    // to be passed to getAllLogs. Events are indexed and filtered by topics
-    // more at: http://solidity.readthedocs.io/en/develop/contracts.html?highlight=event#events
-    poolApi.contract.vaulteventful.init().then(() => {
-      poolApi.contract.vaulteventful
-        .getAllLogs({
-          topics: [poolApi.contract.vaulteventful.hexSignature.VaultCreated]
-        })
-        .then(vaultCreatedLogs => {
-          const logs = vaultCreatedLogs.map(logToEvent)
-          logs.sort(function(a, b) {
-            if (a.symbol < b.symbol) return -1
-            if (a.symbol > b.symbol) return 1
-            return 0
-          })
-          this.setState({
-            vaultCreatedLogs: logs,
-            dragoFilteredList: logs
-          })
-        })
-    })
   }
 }
 

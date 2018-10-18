@@ -2,7 +2,7 @@ import { Route, withRouter } from 'react-router-dom'
 import PageDashboardVaultManager from './pageDashboardVaultManager'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
-// import PageFundsDragoTrader from './pageFundsDragoTrader'
+// import PageSearchDragoTrader from './PageSearchDragoTrader'
 import PageVaultDetailsVaultManager from './pageVaultDetailsVaultManager'
 
 import { Redirect, Switch } from 'react-router-dom'

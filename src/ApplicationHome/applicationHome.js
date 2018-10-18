@@ -62,21 +62,13 @@ class ApplicationHome extends PureComponent {
     // Any time the current user changes,
     // Reset any parts of state that are tied to that user.
     // In this simple example, that's just the email.
-    if (
-      !_.isEqual(
-        props.transactionsDrago.dragosList.lastFetchRange,
-        state.prevLastFetchRange
-      )
-    ) {
-      const {
-        chunk,
-        lastBlock,
-        startBlock
-      } = props.transactionsDrago.dragosList.lastFetchRange
+    const { lastFetchRange } = props.transactionsDrago.dragosList
+    if (!_.isEqual(lastFetchRange, state.prevLastFetchRange)) {
+      const { chunk, lastBlock, startBlock } = lastFetchRange
       if (lastBlock === 0) return null
       if (lastBlock === startBlock)
         return {
-          prevLastFetchRange: props.transactionsDrago.dragosList.lastFetchRange,
+          prevLastFetchRange: lastFetchRange,
           listLoadingProgress: 100
         }
       let newProgress =
@@ -85,7 +77,7 @@ class ApplicationHome extends PureComponent {
           : state.listLoadingProgress +
             ((chunk.toBlock - chunk.fromBlock) / (lastBlock - startBlock)) * 100
       return {
-        prevLastFetchRange: props.transactionsDrago.dragosList.lastFetchRange,
+        prevLastFetchRange: lastFetchRange,
         listLoadingProgress: newProgress
       }
     }
@@ -99,7 +91,7 @@ class ApplicationHome extends PureComponent {
       toBlock: 'latest'
     }
     this.props.dispatch(
-      Actions.drago.getDragosSearchList(this.context.api, options)
+      Actions.drago.getPoolsSearchList(this.context.api, options)
     )
   }
 
@@ -240,7 +232,7 @@ class ApplicationHome extends PureComponent {
                     </a>
                   </div> */}
                   <h2 style={{ color: '#054186' }}>
-                    The leader crypto platfrom for asset management.
+                    The leader crypto platform for asset management.
                   </h2>
                   <p className={styles.subHeadline}>
                     <b className={styles.txtDotted}>Simple</b>,{' '}

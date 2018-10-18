@@ -3,37 +3,17 @@
 // import { Observable } from 'rxjs';
 import * as TYPE_ from '../actions/const'
 import { Actions } from '../actions'
-import {
-  DEBUGGING,
-  INFURA,
-  LOCAL,
-  MSG_NETWORK_STATUS_ERROR,
-  MSG_NETWORK_STATUS_OK,
-  NETWORK_OK,
-  NETWORK_WARNING,
-  RIGOBLOCK
-} from '../../_utils/const'
-import { Interfaces } from '../../_utils/interfaces'
-import { Observable, defer, from, merge, timer } from 'rxjs'
+import { DEBUGGING } from '../../_utils/const'
+import { Observable, from, timer } from 'rxjs'
 import {
   catchError,
-  concat,
-  delay,
-  exhaustMap,
-  filter,
   finalize,
-  flatMap,
   map,
   mergeMap,
   retryWhen,
-  switchMap,
-  takeUntil,
-  tap,
-  timeout
+  tap
 } from 'rxjs/operators'
 import { ofType } from 'redux-observable'
-import { sha3_512 } from 'js-sha3'
-import BigNumber from 'bignumber.js'
 import PoolsApi from '../../PoolsApi/src'
 import utils from '../../_utils/utils'
 // import { race } from 'rxjs/observable/race';
@@ -42,7 +22,89 @@ import utils from '../../_utils/utils'
 // FETCH LIST OF DRAGOS
 //
 
-const getChunkedEvents$ = (api, options, state$) => {
+const getVaultsChunkedEvents$ = (api, options, state$) => {
+  return Observable.create(observer => {
+    let startBlock =
+      state$.value.transactionsVault.vaultsList.lastFetchRange.lastBlock
+    // console.log(fromBlock)
+    const poolApi = new PoolsApi(api)
+    if (startBlock === 0) {
+      switch (api._rb.network.id) {
+        case 1:
+          startBlock = '6000000'
+          break
+        case 42:
+          startBlock = '7000000'
+          break
+        case 3:
+          startBlock = '3000000'
+          break
+        default:
+          '3000000'
+      }
+    }
+
+    const logToEvent = log => {
+      // const key = api.util.sha3(JSON.stringify(log))
+      const { params } = log
+      return {
+        symbol: params.symbol.value,
+        vaultId: params.vaultId.value.toFixed(),
+        name: params.name.value,
+        address: params.vault.value
+      }
+    }
+
+    poolApi.contract.vaulteventful.init().then(() => {
+      api.eth.blockNumber().then(lastBlock => {
+        lastBlock = lastBlock.toFixed()
+        let chunck = 100000
+        console.log(startBlock, lastBlock, chunck)
+        const chunks = utils.blockChunks(startBlock, lastBlock, chunck)
+        chunks.map(async (chunk, key) => {
+          // Pushing chunk logs into array
+          let options = {
+            topics: [
+              poolApi.contract.vaulteventful.hexSignature.VaultCreated,
+              null,
+              null,
+              null
+            ],
+            fromBlock: chunk.fromBlock,
+            toBlock: chunk.toBlock
+          }
+          poolApi.contract.vaulteventful
+            .getAllLogs(options)
+            .then(logs => {
+              const list = [].concat(logs.map(logToEvent))
+              let result = {
+                list,
+                lastFetchRange: {
+                  chunk: {
+                    key: key,
+                    toBlock:
+                      chunk.toBlock === 'latest'
+                        ? Number(lastBlock)
+                        : Number(chunk.toBlock),
+                    fromBlock: chunk.fromBlock
+                  },
+                  startBlock: Number(startBlock),
+                  lastBlock: Number(lastBlock)
+                }
+              }
+              // console.log(result)
+              return observer.next(result)
+            })
+            .catch(error => {
+              return observer.error(error)
+            })
+        })
+      })
+    })
+  })
+}
+
+const getDragosChunkedEvents$ = (api, options, state$) => {
   return Observable.create(observer => {
     let startBlock =
       state$.value.transactionsDrago.dragosList.lastFetchRange.lastBlock
@@ -81,7 +143,6 @@ const getChunkedEvents$ = (api, options, state$) => {
         let chunck = 100000
         console.log(startBlock, lastBlock, chunck)
         const chunks = utils.blockChunks(startBlock, lastBlock, chunck)
-        console.log(chunks)
         chunks.map(async (chunk, key) => {
           // Pushing chunk logs into array
           let options = {
@@ -96,8 +157,8 @@ const getChunkedEvents$ = (api, options, state$) => {
           }
           poolApi.contract.dragoeventful
             .getAllLogs(options)
-            .then(dragoCreatedLogs => {
-              const list = [].concat(dragoCreatedLogs.map(logToEvent))
+            .then(logs => {
+              const list = [].concat(logs.map(logToEvent))
               let result = {
                 list,
                 lastFetchRange: {
@@ -125,25 +186,36 @@ const getChunkedEvents$ = (api, options, state$) => {
   })
 }
 
-const getDragosList$ = (api, options, state$) => {
-  return getChunkedEvents$(api, options, state$)
+const getPoolsList$ = (api, options, state$) => {
+  switch (options.poolType) {
+    case 'drago':
+      return getDragosChunkedEvents$(api, options, state$)
+    case 'vault':
+      return getVaultsChunkedEvents$(api, options, state$)
+    default:
+      return getDragosChunkedEvents$(api, options, state$)
+  }
 }
 
-export const getDragosListEpic = (action$, state$) =>
+export const getPoolsListEpic = (action$, state$) =>
   action$.pipe(
-    ofType(TYPE_.GET_DRAGOS_SEARCH_LIST),
+    ofType(TYPE_.GET_POOLS_SEARCH_LIST),
     mergeMap(action => {
-      return getDragosList$(
+      return getPoolsList$(
         action.payload.api,
         action.payload.options,
         state$
       ).pipe(
         map(results => {
           // console.log(results)
-          // console.log(new Map(results.list))
-          // console.log(new Map([[1, 2], [2, 3]]))
-          // console.log(results.list)
-          return Actions.drago.updateDragosSearchList(results)
+          switch (action.payload.options.poolType) {
+            case 'drago':
+              return Actions.drago.updateDragosSearchList(results)
+            case 'vault':
+              return Actions.drago.updateVaultsSearchList(results)
+            default:
+              throw 'No poolType defined'
+          }
         }),
         catchError(error => {
           console.warn(error)
