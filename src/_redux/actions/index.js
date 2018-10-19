@@ -13,6 +13,7 @@ import exchange from './exchange_actions'
 import notifications from './notifications_actions'
 import tokens from './tokens'
 import transactions from './transactions'
+import vault from './vault_actions'
 
 class actions {
   app = app
@@ -27,26 +28,7 @@ class actions {
 
   transactions = transactions
 
-  vault = {
-    updateSelectedVaultAction: results => {
-      return {
-        type: UPDATE_SELECTED_VAULT_DETAILS,
-        payload: results
-      }
-    },
-    updateTransactionsVaultHolder: results => {
-      return {
-        type: UPDATE_TRANSACTIONS_VAULT_HOLDER,
-        payload: results
-      }
-    },
-    updateTransactionsVaultManager: results => {
-      return {
-        type: UPDATE_TRANSACTIONS_VAULT_MANAGER,
-        payload: results
-      }
-    }
-  }
+  vault = vault
 
   users = {
     isManagerAction: isManager => {

@@ -561,7 +561,7 @@ export const newMakerOrder = async (
     makerTokenAmount: '0', // Base 18 decimals
     takerTokenAmount: '0', // Base 18 decimals
     expirationUnixTimestampSec: new BigNumber(
-      Math.round(new Date().getTime() / 1000) + (defaultExpiry || 60) * 60
+      Math.round(new Date().getTime() / 1000) + (defaultExpiry || 60) * 60 * 12
     ) // part after the plus can be replaced, first part is constant
   }
   console.log(order)

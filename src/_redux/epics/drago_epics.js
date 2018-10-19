@@ -144,29 +144,63 @@ export const getTokensBalancesEpic = action$ => {
 // GET DETAILS FOR A DRAGO
 //
 
-const getPoolDetails$ = (dragoId, api, state$) => {
+const getPoolDetails$ = (poolId, api, options, state$) => {
   return Observable.create(observer => {
-    let dragoDetails
-
+    let poolDetails
     utils
-      .getDragoDetailsFromId(dragoId, api)
+      .getPoolDetailsFromId(poolId, api)
       .then(details => {
-        dragoDetails = details
-        return observer.next({
-          address: details[0][0],
-          name: details[0][1].charAt(0).toUpperCase() + details[0][1].slice(1),
-          symbol: details[0][2],
-          dragoId: details[0][3].toFixed(),
-          addressOwner: details[0][4],
-          addressGroup: details[0][5]
-        })
+        poolDetails = details
+        return options.poolType === 'drago'
+          ? observer.next({
+              address: details[0][0],
+              name:
+                details[0][1].charAt(0).toUpperCase() + details[0][1].slice(1),
+              symbol: details[0][2],
+              dragoId: details[0][3].toFixed(),
+              addressOwner: details[0][4],
+              addressGroup: details[0][5],
+              balanceDRG: '0.0000',
+              buyPrice: '1.0000',
+              buyPrice: '1.0000',
+              totalSupply: '0.2000',
+              vaultETHBalance: '0.20000',
+              created: '01 January 1970'
+            })
+          : observer.next({
+              address: details[0][0],
+              name:
+                details[0][1].charAt(0).toUpperCase() + details[0][1].slice(1),
+              symbol: details[0][2],
+              vaultId: details[0][3].toFixed(),
+              addressOwner: details[0][4],
+              addressGroup: details[0][5],
+              balanceDRG: '0.0000',
+              buyPrice: '1.0000',
+              buyPrice: '1.0000',
+              totalSupply: '0.2000',
+              vaultETHBalance: '0.20000',
+              created: '01 January 1970'
+            })
       })
       .then(() => {
         const accounts = state$.value.endpoint.accounts
-        utils.getDragoDetails(dragoDetails, accounts, api).then(details => {
-          console.log(details)
-          return observer.next(details)
-        })
+        console.log(options.poolType)
+        return options.poolType === 'drago'
+          ? utils
+              .getDragoDetails(poolDetails, accounts, api)
+              .then(details => {
+                // console.log(details)
+                return observer.next(details)
+              })
+              .catch(error => observer.error(error))
+          : utils
+              .getVaultDetails(poolDetails, accounts, api)
+              .then(details => {
+                // console.log(details)
+                return observer.next(details)
+              })
+              .catch(error => observer.error(error))
       })
       .catch(error => {
         return observer.error(error)
@@ -176,22 +210,24 @@ const getPoolDetails$ = (dragoId, api, state$) => {
 
 export const getPoolDetailsEpic = (action$, state$) => {
   return action$.pipe(
-    ofType(TYPE_.GET_DRAGO_DETAILS),
+    ofType(TYPE_.GET_POOL_DETAILS),
     mergeMap(action => {
       console.log(action)
       return getPoolDetails$(
         action.payload.dragoId,
         action.payload.api,
+        action.payload.options,
         state$
       ).pipe(
         flatMap(details => {
           console.log(details)
+          let drago = action.payload.options.poolType === 'drago' ? true : false
           let options = {
             balance: true,
             supply: false,
             limit: 20,
             trader: !state$.value.user.isManager,
-            drago: action.payload.options.poolType === 'drago' ? true : false
+            drago: drago
           }
           let relayName
           switch (action.payload.api._rb.network.id) {
@@ -208,28 +244,48 @@ export const getPoolDetailsEpic = (action$, state$) => {
           const relay = {
             name: relayName
           }
-          if (typeof details.totalSupply !== 'undefined')
-            return Observable.concat(
-              Observable.of(Actions.drago.updateSelectedDrago({ details })),
-              Observable.of(
+          let observablesArray = []
+          if (drago) {
+            observablesArray.push(
+              Actions.drago.updateSelectedDrago({ details })
+            )
+            if (typeof details.totalSupply !== 'undefined') {
+              observablesArray.push(
                 Actions.drago.getPoolTransactions(
                   action.payload.api,
                   details.address,
                   state$.value.endpoint.accounts,
                   options
-                )
-              ),
-              Observable.of(
+                ),
                 Actions.drago.getTokenBalancesDrago(
                   details.address,
                   action.payload.api,
                   relay
                 )
               )
+            }
+          } else {
+            observablesArray.push(
+              Actions.vault.updateSelectedVault({ details })
             )
-          return Observable.concat(
-            Observable.of(Actions.drago.updateSelectedDrago({ details }))
-          )
+            if (typeof details.totalSupply !== 'undefined') {
+              observablesArray.push(
+                Actions.drago.getPoolTransactions(
+                  action.payload.api,
+                  details.address,
+                  state$.value.endpoint.accounts,
+                  options
+                )
+                // Actions.drago.getTokenBalancesDrago(
+                //   details.address,
+                //   action.payload.api,
+                //   relay
+                // )
+              )
+            }
+          }
+          console.log(observablesArray)
+          return Observable.concat(observablesArray)
 
           // return DEBUGGING.DUMB_ACTION
         }),

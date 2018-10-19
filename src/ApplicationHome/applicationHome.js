@@ -88,7 +88,8 @@ class ApplicationHome extends PureComponent {
     let options = {
       topics: [null, null, null, null],
       fromBlock: 0,
-      toBlock: 'latest'
+      toBlock: 'latest',
+      poolType: 'drago'
     }
     this.props.dispatch(
       Actions.drago.getPoolsSearchList(this.context.api, options)

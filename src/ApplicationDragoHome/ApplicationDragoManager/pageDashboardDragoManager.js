@@ -24,7 +24,6 @@ import UserDashboardHeader from '../../_atomic/atoms/userDashboardHeader'
 import scrollToElement from 'scroll-to-element'
 import utils from '../../_utils/utils'
 
-import { Actions } from '../../_redux/actions'
 import styles from './pageDashboardDragoManager.module.css'
 
 function mapStateToProps(state) {
@@ -51,19 +50,7 @@ class PageDashboardDragoManager extends Component {
   }
 
   componentDidMount() {
-    const { accounts } = this.props.endpoint
-    const { api } = this.context
-    const options = {
-      balance: false,
-      supply: true,
-      limit: 20,
-      trader: false,
-      drago: true
-    }
     console.log('componentDidMount')
-    // this.props.dispatch(
-    //   Actions.endpoint.getAccountsTransactions(api, null, accounts, options)
-    // )
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {

@@ -46,39 +46,31 @@ class PageDashboardVaultManager extends Component {
   }
 
   state = {
+    loading: true,
     snackBar: false,
     snackBarMsg: ''
   }
 
-  componentDidMount() {
-    const { accounts } = this.props.endpoint
-    this.getTransactions(null, accounts)
-  }
+  componentDidMount() {}
 
   UNSAFE_componentWillReceiveProps(nextProps) {
     // Updating the lists on each new block if the accounts balances have changed
     // Doing this this to improve performances by avoiding useless re-rendering
-    const { accounts } = this.props.endpoint
-
-    console.log(
-      `${
-        this.constructor.name
-      } -> UNSAFE_componentWillReceiveProps-> nextProps received.`
-    )
+    // const { accounts } = this.props.endpoint
+    // const { api } = this.context
+    // const options = { balance: true, supply: false, limit: 20, trader: true, drago: true }
+    // console.log(`${this.constructor.name} -> UNSAFE_componentWillReceiveProps-> nextProps received.`);
     // Updating the transaction list if there have been a change in total accounts balance and the previous balance is
     // different from 0 (balances are set to 0 on app loading)
     const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
     const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
-    if (
-      !currentBalance.eq(nextProps.endpoint.ethBalance) &&
-      !nextBalance.eq(0)
-    ) {
-      this.getTransactions(null, accounts)
+    if (!currentBalance.eq(nextBalance) && !currentBalance.eq(0)) {
       console.log(
         `${
           this.constructor.name
         } -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`
       )
+      // this.props.dispatch(Actions.endpoint.getAccountsTransactions(api, null, accounts, options))
     }
   }
 
@@ -88,8 +80,8 @@ class PageDashboardVaultManager extends Component {
     propsUpdate = !utils.shallowEqual(this.props, nextProps)
     stateUpdate = !utils.shallowEqual(this.state, nextState)
     if (stateUpdate || propsUpdate) {
-      console.log('State updated ', stateUpdate)
-      console.log('Props updated ', propsUpdate)
+      // console.log('State updated ', stateUpdate)
+      // console.log('Props updated ', propsUpdate)
       console.log(
         `${
           this.constructor.name
@@ -98,8 +90,6 @@ class PageDashboardVaultManager extends Component {
     }
     return stateUpdate || propsUpdate
   }
-
-  componentDidUpdate() {}
 
   snackBar = msg => {
     this.setState({
@@ -346,37 +336,6 @@ class PageDashboardVaultManager extends Component {
         />
       </Row>
     )
-  }
-
-  // Getting last transactions
-  getTransactions = (dragoAddress, accounts) => {
-    const { api } = this.context
-    // const options = {balance: false, supply: true}
-    const options = { balance: false, supply: true, limit: 20, trader: false, drago: true }
-    let startTime = new Date()
-    utils
-      .getTransactionsVaultOptV2(api, dragoAddress, accounts, options)
-      .then(results => {
-        console.log(`${this.constructor.name} -> Transactions list loaded`)
-        const createdLogs = results[1].filter(event => {
-          return event.type !== 'BuyVault' && event.type !== 'SellVault'
-        })
-        let endTime = new Date()
-        let dif = startTime.getTime() - endTime.getTime()
-        let Seconds_from_T1_to_T2 = dif / 1000
-        let Seconds_Between_Dates = Math.abs(Seconds_from_T1_to_T2)
-        console.log(
-          `***** Transactions loaded in ${Seconds_Between_Dates}s *****`
-        )
-        console.log(results)
-        results[1] = createdLogs
-        this.props.dispatch(
-          Actions.vault.updateTransactionsVaultManager(results)
-        )
-      })
-      .catch(error => {
-        console.log(error)
-      })
   }
 }
 

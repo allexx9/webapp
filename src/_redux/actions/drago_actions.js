@@ -15,7 +15,7 @@ const drago = {
   },
   getPoolDetails: (dragoId, api, options = { poolType: 'drago' }) => {
     return {
-      type: TYPE_.GET_DRAGO_DETAILS,
+      type: TYPE_.GET_POOL_DETAILS,
       payload: { dragoId, api, options }
     }
   },
@@ -84,18 +84,6 @@ const drago = {
   updateTransactionsDragoManager: results => {
     return {
       type: TYPE_.UPDATE_TRANSACTIONS_DRAGO_MANAGER,
-      payload: results
-    }
-  },
-  updateTransactionsVaultHolder: results => {
-    return {
-      type: TYPE_.UPDATE_TRANSACTIONS_VAULT_HOLDER,
-      payload: results
-    }
-  },
-  updateTransactionsVaultManager: results => {
-    return {
-      type: TYPE_.UPDATE_TRANSACTIONS_VAULT_MANAGER,
       payload: results
     }
   }

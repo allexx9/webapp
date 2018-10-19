@@ -21,6 +21,7 @@ const customContentStyle = {
 class OrderRawDialog extends Component {
   static propTypes = {
     order: PropTypes.object.isRequired,
+    efxOrder: PropTypes.object,
     onClose: PropTypes.func.isRequired,
     onSubmitOrder: PropTypes.func.isRequired,
     open: PropTypes.bool.isRequired
@@ -74,7 +75,7 @@ class OrderRawDialog extends Component {
           </div>
 
           <div className={styles.orderContainer}>
-            <OrderJsonView orderJson={order.details.order} />
+            <OrderJsonView orderJson={this.props.efxOrder} />
           </div>
           <Row center="xs">
             <Col xs={6}>

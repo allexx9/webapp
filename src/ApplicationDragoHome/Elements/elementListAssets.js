@@ -75,7 +75,7 @@ class ElementListAssets extends PureComponent {
       sortedList: sortedList,
       rowCount: rowCount
     })
-    // console.log(`${this.constructor.name} -> UNSAFE_componentWillReceiveProps`);
+    // console.log(`${this.constructor.name} -> UNSAFE_componentWillReceiveProps`)
   }
 
   render() {
@@ -92,9 +92,7 @@ class ElementListAssets extends PureComponent {
       sortedList,
       useDynamicRowHeight
     } = this.state
-
     const rowGetter = ({ index }) => this._getDatum(sortedList, index)
-
     return (
       <Row>
         <Col xs={12}>
@@ -166,7 +164,7 @@ class ElementListAssets extends PureComponent {
                     disableSort
                     label="PRICE ETH"
                     cellDataGetter={({ rowData }) => rowData}
-                    dataKey="prices"
+                    dataKey="assetsPrices"
                     className={styles.exampleColumn}
                     cellRenderer={({ rowData }) => this.renderPrice(rowData)}
                     flexGrow={1}
@@ -263,6 +261,19 @@ class ElementListAssets extends PureComponent {
   }
 
   renderHolding(token) {
+    let price
+    if (typeof this.props.assetsPrices[token.symbol] !== 'undefined') {
+      if (Number(this.props.assetsPrices[token.symbol].priceEth)) {
+        price = new BigNumber(
+          this.props.assetsPrices[token.symbol].priceEth
+        ).toFixed(5)
+      } else {
+        price = 'N/A'
+      }
+    } else {
+      price = 'N/A'
+    }
+
     return (
       <Row>
         <Col xs={12}>
@@ -288,14 +299,7 @@ class ElementListAssets extends PureComponent {
               <div className={styles.holdingTitleText}>Price</div>
             </Col>
             <Col xs={12}>
-              {typeof this.props.assetsPrices[token.symbol] !== 'undefined' ? (
-                new BigNumber(
-                  this.props.assetsPrices[token.symbol].priceEth
-                ).toFixed(5)
-              ) : (
-                <small>N/A</small>
-              )}{' '}
-              <small className={styles.symbolLegendText}>ETH</small>
+              {price} <small className={styles.symbolLegendText}>ETH</small>
             </Col>
           </Row>
         </Col>

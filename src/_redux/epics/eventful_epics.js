@@ -266,21 +266,21 @@ export const getAccountsTransactionsEpic = action$ =>
             return Actions.drago.updateTransactionsDragoHolder(results)
             // return DEBUGGING.DUMB_ACTION
           } else {
-            // if (!action.payload.options.trader) {
-            //   return Actions.drago.updateTransactionsVaultManager(
-            //     results.length === 0 ? [Array(0), Array(0), Array(0)] : results
-            //   )
-            // }
-            // return Actions.drago.updateTransactionsVaultHolder(results)
-            return DEBUGGING.DUMB_ACTION
+            if (!action.payload.options.trader) {
+              return Actions.vault.updateTransactionsVaultManager(
+                results.length === 0 ? [Array(0), Array(0), Array(0)] : results
+              )
+            }
+            return Actions.vault.updateTransactionsVaultHolder(results)
+            // return DEBUGGING.DUMB_ACTION
           }
         }),
         retryWhen(error => {
-          console.log(error)
           console.log('getAccountsTransactionsEpic')
           let scalingDuration = 3000
           return error.pipe(
             mergeMap((error, i) => {
+              console.warn(error)
               const retryAttempt = i + 1
               // if maximum number of retries have been met
               // or response is a status code we don't wish to retry, throw error
@@ -336,7 +336,7 @@ export const getPoolTransactionsEpic = action$ =>
               transactions: results
             })
           } else {
-            return Actions.drago.updateSelectedVault({
+            return Actions.vault.updateSelectedVault({
               transactions: results
             })
           }

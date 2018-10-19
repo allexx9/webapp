@@ -231,7 +231,7 @@ export const getPricesEpic = (action$, state$) =>
   action$.pipe(
     ofType(TOKEN_PRICE_TICKERS_FETCH_START),
     switchMap(action => {
-      return timer(0, 10000).pipe(
+      return timer(0, 3000).pipe(
         takeUntil(action$.ofType(TOKEN_PRICE_TICKERS_FETCH_STOP)),
         exhaustMap(() => {
           const currentState = state$.value
@@ -257,6 +257,10 @@ export const getPricesEpic = (action$, state$) =>
               } catch (err) {
                 return {}
               }
+            }),
+            tap(val => {
+              console.log(val)
+              return val
             }),
             map(payload => ({ type: TOKENS_TICKERS_UPDATE, payload })),
             catchError(() => {

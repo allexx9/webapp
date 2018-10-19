@@ -159,8 +159,8 @@ function exchangeReducer(state = initialState.exchange, action) {
 
     case TYPE_.TOKENS_TICKERS_UPDATE:
       let prices = {
-        ...action.payload,
-        previous: { ...state.prices }
+        current: action.payload,
+        previous: { ...state.prices.current }
       }
       return { ...state, prices }
 

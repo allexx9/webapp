@@ -141,7 +141,7 @@ class ApplicationExchangeHome extends Component {
   getConf = () => {
     let request = new XMLHttpRequest()
 
-    request.open('GET', 'http://test.ethfinex.com/trustless/v2/r/get/conf')
+    request.open('GET', 'http://api.ethfinex.com/trustless/v1/r/get/conf')
 
     request.setRequestHeader('Content-Type', 'application/json')
 
@@ -159,7 +159,7 @@ class ApplicationExchangeHome extends Component {
   }
 
   componentDidMount = async () => {
-    // console.log(this.getConf())
+    console.log(this.getConf())
 
     const { api } = this.context
     const { selectedExchange } = this.props.exchange

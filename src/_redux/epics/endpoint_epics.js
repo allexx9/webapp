@@ -98,14 +98,6 @@ export const isConnectedToNodeEpic = (action$, $state) =>
               ? (timeInterval = scalingDuration * 5)
               : (timeInterval = scalingDuration * retryAttempt)
             return Observable.concat(
-              // Observable.of(
-              //   Actions.app.updateAppStatus({
-              //     isConnected: false,
-              //     isSyncing: false,
-              //     syncStatus: {},
-              //     connectionRetries: retryAttempt
-              //   })
-              // ),
               Observable.of(
                 Actions.app.updateAppStatus({
                   isConnected: false,
@@ -115,12 +107,6 @@ export const isConnectedToNodeEpic = (action$, $state) =>
                   connectionRetries: retryAttempt
                 })
               )
-              // .pipe(
-              //   map(result => {
-              //     return result
-              //   }),
-              //   delay(timeInterval)
-              // )
             )
           })
         )
@@ -178,10 +164,6 @@ export const attacheInterfaceEpic = action$ =>
     ofType(TYPE_.ATTACH_INTERFACE),
     switchMap(action => {
       return attachInterface$(action.payload.api, action.payload.endpoint).pipe(
-        // tap(result => {
-        //   console.log(result)
-        //   return result
-        // }),
         flatMap(endpoint => {
           console.log(action.payload)
           return Observable.concat(
@@ -191,7 +173,6 @@ export const attacheInterfaceEpic = action$ =>
                 isConnected: true
               })
             ),
-            // Observable.of(Actions.endpoint.checkIsConnectedToNode(action.payload.api)),
             Observable.of(Actions.endpoint.updateInterface(endpoint)),
             Observable.of(
               Actions.endpoint.monitorAccountsStart(
@@ -207,6 +188,7 @@ export const attacheInterfaceEpic = action$ =>
       let scalingDuration = 1000
       return error.pipe(
         mergeMap((error, i) => {
+          console.warn(error)
           const retryAttempt = i + 1
           // if maximum number of retries have been met
           // or response is a status code we don't wish to retry, throw error
@@ -240,13 +222,12 @@ const monitorEventful$ = (web3, api, state$) => {
         .padStart(64, '0')
     return hexAccount
   })
-  const poolApi = new PoolsApi(api)
-  console.log(window.web3)
-  let web3New = new Web3(window.web3._rb.wss)
+
   return merge(
     Observable.create(observer => {
       console.log('subscription Create event DRAGO')
-
+      let web3New = new Web3(window.web3._rb.wss)
+      const poolApi = new PoolsApi(api)
       // DRAGO
       poolApi.contract.dragoeventful.init().then(() => {
         let subscriptionCreate = web3New.eth.subscribe(
@@ -299,7 +280,8 @@ const monitorEventful$ = (web3, api, state$) => {
     }),
     Observable.create(observer => {
       console.log('subscription BuySell DRAGO events')
-
+      let web3New = new Web3(window.web3._rb.wss)
+      const poolApi = new PoolsApi(api)
       // DRAGO
       poolApi.contract.dragoeventful.init().then(() => {
         let subscriptionBuySell = web3New.eth.subscribe(
@@ -450,11 +432,11 @@ export const monitorEventfulEpic = (action$, state$) => {
           return Observable.concat(...observablesArray)
         }),
         retryWhen(error => {
-          console.log(error)
           console.log('monitorEventfulEpic')
-          let scalingDuration = 3000
+          let scalingDuration = 10000
           return error.pipe(
             mergeMap((error, i) => {
+              console.warn(error)
               const retryAttempt = i + 1
               // if maximum number of retries have been met
               // or response is a status code we don't wish to retry, throw error
@@ -586,11 +568,11 @@ export const monitorAccountsEpic = (action$, state$) => {
           return Observable.concat(...observablesArray)
         }),
         retryWhen(error => {
-          console.log(error)
           console.log('monitorAccountsEpic')
           let scalingDuration = 3000
           return error.pipe(
             mergeMap((error, i) => {
+              console.warn(error)
               const retryAttempt = i + 1
               console.log(` monitorAccountsEpic Attempt ${retryAttempt}`)
               // retry after 1s, 2s, etc...
@@ -750,23 +732,23 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
                       newEndpoint.accounts,
                       optionsManager
                     )
+                  ),
+                  Observable.of(
+                    Actions.endpoint.getAccountsTransactions(
+                      action.payload.api,
+                      null,
+                      newEndpoint.accounts,
+                      { ...optionsHolder, ...{ drago: false } }
+                    )
+                  ),
+                  Observable.of(
+                    Actions.endpoint.getAccountsTransactions(
+                      action.payload.api,
+                      null,
+                      newEndpoint.accounts,
+                      { ...optionsManager, ...{ drago: false } }
+                    )
                   )
-                  // Observable.of(
-                  //   Actions.endpoint.getAccountsTransactions(
-                  //     action.payload.api,
-                  //     null,
-                  //     newEndpoint.accounts,
-                  //     { ...optionsHolder, ...{ drago: false } }
-                  //   )
-                  // ),
-                  // Observable.of(
-                  //   Actions.endpoint.getAccountsTransactions(
-                  //     action.payload.api,
-                  //     null,
-                  //     newEndpoint.accounts,
-                  //     { ...optionsManager, ...{ drago: false } }
-                  //   )
-                  // )
                 ]
               : []
             return Observable.concat(

@@ -338,23 +338,25 @@ class utilities {
 
   calculatePortfolioValue = (dragoAssetsList, assetsPrices) => {
     const totalValue = dragoAssetsList.reduce((total, asset) => {
-      // console.log(asset.symbol)
+      console.log(asset.symbol)
       if (typeof assetsPrices[asset.symbol] !== 'undefined') {
         if (typeof assetsPrices[asset.symbol].priceEth !== 'undefined') {
-          const value = new BigNumber(
-            assetsPrices[asset.symbol].priceEth
-          ).times(
-            toUnitAmount(
-              new BigNumber(asset.balances.total),
-              asset.decimals
-            ).toFixed(5)
-          )
-          return total.plus(value)
+          if (assetsPrices[asset.symbol].priceEth !== null) {
+            console.log(assetsPrices[asset.symbol].priceEth)
+            const value = new BigNumber(
+              assetsPrices[asset.symbol].priceEth
+            ).times(
+              toUnitAmount(new BigNumber(asset.balances.total), asset.decimals)
+            )
+            console.log(value)
+            console.log(value.toFixed(5))
+            return total.plus(value)
+          }
+        } else {
+          return total.plus(0)
         }
-      } else {
-        return total.plus(0)
       }
-      return
+      return total.plus(0)
     }, new BigNumber(0))
 
     return totalValue.toFixed(5)
@@ -366,7 +368,8 @@ class utilities {
     dragoETHBalance
   ) => {
     let labels = Array(0)
-    const data = dragoAssetsList.map(asset => {
+    let data = Array(0)
+    dragoAssetsList.map(asset => {
       if (typeof assetsPrices[asset.symbol] !== 'undefined') {
         if (typeof assetsPrices[asset.symbol].priceEth !== 'undefined') {
           const value = new BigNumber(
@@ -378,12 +381,9 @@ class utilities {
             ).toFixed(5)
           )
           labels.push(asset.symbol)
-          return value.toFixed(5)
+          data.push(value.toFixed(5))
         }
-      } else {
-        return 0
       }
-      return
     })
     data.push(new BigNumber(dragoETHBalance).toFixed(5))
     labels.push('ETH')
@@ -547,7 +547,7 @@ class utilities {
     return rangesArray
   }
 
-  getTransactionsVaultOptV2 = (
+  getTransactionsVaultOptV2 = async (
     api,
     poolAddress,
     accounts = [],
@@ -556,43 +556,23 @@ class utilities {
       supply: false,
       limit: 20,
       trader: true,
-      drago: false,
-      allEvents: false
+      drago: false
     }
   ) => {
-    //
-    if (!Array.isArray(accounts))
-      throw Error(
-        `accounts needs to be an array of accounts. Empty array allowed.`
+    if (poolAddress)
+      return this.getTransactionsSingleVault(
+        poolAddress,
+        api,
+        accounts,
+        options
       )
     let startTime = new Date()
-    // if (accounts.length === 0) {
-    //   return Array(0), Array(0), Array(0)
-    // }
-
-    // const hexDragoAddress = '0x' + dragoAddress.substr(2).padStart(64,'0')
-    let hexAccounts = null
-    let hexPoolAddress = null
-
-    console.log(accounts)
-
-    // Formatting accounts address
-    if (accounts.length !== 0) {
-      hexAccounts = accounts.map(account => {
-        const hexAccount = '0x' + account.address.substr(2).padStart(64, '0')
-        return hexAccount
-      })
-    } else hexAccounts = null
-
-    if (poolAddress)
-      hexPoolAddress = ['0x' + poolAddress.substr(2).padStart(64, '0')]
-
+    if (accounts.length === 0) {
+      return Array(0), Array(0), Array(0)
+    }
     const poolApi = new PoolApi(api)
-    let ethvalue = 0
-    let drgvalue = 0
     let dragoSymbolRegistry = new Map()
     let fromBlock
-    // console.log(api._rb.network.id)
     switch (api._rb.network.id) {
       case 1:
         fromBlock = '6000000'
@@ -608,8 +588,8 @@ class utilities {
     }
 
     console.log(
-      `***** ${moment().format()} Utils: ${options.drago ? 'DRAGO' : 'VAULT'} ${
-        options.allEvents ? 'allEvents' : ''
+      `***** ${moment().format()} Utils: ${
+        options.drago ? 'DRAGO' : 'VAULT'
       } events fetching started *****`
     )
     const logToEvent = log => {
@@ -632,11 +612,11 @@ class utilities {
         typeof params.revenue !== 'undefined'
       ) {
         ethvalue =
-          log.event === 'BuyDrago'
+          log.event === 'BuyVauld'
             ? formatEth(params.amount.value, null, api)
             : formatEth(params.revenue.value, null, api)
         drgvalue =
-          log.event === 'SellDrago'
+          log.event === 'SellVault'
             ? formatCoins(params.amount.value, null, api)
             : formatCoins(params.revenue.value, null, api)
       }
@@ -644,7 +624,7 @@ class utilities {
       if (log.event === 'BuyVault' || log.event === 'VaultCreated') {
         const vaultData = {
           symbol: params.symbol.value,
-          dragoId: null,
+          vaultId: null,
           name: null,
           address: params.vault.value
         }
@@ -652,7 +632,14 @@ class utilities {
           ? dragoSymbolRegistry.set(params.vault.value, vaultData)
           : null
       }
-
+      let symbol
+      if (typeof params.symbol.value === 'string') {
+        symbol = params.symbol.value
+      } else {
+        for (let i = 0; i < params.symbol.value.length; ++i) {
+          symbol += String.fromCharCode(params.symbol.value[i])
+        }
+      }
       return {
         type: log.event,
         state: type,
@@ -663,7 +650,8 @@ class utilities {
         params,
         key,
         ethvalue,
-        drgvalue
+        drgvalue,
+        symbol: symbol
       }
     }
 
@@ -678,137 +666,75 @@ class utilities {
     //
     //  https://github.com/RigoBlock/Books/blob/master/Solidity_01_Events.MD
 
+    let hexAccounts = null
+    let hexPoolAddress = null
+    if (poolAddress)
+      hexPoolAddress = ['0x' + poolAddress.substr(2).padStart(64, '0')]
+    // Formatting accounts address
+    if (accounts !== null) {
+      hexAccounts = accounts.map(account => {
+        const hexAccount = '0x' + account.address.substr(2).padStart(64, '0')
+        return hexAccount
+      })
+    }
+
+    const getPoolsFromOwner = async () => {
+      let arrayPromises = accounts.map(async account => {
+        await poolApi.contract.vaultfactory.init()
+        const poolsList = await poolApi.contract.vaultfactory
+          .getVaultsByAddress(account.address)
+          .then(results => {
+            console.log(results)
+            return results
+          })
+          .catch(error => {
+            console.warn(error)
+            throw error
+          })
+        poolsList.forEach(v => {
+          const dragoData = {
+            symbol: null,
+            vaultId: null,
+            name: null,
+            address: v.value
+          }
+          !dragoSymbolRegistry.has(v.value)
+            ? dragoSymbolRegistry.set(v.value, dragoData)
+            : null
+        })
+        return poolsList
+      })
+      return Promise.all(arrayPromises)
+    }
+
+    if (options.trader) {
+    } else {
+      await getPoolsFromOwner()
+    }
+
     // Initializing the eventful contract
     return poolApi.contract.dragoregistry.init().then(() => {
       return poolApi.contract.vaulteventful.init().then(() => {
-        // Filter for create events
-        // const eventsFilterCreate = {
-        //   topics: [
-        //     [poolApi.contract.vaulteventful.hexSignature.VaultCreated],
-        //     null,
-        //     null,
-        //     hexAccounts
-        //   ]
-        // }
-        // Filter for buy events
-        // const eventsFilterBuy = {
-        //   topics: [
-        //     [poolApi.contract.vaulteventful.hexSignature.BuyVault],
-        //     null,
-        //     hexAccounts,
-        //     null
-        //   ]
-        // }
-        // Filter for sell events
-        // const eventsFilterSell = {
-        //   topics: [
-        //     [poolApi.contract.vaulteventful.hexSignature.SellVault],
-        //     null,
-        //     null,
-        //     hexAccounts
-        //   ]
-        // }
-
-        // Filter for buy and sell events
-        // const eventsFilterBuySell = {
-        //   topics: [null, null, hexAccounts, null]
-        // }
-
-        // const createDragoEvents = () => {
-        //   console.log(
-        //     `***** ${moment().format()} Utils: create Events fetching started *****`
-        //   )
-        //   return poolApi.contract.vaulteventful
-        //     .getAllLogs(eventsFilterCreate)
-        //     .then(dragoTransactionsLog => {
-        //       console.log(
-        //         `***** ${moment().format()} Utils: create Events fetching ended *****`
-        //       )
-        //       console.log(dragoTransactionsLog)
-        //       const createLogs = dragoTransactionsLog.map(logToEvent)
-        //       return createLogs
-        //     })
-        // }
-
-        // const buyDragoEvents = () => {
-        //   return poolApi.contract.vaulteventful
-        //     .getAllLogs(eventsFilterBuy)
-        //     .then((dragoTransactionsLog) => {
-        //       const buyLogs = dragoTransactionsLog.map(logToEvent)
-        //       return buyLogs
-        //     }
-        //     )
-        // }
-
-        // const sellDragoEvents = () => {
-        //   return poolApi.contract.vaulteventful
-        //     .getAllLogs(eventsFilterSell)
-        //     .then((dragoTransactionsLog) => {
-        //       const sellLogs = dragoTransactionsLog.map(logToEvent)
-        //       return sellLogs
-        //     }
-        //     )
-        // }
-
-        // const buySellDragoEvents = () => {
-        //   console.log(
-        //     `***** ${moment().format()} Utils: buySell Events fetching started *****`
-        //   )
-        //   return poolApi.contract.vaulteventful
-        //     .getAllLogs(eventsFilterBuySell)
-        //     .then(dragoTransactionsLog => {
-        //       console.log(
-        //         `***** ${moment().format()} Utils: buySell Events fetching ended *****`
-        //       )
-        //       console.log(dragoTransactionsLog)
-        //       const buySellLogs = dragoTransactionsLog.map(logToEvent)
-        //       return buySellLogs
-        //     })
-        // }
-
         const getChunkedEvents = topics => {
           let arrayPromises = []
           return api.eth.blockNumber().then(lastBlock => {
             let chunck = 100000
-            let endBlock = lastBlock
-            let startBlock = lastBlock - chunck
-
-            // fromBlock = 1000000
-            while (fromBlock <= startBlock) {
-              // console.log(`from ${startBlock} to ${endBlock}`)
-
+            const chunks = this.blockChunks(fromBlock, lastBlock, chunck)
+            arrayPromises = chunks.map(async chunk => {
               // Pushing chunk logs into array
               let options = {
                 topics: topics,
-                fromBlock: startBlock,
-                toBlock: endBlock
+                fromBlock: chunk.fromBlock,
+                toBlock: chunk.toBlock
               }
-              arrayPromises.push(
-                poolApi.contract.vaulteventful.getAllLogs(options)
-              )
-
-              // Exit if reached fromBlok
-              if (fromBlock + 1 === startBlock) {
-                break
-              }
-
-              endBlock = startBlock - 1
-              startBlock =
-                startBlock - chunck < fromBlock
-                  ? fromBlock + 1
-                  : startBlock - chunck
-            }
+              return await poolApi.contract.vaulteventful.getAllLogs(options)
+            })
 
             return Promise.all(arrayPromises).then(results => {
               if (options.trader) {
-                // console.log('Trader transactions')
-                // console.log(topics)
               } else {
-                // console.log('Manager transactions')
-                // console.log(topics)
               }
               let dragoTransactionsLog = Array(0).concat(...results)
-              // console.log(dragoTransactionsLog)
               const logs = dragoTransactionsLog.map(logToEvent)
               return logs
             })
@@ -816,11 +742,10 @@ class utilities {
         }
 
         let eventSig
-        console.log(options.drago)
         eventSig = options.drago
           ? [
-              poolApi.contract.dragoeventful.hexSignature.BuyDrago,
-              poolApi.contract.dragoeventful.hexSignature.SellDrago
+              poolApi.contract.vaulteventful.hexSignature.BuyDrago,
+              poolApi.contract.vaulteventful.hexSignature.SellDrago
             ]
           : [
               poolApi.contract.vaulteventful.hexSignature.BuyVault,
@@ -828,37 +753,22 @@ class utilities {
             ]
 
         let topicsBuySell = [eventSig, hexPoolAddress, hexAccounts, null]
-        console.log(topicsBuySell)
 
         eventSig = options.drago
-          ? [poolApi.contract.dragoeventful.hexSignature.DragoCreated]
+          ? [poolApi.contract.vaulteventful.hexSignature.DragoCreated]
           : [poolApi.contract.vaulteventful.hexSignature.VaultCreated]
 
         let topicsCreate = [eventSig, hexPoolAddress, null, hexAccounts]
-        console.log(topicsCreate)
 
         let promisesEvents = null
-        // if (options.trader) {
-        //   // promisesEvents = [buyDragoEvents(), sellDragoEvents()]
-        //   promisesEvents = [buySellDragoEvents()]
-        // } else {
-        //   promisesEvents = [createDragoEvents()]
-        // }
+
         if (options.trader) {
           promisesEvents = [getChunkedEvents(topicsBuySell)]
         } else {
           promisesEvents = [getChunkedEvents(topicsCreate)]
         }
-        if (options.allEvents) {
-          console.log(options.allEvents)
-          promisesEvents = [
-            getChunkedEvents(topicsBuySell),
-            getChunkedEvents(topicsCreate)
-          ]
-        }
         return Promise.all(promisesEvents)
           .then(results => {
-            console.log(results)
             let allLogs = [...results[0]]
             // Creating an array of promises that will be executed to add timestamp and symbol to each entry
             // Doing so because for each entry we need to make an async call to the client
@@ -886,9 +796,6 @@ class utilities {
               allLogs.length - 20,
               allLogs.length
             )
-            // console.log(`***** ${moment().format()} Utils: events loaded *****`)
-            // console.log(results)
-            // console.log(allLogs)
 
             // This is an inefficient way to get the symbol for each transactions.
             // In the future the symbol will have to be saved in the eventful logs.
@@ -908,26 +815,13 @@ class utilities {
                       dragoSymbolRegistry.set(k, dragoData)
                       return dragoDetails
                     })
+                    .catch(error => {
+                      console.warn(error)
+                      throw error
+                    })
                 )
               })
-              // console.log(arrayPromises)
               return arrayPromises
-
-              // dragoSymbolRegistry.forEach((v, k) => {
-              //   arrayPromises.push(
-              //     poolApi.contract.dragoregistry.init()
-              //       .then(() => {
-              //         return poolApi.contract.dragoregistry.fromAddress(k)
-              //           .then((dragoDetails) => {
-              //             dragoSymbolRegistry.set(k, { symbol: dragoDetails[2].trim(), dragoId: dragoDetails[3].toFixed(), name: dragoDetails[1].trim() })
-              //           }
-              //           )
-              //       }
-              //       )
-              //   )
-              // }
-              // )
-              // return arrayPromises
             }
 
             // Getting dragos supply
@@ -940,19 +834,27 @@ class utilities {
               dragoSymbolRegistry.forEach((v, k) => {
                 poolApi.contract.vault.init(k)
                 arrayPromises.push(
-                  poolApi.contract.vault.totalSupply().then(dragoSupply => {
-                    const symbol = dragoSymbolRegistry.get(k).symbol
-                    const name = dragoSymbolRegistry.get(k).name.trim()
-                    const vaultId = dragoSymbolRegistry.get(k).vaultId
-                    const address = dragoSymbolRegistry.get(k).address
-                    supply.push({
-                      supply: formatCoins(new BigNumber(dragoSupply), 4, api),
-                      name,
-                      symbol: symbol,
-                      vaultId: vaultId,
-                      address: address
+                  poolApi.contract.vault
+                    .totalSupply()
+                    .then(dragoSupply => {
+                      const {
+                        symbol,
+                        name,
+                        vaultId,
+                        address
+                      } = dragoSymbolRegistry.get(k)
+                      supply.push({
+                        supply: formatCoins(new BigNumber(dragoSupply), 4, api),
+                        name: name.trim(),
+                        symbol: symbol,
+                        vaultId: vaultId,
+                        address: address
+                      })
                     })
-                  })
+                    .catch(error => {
+                      console.warn(error)
+                      throw error
+                    })
                 )
               })
               return arrayPromises
@@ -974,13 +876,15 @@ class utilities {
                     poolApi.contract.vault
                       .balanceOf(account)
                       .then(dragoBalance => {
-                        const symbol = dragoSymbolRegistry.get(k).symbol
-                        const name = dragoSymbolRegistry.get(k).name.trim()
-                        const vaultId = dragoSymbolRegistry.get(k).vaultId
-                        const address = dragoSymbolRegistry.get(k).address
+                        const {
+                          symbol,
+                          name,
+                          vaultId,
+                          address
+                        } = dragoSymbolRegistry.get(k)
                         balances[account][vaultId] = {
                           balance: dragoBalance,
-                          name,
+                          name: name.trim(),
                           symbol: symbol,
                           vaultId: vaultId,
                           address: address
@@ -993,17 +897,17 @@ class utilities {
             }
 
             // Setting symbol
-            const getSymbols = () => {
-              let transLogs = dragoTransactionsLogs.map(log => {
-                const symbol = dragoSymbolRegistry.get(log.params.vault.value)
-                  .symbol
-                // const vaultId = dragoSymbolRegistry.get(log.params.vault.value).vaultId
-                // const name = dragoSymbolRegistry.get(log.params.vault.value).name
-                log.symbol = symbol
-                return log
-              })
-              return transLogs
-            }
+            // const getSymbols = () => {
+            //   let transLogs = dragoTransactionsLogs.map(log => {
+            //     const symbol = dragoSymbolRegistry.get(log.params.vault.value)
+            //       .symbol
+            //     // const vaultId = dragoSymbolRegistry.get(log.params.vault.value).vaultId
+            //     // const name = dragoSymbolRegistry.get(log.params.vault.value).name
+            //     log.symbol = symbol
+            //     return log
+            //   })
+            //   return transLogs
+            // }
 
             const getTimestamp = logs => {
               return logs.map(log => {
@@ -1060,6 +964,7 @@ class utilities {
                             symbol: balancesRegistry.get(k).symbol,
                             name: balancesRegistry.get(k).name,
                             vaultId: balancesRegistry.get(k).vaultId,
+                            address: balancesRegistry.get(k).address,
                             balance: formatCoins(
                               balancesRegistry.get(k).balance,
                               4,
@@ -1073,7 +978,8 @@ class utilities {
                     }
                   })
                   .then(() => {
-                    let logs = getSymbols()
+                    // let logs = getSymbols()
+                    let logs = dragoTransactionsLogs
                     // console.log(
                     //   `***** ${moment().format()} Utils: symbols loaded *****`
                     // )
@@ -1145,7 +1051,7 @@ class utilities {
    **/
   getTransactionsDragoOptV2 = async (
     api,
-    dragoAddress,
+    poolAddress,
     accounts = [],
     options = {
       balance: true,
@@ -1158,9 +1064,9 @@ class utilities {
     //
     // return Promise.reject(new Error('fail'))
 
-    if (dragoAddress)
+    if (poolAddress)
       return this.getTransactionsSingleDrago(
-        dragoAddress,
+        poolAddress,
         api,
         accounts,
         options
@@ -1170,8 +1076,6 @@ class utilities {
       return Array(0), Array(0), Array(0)
     }
     const poolApi = new PoolApi(api)
-    let ethvalue = 0
-    let drgvalue = 0
     let dragoSymbolRegistry = new Map()
     let fromBlock
     switch (api._rb.network.id) {
@@ -1203,7 +1107,15 @@ class utilities {
         params,
         type
       } = log
-      if (typeof params.amount !== 'undefined') {
+
+      // Getting the transaction amounts if it's a buy or sell event
+      let ethvalue,
+        drgvalue = 0
+
+      if (
+        typeof params.amount !== 'undefined' &&
+        typeof params.revenue !== 'undefined'
+      ) {
         ethvalue =
           log.event === 'BuyDrago'
             ? formatEth(params.amount.value, null, api)
@@ -1215,14 +1127,6 @@ class utilities {
       }
       // Creating a map with list of dragos
       if (log.event === 'BuyDrago' || log.event === 'DragoCreated') {
-        //Checking if the value is an array of bytes or string
-        // var symbol
-        // console.log(params.symbol.value.toString())
-        // if (Array.isArray(params.symbol.value)) {
-        //   symbol = String.fromCharCode(params.symbol.value)
-        // } else {
-        //   symbol = params.symbol.value
-        // }
         const dragoData = {
           symbol: params.symbol.value,
           dragoId: null,
@@ -1232,6 +1136,14 @@ class utilities {
         !dragoSymbolRegistry.has(params.drago.value)
           ? dragoSymbolRegistry.set(params.drago.value, dragoData)
           : null
+      }
+      let symbol
+      if (typeof params.symbol.value === 'string') {
+        symbol = params.symbol.value
+      } else {
+        for (let i = 0; i < params.symbol.value.length; ++i) {
+          symbol += String.fromCharCode(params.symbol.value[i])
+        }
       }
       return {
         type: log.event,
@@ -1243,7 +1155,8 @@ class utilities {
         params,
         key,
         ethvalue,
-        drgvalue
+        drgvalue,
+        symbol: symbol
       }
     }
 
@@ -1258,11 +1171,10 @@ class utilities {
     //
     //  https://github.com/RigoBlock/Books/blob/master/Solidity_01_Events.MD
 
-    // const hexDragoAddress = '0x' + dragoAddress.substr(2).padStart(64,'0')
     let hexAccounts = null
-    let hexDragoAddress = null
-    if (dragoAddress)
-      hexDragoAddress = ['0x' + dragoAddress.substr(2).padStart(64, '0')]
+    let hexPoolAddress = null
+    if (poolAddress)
+      hexPoolAddress = ['0x' + poolAddress.substr(2).padStart(64, '0')]
     // Formatting accounts address
     if (accounts !== null) {
       hexAccounts = accounts.map(account => {
@@ -1279,6 +1191,10 @@ class utilities {
           .then(results => {
             console.log('executed')
             return results
+          })
+          .catch(error => {
+            console.warn(error)
+            throw error
           })
         poolsList.forEach(v => {
           const dragoData = {
@@ -1321,22 +1237,17 @@ class utilities {
 
             return Promise.all(arrayPromises).then(results => {
               if (options.trader) {
-                // console.log('Trader transactions')
-                // console.log(topics)
               } else {
-                // console.log('Manager transactions')
-                // console.log(topics)
               }
               let dragoTransactionsLog = Array(0).concat(...results)
-              // console.log(dragoTransactionsLog)
               const logs = dragoTransactionsLog.map(logToEvent)
               return logs
             })
           })
         }
 
-        let topics
-        topics = options.drago
+        let eventSig
+        eventSig = options.drago
           ? [
               poolApi.contract.dragoeventful.hexSignature.BuyDrago,
               poolApi.contract.dragoeventful.hexSignature.SellDrago
@@ -1346,23 +1257,16 @@ class utilities {
               poolApi.contract.vaulteventful.hexSignature.SellVault
             ]
 
-        let topicsBuySell = [topics, hexDragoAddress, hexAccounts, null]
+        let topicsBuySell = [eventSig, hexPoolAddress, hexAccounts, null]
 
-        topics = options.drago
+        eventSig = options.drago
           ? [poolApi.contract.dragoeventful.hexSignature.DragoCreated]
           : [poolApi.contract.vaulteventful.hexSignature.VaultCreated]
 
-        let topicsCreate = [topics, null, null, hexAccounts]
+        let topicsCreate = [eventSig, null, null, hexAccounts]
 
-        // console.log(getChunkedEvents(topicsBuySell))
-        // console.log(getChunkedEvents(topicsCreate))
         let promisesEvents = null
-        // if (options.trader) {
-        //   // promisesEvents = [buyDragoEvents(), sellDragoEvents()]
-        //   promisesEvents = [buySellDragoEvents()]
-        // } else {
-        //   promisesEvents = [createDragoEvents()]
-        // }
+
         if (options.trader) {
           promisesEvents = [getChunkedEvents(topicsBuySell)]
         } else {
@@ -1397,8 +1301,6 @@ class utilities {
               allLogs.length - options.limit,
               allLogs.length
             )
-            // console.log(`***** ${moment().format()} Utils: events loaded *****`)
-            // console.log(results)
 
             // This is an inefficient way to get the symbol for each transactions.
             // In the future the symbol will have to be saved in the eventful logs.
@@ -1415,8 +1317,13 @@ class utilities {
                         name: dragoDetails[1].trim(),
                         address: k.trim()
                       }
+
                       dragoSymbolRegistry.set(k, dragoData)
                       return dragoDetails
+                    })
+                    .catch(error => {
+                      console.warn(error)
+                      throw error
                     })
                 )
               })
@@ -1433,21 +1340,27 @@ class utilities {
               dragoSymbolRegistry.forEach((v, k) => {
                 poolApi.contract.drago.init(k)
                 arrayPromises.push(
-                  poolApi.contract.drago.totalSupply().then(dragoSupply => {
-                    const {
-                      symbol,
-                      name,
-                      dragoId,
-                      address
-                    } = dragoSymbolRegistry.get(k)
-                    supply.push({
-                      supply: formatCoins(new BigNumber(dragoSupply), 4, api),
-                      name: name.trim(),
-                      symbol: symbol,
-                      dragoId: dragoId,
-                      address: address
+                  poolApi.contract.drago
+                    .totalSupply()
+                    .then(dragoSupply => {
+                      const {
+                        symbol,
+                        name,
+                        dragoId,
+                        address
+                      } = dragoSymbolRegistry.get(k)
+                      supply.push({
+                        supply: formatCoins(new BigNumber(dragoSupply), 4, api),
+                        name: name.trim(),
+                        symbol: symbol,
+                        dragoId: dragoId,
+                        address: address
+                      })
                     })
-                  })
+                    .catch(error => {
+                      console.warn(error)
+                      throw error
+                    })
                 )
               })
               return arrayPromises
@@ -1469,13 +1382,15 @@ class utilities {
                     poolApi.contract.drago
                       .balanceOf(account)
                       .then(dragoBalance => {
-                        const symbol = dragoSymbolRegistry.get(k).symbol
-                        const name = dragoSymbolRegistry.get(k).name.trim()
-                        const dragoId = dragoSymbolRegistry.get(k).dragoId
-                        const address = dragoSymbolRegistry.get(k).address
+                        const {
+                          symbol,
+                          name,
+                          dragoId,
+                          address
+                        } = dragoSymbolRegistry.get(k)
                         balances[account][dragoId] = {
                           balance: dragoBalance,
-                          name,
+                          name: name.trim(),
                           symbol: symbol,
                           dragoId: dragoId,
                           address: address
@@ -1487,18 +1402,21 @@ class utilities {
               return arrayPromises
             }
 
-            // Setting symbol
-            const getSymbols = () => {
-              let transLogs = dragoTransactionsLogs.map(log => {
-                const symbol = dragoSymbolRegistry.get(log.params.drago.value)
-                  .symbol
-                // const dragoId = dragoSymbolRegistry.get(log.params.drago.value).dragoId
-                // const name = dragoSymbolRegistry.get(log.params.drago.value).name
-                log.symbol = symbol
-                return log
-              })
-              return transLogs
-            }
+            // // Setting symbol
+            // const getSymbols = () => {
+            //   let transLogs = dragoTransactionsLogs.map(log => {
+            //     if (typeof dragoSymbolRegistry.get(log.params.drago.value) !== 'undefined') {
+            //       const symbol = dragoSymbolRegistry.get(log.params.drago.value)
+            //       .symbol
+            //     // const dragoId = dragoSymbolRegistry.get(log.params.drago.value).dragoId
+            //     // const name = dragoSymbolRegistry.get(log.params.drago.value).name
+            //     log.symbol = symbol
+            //     }
+
+            //     return log
+            //   })
+            //   return transLogs
+            // }
 
             const getTimestamp = logs => {
               return logs.map(log => {
@@ -1569,7 +1487,9 @@ class utilities {
                     }
                   })
                   .then(() => {
-                    let logs = getSymbols()
+                    // let logs = getSymbols()
+                    let logs = dragoTransactionsLogs
+                    console.log(dragoTransactionsLogs)
                     // console.log(
                     //   `***** ${moment().format()} Utils: symbols loaded *****`
                     // )
@@ -1690,7 +1610,7 @@ class utilities {
     //
     //  https://github.com/RigoBlock/Books/blob/master/Solidity_01_Events.MD
 
-    const hexDragoAddress = '0x' + dragoAddress.substr(2).padStart(64, '0')
+    const hexPoolAddress = '0x' + dragoAddress.substr(2).padStart(64, '0')
     const hexAccounts = accounts.map(account => {
       const hexAccount = '0x' + account.address.substr(2).padStart(64, '0')
       return hexAccount
@@ -1712,10 +1632,8 @@ class utilities {
         })
 
         return Promise.all(arrayPromises).then(results => {
-          console.log(results)
-          let dragoTransactionsLog = Array(0).concat(...results)
-          const logs = dragoTransactionsLog.map(logToEvent)
-          return logs
+          let logs = [].concat(...results)
+          return logs.map(logToEvent)
         })
       })
     }
@@ -1726,7 +1644,7 @@ class utilities {
       console.log('trader transactions')
       eventsFilterBuySell = [
         [contract.hexSignature.BuyDrago, contract.hexSignature.SellDrago],
-        [hexDragoAddress],
+        [hexPoolAddress],
         hexAccounts,
         null
       ]
@@ -1738,7 +1656,7 @@ class utilities {
           contract.hexSignature.SellDrago,
           contract.hexSignature.DragoCreated
         ],
-        [hexDragoAddress],
+        [hexPoolAddress],
         null,
         null
       ]
@@ -1798,7 +1716,184 @@ class utilities {
       })
   }
 
-  getDragoDetailsFromId = async (dragoId, api) => {
+  getTransactionsSingleVault = async (poolAddress, api, accounts, options) => {
+    const poolApi = new PoolApi(api)
+    await poolApi.contract.vaulteventful.init()
+    const contract = poolApi.contract.vaulteventful
+    let fromBlock
+    switch (api._rb.network.id) {
+      case 1:
+        fromBlock = '6000000'
+        break
+      case 42:
+        fromBlock = '7000000'
+        break
+      case 3:
+        fromBlock = '3000000'
+        break
+      default:
+        '3000000'
+    }
+
+    const logToEvent = log => {
+      const key = api.util.sha3(JSON.stringify(log))
+      const {
+        blockNumber,
+        logIndex,
+        transactionHash,
+        transactionIndex,
+        params,
+        type
+      } = log
+      let ethvalue,
+        drgvalue = 0
+      console.log(log)
+      if (
+        typeof params.amount !== 'undefined' &&
+        typeof params.revenue !== 'undefined'
+      ) {
+        ethvalue =
+          log.event === 'BuyVault'
+            ? formatEth(params.amount.value, null, api)
+            : formatEth(params.revenue.value, null, api)
+        drgvalue =
+          log.event === 'SellVault'
+            ? formatCoins(params.amount.value, null, api)
+            : formatCoins(params.revenue.value, null, api)
+      }
+
+      return {
+        type: log.event,
+        state: type,
+        blockNumber,
+        logIndex,
+        transactionHash,
+        transactionIndex,
+        params,
+        key,
+        ethvalue,
+        drgvalue
+      }
+    }
+
+    // Getting all BuyVault and selDrago events since block 0.
+    // dragoFactoryEventsSignatures accesses the contract ABI, gets all the events and for each creates a hex signature
+    // to be passed to getAllLogs. Events are indexed and filtered by topics
+    // more at: http://solidity.readthedocs.io/en/develop/contracts.html?highlight=event#events
+
+    // The second param of the topics array is the drago address
+    // The third param of the topics array is the from address
+    // The third param of the topics array is the to address
+    //
+    //  https://github.com/RigoBlock/Books/blob/master/Solidity_01_Events.MD
+
+    const hexPoolAddress = '0x' + poolAddress.substr(2).padStart(64, '0')
+    const hexAccounts = accounts.map(account => {
+      const hexAccount = '0x' + account.address.substr(2).padStart(64, '0')
+      return hexAccount
+    })
+
+    const getChunkedEvents = topics => {
+      let arrayPromises = []
+      return api.eth.blockNumber().then(lastBlock => {
+        let chunck = 100000
+        const chunks = this.blockChunks(fromBlock, lastBlock, chunck)
+        arrayPromises = chunks.map(async chunk => {
+          // Pushing chunk logs into array
+          let options = {
+            topics: topics,
+            fromBlock: chunk.fromBlock,
+            toBlock: chunk.toBlock
+          }
+          return await poolApi.contract.vaulteventful.getAllLogs(options)
+        })
+
+        return Promise.all(arrayPromises).then(results => {
+          let logs = [].concat(...results)
+          return logs.map(logToEvent)
+        })
+      })
+    }
+
+    let eventsFilterBuySell
+
+    if (options.trader) {
+      console.log('trader transactions')
+      eventsFilterBuySell = [
+        [contract.hexSignature.BuyVault, contract.hexSignature.SellVault],
+        [hexPoolAddress],
+        hexAccounts,
+        null
+      ]
+    } else {
+      console.log('manager transactions')
+      eventsFilterBuySell = [
+        [
+          contract.hexSignature.BuyVault,
+          contract.hexSignature.SellVault,
+          contract.hexSignature.VaultCreated
+        ],
+        [hexPoolAddress],
+        null,
+        null
+      ]
+    }
+
+    let promisesEvents = [getChunkedEvents(eventsFilterBuySell)]
+
+    // const BuyVaultEvents = contract
+    //   .getAllLogs(eventsFilterBuy)
+    //   .then(logs => {
+    //     const buyLogs = logs.map(logToEvent)
+    //     return buyLogs
+    //   })
+    // const SellVaultEvents = contract
+    //   .getAllLogs(eventsFilterSell)
+    //   .then(logs => {
+    //     const sellLogs = logs.map(logToEvent)
+    //     return sellLogs
+    //   })
+    return Promise.all(promisesEvents)
+      .then(logs => {
+        console.log(logs)
+        return logs[0]
+      })
+      .then(logs => {
+        // Creating an array of promises that will be executed to add timestamp to each entry
+        // Doing so because for each entry we need to make an async call to the client
+        // For additional refernce: https://stackoverflow.com/questions/39452083/using-promise-function-inside-javascript-array-map
+        let promises = logs.map(log => {
+          return api.eth
+            .getBlockByNumber(new BigNumber(log.blockNumber).toFixed(0))
+            .then(block => {
+              log.timestamp = block.timestamp
+              return log
+            })
+            .catch(error => {
+              // Sometimes Infura returns null for api.eth.getBlockByNumber, therefore we are assigning a fake timestamp to avoid
+              // other issues in the app.
+              console.log(error)
+              log.timestamp = new Date()
+              return log
+            })
+        })
+        return Promise.all(promises).then(results => {
+          results.sort(function(x, y) {
+            return y.timestamp - x.timestamp
+          })
+          // this.props.dispatch(
+          //   Actions.drago.updateSelectedDrago({
+          //     transactions: results
+          //   })
+          // )
+          console.log(results)
+          console.log(`${this.constructor.name} -> Transactions list loaded`)
+          return results
+        })
+      })
+  }
+
+  getPoolDetailsFromId = async (dragoId, api) => {
     const poolApi = new PoolApi(api)
     await poolApi.contract.dragoregistry.init()
     const dragoDetails = await poolApi.contract.dragoregistry.fromId(dragoId)
@@ -1828,11 +1923,11 @@ class utilities {
     //
 
     const getDragoCreationDate = async (dragoAddress, contract) => {
-      const hexDragoAddress = '0x' + dragoAddress.substr(2).padStart(64, '0')
+      const hexPoolAddress = '0x' + dragoAddress.substr(2).padStart(64, '0')
       const eventsFilterCreate = {
         topics: [
           [contract.hexSignature.DragoCreated],
-          [hexDragoAddress],
+          [hexPoolAddress],
           null,
           null
         ]
@@ -1903,12 +1998,7 @@ class utilities {
     return details
   }
 
-  getVaultDetails = async (vaultDetails, props, api) => {
-    const {
-      endpoint: { accounts: accounts },
-      dispatch
-    } = props
-
+  getVaultDetails = async (vaultDetails, accounts, api) => {
     //
     // Initializing vault API
     // Passing Parity API
@@ -1999,11 +2089,7 @@ class utilities {
     )
     balanceDRG = formatCoins(balanceDRG, 4, api)
     details = { ...details, balanceDRG }
-    dispatch(
-      Actions.vault.updateSelectedVaultAction({
-        details
-      })
-    )
+    return details
   }
 
   updateTokenWrapperLockTime = async (api, tokenAddress, accountAddress) => {

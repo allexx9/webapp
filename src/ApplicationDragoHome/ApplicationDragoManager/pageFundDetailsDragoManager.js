@@ -213,9 +213,13 @@ class PageFundDetailsDragoManager extends Component {
     let totalValue = 'N/A'
     let assetsValues = {}
     let tableLiquidity = [
-      ['Liquidity', 'N/A', ''],
-      ['Porfolio value', 'N/A', ''],
-      ['Total', 'N/A', '']
+      ['Liquidity', 'Calculating...', [<small key="dragoLiqEth">ETH</small>]],
+      [
+        'Porfolio value',
+        'Calculating...',
+        [<small key="dragoPortEth">ETH</small>]
+      ],
+      ['Total', 'Calculating...', [<small key="dragoPortTotEth">ETH</small>]]
     ]
     let estimatedPrice = 'N/A'
     if (typeof dragoDetails.dragoETHBalance !== 'undefined') {
@@ -248,19 +252,19 @@ class PageFundDetailsDragoManager extends Component {
 
     if (
       dragoAssetsList.length !== 0 &&
-      Object.keys(this.props.exchange.prices).length !== 0
+      Object.keys(this.props.exchange.prices.current).length !== 0
     ) {
       if (typeof dragoDetails.dragoETHBalance !== 'undefined') {
         portfolioValue = utils.calculatePortfolioValue(
           dragoAssetsList,
-          this.props.exchange.prices
+          this.props.exchange.prices.current
         )
         totalValue = new BigNumber(dragoDetails.dragoETHBalance)
           .plus(portfolioValue)
           .toFixed(5)
         assetsValues = utils.calculatePieChartPortfolioValue(
           dragoAssetsList,
-          this.props.exchange.prices,
+          this.props.exchange.prices.current,
           dragoDetails.dragoETHBalance
         )
         tableLiquidity = [
@@ -468,8 +472,9 @@ class PageFundDetailsDragoManager extends Component {
                         renderEtherscanButton={this.renderEtherscanButton}
                         dragoDetails={dragoDetails}
                         loading={loading}
-                        assetsPrices={this.props.exchange.prices}
+                        assetsPrices={this.props.exchange.prices.current}
                         assetsChart={assetsCharts}
+                        renderOptimization={false}
                       >
                         <ElementListAssets />
                       </ElementListWrapper>

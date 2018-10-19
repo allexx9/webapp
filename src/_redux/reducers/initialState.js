@@ -171,7 +171,10 @@ const initialState = {
       url: 'https://api.ercdex.com/api/standard',
       networkId: '42'
     },
-    prices: {}
+    prices: {
+      previous: {},
+      current: {}
+    }
   },
   transactions: {
     queue: new Map(),

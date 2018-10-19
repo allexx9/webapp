@@ -67,7 +67,7 @@ class PageVaultDetailsVaultManager extends Component {
   initVault = async () => {
     const poolApi = new PoolApi(this.context.api)
     const dragoId = this.props.match.params.dragoid
-    const vaultDetails = await utils.getDragoDetailsFromId(
+    const vaultDetails = await utils.getPoolDetailsFromId(
       dragoId,
       this.context.api
     )

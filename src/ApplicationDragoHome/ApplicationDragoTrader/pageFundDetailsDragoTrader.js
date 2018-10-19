@@ -216,9 +216,13 @@ class PageFundDetailsDragoTrader extends Component {
     let totalValue = 'N/A'
     let assetsValues = {}
     let tableLiquidity = [
-      ['Liquidity', 'N/A', ''],
-      ['Porfolio value', 'N/A', ''],
-      ['Total', 'N/A', '']
+      ['Liquidity', 'Calculating...', [<small key="dragoLiqEth">ETH</small>]],
+      [
+        'Porfolio value',
+        'Calculating...',
+        [<small key="dragoPortEth">ETH</small>]
+      ],
+      ['Total', 'Calculating...', [<small key="dragoPortTotEth">ETH</small>]]
     ]
     let estimatedPrice = 'N/A'
     if (typeof dragoDetails.dragoETHBalance !== 'undefined') {
@@ -243,19 +247,19 @@ class PageFundDetailsDragoTrader extends Component {
     // console.log(dragoAssetsList)
     if (
       dragoAssetsList.length !== 0 &&
-      Object.keys(this.props.exchange.prices).length !== 0
+      Object.keys(this.props.exchange.prices.current).length !== 0
     ) {
       if (typeof dragoDetails.dragoETHBalance !== 'undefined') {
         portfolioValue = utils.calculatePortfolioValue(
           dragoAssetsList,
-          this.props.exchange.prices
+          this.props.exchange.prices.current
         )
         totalValue = new BigNumber(dragoDetails.dragoETHBalance)
           .plus(portfolioValue)
           .toFixed(5)
         assetsValues = utils.calculatePieChartPortfolioValue(
           dragoAssetsList,
-          this.props.exchange.prices,
+          this.props.exchange.prices.current,
           dragoDetails.dragoETHBalance
         )
         tableLiquidity = [
@@ -276,7 +280,7 @@ class PageFundDetailsDragoTrader extends Component {
           .toFixed(5)
       }
     }
-
+    console.log(this.props)
     return (
       <Row>
         <Col xs={12}>
@@ -461,8 +465,9 @@ class PageFundDetailsDragoTrader extends Component {
                         renderEtherscanButton={this.renderEtherscanButton}
                         dragoDetails={dragoDetails}
                         autoLoading={false}
-                        assetsPrices={this.props.exchange.prices}
+                        assetsPrices={this.props.exchange.prices.current}
                         assetsChart={assetsCharts}
+                        renderOptimization={false}
                       >
                         <ElementListAssets />
                       </ElementListWrapper>

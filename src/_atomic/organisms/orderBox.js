@@ -52,7 +52,8 @@ class OrderBox extends Component {
   }
 
   state = {
-    orderRawDialogOpen: false
+    orderRawDialogOpen: false,
+    efxOrder: {}
   }
 
   static contextTypes = {
@@ -279,6 +280,9 @@ class OrderBox extends Component {
             protocol: '0x'
           }
           efxOrder.meta.sigType = 'contract'
+          this.setState({
+            efxOrder
+          })
           console.log(efxSymbol, efxAmount, selectedOrder.orderPrice)
           console.log(efxOrder)
           let parsedBody = await submitOrderToRelayEFX(
@@ -563,6 +567,7 @@ class OrderBox extends Component {
         </Col>
         <OrderRawDialog
           order={selectedOrder}
+          efxOrder={this.state.efxOrder}
           onSubmitOrder={this.onSubmitOrder}
           onClose={this.onCloseOrderRawDialog}
           open={this.state.orderRawDialogOpen}
