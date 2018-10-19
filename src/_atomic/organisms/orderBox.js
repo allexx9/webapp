@@ -173,6 +173,14 @@ class OrderBox extends Component {
     )
     console.log('Selected order', selectedOrder)
     console.log('Signed order', signedOrder)
+    console.log(signedOrder)
+    let { expirationUnixTimestampSec } = signedOrder
+    console.log(expirationUnixTimestampSec)
+    // expirationUnixTimestampSec = expirationUnixTimestampSec.toNumber()
+    console.log(expirationUnixTimestampSec)
+    expirationUnixTimestampSec = parseInt(expirationUnixTimestampSec)
+    signedOrder.expirationUnixTimestampSec = expirationUnixTimestampSec
+    console.log(signedOrder)
     const payload = {
       details: { order: signedOrder }
     }

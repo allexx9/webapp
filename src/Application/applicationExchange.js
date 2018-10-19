@@ -93,6 +93,15 @@ class ApplicationExchangePage extends Component {
             </Col>
           </Row>
           <MuiThemeProvider muiTheme={muiThemeExchange}>
+            {endpoint.networkInfo.id === 42 && (
+              <Row className={classNames(styles.content)}>
+                <Col xs={12}>
+                  <div style={{ textAlign: 'center', marginTop: '25px' }}>
+                    Exchange only available on Ropsten network.
+                  </div>
+                </Col>
+              </Row>
+            )}
             {/* <Row className={classNames(styles.content)}>
               <Col xs={12}>
                 <div style={{ textAlign: 'center', marginTop: '25px' }}>
@@ -106,14 +115,18 @@ class ApplicationExchangePage extends Component {
                 !endpoint.isMetaMaskNetworkCorrect ? (
                   <WalletSetup />
                 ) : (
-                  <div>
-                    <ApplicationExchangeHome
-                      key={'Exchange' + endpoint.lastMetaMaskUpdateTime}
-                      location={location}
-                      notificationsOpen={notificationsOpen}
-                      handleToggleNotifications={this.handleToggleNotifications}
-                    />
-                  </div>
+                  endpoint.networkInfo.id !== 42 && (
+                    <div>
+                      <ApplicationExchangeHome
+                        key={'Exchange' + endpoint.lastMetaMaskUpdateTime}
+                        location={location}
+                        notificationsOpen={notificationsOpen}
+                        handleToggleNotifications={
+                          this.handleToggleNotifications
+                        }
+                      />
+                    </div>
+                  )
                 )}
               </Col>
             </Row>

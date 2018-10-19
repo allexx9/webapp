@@ -5,7 +5,7 @@ import * as TYPE_ from '../actions/const'
 import { Actions } from '../actions/'
 import { DEBUGGING, INFURA, LOCAL, RIGOBLOCK } from '../../_utils/const'
 import { Interfaces } from '../../_utils/interfaces'
-import { Observable, defer, from, merge, timer } from 'rxjs'
+import { Observable, defer, from, merge, observable, timer } from 'rxjs'
 import {
   catchError,
   delay,
@@ -357,7 +357,9 @@ export const monitorEventfulEpic = (action$, state$) => {
           //   ? { balance: false, supply: true, limit: 20, trader: false, drago: true }
           //   : { balance: true, supply: false, limit: 20, trader: true, drago: true }
           // console.log(options)
-          console.log('DRAGO transactions fetch trader')
+          console.log(
+            'Eventful subscription - > DRAGO transactions fetch trader'
+          )
           observablesArray.push(Observable.of(DEBUGGING.DUMB_ACTION))
           // observablesArray.push(
           //   Observable.of(
@@ -375,7 +377,9 @@ export const monitorEventfulEpic = (action$, state$) => {
           //     )
           //   )
           // )
-          console.log('DRAGO transactions fetch manager')
+          console.log(
+            'Eventful subscription - > DRAGO transactions fetch manager'
+          )
           // observablesArray.push(
           //   Observable.of(
           //     Actions.endpoint.getAccountsTransactions(
@@ -393,7 +397,9 @@ export const monitorEventfulEpic = (action$, state$) => {
           //   )
           // )
 
-          console.log('VAULT transactions fetch trader')
+          console.log(
+            'Eventful subscription - > VAULT transactions fetch trader'
+          )
           observablesArray.push(Observable.of(DEBUGGING.DUMB_ACTION))
           // observablesArray.push(
           //   Observable.of(
@@ -411,7 +417,9 @@ export const monitorEventfulEpic = (action$, state$) => {
           //     )
           //   )
           // )
-          console.log('VAULT transactions fetch manager')
+          console.log(
+            'Eventful subscription - > VAULT transactions fetch manager'
+          )
           // observablesArray.push(
           //   Observable.of(
           //     Actions.endpoint.getAccountsTransactions(
@@ -523,45 +531,129 @@ export const monitorAccountsEpic = (action$, state$) => {
               })
             )
           if (DEBUGGING.initAccountsTransactionsInEpic) {
+            const currentState = state$.value
             if (accountsUpdate[2]) {
               //   let options = state$.value.user.isManager
               //   ? { balance: false, supply: true, limit: 20, trader: false, drago: true }
               //   : { balance: true, supply: false, limit: 20, trader: true, drago: true }
               // console.log(options)
-              console.log('Transactions fetch trader')
-              // observablesArray.push(
-              //   Observable.of(
-              //     Actions.endpoint.getAccountsTransactions(
-              //       action.payload.api,
-              //       null,
-              //       accountsUpdate[0].accounts,
-              //       {
-              //         balance: false,
-              //         supply: true,
-              //         limit: 20,
-              //         trader: false,
-              //         drago: true
-              //       }
-              //     )
-              //   )
-              // )
-              console.log('Transactions fetch manager')
-              // observablesArray.push(
-              //   Observable.of(
-              //     Actions.endpoint.getAccountsTransactions(
-              //       action.payload.api,
-              //       null,
-              //       accountsUpdate[0].accounts,
-              //       {
-              //         balance: true,
-              //         supply: false,
-              //         limit: 20,
-              //         trader: true,
-              //         drago: true
-              //       }
-              //     )
-              //   )
-              // )
+              if (
+                currentState.transactionsDrago.selectedDrago.details.dragoId
+              ) {
+                console.log(
+                  'Account monitoring - > DRAGO transactions fetch: Trader: ' +
+                    state$.value.user.isManager
+                )
+                observablesArray.push(
+                  Observable.of(
+                    Actions.drago.getPoolDetails(
+                      currentState.transactionsDrago.selectedDrago.details
+                        .dragoId,
+                      action.payload.api,
+                      {
+                        poolType: 'drago'
+                      }
+                    )
+                  )
+                )
+              }
+
+              if (
+                currentState.transactionsVault.selectedVault.details.vaultId
+              ) {
+                console.log(
+                  'Account monitoring - > VAULT transactions fetch. Trader ' +
+                    state$.value.user.isManager
+                )
+                observablesArray.push(
+                  Observable.of(
+                    Actions.drago.getPoolDetails(
+                      currentState.transactionsVault.selectedVault.details
+                        .vaultId,
+                      action.payload.api,
+                      {
+                        poolType: 'vault'
+                      }
+                    )
+                  )
+                )
+              }
+              // observablesArray.push(Observable.of(DEBUGGING.DUMB_ACTION))
+              observablesArray.push(
+                Observable.of(
+                  Actions.endpoint.getAccountsTransactions(
+                    action.payload.api,
+                    null,
+                    currentState.endpoint.accounts,
+                    {
+                      balance: false,
+                      supply: true,
+                      limit: 20,
+                      trader: false,
+                      drago: true
+                    }
+                  )
+                )
+              )
+              console.log(
+                'Account monitoring - > DRAGO transactions fetch manager'
+              )
+              observablesArray.push(
+                Observable.of(
+                  Actions.endpoint.getAccountsTransactions(
+                    action.payload.api,
+                    null,
+                    currentState.endpoint.accounts,
+                    {
+                      balance: true,
+                      supply: false,
+                      limit: 20,
+                      trader: true,
+                      drago: true
+                    }
+                  )
+                )
+              )
+
+              console.log(
+                'Account monitoring - > VAULT transactions fetch trader'
+              )
+              observablesArray.push(Observable.of(DEBUGGING.DUMB_ACTION))
+              observablesArray.push(
+                Observable.of(
+                  Actions.endpoint.getAccountsTransactions(
+                    action.payload.api,
+                    null,
+                    currentState.endpoint.accounts,
+                    {
+                      balance: false,
+                      supply: true,
+                      limit: 20,
+                      trader: false,
+                      drago: false
+                    }
+                  )
+                )
+              )
+              console.log(
+                'Account monitoring - > VAULT transactions fetch manager'
+              )
+              observablesArray.push(
+                Observable.of(
+                  Actions.endpoint.getAccountsTransactions(
+                    action.payload.api,
+                    null,
+                    currentState.endpoint.accounts,
+                    {
+                      balance: true,
+                      supply: false,
+                      limit: 20,
+                      trader: true,
+                      drago: false
+                    }
+                  )
+                )
+              )
             }
           }
 

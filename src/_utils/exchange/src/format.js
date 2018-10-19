@@ -102,7 +102,6 @@ export const tickers = {
       priceUsd: null,
       symbol: 'WETH'
     })
-    console.log(tickersList)
     return tickersList
   },
   [Ethfinex]: tickers => {

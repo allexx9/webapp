@@ -116,9 +116,10 @@ class utilities {
           // )
           if (
             !new BigNumber(newEthBalance).eq(prevEthBalance) &&
-            prevBlockNumber !== 0
+            // prevBlockNumber !== 0 &&
+            prevNonce !== 0
           ) {
-            console.log(`${account.name} balance changed.`)
+            console.log(`ETH ${account.name} balance changed.`)
             fetchTransactions = true
             let secondaryText = []
             let balDifference = prevEthBalance.minus(newEthBalance)
@@ -160,9 +161,10 @@ class utilities {
           // console.log(newgrgBalance, prevGrgBalance)
           if (
             !new BigNumber(newgrgBalance).eq(prevGrgBalance) &&
-            prevBlockNumber !== 0
+            // prevBlockNumber !== 0 &&
+            prevNonce !== 0
           ) {
-            console.log(`${account.name} balance changed.`)
+            console.log(`GRG ${account.name} balance changed.`)
             fetchTransactions = true
             let secondaryText = []
             let balDifference = prevGrgBalance.minus(newgrgBalance)
@@ -1713,6 +1715,7 @@ class utilities {
   }
 
   getTransactionsSingleVault = async (poolAddress, api, accounts, options) => {
+    console.log(poolAddress)
     const poolApi = new PoolApi(api)
     await poolApi.contract.vaulteventful.init()
     const contract = poolApi.contract.vaulteventful
@@ -1877,13 +1880,14 @@ class utilities {
           results.sort(function(x, y) {
             return y.timestamp - x.timestamp
           })
-          // this.props.dispatch(
-          //   Actions.drago.updateSelectedDrago({
-          //     transactions: results
-          //   })
-          // )
+          console.log(
+            `${
+              this.constructor.name
+            } -> Single Vault Transactions list loaded: trader ${
+              options.trader
+            }`
+          )
           console.log(results)
-          console.log(`${this.constructor.name} -> Transactions list loaded`)
           return results
         })
       })
@@ -1961,7 +1965,8 @@ class utilities {
       5,
       api
     )
-
+    console.log(dragoDetails)
+    console.log(dragoData)
     let details = {
       address: dragoDetails[0][0],
       name:
@@ -1989,7 +1994,7 @@ class utilities {
         balanceDRG = balanceDRG.plus(balance)
       })
     )
-    balanceDRG = formatCoins(balanceDRG, 5, api)
+    balanceDRG = formatCoins(balanceDRG, 4, api)
     details = { ...details, balanceDRG }
     return details
   }

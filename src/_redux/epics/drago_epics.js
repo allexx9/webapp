@@ -180,7 +180,8 @@ const getPoolDetails$ = (poolId, api, options, state$) => {
               sellPrice: null,
               totalSupply: null,
               created: '01 January 1970',
-              balanceDRG: null
+              balanceDRG: null,
+              fee: null
             })
       })
       .then(() => {
@@ -249,7 +250,7 @@ export const getPoolDetailsEpic = (action$, state$) => {
             observablesArray.push(
               Actions.drago.updateSelectedDrago({ details })
             )
-            if (typeof details.totalSupply !== 'undefined') {
+            if (details.totalSupply !== null) {
               observablesArray.push(
                 Actions.drago.getPoolTransactions(
                   action.payload.api,
@@ -268,7 +269,7 @@ export const getPoolDetailsEpic = (action$, state$) => {
             observablesArray.push(
               Actions.vault.updateSelectedVault({ details })
             )
-            if (typeof details.totalSupply !== 'undefined') {
+            if (details.totalSupply !== null) {
               observablesArray.push(
                 Actions.drago.getPoolTransactions(
                   action.payload.api,

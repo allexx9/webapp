@@ -258,6 +258,7 @@ class PageDashboardDragoManager extends Component {
                     <ElementListWrapper
                       list={dragoList}
                       loading={this.state.loading}
+                      autoLoading={false}
                     >
                       <ElementListSupply />
                     </ElementListWrapper>
@@ -291,6 +292,7 @@ class PageDashboardDragoManager extends Component {
                       renderCopyButton={this.renderCopyButton}
                       renderEtherscanButton={this.renderEtherscanButton}
                       loading={this.state.loading}
+                      autoLoading={false}
                       pagination={{
                         display: 10,
                         number: 1

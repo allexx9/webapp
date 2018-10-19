@@ -166,7 +166,7 @@ export function eventfulVaultReducer(
     case TYPE_.UPDATE_SELECTED_VAULT_DETAILS_RESET:
       return {
         ...state,
-        selectedDrago: {
+        selectedVault: {
           details: {},
           transactions: []
         }

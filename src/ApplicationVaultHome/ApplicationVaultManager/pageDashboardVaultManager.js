@@ -265,7 +265,7 @@ class PageDashboardVaultManager extends Component {
                     </div>
 
                     <div className={styles.sectionParagraph}>Your vaults:</div>
-                    <ElementListWrapper list={vaultList}>
+                    <ElementListWrapper list={vaultList} autoLoading={false}>
                       <ElementListSupply />
                     </ElementListWrapper>
                   </Col>
@@ -301,6 +301,7 @@ class PageDashboardVaultManager extends Component {
                       list={vaultTransactionsLogs}
                       renderCopyButton={this.renderCopyButton}
                       renderEtherscanButton={this.renderEtherscanButton}
+                      autoLoading={false}
                       pagination={{
                         display: 10,
                         number: 1

@@ -5,3 +5,9 @@
   text-align: center;
   padding-top: 0.5em;
 }
+
+.loadingWheel{
+  display: inline-block;
+  margin-right: 10px;
+  width: 50px;
+}

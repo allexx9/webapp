@@ -24,6 +24,7 @@ import InfoTable from '../../Elements/elementInfoTable'
 import Loading from '../../_atomic/atoms/loading'
 import Paper from 'material-ui/Paper'
 import PoolApi from '../../PoolsApi/src'
+import PoolHoldingSupply from '../../_atomic/molecules/poolHoldingSupply'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import Search from 'material-ui/svg-icons/action/search'
@@ -366,11 +367,10 @@ class PageFundDetailsDragoManager extends Component {
                           Total supply:
                         </div>
                         <div className={styles.holdings}>
-                          <span>{dragoDetails.totalSupply}</span>{' '}
-                          <small className={styles.myPositionTokenSymbol}>
-                            {dragoDetails.symbol.toUpperCase()}
-                          </small>
-                          <br />
+                          <PoolHoldingSupply
+                            amount={dragoDetails.totalSupply}
+                            symbol={dragoDetails.symbol.toUpperCase()}
+                          />
                         </div>
                         <InfoTable
                           rows={tableInfo}
@@ -473,6 +473,7 @@ class PageFundDetailsDragoManager extends Component {
                         renderEtherscanButton={this.renderEtherscanButton}
                         dragoDetails={dragoDetails}
                         loading={loading}
+                        autoLoading={false}
                         assetsPrices={this.props.exchange.prices.current}
                         assetsChart={assetsCharts}
                         renderOptimization={false}

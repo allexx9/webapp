@@ -259,7 +259,7 @@ export const getPricesEpic = (action$, state$) =>
               }
             }),
             tap(val => {
-              console.log(val)
+              // console.log(val)
               return val
             }),
             map(payload => ({ type: TOKENS_TICKERS_UPDATE, payload })),

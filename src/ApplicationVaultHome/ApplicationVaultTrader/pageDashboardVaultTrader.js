@@ -256,7 +256,10 @@ class PageDashboardVaultTrader extends Component {
                 <Row>
                   <Col xs={12}>
                     <div className={styles.sectionParagraph}>Your vaults:</div>
-                    <ElementListWrapper list={vaultBalances}>
+                    <ElementListWrapper
+                      list={vaultBalances}
+                      autoLoading={false}
+                    >
                       <ElementListBalances />
                     </ElementListWrapper>
                   </Col>
@@ -292,6 +295,7 @@ class PageDashboardVaultTrader extends Component {
                       list={vaultTransactionsLogs}
                       renderCopyButton={this.renderCopyButton}
                       renderEtherscanButton={this.renderEtherscanButton}
+                      autoLoading={false}
                       pagination={{
                         display: 10,
                         number: 1

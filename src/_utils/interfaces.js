@@ -196,8 +196,13 @@ class Interfaces {
     try {
       const accountsMetaMask = await this.getAccountsMetamask(api)
       const allAccounts = { ...accountsMetaMask }
-      console.log('Metamask account loaded: ', accountsMetaMask)
       const blockNumber = await api.eth.blockNumber()
+      console.log(
+        'Metamask account loaded: ',
+        accountsMetaMask,
+        blockNumber.toFixed()
+      )
+
       const stateUpdate = {
         loading: false,
         prevBlockNumber: blockNumber.toFixed(),

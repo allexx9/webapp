@@ -6,10 +6,8 @@ import { ENDPOINTS, PROD } from '../../_utils/const'
 import { Link, withRouter } from 'react-router-dom'
 import { Tab, Tabs } from 'material-ui/Tabs'
 import { connect } from 'react-redux'
-import { formatCoins, formatEth } from '../../_utils/format'
 import ActionList from 'material-ui/svg-icons/action/list'
 import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
-import BigNumber from 'bignumber.js'
 import CopyContent from 'material-ui/svg-icons/content/content-copy'
 import ElementFeesBox from '../Elements/elementFeesBox'
 import ElementFundNotFound from '../../Elements/elementFundNotFound'
@@ -20,7 +18,7 @@ import FundHeader from '../../_atomic/molecules/fundHeader'
 import InfoTable from '../../Elements/elementInfoTable'
 import Loading from '../../_atomic/atoms/loading'
 import Paper from 'material-ui/Paper'
-import PoolApi from '../../PoolsApi/src'
+import PoolHoldingSupply from '../../_atomic/molecules/poolHoldingSupply'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import Search from 'material-ui/svg-icons/action/search'
@@ -72,7 +70,16 @@ class PageFundDetailsVaultTrader extends Component {
     )
   }
 
-  componentWillUnmount() {}
+  componentWillUnmount() {
+    this.props.dispatch(Actions.tokens.priceTickersStop())
+    this.props.dispatch(Actions.exchange.getPortfolioChartDataStop())
+    this.props.dispatch(
+      Actions.vault.updateSelectedVault(
+        { details: {}, transactions: [] },
+        { reset: true }
+      )
+    )
+  }
 
   shouldComponentUpdate(nextProps, nextState) {
     //
@@ -281,11 +288,10 @@ class PageFundDetailsVaultTrader extends Component {
                           Total supply:
                         </div>
                         <div className={styles.holdings}>
-                          <span>{vaultDetails.totalSupply}</span>{' '}
-                          <small className={styles.myPositionTokenSymbol}>
-                            {vaultDetails.symbol.toUpperCase()}
-                          </small>
-                          <br />
+                          <PoolHoldingSupply
+                            amount={vaultDetails.totalSupply}
+                            symbol={vaultDetails.symbol.toUpperCase()}
+                          />
                         </div>
                         <InfoTable
                           rows={tableInfo}
@@ -303,13 +309,10 @@ class PageFundDetailsVaultTrader extends Component {
                                 Your total holding:
                               </div>
                               <div className={styles.holdings}>
-                                <span className={holdingFadeStyle}>
-                                  {vaultDetails.balanceDRG}
-                                </span>{' '}
-                                <small className={styles.myPositionTokenSymbol}>
-                                  {vaultDetails.symbol.toUpperCase()}
-                                </small>
-                                <br />
+                                <PoolHoldingSupply
+                                  amount={vaultDetails.balanceDRG}
+                                  symbol={vaultDetails.symbol.toUpperCase()}
+                                />
                               </div>
                             </div>
                           </Col>
@@ -376,6 +379,7 @@ class PageFundDetailsVaultTrader extends Component {
                       renderCopyButton={this.renderCopyButton}
                       renderEtherscanButton={this.renderEtherscanButton}
                       loading={loading}
+                      autoLoading={false}
                       pagination={{
                         display: 10,
                         number: 1

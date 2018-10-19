@@ -8,7 +8,7 @@ import { ZeroEx } from '0x.js'
 import Web3 from 'web3'
 // import ReconnectingWebSocket from 'reconnectingwebsocket'
 import PoolApi from '../PoolsApi/src'
-import rp from 'request-promise'
+import rp, { post } from 'request-promise'
 
 export const setAllowaceOnExchangeThroughDrago = (
   selectedFund,
@@ -387,13 +387,17 @@ export const submitOrderToRelayEFX = async (efxOrder, networkId) => {
       relayerApiUrl = `https://test.ethfinex.com/trustless/v1/w/on`
   }
 
+  let efxOderStingified = JSON.stringify(efxOrder)
+  console.log(efxOderStingified)
+
+  console.log(efxOrder)
   let options = {
     method: 'POST',
     uri: relayerApiUrl,
     body: efxOrder,
     json: true // Automatically stringifies the body to JSON
   }
-
+  post(relayerApiUrl, { json: efxOrder })
   return rp(options)
 }
 
@@ -548,22 +552,55 @@ export const newMakerOrder = async (
         : selectedTokensPair.baseToken.address
   }
 
+  // const expirationUnixTimestampSec = new BigNumber(
+  //   Math.round(new Date().getTime() / 1000) + (defaultExpiry || 60) * 60 * 12
+  // ).toNumber()
+
+  const expirationUnixTimestampSec = new BigNumber(
+    Math.round(new Date().getTime() / 1000) + (defaultExpiry || 60) * 60 * 12
+  )
+
+  // part after the plus can be replaced, first part is constant
+  const web3 = new Web3()
   const order = {
-    maker: selectedFund.details.address.toLowerCase(),
-    taker: selectedExchange.taker.toLowerCase(),
+    expirationUnixTimestampSec: web3.utils
+      .toBN(
+        Math.round(new Date().getTime() / 1000) +
+          (defaultExpiry || 60) * 60 * 12
+      )
+      .toString(10),
     feeRecipient: selectedExchange.feeRecipient.toLowerCase(),
+
+    maker: selectedFund.details.address.toLowerCase(),
+    makerFee: web3.utils.toBN('0'),
     makerTokenAddress: makerTokenAddress.toLowerCase(),
-    takerTokenAddress: takerTokenAddress.toLowerCase(),
-    exchangeContractAddress: selectedExchange.exchangeContractAddress.toLowerCase(),
+
     salt: ZeroEx.generatePseudoRandomSalt(),
-    makerFee: '0',
-    takerFee: '0',
-    makerTokenAmount: '0', // Base 18 decimals
-    takerTokenAmount: '0', // Base 18 decimals
-    expirationUnixTimestampSec: new BigNumber(
-      Math.round(new Date().getTime() / 1000) + (defaultExpiry || 60) * 60 * 12
-    ) // part after the plus can be replaced, first part is constant
+    taker: selectedExchange.taker.toLowerCase(),
+    takerFee: web3.utils.toBN('0'),
+    takerTokenAddress: takerTokenAddress.toLowerCase(),
+
+    exchangeContractAddress: selectedExchange.exchangeContractAddress.toLowerCase()
   }
+
+  // const order = {
+  //   expirationUnixTimestampSec: web3.utils.toBN(expiration).toString(10),
+  //   feeRecipient: efx.config['0x'].ethfinexAddress.toLowerCase(),
+
+  //   maker: efx.get('account').toLowerCase(),
+  //   makerFee: web3.utils.toBN('0'),
+  //   makerTokenAddress: sellCurrency.wrapperAddress.toLowerCase(),
+  //   makerTokenAmount: sellAmount,
+
+  //   salt: ZeroEx.generatePseudoRandomSalt(),
+  //   taker: efx.config['0x'].ethfinexAddress.toLowerCase(),
+  //   takerFee: web3.utils.toBN('0'),
+  //   takerTokenAddress: buyCurrency.wrapperAddress.toLowerCase(),
+  //   takerTokenAmount: buyAmount,
+
+  //   exchangeContractAddress: efx.config['0x'].exchangeAddress.toLowerCase()
+  // }
+
   console.log(order)
   return order
 }
