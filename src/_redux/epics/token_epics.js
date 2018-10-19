@@ -265,7 +265,7 @@ export const getPricesEpic = (action$, state$) =>
             map(payload => ({ type: TOKENS_TICKERS_UPDATE, payload })),
             catchError(() => {
               return Observable.of({
-                type: QUEUE_ERROR_NOTIFICATION,
+                type: 'QUEUE_ERROR_NOTIFICATION_SILENT',
                 payload: 'Error fetching tickers data.'
               })
             })
@@ -273,7 +273,7 @@ export const getPricesEpic = (action$, state$) =>
         }),
         catchError(() => {
           return Observable.of({
-            type: QUEUE_ERROR_NOTIFICATION,
+            type: 'QUEUE_ERROR_NOTIFICATION_SILENT',
             payload: 'Error fetching tickers data.'
           })
         })

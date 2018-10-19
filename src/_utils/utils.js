@@ -545,6 +545,99 @@ class utilities {
     return rangesArray
   }
 
+  logToEvent = (log, dragoSymbolRegistry, api) => {
+    const key = api.util.sha3(JSON.stringify(log))
+
+    const {
+      address,
+      blockNumber,
+      event,
+      logIndex,
+      returnValues,
+      transactionHash,
+      transactionIndex
+    } = log
+
+    const hexToString = hex => {
+      let string = ''
+      for (let i = 0; i < hex.length; i += 2) {
+        string += String.fromCharCode(parseInt(hex.substr(i, 2), 16))
+      }
+      return string
+    }
+
+    // Getting the transaction amounts if it's a buy or sell event
+    let ethvalue,
+      drgvalue = 0
+
+    if (
+      typeof returnValues.amount !== 'undefined' &&
+      typeof returnValues.revenue !== 'undefined'
+    ) {
+      ethvalue =
+        event === 'BuyDrago' || event === 'BuyVault'
+          ? formatEth(returnValues.amount, null, api)
+          : formatEth(returnValues.revenue, null, api)
+      drgvalue =
+        event === 'SellDrago' || event === 'SellVault'
+          ? formatCoins(returnValues.amount, null, api)
+          : formatCoins(returnValues.revenue, null, api)
+    }
+    // Creating a map with list of dragos
+    if (
+      event === 'BuyDrago' ||
+      event === 'DragoCreated' ||
+      event === 'BuyVault' ||
+      event === 'VaultCreated'
+    ) {
+      let poolAddress = returnValues.drago || returnValues.vault
+      let data
+      if (returnValues.drago) {
+        data = {
+          symbol: returnValues.symbol,
+          vaultId: null,
+          name: null,
+          address: poolAddress
+        }
+      }
+      if (returnValues.vault) {
+        data = {
+          symbol: returnValues.symbol,
+          vaultId: null,
+          name: null,
+          address: poolAddress
+        }
+      }
+
+      !dragoSymbolRegistry.has(poolAddress)
+        ? dragoSymbolRegistry.set(poolAddress, data)
+        : null
+    }
+    let symbol
+    if (typeof returnValues.symbol === 'string') {
+      '0x' === returnValues.symbol.substring(0, 2)
+        ? (symbol = hexToString(returnValues.symbol.substring(2)))
+        : (symbol = returnValues.symbol)
+    } else {
+      for (let i = 0; i < returnValues.symbol.length; ++i) {
+        symbol += String.fromCharCode(returnValues.symbol[i])
+      }
+    }
+    return {
+      address,
+      type: event,
+      blockNumber: new BigNumber(blockNumber),
+      logIndex,
+      transactionHash,
+      transactionIndex,
+      params: returnValues,
+      key,
+      ethvalue,
+      drgvalue,
+      symbol: symbol
+    }
+  }
+
   getTransactionsVaultOptV2 = async (
     api,
     poolAddress,
@@ -590,67 +683,71 @@ class utilities {
         options.drago ? 'DRAGO' : 'VAULT'
       } events fetching started *****`
     )
+    // const logToEvent = log => {
+    //   const key = api.util.sha3(JSON.stringify(log))
+    //   const {
+    //     blockNumber,
+    //     logIndex,
+    //     transactionHash,
+    //     transactionIndex,
+    //     params,
+    //     type
+    //   } = log
+
+    //   // Getting the transaction amounts if it's a buy or sell event
+    //   let ethvalue,
+    //     drgvalue = 0
+
+    //   if (
+    //     typeof params.amount !== 'undefined' &&
+    //     typeof params.revenue !== 'undefined'
+    //   ) {
+    //     ethvalue =
+    //       log.event === 'BuyVault'
+    //         ? formatEth(params.amount.value, null, api)
+    //         : formatEth(params.revenue.value, null, api)
+    //     drgvalue =
+    //       log.event === 'SellVault'
+    //         ? formatCoins(params.amount.value, null, api)
+    //         : formatCoins(params.revenue.value, null, api)
+    //   }
+    //   // Creating a map with list of vaults
+    //   if (log.event === 'BuyVault' || log.event === 'VaultCreated') {
+    //     const vaultData = {
+    //       symbol: params.symbol.value,
+    //       vaultId: null,
+    //       name: null,
+    //       address: params.vault.value
+    //     }
+    //     !dragoSymbolRegistry.has(params.vault.value)
+    //       ? dragoSymbolRegistry.set(params.vault.value, vaultData)
+    //       : null
+    //   }
+    //   let symbol
+    //   if (typeof params.symbol.value === 'string') {
+    //     symbol = params.symbol.value
+    //   } else {
+    //     for (let i = 0; i < params.symbol.value.length; ++i) {
+    //       symbol += String.fromCharCode(params.symbol.value[i])
+    //     }
+    //   }
+    //   return {
+    //     type: log.event,
+    //     state: type,
+    //     blockNumber,
+    //     logIndex,
+    //     transactionHash,
+    //     transactionIndex,
+    //     params,
+    //     key,
+    //     ethvalue,
+    //     drgvalue,
+    //     symbol: symbol
+    //   }
+    // }
+
     const logToEvent = log => {
-      const key = api.util.sha3(JSON.stringify(log))
-      const {
-        blockNumber,
-        logIndex,
-        transactionHash,
-        transactionIndex,
-        params,
-        type
-      } = log
-
-      // Getting the transaction amounts if it's a buy or sell event
-      let ethvalue,
-        drgvalue = 0
-
-      if (
-        typeof params.amount !== 'undefined' &&
-        typeof params.revenue !== 'undefined'
-      ) {
-        ethvalue =
-          log.event === 'BuyVauld'
-            ? formatEth(params.amount.value, null, api)
-            : formatEth(params.revenue.value, null, api)
-        drgvalue =
-          log.event === 'SellVault'
-            ? formatCoins(params.amount.value, null, api)
-            : formatCoins(params.revenue.value, null, api)
-      }
-      // Creating a map with list of vaults
-      if (log.event === 'BuyVault' || log.event === 'VaultCreated') {
-        const vaultData = {
-          symbol: params.symbol.value,
-          vaultId: null,
-          name: null,
-          address: params.vault.value
-        }
-        !dragoSymbolRegistry.has(params.vault.value)
-          ? dragoSymbolRegistry.set(params.vault.value, vaultData)
-          : null
-      }
-      let symbol
-      if (typeof params.symbol.value === 'string') {
-        symbol = params.symbol.value
-      } else {
-        for (let i = 0; i < params.symbol.value.length; ++i) {
-          symbol += String.fromCharCode(params.symbol.value[i])
-        }
-      }
-      return {
-        type: log.event,
-        state: type,
-        blockNumber,
-        logIndex,
-        transactionHash,
-        transactionIndex,
-        params,
-        key,
-        ethvalue,
-        drgvalue,
-        symbol: symbol
-      }
+      return this.logToEvent(log, dragoSymbolRegistry, api)
     }
 
     // Getting all buyDrago and selDrago events since block 0.
@@ -682,7 +779,7 @@ class utilities {
         const poolsList = await poolApi.contract.vaultfactory
           .getVaultsByAddress(account.address)
           .then(results => {
-            console.log(results)
+            console.log('getVaultsByAddress', results)
             return results
           })
           .catch(error => {
@@ -1095,69 +1192,83 @@ class utilities {
         options.drago ? 'DRAGO' : 'VAULT'
       } events fetching started *****`
     )
+    // const logToEvent = log => {
+    //   console.log(log)
+    //   const key = api.util.sha3(JSON.stringify(log))
+    //   // const {
+    //   //   blockNumber,
+    //   //   logIndex,
+    //   //   transactionHash,
+    //   //   transactionIndex,
+    //   //   params,
+    //   //   type
+    //   // } = log
+
+    //   const {
+    //     address,
+    //     blockNumber,
+    //     event,
+    //     logIndex,
+    //     returnValues,
+    //     transactionHash,
+    //     transactionIndex
+    //   } = log
+
+    //   // Getting the transaction amounts if it's a buy or sell event
+    //   let ethvalue,
+    //     drgvalue = 0
+
+    //   if (
+    //     typeof returnValues.amount !== 'undefined' &&
+    //     typeof returnValues.revenue !== 'undefined'
+    //   ) {
+    //     ethvalue =
+    //       event === 'BuyDrago'
+    //         ? formatEth(returnValues.amount, null, api)
+    //         : formatEth(returnValues.revenue, null, api)
+    //     drgvalue =
+    //       event === 'SellDrago'
+    //         ? formatCoins(returnValues.amount, null, api)
+    //         : formatCoins(returnValues.revenue, null, api)
+    //   }
+    //   // Creating a map with list of dragos
+    //   if (event === 'BuyDrago' || event === 'DragoCreated') {
+    //     const dragoData = {
+    //       symbol: returnValues.symbol,
+    //       dragoId: null,
+    //       name: null,
+    //       address: returnValues.drago
+    //     }
+    //     !dragoSymbolRegistry.has(returnValues.drago)
+    //       ? dragoSymbolRegistry.set(returnValues.drago, dragoData)
+    //       : null
+    //   }
+    //   let symbol
+    //   if (typeof returnValues.symbol === 'string') {
+    //     symbol = returnValues.symbol
+    //   } else {
+    //     for (let i = 0; i < returnValues.symbol.length; ++i) {
+    //       symbol += String.fromCharCode(returnValues.symbol[i])
+    //     }
+    //   }
+    //   return {
+    //     address,
+    //     type: event,
+    //     blockNumber: new BigNumber(blockNumber),
+    //     logIndex,
+    //     transactionHash,
+    //     transactionIndex,
+    //     params: returnValues,
+    //     key,
+    //     ethvalue,
+    //     drgvalue,
+    //     symbol: symbol
+    //   }
+    // }
+
     const logToEvent = log => {
-      const key = api.util.sha3(JSON.stringify(log))
-      const {
-        blockNumber,
-        logIndex,
-        transactionHash,
-        transactionIndex,
-        params,
-        type
-      } = log
-
-      // Getting the transaction amounts if it's a buy or sell event
-      let ethvalue,
-        drgvalue = 0
-
-      if (
-        typeof params.amount !== 'undefined' &&
-        typeof params.revenue !== 'undefined'
-      ) {
-        ethvalue =
-          log.event === 'BuyDrago'
-            ? formatEth(params.amount.value, null, api)
-            : formatEth(params.revenue.value, null, api)
-        drgvalue =
-          log.event === 'SellDrago'
-            ? formatCoins(params.amount.value, null, api)
-            : formatCoins(params.revenue.value, null, api)
-      }
-      // Creating a map with list of dragos
-      if (log.event === 'BuyDrago' || log.event === 'DragoCreated') {
-        const dragoData = {
-          symbol: params.symbol.value,
-          dragoId: null,
-          name: null,
-          address: params.drago.value
-        }
-        !dragoSymbolRegistry.has(params.drago.value)
-          ? dragoSymbolRegistry.set(params.drago.value, dragoData)
-          : null
-      }
-      let symbol
-      if (typeof params.symbol.value === 'string') {
-        symbol = params.symbol.value
-      } else {
-        for (let i = 0; i < params.symbol.value.length; ++i) {
-          symbol += String.fromCharCode(params.symbol.value[i])
-        }
-      }
-      return {
-        type: log.event,
-        state: type,
-        blockNumber,
-        logIndex,
-        transactionHash,
-        transactionIndex,
-        params,
-        key,
-        ethvalue,
-        drgvalue,
-        symbol: symbol
-      }
+      return this.logToEvent(log, dragoSymbolRegistry, api)
     }
-
     // Getting all buyDrago and selDrago events since block 0.
     // dragoFactoryEventsSignatures accesses the contract ABI, gets all the events and for each creates a hex signature
     // to be passed to getAllLogs. Events are indexed and filtered by topics
@@ -1187,6 +1298,7 @@ class utilities {
         const poolsList = await poolApi.contract.dragofactory
           .getDragosByAddress(account.address)
           .then(results => {
+            console.log('getDragosByAddress', results)
             console.log('executed')
             return results
           })
@@ -1223,6 +1335,7 @@ class utilities {
           return api.eth.blockNumber().then(lastBlock => {
             let chunck = 100000
             const chunks = this.blockChunks(fromBlock, lastBlock, chunck)
+            console.log(chunks)
             arrayPromises = chunks.map(async chunk => {
               // Pushing chunk logs into array
               let options = {
@@ -1237,6 +1350,7 @@ class utilities {
               if (options.trader) {
               } else {
               }
+              console.log(results)
               let dragoTransactionsLog = Array(0).concat(...results)
               const logs = dragoTransactionsLog.map(logToEvent)
               return logs
@@ -1265,14 +1379,15 @@ class utilities {
 
         let promisesEvents = null
 
-        if (options.trader) {
-          promisesEvents = [getChunkedEvents(topicsBuySell)]
-        } else {
-          promisesEvents = [getChunkedEvents(topicsCreate)]
-        }
+        options.trader
+          ? (promisesEvents = [getChunkedEvents(topicsBuySell)])
+          : (promisesEvents = [getChunkedEvents(topicsCreate)])
+
         return Promise.all(promisesEvents)
           .then(results => {
             let allLogs = [...results[0]]
+            console.log(options.trader)
+            console.log(allLogs)
             // Creating an array of promises that will be executed to add timestamp and symbol to each entry
             // Doing so because for each entry we need to make an async call to the client
             // For additional refernce: https://stackoverflow.com/questions/39452083/using-promise-function-inside-javascript-array-map
@@ -1559,41 +1674,61 @@ class utilities {
     const logToEvent = log => {
       const key = api.util.sha3(JSON.stringify(log))
       const {
+        address,
         blockNumber,
+        event,
         logIndex,
+        returnValues,
         transactionHash,
-        transactionIndex,
-        params,
-        type
+        transactionIndex
       } = log
+
+      const hexToString = hex => {
+        let string = ''
+        for (let i = 0; i < hex.length; i += 2) {
+          string += String.fromCharCode(parseInt(hex.substr(i, 2), 16))
+        }
+        return string
+      }
+
       let ethvalue,
         drgvalue = 0
 
       if (
-        typeof params.amount !== 'undefined' &&
-        typeof params.revenue !== 'undefined'
+        typeof returnValues.amount !== 'undefined' &&
+        typeof returnValues.revenue !== 'undefined'
       ) {
         ethvalue =
-          log.event === 'BuyDrago'
-            ? formatEth(params.amount.value, null, api)
-            : formatEth(params.revenue.value, null, api)
+          event === 'BuyDrago'
+            ? formatEth(returnValues.amount, null, api)
+            : formatEth(returnValues.revenue, null, api)
         drgvalue =
-          log.event === 'SellDrago'
-            ? formatCoins(params.amount.value, null, api)
-            : formatCoins(params.revenue.value, null, api)
+          event === 'SellDrago'
+            ? formatCoins(returnValues.amount, null, api)
+            : formatCoins(returnValues.revenue, null, api)
       }
-
+      let symbol
+      if (typeof returnValues.symbol === 'string') {
+        '0x' === returnValues.symbol.substring(0, 2)
+          ? (symbol = hexToString(returnValues.symbol.substring(2)))
+          : (symbol = returnValues.symbol)
+      } else {
+        for (let i = 0; i < returnValues.symbol.length; ++i) {
+          symbol += String.fromCharCode(returnValues.symbol[i])
+        }
+      }
       return {
-        type: log.event,
-        state: type,
-        blockNumber,
+        address,
+        type: event,
+        blockNumber: new BigNumber(blockNumber),
         logIndex,
         transactionHash,
         transactionIndex,
-        params,
+        params: returnValues,
         key,
         ethvalue,
-        drgvalue
+        drgvalue,
+        symbol: symbol
       }
     }
 
@@ -1737,41 +1872,61 @@ class utilities {
     const logToEvent = log => {
       const key = api.util.sha3(JSON.stringify(log))
       const {
+        address,
         blockNumber,
+        event,
         logIndex,
+        returnValues,
         transactionHash,
-        transactionIndex,
-        params,
-        type
+        transactionIndex
       } = log
-      let ethvalue,
-        drgvalue = 0
-      console.log(log)
-      if (
-        typeof params.amount !== 'undefined' &&
-        typeof params.revenue !== 'undefined'
-      ) {
-        ethvalue =
-          log.event === 'BuyVault'
-            ? formatEth(params.amount.value, null, api)
-            : formatEth(params.revenue.value, null, api)
-        drgvalue =
-          log.event === 'SellVault'
-            ? formatCoins(params.amount.value, null, api)
-            : formatCoins(params.revenue.value, null, api)
+
+      const hexToString = hex => {
+        let string = ''
+        for (let i = 0; i < hex.length; i += 2) {
+          string += String.fromCharCode(parseInt(hex.substr(i, 2), 16))
+        }
+        return string
       }
 
+      let ethvalue,
+        drgvalue = 0
+
+      if (
+        typeof returnValues.amount !== 'undefined' &&
+        typeof returnValues.revenue !== 'undefined'
+      ) {
+        ethvalue =
+          event === 'BuyVault'
+            ? formatEth(returnValues.amount, null, api)
+            : formatEth(returnValues.revenue, null, api)
+        drgvalue =
+          event === 'SellVault'
+            ? formatCoins(returnValues.amount, null, api)
+            : formatCoins(returnValues.revenue, null, api)
+      }
+      let symbol
+      if (typeof returnValues.symbol === 'string') {
+        '0x' === returnValues.symbol.substring(0, 2)
+          ? (symbol = hexToString(returnValues.symbol.substring(2)))
+          : (symbol = returnValues.symbol)
+      } else {
+        for (let i = 0; i < returnValues.symbol.length; ++i) {
+          symbol += String.fromCharCode(returnValues.symbol[i])
+        }
+      }
       return {
-        type: log.event,
-        state: type,
-        blockNumber,
+        address,
+        type: event,
+        blockNumber: new BigNumber(blockNumber),
         logIndex,
         transactionHash,
         transactionIndex,
-        params,
+        params: returnValues,
         key,
         ethvalue,
-        drgvalue
+        drgvalue,
+        symbol: symbol
       }
     }
 

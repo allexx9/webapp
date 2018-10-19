@@ -282,9 +282,16 @@ class PageFundDetailsDragoManager extends Component {
           ],
           ['Total', totalValue, [<small key="dragoPortTotEth">ETH</small>]]
         ]
-        estimatedPrice = new BigNumber(portfolioValue)
-          .div(new BigNumber(dragoDetails.totalSupply))
-          .toFixed(5)
+        try {
+          new BigNumber(dragoDetails.totalSupply).gt(0)
+            ? (estimatedPrice = new BigNumber(portfolioValue)
+                .div(new BigNumber(dragoDetails.totalSupply))
+                .toFixed(5))
+            : 'N/A'
+        } catch (error) {
+          console.warn(error)
+          estimatedPrice = 'N/A'
+        }
       }
     }
 
@@ -512,6 +519,7 @@ class PageFundDetailsDragoManager extends Component {
                       renderCopyButton={this.renderCopyButton}
                       renderEtherscanButton={this.renderEtherscanButton}
                       loading={loading}
+                      autoLoading={false}
                       pagination={{
                         display: 10,
                         number: 1

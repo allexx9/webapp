@@ -45,13 +45,29 @@ const getVaultsChunkedEvents$ = (api, options, state$) => {
     }
 
     const logToEvent = log => {
-      // const key = api.util.sha3(JSON.stringify(log))
-      const { params } = log
+      const hexToString = hex => {
+        let string = ''
+        for (let i = 0; i < hex.length; i += 2) {
+          string += String.fromCharCode(parseInt(hex.substr(i, 2), 16))
+        }
+        return string
+      }
+      const { returnValues } = log
+      let symbol
+      if (typeof returnValues.symbol === 'string') {
+        '0x' === returnValues.symbol.substring(0, 2)
+          ? (symbol = hexToString(returnValues.symbol.substring(2)))
+          : (symbol = returnValues.symbol)
+      } else {
+        for (let i = 0; i < returnValues.symbol.length; ++i) {
+          symbol += String.fromCharCode(returnValues.symbol[i])
+        }
+      }
       return {
-        symbol: params.symbol.value,
-        vaultId: params.vaultId.value.toFixed(),
-        name: params.name.value,
-        address: params.vault.value
+        symbol,
+        vaultId: returnValues.vaultId,
+        name: returnValues.name,
+        address: returnValues.vault
       }
     }
 
@@ -127,13 +143,29 @@ const getDragosChunkedEvents$ = (api, options, state$) => {
     }
 
     const logToEvent = log => {
-      // const key = api.util.sha3(JSON.stringify(log))
-      const { params } = log
+      const hexToString = hex => {
+        let string = ''
+        for (let i = 0; i < hex.length; i += 2) {
+          string += String.fromCharCode(parseInt(hex.substr(i, 2), 16))
+        }
+        return string
+      }
+      const { returnValues } = log
+      let symbol
+      if (typeof returnValues.symbol === 'string') {
+        '0x' === returnValues.symbol.substring(0, 2)
+          ? (symbol = hexToString(returnValues.symbol.substring(2)))
+          : (symbol = returnValues.symbol)
+      } else {
+        for (let i = 0; i < returnValues.symbol.length; ++i) {
+          symbol += String.fromCharCode(returnValues.symbol[i])
+        }
+      }
       return {
-        symbol: params.symbol.value,
-        dragoId: params.dragoId.value.toFixed(),
-        name: params.name.value,
-        address: params.drago.value
+        symbol,
+        dragoId: returnValues.dragoId,
+        name: returnValues.name,
+        address: returnValues.drago
       }
     }
 

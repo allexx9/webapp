@@ -115,13 +115,13 @@ export const getTokensBalancesEpic = action$ => {
                 action.payload.relay,
                 action.payload.api._rb.network.id
               )
-            ),
-            Observable.of(
-              Actions.exchange.getPortfolioChartDataStart(
-                action.payload.relay,
-                action.payload.api._rb.network.id
-              )
             )
+            // Observable.of(
+            //   Actions.exchange.getPortfolioChartDataStart(
+            //     action.payload.relay,
+            //     action.payload.api._rb.network.id
+            //   )
+            // )
             // Observable.of({
             //   type: UPDATE_ELEMENT_LOADING,
             //   payload: { marketBox: false }

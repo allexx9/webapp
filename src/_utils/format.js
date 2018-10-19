@@ -47,7 +47,8 @@ export function formatBlockNumber(blockNumber) {
 export function formatCoins(amount, decimals = 4) {
   //prev. decimals = 6
   // console.log(amount.toNumber())
-  const adjusted = amount.div(DIVISOR)
+
+  const adjusted = new BigNumber(amount).div(DIVISOR)
   if (decimals === -1) {
     if (adjusted.gte(10000)) {
       decimals = 0
