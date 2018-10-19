@@ -46,7 +46,7 @@ class ElementListAssets extends PureComponent {
     this.state = {
       disableHeader: false,
       headerHeight: 30,
-      height: 370,
+      height: 390,
       width: 600,
       hideIndexRow: false,
       overscanRowCount: 10,

@@ -30,6 +30,7 @@ import SectionTitle from '../../_atomic/atoms/sectionTitle'
 import Snackbar from 'material-ui/Snackbar'
 import Sticky from 'react-stickynode'
 // import Web3 from 'web3'
+import RefreshIndicator from 'material-ui/RefreshIndicator'
 import scrollToElement from 'scroll-to-element'
 import styles from './pageFundDetailsDragoTrader.module.css'
 import utils from '../../_utils/utils'
@@ -83,6 +84,7 @@ class PageFundDetailsDragoTrader extends Component {
   componentWillUnmount() {
     this.props.dispatch(Actions.tokens.priceTickersStop())
     this.props.dispatch(Actions.exchange.getPortfolioChartDataStop())
+    this.props.dispatch(Actions.drago.updateSelectedDrago({}, { reset: true }))
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -233,6 +235,26 @@ class PageFundDetailsDragoTrader extends Component {
       ]
     }
 
+    const checkLoading = input => {
+      const refresh = {
+        display: 'inline-block',
+        position: 'relative'
+      }
+      // if (input) {
+      //   return (
+      //     <RefreshIndicator
+      //       size={30}
+      //       left={0}
+      //       top={5}
+      //       right={20}
+      //       status="loading"
+      //       style={refresh}
+      //     />
+      //   )
+      // }
+      return input
+    }
+
     // Waiting until getDragoDetails returns the drago details
     if (Object.keys(dragoDetails).length === 0) {
       return (
@@ -347,7 +369,7 @@ class PageFundDetailsDragoTrader extends Component {
                           Total supply:
                         </div>
                         <div className={styles.holdings}>
-                          <span>{dragoDetails.totalSupply}</span>{' '}
+                          <span>{checkLoading(dragoDetails.totalSupply)}</span>{' '}
                           <small className={styles.myPositionTokenSymbol}>
                             {dragoDetails.symbol.toUpperCase()}
                           </small>
@@ -369,7 +391,9 @@ class PageFundDetailsDragoTrader extends Component {
                                 Your total holding:
                               </div>
                               <div className={styles.holdings}>
-                                <span>{dragoDetails.balanceDRG}</span>{' '}
+                                <span>
+                                  {checkLoading(dragoDetails.balanceDRG)}
+                                </span>{' '}
                                 <small className={styles.myPositionTokenSymbol}>
                                   {dragoDetails.symbol.toUpperCase()}
                                 </small>

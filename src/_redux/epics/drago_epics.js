@@ -89,7 +89,7 @@ export const getTokensBalancesEpic = action$ => {
           return ordered
         }),
         tap(val => {
-          console.log(val)
+          // console.log(val)
           return val
         }),
         mergeMap(dragoAssets =>
@@ -161,11 +161,11 @@ const getPoolDetails$ = (poolId, api, options, state$) => {
               addressOwner: details[0][4],
               addressGroup: details[0][5],
               balanceDRG: '0.0000',
-              buyPrice: '1.0000',
-              buyPrice: '1.0000',
-              totalSupply: '0.2000',
-              vaultETHBalance: '0.20000',
-              created: '01 January 1970'
+              buyPrice: null,
+              sellPrice: null,
+              totalSupply: null,
+              created: '01 January 1970',
+              balanceDRG: null
             })
           : observer.next({
               address: details[0][0],
@@ -176,11 +176,11 @@ const getPoolDetails$ = (poolId, api, options, state$) => {
               addressOwner: details[0][4],
               addressGroup: details[0][5],
               balanceDRG: '0.0000',
-              buyPrice: '1.0000',
-              buyPrice: '1.0000',
-              totalSupply: '0.2000',
-              vaultETHBalance: '0.20000',
-              created: '01 January 1970'
+              buyPrice: null,
+              sellPrice: null,
+              totalSupply: null,
+              created: '01 January 1970',
+              balanceDRG: null
             })
       })
       .then(() => {

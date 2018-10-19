@@ -57,10 +57,23 @@ const drago = {
       }
     }
   },
-  updateSelectedDrago: results => {
-    return {
-      type: TYPE_.UPDATE_SELECTED_DRAGO_DETAILS,
-      payload: results
+  updateSelectedDrago: (results = {}, options = { reset: false }) => {
+    switch (options.reset) {
+      case true:
+        return {
+          type: TYPE_.UPDATE_SELECTED_DRAGO_DETAILS_RESET,
+          payload: results
+        }
+      case false:
+        return {
+          type: TYPE_.UPDATE_SELECTED_DRAGO_DETAILS,
+          payload: results
+        }
+      default:
+        return {
+          type: TYPE_.UPDATE_SELECTED_DRAGO_DETAILS,
+          payload: results
+        }
     }
   },
   updateDragosSearchList: results => {

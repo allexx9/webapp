@@ -75,6 +75,7 @@ class PageFundDetailsDragoManager extends Component {
   componentWillUnmount() {
     this.props.dispatch(Actions.tokens.priceTickersStop())
     this.props.dispatch(Actions.exchange.getPortfolioChartDataStop())
+    this.props.dispatch(Actions.drago.updateSelectedDrago({}, { reset: true }))
   }
 
   shouldComponentUpdate(nextProps, nextState) {

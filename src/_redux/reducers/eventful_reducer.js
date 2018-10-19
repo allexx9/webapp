@@ -51,6 +51,17 @@ export function eventfulDragoReducer(
         }
       }
 
+    case TYPE_.UPDATE_SELECTED_DRAGO_DETAILS_RESET:
+      return {
+        ...state,
+        selectedDrago: {
+          details: {},
+          transactions: [],
+          assets: [],
+          assetsCharts: {}
+        }
+      }
+
     case TYPE_.UPDATE_SELECTED_DRAGO_DETAILS_CHART_ASSETS_MARKET_DATA_INIT: {
       // console.log(action)
       let selectedDrago = { ...state.selectedDrago }
@@ -150,6 +161,14 @@ export function eventfulVaultReducer(
         selectedVault: {
           ...state.selectedVault,
           ...action.payload
+        }
+      }
+    case TYPE_.UPDATE_SELECTED_VAULT_DETAILS_RESET:
+      return {
+        ...state,
+        selectedDrago: {
+          details: {},
+          transactions: []
         }
       }
     default:

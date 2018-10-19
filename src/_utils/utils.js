@@ -338,18 +338,14 @@ class utilities {
 
   calculatePortfolioValue = (dragoAssetsList, assetsPrices) => {
     const totalValue = dragoAssetsList.reduce((total, asset) => {
-      console.log(asset.symbol)
       if (typeof assetsPrices[asset.symbol] !== 'undefined') {
         if (typeof assetsPrices[asset.symbol].priceEth !== 'undefined') {
           if (assetsPrices[asset.symbol].priceEth !== null) {
-            console.log(assetsPrices[asset.symbol].priceEth)
             const value = new BigNumber(
               assetsPrices[asset.symbol].priceEth
             ).times(
               toUnitAmount(new BigNumber(asset.balances.total), asset.decimals)
             )
-            console.log(value)
-            console.log(value.toFixed(5))
             return total.plus(value)
           }
         } else {
