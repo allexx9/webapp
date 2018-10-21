@@ -150,7 +150,7 @@ export const NETWORK_WARNING = 'networkWarning'
 
 export const KOVAN_ETHERSCAN = 'https://kovan.etherscan.io/'
 export const ROPSTEN_ETHERSCAN = 'https://ropsten.etherscan.io/'
-export const MAINNET_ETHERSCAN = 'https://etherscan.io'
+export const MAINNET_ETHERSCAN = 'https://etherscan.io/'
 
 export const ENDPOINTS = {
   infura: {
