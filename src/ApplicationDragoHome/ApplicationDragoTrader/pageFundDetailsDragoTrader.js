@@ -172,7 +172,7 @@ class PageFundDetailsDragoTrader extends Component {
       endpoint: { accounts: accounts },
       user
     } = this.props
-    const { loading } = this.state
+    // const { loading } = this.state
     const dragoAssetsList = this.props.transactionsDrago.selectedDrago.assets
     const assetsCharts = this.props.transactionsDrago.selectedDrago.assetsCharts
     const dragoDetails = this.props.transactionsDrago.selectedDrago.details
@@ -262,6 +262,11 @@ class PageFundDetailsDragoTrader extends Component {
         formatPrice(totalAssetsValue),
         [<small key="dragoPortTotEth">ETH</small>]
       ]
+      assetsValues = utils.calculatePieChartPortfolioValue(
+        dragoAssetsList,
+        this.props.exchange.prices.current,
+        dragoDetails.dragoETHBalance
+      )
     }
 
     // Show estimated prices

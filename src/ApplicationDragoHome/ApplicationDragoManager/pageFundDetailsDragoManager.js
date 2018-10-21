@@ -260,6 +260,11 @@ class PageFundDetailsDragoManager extends Component {
         formatPrice(totalAssetsValue),
         [<small key="dragoPortTotEth">ETH</small>]
       ]
+      assetsValues = utils.calculatePieChartPortfolioValue(
+        dragoAssetsList,
+        this.props.exchange.prices.current,
+        dragoDetails.dragoETHBalance
+      )
     }
 
     // Show estimated prices

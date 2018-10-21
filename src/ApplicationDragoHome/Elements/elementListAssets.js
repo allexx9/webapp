@@ -127,7 +127,7 @@ class ElementListAssets extends PureComponent {
                     label=""
                     cellDataGetter={({ rowData }) => rowData.symbol}
                     dataKey="symbol"
-                    className={styles.exampleColumn}
+                    className={styles.column}
                     cellRenderer={({ cellData }) => this.renderIcon(cellData)}
                     flexShrink={1}
                   />
@@ -137,7 +137,7 @@ class ElementListAssets extends PureComponent {
                     label="NAME"
                     cellDataGetter={({ rowData }) => rowData.name}
                     dataKey="name"
-                    className={styles.exampleColumn}
+                    className={styles.column}
                     cellRenderer={({ rowData }) => this.renderName(rowData)}
                     flexShrink={1}
                   />
@@ -147,7 +147,7 @@ class ElementListAssets extends PureComponent {
                     label="HOLDING"
                     cellDataGetter={({ rowData }) => rowData}
                     dataKey="holding"
-                    className={styles.exampleColumn}
+                    className={styles.column}
                     cellRenderer={({ rowData }) => this.renderHolding(rowData)}
                     flexShrink={1}
                   />
@@ -157,7 +157,7 @@ class ElementListAssets extends PureComponent {
                     label="TX"
                     cellDataGetter={({ rowData }) => rowData}
                     dataKey="tx"
-                    className={styles.exampleColumn}
+                    className={styles.column}
                     cellRenderer={({ rowData }) => this.renderTx(rowData)}
                     flexShrink={1}
                   /> */}
@@ -167,7 +167,7 @@ class ElementListAssets extends PureComponent {
                     label="PRICE ETH"
                     cellDataGetter={({ rowData }) => rowData}
                     dataKey="assetsPrices"
-                    className={styles.exampleColumn}
+                    className={styles.column}
                     cellRenderer={({ rowData }) => this.renderPrice(rowData)}
                     flexGrow={1}
                   /> */}
@@ -177,7 +177,7 @@ class ElementListAssets extends PureComponent {
                     label="VALUE"
                     cellDataGetter={({ rowData }) => rowData}
                     dataKey="values"
-                    className={styles.exampleColumn}
+                    className={styles.columnValue}
                     cellRenderer={({ rowData }) => this.renderValue(rowData)}
                     flexGrow={1}
                   />
@@ -187,7 +187,7 @@ class ElementListAssets extends PureComponent {
                     label="MARKET 24H"
                     cellDataGetter={({ rowData }) => rowData}
                     dataKey="stats"
-                    className={styles.exampleColumn}
+                    className={styles.column}
                     cellRenderer={({ rowData }) => this.renderChart(rowData)}
                     flexGrow={1}
                   />
@@ -221,6 +221,7 @@ class ElementListAssets extends PureComponent {
     } catch (error) {
       console.warn(error)
     }
+    return <div className={styles.noDataChart}>No data</div>
   }
 
   actionButton(cellData, rowData) {
@@ -357,6 +358,13 @@ class ElementListAssets extends PureComponent {
 
   renderValue(token) {
     if (typeof this.props.assetsPrices[token.symbol] !== 'undefined') {
+      if (!Number(this.props.assetsPrices[token.symbol].priceEth)) {
+        return (
+          <div className={styles.valueText}>
+            <small>N/A</small>
+          </div>
+        )
+      }
       return (
         <div className={styles.valueText}>
           {formatPrice(

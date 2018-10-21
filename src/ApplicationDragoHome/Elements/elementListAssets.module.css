@@ -61,10 +61,17 @@
   text-transform: none;
 }
 
-.exampleColumn {
+.column {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.columnValue {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
 }
 
 .checkboxLabel {
