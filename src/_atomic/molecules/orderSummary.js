@@ -44,9 +44,9 @@ class OrderSummary extends PureComponent {
         ? new BigNumber(amount).toFixed(5)
         : new BigNumber(0).toFixed(5)
     }
-    fee = new BigNumber(
-      web3.utils.fromWei(order.details.order.takerFee, 'ether')
-    ).toFixed(5)
+    // fee = new BigNumber(
+    //   web3.utils.fromWei(order.details.order.takerFee.toFixed(), 'ether')
+    // ).toFixed(5)
     total = new BigNumber(price()).times(amount()).toFixed(5)
 
     order.takerOrder

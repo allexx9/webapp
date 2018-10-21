@@ -23,6 +23,9 @@ export default class SelectFundItem extends Component {
           <div className={styles.name}>{fund.symbol}</div>
           <div className={styles.balance}>{fund.name}</div>
         </div>
+        <div>
+          <div className={styles.address}>{fund.address}</div>
+        </div>
       </div>
     )
   }

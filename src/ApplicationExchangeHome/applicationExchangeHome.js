@@ -159,7 +159,7 @@ class ApplicationExchangeHome extends Component {
   }
 
   componentDidMount = async () => {
-    console.log(this.getConf())
+    // console.log(this.getConf())
 
     const { api } = this.context
     const { selectedExchange } = this.props.exchange
@@ -338,7 +338,7 @@ class ApplicationExchangeHome extends Component {
   }
 
   onToggleAggregateOrders = isInputChecked => {
-    console.log(isInputChecked)
+    // console.log(isInputChecked)
     this.props.dispatch(Actions.exchange.setAggregateOrders(isInputChecked))
 
     let filter = {
@@ -665,6 +665,7 @@ class ApplicationExchangeHome extends Component {
                     <FundSelector
                       funds={this.props.exchange.availableFunds}
                       onSelectFund={this.onSelectFund}
+                      selectedFund={this.props.exchange.selectedFund}
                     />
                   </Col>
                   {/* <Col xs={2}>
