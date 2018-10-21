@@ -353,10 +353,6 @@ export const monitorEventfulEpic = (action$, state$) => {
           const observablesArray = Array(0)
           const currentState = state$.value
           console.log(event)
-          //   let options = state$.value.user.isManager
-          //   ? { balance: false, supply: true, limit: 20, trader: false, drago: true }
-          //   : { balance: true, supply: false, limit: 20, trader: true, drago: true }
-          // console.log(options)
           console.log(
             'Eventful subscription - > DRAGO transactions fetch trader'
           )
@@ -533,10 +529,6 @@ export const monitorAccountsEpic = (action$, state$) => {
           if (DEBUGGING.initAccountsTransactionsInEpic) {
             const currentState = state$.value
             if (accountsUpdate[2]) {
-              //   let options = state$.value.user.isManager
-              //   ? { balance: false, supply: true, limit: 20, trader: false, drago: true }
-              //   : { balance: true, supply: false, limit: 20, trader: true, drago: true }
-              // console.log(options)
               if (
                 currentState.transactionsDrago.selectedDrago.details.dragoId
               ) {

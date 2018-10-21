@@ -269,6 +269,7 @@ class ApplicationHome extends PureComponent {
                             display: 5,
                             number: 1
                           }}
+                          autoLoading={false}
                           tableHeight={330}
                         >
                           <ElementListFunds />

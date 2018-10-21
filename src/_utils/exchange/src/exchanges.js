@@ -129,7 +129,7 @@ export const getTickers = {
         SupportedExchanges.Ethfinex.http[NETWORKS_ID[networkId]]
       }/v2/tickers`,
       qs: {
-        symbols: `${symbols},tETHUSD`
+        symbols: `${symbols}`
       },
       json: true
     }

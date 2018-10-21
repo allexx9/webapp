@@ -55,6 +55,11 @@ export function eventfulDragoReducer(
       return {
         ...state,
         selectedDrago: {
+          values: {
+            portfolioValue: -1,
+            totalAssetsValue: -1,
+            estimatedPrice: -1
+          },
           details: {},
           transactions: [],
           assets: [],

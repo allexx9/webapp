@@ -2,8 +2,12 @@
 import { APP, DS } from './const'
 import { DRG_ISIN } from './const'
 import { ERCdEX, Ethfinex } from './const'
-import { formatCoins, formatEth } from './format'
-import { toUnitAmount } from './format'
+import {
+  formatCoins,
+  formatEth,
+  toBaseUnitAmount,
+  toUnitAmount
+} from './format'
 import BigNumber from 'bignumber.js'
 import ElementNotification from '../Elements/elementNotification'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
@@ -12,6 +16,8 @@ import Web3 from 'web3'
 import palette from './palete'
 
 import { Actions } from '../_redux/actions'
+import { MOCK_ERC20_TOKENS } from './tokens'
+
 import {
   MSG_NETWORK_STATUS_ERROR,
   MSG_NETWORK_STATUS_OK,
@@ -46,6 +52,24 @@ class NotificationAlert extends Component {
 }
 
 class utilities {
+  generateMockAssets = (network = 'mainnet') => {
+    let mockAssets = MOCK_ERC20_TOKENS[network]
+    delete mockAssets.ETH
+    for (let key in mockAssets) {
+      let tokenBalance = new BigNumber(Math.floor(Math.random() * 400) + 1)
+      let wrapperBalance = new BigNumber(Math.floor(Math.random() * 400) + 1)
+      let totalBalance = tokenBalance.plus(wrapperBalance)
+      mockAssets[key].balances = {
+        token: toBaseUnitAmount(tokenBalance, mockAssets[key].decimals),
+        wrappers: {
+          Ethfinex: toBaseUnitAmount(wrapperBalance, mockAssets[key].decimals)
+        },
+        total: toBaseUnitAmount(totalBalance, mockAssets[key].decimals)
+      }
+    }
+    return mockAssets
+  }
+
   updateAccounts = async (api, blockNumber, state$) => {
     const currentState = state$.value
     const { endpoint } = currentState
@@ -258,10 +282,11 @@ class utilities {
   ethfinexTickersToArray = assets => {
     let assetArray = Array(0)
     for (let token in assets) {
-      if (!['ETH', 'WETH', 'USDT', 'WETH'].includes(assets[token].symbol)) {
+      if (!['ETH', 'WETH', 'USDT', 'ETHW'].includes(assets[token].symbol)) {
         assetArray.push(`t${assets[token].symbolTicker.Ethfinex}ETH`)
       }
     }
+    assetArray.push(`tETHUSD`)
     return assetArray
   }
 
@@ -779,7 +804,6 @@ class utilities {
         const poolsList = await poolApi.contract.vaultfactory
           .getVaultsByAddress(account.address)
           .then(results => {
-            console.log('getVaultsByAddress', results)
             return results
           })
           .catch(error => {
@@ -1298,8 +1322,6 @@ class utilities {
         const poolsList = await poolApi.contract.dragofactory
           .getDragosByAddress(account.address)
           .then(results => {
-            console.log('getDragosByAddress', results)
-            console.log('executed')
             return results
           })
           .catch(error => {
@@ -1335,7 +1357,6 @@ class utilities {
           return api.eth.blockNumber().then(lastBlock => {
             let chunck = 100000
             const chunks = this.blockChunks(fromBlock, lastBlock, chunck)
-            console.log(chunks)
             arrayPromises = chunks.map(async chunk => {
               // Pushing chunk logs into array
               let options = {
@@ -1347,10 +1368,6 @@ class utilities {
             })
 
             return Promise.all(arrayPromises).then(results => {
-              if (options.trader) {
-              } else {
-              }
-              console.log(results)
               let dragoTransactionsLog = Array(0).concat(...results)
               const logs = dragoTransactionsLog.map(logToEvent)
               return logs
@@ -1386,8 +1403,6 @@ class utilities {
         return Promise.all(promisesEvents)
           .then(results => {
             let allLogs = [...results[0]]
-            console.log(options.trader)
-            console.log(allLogs)
             // Creating an array of promises that will be executed to add timestamp and symbol to each entry
             // Doing so because for each entry we need to make an async call to the client
             // For additional refernce: https://stackoverflow.com/questions/39452083/using-promise-function-inside-javascript-array-map
@@ -1600,9 +1615,7 @@ class utilities {
                     }
                   })
                   .then(() => {
-                    // let logs = getSymbols()
                     let logs = dragoTransactionsLogs
-                    console.log(dragoTransactionsLogs)
                     // console.log(
                     //   `***** ${moment().format()} Utils: symbols loaded *****`
                     // )
@@ -1811,7 +1824,6 @@ class utilities {
     //   })
     return Promise.all(promisesEvents)
       .then(logs => {
-        console.log(logs)
         return logs[0]
       })
       .then(dragoTransactionsLog => {
@@ -1842,15 +1854,17 @@ class utilities {
           //     transactions: results
           //   })
           // )
-          console.log(results)
-          console.log(`${this.constructor.name} -> Transactions list loaded`)
+          console.log(
+            `${
+              this.constructor.name
+            } -> getTransactionsSingleDrago: Transactions list loaded`
+          )
           return results
         })
       })
   }
 
   getTransactionsSingleVault = async (poolAddress, api, accounts, options) => {
-    console.log(poolAddress)
     const poolApi = new PoolApi(api)
     await poolApi.contract.vaulteventful.init()
     const contract = poolApi.contract.vaulteventful
@@ -2061,8 +2075,21 @@ class utilities {
     // Passing Parity API
     //
     const poolApi = new PoolApi(api)
-
     const dragoAddress = dragoDetails[0][0]
+    let fromBlock
+    switch (api._rb.network.id) {
+      case 1:
+        fromBlock = '6000000'
+        break
+      case 42:
+        fromBlock = '7000000'
+        break
+      case 3:
+        fromBlock = '3000000'
+        break
+      default:
+        '3000000'
+    }
     //
     // Getting last transactions
     //
@@ -2077,38 +2104,52 @@ class utilities {
     // Gettind drago data, creation date, supply, ETH balances
     //
 
-    const getDragoCreationDate = async (dragoAddress, contract) => {
-      const hexPoolAddress = '0x' + dragoAddress.substr(2).padStart(64, '0')
-      const eventsFilterCreate = {
-        topics: [
-          [contract.hexSignature.DragoCreated],
-          [hexPoolAddress],
-          null,
-          null
-        ]
-      }
-      const dragoCreatedLog = await contract.getAllLogs(eventsFilterCreate)
-      let blockInfo
-      if (dragoCreatedLog.length !== 0) {
-        try {
-          blockInfo = await api.eth.getBlockByNumber(
-            dragoCreatedLog[0].blockNumber.toFixed(0)
-          )
-        } catch (error) {
-          blockInfo = { timestamp: new Date(0) }
-        }
-      } else {
-        blockInfo = { timestamp: new Date(0) }
-      }
+    const getDragoCreationDate = async address => {
+      const hexPoolAddress = '0x' + address.substr(2).padStart(64, '0')
 
-      return this.dateFromTimeStampHuman(blockInfo.timestamp)
+      let topics = [
+        [poolApi.contract.dragoeventful.hexSignature.DragoCreated],
+        [hexPoolAddress],
+        null,
+        null
+      ]
+
+      let arrayPromises = []
+      return api.eth.blockNumber().then(lastBlock => {
+        let chunck = 100000
+        const chunks = this.blockChunks(fromBlock, lastBlock, chunck)
+        arrayPromises = chunks.map(async chunk => {
+          // Pushing chunk logs into array
+          let options = {
+            topics: topics,
+            fromBlock: chunk.fromBlock,
+            toBlock: chunk.toBlock
+          }
+          return await poolApi.contract.dragoeventful.getAllLogs(options)
+        })
+
+        return Promise.all(arrayPromises)
+          .then(results => {
+            let logs = [].concat(...results)
+            if (logs.length !== 0) {
+              return api.eth
+                .getBlockByNumber(logs[0].blockNumber.toFixed(0))
+                .then(result => {
+                  return this.dateFromTimeStampHuman(result.timestamp)
+                })
+            } else {
+              return this.dateFromTimeStampHuman(new Date(0))
+            }
+          })
+          .catch(error => {
+            console.warn(error)
+            throw Error(error)
+          })
+      })
     }
 
     const dragoData = await poolApi.contract.drago.getData()
-    const dragoCreatedDate = await getDragoCreationDate(
-      dragoAddress,
-      poolApi.contract.dragoeventful
-    )
+    const dragoCreatedDate = await getDragoCreationDate(dragoAddress)
     const dragoTotalSupply = await poolApi.contract.drago.totalSupply()
     const dragoETHBalance = await formatEth(
       await poolApi.contract.drago.getBalance(),
@@ -2120,8 +2161,6 @@ class utilities {
       5,
       api
     )
-    console.log(dragoDetails)
-    console.log(dragoData)
     let details = {
       address: dragoDetails[0][0],
       name:
@@ -2160,8 +2199,21 @@ class utilities {
     // Passing Parity API
     //
     const poolApi = new PoolApi(api)
-
     const vaultAddress = vaultDetails[0][0]
+    let fromBlock
+    switch (api._rb.network.id) {
+      case 1:
+        fromBlock = '6000000'
+        break
+      case 42:
+        fromBlock = '7000000'
+        break
+      case 3:
+        fromBlock = '3000000'
+        break
+      default:
+        '3000000'
+    }
     //
     // Getting last transactions
     //
@@ -2176,35 +2228,53 @@ class utilities {
     // Gettind vault data, creation date, supply, ETH balances
     //
 
-    const getvaultCreationDate = async (vaultAddress, contract) => {
-      const hexVaultAddress = '0x' + vaultAddress.substr(2).padStart(64, '0')
-      const eventsFilterCreate = {
-        topics: [
-          [contract.hexSignature.VaultCreated],
-          [hexVaultAddress],
-          null,
-          null
-        ]
-      }
-      let blockInfo
-      const vaultCreatedLog = await contract.getAllLogs(eventsFilterCreate)
-      if (vaultCreatedLog.length !== 0) {
-        try {
-          blockInfo = await api.eth.getBlockByNumber(
-            vaultCreatedLog[0].blockNumber.toFixed(0)
-          )
-        } catch (error) {
-          blockInfo = { timestamp: new Date(0) }
-        }
-      } else {
-        blockInfo = { timestamp: new Date(0) }
-      }
-      return this.dateFromTimeStampHuman(blockInfo.timestamp)
+    const getVaultCreationDate = async address => {
+      const hexPoolAddress = '0x' + address.substr(2).padStart(64, '0')
+
+      let topics = [
+        [poolApi.contract.vaulteventful.hexSignature.VaultCreated],
+        [hexPoolAddress],
+        null,
+        null
+      ]
+
+      let arrayPromises = []
+      return api.eth.blockNumber().then(lastBlock => {
+        let chunck = 100000
+        const chunks = this.blockChunks(fromBlock, lastBlock, chunck)
+        arrayPromises = chunks.map(async chunk => {
+          // Pushing chunk logs into array
+          let options = {
+            topics: topics,
+            fromBlock: chunk.fromBlock,
+            toBlock: chunk.toBlock
+          }
+          return await poolApi.contract.vaulteventful.getAllLogs(options)
+        })
+
+        return Promise.all(arrayPromises)
+          .then(results => {
+            let logs = [].concat(...results)
+            if (logs.length !== 0) {
+              return api.eth
+                .getBlockByNumber(logs[0].blockNumber.toFixed(0))
+                .then(result => {
+                  return this.dateFromTimeStampHuman(result.timestamp)
+                })
+            } else {
+              return this.dateFromTimeStampHuman(new Date(0))
+            }
+          })
+          .catch(error => {
+            console.warn(error)
+            throw Error(error)
+          })
+      })
     }
 
     const vaultData = await poolApi.contract.vault.getData()
     const vaultAdminData = await poolApi.contract.vault.getAdminData()
-    const vaultCreatedDate = await getvaultCreationDate(
+    const vaultCreatedDate = await getVaultCreationDate(
       vaultAddress,
       poolApi.contract.vaulteventful
     )

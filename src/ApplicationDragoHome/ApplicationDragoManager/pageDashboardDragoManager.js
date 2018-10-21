@@ -65,11 +65,11 @@ class PageDashboardDragoManager extends Component {
     const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
     const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
     if (!currentBalance.eq(nextBalance) && !currentBalance.eq(0)) {
-      console.log(
-        `${
-          this.constructor.name
-        } -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`
-      )
+      // console.log(
+      //   `${
+      //     this.constructor.name
+      //   } -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`
+      // )
       // this.props.dispatch(Actions.endpoint.getAccountsTransactions(api, null, accounts, options))
     }
   }
@@ -82,11 +82,11 @@ class PageDashboardDragoManager extends Component {
     if (stateUpdate || propsUpdate) {
       // console.log('State updated ', stateUpdate)
       // console.log('Props updated ', propsUpdate)
-      console.log(
-        `${
-          this.constructor.name
-        } -> shouldComponentUpdate -> Proceeding with rendering.`
-      )
+      // console.log(
+      //   `${
+      //     this.constructor.name
+      //   } -> shouldComponentUpdate -> Proceeding with rendering.`
+      // )
     }
     return stateUpdate || propsUpdate
   }

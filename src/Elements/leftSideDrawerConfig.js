@@ -10,6 +10,7 @@ import ActionSwapHoriz from 'material-ui/svg-icons/action/swap-horiz'
 import Drawer from 'material-ui/Drawer'
 import Menu from 'material-ui/Menu'
 import MenuItem from 'material-ui/MenuItem'
+import NavigationApp from 'material-ui/svg-icons/navigation/apps'
 
 let drawerStyle = {
   activeLink: {
@@ -57,12 +58,33 @@ class LeftSideDrawerConfig extends Component {
           >
             <MenuItem
               checked={true}
+              primaryText="Application"
+              leftIcon={<NavigationApp />}
+              containerElement={
+                <Link
+                  to={
+                    DS +
+                    APP +
+                    DS +
+                    this.buildUrlPath(location) +
+                    '/config/application'
+                  }
+                />
+              }
+              value="application"
+            />
+            <MenuItem
+              checked={true}
               primaryText="Network"
               leftIcon={<ActionSwapHoriz />}
               containerElement={
                 <Link
                   to={
-                    DS + APP + DS + this.buildUrlPath(location) + DS + 'network'
+                    DS +
+                    APP +
+                    DS +
+                    this.buildUrlPath(location) +
+                    '/config/network'
                   }
                 />
               }

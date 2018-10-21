@@ -79,6 +79,34 @@ class ApplicationExchangePage extends Component {
   render() {
     const { notificationsOpen } = this.state
     const { location, endpoint } = this.props
+
+    if (endpoint.networkInfo.id === 42) {
+      return (
+        <MuiThemeProvider muiTheme={muiTheme}>
+          <Grid fluid className={styles.maincontainer}>
+            <Row>
+              <Col xs={12}>
+                <ApplicationTopBar
+                  handleTopBarSelectAccountType={
+                    this.handleTopBarSelectAccountType
+                  }
+                  handleToggleNotifications={this.handleToggleNotifications}
+                />
+              </Col>
+            </Row>
+            <MuiThemeProvider muiTheme={muiThemeExchange}>
+              <Row className={classNames(styles.content)}>
+                <Col xs={12}>
+                  <div style={{ textAlign: 'center', marginTop: '25px' }}>
+                    Exchange only available on Ropsten and Mainnet network.
+                  </div>
+                </Col>
+              </Row>
+            </MuiThemeProvider>
+          </Grid>
+        </MuiThemeProvider>
+      )
+    }
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
         <Grid fluid className={styles.maincontainer}>
@@ -93,15 +121,6 @@ class ApplicationExchangePage extends Component {
             </Col>
           </Row>
           <MuiThemeProvider muiTheme={muiThemeExchange}>
-            {endpoint.networkInfo.id === 42 && (
-              <Row className={classNames(styles.content)}>
-                <Col xs={12}>
-                  <div style={{ textAlign: 'center', marginTop: '25px' }}>
-                    Exchange only available on Ropsten network.
-                  </div>
-                </Col>
-              </Row>
-            )}
             {/* <Row className={classNames(styles.content)}>
               <Col xs={12}>
                 <div style={{ textAlign: 'center', marginTop: '25px' }}>
@@ -130,9 +149,6 @@ class ApplicationExchangePage extends Component {
                 )}
               </Col>
             </Row>
-            {/* <TestComponent
-                      key={'test' + endpoint.lastMetaMaskUpdateTime}
-                    /> */}
           </MuiThemeProvider>
         </Grid>
       </MuiThemeProvider>

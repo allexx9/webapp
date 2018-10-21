@@ -128,7 +128,7 @@ class PageSearchVaultTrader extends Component {
             <Paper zDepth={1}>
               <UserDashboardHeader
                 fundType="vault"
-                userType="vaults"
+                userType="holder"
                 icon={<ActionShowChart />}
               />
             </Paper>

@@ -91,7 +91,6 @@ export class App extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    // console.log(this.props.user.isManager)
     const propsUpdate = !utils.shallowEqual(this.props, nextProps)
     const stateUpdate = !utils.shallowEqual(this.state, nextState)
     // console.log(`${this.constructor.name} -> propsUpdate: %c${propsUpdate}.%c stateUpdate: %c${stateUpdate}`, `color: ${propsUpdate ? 'green' : 'red'}; font-weight: bold;`,'',`color: ${stateUpdate ? 'green' : 'red'}; font-weight: bold;`)

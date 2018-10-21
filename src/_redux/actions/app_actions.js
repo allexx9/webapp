@@ -1,18 +1,24 @@
 // Copyright 2016-2017 Rigo Investment Sarl.
 
-import { QUEUE_ERROR_NOTIFICATION, UPDATE_APP_STATUS } from './const'
+import * as TYPE_ from './const'
 
 const tokens = {
   updateAppStatus: status => {
     return {
-      type: UPDATE_APP_STATUS,
+      type: TYPE_.UPDATE_APP_STATUS,
       payload: status
+    }
+  },
+  updateAppConfig: config => {
+    return {
+      type: TYPE_.UPDATE_APP_CONFIG,
+      payload: config
     }
   },
 
   queueErrorNotification: error => {
     return {
-      type: QUEUE_ERROR_NOTIFICATION,
+      type: TYPE_.QUEUE_ERROR_NOTIFICATION,
       payload: error
     }
   }

@@ -122,16 +122,6 @@ export const tickers = {
       priceUsd: '',
       symbol: 'ETH'
     })
-    tickersList.push({
-      priceEth: '0.25',
-      priceUsd: '',
-      symbol: 'GRG'
-    })
-    tickersList.push({
-      priceEth: '0.065',
-      priceUsd: '',
-      symbol: 'USDT'
-    })
     return tickersList
   }
 }

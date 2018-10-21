@@ -6,6 +6,7 @@ import { Link, withRouter } from 'react-router-dom'
 import { Tab, Tabs } from 'material-ui/Tabs'
 import { connect } from 'react-redux'
 // import { formatCoins, formatEth } from '../../_utils/format'
+import { formatPrice } from '../../_utils/format'
 import ActionAssessment from 'material-ui/svg-icons/action/assessment'
 import ActionList from 'material-ui/svg-icons/action/list'
 import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
@@ -175,6 +176,7 @@ class PageFundDetailsDragoTrader extends Component {
     const dragoAssetsList = this.props.transactionsDrago.selectedDrago.assets
     const assetsCharts = this.props.transactionsDrago.selectedDrago.assetsCharts
     const dragoDetails = this.props.transactionsDrago.selectedDrago.details
+    const dragoValues = this.props.transactionsDrago.selectedDrago.values
     const dragoTransactionsList = this.props.transactionsDrago.selectedDrago
       .transactions
     const tabButtons = {
@@ -213,8 +215,8 @@ class PageFundDetailsDragoTrader extends Component {
       ['Address', dragoDetails.address, tableButtonsDragoAddress],
       ['Manager', dragoDetails.addressOwner, tableButtonsDragoOwner]
     ]
-    let portfolioValue = 'N/A'
-    let totalValue = 'N/A'
+
+    let totalAssetsValue = 0
     let assetsValues = {}
     let tableLiquidity = [
       ['Liquidity', 'Calculating...', [<small key="dragoLiqEth">ETH</small>]],
@@ -225,13 +227,44 @@ class PageFundDetailsDragoTrader extends Component {
       ],
       ['Total', 'Calculating...', [<small key="dragoPortTotEth">ETH</small>]]
     ]
-    let estimatedPrice = 'N/A'
+
+    // Show pool balance
     if (typeof dragoDetails.dragoETHBalance !== 'undefined') {
+      totalAssetsValue = dragoDetails.dragoETHBalance
       tableLiquidity[0] = [
         'Liquidity',
-        dragoDetails.dragoETHBalance,
+        formatPrice(dragoDetails.dragoETHBalance),
         <small key="dragoLiqEth">ETH</small>
       ]
+
+      tableLiquidity[2] = [
+        'Total',
+        formatPrice(totalAssetsValue),
+        [<small key="dragoPortTotEth">ETH</small>]
+      ]
+    }
+
+    // Show portfolio value
+    if (dragoValues.portfolioValue !== -1) {
+      totalAssetsValue = new BigNumber(dragoDetails.dragoETHBalance)
+        .plus(dragoValues.portfolioValue)
+        .toFixed(4)
+      tableLiquidity[1] = [
+        'Porfolio value',
+        formatPrice(dragoValues.portfolioValue),
+        [<small key="dragoPortEth">ETH</small>]
+      ]
+      tableLiquidity[2] = [
+        'Total',
+        formatPrice(totalAssetsValue),
+        [<small key="dragoPortTotEth">ETH</small>]
+      ]
+    }
+
+    // Show estimated prices
+    let estimatedPrice = 'N/A'
+    if (dragoValues.estimatedPrice !== -1) {
+      estimatedPrice = formatPrice(dragoValues.estimatedPrice)
     }
 
     // Waiting until getDragoDetails returns the drago details
@@ -245,42 +278,7 @@ class PageFundDetailsDragoTrader extends Component {
     if (dragoDetails.address === '0x0000000000000000000000000000000000000000') {
       return <ElementFundNotFound />
     }
-    // console.log(dragoAssetsList)
-    if (
-      dragoAssetsList.length !== 0 &&
-      Object.keys(this.props.exchange.prices.current).length !== 0
-    ) {
-      if (typeof dragoDetails.dragoETHBalance !== 'undefined') {
-        portfolioValue = utils.calculatePortfolioValue(
-          dragoAssetsList,
-          this.props.exchange.prices.current
-        )
-        totalValue = new BigNumber(dragoDetails.dragoETHBalance)
-          .plus(portfolioValue)
-          .toFixed(4)
-        assetsValues = utils.calculatePieChartPortfolioValue(
-          dragoAssetsList,
-          this.props.exchange.prices.current,
-          dragoDetails.dragoETHBalance
-        )
-        tableLiquidity = [
-          [
-            'Liquidity',
-            dragoDetails.dragoETHBalance,
-            [<small key="dragoLiqEth">ETH</small>]
-          ],
-          [
-            'Porfolio value',
-            portfolioValue,
-            [<small key="dragoPortEth">ETH</small>]
-          ],
-          ['Total', totalValue, [<small key="dragoPortTotEth">ETH</small>]]
-        ]
-        estimatedPrice = new BigNumber(portfolioValue)
-          .div(new BigNumber(dragoDetails.totalSupply))
-          .toFixed(4)
-      }
-    }
+
     return (
       <Row>
         <Col xs={12}>
@@ -497,7 +495,7 @@ class PageFundDetailsDragoTrader extends Component {
                       list={dragoTransactionsList}
                       renderCopyButton={this.renderCopyButton}
                       renderEtherscanButton={this.renderEtherscanButton}
-                      loading={loading}
+                      autoLoading={false}
                       pagination={{
                         display: 10,
                         number: 1

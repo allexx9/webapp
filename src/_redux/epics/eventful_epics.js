@@ -285,7 +285,6 @@ export const getAccountsTransactionsEpic = action$ =>
         action.payload.options
       ).pipe(
         tap(results => {
-          console.log(results)
           return results
         }),
         map(results => {
@@ -351,7 +350,6 @@ export const getPoolTransactionsEpic = action$ =>
   action$.pipe(
     ofType(TYPE_.GET_POOL_TRANSACTIONS),
     mergeMap(action => {
-      console.log(action.payload)
       return getPoolTransactions$(
         action.payload.api,
         action.payload.dragoAddress,
@@ -359,7 +357,6 @@ export const getPoolTransactionsEpic = action$ =>
         action.payload.options
       ).pipe(
         tap(results => {
-          console.log(results)
           return results
         }),
         map(results => {

@@ -6,10 +6,11 @@ import {
 } from './const'
 
 const tokens = {
-  priceTickersStart: (relay, networkId) => {
+  priceTickersStart: (relay, networkId, assetsList = {}) => {
     const payload = {
       relay,
-      networkId
+      networkId,
+      assetsList
     }
     return {
       type: TOKEN_PRICE_TICKERS_FETCH_START,

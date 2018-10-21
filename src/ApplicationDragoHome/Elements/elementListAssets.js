@@ -11,6 +11,7 @@ import FlatButton from 'material-ui/FlatButton'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
+import { formatPrice } from '../../_utils/format'
 import { toUnitAmount } from '../../_utils/format'
 import utils from '../../_utils/utils'
 
@@ -282,10 +283,12 @@ class ElementListAssets extends PureComponent {
               <div className={styles.holdingTitleText}>Amount</div>
             </Col>
             <Col xs={12}>
-              {toUnitAmount(
-                new BigNumber(token.balances.total),
-                token.decimals
-              ).toFixed(5)}{' '}
+              {formatPrice(
+                toUnitAmount(
+                  new BigNumber(token.balances.total),
+                  token.decimals
+                ).toFixed(5)
+              )}{' '}
               <small className={styles.symbolLegendText}>
                 {token.symbol.toUpperCase()}
               </small>
@@ -349,14 +352,16 @@ class ElementListAssets extends PureComponent {
     if (typeof this.props.assetsPrices[token.symbol] !== 'undefined') {
       return (
         <div className={styles.valueText}>
-          {new BigNumber(this.props.assetsPrices[token.symbol].priceEth)
-            .times(
-              toUnitAmount(
-                new BigNumber(token.balances.total),
-                token.decimals
-              ).toFixed(5)
-            )
-            .toFixed(5)}{' '}
+          {formatPrice(
+            new BigNumber(this.props.assetsPrices[token.symbol].priceEth)
+              .times(
+                toUnitAmount(
+                  new BigNumber(token.balances.total),
+                  token.decimals
+                ).toFixed(5)
+              )
+              .toFixed(5)
+          )}{' '}
           <small className={styles.symbolLegendText}>ETH</small>
         </div>
       )

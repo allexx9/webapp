@@ -214,7 +214,7 @@ class ElementListFunds extends PureComponent {
     const { match } = this.props
     const url =
       rowData.dragoId + '/' + utils.dragoISIN(cellData, rowData.dragoId)
-    let poolType = match.path.includes('drago') ? 'drago' : 'vault'
+    let poolType = match.path.includes('vault') ? 'vault' : 'drago'
     return (
       <div className={styles.actionButtonContainer}>
         <FlatButton

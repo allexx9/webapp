@@ -57,7 +57,10 @@ const initialState = {
     connectinoRetries: 0,
     lastBlockNumberUpdate: 0,
     accountsAddressHash: '',
-    errorEventfulSubscription: false
+    errorEventfulSubscription: false,
+    config: {
+      isMock: false
+    }
   },
   notifications: {
     engine: ''
@@ -202,6 +205,11 @@ const initialState = {
       logs: []
     },
     selectedDrago: {
+      values: {
+        portfolioValue: -1,
+        totalAssetsValue: -1,
+        estimatedPrice: -1
+      },
       details: {},
       transactions: [],
       assets: [],

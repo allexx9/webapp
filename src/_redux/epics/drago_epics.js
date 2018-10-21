@@ -71,7 +71,7 @@ const getTokensBalances$ = (dragoAddress, api) => {
   )
 }
 
-export const getTokensBalancesEpic = action$ => {
+export const getTokensBalancesEpic = (action$, state$) => {
   return action$.pipe(
     ofType(TYPE_.GET_TOKEN_BALANCES_DRAGO),
     mergeMap(action => {
@@ -89,8 +89,20 @@ export const getTokensBalancesEpic = action$ => {
           return ordered
         }),
         tap(val => {
-          // console.log(val)
+          console.log(val)
           return val
+        }),
+        map(dragoAssets => {
+          if (state$.value.app.config.isMock) {
+            if (
+              Object.keys(state$.value.transactionsDrago.selectedDrago.assets)
+                .length === 0
+            ) {
+              const networkName = state$.value.endpoint.networkInfo.name
+              dragoAssets = utils.generateMockAssets(networkName)
+            }
+          }
+          return dragoAssets
         }),
         mergeMap(dragoAssets =>
           Observable.concat(
@@ -113,7 +125,8 @@ export const getTokensBalancesEpic = action$ => {
             Observable.of(
               Actions.tokens.priceTickersStart(
                 action.payload.relay,
-                action.payload.api._rb.network.id
+                action.payload.api._rb.network.id,
+                dragoAssets
               )
             )
             // Observable.of(
@@ -186,7 +199,6 @@ const getPoolDetails$ = (poolId, api, options, state$) => {
       })
       .then(() => {
         const accounts = state$.value.endpoint.accounts
-        console.log(options.poolType)
         return options.poolType === 'drago'
           ? utils
               .getDragoDetails(poolDetails, accounts, api)
@@ -213,7 +225,6 @@ export const getPoolDetailsEpic = (action$, state$) => {
   return action$.pipe(
     ofType(TYPE_.GET_POOL_DETAILS),
     mergeMap(action => {
-      console.log(action)
       return getPoolDetails$(
         action.payload.dragoId,
         action.payload.api,
@@ -221,7 +232,6 @@ export const getPoolDetailsEpic = (action$, state$) => {
         state$
       ).pipe(
         flatMap(details => {
-          console.log(details)
           let drago = action.payload.options.poolType === 'drago' ? true : false
           let options = {
             balance: true,
@@ -285,7 +295,6 @@ export const getPoolDetailsEpic = (action$, state$) => {
               )
             }
           }
-          console.log(observablesArray)
           return Observable.concat(observablesArray)
 
           // return DEBUGGING.DUMB_ACTION

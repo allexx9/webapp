@@ -163,7 +163,7 @@ class PageSearchDragoTrader extends Component {
             <Paper zDepth={1}>
               <UserDashboardHeader
                 fundType="drago"
-                userType="funds"
+                userType="holder"
                 icon={<ActionShowChart />}
               />
             </Paper>
