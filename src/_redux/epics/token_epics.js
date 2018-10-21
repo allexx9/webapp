@@ -147,6 +147,7 @@ const updateGroupCandles = ticker => {
           volume: convertToETH(symbol, tick[5]),
           epoch: tick[0]
         }
+        // console.log(entry)
         return entry
       })
     return {
