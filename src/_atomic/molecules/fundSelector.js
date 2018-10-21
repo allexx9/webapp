@@ -14,7 +14,7 @@ export default class FundSelector extends PureComponent {
   }
 
   state = {
-    value: 1
+    value: 0
   }
 
   onSelectFund = (event, key) => {

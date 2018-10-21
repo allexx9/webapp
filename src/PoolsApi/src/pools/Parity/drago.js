@@ -232,8 +232,6 @@ class DragoParity {
     const options = {
       from: accountAddress
     }
-    console.log(options)
-    console.log(values)
     return instance.sellDrago.estimateGas(options, values).then(gasEstimate => {
       options.gas = gasEstimate.times(1.2).toFixed(0)
       console.log(

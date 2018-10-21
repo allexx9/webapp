@@ -104,43 +104,27 @@ export const getTokensBalancesEpic = (action$, state$) => {
           }
           return dragoAssets
         }),
-        mergeMap(dragoAssets =>
-          Observable.concat(
-            // Observable.of(
-            //   Actions.drago.getAssetsPriceData(
-            //     dragoAssets,
-            //     42,
-            //     ERC20_TOKENS['kovan'].WETH.address
-            //   )
-            // ),
-            // Observable.of({
-            //   type: UPDATE_ELEMENT_LOADING,
-            //   payload: { marketBox: true }
-            // }),
-            Observable.of(
-              Actions.drago.updateSelectedDrago({
-                assets: Object.values(dragoAssets)
-              })
-            ),
-            Observable.of(
-              Actions.tokens.priceTickersStart(
-                action.payload.relay,
-                action.payload.api._rb.network.id,
-                dragoAssets
-              )
-            ),
-            Observable.of(
+        flatMap(dragoAssets => {
+          let observablesArray = [
+            Actions.drago.updateSelectedDrago({
+              assets: Object.values(dragoAssets)
+            }),
+            Actions.tokens.priceTickersStart(
+              action.payload.relay,
+              action.payload.api._rb.network.id,
+              dragoAssets
+            )
+          ]
+          if (action.payload.relay.name === 'Ethfinex') {
+            observablesArray.push(
               Actions.exchange.getPortfolioChartDataStart(
                 action.payload.relay,
                 action.payload.api._rb.network.id
               )
             )
-            // Observable.of({
-            //   type: UPDATE_ELEMENT_LOADING,
-            //   payload: { marketBox: false }
-            // })
-          )
-        ),
+          }
+          return Observable.concat(observablesArray)
+        }),
         catchError(error => {
           console.log(error)
           return Observable.of({

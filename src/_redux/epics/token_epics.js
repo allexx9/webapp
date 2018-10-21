@@ -296,6 +296,9 @@ const getTickersWs$ = (relay, networkId, symbols) => {
 }
 
 const getTickers$ = (relay, networkId, symbols, protocol = 'ws') => {
+  if (relay.name === 'ERCdEX') {
+    protocol = 'http'
+  }
   if (protocol === 'ws') {
     return getTickersWs$(relay, networkId, symbols)
   }
