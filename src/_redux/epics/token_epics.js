@@ -129,10 +129,10 @@ const updateGroupCandles = ticker => {
   }
   // We need to express USD valuation in ETH
   symbol === 'ETH' ? (symbol = USDT) : null
-  console.log(symbol)
+  // console.log(symbol)
   // INITIAL SHAPSHOT
   if (Array.isArray(ticker[1][0])) {
-    console.log('snapshot:', ticker)
+    // console.log('snapshot:', ticker)
     let candles = ticker[1]
       .filter(tick => {
         return tick[0] >= yesterday
@@ -229,12 +229,12 @@ const getTickersWs$ = (relay, networkId, symbols) => {
     const exchange = new Exchange(relay.name, networkId, 'ws')
     const websocket = exchange.getTicker('test', 'test')
     websocket.addEventListener('open', msg => {
-      console.log(msg)
-      console.log(symbols)
+      // console.log(msg)
+      // console.log(symbols)
       let symbolsArray = symbols.split(',')
       if (symbolsArray.length !== 0) {
         symbolsArray.forEach(function(symbol) {
-          console.log(`ticker subcribe ${symbol}`)
+          // console.log(`ticker subcribe ${symbol}`)
           let msg = JSON.stringify({
             event: `subscribe`,
             channel: `ticker`,
@@ -248,7 +248,7 @@ const getTickersWs$ = (relay, networkId, symbols) => {
       }
     })
     websocket.onmessage = msg => {
-      console.log('WebSocket message.', msg.data)
+      // console.log('WebSocket message.', msg.data)
       let data = JSON.parse(msg.data)
       if (typeof data.event !== undefined) {
         if (data.event === 'subscribed') {
@@ -277,7 +277,7 @@ const getTickersWs$ = (relay, networkId, symbols) => {
               }
             ]
           }
-          console.log(tick)
+          // console.log(tick)
           return observer.next(tick)
         }
       }
@@ -328,7 +328,7 @@ export const getPricesEpic = (action$, state$) =>
             'ws'
           ).pipe(
             tap(val => {
-              console.log(val)
+              // console.log(val)
               return val
             }),
             map(message => {
@@ -356,7 +356,7 @@ export const getPricesEpic = (action$, state$) =>
               }
             }),
             tap(val => {
-              console.log(val)
+              // console.log(val)
               return val
             }),
             map(payload => ({ type: TOKENS_TICKERS_UPDATE, payload })),

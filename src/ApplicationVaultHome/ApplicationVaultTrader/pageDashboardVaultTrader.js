@@ -296,6 +296,7 @@ class PageDashboardVaultTrader extends Component {
                       renderCopyButton={this.renderCopyButton}
                       renderEtherscanButton={this.renderEtherscanButton}
                       autoLoading={false}
+                      renderOptimization={false}
                       pagination={{
                         display: 10,
                         number: 1

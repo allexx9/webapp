@@ -102,7 +102,11 @@ class utilities {
 
     const accounts = [].concat(endpoint.accounts)
     if (accounts.length !== 0) {
-      console.log(`endpoint_epic -> New nonce: ` + endpoint.accounts[0].nonce)
+      let newNonce = await api.eth.getTransactionCount(
+        endpoint.accounts[0].address
+      )
+      newNonce = new BigNumber(newNonce).toFixed()
+      console.log(`endpoint_epic -> New nonce: ` + newNonce)
       try {
         const poolsApi = new PoolsApi(api)
         poolsApi.contract.rigotoken.init()
@@ -224,7 +228,7 @@ class utilities {
         })
         newEndpoint = {
           prevBlockNumber: newBlockNumber.toFixed(),
-          prevNonce: endpoint.accounts[0].nonce,
+          prevNonce: newNonce,
           loading: false,
           networkError: NETWORK_OK,
           networkStatus: MSG_NETWORK_STATUS_OK,
@@ -2023,7 +2027,7 @@ class utilities {
     //   })
     return Promise.all(promisesEvents)
       .then(logs => {
-        console.log(logs)
+        console.log('getTransactionsSingleVault', logs)
         return logs[0]
       })
       .then(logs => {

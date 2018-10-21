@@ -252,6 +252,9 @@ class PageFundDetailsDragoManager extends Component {
         formatPrice(dragoValues.portfolioValue),
         [<small key="dragoPortEth">ETH</small>]
       ]
+      if (!Number(totalAssetsValue)) {
+        totalAssetsValue = dragoDetails.dragoETHBalance
+      }
       tableLiquidity[2] = [
         'Total',
         formatPrice(totalAssetsValue),
@@ -284,53 +287,6 @@ class PageFundDetailsDragoManager extends Component {
     if (metaMaskAccountIndex === -1) {
       return <ElementNoAdminAccess />
     }
-
-    // if (
-    //   dragoAssetsList.length !== 0 &&
-    //   Object.keys(this.props.exchange.prices.current).length !== 0
-    // ) {
-    //   if (typeof dragoDetails.dragoETHBalance !== 'undefined') {
-    //     portfolioValue = utils.calculatePortfolioValue(
-    //       dragoAssetsList,
-    //       this.props.exchange.prices.current
-    //     )
-    //     totalAssetsValue = new BigNumber(dragoDetails.dragoETHBalance)
-    //       .plus(portfolioValue)
-    //       .toFixed(5)
-    //     assetsValues = utils.calculatePieChartPortfolioValue(
-    //       dragoAssetsList,
-    //       this.props.exchange.prices.current,
-    //       dragoDetails.dragoETHBalance
-    //     )
-    //     tableLiquidity = [
-    //       [
-    //         'Liquidity',
-    //         dragoDetails.dragoETHBalance,
-    //         [<small key="dragoLiqEth">ETH</small>]
-    //       ],
-    //       [
-    //         'Porfolio value',
-    //         portfolioValue,
-    //         [<small key="dragoPortEth">ETH</small>]
-    //       ],
-    //       [
-    //         'Total',
-    //         totalAssetsValue,
-    //         [<small key="dragoPortTotEth">ETH</small>]
-    //       ]
-    //     ]
-    //     try {
-    //       new BigNumber(dragoDetails.totalSupply).gt(0)
-    //         ? (estimatedPrice = new BigNumber(portfolioValue)
-    //             .div(new BigNumber(dragoDetails.totalSupply))
-    //             .toFixed(5))
-    //         : 'N/A'
-    //     } catch (error) {
-    //       console.warn(error)
-    //       estimatedPrice = 'N/A'
-    //     }
-    //   }
-    // }
 
     return (
       <Row>

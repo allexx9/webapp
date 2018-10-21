@@ -506,15 +506,9 @@ class DragoWeb3 {
         return instance.methods
           .buyDrago()
           .send(options)
-          .on('confirmation', function(confirmationNumber, receipt) {
-            console.log(confirmationNumber)
-          })
-          .on('receipt', function(receipt) {
-            console.log(receipt)
-          })
-
+          .on('confirmation', function(confirmationNumber, receipt) {})
+          .on('receipt', function(receipt) {})
           .then(result => {
-            console.log(result)
             return result
           })
       })

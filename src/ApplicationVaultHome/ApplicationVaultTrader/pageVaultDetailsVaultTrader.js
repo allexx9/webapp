@@ -81,19 +81,19 @@ class PageFundDetailsVaultTrader extends Component {
     )
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    //
-    let stateUpdate = true
-    let propsUpdate = true
-    // const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
-    // const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
-    stateUpdate = !utils.shallowEqual(this.state, nextState)
-    propsUpdate = !utils.shallowEqual(this.props, nextProps)
-    if (stateUpdate || propsUpdate) {
-      // console.log(`${this.constructor.name} -> shouldComponentUpdate -> Proceedding with rendering.`);
-    }
-    return stateUpdate || propsUpdate
-  }
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   //
+  //   let stateUpdate = true
+  //   let propsUpdate = true
+  //   // const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
+  //   // const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
+  //   stateUpdate = !utils.shallowEqual(this.state, nextState)
+  //   propsUpdate = !utils.shallowEqual(this.props, nextProps)
+  //   if (stateUpdate || propsUpdate) {
+  //     // console.log(`${this.constructor.name} -> shouldComponentUpdate -> Proceedding with rendering.`);
+  //   }
+  //   return stateUpdate || propsUpdate
+  // }
 
   snackBar = msg => {
     this.setState({
@@ -162,6 +162,7 @@ class PageFundDetailsVaultTrader extends Component {
   }
 
   render() {
+    // console.log(this.props)
     const { user } = this.props
     const { accounts } = this.props.endpoint
     const { loading } = this.state
@@ -222,6 +223,7 @@ class PageFundDetailsVaultTrader extends Component {
     const holdingFadeStyle = styles.noFadeNewHolding
     // console.log(this.props)
     // console.log(this.state)
+    // console.log(vaultTransactionsList)
     return (
       <Row>
         <Col xs={12}>
@@ -380,6 +382,7 @@ class PageFundDetailsVaultTrader extends Component {
                       renderEtherscanButton={this.renderEtherscanButton}
                       loading={loading}
                       autoLoading={false}
+                      renderOptimization={false}
                       pagination={{
                         display: 10,
                         number: 1

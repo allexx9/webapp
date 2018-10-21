@@ -63,7 +63,6 @@ export const poolCalculateValueMiddleWare = store => next => action => {
     let { current } = state.exchange.prices
     const { details } = state.transactionsDrago.selectedDrago
     current = { ...current, ...action.payload }
-    console.log(assets, current, details)
     const portfolioValue = utils.calculatePortfolioValue(assets, current)
     let estimatedPrice
     if (new BigNumber(details.totalSupply).eq(0)) {

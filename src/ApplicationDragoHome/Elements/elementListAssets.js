@@ -21,6 +21,7 @@ import * as Colors from 'material-ui/styles/colors'
 import AssetChart from '../../_atomic/atoms/assetChart'
 import BigNumber from 'bignumber.js'
 import TokenIcon from '../../_atomic/atoms/tokenIcon'
+import moment from 'moment'
 
 // import ChartBox from '../../_atomic/organisms/chartBox'
 
@@ -201,18 +202,24 @@ class ElementListAssets extends PureComponent {
 
   renderChart(token) {
     // const data = this.props.assetsChart[token.symbol].data
-
-    if (typeof this.props.assetsChart[token.symbol] !== 'undefined') {
-      const data = this.props.assetsChart[token.symbol].data
-      if (data.length !== 0) {
-        return (
-          <div className={styles.chart}>
-            <AssetChart data={data} />
-          </div>
-        )
-      } else {
-        return <div className={styles.noDataChart}>No data</div>
+    if (token.symbol === 'WETH' || token.symbol === 'ETHW') {
+      return <div className={styles.noDataChart}>No data</div>
+    }
+    try {
+      if (typeof this.props.assetsChart[token.symbol] !== 'undefined') {
+        const data = this.props.assetsChart[token.symbol].data
+        if (data.length > 2) {
+          return (
+            <div className={styles.chart}>
+              <AssetChart data={data} />
+            </div>
+          )
+        } else {
+          return <div className={styles.noDataChart}>No data</div>
+        }
       }
+    } catch (error) {
+      console.warn(error)
     }
   }
 

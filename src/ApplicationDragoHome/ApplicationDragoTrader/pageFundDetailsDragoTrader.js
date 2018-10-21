@@ -254,6 +254,9 @@ class PageFundDetailsDragoTrader extends Component {
         formatPrice(dragoValues.portfolioValue),
         [<small key="dragoPortEth">ETH</small>]
       ]
+      if (!Number(totalAssetsValue)) {
+        totalAssetsValue = dragoDetails.dragoETHBalance
+      }
       tableLiquidity[2] = [
         'Total',
         formatPrice(totalAssetsValue),

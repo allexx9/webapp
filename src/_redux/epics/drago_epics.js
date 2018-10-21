@@ -121,20 +121,20 @@ export const getTokensBalancesEpic = (action$, state$) => {
               Actions.drago.updateSelectedDrago({
                 assets: Object.values(dragoAssets)
               })
+            ),
+            Observable.of(
+              Actions.tokens.priceTickersStart(
+                action.payload.relay,
+                action.payload.api._rb.network.id,
+                dragoAssets
+              )
+            ),
+            Observable.of(
+              Actions.exchange.getPortfolioChartDataStart(
+                action.payload.relay,
+                action.payload.api._rb.network.id
+              )
             )
-            // Observable.of(
-            //   Actions.tokens.priceTickersStart(
-            //     action.payload.relay,
-            //     action.payload.api._rb.network.id,
-            //     dragoAssets
-            //   )
-            // ),
-            // Observable.of(
-            //   Actions.exchange.getPortfolioChartDataStart(
-            //     action.payload.relay,
-            //     action.payload.api._rb.network.id
-            //   )
-            // )
             // Observable.of({
             //   type: UPDATE_ELEMENT_LOADING,
             //   payload: { marketBox: false }
