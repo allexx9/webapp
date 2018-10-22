@@ -5,7 +5,7 @@ import * as TYPE_ from '../actions/const'
 import { Actions } from '../actions/'
 import { DEBUGGING, INFURA, LOCAL, RIGOBLOCK } from '../../_utils/const'
 import { Interfaces } from '../../_utils/interfaces'
-import { Observable, defer, from, merge, timer } from 'rxjs'
+import { Observable, defer, from, merge, observable, timer } from 'rxjs'
 import {
   catchError,
   delay,
@@ -79,7 +79,7 @@ export const isConnectedToNodeEpic = (action$, $state) =>
       exhaustMap(() => {
         return isConnectedToNode$(action.payload.api, $state).pipe(
           tap(result => {
-            console.log(result)
+            // console.log(result)
             return result
           }),
           flatMap(result => {
@@ -98,14 +98,6 @@ export const isConnectedToNodeEpic = (action$, $state) =>
               ? (timeInterval = scalingDuration * 5)
               : (timeInterval = scalingDuration * retryAttempt)
             return Observable.concat(
-              // Observable.of(
-              //   Actions.app.updateAppStatus({
-              //     isConnected: false,
-              //     isSyncing: false,
-              //     syncStatus: {},
-              //     connectionRetries: retryAttempt
-              //   })
-              // ),
               Observable.of(
                 Actions.app.updateAppStatus({
                   isConnected: false,
@@ -115,12 +107,6 @@ export const isConnectedToNodeEpic = (action$, $state) =>
                   connectionRetries: retryAttempt
                 })
               )
-              // .pipe(
-              //   map(result => {
-              //     return result
-              //   }),
-              //   delay(timeInterval)
-              // )
             )
           })
         )
@@ -178,10 +164,6 @@ export const attacheInterfaceEpic = action$ =>
     ofType(TYPE_.ATTACH_INTERFACE),
     switchMap(action => {
       return attachInterface$(action.payload.api, action.payload.endpoint).pipe(
-        // tap(result => {
-        //   console.log(result)
-        //   return result
-        // }),
         flatMap(endpoint => {
           console.log(action.payload)
           return Observable.concat(
@@ -191,7 +173,6 @@ export const attacheInterfaceEpic = action$ =>
                 isConnected: true
               })
             ),
-            // Observable.of(Actions.endpoint.checkIsConnectedToNode(action.payload.api)),
             Observable.of(Actions.endpoint.updateInterface(endpoint)),
             Observable.of(
               Actions.endpoint.monitorAccountsStart(
@@ -207,6 +188,7 @@ export const attacheInterfaceEpic = action$ =>
       let scalingDuration = 1000
       return error.pipe(
         mergeMap((error, i) => {
+          console.warn(error)
           const retryAttempt = i + 1
           // if maximum number of retries have been met
           // or response is a status code we don't wish to retry, throw error
@@ -240,13 +222,12 @@ const monitorEventful$ = (web3, api, state$) => {
         .padStart(64, '0')
     return hexAccount
   })
-  const poolApi = new PoolsApi(api)
-  console.log(window.web3)
-  let web3New = new Web3(window.web3._rb.wss)
+
   return merge(
     Observable.create(observer => {
       console.log('subscription Create event DRAGO')
-
+      let web3New = new Web3(window.web3._rb.wss)
+      const poolApi = new PoolsApi(api)
       // DRAGO
       poolApi.contract.dragoeventful.init().then(() => {
         let subscriptionCreate = web3New.eth.subscribe(
@@ -299,7 +280,8 @@ const monitorEventful$ = (web3, api, state$) => {
     }),
     Observable.create(observer => {
       console.log('subscription BuySell DRAGO events')
-
+      let web3New = new Web3(window.web3._rb.wss)
+      const poolApi = new PoolsApi(api)
       // DRAGO
       poolApi.contract.dragoeventful.init().then(() => {
         let subscriptionBuySell = web3New.eth.subscribe(
@@ -371,11 +353,9 @@ export const monitorEventfulEpic = (action$, state$) => {
           const observablesArray = Array(0)
           const currentState = state$.value
           console.log(event)
-          //   let options = state$.value.user.isManager
-          //   ? { balance: false, supply: true, limit: 20, trader: false, drago: true }
-          //   : { balance: true, supply: false, limit: 20, trader: true, drago: true }
-          // console.log(options)
-          console.log('DRAGO transactions fetch trader')
+          console.log(
+            'Eventful subscription - > DRAGO transactions fetch trader'
+          )
           observablesArray.push(Observable.of(DEBUGGING.DUMB_ACTION))
           // observablesArray.push(
           //   Observable.of(
@@ -393,7 +373,9 @@ export const monitorEventfulEpic = (action$, state$) => {
           //     )
           //   )
           // )
-          console.log('DRAGO transactions fetch manager')
+          console.log(
+            'Eventful subscription - > DRAGO transactions fetch manager'
+          )
           // observablesArray.push(
           //   Observable.of(
           //     Actions.endpoint.getAccountsTransactions(
@@ -411,7 +393,9 @@ export const monitorEventfulEpic = (action$, state$) => {
           //   )
           // )
 
-          console.log('VAULT transactions fetch trader')
+          console.log(
+            'Eventful subscription - > VAULT transactions fetch trader'
+          )
           observablesArray.push(Observable.of(DEBUGGING.DUMB_ACTION))
           // observablesArray.push(
           //   Observable.of(
@@ -429,7 +413,9 @@ export const monitorEventfulEpic = (action$, state$) => {
           //     )
           //   )
           // )
-          console.log('VAULT transactions fetch manager')
+          console.log(
+            'Eventful subscription - > VAULT transactions fetch manager'
+          )
           // observablesArray.push(
           //   Observable.of(
           //     Actions.endpoint.getAccountsTransactions(
@@ -450,11 +436,11 @@ export const monitorEventfulEpic = (action$, state$) => {
           return Observable.concat(...observablesArray)
         }),
         retryWhen(error => {
-          console.log(error)
           console.log('monitorEventfulEpic')
-          let scalingDuration = 3000
+          let scalingDuration = 10000
           return error.pipe(
             mergeMap((error, i) => {
+              console.warn(error)
               const retryAttempt = i + 1
               // if maximum number of retries have been met
               // or response is a status code we don't wish to retry, throw error
@@ -501,8 +487,6 @@ const monitorAccounts$ = (web3, api, state$) => {
             return observer.next(result)
           })
         } else {
-          // web3.setProvider(window.web3.currentProvider)
-          // window.web3 = new Web3(window.web3.currentProvider)
           return observer.error(_error)
         }
       }
@@ -543,68 +527,137 @@ export const monitorAccountsEpic = (action$, state$) => {
               })
             )
           if (DEBUGGING.initAccountsTransactionsInEpic) {
+            const currentState = state$.value
             if (accountsUpdate[2]) {
-              //   let options = state$.value.user.isManager
-              //   ? { balance: false, supply: true, limit: 20, trader: false, drago: true }
-              //   : { balance: true, supply: false, limit: 20, trader: true, drago: true }
-              // console.log(options)
-              console.log('Transactions fetch trader')
-              // observablesArray.push(
-              //   Observable.of(
-              //     Actions.endpoint.getAccountsTransactions(
-              //       action.payload.api,
-              //       null,
-              //       accountsUpdate[0].accounts,
-              //       {
-              //         balance: false,
-              //         supply: true,
-              //         limit: 20,
-              //         trader: false,
-              //         drago: true
-              //       }
-              //     )
-              //   )
-              // )
-              console.log('Transactions fetch manager')
-              // observablesArray.push(
-              //   Observable.of(
-              //     Actions.endpoint.getAccountsTransactions(
-              //       action.payload.api,
-              //       null,
-              //       accountsUpdate[0].accounts,
-              //       {
-              //         balance: true,
-              //         supply: false,
-              //         limit: 20,
-              //         trader: true,
-              //         drago: true
-              //       }
-              //     )
-              //   )
-              // )
+              if (
+                currentState.transactionsDrago.selectedDrago.details.dragoId
+              ) {
+                console.log(
+                  'Account monitoring - > DRAGO transactions fetch: Trader: ' +
+                    state$.value.user.isManager
+                )
+                observablesArray.push(
+                  Observable.of(
+                    Actions.drago.getPoolDetails(
+                      currentState.transactionsDrago.selectedDrago.details
+                        .dragoId,
+                      action.payload.api,
+                      {
+                        poolType: 'drago'
+                      }
+                    )
+                  )
+                )
+              }
+
+              if (
+                currentState.transactionsVault.selectedVault.details.vaultId
+              ) {
+                console.log(
+                  'Account monitoring - > VAULT transactions fetch. Trader ' +
+                    state$.value.user.isManager
+                )
+                observablesArray.push(
+                  Observable.of(
+                    Actions.drago.getPoolDetails(
+                      currentState.transactionsVault.selectedVault.details
+                        .vaultId,
+                      action.payload.api,
+                      {
+                        poolType: 'vault'
+                      }
+                    )
+                  )
+                )
+              }
+              // observablesArray.push(Observable.of(DEBUGGING.DUMB_ACTION))
+              observablesArray.push(
+                Observable.of(
+                  Actions.endpoint.getAccountsTransactions(
+                    action.payload.api,
+                    null,
+                    currentState.endpoint.accounts,
+                    {
+                      balance: false,
+                      supply: true,
+                      limit: 20,
+                      trader: false,
+                      drago: true
+                    }
+                  )
+                )
+              )
+              console.log(
+                'Account monitoring - > DRAGO transactions fetch manager'
+              )
+              observablesArray.push(
+                Observable.of(
+                  Actions.endpoint.getAccountsTransactions(
+                    action.payload.api,
+                    null,
+                    currentState.endpoint.accounts,
+                    {
+                      balance: true,
+                      supply: false,
+                      limit: 20,
+                      trader: true,
+                      drago: true
+                    }
+                  )
+                )
+              )
+
+              console.log(
+                'Account monitoring - > VAULT transactions fetch trader'
+              )
+              observablesArray.push(Observable.of(DEBUGGING.DUMB_ACTION))
+              observablesArray.push(
+                Observable.of(
+                  Actions.endpoint.getAccountsTransactions(
+                    action.payload.api,
+                    null,
+                    currentState.endpoint.accounts,
+                    {
+                      balance: false,
+                      supply: true,
+                      limit: 20,
+                      trader: false,
+                      drago: false
+                    }
+                  )
+                )
+              )
+              console.log(
+                'Account monitoring - > VAULT transactions fetch manager'
+              )
+              observablesArray.push(
+                Observable.of(
+                  Actions.endpoint.getAccountsTransactions(
+                    action.payload.api,
+                    null,
+                    currentState.endpoint.accounts,
+                    {
+                      balance: true,
+                      supply: false,
+                      limit: 20,
+                      trader: true,
+                      drago: false
+                    }
+                  )
+                )
+              )
             }
           }
 
           return Observable.concat(...observablesArray)
         }),
         retryWhen(error => {
-          console.log(error)
           console.log('monitorAccountsEpic')
           let scalingDuration = 3000
           return error.pipe(
             mergeMap((error, i) => {
+              console.warn(error)
               const retryAttempt = i + 1
-              // if maximum number of retries have been met
-              // or response is a status code we don't wish to retry, throw error
-              // if (
-              //   retryAttempt > maxRetryAttempts ||
-              //   excludedStatusCodes.find(e => e === error.status)
-              // ) {
-              //   throw(error);
-              // }
-              // const _rb = window.web3._rb
-              // window.web3 = new Web3(window.web3.currentProvider)
-              // window.web3._rb = _rb
               console.log(` monitorAccountsEpic Attempt ${retryAttempt}`)
               // retry after 1s, 2s, etc...
               return timer(scalingDuration)
@@ -763,23 +816,23 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
                       newEndpoint.accounts,
                       optionsManager
                     )
+                  ),
+                  Observable.of(
+                    Actions.endpoint.getAccountsTransactions(
+                      action.payload.api,
+                      null,
+                      newEndpoint.accounts,
+                      { ...optionsHolder, ...{ drago: false } }
+                    )
+                  ),
+                  Observable.of(
+                    Actions.endpoint.getAccountsTransactions(
+                      action.payload.api,
+                      null,
+                      newEndpoint.accounts,
+                      { ...optionsManager, ...{ drago: false } }
+                    )
                   )
-                  // Observable.of(
-                  //   Actions.endpoint.getAccountsTransactions(
-                  //     action.payload.api,
-                  //     null,
-                  //     newEndpoint.accounts,
-                  //     { ...optionsHolder, ...{ drago: false } }
-                  //   )
-                  // ),
-                  // Observable.of(
-                  //   Actions.endpoint.getAccountsTransactions(
-                  //     action.payload.api,
-                  //     null,
-                  //     newEndpoint.accounts,
-                  //     { ...optionsManager, ...{ drago: false } }
-                  //   )
-                  // )
                 ]
               : []
             return Observable.concat(

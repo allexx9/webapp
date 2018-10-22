@@ -57,7 +57,10 @@ const initialState = {
     connectinoRetries: 0,
     lastBlockNumberUpdate: 0,
     accountsAddressHash: '',
-    errorEventfulSubscription: false
+    errorEventfulSubscription: false,
+    config: {
+      isMock: false
+    }
   },
   notifications: {
     engine: ''
@@ -89,6 +92,7 @@ const initialState = {
     //     epoch: 0
     //   }
     // ],
+    availableFunds: [],
     chartData: [],
     selectedFund: {
       details: {},
@@ -170,7 +174,10 @@ const initialState = {
       url: 'https://api.ercdex.com/api/standard',
       networkId: '42'
     },
-    prices: {}
+    prices: {
+      previous: {},
+      current: {}
+    }
   },
   transactions: {
     queue: new Map(),
@@ -198,6 +205,11 @@ const initialState = {
       logs: []
     },
     selectedDrago: {
+      values: {
+        portfolioValue: -1,
+        totalAssetsValue: -1,
+        estimatedPrice: -1
+      },
       details: {},
       transactions: [],
       assets: [],
@@ -208,7 +220,11 @@ const initialState = {
     vaultsList: {
       list: [],
       lastFetchRange: {
-        chunk: 0,
+        chunk: {
+          key: 0,
+          toBlock: 0,
+          fromBlock: 0
+        },
         startBlock: 0,
         lastBlock: 0
       }

@@ -199,7 +199,7 @@ const reconnectingWebsocketBook$ = (
   return Observable.create(observer => {
     const BOOK = {}
     let seq = null
-    const pair = 'ETHUSD'
+    let pair = 'ETHUSD'
 
     const checkCross = () => {
       let bid = BOOK.psnap.bids[0]
@@ -216,6 +216,10 @@ const reconnectingWebsocketBook$ = (
       utils.getTockenSymbolForRelay(relay.name, baseToken),
       utils.getTockenSymbolForRelay(relay.name, quoteToken)
     )
+    pair =
+      utils.getTockenSymbolForRelay(relay.name, baseToken) +
+      utils.getTockenSymbolForRelay(relay.name, quoteToken)
+    console.log(pair)
     websocket.addEventListener('open', () => {
       console.log('WebSocket open.')
       BOOK.bids = {}
@@ -237,7 +241,7 @@ const reconnectingWebsocketBook$ = (
 
     websocket.onmessage = msgWs => {
       console.log('WebSocket message.')
-      // console.log(msgWs)
+      console.log(msgWs)
       let msg = JSON.parse(msgWs.data)
       if (msg.event) return
       if (msg[1] === 'hb') {

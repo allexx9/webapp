@@ -7,6 +7,7 @@ import React, { Component } from 'react'
 import { UPDATE_SELECTED_ORDER } from '../../_redux/actions/const'
 import { connect } from 'react-redux'
 import { detect } from 'detect-browser'
+import { formatPrice } from '../../_utils/format'
 import styles from './tableOrderBook.module.css'
 import utils from '../../_utils/utils'
 
@@ -56,23 +57,6 @@ class TableOrderBook extends Component {
     if (!this.props.aggregated && !this.props.onlyAggregated) {
       this.props.dispatch(this.updateSelectedOrder(this.props.orders[id]))
     }
-  }
-
-  formatPrice = price => {
-    const number = Number(price)
-    if (number < 100) {
-      return number.toFixed(5)
-    }
-    if (number < 1000) {
-      return number.toFixed(4)
-    }
-    if (number < 10000) {
-      return number.toFixed(3)
-    }
-    if (number < 100000) {
-      return number.toFixed(2)
-    }
-    return number.toFixed(5)
   }
 
   renderRows = ordersSorted => {
@@ -172,7 +156,7 @@ class TableOrderBook extends Component {
                 {Number(amount).toFixed(2)}
               </Col>
               <Col xs={5} style={orderStylePrice[orderType]}>
-                {this.formatPrice(price)}
+                {formatPrice(price)}
               </Col>
             </Row>
           </Col>

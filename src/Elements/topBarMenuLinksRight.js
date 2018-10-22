@@ -98,23 +98,8 @@ class NavLinks extends Component {
   // value = 1 = Trader
   // value = 2 = Manager
   handleTopBarSelectAccountType = (event, value) => {
-    const accountType = {
-      false: false,
-      true: true
-    }
-
-    this.props.dispatch(Actions.users.isManagerAction(accountType[value]))
-    // let options = accountType[value]
-    //   ? { balance: false, supply: true, limit: 20, trader: false, drago: true }
-    //   : { balance: true, supply: false, limit: 20, trader: true, drago: true }
-    // this.props.dispatch(
-    //   Actions.endpoint.getAccountsTransactions(
-    //     this.context.api,
-    //     null,
-    //     this.props.endpoint.accounts,
-    //     options
-    //   )
-    // )
+    console.log(value)
+    this.props.dispatch(Actions.users.isManagerAction(value))
   }
 
   componentDidMount() {

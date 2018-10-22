@@ -13,7 +13,8 @@ class ElementListWrapper extends Component {
     loading: PropTypes.bool,
     autoLoading: PropTypes.bool,
     pagination: PropTypes.object,
-    tableHeight: PropTypes.number
+    tableHeight: PropTypes.number,
+    renderOptimization: PropTypes.bool
   }
 
   static defaultProps = {
@@ -24,7 +25,8 @@ class ElementListWrapper extends Component {
       display: 5,
       number: 1
     },
-    tableHeight: 650
+    tableHeight: 650,
+    renderOptimization: true
   }
 
   state = {
@@ -61,8 +63,11 @@ class ElementListWrapper extends Component {
   shouldComponentUpdate(nextProps, nextState) {
     let stateUpdate = true
     let propsUpdate = true
-    propsUpdate = !utils.shallowEqual(this.props.list, nextProps.list)
-    stateUpdate = !utils.shallowEqual(this.state, nextState)
+    if (nextProps.renderOptimization) {
+      propsUpdate = !utils.shallowEqual(this.props.list, nextProps.list)
+      stateUpdate = !utils.shallowEqual(this.state, nextState)
+    }
+
     return stateUpdate || propsUpdate
   }
 

@@ -488,7 +488,6 @@ class ElementFundActions extends React.Component {
         transactionDetails
       )
     )
-
     // Sending the transaction
     poolApi = new PoolApi(provider)
     poolApi.contract.drago.init(dragoDetails.address)

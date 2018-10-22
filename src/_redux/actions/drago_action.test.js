@@ -6,7 +6,7 @@ describe('drago actions creator', () => {
     const assets = []
     const networkId = 1
     const quoteToken = {}
-    const results = drago.getAssetsPriceDataAction(
+    const results = drago.getAssetsPriceData(
       assets,
       networkId,
       quoteToken

@@ -432,7 +432,7 @@ class TokenLockInfo extends PureComponent {
               <Col xs={2}>
                 <TokenLockTimeField
                   key="quoteTokenTimeField"
-                  isBaseToken={true}
+                  isBaseToken={false}
                   onChangeTime={this.onChangeTime}
                   disabled={false}
                   amount={this.state.quoteTokenLockTime}

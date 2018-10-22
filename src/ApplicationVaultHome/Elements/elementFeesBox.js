@@ -1,6 +1,7 @@
 import * as Colors from 'material-ui/styles/colors'
 import { Col, Row } from 'react-flexbox-grid'
 import FlatButton from 'material-ui/FlatButton'
+import LoadingWheel from '../../_atomic/atoms/loadingWheel'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
@@ -9,9 +10,12 @@ import styles from './elementFeesBox.module.css'
 export default class ElementFeesBox extends Component {
   static propTypes = {
     vaultDetails: PropTypes.object.isRequired,
-    accounts: PropTypes.array,
     handleBuySellButtons: PropTypes.func,
-    isManager: PropTypes.bool
+    isManager: PropTypes.bool.isRequired
+  }
+
+  static defaultProps = {
+    handleBuySellButtons: () => {}
   }
 
   buttonBuyClick = () => {
@@ -35,7 +39,13 @@ export default class ElementFeesBox extends Component {
         <div>
           <Row middle="xs">
             <Col xs={12}>
-              <div className={styles.price}>{vaultDetails.fee} %</div>
+              <div className={styles.price}>
+                {vaultDetails.fee === null ? (
+                  <LoadingWheel />
+                ) : (
+                  vaultDetails.fee + '%'
+                )}
+              </div>
             </Col>
           </Row>
           <Row middle="xs">
@@ -71,27 +81,15 @@ export default class ElementFeesBox extends Component {
         <div>
           <Row middle="xs">
             <Col xs={12}>
-              <div className={styles.price}>{vaultDetails.fee} %</div>
+              <div className={styles.price}>
+                {vaultDetails.fee === null ? (
+                  <LoadingWheel />
+                ) : (
+                  vaultDetails.fee + '%'
+                )}
+              </div>
             </Col>
           </Row>
-          {/* <Row middle="xs">
-            <Col xs={6}>
-              <div className={styles.actionButton}><FlatButton primary={true} label="Withdraw"
-                labelStyle={{ fontWeight: 700, fontSize: '18px' }}
-                onClick={this.buttonSellClick}
-                style={buttonStyle}
-              /></div>
-
-            </Col>
-            <Col xs={6}>
-              <div className={styles.actionButton}><FlatButton primary={true} label="Deposit"
-                labelStyle={{ fontWeight: 700, fontSize: '18px' }}
-                // onClick={this.buttonBuyClick}
-                onClick={this.buttonBuyClick}
-                style={buttonStyle}
-              /></div>
-            </Col>
-          </Row> */}
         </div>
       )
     }

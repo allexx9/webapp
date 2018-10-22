@@ -36,4 +36,6 @@
 
 .detailsToolbar {
   height: 100% !important;
+  border-top-right-radius: 2px !important;
+  border-top-left-radius: 2px !important;
 }

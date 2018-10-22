@@ -79,6 +79,34 @@ class ApplicationExchangePage extends Component {
   render() {
     const { notificationsOpen } = this.state
     const { location, endpoint } = this.props
+
+    if (endpoint.networkInfo.id === 42) {
+      return (
+        <MuiThemeProvider muiTheme={muiTheme}>
+          <Grid fluid className={styles.maincontainer}>
+            <Row>
+              <Col xs={12}>
+                <ApplicationTopBar
+                  handleTopBarSelectAccountType={
+                    this.handleTopBarSelectAccountType
+                  }
+                  handleToggleNotifications={this.handleToggleNotifications}
+                />
+              </Col>
+            </Row>
+            <MuiThemeProvider muiTheme={muiThemeExchange}>
+              <Row className={classNames(styles.content)}>
+                <Col xs={12}>
+                  <div style={{ textAlign: 'center', marginTop: '25px' }}>
+                    Exchange only available on Ropsten and Mainnet network.
+                  </div>
+                </Col>
+              </Row>
+            </MuiThemeProvider>
+          </Grid>
+        </MuiThemeProvider>
+      )
+    }
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
         <Grid fluid className={styles.maincontainer}>
@@ -106,20 +134,21 @@ class ApplicationExchangePage extends Component {
                 !endpoint.isMetaMaskNetworkCorrect ? (
                   <WalletSetup />
                 ) : (
-                  <div>
-                    <ApplicationExchangeHome
-                      key={'Exchange' + endpoint.lastMetaMaskUpdateTime}
-                      location={location}
-                      notificationsOpen={notificationsOpen}
-                      handleToggleNotifications={this.handleToggleNotifications}
-                    />
-                  </div>
+                  endpoint.networkInfo.id !== 42 && (
+                    <div>
+                      <ApplicationExchangeHome
+                        key={'Exchange' + endpoint.lastMetaMaskUpdateTime}
+                        location={location}
+                        notificationsOpen={notificationsOpen}
+                        handleToggleNotifications={
+                          this.handleToggleNotifications
+                        }
+                      />
+                    </div>
+                  )
                 )}
               </Col>
             </Row>
-            {/* <TestComponent
-                      key={'test' + endpoint.lastMetaMaskUpdateTime}
-                    /> */}
           </MuiThemeProvider>
         </Grid>
       </MuiThemeProvider>

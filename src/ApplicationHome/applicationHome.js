@@ -55,28 +55,21 @@ class ApplicationHome extends PureComponent {
       startBlock: 0,
       lastBlock: 0
     },
-    listLoadingProgress: 0
+    listLoadingProgress: 0,
+    showCommunityButtons: true
   }
 
   static getDerivedStateFromProps(props, state) {
     // Any time the current user changes,
     // Reset any parts of state that are tied to that user.
     // In this simple example, that's just the email.
-    if (
-      !_.isEqual(
-        props.transactionsDrago.dragosList.lastFetchRange,
-        state.prevLastFetchRange
-      )
-    ) {
-      const {
-        chunk,
-        lastBlock,
-        startBlock
-      } = props.transactionsDrago.dragosList.lastFetchRange
+    const { lastFetchRange } = props.transactionsDrago.dragosList
+    if (!_.isEqual(lastFetchRange, state.prevLastFetchRange)) {
+      const { chunk, lastBlock, startBlock } = lastFetchRange
       if (lastBlock === 0) return null
       if (lastBlock === startBlock)
         return {
-          prevLastFetchRange: props.transactionsDrago.dragosList.lastFetchRange,
+          prevLastFetchRange: lastFetchRange,
           listLoadingProgress: 100
         }
       let newProgress =
@@ -85,7 +78,7 @@ class ApplicationHome extends PureComponent {
           : state.listLoadingProgress +
             ((chunk.toBlock - chunk.fromBlock) / (lastBlock - startBlock)) * 100
       return {
-        prevLastFetchRange: props.transactionsDrago.dragosList.lastFetchRange,
+        prevLastFetchRange: lastFetchRange,
         listLoadingProgress: newProgress
       }
     }
@@ -93,14 +86,32 @@ class ApplicationHome extends PureComponent {
   }
 
   componentDidMount() {
+    window.addEventListener('scroll', this.handleScroll)
     let options = {
       topics: [null, null, null, null],
       fromBlock: 0,
-      toBlock: 'latest'
+      toBlock: 'latest',
+      poolType: 'drago'
     }
     this.props.dispatch(
-      Actions.drago.getDragosSearchList(this.context.api, options)
+      Actions.drago.getPoolsSearchList(this.context.api, options)
     )
+  }
+
+  componentWillUnmount = () => {
+    window.removeEventListener('scroll', this.handleScroll)
+  }
+
+  handleScroll = () => {
+    if (window.scrollY > 50) {
+      this.setState({
+        showCommunityButtons: false
+      })
+    } else {
+      this.setState({
+        showCommunityButtons: true
+      })
+    }
   }
 
   filter = filter => {
@@ -240,7 +251,7 @@ class ApplicationHome extends PureComponent {
                     </a>
                   </div> */}
                   <h2 style={{ color: '#054186' }}>
-                    The leader crypto platfrom for asset management.
+                    The leader crypto platform for asset management.
                   </h2>
                   <p className={styles.subHeadline}>
                     <b className={styles.txtDotted}>Simple</b>,{' '}
@@ -276,6 +287,7 @@ class ApplicationHome extends PureComponent {
                             display: 5,
                             number: 1
                           }}
+                          autoLoading={false}
                           tableHeight={330}
                         >
                           <ElementListFunds />
@@ -384,57 +396,59 @@ class ApplicationHome extends PureComponent {
             />
           </Col>
         </Row>
-        <div className={styles.telegramButtonContainer}>
-          <div>
-            <a
-              href="https://t.me/rigoblockprotocol"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.communityButton}
-            >
-              <FlatButton
-                labelPosition="before"
-                label="Join us on telegram!"
-                labelStyle={{
-                  color: '#054186',
-                  fontWeight: '600',
-                  fontSize: '20px'
-                }}
-                style={buttonTelegram}
-                icon={
-                  <img
-                    src="/img/iconmonstr-telegram-1.svg"
-                    // style={{ fill: '#ffca57' }}
-                    height="24px"
-                    className={styles.telegramIcon}
-                    alt=""
-                  />
-                }
-                // hoverColor={Colors.blue300}
-              />
-            </a>
+        {this.state.showCommunityButtons && (
+          <div className={styles.telegramButtonContainer}>
+            <div>
+              <a
+                href="https://t.me/rigoblockprotocol"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.communityButton}
+              >
+                <FlatButton
+                  labelPosition="before"
+                  label="Join us on telegram!"
+                  labelStyle={{
+                    color: '#054186',
+                    fontWeight: '600',
+                    fontSize: '20px'
+                  }}
+                  style={buttonTelegram}
+                  icon={
+                    <img
+                      src="/img/iconmonstr-telegram-1.svg"
+                      // style={{ fill: '#ffca57' }}
+                      height="24px"
+                      className={styles.telegramIcon}
+                      alt=""
+                    />
+                  }
+                  // hoverColor={Colors.blue300}
+                />
+              </a>
 
-            <a
-              href="https://community.rigoblock.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.communityButton}
-            >
-              <FlatButton
-                labelPosition="before"
-                label="Join our Community"
-                labelStyle={{
-                  color: '#054186',
-                  fontWeight: '600',
-                  fontSize: '20px'
-                }}
-                style={buttonTelegram}
-                icon={<Chat color="#ffca57" />}
-                // hoverColor={Colors.blue300}
-              />
-            </a>
+              <a
+                href="https://community.rigoblock.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.communityButton}
+              >
+                <FlatButton
+                  labelPosition="before"
+                  label="Join our Community"
+                  labelStyle={{
+                    color: '#054186',
+                    fontWeight: '600',
+                    fontSize: '20px'
+                  }}
+                  style={buttonTelegram}
+                  icon={<Chat color="#ffca57" />}
+                  // hoverColor={Colors.blue300}
+                />
+              </a>
+            </div>
           </div>
-        </div>
+        )}
         <WalletSetup />
       </div>
     )

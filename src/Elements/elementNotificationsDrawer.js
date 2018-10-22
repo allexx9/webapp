@@ -300,7 +300,7 @@ class ElementNotificationsDrawer extends Component {
             secondaryText[1] = timeStamp
             eventStatus = value.status
             break
-            case 'LockToken':
+          case 'LockToken':
             symbol = value.symbol
             primaryText = 'Lock token ' + symbol
             secondaryText[0] =

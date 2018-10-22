@@ -2,6 +2,8 @@
 
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
+import ReactTooltip from 'react-tooltip'
+import moment from 'moment'
 
 export default class TokenLockBalance extends Component {
   static propTypes = {
@@ -15,10 +17,58 @@ export default class TokenLockBalance extends Component {
   }
   render() {
     const now = Math.floor(Date.now() / 1000)
+    // console.log(now, Number(this.props.lockTime))
+    // now > Number(this.props.lockTime)
+    //   ? console.log('red')
+    //   : console.log('green')
     return now > Number(this.props.lockTime) ? (
-      <span style={{ color: 'red' }}>{this.props.balance}</span>
+      <div
+        data-tip={
+          'Exp: ' +
+          moment.unix(this.props.lockTime).format('MMMM Do YYYY, h:mm:ss a')
+        }
+      >
+        <div
+          style={{
+            textAlign: 'right'
+          }}
+        >
+          <span
+            style={{
+              color: 'red',
+              borderBottom: '1px dotted red',
+              textDecoration: 'none'
+            }}
+          >
+            {this.props.balance}
+          </span>
+        </div>
+        <ReactTooltip effect="solid" place="top" />
+      </div>
     ) : (
-      <span style={{ color: 'green' }}>{this.props.balance}</span>
+      <div
+        data-tip={
+          'Exp: ' +
+          moment.unix(this.props.lockTime).format('MMMM Do YYYY, h:mm:ss a')
+        }
+      >
+        <div
+          style={{
+            textAlign: 'right'
+          }}
+        >
+          <span
+            style={{
+              color: 'green',
+              borderBottom: '1px dotted green',
+              textDecoration: 'none'
+            }}
+          >
+            {this.props.balance}
+          </span>
+        </div>
+        <ReactTooltip effect="solid" place="top" />
+      </div>
     )
   }
 }

@@ -155,7 +155,7 @@ class PageDashboardDragoTrader extends Component {
     }
     // console.log(this.props)
     // console.log(this.props.endpoint.accounts[0].address)
-    console.log(this.props)
+
     const listAccounts = accounts.map((account, key) => {
       return (
         <Col xs={6} key={account.name + key}>
@@ -258,6 +258,7 @@ class PageDashboardDragoTrader extends Component {
                     </div>
                     <ElementListWrapper
                       list={dragoBalances}
+                      autoLoading={false}
                       // dragoDetails={}
                       // loading={this.state.loading}
                     >
@@ -291,6 +292,7 @@ class PageDashboardDragoTrader extends Component {
                       list={dragoTransactionsLogs}
                       renderCopyButton={this.renderCopyButton}
                       renderEtherscanButton={this.renderEtherscanButton}
+                      autoLoading={false}
                       pagination={{
                         display: 10,
                         number: 1

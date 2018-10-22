@@ -150,7 +150,7 @@ export const NETWORK_WARNING = 'networkWarning'
 
 export const KOVAN_ETHERSCAN = 'https://kovan.etherscan.io/'
 export const ROPSTEN_ETHERSCAN = 'https://ropsten.etherscan.io/'
-export const MAINNET_ETHERSCAN = 'https://etherscan.io'
+export const MAINNET_ETHERSCAN = 'https://etherscan.io/'
 
 export const ENDPOINTS = {
   infura: {
@@ -281,7 +281,7 @@ export const EXCHANGES = {
     },
     ropsten: {
       tokenTransferProxy: '0x4e9aad8184de8833365fea970cd9149372fdf1e6',
-      exchangeContractAddress: '0x67799a5e640bc64ca24d3e6813842754e546d7b1',
+      exchangeContractAddress: '0x1d8643aae25841322ecde826862a9fa922770981',
       feeRecipient: '',
       networkId: 3,
       name: 'ERCdEX',
@@ -304,11 +304,11 @@ export const EXCHANGES = {
     ropsten: {
       // Old contracts
       // tokenTransferProxy: '0xcc040edf6e508c4372a62b1a902c69dcc52ceb1d'
-      // exchangeContractAddress: '0x67799a5e640bc64ca24d3e6813842754e546d7b1',
+      // exchangeContractAddress: '0x1d8643aae25841322ecde826862a9fa922770981',
 
       // Rigoblock ammended contract for EFX
       tokenTransferProxy: '0xeea64eebd1f2dc273cfc79cbdda23b69c6b5588',
-      exchangeContractAddress: '0x67799a5e640bc64ca24d3e6813842754e546d7b1',
+      exchangeContractAddress: '0x1d8643aae25841322ecde826862a9fa922770981',
       feeRecipient: '0x9faf5515f177f3a8a845d48c19032b33cc54c09c',
       networkId: 3,
       name: 'Ethfinex',

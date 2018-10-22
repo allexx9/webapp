@@ -229,11 +229,13 @@ class ElementListTransactions extends PureComponent {
   }
 
   renderEthValue(ethValue) {
-    return (
-      <div>
-        {new BigNumber(ethValue).toFixed(4)} <small>ETH</small>
-      </div>
-    )
+    if (Number(ethValue))
+      return (
+        <div>
+          {new BigNumber(ethValue).toFixed(4)} <small>ETH</small>
+        </div>
+      )
+    return ''
   }
 
   renderTx(transactionHash) {

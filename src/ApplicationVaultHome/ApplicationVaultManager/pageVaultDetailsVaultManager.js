@@ -22,6 +22,7 @@ import InfoTable from '../../Elements/elementInfoTable'
 import Loading from '../../_atomic/atoms/loading'
 import Paper from 'material-ui/Paper'
 import PoolApi from '../../PoolsApi/src'
+import PoolHoldingSupply from '../../_atomic/molecules/poolHoldingSupply'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import Search from 'material-ui/svg-icons/action/search'
@@ -60,63 +61,25 @@ class PageVaultDetailsVaultManager extends Component {
     snackBarMsg: ''
   }
 
-  componentDidMount() {
-    this.initVault()
-  }
-
-  initVault = async () => {
-    const poolApi = new PoolApi(this.context.api)
+  componentDidMount = async () => {
+    const { api } = this.context
     const dragoId = this.props.match.params.dragoid
-    const vaultDetails = await utils.getDragoDetailsFromId(
-      dragoId,
-      this.context.api
+
+    // Getting Drago details and transactions
+    this.props.dispatch(
+      Actions.drago.getPoolDetails(dragoId, api, { poolType: 'vault' })
     )
-    await utils.getVaultDetails(vaultDetails, this.props, this.context.api)
-    this.setState({
-      loading: false
-    })
-    await this.getTransactions(
-      vaultDetails,
-      this.context.api,
-      this.props.endpoint.accounts
-    )
-    await poolApi.contract.vaulteventful.init()
-    this.subscribeToEvents(poolApi.contract.vaulteventful)
   }
 
   componentWillUnmount() {
-    const { contractSubscription } = this.state
-
-    try {
-      contractSubscription.unsubscribe(function(error, success) {
-        if (success) {
-          console.log(`Successfully unsubscribed from contract.`)
-        }
-        if (error) {
-          console.log(`Unsubscribe error ${error}.`)
-        }
-      })
-    } catch (error) {
-      console.log(`Unsubscribe error ${error}.`)
-    }
-  }
-
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    // Updating the lists on each new block if the accounts balances have changed
-    // Doing this this to improve performances by avoiding useless re-rendering
-
-    const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
-    const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
-    if (!currentBalance.eq(nextBalance)) {
-      this.initVault()
-      console.log(
-        `${
-          this.constructor.name
-        } -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`
+    this.props.dispatch(Actions.tokens.priceTickersStop())
+    this.props.dispatch(Actions.exchange.getPortfolioChartDataStop())
+    this.props.dispatch(
+      Actions.vault.updateSelectedVault(
+        { details: {}, transactions: [] },
+        { reset: true }
       )
-    } else {
-      null
-    }
+    )
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -127,11 +90,11 @@ class PageVaultDetailsVaultManager extends Component {
     stateUpdate = !utils.shallowEqual(this.state, nextState)
     propsUpdate = !utils.shallowEqual(this.props, nextProps)
     if (stateUpdate || propsUpdate) {
-      console.log(
-        `${
-          this.constructor.name
-        } -> shouldComponentUpdate -> Proceedding with rendering.`
-      )
+      // console.log(
+      //   `${
+      //     this.constructor.name
+      //   } -> shouldComponentUpdate -> Proceedding with rendering.`
+      // )
     }
     return stateUpdate || propsUpdate
   }
@@ -171,6 +134,7 @@ class PageVaultDetailsVaultManager extends Component {
         key={'addressether' + text}
         href={this.props.endpoint.networkInfo.etherscan + type + '/' + text}
         target="_blank"
+        rel="noopener noreferrer"
       >
         <Search className={styles.copyAddress} />
       </a>
@@ -225,7 +189,7 @@ class PageVaultDetailsVaultManager extends Component {
 
     console.log(vaultDetails)
     // Waiting until getVaultDetails returns the drago details
-    if (loading || Object.keys(vaultDetails).length === 0) {
+    if (Object.keys(vaultDetails).length === 0) {
       return (
         <div style={{ paddingTop: '10px' }}>
           <Loading />
@@ -321,11 +285,10 @@ class PageVaultDetailsVaultManager extends Component {
                           Total supply:
                         </div>
                         <div className={styles.holdings}>
-                          <span>{vaultDetails.totalSupply}</span>{' '}
-                          <small className={styles.myPositionTokenSymbol}>
-                            {vaultDetails.symbol.toUpperCase()}
-                          </small>
-                          <br />
+                          <PoolHoldingSupply
+                            amount={vaultDetails.totalSupply}
+                            symbol={vaultDetails.symbol.toUpperCase()}
+                          />
                         </div>
                         <InfoTable
                           rows={tableInfo}
@@ -391,7 +354,8 @@ class PageVaultDetailsVaultManager extends Component {
                       list={vaultTransactionsList}
                       renderCopyButton={this.renderCopyButton}
                       renderEtherscanButton={this.renderEtherscanButton}
-                      loading={loading}
+                      loading={true}
+                      autoLoading={false}
                       pagination={{
                         display: 10,
                         number: 1
@@ -426,276 +390,7 @@ class PageVaultDetailsVaultManager extends Component {
           }}
         />
       </Row>
-
-      // <Row>
-      //   <Col xs={12}>
-      //     <Paper className={styles.paperContainer} zDepth={1}>
-      //     <FundHeader
-      //           fundDetails={vaultDetails}
-      //           fundType='vault'
-      //           actions={<ElementVaultActionsList accounts={accounts} dragoDetails={vaultDetails} snackBar={this.snackBar} />}
-      //         />
-      //       <Tabs tabItemContainerStyle={tabButtons.tabItemContainerStyle} inkBarStyle={tabButtons.inkBarStyle} className={styles.test}>
-      //         <Tab label="Info" className={styles.detailsTab}
-      //           icon={<ActionList color={'#054186'} />}>
-      //           <Grid fluid>
-      //             <Row>
-      //               <Col xs={6}>
-      //                 <Paper zDepth={1} >
-      //                   <AppBar
-      //                     title={"ETH LIQUIDITY"}
-      //                     showMenuIconButton={false}
-      //                     titleStyle={{ fontSize: 20 }}
-      //                   />
-      //                   <div className={styles.ETHliquidity}>
-      //                     <div>{this.state.vaultDetails.vaultBalance} <small>ETH</small><br /></div>
-      //                   </div>
-      //                 </Paper>
-      //               </Col>
-      //               <Col xs={6}>
-      //                 <Paper zDepth={1}>
-      //                   <ElementFeesBox
-      //                     accounts={accounts}
-      //                     isManager={user.isManager}
-      //                     vaultDetails={vaultDetails} />
-      //                 </Paper>
-      //               </Col>
-      //             </Row>
-      //             <br />
-      //             <Row>
-      //               <Col xs={12}>
-      //                 <Paper zDepth={1}>
-      //                   <AppBar
-      //                     title="DETAILS"
-      //                     showMenuIconButton={false}
-      //                     titleStyle={{ fontSize: 20 }}
-      //                   />
-      //                   <div className={styles.detailsTabContent}>
-      //                     <InfoTable rows={tableInfo} columnsStyle={columnsStyle} />
-      //                   </div>
-      //                 </Paper>
-      //               </Col>
-      //             </Row>
-      //             <Row>
-      //               <Col xs={12} className={styles.detailsTabContent}>
-      //                 <Paper style={paperStyle} zDepth={1} >
-      //                   <AppBar
-      //                     title="LAST TRANSACTIONS"
-      //                     showMenuIconButton={false}
-      //                     titleStyle={{ fontSize: 20 }}
-      //                   />
-
-      //                   <div className={styles.detailsTabContent}>
-      //                     <p>Your last 20 transactions on this Drago.</p>
-      //                   </div>
-      //                   <ElementListWrapper list={vaultTransactionList}
-      //                     renderCopyButton={this.renderCopyButton}
-      //                     renderEtherscanButton={this.renderEtherscanButton}
-      //                     loading={loading}
-      //                   >
-      //                     <ElementListTransactions />
-      //                   </ElementListWrapper>
-      //                   {/* <ElementListTransactions accountsInfo={accountsInfo} list={vaultTransactionList}
-      //                   renderCopyButton={this.renderCopyButton}
-      //                   renderEtherscanButton={this.renderEtherscanButton}/> */}
-      //                 </Paper>
-      //               </Col>
-      //             </Row>
-      //           </Grid>
-      //         </Tab>
-      //         <Tab label="Stats" className={styles.detailsTab}
-      //           icon={<ActionAssessment color={'#054186'} />}>
-      //           <Grid fluid>
-      //             <Row>
-      //               <Col xs={12} className={styles.detailsTabContent}>
-      //                 <p>
-      //                   Stats
-      //                 </p>
-      //               </Col>
-      //             </Row>
-      //           </Grid>
-      //         </Tab>
-      //       </Tabs>
-      //     </Paper>
-      //   </Col>
-      //   <Snackbar
-      //     open={this.state.snackBar}
-      //     message={this.state.snackBarMsg}
-      //     action="close"
-      //
-      //     onRequestClose={this.handlesnackBarRequestClose}
-      //     bodyStyle={{
-      //       height: "auto",
-      //       flexGrow: 0,
-      //       paddingTop: "10px",
-      //       lineHeight: "20px",
-      //       borderRadius: "2px 2px 0px 0px",
-      //       backgroundColor: "#fafafa",
-      //       boxShadow: "#bdbdbd 0px 0px 5px 0px"
-      //     }}
-      //     contentStyle={{
-      //       color: "#000000 !important",
-      //       fontWeight: "600"
-      //     }}
-      //   />
-      // </Row>
     )
-  }
-
-  subscribeToEvents = contract => {
-    const networkName = this.props.endpoint.networkInfo.name
-    let WsSecureUrl = ''
-    const eventfullContracAddress = contract.contract.address[0]
-    if (PROD) {
-      WsSecureUrl = ENDPOINTS.rigoblock.wss[networkName].prod
-    } else {
-      WsSecureUrl = ENDPOINTS.rigoblock.wss[networkName].dev
-    }
-    const web3 = new Web3(WsSecureUrl)
-    const eventfullContract = new web3.eth.Contract(
-      contract.abi,
-      eventfullContracAddress
-    )
-    const subscription = eventfullContract.events.allEvents(
-      {
-        fromBlock: 'latest',
-        topics: [null, null, null, null]
-      },
-      (error, events) => {
-        console.log(`${this.constructor.name} -> New contract event.`)
-        console.log(events)
-        this.initVault()
-      }
-    )
-    this.setState({
-      contractSubscription: subscription
-    })
-  }
-
-  // Getting last transactions
-  getTransactions = async (vaultDetails, api) => {
-    const vaultAddress = vaultDetails[0][0]
-
-    const poolApi = new PoolApi(this.context.api)
-    await poolApi.contract.vaulteventful.init()
-    const contract = poolApi.contract.vaulteventful
-    const logToEvent = log => {
-      const key = api.util.sha3(JSON.stringify(log))
-      const {
-        blockNumber,
-        logIndex,
-        transactionHash,
-        transactionIndex,
-        params,
-        type
-      } = log
-      let ethvalue =
-        log.event === 'BuyVault'
-          ? formatEth(params.amount.value, null, api)
-          : formatEth(params.revenue.value, null, api)
-      let drgvalue =
-        log.event === 'SellVault'
-          ? formatCoins(params.amount.value, null, api)
-          : formatCoins(params.revenue.value, null, api)
-      // let ethvalue = null
-      // let drgvalue = null
-      // if ((log.event === 'BuyDrago')) {
-      //   ethvalue = formatEth(params.amount.value,null,api)
-      //   drgvalue = formatCoins(params.revenue.value,null,api)
-      // }
-      // if ((log.event === 'SellDrago')) {
-      //   ethvalue = formatEth(params.revenue.value,null,api)
-      //   drgvalue = formatCoins(params.amount.value,null,api)
-      // }
-      return {
-        type: log.event,
-        state: type,
-        blockNumber,
-        logIndex,
-        transactionHash,
-        transactionIndex,
-        params,
-        key,
-        ethvalue,
-        drgvalue,
-        symbol: String.fromCharCode(...params.symbol.value)
-      }
-    }
-
-    // Getting all buyDrago and selDrago events since block 0.
-    // dragoFactoryEventsSignatures accesses the contract ABI, gets all the events and for each creates a hex signature
-    // to be passed to getAllLogs. Events are indexed and filtered by topics
-    // more at: http://solidity.readthedocs.io/en/develop/contracts.html?highlight=event#events
-
-    // The second param of the topics array is the drago address
-    // The third param of the topics array is the from address
-    // The third param of the topics array is the to address
-    //
-    //  https://github.com/RigoBlock/Books/blob/master/Solidity_01_Events.MD
-
-    const hexVaultAddress = '0x' + vaultAddress.substr(2).padStart(64, '0')
-
-    // const options = {
-    //   fromBlock: 0,
-    //   toBlock: 'pending',
-    // }
-
-    const eventsFilterBuy = {
-      topics: [[contract.hexSignature.BuyVault], [hexVaultAddress], null, null]
-    }
-    const eventsFilterSell = {
-      topics: [[contract.hexSignature.SellVault], [hexVaultAddress], null, null]
-    }
-    const buyVaultEvents = contract
-      .getAllLogs(eventsFilterBuy)
-      .then(vaultTransactionsLog => {
-        const buyLogs = vaultTransactionsLog.map(logToEvent)
-        return buyLogs
-      })
-    const sellVaultEvents = contract
-      .getAllLogs(eventsFilterSell)
-      .then(vaultTransactionsLog => {
-        const sellLogs = vaultTransactionsLog.map(logToEvent)
-        return sellLogs
-      })
-    Promise.all([buyVaultEvents, sellVaultEvents])
-      .then(logs => {
-        const allLogs = [...logs[0], ...logs[1]]
-        return allLogs
-      })
-      .then(vaultTransactionsLog => {
-        console.log(vaultTransactionsLog)
-        // Creating an array of promises that will be executed to add timestamp to each entry
-        // Doing so because for each entry we need to make an async call to the client
-        // For additional refernce: https://stackoverflow.com/questions/39452083/using-promise-function-inside-javascript-array-map
-        let promises = vaultTransactionsLog.map(log => {
-          return api.eth
-            .getBlockByNumber(new BigNumber(log.blockNumber.c[0]).toFixed(0))
-            .then(block => {
-              log.timestamp = block.timestamp
-              return log
-            })
-            .catch(error => {
-              // Sometimes Infura returns null for api.eth.getBlockByNumber, therefore we are assigning a fake timestamp to avoid
-              // other issues in the app.
-              console.log(error)
-              log.timestamp = new Date()
-              return log
-            })
-        })
-        Promise.all(promises).then(results => {
-          results.sort(function(x, y) {
-            return y.timestamp - x.timestamp
-          })
-          this.props.dispatch(
-            Actions.vault.updateSelectedVaultAction({ transactions: results })
-          )
-          console.log(`${this.constructor.name} -> Transactions list loaded`)
-          this.setState({
-            loading: false
-          })
-        })
-      })
   }
 }
 

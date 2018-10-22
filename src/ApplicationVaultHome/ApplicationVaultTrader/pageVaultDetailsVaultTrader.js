@@ -6,10 +6,8 @@ import { ENDPOINTS, PROD } from '../../_utils/const'
 import { Link, withRouter } from 'react-router-dom'
 import { Tab, Tabs } from 'material-ui/Tabs'
 import { connect } from 'react-redux'
-import { formatCoins, formatEth } from '../../_utils/format'
 import ActionList from 'material-ui/svg-icons/action/list'
 import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
-import BigNumber from 'bignumber.js'
 import CopyContent from 'material-ui/svg-icons/content/content-copy'
 import ElementFeesBox from '../Elements/elementFeesBox'
 import ElementFundNotFound from '../../Elements/elementFundNotFound'
@@ -20,7 +18,7 @@ import FundHeader from '../../_atomic/molecules/fundHeader'
 import InfoTable from '../../Elements/elementInfoTable'
 import Loading from '../../_atomic/atoms/loading'
 import Paper from 'material-ui/Paper'
-import PoolApi from '../../PoolsApi/src'
+import PoolHoldingSupply from '../../_atomic/molecules/poolHoldingSupply'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import Search from 'material-ui/svg-icons/action/search'
@@ -53,117 +51,49 @@ class PageFundDetailsVaultTrader extends Component {
   }
 
   state = {
-    vaultTransactionsLogs: [],
     loading: true,
     snackBar: false,
     snackBarMsg: '',
     openBuySellDialog: {
       open: false,
       action: 'deposit'
-    },
-    prevProps: {}
+    }
   }
 
   componentDidMount = async () => {
-    this.initVault()
-    // const poolApi = new PoolApi(this.context.api)
-    // await poolApi.contract.vaulteventful.init()
-    // this.subscribeToEvents(poolApi.contract.vaulteventful)
-  }
-
-  initVault = async () => {
+    const { api } = this.context
     const dragoId = this.props.match.params.dragoid
-    const vaultDetails = await utils.getDragoDetailsFromId(
-      dragoId,
-      this.context.api
-    )
-    await utils.getVaultDetails(vaultDetails, this.props, this.context.api)
-    this.setState({
-      loading: false
-    })
-    const address = vaultDetails[0][0]
-    let options = {
-      balance: true,
-      supply: false,
-      limit: 20,
-      allEvents: true,
-      trader: true,
-      drago: false
-    }
+
+    // Getting Drago details and transactions
     this.props.dispatch(
-      Actions.drago.getPoolTransactions(this.context.api, address, [], options)
+      Actions.drago.getPoolDetails(dragoId, api, { poolType: 'vault' })
     )
-    // await this.getTransactions(
-    //   vaultDetails,
-    //   this.context.api,
-    //   this.props.endpoint.accounts
-    // )
   }
 
   componentWillUnmount() {
-    const { contractSubscription } = this.state
-
-    // this.props.dispatch({type: TOKEN_PRICE_TICKERS_FETCH_STOP})
-    try {
-      contractSubscription.unsubscribe(function(error, success) {
-        if (success) {
-          console.log(`Successfully unsubscribed from contract.`)
-        }
-        if (error) {
-          console.log(`Unsubscribe error ${error}.`)
-        }
-      })
-    } catch (error) {
-      console.log(`Unsubscribe error ${error}.`)
-    }
+    this.props.dispatch(Actions.tokens.priceTickersStop())
+    this.props.dispatch(Actions.exchange.getPortfolioChartDataStop())
+    this.props.dispatch(
+      Actions.vault.updateSelectedVault(
+        { details: {}, transactions: [] },
+        { reset: true }
+      )
+    )
   }
 
-  UNSAFE_componentWillReceiveProps = nextProps => {
-    // Updating the lists on each new block if the accounts balances have changed
-    // Doing this this to improve performances by avoiding useless re-rendering
-
-    const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
-    const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
-    if (!currentBalance.eq(nextBalance)) {
-      this.initVault()
-      this.setState({
-        prevProps: this.props
-      })
-      // console.log(
-      //   `${
-      //     this.constructor.name
-      //   } -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`
-      // )
-    } else {
-      null
-    }
-  }
-
-  // static getDerivedStateFromProps(props) {
-  //   return {
-  //     // Since this method fires on both props and state changes, local updates
-  //     // to the controlled value will be ignored, because the props version
-  //     // always overrides it. Oops!
-  //     prevProps: props
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   //
+  //   let stateUpdate = true
+  //   let propsUpdate = true
+  //   // const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
+  //   // const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
+  //   stateUpdate = !utils.shallowEqual(this.state, nextState)
+  //   propsUpdate = !utils.shallowEqual(this.props, nextProps)
+  //   if (stateUpdate || propsUpdate) {
+  //     // console.log(`${this.constructor.name} -> shouldComponentUpdate -> Proceedding with rendering.`);
   //   }
+  //   return stateUpdate || propsUpdate
   // }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    let stateUpdate = true
-    let propsUpdate = true
-    // const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
-    // const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
-    stateUpdate = !utils.shallowEqual(this.state, nextState)
-    propsUpdate = !utils.shallowEqual(this.props, nextProps)
-    if (stateUpdate || propsUpdate) {
-      // console.log(
-      //   `${
-      //     this.constructor.name
-      //   } -> shouldComponentUpdate -> Proceedding with rendering.`
-      // )
-    }
-    return stateUpdate || propsUpdate
-  }
 
   snackBar = msg => {
     this.setState({
@@ -232,6 +162,7 @@ class PageFundDetailsVaultTrader extends Component {
   }
 
   render() {
+    // console.log(this.props)
     const { user } = this.props
     const { accounts } = this.props.endpoint
     const { loading } = this.state
@@ -271,7 +202,7 @@ class PageFundDetailsVaultTrader extends Component {
     ]
 
     // Waiting until getVaultDetails returns the drago details
-    if (loading || Object.keys(vaultDetails).length === 0) {
+    if (Object.keys(vaultDetails).length === 0) {
       return (
         <div style={{ paddingTop: '10px' }}>
           <Loading />
@@ -283,15 +214,16 @@ class PageFundDetailsVaultTrader extends Component {
       return <ElementFundNotFound />
     }
 
-    const holdingFadeStyle =
-      Object.keys(this.state.prevProps).length !== 0 &&
-      this.state.prevProps.transactionsVault.selectedVault.details
-        .balanceDRG !== vaultDetails.balanceDRG
-        ? styles.fadeNewHolding
-        : styles.noFadeNewHolding
-
+    // const holdingFadeStyle =
+    //   Object.keys(this.state.prevProps).length !== 0 &&
+    //   this.state.prevProps.transactionsVault.selectedVault.details
+    //     .balanceDRG !== vaultDetails.balanceDRG
+    //     ? styles.fadeNewHolding
+    //     : styles.noFadeNewHolding
+    const holdingFadeStyle = styles.noFadeNewHolding
     // console.log(this.props)
     // console.log(this.state)
+    // console.log(vaultTransactionsList)
     return (
       <Row>
         <Col xs={12}>
@@ -358,11 +290,10 @@ class PageFundDetailsVaultTrader extends Component {
                           Total supply:
                         </div>
                         <div className={styles.holdings}>
-                          <span>{vaultDetails.totalSupply}</span>{' '}
-                          <small className={styles.myPositionTokenSymbol}>
-                            {vaultDetails.symbol.toUpperCase()}
-                          </small>
-                          <br />
+                          <PoolHoldingSupply
+                            amount={vaultDetails.totalSupply}
+                            symbol={vaultDetails.symbol.toUpperCase()}
+                          />
                         </div>
                         <InfoTable
                           rows={tableInfo}
@@ -380,13 +311,10 @@ class PageFundDetailsVaultTrader extends Component {
                                 Your total holding:
                               </div>
                               <div className={styles.holdings}>
-                                <span className={holdingFadeStyle}>
-                                  {vaultDetails.balanceDRG}
-                                </span>{' '}
-                                <small className={styles.myPositionTokenSymbol}>
-                                  {vaultDetails.symbol.toUpperCase()}
-                                </small>
-                                <br />
+                                <PoolHoldingSupply
+                                  amount={vaultDetails.balanceDRG}
+                                  symbol={vaultDetails.symbol.toUpperCase()}
+                                />
                               </div>
                             </div>
                           </Col>
@@ -453,6 +381,8 @@ class PageFundDetailsVaultTrader extends Component {
                       renderCopyButton={this.renderCopyButton}
                       renderEtherscanButton={this.renderEtherscanButton}
                       loading={loading}
+                      autoLoading={false}
+                      renderOptimization={false}
                       pagination={{
                         display: 10,
                         number: 1
@@ -520,147 +450,6 @@ class PageFundDetailsVaultTrader extends Component {
     this.setState({
       contractSubscription: subscription
     })
-  }
-
-  // Getting last transactions
-  getTransactions = async (vaultDetails, api, accounts) => {
-    const vaultAddress = vaultDetails[0][0]
-
-    const poolApi = new PoolApi(this.context.api)
-    await poolApi.contract.vaulteventful.init()
-    const contract = poolApi.contract.vaulteventful
-    const logToEvent = log => {
-      const key = api.util.sha3(JSON.stringify(log))
-      const {
-        blockNumber,
-        logIndex,
-        transactionHash,
-        transactionIndex,
-        params,
-        type
-      } = log
-      let ethvalue =
-        log.event === 'BuyVault'
-          ? formatEth(params.amount.value, null, api)
-          : formatEth(params.revenue.value, null, api)
-      let drgvalue =
-        log.event === 'SellVault'
-          ? formatCoins(params.amount.value, null, api)
-          : formatCoins(params.revenue.value, null, api)
-      // let ethvalue = null
-      // let drgvalue = null
-      // if ((log.event === 'BuyDrago')) {
-      //   ethvalue = formatEth(params.amount.value,null,api)
-      //   drgvalue = formatCoins(params.revenue.value,null,api)
-      // }
-      // if ((log.event === 'SellDrago')) {
-      //   ethvalue = formatEth(params.revenue.value,null,api)
-      //   drgvalue = formatCoins(params.amount.value,null,api)
-      // }
-      return {
-        type: log.event,
-        state: type,
-        blockNumber,
-        logIndex,
-        transactionHash,
-        transactionIndex,
-        params,
-        key,
-        ethvalue,
-        drgvalue,
-        symbol: String.fromCharCode(...params.symbol.value)
-      }
-    }
-
-    // Getting all buyDrago and selDrago events since block 0.
-    // dragoFactoryEventsSignatures accesses the contract ABI, gets all the events and for each creates a hex signature
-    // to be passed to getAllLogs. Events are indexed and filtered by topics
-    // more at: http://solidity.readthedocs.io/en/develop/contracts.html?highlight=event#events
-
-    // The second param of the topics array is the drago address
-    // The third param of the topics array is the from address
-    // The third param of the topics array is the to address
-    //
-    //  https://github.com/RigoBlock/Books/blob/master/Solidity_01_Events.MD
-
-    const hexVaultAddress = '0x' + vaultAddress.substr(2).padStart(64, '0')
-    const hexAccounts = accounts.map(account => {
-      const hexAccount = '0x' + account.address.substr(2).padStart(64, '0')
-      return hexAccount
-    })
-    // const options = {
-    //   fromBlock: 0,
-    //   toBlock: 'pending',
-    // }
-    const eventsFilterBuy = {
-      topics: [
-        [contract.hexSignature.BuyVault],
-        [hexVaultAddress],
-        hexAccounts,
-        null
-      ]
-    }
-    const eventsFilterSell = {
-      topics: [
-        [contract.hexSignature.SellVault],
-        [hexVaultAddress],
-        hexAccounts,
-        null
-      ]
-    }
-    const buyVaultEvents = contract
-      .getAllLogs(eventsFilterBuy)
-      .then(vaultTransactionsLog => {
-        console.log(vaultTransactionsLog)
-        const buyLogs = vaultTransactionsLog.map(logToEvent)
-        return buyLogs
-      })
-    const sellVaultEvents = contract
-      .getAllLogs(eventsFilterSell)
-      .then(vaultTransactionsLog => {
-        const sellLogs = vaultTransactionsLog.map(logToEvent)
-        return sellLogs
-      })
-    Promise.all([buyVaultEvents, sellVaultEvents])
-      .then(logs => {
-        const allLogs = [...logs[0], ...logs[1]]
-        return allLogs
-      })
-      .then(vaultTransactionsLog => {
-        console.log(vaultTransactionsLog)
-        // Creating an array of promises that will be executed to add timestamp to each entry
-        // Doing so because for each entry we need to make an async call to the client
-        // For additional refernce: https://stackoverflow.com/questions/39452083/using-promise-function-inside-javascript-array-map
-        let promises = vaultTransactionsLog.map(log => {
-          return api.eth
-            .getBlockByNumber(new BigNumber(log.blockNumber).toFixed(0))
-            .then(block => {
-              log.timestamp = block.timestamp
-              return log
-            })
-            .catch(error => {
-              // Sometimes Infura returns null for api.eth.getBlockByNumber, therefore we are assigning a fake timestamp to avoid
-              // other issues in the app.
-              console.log(error)
-              log.timestamp = new Date()
-              return log
-            })
-        })
-        Promise.all(promises).then(results => {
-          results.sort(function(x, y) {
-            return y.timestamp - x.timestamp
-          })
-          this.props.dispatch(
-            Actions.vault.updateSelectedVaultAction({
-              transactions: results
-            })
-          )
-          console.log(`${this.constructor.name} -> Transactions list loaded`)
-          this.setState({
-            loading: false
-          })
-        })
-      })
   }
 }
 

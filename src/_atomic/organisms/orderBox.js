@@ -52,7 +52,8 @@ class OrderBox extends Component {
   }
 
   state = {
-    orderRawDialogOpen: false
+    orderRawDialogOpen: false,
+    efxOrder: {}
   }
 
   static contextTypes = {
@@ -165,13 +166,21 @@ class OrderBox extends Component {
     } = this.props.exchange
     if (!selectedOrder.takerOrder) {
     }
-    console.log(`Selected order: ${selectedOrder}`)
     let signedOrder = await signOrder(
       selectedOrder,
       selectedExchange,
       walletAddress
     )
-    console.log(`Signed order: ${signedOrder}`)
+    console.log('Selected order', selectedOrder)
+    console.log('Signed order', signedOrder)
+    console.log(signedOrder)
+    let { expirationUnixTimestampSec } = signedOrder
+    console.log(expirationUnixTimestampSec)
+    // expirationUnixTimestampSec = expirationUnixTimestampSec.toNumber()
+    console.log(expirationUnixTimestampSec)
+    expirationUnixTimestampSec = parseInt(expirationUnixTimestampSec)
+    // signedOrder.expirationUnixTimestampSec = expirationUnixTimestampSec
+    console.log(signedOrder)
     const payload = {
       details: { order: signedOrder }
     }
@@ -278,6 +287,10 @@ class OrderBox extends Component {
             meta: signedOrder,
             protocol: '0x'
           }
+          efxOrder.meta.sigType = 'contract'
+          this.setState({
+            efxOrder
+          })
           console.log(efxSymbol, efxAmount, selectedOrder.orderPrice)
           console.log(efxOrder)
           let parsedBody = await submitOrderToRelayEFX(
@@ -562,6 +575,7 @@ class OrderBox extends Component {
         </Col>
         <OrderRawDialog
           order={selectedOrder}
+          efxOrder={this.state.efxOrder}
           onSubmitOrder={this.onSubmitOrder}
           onClose={this.onCloseOrderRawDialog}
           open={this.state.orderRawDialogOpen}

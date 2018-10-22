@@ -3,37 +3,17 @@
 // import { Observable } from 'rxjs';
 import * as TYPE_ from '../actions/const'
 import { Actions } from '../actions'
-import {
-  DEBUGGING,
-  INFURA,
-  LOCAL,
-  MSG_NETWORK_STATUS_ERROR,
-  MSG_NETWORK_STATUS_OK,
-  NETWORK_OK,
-  NETWORK_WARNING,
-  RIGOBLOCK
-} from '../../_utils/const'
-import { Interfaces } from '../../_utils/interfaces'
-import { Observable, defer, from, merge, timer } from 'rxjs'
+import { DEBUGGING } from '../../_utils/const'
+import { Observable, from, timer } from 'rxjs'
 import {
   catchError,
-  concat,
-  delay,
-  exhaustMap,
-  filter,
   finalize,
-  flatMap,
   map,
   mergeMap,
   retryWhen,
-  switchMap,
-  takeUntil,
-  tap,
-  timeout
+  tap
 } from 'rxjs/operators'
 import { ofType } from 'redux-observable'
-import { sha3_512 } from 'js-sha3'
-import BigNumber from 'bignumber.js'
 import PoolsApi from '../../PoolsApi/src'
 import utils from '../../_utils/utils'
 // import { race } from 'rxjs/observable/race';
@@ -42,10 +22,10 @@ import utils from '../../_utils/utils'
 // FETCH LIST OF DRAGOS
 //
 
-const getChunkedEvents$ = (api, options, state$) => {
+const getVaultsChunkedEvents$ = (api, options, state$) => {
   return Observable.create(observer => {
     let startBlock =
-      state$.value.transactionsDrago.dragosList.lastFetchRange.lastBlock
+      state$.value.transactionsVault.vaultsList.lastFetchRange.lastBlock
     // console.log(fromBlock)
     const poolApi = new PoolsApi(api)
     if (startBlock === 0) {
@@ -65,28 +45,43 @@ const getChunkedEvents$ = (api, options, state$) => {
     }
 
     const logToEvent = log => {
-      // const key = api.util.sha3(JSON.stringify(log))
-      const { params } = log
+      const hexToString = hex => {
+        let string = ''
+        for (let i = 0; i < hex.length; i += 2) {
+          string += String.fromCharCode(parseInt(hex.substr(i, 2), 16))
+        }
+        return string
+      }
+      const { returnValues } = log
+      let symbol
+      if (typeof returnValues.symbol === 'string') {
+        '0x' === returnValues.symbol.substring(0, 2)
+          ? (symbol = hexToString(returnValues.symbol.substring(2)))
+          : (symbol = returnValues.symbol)
+      } else {
+        for (let i = 0; i < returnValues.symbol.length; ++i) {
+          symbol += String.fromCharCode(returnValues.symbol[i])
+        }
+      }
       return {
-        symbol: params.symbol.value,
-        dragoId: params.dragoId.value.toFixed(),
-        name: params.name.value,
-        address: params.drago.value
+        symbol,
+        vaultId: returnValues.vaultId,
+        name: returnValues.name,
+        address: returnValues.vault
       }
     }
 
-    poolApi.contract.dragoeventful.init().then(() => {
+    poolApi.contract.vaulteventful.init().then(() => {
       api.eth.blockNumber().then(lastBlock => {
         lastBlock = lastBlock.toFixed()
         let chunck = 100000
         console.log(startBlock, lastBlock, chunck)
         const chunks = utils.blockChunks(startBlock, lastBlock, chunck)
-        console.log(chunks)
         chunks.map(async (chunk, key) => {
           // Pushing chunk logs into array
           let options = {
             topics: [
-              poolApi.contract.dragoeventful.hexSignature.DragoCreated,
+              poolApi.contract.vaulteventful.hexSignature.VaultCreated,
               null,
               null,
               null
@@ -94,10 +89,10 @@ const getChunkedEvents$ = (api, options, state$) => {
             fromBlock: chunk.fromBlock,
             toBlock: chunk.toBlock
           }
-          poolApi.contract.dragoeventful
+          poolApi.contract.vaulteventful
             .getAllLogs(options)
-            .then(dragoCreatedLogs => {
-              const list = [].concat(dragoCreatedLogs.map(logToEvent))
+            .then(logs => {
+              const list = [].concat(logs.map(logToEvent))
               let result = {
                 list,
                 lastFetchRange: {
@@ -125,25 +120,134 @@ const getChunkedEvents$ = (api, options, state$) => {
   })
 }
 
-const getDragosList$ = (api, options, state$) => {
-  return getChunkedEvents$(api, options, state$)
+const getDragosChunkedEvents$ = (api, options, state$) => {
+  return Observable.create(observer => {
+    let startBlock =
+      state$.value.transactionsDrago.dragosList.lastFetchRange.lastBlock
+    // console.log(fromBlock)
+    const poolApi = new PoolsApi(api)
+    if (startBlock === 0) {
+      switch (api._rb.network.id) {
+        case 1:
+          startBlock = '6000000'
+          break
+        case 42:
+          startBlock = '7000000'
+          break
+        case 3:
+          startBlock = '3000000'
+          break
+        default:
+          '3000000'
+      }
+    }
+
+    const logToEvent = log => {
+      const hexToString = hex => {
+        let string = ''
+        for (let i = 0; i < hex.length; i += 2) {
+          string += String.fromCharCode(parseInt(hex.substr(i, 2), 16))
+        }
+        return string
+      }
+      const { returnValues } = log
+      let symbol
+      if (typeof returnValues.symbol === 'string') {
+        '0x' === returnValues.symbol.substring(0, 2)
+          ? (symbol = hexToString(returnValues.symbol.substring(2)))
+          : (symbol = returnValues.symbol)
+      } else {
+        for (let i = 0; i < returnValues.symbol.length; ++i) {
+          symbol += String.fromCharCode(returnValues.symbol[i])
+        }
+      }
+      return {
+        symbol,
+        dragoId: returnValues.dragoId,
+        name: returnValues.name,
+        address: returnValues.drago
+      }
+    }
+
+    poolApi.contract.dragoeventful.init().then(() => {
+      api.eth.blockNumber().then(lastBlock => {
+        lastBlock = lastBlock.toFixed()
+        let chunck = 100000
+        console.log(startBlock, lastBlock, chunck)
+        const chunks = utils.blockChunks(startBlock, lastBlock, chunck)
+        chunks.map(async (chunk, key) => {
+          // Pushing chunk logs into array
+          let options = {
+            topics: [
+              poolApi.contract.dragoeventful.hexSignature.DragoCreated,
+              null,
+              null,
+              null
+            ],
+            fromBlock: chunk.fromBlock,
+            toBlock: chunk.toBlock
+          }
+          poolApi.contract.dragoeventful
+            .getAllLogs(options)
+            .then(logs => {
+              const list = [].concat(logs.map(logToEvent))
+              let result = {
+                list,
+                lastFetchRange: {
+                  chunk: {
+                    key: key,
+                    toBlock:
+                      chunk.toBlock === 'latest'
+                        ? Number(lastBlock)
+                        : Number(chunk.toBlock),
+                    fromBlock: chunk.fromBlock
+                  },
+                  startBlock: Number(startBlock),
+                  lastBlock: Number(lastBlock)
+                }
+              }
+              // console.log(result)
+              return observer.next(result)
+            })
+            .catch(error => {
+              return observer.error(error)
+            })
+        })
+      })
+    })
+  })
 }
 
-export const getDragosListEpic = (action$, state$) =>
+const getPoolsList$ = (api, options, state$) => {
+  switch (options.poolType) {
+    case 'drago':
+      return getDragosChunkedEvents$(api, options, state$)
+    case 'vault':
+      return getVaultsChunkedEvents$(api, options, state$)
+    default:
+      return getDragosChunkedEvents$(api, options, state$)
+  }
+}
+
+export const getPoolsListEpic = (action$, state$) =>
   action$.pipe(
-    ofType(TYPE_.GET_DRAGOS_SEARCH_LIST),
+    ofType(TYPE_.GET_POOLS_SEARCH_LIST),
     mergeMap(action => {
-      return getDragosList$(
+      return getPoolsList$(
         action.payload.api,
         action.payload.options,
         state$
       ).pipe(
         map(results => {
           // console.log(results)
-          // console.log(new Map(results.list))
-          // console.log(new Map([[1, 2], [2, 3]]))
-          // console.log(results.list)
-          return Actions.drago.updateDragosSearchList(results)
+          switch (action.payload.options.poolType) {
+            case 'drago':
+              return Actions.drago.updateDragosSearchList(results)
+            case 'vault':
+              return Actions.drago.updateVaultsSearchList(results)
+            default:
+              throw 'No poolType defined'
+          }
         }),
         catchError(error => {
           console.warn(error)
@@ -160,7 +264,7 @@ export const getDragosListEpic = (action$, state$) =>
 // FETCH ACCOUNT TRANSACTIONS
 //
 
-const getAccountsTransactions$ = (api, dragoAddress, accounts, options) => {
+const getPoolTransactions$ = (api, dragoAddress, accounts, options) => {
   return options.drago
     ? from(
         utils.getTransactionsDragoOptV2(api, dragoAddress, accounts, options)
@@ -174,42 +278,40 @@ export const getAccountsTransactionsEpic = action$ =>
   action$.pipe(
     ofType(TYPE_.GET_ACCOUNTS_TRANSACTIONS),
     mergeMap(action => {
-      console.log(action.payload)
-      return getAccountsTransactions$(
+      return getPoolTransactions$(
         action.payload.api,
         action.payload.dragoAddress,
         action.payload.accounts,
         action.payload.options
       ).pipe(
         tap(results => {
-          console.log(results)
           return results
         }),
         map(results => {
           if (action.payload.options.drago) {
             if (!action.payload.options.trader) {
-              return Actions.drago.updateTransactionsDragoManagerAction(
+              return Actions.drago.updateTransactionsDragoManager(
                 results.length === 0 ? [Array(0), Array(0), Array(0)] : results
               )
             }
-            return Actions.drago.updateTransactionsDragoHolderAction(results)
+            return Actions.drago.updateTransactionsDragoHolder(results)
             // return DEBUGGING.DUMB_ACTION
           } else {
-            // if (!action.payload.options.trader) {
-            //   return Actions.drago.updateTransactionsVaultManagerAction(
-            //     results.length === 0 ? [Array(0), Array(0), Array(0)] : results
-            //   )
-            // }
-            // return Actions.drago.updateTransactionsVaultHolderAction(results)
-            return DEBUGGING.DUMB_ACTION
+            if (!action.payload.options.trader) {
+              return Actions.vault.updateTransactionsVaultManager(
+                results.length === 0 ? [Array(0), Array(0), Array(0)] : results
+              )
+            }
+            return Actions.vault.updateTransactionsVaultHolder(results)
+            // return DEBUGGING.DUMB_ACTION
           }
         }),
         retryWhen(error => {
-          console.log(error)
           console.log('getAccountsTransactionsEpic')
           let scalingDuration = 3000
           return error.pipe(
             mergeMap((error, i) => {
+              console.warn(error)
               const retryAttempt = i + 1
               // if maximum number of retries have been met
               // or response is a status code we don't wish to retry, throw error
@@ -248,41 +350,26 @@ export const getPoolTransactionsEpic = action$ =>
   action$.pipe(
     ofType(TYPE_.GET_POOL_TRANSACTIONS),
     mergeMap(action => {
-      console.log(action.payload)
-      return getAccountsTransactions$(
+      return getPoolTransactions$(
         action.payload.api,
         action.payload.dragoAddress,
         action.payload.accounts,
         action.payload.options
       ).pipe(
         tap(results => {
-          console.log(results)
           return results
         }),
         map(results => {
-          // if (action.payload.options.drago) {
-          //   if (!action.payload.options.trader) {
-          //     return Actions.drago.updateTransactionsDragoManagerAction(
-          //       results.length === 0 ? [Array(0), Array(0), Array(0)] : results
-          //     )
-          //   }
-          //   return Actions.drago.updateTransactionsDragoHolderAction(results)
-          // } else {
-          //   if (!action.payload.options.trader) {
-          //     return Actions.drago.updateTransactionsVaultManagerAction(
-          //       results.length === 0 ? [Array(0), Array(0), Array(0)] : results
-          //     )
-          //   }
-          //   return Actions.drago.updateTransactionsVaultHolderAction(results)
-          // }
-          return DEBUGGING.DUMB_ACTION
-          // return action.payload.options.drago
-          //   ? Actions.drago.updateSelectedDragoAction({
-          //       transactions: results[1]
-          //     })
-          //   : Actions.vault.updateSelectedVaultAction({
-          //       transactions: results[1]
-          //     })
+          if (action.payload.options.drago) {
+            return Actions.drago.updateSelectedDrago({
+              transactions: results
+            })
+          } else {
+            return Actions.vault.updateSelectedVault({
+              transactions: results
+            })
+          }
+          // return DEBUGGING.DUMB_ACTION
         }),
         catchError(error => {
           console.warn(error)

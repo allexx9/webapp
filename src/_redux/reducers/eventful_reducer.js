@@ -8,8 +8,8 @@ export function eventfulDragoReducer(
   action
 ) {
   switch (action.type) {
-    case TYPE_.UPDATE_DRAGOS_LIST:
-      let newList = state.dragosList.list.concat(action.payload.list)
+    case TYPE_.UPDATE_DRAGOS_LIST: {
+      let newList = [].concat(state.dragosList.list.concat(action.payload.list))
       newList.sort(function(a, b) {
         if (a.symbol < b.symbol) return -1
         if (a.symbol > b.symbol) return 1
@@ -22,7 +22,7 @@ export function eventfulDragoReducer(
           lastFetchRange: action.payload.lastFetchRange
         }
       }
-
+    }
     case TYPE_.UPDATE_TRANSACTIONS_DRAGO_HOLDER:
       return {
         ...state,
@@ -48,6 +48,22 @@ export function eventfulDragoReducer(
         selectedDrago: {
           ...state.selectedDrago,
           ...action.payload
+        }
+      }
+
+    case TYPE_.UPDATE_SELECTED_DRAGO_DETAILS_RESET:
+      return {
+        ...state,
+        selectedDrago: {
+          values: {
+            portfolioValue: -1,
+            totalAssetsValue: -1,
+            estimatedPrice: -1
+          },
+          details: {},
+          transactions: [],
+          assets: [],
+          assetsCharts: {}
         }
       }
 
@@ -113,15 +129,21 @@ export function eventfulVaultReducer(
   action
 ) {
   switch (action.type) {
-    case TYPE_.UPDATE_VAULTS_SEARCH_LIST:
-      let newList = state.dragosList.list.concat(action.payload.list)
+    case TYPE_.UPDATE_VAULTS_LIST: {
+      let newList = [].concat(state.vaultsList.list.concat(action.payload.list))
+      newList.sort(function(a, b) {
+        if (a.symbol < b.symbol) return -1
+        if (a.symbol > b.symbol) return 1
+        return 0
+      })
       return {
         ...state,
-        dragosList: {
+        vaultsList: {
           list: newList,
           lastFetchRange: action.payload.lastFetchRange
         }
       }
+    }
     case TYPE_.UPDATE_TRANSACTIONS_VAULT_HOLDER:
       return {
         ...state,
@@ -144,6 +166,14 @@ export function eventfulVaultReducer(
         selectedVault: {
           ...state.selectedVault,
           ...action.payload
+        }
+      }
+    case TYPE_.UPDATE_SELECTED_VAULT_DETAILS_RESET:
+      return {
+        ...state,
+        selectedVault: {
+          details: {},
+          transactions: []
         }
       }
     default:

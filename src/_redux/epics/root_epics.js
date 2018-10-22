@@ -7,15 +7,16 @@ import {
   getOrderBookFromRelayEpic,
   getTradeHistoryLogsFromRelayERCdEXEpic,
   updateFundLiquidityEpic,
-  updateLiquidityAndTokenBalancesEpic
+  updateLiquidityAndTokenBalancesEpic,
+  resetLiquidityAndTokenBalancesEpic
   // getAssetsPricesDataFromERCdEXEpic
 } from './exchange_epics'
 
+import * as Drago from './drago_epics'
 import * as Endpoint from './endpoint_epics'
 import * as Eventful from './eventful_epics'
 import * as Tokens from './token_epics'
 import { ERCdEX, Ethfinex } from './exchanges'
-import { getTokensBalancesEpic } from './drago_epics'
 
 const ERCdEX_Epics = [
   ERCdEX.getCandlesSingleDataEpic,
@@ -47,10 +48,12 @@ const Endpoint_Epics = [
 ]
 
 const Eventful_Epics = [
-  Eventful.getDragosListEpic,
+  Eventful.getPoolsListEpic,
   Eventful.getAccountsTransactionsEpic,
   Eventful.getPoolTransactionsEpic
 ]
+
+const Drago_Epics = [Drago.getPoolDetailsEpic, Drago.getTokensBalancesEpic]
 
 export const rootEpic = combineEpics(
   // relayWebSocketEpic,
@@ -59,11 +62,12 @@ export const rootEpic = combineEpics(
   ...Ethfinex_Epics,
   ...Tokens_Epics,
   ...Eventful_Epics,
-  getTokensBalancesEpic,
+  ...Drago_Epics,
   getOrderBookFromRelayEpic,
   getLiquidityAndTokenBalancesEpic,
   updateLiquidityAndTokenBalancesEpic,
   updateFundLiquidityEpic,
+  resetLiquidityAndTokenBalancesEpic,
   getTradeHistoryLogsFromRelayERCdEXEpic
   // getAssetsPricesDataFromERCdEXEpic
 )

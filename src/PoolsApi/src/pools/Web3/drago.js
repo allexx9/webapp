@@ -503,7 +503,14 @@ class DragoWeb3 {
         options.gas = gasEstimate
       })
       .then(() => {
-        return instance.methods.buyDrago().send(options)
+        return instance.methods
+          .buyDrago()
+          .send(options)
+          .on('confirmation', function(confirmationNumber, receipt) {})
+          .on('receipt', function(receipt) {})
+          .then(result => {
+            return result
+          })
       })
   }
 

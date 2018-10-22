@@ -3,6 +3,7 @@ import { Redirect, Route, Switch, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 import ElementBottomStatusBar from '../Elements/elementBottomStatusBar'
 import LeftSideDrawerConfig from '../Elements/leftSideDrawerConfig'
+import PageAppConfig from './pageAppConfig'
 import PageNetworkConfig from './pageNetworkConfig'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
@@ -32,7 +33,13 @@ class ApplicationConfigHome extends Component {
             <Switch>
               <Route
                 path={match.path + '/network'}
+                exact
                 render={props => <PageNetworkConfig {...props} />}
+              />
+              <Route
+                path={match.path + '/application'}
+                exact
+                render={props => <PageAppConfig {...props} />}
               />
               <Redirect from={match.path} to={match.path + '/network'} />
             </Switch>

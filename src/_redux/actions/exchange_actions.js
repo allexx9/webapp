@@ -153,6 +153,14 @@ const exchange = {
             // dragoAddress
           }
         }
+      case 'RESET':
+        return {
+          type: TYPE_.UPDATE_LIQUIDITY_AND_TOKENS_BALANCE_RESET,
+          payload: {
+            api
+            // dragoAddress
+          }
+        }
       default:
         return {
           type: TYPE_.UPDATE_LIQUIDITY_AND_TOKENS_BALANCE,
@@ -161,6 +169,12 @@ const exchange = {
             dragoAddress
           }
         }
+    }
+  },
+  updateAvailableFunds: payload => {
+    return {
+      type: TYPE_.UPDATE_AVAILABLE_FUNDS,
+      payload: payload
     }
   },
   updateAvailableRelays: payload => {

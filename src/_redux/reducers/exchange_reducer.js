@@ -6,6 +6,12 @@ import initialState from './initialState'
 
 function exchangeReducer(state = initialState.exchange, action) {
   switch (action.type) {
+    case TYPE_.UPDATE_AVAILABLE_FUNDS:
+      return {
+        ...state,
+        availableFunds: [...action.payload]
+      }
+
     case TYPE_.UPDATE_FUND_ORDERS:
       return {
         ...state,
@@ -153,8 +159,8 @@ function exchangeReducer(state = initialState.exchange, action) {
 
     case TYPE_.TOKENS_TICKERS_UPDATE:
       let prices = {
-        ...action.payload,
-        previous: { ...state.prices }
+        current: { ...state.prices.current, ...action.payload },
+        previous: { ...state.prices.current }
       }
       return { ...state, prices }
 

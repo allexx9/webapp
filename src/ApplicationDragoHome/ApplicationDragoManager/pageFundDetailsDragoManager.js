@@ -6,6 +6,7 @@ import { Link, withRouter } from 'react-router-dom'
 import { Tab, Tabs } from 'material-ui/Tabs'
 import { connect } from 'react-redux'
 import { formatCoins, formatEth } from '../../_utils/format'
+import { formatPrice } from '../../_utils/format'
 import ActionAssessment from 'material-ui/svg-icons/action/assessment'
 import ActionList from 'material-ui/svg-icons/action/list'
 import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
@@ -24,6 +25,7 @@ import InfoTable from '../../Elements/elementInfoTable'
 import Loading from '../../_atomic/atoms/loading'
 import Paper from 'material-ui/Paper'
 import PoolApi from '../../PoolsApi/src'
+import PoolHoldingSupply from '../../_atomic/molecules/poolHoldingSupply'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import Search from 'material-ui/svg-icons/action/search'
@@ -64,79 +66,18 @@ class PageFundDetailsDragoManager extends Component {
 
   componentDidMount = async () => {
     const { api } = this.context
-    const relay = {
-      name: Ethfinex
-    }
-    // Getting Drago details
-    let dragoDetails = await this.getDragoDetails()
-
-    // Getting Drago assets
-    this.props.dispatch(
-      Actions.drago.getTokenBalancesDrago(dragoDetails, api, relay)
-    )
-    // await this.getPortfolioDetails(dragoDetails)
-    const poolApi = new PoolApi(api)
-    await poolApi.contract.dragoeventful.init()
-    this.subscribeToEvents(poolApi.contract.dragoeventful)
-  }
-
-  getDragoDetails = async () => {
-    const { api } = this.context
-    const relay = {
-      name: Ethfinex
-    }
     const dragoId = this.props.match.params.dragoid
-    const dragoDetails = await utils.getDragoDetailsFromId(dragoId, api)
-    await utils.getDragoDetails(dragoDetails, this.props, api, relay)
-    this.setState({
-      loading: false
-    })
-    await this.getTransactions(dragoDetails, api, this.props.endpoint.accounts)
-    return dragoDetails
+
+    // Getting Drago details and transactions
+    this.props.dispatch(
+      Actions.drago.getPoolDetails(dragoId, api, { poolType: 'drago' })
+    )
   }
 
   componentWillUnmount() {
-    const { contractSubscription } = this.state
-
     this.props.dispatch(Actions.tokens.priceTickersStop())
     this.props.dispatch(Actions.exchange.getPortfolioChartDataStop())
-    try {
-      contractSubscription.unsubscribe(function(error, success) {
-        if (success) {
-          console.log(`Successfully unsubscribed from contract.`)
-        }
-        if (error) {
-          console.log(`Unsubscribe error ${error}.`)
-        }
-      })
-    } catch (error) {
-      console.log(`Unsubscribe error ${error}.`)
-    }
-  }
-
-  UNSAFE_componentWillReceiveProps = async nextProps => {
-    // Updating the lists on each new block if the accounts balances have changed
-    // Doing this this to improve performances by avoiding useless re-rendering
-    //
-    const { api } = this.context
-    const relay = {
-      name: Ethfinex
-    }
-    const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
-    const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
-    if (!currentBalance.eq(nextBalance)) {
-      let dragoDetails = await this.getDragoDetails()
-      this.props.dispatch(
-        Actions.drago.getTokenBalancesDrago(dragoDetails, api, relay)
-      )
-      console.log(
-        `${
-          this.constructor.name
-        } -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`
-      )
-    } else {
-      null
-    }
+    this.props.dispatch(Actions.drago.updateSelectedDrago({}, { reset: true }))
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -233,6 +174,7 @@ class PageFundDetailsDragoManager extends Component {
     const dragoAssetsList = this.props.transactionsDrago.selectedDrago.assets
     const assetsCharts = this.props.transactionsDrago.selectedDrago.assetsCharts
     const dragoDetails = this.props.transactionsDrago.selectedDrago.details
+    const dragoValues = this.props.transactionsDrago.selectedDrago.values
     const dragoTransactionsList = this.props.transactionsDrago.selectedDrago
       .transactions
     const tabButtons = {
@@ -271,18 +213,68 @@ class PageFundDetailsDragoManager extends Component {
       ['Address', dragoDetails.address, tableButtonsDragoAddress],
       ['Manager', dragoDetails.addressOwner, tableButtonsDragoOwner]
     ]
-    let portfolioValue = 'N/A'
-    let totalValue = 'N/A'
+
+    let totalAssetsValue = 0
     let assetsValues = {}
     let tableLiquidity = [
-      ['Liquidity', 'N/A', ''],
-      ['Porfolio value', 'N/A', ''],
-      ['Total', 'N/A', '']
+      ['Liquidity', 'Calculating...', [<small key="dragoLiqEth">ETH</small>]],
+      [
+        'Porfolio value',
+        'Calculating...',
+        [<small key="dragoPortEth">ETH</small>]
+      ],
+      ['Total', 'Calculating...', [<small key="dragoPortTotEth">ETH</small>]]
     ]
+
+    // Show pool balance
+    if (typeof dragoDetails.dragoETHBalance !== 'undefined') {
+      totalAssetsValue = dragoDetails.dragoETHBalance
+      tableLiquidity[0] = [
+        'Liquidity',
+        formatPrice(dragoDetails.dragoETHBalance),
+        <small key="dragoLiqEth">ETH</small>
+      ]
+
+      tableLiquidity[2] = [
+        'Total',
+        formatPrice(totalAssetsValue),
+        [<small key="dragoPortTotEth">ETH</small>]
+      ]
+    }
+
+    // Show portfolio value
+    if (dragoValues.portfolioValue !== -1) {
+      totalAssetsValue = new BigNumber(dragoDetails.dragoETHBalance)
+        .plus(dragoValues.portfolioValue)
+        .toFixed(4)
+      tableLiquidity[1] = [
+        'Porfolio value',
+        formatPrice(dragoValues.portfolioValue),
+        [<small key="dragoPortEth">ETH</small>]
+      ]
+      if (!Number(totalAssetsValue)) {
+        totalAssetsValue = dragoDetails.dragoETHBalance
+      }
+      tableLiquidity[2] = [
+        'Total',
+        formatPrice(totalAssetsValue),
+        [<small key="dragoPortTotEth">ETH</small>]
+      ]
+      assetsValues = utils.calculatePieChartPortfolioValue(
+        dragoAssetsList,
+        this.props.exchange.prices.current,
+        dragoDetails.dragoETHBalance
+      )
+    }
+
+    // Show estimated prices
     let estimatedPrice = 'N/A'
+    if (dragoValues.estimatedPrice !== -1) {
+      estimatedPrice = formatPrice(dragoValues.estimatedPrice)
+    }
 
     // Waiting until getDragoDetails returns the drago details
-    if (loading || Object.keys(dragoDetails).length === 0) {
+    if (Object.keys(dragoDetails).length === 0) {
       return (
         <div style={{ paddingTop: '10px' }}>
           <Loading />
@@ -299,42 +291,6 @@ class PageFundDetailsDragoManager extends Component {
     })
     if (metaMaskAccountIndex === -1) {
       return <ElementNoAdminAccess />
-    }
-
-    if (
-      dragoAssetsList.length !== 0 &&
-      Object.keys(this.props.exchange.prices).length !== 0
-    ) {
-      if (typeof dragoDetails.dragoETHBalance !== 'undefined') {
-        portfolioValue = utils.calculatePortfolioValue(
-          dragoAssetsList,
-          this.props.exchange.prices
-        )
-        totalValue = new BigNumber(dragoDetails.dragoETHBalance)
-          .plus(portfolioValue)
-          .toFixed(5)
-        assetsValues = utils.calculatePieChartPortfolioValue(
-          dragoAssetsList,
-          this.props.exchange.prices,
-          dragoDetails.dragoETHBalance
-        )
-        tableLiquidity = [
-          [
-            'Liquidity',
-            dragoDetails.dragoETHBalance,
-            [<small key="dragoLiqEth">ETH</small>]
-          ],
-          [
-            'Porfolio value',
-            portfolioValue,
-            [<small key="dragoPortEth">ETH</small>]
-          ],
-          ['Total', totalValue, [<small key="dragoPortTotEth">ETH</small>]]
-        ]
-        estimatedPrice = new BigNumber(portfolioValue)
-          .div(new BigNumber(dragoDetails.totalSupply))
-          .toFixed(5)
-      }
     }
 
     return (
@@ -416,11 +372,10 @@ class PageFundDetailsDragoManager extends Component {
                           Total supply:
                         </div>
                         <div className={styles.holdings}>
-                          <span>{dragoDetails.totalSupply}</span>{' '}
-                          <small className={styles.myPositionTokenSymbol}>
-                            {dragoDetails.symbol.toUpperCase()}
-                          </small>
-                          <br />
+                          <PoolHoldingSupply
+                            amount={dragoDetails.totalSupply}
+                            symbol={dragoDetails.symbol.toUpperCase()}
+                          />
                         </div>
                         <InfoTable
                           rows={tableInfo}
@@ -523,8 +478,14 @@ class PageFundDetailsDragoManager extends Component {
                         renderEtherscanButton={this.renderEtherscanButton}
                         dragoDetails={dragoDetails}
                         loading={loading}
-                        assetsPrices={this.props.exchange.prices}
+                        autoLoading={false}
+                        assetsPrices={this.props.exchange.prices.current}
                         assetsChart={assetsCharts}
+                        renderOptimization={false}
+                        pagination={{
+                          display: 4,
+                          number: 1
+                        }}
                       >
                         <ElementListAssets />
                       </ElementListWrapper>
@@ -559,7 +520,11 @@ class PageFundDetailsDragoManager extends Component {
                       list={dragoTransactionsList}
                       renderCopyButton={this.renderCopyButton}
                       renderEtherscanButton={this.renderEtherscanButton}
-                      loading={loading}
+                      autoLoading={false}
+                      pagination={{
+                        display: 10,
+                        number: 1
+                      }}
                     >
                       <ElementListTransactions />
                     </ElementListWrapper>
@@ -737,7 +702,7 @@ class PageFundDetailsDragoManager extends Component {
             return y.timestamp - x.timestamp
           })
           this.props.dispatch(
-            Actions.drago.updateSelectedDragoAction({ transactions: results })
+            Actions.drago.updateSelectedDrago({ transactions: results })
           )
           console.log(`${this.constructor.name} -> Transactions list loaded`)
           this.setState({
