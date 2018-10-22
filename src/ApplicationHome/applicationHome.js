@@ -55,7 +55,8 @@ class ApplicationHome extends PureComponent {
       startBlock: 0,
       lastBlock: 0
     },
-    listLoadingProgress: 0
+    listLoadingProgress: 0,
+    showCommunityButtons: true
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -85,6 +86,7 @@ class ApplicationHome extends PureComponent {
   }
 
   componentDidMount() {
+    window.addEventListener('scroll', this.handleScroll)
     let options = {
       topics: [null, null, null, null],
       fromBlock: 0,
@@ -94,6 +96,23 @@ class ApplicationHome extends PureComponent {
     this.props.dispatch(
       Actions.drago.getPoolsSearchList(this.context.api, options)
     )
+  }
+
+  componentWillUnmount = () => {
+    window.removeEventListener('scroll', this.handleScroll)
+  }
+
+  handleScroll = event => {
+    console.log(window.scrollY)
+    if (window.scrollY > 50) {
+      this.setState({
+        showCommunityButtons: false
+      })
+    } else {
+      this.setState({
+        showCommunityButtons: true
+      })
+    }
   }
 
   filter = filter => {
@@ -378,57 +397,59 @@ class ApplicationHome extends PureComponent {
             />
           </Col>
         </Row>
-        <div className={styles.telegramButtonContainer}>
-          <div>
-            <a
-              href="https://t.me/rigoblockprotocol"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.communityButton}
-            >
-              <FlatButton
-                labelPosition="before"
-                label="Join us on telegram!"
-                labelStyle={{
-                  color: '#054186',
-                  fontWeight: '600',
-                  fontSize: '20px'
-                }}
-                style={buttonTelegram}
-                icon={
-                  <img
-                    src="/img/iconmonstr-telegram-1.svg"
-                    // style={{ fill: '#ffca57' }}
-                    height="24px"
-                    className={styles.telegramIcon}
-                    alt=""
-                  />
-                }
-                // hoverColor={Colors.blue300}
-              />
-            </a>
+        {this.state.showCommunityButtons && (
+          <div className={styles.telegramButtonContainer}>
+            <div>
+              <a
+                href="https://t.me/rigoblockprotocol"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.communityButton}
+              >
+                <FlatButton
+                  labelPosition="before"
+                  label="Join us on telegram!"
+                  labelStyle={{
+                    color: '#054186',
+                    fontWeight: '600',
+                    fontSize: '20px'
+                  }}
+                  style={buttonTelegram}
+                  icon={
+                    <img
+                      src="/img/iconmonstr-telegram-1.svg"
+                      // style={{ fill: '#ffca57' }}
+                      height="24px"
+                      className={styles.telegramIcon}
+                      alt=""
+                    />
+                  }
+                  // hoverColor={Colors.blue300}
+                />
+              </a>
 
-            <a
-              href="https://community.rigoblock.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.communityButton}
-            >
-              <FlatButton
-                labelPosition="before"
-                label="Join our Community"
-                labelStyle={{
-                  color: '#054186',
-                  fontWeight: '600',
-                  fontSize: '20px'
-                }}
-                style={buttonTelegram}
-                icon={<Chat color="#ffca57" />}
-                // hoverColor={Colors.blue300}
-              />
-            </a>
+              <a
+                href="https://community.rigoblock.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.communityButton}
+              >
+                <FlatButton
+                  labelPosition="before"
+                  label="Join our Community"
+                  labelStyle={{
+                    color: '#054186',
+                    fontWeight: '600',
+                    fontSize: '20px'
+                  }}
+                  style={buttonTelegram}
+                  icon={<Chat color="#ffca57" />}
+                  // hoverColor={Colors.blue300}
+                />
+              </a>
+            </div>
           </div>
-        </div>
+        )}
         <WalletSetup />
       </div>
     )

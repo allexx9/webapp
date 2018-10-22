@@ -33,7 +33,7 @@ class PageAppConfig extends Component {
     )
   }
 
-  showMockTroggle = () => {
+  showMockToggle = () => {
     const { accounts } = this.props.endpoint
     let allowedAccountsGab = [
       '0xC2B5122381bcddb87e75FAb2e46a70e7C19B69D3'.toLowerCase(),
@@ -82,7 +82,7 @@ class PageAppConfig extends Component {
           </Col>
           <Col xs={12}>
             <Paper className={styles.paperContainer} zDepth={1}>
-              {this.showMockTroggle()}
+              {this.showMockToggle()}
             </Paper>
           </Col>
         </Row>
