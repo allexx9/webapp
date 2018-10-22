@@ -866,7 +866,7 @@ class ApplicationExchangeHome extends Component {
         })
 
         this.props.dispatch(Actions.exchange.updateAvailableFunds(dragoList))
-        this.onSelectFund(dragoList[1])
+        this.onSelectFund(dragoList[0])
       }
     } catch (error) {
       console.warn(error)
