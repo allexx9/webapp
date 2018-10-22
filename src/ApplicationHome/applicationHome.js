@@ -102,8 +102,7 @@ class ApplicationHome extends PureComponent {
     window.removeEventListener('scroll', this.handleScroll)
   }
 
-  handleScroll = event => {
-    console.log(window.scrollY)
+  handleScroll = () => {
     if (window.scrollY > 50) {
       this.setState({
         showCommunityButtons: false
