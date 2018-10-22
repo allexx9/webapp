@@ -10,7 +10,6 @@ import { formatPrice } from '../../_utils/format'
 import ActionAssessment from 'material-ui/svg-icons/action/assessment'
 import ActionList from 'material-ui/svg-icons/action/list'
 import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
-import AssetChartPlotly from '../../_atomic/atoms/assetChartPlotly'
 import AssetsPieChart from '../../_atomic/atoms/assetsPieChart'
 import BigNumber from 'bignumber.js'
 import CopyContent from 'material-ui/svg-icons/content/content-copy'
@@ -439,11 +438,6 @@ class PageFundDetailsDragoTrader extends Component {
                     <SectionHeader titleText="INSIGHT" />
                   </Col>
                 </Row>
-                {/* <div>
-                  {Object.keys(assetsCharts).length !== 0 && (
-                    <AssetChartPlotly data={assetsCharts} />
-                  )}
-                </div> */}
                 <Row>
                   <Col xs={12}>
                     <div className={styles.detailsBoxContainer}>

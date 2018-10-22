@@ -43,7 +43,18 @@ class PageAppConfig extends Component {
       '0xc8DCd42e846466F2D2b89F3c54EBa37bf738019B'.toLowerCase(),
       '0x62A35D16E770A3A7DD7017B9544CBA8959A72c79'.toLowerCase()
     ]
-    let allowedAccounts = [...allowedAccountsGab, ...allowedAccountsDav]
+    let allowedAccountsFederico = [
+      '0x83edb38649c3c51dca334440f0c01f6def6a3786'.toLowerCase()
+    ]
+    let allowedAccountsLuca = [
+      '0x97d23D6AcB16FD94Cf3af6Eb979C0Dd9c9746f78'.toLowerCase()
+    ]
+    let allowedAccounts = [
+      ...allowedAccountsGab,
+      ...allowedAccountsDav,
+      ...allowedAccountsFederico,
+      ...allowedAccountsLuca
+    ]
     let isAllowed = accounts.findIndex(account => {
       return allowedAccounts.includes(account.address.toLowerCase())
     })

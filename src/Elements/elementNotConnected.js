@@ -193,6 +193,7 @@ class ElementNotConnected extends Component {
     const { isSyncing } = this.props.app
     // console.log('Sync Status: ', syncStatus)
     // console.log('Syncing: ', isSyncing)
+    return this.renderNotConnected()
     return isSyncing ? this.renderSyncing() : this.renderNotConnected()
   }
 }

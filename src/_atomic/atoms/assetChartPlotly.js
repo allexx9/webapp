@@ -1,7 +1,11 @@
-import Plot from 'react-plotly.js'
+// import Plot from 'react-plotly.js'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
-import moment from 'moment'
+// import moment from 'moment'
+import Plotly from 'plotly.js-finance-dist'
+import createPlotlyComponent from 'react-plotly.js/factory'
+
+const Plot = createPlotlyComponent(Plotly)
 
 class AssetChartPlotly extends Component {
   static propTypes = {
