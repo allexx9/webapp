@@ -111,7 +111,7 @@ class OrdersHistoryBox extends Component {
                         </Col>
                         <Col xs={12}>
                           <TableOpenOrders
-                            orders={this.props.fundOrders.open}
+                            orders={this.props.fundOrders.history}
                             onCancelOrder={this.onCancelOrder}
                           />
                         </Col>

@@ -2,7 +2,7 @@
 
 // import { Observable } from 'rxjs';
 import { BigNumber } from '@0xproject/utils'
-import { Observable, from, timer } from 'rxjs'
+import { Observable, from, merge, timer, zip } from 'rxjs'
 import {
   bufferCount,
   bufferTime,
@@ -406,243 +406,6 @@ const reconnectingWebsocketBook$ = (
   })
 }
 
-// const reconnectingWebsocketBook2$ = (
-//   relay,
-//   networkId,
-//   baseToken,
-//   quoteToken
-// ) => {
-//   return Observable.create(observer => {
-//     const BOOK = {}
-//     let seq = null
-//     let pair = ''
-
-//     const checkCross = () => {
-//       let bid = BOOK.psnap.bids[0]
-//       let ask = BOOK.psnap.asks[0]
-//       if (bid >= ask) {
-//         let lm = [moment.utc().format(), 'bid(' + bid + ')>=ask(' + ask + ')']
-//         console.log(lm.join('/') + '\n')
-//         console.log(lm.join('/'))
-//       }
-//     }
-
-//     const ethfinex = exchangeConnector(relay.name, {
-//       networkId: networkId
-//     })
-//     const baseTokenSymbol = utils.getTockenSymbolForRelay(relay.name, baseToken)
-//     const quoteTokenSymbol = utils.getTockenSymbolForRelay(
-//       relay.name,
-//       quoteToken
-//     )
-//     pair = baseTokenSymbol + quoteTokenSymbol
-//     ethfinex.raw.ws
-//       .getTickers({ symbols: pair }, (error, msg) => {
-//         if (error) {
-//           return observer.error(error)
-//         } else {
-//           if (Array.isArray(msg)) {
-//             return observer.next(msg)
-//           }
-//           return observer.next('')
-//         }
-//       })
-//       .then(unsubscribe => {
-//         console.log(unsubscribe)
-//         return () => ethfinex.ws.close()
-//       })
-
-//     const exchange = new Exchange(relay.name, networkId, 'ws')
-//     const websocket = exchange.getAggregatedOrders(
-//       utils.getTockenSymbolForRelay(relay.name, baseToken),
-//       utils.getTockenSymbolForRelay(relay.name, quoteToken)
-//     )
-//     websocket.addEventListener('open', () => {
-//       console.log('WebSocket open.')
-//       BOOK.bids = {}
-//       BOOK.asks = {}
-//       BOOK.psnap = {}
-//       BOOK.mcnt = 0
-
-//       let msg = JSON.stringify({
-//         event: `subscribe`,
-//         channel: 'book',
-//         pair: 't' + pair,
-//         prec: 'P2',
-//         freq: 'F1',
-//         len: 25
-//       })
-//       websocket.send(JSON.stringify({ event: 'conf', flags: 65536 + 131072 }))
-//       websocket.send(msg)
-//     })
-
-//     websocket.onmessage = msgWs => {
-//       console.log('WebSocket message.')
-//       // console.log(msgWs)
-//       let msg = JSON.parse(msgWs.data)
-//       if (msg.event) return
-//       if (msg[1] === 'hb') {
-//         seq = +msg[2]
-//         return
-//       } else if (msg[1] === 'cs') {
-//         seq = +msg[3]
-
-//         const checksum = msg[2]
-//         const csdata = []
-//         const bids_keys = BOOK.psnap['bids']
-//         const asks_keys = BOOK.psnap['asks']
-
-//         for (let i = 0; i < 25; i++) {
-//           if (bids_keys[i]) {
-//             const price = bids_keys[i]
-//             const pp = BOOK.bids[price]
-//             csdata.push(pp.price, pp.amount)
-//           }
-//           if (asks_keys[i]) {
-//             const price = asks_keys[i]
-//             const pp = BOOK.asks[price]
-//             csdata.push(pp.price, -pp.amount)
-//           }
-//         }
-
-//         const cs_str = csdata.join(':')
-//         const cs_calc = CRC.str(cs_str)
-
-//         // console.log(
-//         //   '[' +
-//         //     moment().format('YYYY-MM-DDTHH:mm:ss.SSS') +
-//         //     '] ' +
-//         //     pair +
-//         //     ' | ' +
-//         //     JSON.stringify([
-//         //       'cs_string=' + cs_str,
-//         //       'cs_calc=' + cs_calc,
-//         //       'server_checksum=' + checksum
-//         //     ]) +
-//         //     '\n'
-//         // )
-//         if (cs_calc !== checksum) {
-//           console.error('CHECKSUM_FAILED')
-//         }
-//         return
-//       }
-
-//       // console.log(
-//       //   '[' +
-//       //     moment().format('YYYY-MM-DDTHH:mm:ss.SSS') +
-//       //     '] ' +
-//       //     pair +
-//       //     ' | ' +
-//       //     JSON.stringify(msg) +
-//       //     '\n'
-//       // )
-
-//       if (BOOK.mcnt === 0) {
-//         _.each(msg[1], function(pp) {
-//           pp = { price: pp[0], cnt: pp[1], amount: pp[2] }
-//           const side = pp.amount >= 0 ? 'bids' : 'asks'
-//           pp.amount = Math.abs(pp.amount)
-//           if (BOOK[side][pp.price]) {
-//             console.log(
-//               '[' +
-//                 moment().format() +
-//                 '] ' +
-//                 pair +
-//                 ' | ' +
-//                 JSON.stringify(pp) +
-//                 ' BOOK snap existing bid override\n'
-//             )
-//           }
-//           BOOK[side][pp.price] = pp
-//         })
-//       } else {
-//         const cseq = +msg[2]
-//         msg = msg[1]
-
-//         if (!seq) {
-//           seq = cseq - 1
-//         }
-
-//         if (cseq - seq !== 1) {
-//           console.error('OUT OF SEQUENCE', seq, cseq)
-//         }
-
-//         seq = cseq
-
-//         let pp = { price: msg[0], cnt: msg[1], amount: msg[2] }
-
-//         if (!pp.cnt) {
-//           let found = true
-
-//           if (pp.amount > 0) {
-//             if (BOOK['bids'][pp.price]) {
-//               delete BOOK['bids'][pp.price]
-//             } else {
-//               found = false
-//             }
-//           } else if (pp.amount < 0) {
-//             if (BOOK['asks'][pp.price]) {
-//               delete BOOK['asks'][pp.price]
-//             } else {
-//               found = false
-//             }
-//           }
-
-//           if (!found) {
-//             console.log(
-//               '[' +
-//                 moment().format() +
-//                 '] ' +
-//                 pair +
-//                 ' | ' +
-//                 JSON.stringify(pp) +
-//                 ' BOOK delete fail side not found\n'
-//             )
-//           }
-//         } else {
-//           let side = pp.amount >= 0 ? 'bids' : 'asks'
-//           pp.amount = Math.abs(pp.amount)
-//           BOOK[side][pp.price] = pp
-//         }
-//       }
-
-//       _.each(['bids', 'asks'], function(side) {
-//         let sbook = BOOK[side]
-//         let bprices = Object.keys(sbook)
-
-//         let prices = bprices.sort(function(a, b) {
-//           if (side === 'bids') {
-//             return +a >= +b ? -1 : 1
-//           } else {
-//             return +a <= +b ? -1 : 1
-//           }
-//         })
-
-//         BOOK.psnap[side] = prices
-//       })
-
-//       BOOK.mcnt++
-//       // const now = moment.utc().format('YYYYMMDDHHmmss')
-//       // console.log('bids', now, { bids: BOOK.bids })
-//       // console.log('asks', now, { asks: BOOK.asks })
-
-//       checkCross(msg)
-//       return observer.next({ asks: BOOK.asks, bids: BOOK.bids })
-//     }
-//     websocket.onclose = msg => {
-//       seq = null
-//       console.log(msg)
-//       return msg.wasClean ? observer.complete() : null
-//     }
-//     websocket.onerror = error => {
-//       console.log('WebSocket error.')
-//       console.log(error)
-//       return observer.error(error)
-//     }
-//     return () => websocket.close(1000, 'Closed by client', { keepClosed: true })
-//   })
-// }
-
 export const initRelayWebSocketBookEpic = action$ =>
   action$.pipe(
     ofType(customRelayAction(TYPE_.RELAY_OPEN_WEBSOCKET_BOOK)),
@@ -898,15 +661,18 @@ const getAccountOrdersFromRelay$ = (
   quoteToken
 ) => {
   const exchange = new Exchange(relay.name, networkId)
-  console.log('orders open')
-  return from(exchange.getAccountOrders(account, baseToken, quoteToken))
+  console.log('getAccountOrdersFromRelay$')
+  return zip(
+    from(exchange.getAccountOrders(account, baseToken, quoteToken)),
+    from(exchange.getAccountHistory(account, baseToken, quoteToken))
+  )
+  // return from(exchange.getAccountOrders(account, baseToken, quoteToken))
 }
 
 export const getAccountOrdersEpic = action$ => {
   return action$.pipe(
     ofType(customRelayAction(TYPE_.FETCH_ACCOUNT_ORDERS)),
     mergeMap(action => {
-      console.log('orders')
       // console.log(customRelayAction(TYPE_.FETCH_ACCOUNT_ORDERS))
       return timer(0, 5000).pipe(
         takeUntil(
@@ -921,11 +687,11 @@ export const getAccountOrdersEpic = action$ => {
             action.payload.baseToken
           ).pipe(
             map(orders => {
-              console.log(orders)
               return {
                 type: TYPE_.UPDATE_FUND_ORDERS,
                 payload: {
-                  open: orders
+                  open: orders[0],
+                  history: orders[1]
                 }
               }
             }),

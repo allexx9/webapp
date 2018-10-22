@@ -147,6 +147,7 @@ const initialState = {
     availableTradeTokensPairs: TRADE_TOKENS_PAIRS,
     fundOrders: {
       open: [],
+      history: [],
       cancelled: [],
       executed: []
     },

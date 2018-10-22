@@ -4,6 +4,8 @@ import BigNumber from 'bignumber.js'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
+import { formatPrice } from '../../_utils/format'
+
 import styles from './tableOpenOrders.module.css'
 
 class TableOpenOrders extends Component {
@@ -40,8 +42,8 @@ class TableOpenOrders extends Component {
               <Col xs={2} style={orderTypeStyle[order.orderType]}>
                 {order.orderType === 'asks' ? 'SELL' : 'BUY'}
               </Col>
-              <Col xs={2}>{order.orderPrice}</Col>
-              <Col xs={2}>{order.orderAmount}</Col>
+              <Col xs={2}>{formatPrice(order.orderPrice)}</Col>
+              <Col xs={2}>{Math.abs(order.orderAmount).toString()}</Col>
               {/* <Col xs={2}>
                   {new Date(order.order.expirationUnixTimestampSec*1000).toLocaleString()}
                 </Col> */}

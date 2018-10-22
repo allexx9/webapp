@@ -1,5 +1,6 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
+import { formatPrice } from '../../_utils/format'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import ReactTooltip from 'react-tooltip'
@@ -40,7 +41,7 @@ export default class TokenLockBalance extends Component {
               textDecoration: 'none'
             }}
           >
-            {this.props.balance}
+            {formatPrice(this.props.balance)}
           </span>
         </div>
         <ReactTooltip effect="solid" place="top" />
@@ -64,7 +65,7 @@ export default class TokenLockBalance extends Component {
               textDecoration: 'none'
             }}
           >
-            {this.props.balance}
+            {formatPrice(this.props.balance)}
           </span>
         </div>
         <ReactTooltip effect="solid" place="top" />
