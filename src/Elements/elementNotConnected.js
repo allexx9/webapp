@@ -72,103 +72,170 @@ class ElementNotConnected extends Component {
   renderSyncing = () => {
     // const progressWarp = new BigNumber(this.context.syncStatus.warpChunksProcessed).div(new BigNumber(this.context.syncStatus.warpChunksAmount)).times(100).toFixed(2)
     return (
-      <Dialog
-        open={true}
-        modal={true}
-        title={this.renderTitle()}
-        contentStyle={style.dialogContent}
-        bodyStyle={style.dialogBody}
-        style={style.dialogRoot}
-        repositionOnUpdate={false}
-      >
-        <div className={styles.detailsBoxContainer}>
-          <Grid fluid>
-            <Row>
-              <Col xs={12}>
-                <SectionHeader titleText="NODE SYNCING" />
-              </Col>
-            </Row>
-            <Row>
-              <Col xs={12}>
-                <p>
-                  <b>Your node is syncing with Ethereum blockchain.</b>
-                </p>
-                <p>
-                  Please wait until fully synced before accessing RigoBlock.
-                </p>
-                <p>Syncing progress:</p>
-                <p>
-                  <SyncStatusCurrentBlock
-                    syncStatus={this.props.app.syncStatus}
-                  />
-                </p>
-                {/* <p><SyncStatusWarpChunksProcessed syncStatus={this.context.syncStatus}/></p> */}
-                <p>
-                  Please contact our support or{' '}
-                  {
-                    <Link
-                      to={DS + APP + DS + this.buildUrlPath() + DS + 'config'}
-                    >
-                      select
-                    </Link>
-                  }{' '}
-                  a different endpoint.
-                </p>
-              </Col>
-            </Row>
-          </Grid>
-        </div>
-      </Dialog>
+      // <Dialog
+      //   open={true}
+      //   modal={true}
+      //   title={this.renderTitle()}
+      //   contentStyle={style.dialogContent}
+      //   bodyStyle={style.dialogBody}
+      //   style={style.dialogRoot}
+      //   repositionOnUpdate={false}
+      // >
+      //   <div className={styles.detailsBoxContainer}>
+      //     <Grid fluid>
+      //       <Row>
+      //         <Col xs={12}>
+      //           <SectionHeader titleText="NODE SYNCING" />
+      //         </Col>
+      //       </Row>
+      //       <Row>
+      //         <Col xs={12}>
+      //           <p>
+      //             <b>Your node is syncing with Ethereum blockchain.</b>
+      //           </p>
+      //           <p>
+      //             Please wait until fully synced before accessing RigoBlock.
+      //           </p>
+      //           <p>Syncing progress:</p>
+      //           <p>
+      //             <SyncStatusCurrentBlock
+      //               syncStatus={this.props.app.syncStatus}
+      //             />
+      //           </p>
+      //           {/* <p><SyncStatusWarpChunksProcessed syncStatus={this.context.syncStatus}/></p> */}
+      //           <p>
+      //             Please contact our support or{' '}
+      //             {
+      //               <Link
+      //                 to={DS + APP + DS + this.buildUrlPath() + DS + 'config'}
+      //               >
+      //                 select
+      //               </Link>
+      //             }{' '}
+      //             a different endpoint.
+      //           </p>
+      //         </Col>
+      //       </Row>
+      //     </Grid>
+      //   </div>
+      // </Dialog>
+      <div className={styles.detailsBoxContainer}>
+        <Grid fluid>
+          <Row>
+            <Col xs={12}>
+              <SectionHeader titleText="NODE SYNCING" />
+            </Col>
+          </Row>
+          <Row>
+            <Col xs={12}>
+              <p>
+                <b>Your node is syncing with Ethereum blockchain.</b>
+              </p>
+              <p>Please wait until fully synced before accessing RigoBlock.</p>
+              <p>Syncing progress:</p>
+              <p>
+                <SyncStatusCurrentBlock
+                  syncStatus={this.props.app.syncStatus}
+                />
+              </p>
+              {/* <p><SyncStatusWarpChunksProcessed syncStatus={this.context.syncStatus}/></p> */}
+              <p>
+                Please contact our support or{' '}
+                {
+                  <Link
+                    to={DS + APP + DS + this.buildUrlPath() + DS + 'config'}
+                  >
+                    select
+                  </Link>
+                }{' '}
+                a different endpoint.
+              </p>
+            </Col>
+          </Row>
+        </Grid>
+      </div>
     )
   }
 
   renderNotConnected = () => {
     return (
-      <Dialog
-        open={true}
-        modal={true}
-        title={this.renderTitle()}
-        contentStyle={style.dialogContent}
-        bodyStyle={style.dialogBody}
-        style={style.dialogRoot}
-        repositionOnUpdate={false}
-      >
-        <div className={styles.detailsBoxContainer}>
-          <Grid fluid>
-            <Row>
-              <Col xs={12}>
-                <SectionHeader titleText="CONNECTION ERROR" />
-              </Col>
-            </Row>
-            <Row>
-              <Col xs={12}>
-                <p>
-                  <b>Unable to connect to the network.</b>
-                </p>
-                {/* <p>Trying to establish a new connection in {this.state.counter} seconds... </p> */}
-                <p>Trying to establish a new connection... </p>
-                {/* <p>
-                  Attempt {this.props.app.connectionRetries}: retrying in{' '}
-                  {this.props.app.retryTimeInterval}
-                  ms
-                </p> */}
-                <p>Attempt {this.props.app.connectionRetries}.</p>
-                <p>
-                  Please contact our support or{' '}
-                  {
-                    <Link
-                      to={DS + APP + DS + this.buildUrlPath() + DS + 'config'}
-                    >
-                      select
-                    </Link>
-                  }{' '}
-                  a different endpoint.
-                </p>
-              </Col>
-            </Row>
-          </Grid>
-        </div>
-      </Dialog>
+      // <Dialog
+      //   open={true}
+      //   modal={true}
+      //   title={this.renderTitle()}
+      //   contentStyle={style.dialogContent}
+      //   bodyStyle={style.dialogBody}
+      //   style={style.dialogRoot}
+      //   repositionOnUpdate={false}
+      // >
+      //   <div className={styles.detailsBoxContainer}>
+      //     <Grid fluid>
+      //       <Row>
+      //         <Col xs={12}>
+      //           <SectionHeader titleText="CONNECTION ERROR" />
+      //         </Col>
+      //       </Row>
+      //       <Row>
+      //         <Col xs={12}>
+      //           <p>
+      //             <b>Unable to connect to the network.</b>
+      //           </p>
+      //           {/* <p>Trying to establish a new connection in {this.state.counter} seconds... </p> */}
+      //           <p>Trying to establish a new connection... </p>
+      //           {/* <p>
+      //             Attempt {this.props.app.connectionRetries}: retrying in{' '}
+      //             {this.props.app.retryTimeInterval}
+      //             ms
+      //           </p> */}
+      //           <p>Attempt {this.props.app.connectionRetries}.</p>
+      //           <p>
+      //             Please contact our support or{' '}
+      //             {
+      //               <Link
+      //                 to={DS + APP + DS + this.buildUrlPath() + DS + 'config'}
+      //               >
+      //                 select
+      //               </Link>
+      //             }{' '}
+      //             a different endpoint.
+      //           </p>
+      //         </Col>
+      //       </Row>
+      //     </Grid>
+      //   </div>
+      // </Dialog>
+
+      <div className={styles.detailsBoxContainer}>
+        <Row>
+          <Col xs={12}>
+            <SectionHeader titleText="CONNECTION ERROR" />
+          </Col>
+        </Row>
+        <Row>
+          <Col xs={12}>
+            <p>
+              <b>Unable to connect to the network.</b>
+            </p>
+            {/* <p>Trying to establish a new connection in {this.state.counter} seconds... </p> */}
+            <p>Trying to establish a new connection... </p>
+            {/* <p>
+        Attempt {this.props.app.connectionRetries}: retrying in{' '}
+        {this.props.app.retryTimeInterval}
+        ms
+      </p> */}
+            <p>Attempt {this.props.app.connectionRetries}.</p>
+            <p>
+              Please contact our support or{' '}
+              {
+                <Link to={DS + APP + DS + this.buildUrlPath() + DS + 'config'}>
+                  select
+                </Link>
+              }{' '}
+              a different endpoint.
+            </p>
+          </Col>
+        </Row>
+      </div>
     )
   }
 
@@ -193,7 +260,6 @@ class ElementNotConnected extends Component {
     const { isSyncing } = this.props.app
     // console.log('Sync Status: ', syncStatus)
     // console.log('Syncing: ', isSyncing)
-    return this.renderNotConnected()
     return isSyncing ? this.renderSyncing() : this.renderNotConnected()
   }
 }

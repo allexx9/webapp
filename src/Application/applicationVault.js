@@ -108,10 +108,10 @@ class ApplicationDragoPage extends Component {
                     syncStatus={syncStatus}
                   />
                 )}
-                <ElementNotConnected
+                {/* <ElementNotConnected
                   isSyncing={isSyncing}
                   syncStatus={syncStatus}
-                />
+                /> */}
               </Col>
             </Row>
           </MuiThemeProvider>
