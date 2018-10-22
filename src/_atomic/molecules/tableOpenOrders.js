@@ -17,8 +17,9 @@ class TableOpenOrders extends Component {
   onCancelOrder = (event, id) => {
     event.preventDefault()
     console.log(id)
-    console.log(this.props.orders[id])
-    // this.props.onCancelOrder(this.props.orders[id])
+    console.log(this.props.orders[id].order.id)
+
+    this.props.onCancelOrder(this.props.orders[id])
   }
 
   renderTableRows = orders => {

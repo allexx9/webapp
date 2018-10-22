@@ -52,6 +52,14 @@ class NotificationAlert extends Component {
 }
 
 class utilities {
+  sign = (toSign, account) => {
+    // metamask will take care of the 3rd parameter, "password"
+    if (window.web3.currentProvider.isMetaMask) {
+      return window.web3.eth.personal.sign(toSign, account)
+    } else {
+      return window.web3.eth.sign(toSign, account)
+    }
+  }
   generateMockAssets = (network = 'mainnet') => {
     let mockAssets = MOCK_ERC20_TOKENS[network]
     delete mockAssets.ETH

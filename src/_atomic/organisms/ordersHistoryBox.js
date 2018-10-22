@@ -1,4 +1,6 @@
+import { Actions } from '../../_redux/actions'
 import { Col, Row } from 'react-flexbox-grid'
+import { cancelOrderFromRelayEFX } from '../../_utils/exchange'
 import {
   cancelOrderOnExchangeViaProxy
   // softCancelOrderFromRelayERCdEX
@@ -14,6 +16,7 @@ import TableOpenOrders from '../molecules/tableOpenOrders'
 import TableOrdersHistory from '../molecules/tableOrdersHistory'
 import serializeError from 'serialize-error'
 import styles from './ordersHistoryBox.module.css'
+import utils from '../../_utils/utils'
 
 const paperStyle = {
   padding: '10px'
@@ -27,12 +30,14 @@ class OrdersHistoryBox extends Component {
   static propTypes = {
     fundOrders: PropTypes.object.isRequired,
     exchange: PropTypes.object.isRequired,
+    endpoint: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
     notifications: PropTypes.object.isRequired
   }
 
   onCancelOrder = async order => {
     const { selectedFund, selectedTokensPair } = this.props.exchange
+    const { endpoint } = this.props
 
     const transactionId = sha3_512(new Date() + selectedFund.managerAccount)
     let transactionDetails = {
@@ -42,38 +47,74 @@ class OrdersHistoryBox extends Component {
       timestamp: new Date(),
       account: selectedFund.details.address,
       error: false,
-      action:
-        order.orderType === 'asks' ? 'CancelExBuyOrder' : 'CancelExSellOrder',
+      action: 'ExCancelOrder',
       symbol: selectedTokensPair.baseToken.symbol.toUpperCase(),
       amount: order.orderAmount
     }
     // this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
 
+    // try {
+    //   const receipt = await cancelOrderOnExchangeViaProxy(
+    //     selectedFund,
+    //     order.order,
+    //     order.order.takerTokenAmount
+    //   )
+    //   console.log(receipt)
+    //   transactionDetails.status = 'executed'
+    //   transactionDetails.receipt = receipt
+    //   transactionDetails.hash = receipt.transactionHash
+    //   transactionDetails.timestamp = new Date()
+    //   // this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
+
+    //   // const result = await softCancelOrderFromRelayERCdEX(order)
+    //   // console.log(result)
+
+    //   // Updating drago liquidity
+    //   // this.props.dispatch(this.updateSelectedFundLiquidity(selectedFund.details.address, this.context.api))
+    // } catch (error) {
+    //   console.log(serializeError(error))
+    //   const errorArray = serializeError(error).message.split(/\r?\n/)
+    //   transactionDetails.status = 'error'
+    //   transactionDetails.error = errorArray[0]
+    //   // this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
+    //   // utils.notificationError(this.props.notifications.engine, serializeError(error).message)
+    // }
     try {
-      const receipt = await cancelOrderOnExchangeViaProxy(
-        selectedFund,
-        order.order,
-        order.order.takerTokenAmount
+      console.log(order.order.id)
+      const sig = await utils.sign(
+        parseInt(order.order.id).toString(16),
+        this.props.exchange.walletAddress
       )
-      console.log(receipt)
+      console.log(sig)
+      let parsedBody = await cancelOrderFromRelayEFX(
+        order.order.id,
+        sig,
+        endpoint.networkInfo.id
+      )
       transactionDetails.status = 'executed'
-      transactionDetails.receipt = receipt
-      transactionDetails.hash = receipt.transactionHash
       transactionDetails.timestamp = new Date()
-      // this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
-
-      // const result = await softCancelOrderFromRelayERCdEX(order)
-      // console.log(result)
-
-      // Updating drago liquidity
-      // this.props.dispatch(this.updateSelectedFundLiquidity(selectedFund.details.address, this.context.api))
+      this.props.dispatch(
+        Actions.transactions.addTransactionToQueueAction(
+          transactionId,
+          transactionDetails
+        )
+      )
+      console.log(parsedBody)
     } catch (error) {
       console.log(serializeError(error))
       const errorArray = serializeError(error).message.split(/\r?\n/)
       transactionDetails.status = 'error'
       transactionDetails.error = errorArray[0]
-      // this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
-      // utils.notificationError(this.props.notifications.engine, serializeError(error).message)
+      this.props.dispatch(
+        Actions.transactions.addTransactionToQueueAction(
+          transactionId,
+          transactionDetails
+        )
+      )
+      utils.notificationError(
+        this.props.notifications.engine,
+        serializeError(error).message
+      )
     }
   }
 
@@ -110,7 +151,7 @@ class OrdersHistoryBox extends Component {
                           <SectionTitleExchange titleText="ORDER HISTORY" />
                         </Col>
                         <Col xs={12}>
-                          <TableOpenOrders
+                          <TableOrdersHistory
                             orders={this.props.fundOrders.history}
                             onCancelOrder={this.onCancelOrder}
                           />

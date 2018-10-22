@@ -229,7 +229,6 @@ export const accountOrders = {
 
       return orderObject
     })
-    console.log(formattedOrders)
     return formattedOrders
   }
 }

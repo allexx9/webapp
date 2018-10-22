@@ -118,7 +118,6 @@ const initialState = {
       valid: false
     },
     walletAddress: '',
-    walletSelectedAddress: '',
     selectedExchange: EXCHANGES.ERCdEX[NETWORK_NAME],
     selectedRelay: RELAYS[ERCdEX],
     availableRelays: {},

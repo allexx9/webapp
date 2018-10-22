@@ -110,7 +110,7 @@ class ExchangeBox extends PureComponent {
       console.log(token)
       let result = await web3.eth.personal.sign(
         token,
-        this.props.exchange.walletSelectedAddress
+        this.props.exchange.walletAddress
       )
       // .then((result) => {
       //   console.log(result)
