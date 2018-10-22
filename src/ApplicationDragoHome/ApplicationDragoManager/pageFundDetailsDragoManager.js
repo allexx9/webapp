@@ -482,6 +482,10 @@ class PageFundDetailsDragoManager extends Component {
                         assetsPrices={this.props.exchange.prices.current}
                         assetsChart={assetsCharts}
                         renderOptimization={false}
+                        pagination={{
+                          display: 4,
+                          number: 1
+                        }}
                       >
                         <ElementListAssets />
                       </ElementListWrapper>
