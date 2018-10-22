@@ -290,6 +290,26 @@ class ElementNotificationsDrawer extends Component {
             secondaryText[1] = timeStamp
             eventStatus = value.status
             break
+          case 'UnLockToken':
+            symbol = value.symbol
+            primaryText = 'UnLock token ' + symbol
+            secondaryText[0] =
+              'Status: ' +
+              value.status.charAt(0).toUpperCase() +
+              value.status.slice(1)
+            secondaryText[1] = timeStamp
+            eventStatus = value.status
+            break
+          case 'LockToken':
+            symbol = value.symbol
+            primaryText = 'Lock token ' + symbol
+            secondaryText[0] =
+              'Status: ' +
+              value.status.charAt(0).toUpperCase() +
+              value.status.slice(1)
+            secondaryText[1] = timeStamp
+            eventStatus = value.status
+            break
         }
         return (
           <ElementNotification

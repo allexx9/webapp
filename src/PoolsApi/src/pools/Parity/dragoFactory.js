@@ -73,6 +73,14 @@ class DragoFactoryParity {
         return instance.createDrago.postTransaction(options, values)
       })
   }
+
+  getDragosByAddress = accountAddress => {
+    if (!accountAddress) {
+      throw new Error('accountAddress needs to be provided')
+    }
+    const instance = this._instance
+    return instance.getDragosByAddress.call({}, [accountAddress.toLowerCase()])
+  }
 }
 
 export default DragoFactoryParity

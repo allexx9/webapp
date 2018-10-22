@@ -7,7 +7,9 @@ import React, { Component } from 'react'
 import { UPDATE_SELECTED_ORDER } from '../../_redux/actions/const'
 import { connect } from 'react-redux'
 import { detect } from 'detect-browser'
+import { formatPrice } from '../../_utils/format'
 import styles from './tableOrderBook.module.css'
+import utils from '../../_utils/utils'
 
 function mapStateToProps(state) {
   return state
@@ -25,6 +27,11 @@ class TableOrderBook extends Component {
 
   static contextTypes = {
     api: PropTypes.object.isRequired
+  }
+
+  shouldComponentUpdate(nextProps) {
+    let propsUpdate = !utils.shallowEqual(this.props.orders, nextProps.orders)
+    return propsUpdate
   }
 
   updateSelectedOrder = order => {
@@ -74,8 +81,8 @@ class TableOrderBook extends Component {
     }
 
     const progressBarAmountColor = {
-      asks: Colors.red100,
-      bids: Colors.green100
+      asks: '#ff7f7f',
+      bids: '#95cf95'
     }
 
     // var arr = [1,2,3];
@@ -146,10 +153,10 @@ class TableOrderBook extends Component {
                 }}
               />
               <Col xs={5} style={orderStylePrice[orderType]}>
-                {amount}
+                {Number(amount).toFixed(2)}
               </Col>
               <Col xs={5} style={orderStylePrice[orderType]}>
-                {price}
+                {formatPrice(price)}
               </Col>
             </Row>
           </Col>
@@ -160,8 +167,7 @@ class TableOrderBook extends Component {
 
   render() {
     const { orders } = this.props
-    // console.log(orders)
-
+    console.log('*** Render Orders ***')
     return (
       <Row className={styles.containerOrders}>
         <Col xs={12}>{this.renderRows(orders)}</Col>

@@ -1,0 +1,16 @@
+.lockHeader {
+  font-size: 12px !important;
+  padding-bottom: 5px;
+  padding-top: 5px;
+}
+
+.buttonsLockContainer {
+  padding-top: 5px;
+}
+.buttonsLock {
+  padding-top: 4px;
+}
+
+.symbolText {
+  font-weight: 700;
+}

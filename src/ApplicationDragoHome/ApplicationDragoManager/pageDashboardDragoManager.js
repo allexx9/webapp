@@ -24,7 +24,6 @@ import UserDashboardHeader from '../../_atomic/atoms/userDashboardHeader'
 import scrollToElement from 'scroll-to-element'
 import utils from '../../_utils/utils'
 
-import { Actions } from '../../_redux/actions'
 import styles from './pageDashboardDragoManager.module.css'
 
 function mapStateToProps(state) {
@@ -51,13 +50,7 @@ class PageDashboardDragoManager extends Component {
   }
 
   componentDidMount() {
-    const { accounts } = this.props.endpoint
-    const { api } = this.context
-    const options = { balance: false, supply: true, limit: 10, trader: false }
     console.log('componentDidMount')
-    this.props.dispatch(
-      Actions.endpoint.getAccountsTransactions(api, null, accounts, options)
-    )
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
@@ -65,18 +58,18 @@ class PageDashboardDragoManager extends Component {
     // Doing this this to improve performances by avoiding useless re-rendering
     // const { accounts } = this.props.endpoint
     // const { api } = this.context
-    // const options = { balance: true, supply: false, limit: 10, trader: true }
+    // const options = { balance: true, supply: false, limit: 20, trader: true, drago: true }
     // console.log(`${this.constructor.name} -> UNSAFE_componentWillReceiveProps-> nextProps received.`);
     // Updating the transaction list if there have been a change in total accounts balance and the previous balance is
     // different from 0 (balances are set to 0 on app loading)
     const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
     const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
     if (!currentBalance.eq(nextBalance) && !currentBalance.eq(0)) {
-      console.log(
-        `${
-          this.constructor.name
-        } -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`
-      )
+      // console.log(
+      //   `${
+      //     this.constructor.name
+      //   } -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`
+      // )
       // this.props.dispatch(Actions.endpoint.getAccountsTransactions(api, null, accounts, options))
     }
   }
@@ -89,11 +82,11 @@ class PageDashboardDragoManager extends Component {
     if (stateUpdate || propsUpdate) {
       // console.log('State updated ', stateUpdate)
       // console.log('Props updated ', propsUpdate)
-      console.log(
-        `${
-          this.constructor.name
-        } -> shouldComponentUpdate -> Proceeding with rendering.`
-      )
+      // console.log(
+      //   `${
+      //     this.constructor.name
+      //   } -> shouldComponentUpdate -> Proceeding with rendering.`
+      // )
     }
     return stateUpdate || propsUpdate
   }
@@ -265,6 +258,7 @@ class PageDashboardDragoManager extends Component {
                     <ElementListWrapper
                       list={dragoList}
                       loading={this.state.loading}
+                      autoLoading={false}
                     >
                       <ElementListSupply />
                     </ElementListWrapper>
@@ -298,6 +292,7 @@ class PageDashboardDragoManager extends Component {
                       renderCopyButton={this.renderCopyButton}
                       renderEtherscanButton={this.renderEtherscanButton}
                       loading={this.state.loading}
+                      autoLoading={false}
                       pagination={{
                         display: 10,
                         number: 1

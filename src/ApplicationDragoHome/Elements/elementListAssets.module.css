@@ -61,10 +61,17 @@
   text-transform: none;
 }
 
-.exampleColumn {
+.column {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.columnValue {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
 }
 
 .checkboxLabel {
@@ -92,7 +99,12 @@
 /* min-width: 200px; */
 box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 10px 1px;
 border-radius: 4px 4px 4px 4px;
-margin: 10px;
-/* height: 145px; */
-/* width: 200px; */
+margin-top: 2px;
+margin-left: 2px;
+margin-bottom: 2px;
+height: 80px;  
+width: 340px;
+position: absolute;
+right: 25px;
+top: 5px;
 }

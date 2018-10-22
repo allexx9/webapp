@@ -1,0 +1,17 @@
+.holdings {
+  font-size: 22px;
+  font-weight: 700;
+  height: 32px;
+  opacity: 0.8;
+  /* color: #616161; */
+}
+
+.loadingWheel{
+  display: inline-block;
+  margin-right: 10px;
+  width: 70px;
+}
+
+.symbol {
+  display: inline-block;
+}

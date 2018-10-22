@@ -14,8 +14,12 @@ import FundProxyWeb3 from './Web3/fundProxy'
 // import FundProxyParity from './Parity/fundProxy'
 import ExchangeParity from './Parity/exchange'
 import RegistryParity from './registry'
+import RigoTokenFaucetParity from './Parity/rigoTokenFaucet'
+import RigoTokenFaucetWeb3 from './Web3/rigoTokenFaucet'
 import RigoTokenParity from './Parity/rigoToken'
 import RigoTokenWeb3 from './Web3/rigoToken'
+import TokenWrapperParity from './Parity/tokenWrapper'
+import TokenWrapperWeb3 from './Web3/tokenWrapper'
 import VaultEventfulParity from './Parity/vaultEventful'
 import VaultFactoryParity from './Parity/vaultFactory'
 import VaultFactoryWeb3 from './Web3/vaultFactory'
@@ -40,6 +44,8 @@ class Contract {
       this._vault = new VaultWeb3(api)
       this._vaultfactory = new VaultFactoryWeb3(api)
       this._rigotoken = new RigoTokenWeb3(api)
+      this._rigotokenfaucet = new RigoTokenFaucetWeb3(api)
+      this._tokenwrapper = new TokenWrapperWeb3(api)
       this._fundproxy = new FundProxyWeb3(api)
     } else {
       this._drago = new DragoParity(api)
@@ -51,6 +57,8 @@ class Contract {
       this._exchange = new ExchangeParity(api)
       this._registry = new RegistryParity(api)
       this._rigotoken = new RigoTokenParity(api)
+      this._rigotokenfaucet = new RigoTokenFaucetParity(api)
+      this._tokenwrapper = new TokenWrapperParity(api)
       // this._fundproxy = new RigoTokenParity(api)
       this._vault = new VaultParity(api)
       this._vaulteventful = new VaultEventfulParity(api)
@@ -75,7 +83,9 @@ class Contract {
   }
 
   get dragoeventful() {
-    return this._dragoeventful
+    return typeof this._dragoeventful !== 'undefined'
+      ? this._dragoeventful
+      : this._dragoeventful
   }
 
   get ether() {
@@ -96,6 +106,14 @@ class Contract {
 
   get rigotoken() {
     return this._rigotoken
+  }
+
+  get rigotokenfaucet() {
+    return this._rigotokenfaucet
+  }
+
+  get tokenwrapper() {
+    return this._tokenwrapper
   }
 
   get vaulteventful() {

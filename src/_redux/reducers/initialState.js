@@ -54,7 +54,13 @@ const initialState = {
     syncStatus: {},
     appLoading: true,
     retryTimeInterval: 0,
-    connectinoRetries: 0
+    connectinoRetries: 0,
+    lastBlockNumberUpdate: 0,
+    accountsAddressHash: '',
+    errorEventfulSubscription: false,
+    config: {
+      isMock: false
+    }
   },
   notifications: {
     engine: ''
@@ -86,26 +92,48 @@ const initialState = {
     //     epoch: 0
     //   }
     // ],
+    availableFunds: [],
     chartData: [],
     selectedFund: {
       details: {},
       liquidity: {
+        loading: true,
         ETH: new BigNumber(0),
         WETH: new BigNumber(0),
-        ZRX: new BigNumber(0)
+        ZRX: new BigNumber(0),
+        baseToken: {
+          balance: new BigNumber(0),
+          balanceWrapper: new BigNumber(0)
+        },
+        quoteToken: {
+          balance: new BigNumber(0),
+          balanceWrapper: new BigNumber(0)
+        }
       },
       managerAccount: ''
     },
-    makerAddress: '',
-    selectedExchange: EXCHANGES.zeroEx[NETWORK_NAME],
+    accountSignature: {
+      signature: '',
+      nonce: '',
+      valid: false
+    },
+    walletAddress: '',
+    walletSelectedAddress: '',
+    selectedExchange: EXCHANGES.ERCdEX[NETWORK_NAME],
     selectedRelay: RELAYS[ERCdEX],
     availableRelays: {},
     // selectedExchange: EXCHANGES.rigoBlock[DEFAULT_NETWORK_NAME],
     selectedTokensPair: {
       baseToken: BASE_TOKEN,
+      baseTokenLockedAmount: new BigNumber(0),
+      baseTokenAvailableAmount: new BigNumber(0),
       quoteToken: QUOTE_TOKEN,
+      quoteTokenLockedAmount: new BigNumber(0),
+      quoteTokenAvailableAmount: new BigNumber(0),
       baseTokenAllowance: false,
       quoteTokenAllowance: false,
+      baseTokenLockWrapExpire: '0',
+      quoteTokenLockWrapExpire: '0',
       ticker: {
         current: {
           price: '0'
@@ -136,7 +164,7 @@ const initialState = {
         quoteToken: QUOTE_TOKEN
       }
     },
-    orderBookAggregated: RELAYS[ERCdEX].onlyAggregateOrderbook,
+    orderBookAggregated: true,
     orderBook: {
       asks: [],
       bids: [],
@@ -146,13 +174,28 @@ const initialState = {
       url: 'https://api.ercdex.com/api/standard',
       networkId: '42'
     },
-    prices: {}
+    prices: {
+      previous: {},
+      current: {}
+    }
   },
   transactions: {
     queue: new Map(),
     pending: 0
   },
   transactionsDrago: {
+    dragosList: {
+      list: [],
+      lastFetchRange: {
+        chunk: {
+          key: 0,
+          toBlock: 0,
+          fromBlock: 0
+        },
+        startBlock: 0,
+        lastBlock: 0
+      }
+    },
     holder: {
       balances: [],
       logs: []
@@ -162,17 +205,30 @@ const initialState = {
       logs: []
     },
     selectedDrago: {
+      values: {
+        portfolioValue: -1,
+        totalAssetsValue: -1,
+        estimatedPrice: -1
+      },
       details: {},
       transactions: [],
       assets: [],
-      assetsCharts: {
-        GRG: {
-          data: fakeTicker()
-        }
-      }
+      assetsCharts: {}
     }
   },
   transactionsVault: {
+    vaultsList: {
+      list: [],
+      lastFetchRange: {
+        chunk: {
+          key: 0,
+          toBlock: 0,
+          fromBlock: 0
+        },
+        startBlock: 0,
+        lastBlock: 0
+      }
+    },
     holder: {
       balances: [],
       logs: []
@@ -190,16 +246,18 @@ const initialState = {
     accounts: [],
     accountsBalanceError: false,
     ethBalance: new BigNumber(0),
+    grgBalance: new BigNumber(0),
     endpointInfo: ENDPOINTS[DEFAULT_ENDPOINT],
     networkInfo: NETWORKS[DEFAULT_NETWORK_NAME],
     loading: true,
     networkError: NETWORK_OK,
     networkStatus: MSG_NETWORK_STATUS_OK,
     prevBlockNumber: '0',
-    grgBalance: null,
+    prevNonce: '0',
     warnMsg: '',
-    metaMaskNetworkCorrect: false,
-    metaMaskLocked: true,
+    isMetaMaskNetworkCorrect: false,
+    isMetaMaskLocked: true,
+    lastMetaMaskUpdateTime: 0,
     openWalletSetup: false
   },
   user: {

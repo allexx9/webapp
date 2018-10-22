@@ -29,7 +29,7 @@ class PageNetworkConfig extends Component {
   constructor(props) {
     super(props)
     let selectedEndpoint = INFURA
-    let selectedNetwork = KOVAN
+    let selectedNetwork = ROPSTEN
     let disabledRemote = false
     let disabledLocal = true
     switch (this.props.endpoint.endpointInfo.name) {
@@ -170,8 +170,9 @@ class PageNetworkConfig extends Component {
                 <MenuItem value={0} primaryText="Ethereum Kovan" />
                 <MenuItem value={1} primaryText="Ethereum Ropsten" />
                 <MenuItem
-                  value={2}
                   // disabled={true}
+                  value={2}
+                  disabled={false}
                   primaryText="Ethereum Mainnet"
                 />
               </DropDownMenu>

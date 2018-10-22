@@ -3,22 +3,20 @@
 import { Col, Row } from 'react-flexbox-grid'
 import { connect } from 'react-redux'
 import BigNumber from 'bignumber.js'
-import CheckAuthPage from '../Elements/checkAuthPage'
 import ElementBottomStatusBar from '../Elements/elementBottomStatusBar'
 import ElementNotificationsDrawer from '../Elements/elementNotificationsDrawer'
 import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 // import FlatButton from 'material-ui/FlatButton'
-import PoolApi from '../PoolsApi/src'
-// import ApplicationDragoManager from './ApplicationDragoManager'
-// import ApplicationDragoTrader from './ApplicationDragoTrader'
 import Loading from '../_atomic/atoms/loading'
+import PoolApi from '../PoolsApi/src'
 // import DragoComingSoon from '../Elements/elementDragoComingSoon'
 import { Actions } from '../_redux/actions'
 import {
   DEFAULT_RELAY,
   ERC20_TOKENS,
+  EXCHANGES,
   RELAYS,
   TRADE_TOKENS_PAIRS
 } from '../_utils/const'
@@ -27,13 +25,19 @@ import FundSelector from '../_atomic/molecules/fundSelector'
 import OrderBook from '../_atomic/organisms/orderBook'
 import OrderBox from '../_atomic/organisms/orderBox'
 import OrdersHistoryBox from '../_atomic/organisms/ordersHistoryBox'
+import TokenBalances from '../_atomic/atoms/tokenBalances'
 import TokenLiquidity from '../_atomic/atoms/tokenLiquidity'
 import TokenPrice from '../_atomic/atoms/tokenPrice'
 import TokenTradeSelector from '../_atomic/molecules/tokenTradeSelector'
+import exchangeConnector, {
+  NETWORKS,
+  exchanges,
+  supportedExchanges
+} from '@rigoblock/exchange-connector'
 
 import {
   CANCEL_SELECTED_ORDER,
-  FETCH_FUND_ORDERS,
+  FETCH_ACCOUNT_ORDERS,
   RELAY_CLOSE_WEBSOCKET,
   UPDATE_FUND_LIQUIDITY,
   UPDATE_SELECTED_FUND
@@ -113,7 +117,7 @@ class ApplicationExchangeHome extends Component {
     }
     console.log(payload)
     return {
-      type: FETCH_FUND_ORDERS,
+      type: FETCH_ACCOUNT_ORDERS,
       payload: payload
     }
   }
@@ -134,12 +138,38 @@ class ApplicationExchangeHome extends Component {
     return stateUpdate || propsUpdate
   }
 
-  UNSAFE_componentWillMount() {}
+  getConf = () => {
+    let request = new XMLHttpRequest()
+
+    request.open('GET', 'http://api.ethfinex.com/trustless/v1/r/get/conf')
+
+    request.setRequestHeader('Content-Type', 'application/json')
+
+    request.onreadystatechange = function() {
+      if (this.readyState === 4) {
+        console.log('Status:', this.status)
+        console.log('Headers:', this.getAllResponseHeaders())
+        console.log('Body:', this.responseText)
+      }
+    }
+
+    let body = {}
+
+    request.send(JSON.stringify(body))
+  }
 
   componentDidMount = async () => {
+    // console.log(this.getConf())
+
     const { api } = this.context
     const { selectedExchange } = this.props.exchange
+    const { endpoint } = this.props
+
     const defaultRelay = RELAYS[DEFAULT_RELAY[api._rb.network.name]]
+    // console.log(EXCHANGES)
+    // console.log(api._rb.network.name)
+    // console.log(defaultRelay)
+    const defaultExchange = EXCHANGES[defaultRelay.name][api._rb.network.name]
     const defaultTokensPair = {
       baseToken:
         ERC20_TOKENS[api._rb.network.name][
@@ -150,21 +180,33 @@ class ApplicationExchangeHome extends Component {
           defaultRelay.defaultTokensPair.quoteTokenSymbol
         ]
     }
-    // console.log(accounts)
-    // this.getSelectedFundDetails(null, accounts)
-    // this.connectToRadarRelay()
+    console.log('***** MOUNT *****')
     try {
-      const address = await getAvailableAccounts(selectedExchange)
+      // const address = await getAvailableAccounts(selectedExchange)
+      // this.props.dispatch({
+      //   type: 'SET_MAKER_ADDRESS',
+      //   payload: address[0]
+      // })
+      // const accounts = [
+      //   {
+      //     address: address[0]
+      //   }
+      // ]
+      const walletAddress = endpoint.accounts.find(
+        account => account.source === 'MetaMask'
+      )
       this.props.dispatch({
         type: 'SET_MAKER_ADDRESS',
-        payload: address[0]
+        payload: walletAddress.address
       })
       const accounts = [
         {
-          address: address[0]
+          address: walletAddress.address
         }
       ]
+      console.log(walletAddress.address)
 
+      // Get funds details (balance, transactions)
       this.getSelectedFundDetails(null, accounts)
 
       // Set available relays
@@ -174,10 +216,13 @@ class ApplicationExchangeHome extends Component {
         )
       )
 
-      // Updating selected relay
+      // Updating selected exchange
       this.props.dispatch(
-        Actions.exchange.updateSelectedRelayAction(defaultRelay)
+        Actions.exchange.updateSelectedExchange(defaultExchange)
       )
+
+      // Updating selected relay
+      this.props.dispatch(Actions.exchange.updateSelectedRelay(defaultRelay))
 
       // Set available trade tokens pairs
       this.props.dispatch(
@@ -191,17 +236,22 @@ class ApplicationExchangeHome extends Component {
         Actions.exchange.updateSelectedTradeTokensPair(defaultTokensPair)
       )
 
+      // Updating selected tokens pair balances and fund liquidity (ETH, ZRX)
+      this.props.dispatch(
+        Actions.exchange.updateLiquidityAndTokenBalances(api, 'START')
+      )
+
       this.connectToExchange(defaultRelay, defaultTokensPair)
 
       // Getting trade history logs
-      this.props.dispatch(
-        Actions.exchange.getTradeHistoryLogs(
-          defaultRelay,
-          api._rb.network.id,
-          defaultTokensPair.baseToken.address,
-          defaultTokensPair.quoteToken.address
-        )
-      )
+      // this.props.dispatch(
+      //   Actions.exchange.getTradeHistoryLogs(
+      //     defaultRelay,
+      //     api._rb.network.id,
+      //     defaultTokensPair.baseToken.address,
+      //     defaultTokensPair.quoteToken.address
+      //   )
+      // )
 
       // // Getting history logs
       // this.props.dispatch(this.getTradeHistoryLogs(
@@ -216,7 +266,7 @@ class ApplicationExchangeHome extends Component {
         (Math.floor(Date.now() / 1000) - 86400 * 7) * 1000
       ).toISOString()
       this.props.dispatch(
-        Actions.exchange.getChartData(
+        Actions.exchange.fetchCandleDataSingle(
           defaultRelay,
           api._rb.network.id,
           defaultTokensPair.baseToken,
@@ -231,7 +281,11 @@ class ApplicationExchangeHome extends Component {
 
   componentWillUnmount = () => {
     console.log('***** UNMOUNT *****')
+    const { api } = this.context
     this.props.dispatch(Actions.exchange.relayCloseWs())
+    this.props.dispatch(
+      Actions.exchange.updateLiquidityAndTokenBalances(api, 'STOP')
+    )
   }
 
   UNSAFE_componentWillUpdate() {
@@ -255,17 +309,26 @@ class ApplicationExchangeHome extends Component {
 
   connectToExchange = async (defaultRelay, defaultTokensPair) => {
     const { api } = this.context
+    console.log(defaultRelay)
+    // this.props.dispatch(
+    //   Actions.exchange.relayGetOrders(
+    //     defaultRelay,
+    //     api._rb.network.id,
+    //     defaultTokensPair.baseToken,
+    //     defaultTokensPair.quoteToken,
+    //     defaultRelay.initOrdeBookAggregated
+    //   )
+    // )
     this.props.dispatch(
-      Actions.exchange.relayGetOrders(
+      Actions.exchange.relayOpenWsTicker(
         defaultRelay,
         api._rb.network.id,
         defaultTokensPair.baseToken,
-        defaultTokensPair.quoteToken,
-        defaultRelay.initOrdeBookAggregated
+        defaultTokensPair.quoteToken
       )
     )
     this.props.dispatch(
-      Actions.exchange.relayOpenWs(
+      Actions.exchange.relayOpenWsBook(
         defaultRelay,
         api._rb.network.id,
         defaultTokensPair.baseToken,
@@ -275,7 +338,7 @@ class ApplicationExchangeHome extends Component {
   }
 
   onToggleAggregateOrders = isInputChecked => {
-    console.log(isInputChecked)
+    // console.log(isInputChecked)
     this.props.dispatch(Actions.exchange.setAggregateOrders(isInputChecked))
 
     let filter = {
@@ -290,7 +353,11 @@ class ApplicationExchangeHome extends Component {
 
   onSelectFund = async fund => {
     const { api } = this.context
-    const { selectedTokensPair, selectedExchange } = this.props.exchange
+    const {
+      selectedTokensPair,
+      selectedExchange,
+      selectedRelay
+    } = this.props.exchange
 
     // Resetting current order
     this.props.dispatch({
@@ -308,26 +375,63 @@ class ApplicationExchangeHome extends Component {
       )
 
       // Getting drago liquidity
-      this.props.dispatch(this.updateSelectedFundLiquidity(fund.address, api))
+      // this.props.dispatch(this.updateSelectedFundLiquidity(fund.address, api))
 
-      // Getting allowances
-      const allowanceBaseToken = await getTokenAllowance(
-        selectedTokensPair.baseToken,
-        fund.address,
-        selectedExchange
-      )
-      const allowanceQuoteToken = await getTokenAllowance(
-        selectedTokensPair.quoteToken,
-        fund.address,
-        selectedExchange
-      )
-      const tokensAllowance = {
-        baseTokenAllowance: new BigNumber(allowanceBaseToken).gt(0),
-        quoteTokenAllowance: new BigNumber(allowanceQuoteToken).gt(0)
-      }
+      // Updating selected tokens pair balances and fund liquidity (ETH, ZRX)
       this.props.dispatch(
-        Actions.exchange.updateSelectedTradeTokensPair(tokensAllowance)
+        Actions.exchange.updateLiquidityAndTokenBalances(api, '', fund.address)
       )
+
+      console.log(selectedRelay)
+
+      let allowanceBaseToken,
+        allowanceQuoteToken = 0
+
+      if (!selectedRelay.isTokenWrapper) {
+        // Getting allowances
+        allowanceBaseToken = await getTokenAllowance(
+          selectedTokensPair.baseToken,
+          fund.address,
+          selectedExchange
+        )
+        allowanceQuoteToken = await getTokenAllowance(
+          selectedTokensPair.quoteToken,
+          fund.address,
+          selectedExchange
+        )
+      }
+
+      let baseTokenLockWrapExpire,
+        quoteTokenLockWrapExpire = '0'
+
+      if (selectedRelay.isTokenWrapper) {
+        // Getting token wrapper lock time
+        baseTokenLockWrapExpire = await utils.updateTokenWrapperLockTime(
+          api,
+          selectedTokensPair.baseToken.wrappers[selectedRelay.name].address,
+          fund.address
+        )
+        quoteTokenLockWrapExpire = await utils.updateTokenWrapperLockTime(
+          api,
+          selectedTokensPair.quoteToken.wrappers[selectedRelay.name].address,
+          fund.address
+        )
+      }
+
+      const payload = {
+        baseTokenAllowance: new BigNumber(allowanceBaseToken).gt(0),
+        quoteTokenAllowance: new BigNumber(allowanceQuoteToken).gt(0),
+        baseTokenLockWrapExpire: baseTokenLockWrapExpire,
+        quoteTokenLockWrapExpire: quoteTokenLockWrapExpire
+      }
+
+      console.log(payload)
+
+      this.props.dispatch(
+        Actions.exchange.updateSelectedTradeTokensPair(payload)
+      )
+
+      console.log(fund)
       // Getting fund orders
       // this.props.dispatch(this.getFundOrders(
       //   this.props.exchange.relay.networkId,
@@ -349,9 +453,36 @@ class ApplicationExchangeHome extends Component {
       selectedFund
     } = this.props.exchange
     const selectedTokens = pair.split('-')
+    const baseToken = ERC20_TOKENS[api._rb.network.name][selectedTokens[0]]
+    const quoteToken = ERC20_TOKENS[api._rb.network.name][selectedTokens[1]]
+
+    // Reset balances
+    this.props.dispatch(
+      Actions.exchange.updateLiquidityAndTokenBalances(
+        api,
+        'RESET',
+        selectedFund.details.address
+      )
+    )
+    // Updating selected tokens pair
+    this.props.dispatch(
+      Actions.exchange.updateSelectedTradeTokensPair({
+        baseToken: baseToken,
+        quoteToken: quoteToken,
+        baseTokenAllowance: false,
+        quoteTokenAllowance: false,
+        ticker: {
+          current: {
+            price: '0'
+          },
+          previous: {
+            price: '0'
+          },
+          variation: 0
+        }
+      })
+    )
     try {
-      const baseToken = ERC20_TOKENS[api._rb.network.name][selectedTokens[0]]
-      const quoteToken = ERC20_TOKENS[api._rb.network.name][selectedTokens[1]]
       const allowanceBaseToken = await getTokenAllowance(
         selectedTokensPair.baseToken,
         selectedFund.details.address,
@@ -394,52 +525,25 @@ class ApplicationExchangeHome extends Component {
       })
 
       // Reconnecting to the exchange
-      this.connectToExchange(tradeTokensPair)
+      this.connectToExchange(selectedExchange, tradeTokensPair)
 
       // Getting chart data
-      let tsYesterday = new Date(
-        (Math.floor(Date.now() / 1000) - 86400 * 7) * 1000
-      ).toISOString()
-      this.props.dispatch(
-        Actions.exchange.getChartData(
-          this.props.exchange.selectedRelay,
-          this.props.exchange.relay.networkId,
-          this.props.exchange.selectedTokensPair.baseToken,
-          this.props.exchange.selectedTokensPair.quoteToken,
-          tsYesterday
-        )
-      )
+      // let tsYesterday = new Date(
+      //   (Math.floor(Date.now() / 1000) - 86400 * 7) * 1000
+      // ).toISOString()
+      // this.props.dispatch(
+      //   Actions.exchange.fetchCandleDataSingle(
+      //     this.props.exchange.selectedRelay,
+      //     this.props.exchange.relay.networkId,
+      //     this.props.exchange.selectedTokensPair.baseToken,
+      //     this.props.exchange.selectedTokensPair.quoteToken,
+      //     tsYesterday
+      //   )
+      // )
     } catch (error) {
       console.log(error)
     }
   }
-
-  // onButtonTest = () => {
-  //   console.log('open')
-  //   var filter = {
-  //     networkId: this.props.exchange.relay.networkId,
-  //     baseTokenAddress: this.props.exchange.selectedTokensPair.baseToken.address,
-  //     quoteTokenAddress: this.props.exchange.selectedTokensPair.quoteToken.address,
-  //     aggregated: this.props.exchange.orderBook.aggregated
-  //   }
-  //   this.props.dispatch(this.relayGetOrders(filter))
-  //   // this.props.dispatch({ type: 'RELAY_SUBSCRIBE_WEBSOCKET', payload: { sub: 'sub:ticker2' }})
-  // }
-
-  // onButtonTest2 = () => {
-  //   console.log('subscribe')
-  //   getMarketTakerOrder(
-  //     this.props.exchange.selectedTokensPair.baseToken.address,
-  //     this.props.exchange.selectedTokensPair.quoteToken.address,
-  //     this.props.exchange.selectedTokensPair.baseToken.address,
-  //     '95000000000000000000',
-  //     this.props.exchange.relay.networkId,
-  //     "0x57072759Ba54479669CAdF1A25528a472Af95cEF".toLowerCase()
-  //   )
-  //     .then(results => {
-  //       console.log(results)
-  //     })
-  // }
 
   render() {
     const {
@@ -488,10 +592,9 @@ class ApplicationExchangeHome extends Component {
     //   )
     // }
 
-    if (endpoint.accounts.length === 0 || !endpoint.metaMaskNetworkCorrect) {
+    if (endpoint.accounts.length === 0 || !endpoint.isMetaMaskNetworkCorrect) {
       return (
         <span>
-          <CheckAuthPage warnMsg={endpoint.warnMsg} location={location} />
           <ElementBottomStatusBar
             blockNumber={endpoint.prevBlockNumber}
             networkName={endpoint.networkInfo.name}
@@ -536,12 +639,13 @@ class ApplicationExchangeHome extends Component {
 
     if (user.isManager) {
       const { bids, asks, spread } = this.props.exchange.orderBook
-      const asksOrderNormalized = asks.slice(asks.length - 20, asks.length)
+      // console.log(asks)
+      // console.log(bids)
+      const asksOrderNormalized = asks.slice(-20)
       const bidsOrderNormalized = bids.slice(0, 20)
       // console.log(this.props.exchange.selectedExchange)
       // const bidsOrderNormalizedFilled = [ ...Array(20 - bidsOrderNormalized.length).fill(null), ...bidsOrderNormalized ]
       // const asksOrderNormalizedFilled = [ ...Array(20 - asksOrderNormalized.length).fill(null), ...asksOrderNormalized]
-      // console.log(this.props.transactionsDrago.manager.list)
       const { chartData, fundOrders } = this.props.exchange
       const currentPrice = new BigNumber(
         this.props.exchange.selectedTokensPair.ticker.current.price
@@ -557,30 +661,40 @@ class ApplicationExchangeHome extends Component {
             <Col xs={12}>
               <Paper className={styles.paperTopBarContainer} zDepth={1}>
                 <Row>
-                  <Col xs={4}>
+                  <Col xs={12} sm={4}>
                     <FundSelector
-                      funds={this.props.transactionsDrago.manager.list}
+                      funds={this.props.exchange.availableFunds}
                       onSelectFund={this.onSelectFund}
+                      selectedFund={this.props.exchange.selectedFund}
                     />
                   </Col>
-                  <Col xs={2}>
+                  {/* <Col xs={2}>
                     <TokenLiquidity
                       liquidity={exchange.selectedFund.liquidity}
                       loading={exchange.loading.liquidity}
                     />
-                  </Col>
-                  <Col xs={2}>
+                  </Col> */}
+                  <Col xs={12} sm={4}>
                     <TokenTradeSelector
                       tradableTokens={exchange.availableTradeTokensPairs}
                       selectedTradeTokensPair={exchange.selectedTokensPair}
                       onSelectTokenTrade={this.onSelectTokenTrade}
                     />
                   </Col>
-                  <Col xs={4} className={styles.tokenPriceContainer}>
+                  <Col xs={12} sm={4} className={styles.tokenPriceContainer}>
                     <TokenPrice
                       selectedTradeTokensPair={exchange.selectedTokensPair}
                       tokenPrice={currentPrice.toFixed(4)}
                       priceVariation={priceVariation}
+                    />
+                  </Col>
+                </Row>
+                <Row>
+                  <Col xs={12}>
+                    <TokenBalances
+                      liquidity={exchange.selectedFund.liquidity}
+                      selectedTradeTokensPair={exchange.selectedTokensPair}
+                      // loading={exchange.loading.liquidity}
                     />
                   </Col>
                 </Row>
@@ -591,41 +705,51 @@ class ApplicationExchangeHome extends Component {
             </Col> */}
             <Col xs={12}>
               <Row>
-                <Col xs={3}>
+                <Col xs={12} md={12} lg={3}>
                   <Row>
                     <Col xs={12}>
-                      <ExchangeBox />
+                      <div className={styles.boxContainer}>
+                        <ExchangeBox />
+                      </div>
                     </Col>
                     <Col xs={12}>
-                      <OrderBox />
+                      <div className={styles.boxContainer}>
+                        <OrderBox />
+                      </div>
                     </Col>
                   </Row>
                 </Col>
-                <Col xs={7}>
+                <Col xs={12} md={12} lg={7}>
                   <Row>
                     <Col xs={12}>
-                      <ChartBox
-                        data={chartData}
-                        // loading={exchange.loading.marketBox}
-                        loading={false}
-                      />
+                      <div className={styles.boxContainer}>
+                        <ChartBox
+                          data={chartData}
+                          // loading={exchange.loading.marketBox}
+                          loading={false}
+                        />
+                      </div>
                     </Col>
                     <Col xs={12}>
-                      <OrdersHistoryBox fundOrders={fundOrders} />
+                      <div className={styles.boxContainer}>
+                        <OrdersHistoryBox fundOrders={fundOrders} />
+                      </div>
                     </Col>
                   </Row>
                 </Col>
-                <Col xs={2}>
-                  <OrderBook
-                    bidsOrders={bidsOrderNormalized}
-                    asksOrders={asksOrderNormalized}
-                    spread={spread}
-                    aggregated={this.props.exchange.orderBookAggregated}
-                    onToggleAggregateOrders={this.onToggleAggregateOrders}
-                    onlyAggregated={
-                      this.props.exchange.selectedRelay.onlyAggregateOrderbook
-                    }
-                  />
+                <Col xs={12} md={12} lg={2}>
+                  <div className={styles.boxContainer}>
+                    <OrderBook
+                      bidsOrders={bidsOrderNormalized}
+                      asksOrders={asksOrderNormalized}
+                      spread={spread}
+                      aggregated={this.props.exchange.orderBookAggregated}
+                      onToggleAggregateOrders={this.onToggleAggregateOrders}
+                      onlyAggregated={
+                        this.props.exchange.selectedRelay.onlyAggregateOrderbook
+                      }
+                    />
+                  </div>
                 </Col>
               </Row>
             </Col>
@@ -682,52 +806,70 @@ class ApplicationExchangeHome extends Component {
   // }
 
   // Getting last transactions
-  async getSelectedFundDetails(dragoAddress, accounts) {
+  getSelectedFundDetails = async (dragoAddress, accounts) => {
     console.log(dragoAddress, accounts)
     const { api } = this.context
-    // const options = {balance: false, supply: true}
-    const options = { balance: false, supply: true, limit: 10, trader: false }
     try {
-      const results = await utils.getTransactionsDragoOptV2(
-        api,
-        dragoAddress,
-        accounts,
-        options
-      )
-      const createdLogs = results[1].filter(event => {
-        return event.type !== 'BuyDrago' && event.type !== 'SellDrago'
-      })
-      // console.log(results)
-      results[1] = createdLogs
-      results[2].sort(function(a, b) {
-        let keyA = a.symbol,
-          keyB = b.symbol
-        // Compare the 2 dates
-        if (keyA < keyB) return -1
-        if (keyA > keyB) return 1
-        return 0
-      })
-      this.props.dispatch(
-        Actions.drago.updateTransactionsDragoManagerAction(results)
-      )
+      let poolApi = new PoolApi(api)
+      await poolApi.contract.dragofactory.init()
+      await poolApi.contract.dragoregistry.init()
 
-      if (results[2].length !== 0) {
-        // Getting fund orders
-        // this.props.dispatch(this.getFundOrders(
-        //   this.props.exchange.relay.networkId,
-        //   results[2][0].address.toLowerCase(),
-        //   this.props.exchange.selectedTokensPair.baseToken.address,
-        //   this.props.exchange.selectedTokensPair.quoteToken.address,
-        // )
-        // )
-        this.onSelectFund(results[2][0])
-      } else {
+      const getDragoList = async () => {
+        let arrayPromises = accounts.map(async account => {
+          return poolApi.contract.dragofactory
+            .getDragosByAddress(account.address)
+            .then(results => {
+              return results
+            })
+            .catch(error => {
+              console.warn(error)
+              return error
+            })
+        })
+        return Promise.all(arrayPromises)
+      }
+
+      const getDragoDetails = async dragoList => {
+        let arrayPromises = dragoList.map(drago => {
+          return poolApi.contract.dragoregistry
+            .fromAddress(drago.value)
+            .then(dragoDetails => {
+              const dragoData = {
+                symbol: dragoDetails[2].trim(),
+                dragoId: dragoDetails[3].toFixed(),
+                name: dragoDetails[1].trim(),
+                address: drago.value
+              }
+              return dragoData
+            })
+            .catch(error => {
+              console.warn(error)
+              return error
+            })
+        })
+        return Promise.all(arrayPromises)
+      }
+
+      let dragoList = await getDragoDetails(...(await getDragoList()))
+      console.log(dragoList)
+      if (dragoList.lenght) {
         this.setState({
           managerHasNoFunds: true
         })
+      } else {
+        dragoList.sort(function(a, b) {
+          let keyA = a.symbol,
+            keyB = b.symbol
+          if (keyA < keyB) return -1
+          if (keyA > keyB) return 1
+          return 0
+        })
+
+        this.props.dispatch(Actions.exchange.updateAvailableFunds(dragoList))
+        this.onSelectFund(dragoList[0])
       }
     } catch (error) {
-      console.log(error)
+      console.warn(error)
     }
   }
 }

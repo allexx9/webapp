@@ -20,6 +20,9 @@
   height: 100% !important;
 }
 
+.progressBarContainer{
+  padding-top: 10px;
+}
 
 .detailsToolbarGroup {
   width: 100% !important;
@@ -35,6 +38,6 @@
 .filterBox {
   height: 100%;
   width: 100%;
-  padding: 45px 20px 20px 20px;
+  padding: 45px 20px 0px 20px;
   display: 'inline-block';
 }

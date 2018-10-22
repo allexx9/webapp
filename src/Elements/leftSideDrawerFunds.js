@@ -76,7 +76,7 @@ class LeftSideDrawerFunds extends Component {
               value="dashboard"
             />
             <MenuItem
-              primaryText="Funds"
+              primaryText="Dragos"
               leftIcon={<ActionShowChart />}
               containerElement={
                 <Link

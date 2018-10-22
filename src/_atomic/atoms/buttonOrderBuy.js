@@ -3,7 +3,7 @@ import FlatButton from 'material-ui/FlatButton'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
-class ButtonBuy extends Component {
+class ButtonOrderBuy extends Component {
   static propTypes = {
     onBuySell: PropTypes.func.isRequired,
     selected: PropTypes.bool
@@ -46,4 +46,4 @@ class ButtonBuy extends Component {
   }
 }
 
-export default ButtonBuy
+export default ButtonOrderBuy

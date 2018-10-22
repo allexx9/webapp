@@ -6,6 +6,8 @@ import { DRAGOEVENTFUL } from '../../utils/const'
 import { toHex } from '../../utils'
 import Registry from '../registry'
 
+const Web3 = require('web3')
+
 class DragoEventfulParity {
   constructor(api) {
     if (!api) {
@@ -16,6 +18,7 @@ class DragoEventfulParity {
     this._registry = new Registry(api)
     this._constunctorName = this.constructor.name
     this._contractName = DRAGOEVENTFUL
+    this._contractAddres = ''
   }
 
   get instance() {
@@ -43,21 +46,52 @@ class DragoEventfulParity {
   init = () => {
     const contractAbi = this._abi
     const contractName = this._contractName
-    return this._registry.instance(contractAbi, contractName).then(contract => {
-      this._instance = contract.instance
-      this._contract = contract
-      const hexSignature = this._contract._events.reduce((events, event) => {
-        events[event._name] = toHex(event._signature)
-        return events
-      }, {})
-      this._hexSignature = hexSignature
-      return this._instance
-    })
+    return typeof this._instance !== 'undefined'
+      ? this._instance
+      : this._registry.instance(contractAbi, contractName).then(contract => {
+          this._instance = contract.instance
+          this._contract = contract
+          this._contractAddress = contract._address[0]
+          const hexSignature = this._contract._events.reduce(
+            (events, event) => {
+              events[event._name] = toHex(event._signature)
+              return events
+            },
+            {}
+          )
+          this._hexSignature = hexSignature
+          return this._instance
+        })
   }
 
-  getAllLogs = (topics = { topics: [null, null, null, null] }) => {
-    const contract = this._contract
-    return contract.getAllLogs(topics)
+  getAllLogs = (
+    options = {
+      topics: [null, null, null, null],
+      fromBlock: 0,
+      toBlock: 'latest'
+    }
+  ) => {
+    // console.log(options)
+    const contractAddress = this._contractAddress
+    const web3 = new Web3(this._api.provider._url)
+
+    const contractWeb3 = new web3.eth.Contract(
+      this._abi,
+      contractAddress.toLowerCase()
+    )
+    return contractWeb3
+      .getPastEvents('allEvents', {
+        fromBlock: options.fromBlock,
+        toBlock: options.toBlock,
+        topics: options.topics
+      })
+      .then(function(logs) {
+        return logs
+      })
+    // return this._api.eth.getLogs(options).then(function(logs) {
+    //   console.log(logs)
+    //   return contract.parseEventLogs(logs)
+    // })
   }
 }
 

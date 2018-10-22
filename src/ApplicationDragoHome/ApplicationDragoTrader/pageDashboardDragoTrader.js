@@ -24,7 +24,6 @@ import scrollToElement from 'scroll-to-element'
 import utils from '../../_utils/utils'
 // import SectionTitle from '../../_atomic/atoms/sectionTitle';
 
-import { Actions } from '../../_redux/actions'
 import { HELP_ } from '../../_utils/const'
 import styles from './pageDashboardDragoTrader.module.css'
 
@@ -51,22 +50,14 @@ class PageDashboardDragoTrader extends Component {
     snackBarMsg: ''
   }
 
-  componentDidMount() {
-    const { accounts } = this.props.endpoint
-    const { api } = this.context
-    const options = { balance: true, supply: false, limit: 10, trader: true }
-    console.log('componentDidMount')
-    this.props.dispatch(
-      Actions.endpoint.getAccountsTransactions(api, null, accounts, options)
-    )
-  }
+  componentDidMount() {}
 
   UNSAFE_componentWillReceiveProps(nextProps) {
     // Updating the lists on each new block if the accounts balances have changed
     // Doing this this to improve performances by avoiding useless re-rendering
     // const { accounts } = this.props.endpoint
     // const { api } = this.context
-    // const options = { balance: true, supply: false, limit: 10, trader: true }
+    // const options = { balance: true, supply: false, limit: 20, trader: true, drago: true }
     // console.log(`${this.constructor.name} -> UNSAFE_componentWillReceiveProps-> nextProps received.`);
     // Updating the transaction list if there have been a change in total accounts balance and the previous balance is
     // different from 0 (balances are set to 0 on app loading)
@@ -78,7 +69,6 @@ class PageDashboardDragoTrader extends Component {
           this.constructor.name
         } -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`
       )
-      // this.props.dispatch(Actions.endpoint.getAccountsTransactions(api, null, accounts, options))
     }
   }
 
@@ -90,11 +80,11 @@ class PageDashboardDragoTrader extends Component {
     if (stateUpdate || propsUpdate) {
       // console.log('State updated ', stateUpdate)
       // console.log('Props updated ', propsUpdate)
-      console.log(
-        `${
-          this.constructor.name
-        } -> shouldComponentUpdate -> Proceeding with rendering.`
-      )
+      // console.log(
+      //   `${
+      //     this.constructor.name
+      //   } -> shouldComponentUpdate -> Proceeding with rendering.`
+      // )
     }
     return stateUpdate || propsUpdate
   }
@@ -163,8 +153,9 @@ class PageDashboardDragoTrader extends Component {
         zIndex: 1000
       }
     }
-    console.log(this.props)
+    // console.log(this.props)
     // console.log(this.props.endpoint.accounts[0].address)
+
     const listAccounts = accounts.map((account, key) => {
       return (
         <Col xs={6} key={account.name + key}>
@@ -267,6 +258,7 @@ class PageDashboardDragoTrader extends Component {
                     </div>
                     <ElementListWrapper
                       list={dragoBalances}
+                      autoLoading={false}
                       // dragoDetails={}
                       // loading={this.state.loading}
                     >
@@ -300,6 +292,7 @@ class PageDashboardDragoTrader extends Component {
                       list={dragoTransactionsLogs}
                       renderCopyButton={this.renderCopyButton}
                       renderEtherscanButton={this.renderEtherscanButton}
+                      autoLoading={false}
                       pagination={{
                         display: 10,
                         number: 1

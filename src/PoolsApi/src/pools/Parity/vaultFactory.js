@@ -74,6 +74,14 @@ class VaultFactoryParity {
         return instance.createVault.postTransaction(options, values)
       })
   }
+
+  getVaultsByAddress = accountAddress => {
+    if (!accountAddress) {
+      throw new Error('accountAddress needs to be provided')
+    }
+    const instance = this._instance
+    return instance.getVaultsByAddress.call({}, [accountAddress.toLowerCase()])
+  }
 }
 
 export default VaultFactoryParity

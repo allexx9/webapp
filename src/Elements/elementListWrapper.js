@@ -11,16 +11,22 @@ class ElementListWrapper extends Component {
     list: PropTypes.array.isRequired,
     children: PropTypes.object.isRequired,
     loading: PropTypes.bool,
-    pagination: PropTypes.object
+    autoLoading: PropTypes.bool,
+    pagination: PropTypes.object,
+    tableHeight: PropTypes.number,
+    renderOptimization: PropTypes.bool
   }
 
   static defaultProps = {
     list: [],
     loading: false,
+    autoLoading: true,
     pagination: {
       display: 5,
       number: 1
-    }
+    },
+    tableHeight: 650,
+    renderOptimization: true
   }
 
   state = {
@@ -42,11 +48,12 @@ class ElementListWrapper extends Component {
   }
 
   componentDidMount = () => {
-    this.td = setTimeout(() => {
-      this.setState({
-        loading: false
-      })
-    }, 3000)
+    if (this.state.autoLoading)
+      this.td = setTimeout(() => {
+        this.setState({
+          loading: false
+        })
+      }, 5000)
   }
 
   componentWillUnmount = () => {
@@ -56,8 +63,11 @@ class ElementListWrapper extends Component {
   shouldComponentUpdate(nextProps, nextState) {
     let stateUpdate = true
     let propsUpdate = true
-    propsUpdate = !utils.shallowEqual(this.props.list, nextProps.list)
-    stateUpdate = !utils.shallowEqual(this.state, nextState)
+    if (nextProps.renderOptimization) {
+      propsUpdate = !utils.shallowEqual(this.props.list, nextProps.list)
+      stateUpdate = !utils.shallowEqual(this.state, nextState)
+    }
+
     return stateUpdate || propsUpdate
   }
 
@@ -65,24 +75,31 @@ class ElementListWrapper extends Component {
     // Exstracting the list form props
     // and checking if the list === null
     const { list, ...rest } = this.props
-    console.log(list)
-    if (Object.keys(list).length === 0 && this.state.loading) {
+    // console.log(list)
+    if (
+      Object.keys(list).length === 0 &&
+      this.state.loading &&
+      this.props.autoLoading
+    ) {
       return (
-        <ContentLoader
-          height={100}
-          width={400}
-          speed={2}
-          primaryColor="#f3f3f3"
-          secondaryColor="#ecebeb"
-        >
-          <rect x="0" y="10" rx="5" ry="5" width="400" height="10" />
-          <rect x="0" y="25" rx="5" ry="5" width="400" height="10" />
-          <rect x="0" y="40" rx="5" ry="5" width="400" height="10" />
-          <rect x="0" y="55" rx="5" ry="5" width="400" height="10" />
-          <rect x="0" y="70" rx="5" ry="5" width="400" height="10" />
-          <rect x="0" y="85" rx="5" ry="5" width="400" height="10" />
-          <rect x="0" y="100" rx="5" ry="5" width="400" height="10" />
-        </ContentLoader>
+        <div className={styles.loadingText}>
+          Loading...
+          <ContentLoader
+            height={100}
+            width={400}
+            speed={2}
+            primaryColor="#f3f3f3"
+            secondaryColor="#ecebeb"
+          >
+            <rect x="0" y="10" rx="5" ry="5" width="400" height="10" />
+            <rect x="0" y="25" rx="5" ry="5" width="400" height="10" />
+            <rect x="0" y="40" rx="5" ry="5" width="400" height="10" />
+            <rect x="0" y="55" rx="5" ry="5" width="400" height="10" />
+            <rect x="0" y="70" rx="5" ry="5" width="400" height="10" />
+            <rect x="0" y="85" rx="5" ry="5" width="400" height="10" />
+            <rect x="0" y="100" rx="5" ry="5" width="400" height="10" />
+          </ContentLoader>
+        </div>
       )
     }
     const slicedList = list.slice(

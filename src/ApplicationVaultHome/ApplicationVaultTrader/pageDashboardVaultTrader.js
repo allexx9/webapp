@@ -1,5 +1,4 @@
 import * as Colors from 'material-ui/styles/colors'
-import { Actions } from '../../_redux/actions'
 import { Col, Grid, Row } from 'react-flexbox-grid'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 import { Link, withRouter } from 'react-router-dom'
@@ -45,35 +44,25 @@ class PageDashboardVaultTrader extends Component {
   }
 
   state = {
+    loading: true,
     snackBar: false,
     snackBarMsg: ''
   }
 
-  componentDidMount() {}
-
-  UNSAFE_componentWillMount() {
-    const { accounts } = this.props.endpoint
-    this.getTransactions(null, accounts)
-  }
+  componentDidMount = () => {}
 
   UNSAFE_componentWillReceiveProps(nextProps) {
     // Updating the lists on each new block if the accounts balances have changed
     // Doing this this to improve performances by avoiding useless re-rendering
-    const { accounts } = this.props.endpoint
-    console.log(
-      `${
-        this.constructor.name
-      } -> UNSAFE_componentWillReceiveProps-> nextProps received.`
-    )
+    // const { accounts } = this.props.endpoint
+    // const { api } = this.context
+    // const options = { balance: true, supply: false, limit: 20, trader: true, drago: true }
+    // console.log(`${this.constructor.name} -> UNSAFE_componentWillReceiveProps-> nextProps received.`);
     // Updating the transaction list if there have been a change in total accounts balance and the previous balance is
     // different from 0 (balances are set to 0 on app loading)
     const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
     const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
-    if (
-      !currentBalance.eq(nextProps.endpoint.ethBalance) &&
-      !nextBalance.eq(0)
-    ) {
-      this.getTransactions(null, accounts)
+    if (!currentBalance.eq(nextBalance) && !currentBalance.eq(0)) {
       console.log(
         `${
           this.constructor.name
@@ -88,18 +77,16 @@ class PageDashboardVaultTrader extends Component {
     propsUpdate = !utils.shallowEqual(this.props, nextProps)
     stateUpdate = !utils.shallowEqual(this.state, nextState)
     if (stateUpdate || propsUpdate) {
-      console.log('State updated ', stateUpdate)
-      console.log('Props updated ', propsUpdate)
-      console.log(
-        `${
-          this.constructor.name
-        } -> shouldComponentUpdate -> Proceedding with rendering.`
-      )
+      // console.log('State updated ', stateUpdate)
+      // console.log('Props updated ', propsUpdate)
+      // console.log(
+      //   `${
+      //     this.constructor.name
+      //   } -> shouldComponentUpdate -> Proceedding with rendering.`
+      // )
     }
     return stateUpdate || propsUpdate
   }
-
-  componentDidUpdate() {}
 
   snackBar = msg => {
     this.setState({
@@ -269,7 +256,10 @@ class PageDashboardVaultTrader extends Component {
                 <Row>
                   <Col xs={12}>
                     <div className={styles.sectionParagraph}>Your vaults:</div>
-                    <ElementListWrapper list={vaultBalances}>
+                    <ElementListWrapper
+                      list={vaultBalances}
+                      autoLoading={false}
+                    >
                       <ElementListBalances />
                     </ElementListWrapper>
                   </Col>
@@ -305,6 +295,8 @@ class PageDashboardVaultTrader extends Component {
                       list={vaultTransactionsLogs}
                       renderCopyButton={this.renderCopyButton}
                       renderEtherscanButton={this.renderEtherscanButton}
+                      autoLoading={false}
+                      renderOptimization={false}
                       pagination={{
                         display: 10,
                         number: 1
@@ -340,27 +332,6 @@ class PageDashboardVaultTrader extends Component {
         />
       </Row>
     )
-  }
-
-  // Getting last transactions
-  getTransactions = (dragoAddress, accounts) => {
-    const { api } = this.context
-    const options = { balance: true, supply: false, limit: 10, trader: true }
-
-    utils
-      .getTransactionsVaultOptV2(api, dragoAddress, accounts, options)
-      .then(results => {
-        console.log(`${this.constructor.name} -> Transactions list loaded`)
-        // const buySellLogs = results[1].filter(event =>{
-        //   return event.type !== 'DragoCreated'
-        // })
-        this.props.dispatch(
-          Actions.vault.updateTransactionsVaultHolderAction(results)
-        )
-      })
-      .catch(error => {
-        console.log(error)
-      })
   }
 }
 

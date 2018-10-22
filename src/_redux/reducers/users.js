@@ -6,10 +6,9 @@ import initialState from './initialState'
 function usersReducer(state = initialState.user, action) {
   switch (action.type) {
     case IS_MANAGER:
-      let isManager = action.payload
       return {
         ...state,
-        isManager
+        isManager: action.payload
       }
     default:
       return state

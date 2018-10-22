@@ -70,11 +70,18 @@ class DragoParity {
   getBalanceZRX = () => {
     const api = this._api
     const instance = this._instance
-    const wethInstance = api.newContract(
+    const tokenInstance = api.newContract(
       abis.weth,
       ZRX_ADDRESSES[api._rb.network.id]
     ).instance
-    return wethInstance.balanceOf.call({}, [instance.address])
+    return tokenInstance.balanceOf.call({}, [instance.address])
+  }
+
+  getBalanceToken = tokenAddress => {
+    const api = this._api
+    const instance = this._instance
+    const tokenInstance = api.newContract(abis.erc20, tokenAddress).instance
+    return tokenInstance.balanceOf.call({}, [instance.address])
   }
 
   buyDrago = (accountAddress, amount) => {
@@ -225,8 +232,6 @@ class DragoParity {
     const options = {
       from: accountAddress
     }
-    console.log(options)
-    console.log(values)
     return instance.sellDrago.estimateGas(options, values).then(gasEstimate => {
       options.gas = gasEstimate.times(1.2).toFixed(0)
       console.log(

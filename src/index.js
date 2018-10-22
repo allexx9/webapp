@@ -11,17 +11,17 @@ import App from './App'
 import React from 'react'
 import ReactDOM from 'react-dom'
 // import logger from 'redux-logger'
-
 import registerServiceWorker from './registerServiceWorker'
-// import thunkMiddleware from 'redux-thunk'
 // import { composeWithDevTools } from 'redux-devtools-extension';
-import * as ACTIONS from './_redux/actions/const'
 import { PersistGate } from 'redux-persist/integration/react'
 import { createFilter } from 'redux-persist-transform-filter'
+import {
+  notificationsMiddleWare,
+  poolCalculateValueMiddleWare,
+  relayActionsMiddleWare
+} from './_redux/middlewares'
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2'
-import serializeError from 'serialize-error'
 import storage from 'redux-persist/lib/storage'
-import utils from './_utils/utils'
 
 import './index.module.css'
 
@@ -33,63 +33,13 @@ if (process.env.NODE_ENV !== 'development') {
   console.error = noop
 }
 
-const relayActionsMiddleWare = store => next => action => {
-  const state = store.getState()
-  // console.log("relayActionsMiddleWare triggered:", action)
-  // console.log(state.exchange.selectedRelay.name)
-  // console.log(ACTIONS.CUSTOM_EXCHANGE_ACTIONS)
-  if (ACTIONS.CUSTOM_EXCHANGE_ACTIONS.includes(action.type)) {
-    console.log(
-      `relayActionsMiddleWare  action: ${state.exchange.selectedRelay.name.toUpperCase()}_${
-        action.type
-      }`
-    )
-    action.type = `${state.exchange.selectedRelay.name.toUpperCase()}_${
-      action.type
-    }`
-    console.log(action.type)
-  }
-  next(action)
-}
-
-const notificationsMiddleWare = store => next => action => {
-  const state = store.getState()
-  console.log(action)
-  if (action.type === ACTIONS.QUEUE_ACCOUNT_NOTIFICATION) {
-    action.payload.map(notification => {
-      utils.notificationAccount(
-        state.notifications.engine,
-        notification,
-        'info'
-      )
-      return
-    })
-  }
-  if (action.type === ACTIONS.QUEUE_ERROR_NOTIFICATION) {
-    utils.notificationError(
-      state.notifications.engine,
-      serializeError(action.payload),
-      'error'
-    )
-  }
-  if (action.type === ACTIONS.QUEUE_WARNING_NOTIFICATION) {
-    utils.notificationError(
-      state.notifications.engine,
-      serializeError(action.payload),
-      'warning'
-    )
-  }
-  next(action)
-}
-
 const epicMiddleware = createEpicMiddleware()
 
 const middlewares = [
-  // thunkMiddleware,
   epicMiddleware,
   relayActionsMiddleWare,
-  notificationsMiddleWare
-  // promiseMiddleware()
+  notificationsMiddleWare,
+  poolCalculateValueMiddleWare
 ]
 
 // if (process.env.NODE_ENV === `development`) {
@@ -97,10 +47,20 @@ const middlewares = [
 // }
 
 // Redux Persist
-const saveSubsetFilter = createFilter('endpoint', [
+const saveSubsetFilterEndpoint = createFilter('endpoint', [
   'endpointInfo',
   'networkInfo'
 ])
+const saveSubsetFilterApp = createFilter('app', [
+  'isConnected',
+  'isSyncing',
+  'lastBlockNumberUpdate',
+  'accountsAddressHash',
+  'config'
+])
+// const saveSubsetFilterTransactionsDrago = createFilter('transactionsDrago', [
+//   'dragosList'
+// ])
 //   const saveSubsetBlacklistFilter = createBlacklistFilter(
 //     'endpoint',
 //     ['accounts']
@@ -110,9 +70,12 @@ const persistConfig = {
   key: 'rigoblock',
   storage,
   stateReconciler: autoMergeLevel2,
-  whitelist: ['endpoint', 'user'],
+  whitelist: ['endpoint', 'app', 'user'],
   transforms: [
-    saveSubsetFilter
+    saveSubsetFilterEndpoint,
+    saveSubsetFilterApp
+    // saveSubsetFilterTransactionsDrago
+    // saveSubsetFilterApp
     // saveSubsetBlacklistFilter
   ]
 }

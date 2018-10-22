@@ -8,7 +8,7 @@ import { ZeroEx } from '0x.js'
 import Web3 from 'web3'
 // import ReconnectingWebSocket from 'reconnectingwebsocket'
 import PoolApi from '../PoolsApi/src'
-import rp from 'request-promise'
+import rp, { post } from 'request-promise'
 
 export const setAllowaceOnExchangeThroughDrago = (
   selectedFund,
@@ -299,38 +299,58 @@ export const formatOrders = (orders, orderType) => {
   return formattedOrders
 }
 
-export const signOrder = async (order, ZeroExConfig) => {
-  const DECIMALS = 18
+export const signOrder = async (order, selectedExchange, walletAddress) => {
+  const baseTokenDecimals = order.selectedTokensPair.baseToken.decimals
+  const quoteTokenDecimals = order.selectedTokensPair.quoteToken.decimals
+  console.log(baseTokenDecimals, quoteTokenDecimals)
   let makerTokenAmount, takerTokenAmount
-  const zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig)
-
+  const zeroEx = new ZeroEx(window.web3.currentProvider, selectedExchange)
+  console.log(order.orderFillAmount, order.orderPrice)
   switch (order.orderType) {
     case 'asks':
+      console.log('asks')
       makerTokenAmount = new BigNumber(order.orderFillAmount)
-      takerTokenAmount = new BigNumber(makerTokenAmount).times(
+      takerTokenAmount = new BigNumber(order.orderFillAmount).times(
         new BigNumber(order.orderPrice)
+      )
+      makerTokenAmount = ZeroEx.toBaseUnitAmount(
+        makerTokenAmount,
+        baseTokenDecimals
+      )
+      takerTokenAmount = ZeroEx.toBaseUnitAmount(
+        takerTokenAmount,
+        quoteTokenDecimals
       )
       break
     case 'bids':
+      console.log('bids')
       makerTokenAmount = new BigNumber(order.orderFillAmount).times(
         new BigNumber(order.orderPrice)
       )
       takerTokenAmount = new BigNumber(order.orderFillAmount)
+      makerTokenAmount = ZeroEx.toBaseUnitAmount(
+        makerTokenAmount,
+        quoteTokenDecimals
+      )
+      takerTokenAmount = ZeroEx.toBaseUnitAmount(
+        takerTokenAmount,
+        baseTokenDecimals
+      )
       break
   }
   const tokensAmounts = {
-    makerTokenAmount: ZeroEx.toBaseUnitAmount(makerTokenAmount, DECIMALS), // Base 18 decimals
-    takerTokenAmount: ZeroEx.toBaseUnitAmount(takerTokenAmount, DECIMALS) // Base 18 decimals
+    makerTokenAmount,
+    takerTokenAmount
   }
   let orderToBeSigned = { ...order.details.order, ...tokensAmounts }
-  const fees = await getFees(orderToBeSigned, ZeroExConfig.networkId)
-  console.log(fees)
-  const orderToBeSignedWithFees = {
-    ...orderToBeSigned,
-    ...fees
-  }
-  console.log(orderToBeSignedWithFees)
-  const orderHash = ZeroEx.getOrderHashHex(orderToBeSignedWithFees)
+  // const fees = await getFees(orderToBeSigned, selectedExchange.networkId)
+  // console.log(fees)
+  // orderToBeSigned = {
+  //   ...orderToBeSigned,
+  //   ...fees
+  // }
+  // console.log(orderToBeSigned)
+  const orderHash = ZeroEx.getOrderHashHex(orderToBeSigned)
   console.log(ZeroEx.isValidOrderHash(orderHash))
   const shouldAddPersonalMessagePrefix = true
   const signer = await zeroEx.getAvailableAddressesAsync()
@@ -339,15 +359,46 @@ export const signOrder = async (order, ZeroExConfig) => {
     signer[0],
     shouldAddPersonalMessagePrefix
   )
-  console.log(
-    ZeroEx.isValidSignature(orderHash, ecSignature, orderToBeSigned.maker)
-  )
+  console.log(`signer address ${walletAddress}`)
+  console.log(ZeroEx.isValidSignature(orderHash, ecSignature, walletAddress))
   // Append signature to order
   const signedOrder = {
-    ...orderToBeSignedWithFees,
+    ...orderToBeSigned,
     ecSignature
   }
   return signedOrder
+}
+
+export const submitOrderToRelayEFX = async (efxOrder, networkId) => {
+  console.log(efxOrder)
+  // const ZeroExConfig = {
+  //   networkId: 42
+  //   // exchangeContractAddress: this._network.id
+  // }
+  let relayerApiUrl
+  switch (networkId) {
+    case 1:
+      relayerApiUrl = `https://api.ethfinex.com/trustless/v1/w/on`
+      break
+    case 3:
+      relayerApiUrl = `https://test.ethfinex.com/trustless/v1/w/on`
+      break
+    default:
+      relayerApiUrl = `https://test.ethfinex.com/trustless/v1/w/on`
+  }
+
+  let efxOderStingified = JSON.stringify(efxOrder)
+  console.log(efxOderStingified)
+
+  console.log(efxOrder)
+  let options = {
+    method: 'POST',
+    uri: relayerApiUrl,
+    body: efxOrder,
+    json: true // Automatically stringifies the body to JSON
+  }
+  post(relayerApiUrl, { json: efxOrder })
+  return rp(options)
 }
 
 export const submitOrderToRelay = async signedOrder => {
@@ -419,6 +470,8 @@ export const getTokenAllowance = async (token, ownerAddress, ZeroExConfig) => {
   if (token.symbol === 'ETH') {
     return true
   }
+  console.log(token.symbol)
+  console.log(ZeroExConfig)
   const zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig)
   return zeroEx.token.getProxyAllowanceAsync(token.address, ownerAddress)
 }
@@ -471,37 +524,84 @@ export const getMarketTakerOrder = async (
 
 export const newMakerOrder = async (
   orderType,
-  baseTokenAddress,
-  quoteTokenAddress,
-  ZeroExConfig,
-  selectedFund
+  selectedTokensPair,
+  selectedExchange,
+  selectedFund,
+  isTokenWrapper
 ) => {
-  // const zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig);
-  // const EXCHANGE_ADDRESS = zeroEx.exchange.getContractAddress();
-  const EXCHANGE_ADDRESS = '0xf307de6528fa16473d8f6509b7b1d8851320dba5'
-  // const accounts = await zeroEx.getAvailableAddressesAsync();
-  // const makerAddress = accounts[0]
-  const makerTokenAddress =
-    orderType === 'asks' ? baseTokenAddress : quoteTokenAddress
-  const takerTokenAddress =
-    orderType === 'asks' ? quoteTokenAddress : baseTokenAddress
-
-  const order = {
-    maker: selectedFund.details.address.toLowerCase(),
-    // maker: makerAddress,
-    // dragoAddress: "0x57072759Ba54479669CAdF1A25528a472Af95cEF".toLowerCase(),
-    taker: ZeroEx.NULL_ADDRESS,
-    feeRecipient: ZeroEx.NULL_ADDRESS,
-    makerTokenAddress: makerTokenAddress,
-    takerTokenAddress: takerTokenAddress,
-    exchangeContractAddress: EXCHANGE_ADDRESS,
-    salt: ZeroEx.generatePseudoRandomSalt(),
-    makerFee: '0',
-    takerFee: '0',
-    makerTokenAmount: '0', // Base 18 decimals
-    takerTokenAmount: '0', // Base 18 decimals
-    expirationUnixTimestampSec: new BigNumber(Date.now() + 2592000) // Valid for up to 1 month
+  let makerTokenAddress, takerTokenAddress
+  // let web3 = new Web3(Web3.currentProvider)
+  const defaultExpiry = ''
+  if (isTokenWrapper) {
+    makerTokenAddress =
+      orderType === 'asks'
+        ? selectedTokensPair.baseToken.wrappers[selectedExchange.name].address
+        : selectedTokensPair.quoteToken.wrappers[selectedExchange.name].address
+    takerTokenAddress =
+      orderType === 'asks'
+        ? selectedTokensPair.quoteToken.wrappers[selectedExchange.name].address
+        : selectedTokensPair.baseToken.wrappers[selectedExchange.name].address
+  } else {
+    makerTokenAddress =
+      orderType === 'asks'
+        ? selectedTokensPair.baseToken.address
+        : selectedTokensPair.quoteToken.address
+    takerTokenAddress =
+      orderType === 'asks'
+        ? selectedTokensPair.quoteToken.address
+        : selectedTokensPair.baseToken.address
   }
+
+  // const expirationUnixTimestampSec = new BigNumber(
+  //   Math.round(new Date().getTime() / 1000) + (defaultExpiry || 60) * 60 * 12
+  // ).toNumber()
+
+  const expirationUnixTimestampSec = new BigNumber(
+    Math.round(new Date().getTime() / 1000) + (defaultExpiry || 60) * 60 * 12
+  )
+
+  // part after the plus can be replaced, first part is constant
+  const web3 = new Web3()
+  const order = {
+    expirationUnixTimestampSec: web3.utils
+      .toBN(
+        Math.round(new Date().getTime() / 1000) +
+          (defaultExpiry || 60) * 60 * 12
+      )
+      .toString(10),
+    feeRecipient: selectedExchange.feeRecipient.toLowerCase(),
+
+    maker: selectedFund.details.address.toLowerCase(),
+    makerFee: web3.utils.toBN('0'),
+    makerTokenAddress: makerTokenAddress.toLowerCase(),
+
+    salt: ZeroEx.generatePseudoRandomSalt(),
+    taker: selectedExchange.taker.toLowerCase(),
+    takerFee: web3.utils.toBN('0'),
+    takerTokenAddress: takerTokenAddress.toLowerCase(),
+
+    exchangeContractAddress: selectedExchange.exchangeContractAddress.toLowerCase()
+  }
+
+  // const order = {
+  //   expirationUnixTimestampSec: web3.utils.toBN(expiration).toString(10),
+  //   feeRecipient: efx.config['0x'].ethfinexAddress.toLowerCase(),
+
+  //   maker: efx.get('account').toLowerCase(),
+  //   makerFee: web3.utils.toBN('0'),
+  //   makerTokenAddress: sellCurrency.wrapperAddress.toLowerCase(),
+  //   makerTokenAmount: sellAmount,
+
+  //   salt: ZeroEx.generatePseudoRandomSalt(),
+  //   taker: efx.config['0x'].ethfinexAddress.toLowerCase(),
+  //   takerFee: web3.utils.toBN('0'),
+  //   takerTokenAddress: buyCurrency.wrapperAddress.toLowerCase(),
+  //   takerTokenAmount: buyAmount,
+
+  //   exchangeContractAddress: efx.config['0x'].exchangeAddress.toLowerCase()
+  // }
+
+  console.log(order)
   return order
 }
 
@@ -990,13 +1090,13 @@ class Exchange {
   //   const DECIMALS = 18;
   //   const EXCHANGE_ADDRESS = zeroEx.exchange.getContractAddress();
   //   const accounts = await zeroEx.getAvailableAddressesAsync();
-  //   const makerAddress = accounts[0]
+  //   const walletAddress = accounts[0]
   //   const makerTokenAddress = (orderType === 'asks') ? this._baseTokenAddress : this._quoteTokenAddress
   //   const takerTokenAddress = (orderType === 'asks') ? this._quoteTokenAddress : this._baseTokenAddress
 
   //   const order = {
   //     // maker: "0x57072759Ba54479669CAdF1A25528a472Af95cEF".toLowerCase(),
-  //     maker: makerAddress,
+  //     maker: walletAddress,
   //     dragoAddress: "0x57072759Ba54479669CAdF1A25528a472Af95cEF".toLowerCase(),
   //     taker: ZeroEx.NULL_ADDRESS,
   //     feeRecipient: ZeroEx.NULL_ADDRESS,

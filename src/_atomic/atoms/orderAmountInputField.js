@@ -5,9 +5,9 @@ import { TextField } from 'material-ui'
 import BigNumber from 'bignumber.js'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
-import styles from './orderAmount.module.css'
+import styles from './orderAmountInputField.module.css'
 
-export default class OrderAmount extends Component {
+export default class OrderAmountInputField extends Component {
   static propTypes = {
     orderFillAmount: PropTypes.string.isRequired,
     orderMaxAmount: PropTypes.number.isRequired,

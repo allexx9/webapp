@@ -11,6 +11,7 @@ import FlatButton from 'material-ui/FlatButton'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
+import { formatPrice } from '../../_utils/format'
 import { toUnitAmount } from '../../_utils/format'
 import utils from '../../_utils/utils'
 
@@ -18,8 +19,10 @@ import styles from './elementListAssets.module.css'
 
 import * as Colors from 'material-ui/styles/colors'
 import AssetChart from '../../_atomic/atoms/assetChart'
+import AssetChartPlotly from '../../_atomic/atoms/assetChartPlotly'
 import BigNumber from 'bignumber.js'
 import TokenIcon from '../../_atomic/atoms/tokenIcon'
+import moment from 'moment'
 
 // import ChartBox from '../../_atomic/organisms/chartBox'
 
@@ -46,7 +49,7 @@ class ElementListAssets extends PureComponent {
     this.state = {
       disableHeader: false,
       headerHeight: 30,
-      height: 370,
+      height: 390,
       width: 600,
       hideIndexRow: false,
       overscanRowCount: 10,
@@ -75,7 +78,7 @@ class ElementListAssets extends PureComponent {
       sortedList: sortedList,
       rowCount: rowCount
     })
-    // console.log(`${this.constructor.name} -> UNSAFE_componentWillReceiveProps`);
+    // console.log(`${this.constructor.name} -> UNSAFE_componentWillReceiveProps`)
   }
 
   render() {
@@ -92,9 +95,7 @@ class ElementListAssets extends PureComponent {
       sortedList,
       useDynamicRowHeight
     } = this.state
-
     const rowGetter = ({ index }) => this._getDatum(sortedList, index)
-
     return (
       <Row>
         <Col xs={12}>
@@ -127,7 +128,7 @@ class ElementListAssets extends PureComponent {
                     label=""
                     cellDataGetter={({ rowData }) => rowData.symbol}
                     dataKey="symbol"
-                    className={styles.exampleColumn}
+                    className={styles.column}
                     cellRenderer={({ cellData }) => this.renderIcon(cellData)}
                     flexShrink={1}
                   />
@@ -137,7 +138,7 @@ class ElementListAssets extends PureComponent {
                     label="NAME"
                     cellDataGetter={({ rowData }) => rowData.name}
                     dataKey="name"
-                    className={styles.exampleColumn}
+                    className={styles.column}
                     cellRenderer={({ rowData }) => this.renderName(rowData)}
                     flexShrink={1}
                   />
@@ -147,7 +148,7 @@ class ElementListAssets extends PureComponent {
                     label="HOLDING"
                     cellDataGetter={({ rowData }) => rowData}
                     dataKey="holding"
-                    className={styles.exampleColumn}
+                    className={styles.column}
                     cellRenderer={({ rowData }) => this.renderHolding(rowData)}
                     flexShrink={1}
                   />
@@ -157,7 +158,7 @@ class ElementListAssets extends PureComponent {
                     label="TX"
                     cellDataGetter={({ rowData }) => rowData}
                     dataKey="tx"
-                    className={styles.exampleColumn}
+                    className={styles.column}
                     cellRenderer={({ rowData }) => this.renderTx(rowData)}
                     flexShrink={1}
                   /> */}
@@ -166,8 +167,8 @@ class ElementListAssets extends PureComponent {
                     disableSort
                     label="PRICE ETH"
                     cellDataGetter={({ rowData }) => rowData}
-                    dataKey="prices"
-                    className={styles.exampleColumn}
+                    dataKey="assetsPrices"
+                    className={styles.column}
                     cellRenderer={({ rowData }) => this.renderPrice(rowData)}
                     flexGrow={1}
                   /> */}
@@ -177,7 +178,7 @@ class ElementListAssets extends PureComponent {
                     label="VALUE"
                     cellDataGetter={({ rowData }) => rowData}
                     dataKey="values"
-                    className={styles.exampleColumn}
+                    className={styles.columnValue}
                     cellRenderer={({ rowData }) => this.renderValue(rowData)}
                     flexGrow={1}
                   />
@@ -187,7 +188,7 @@ class ElementListAssets extends PureComponent {
                     label="MARKET 24H"
                     cellDataGetter={({ rowData }) => rowData}
                     dataKey="stats"
-                    className={styles.exampleColumn}
+                    className={styles.column}
                     cellRenderer={({ rowData }) => this.renderChart(rowData)}
                     flexGrow={1}
                   />
@@ -202,19 +203,29 @@ class ElementListAssets extends PureComponent {
 
   renderChart(token) {
     // const data = this.props.assetsChart[token.symbol].data
-
-    if (typeof this.props.assetsChart[token.symbol] !== 'undefined') {
-      const data = this.props.assetsChart[token.symbol].data
-      if (data.length !== 0) {
-        return (
-          <div className={styles.chart}>
-            <AssetChart data={data} />
-          </div>
-        )
-      } else {
-        return <div className={styles.noDataChart}>No data</div>
-      }
+    if (token.symbol === 'WETH' || token.symbol === 'ETHW') {
+      return <div className={styles.noDataChart}>No data</div>
     }
+    try {
+      if (typeof this.props.assetsChart[token.symbol] !== 'undefined') {
+        const data = this.props.assetsChart[token.symbol].data
+        if (data.length > 2) {
+          return (
+            // <div className={styles.chart}>
+            //   <AssetChart data={data} />
+            // </div>
+            <div className={styles.chart}>
+              <AssetChartPlotly data={data} />
+            </div>
+          )
+        } else {
+          return <div className={styles.noDataChart}>No data</div>
+        }
+      }
+    } catch (error) {
+      console.warn(error)
+    }
+    return <div className={styles.noDataChart}>No data</div>
   }
 
   actionButton(cellData, rowData) {
@@ -263,6 +274,19 @@ class ElementListAssets extends PureComponent {
   }
 
   renderHolding(token) {
+    let price
+    if (typeof this.props.assetsPrices[token.symbol] !== 'undefined') {
+      if (Number(this.props.assetsPrices[token.symbol].priceEth)) {
+        price = new BigNumber(
+          this.props.assetsPrices[token.symbol].priceEth
+        ).toFixed(5)
+      } else {
+        price = 'N/A'
+      }
+    } else {
+      price = 'N/A'
+    }
+
     return (
       <Row>
         <Col xs={12}>
@@ -271,10 +295,12 @@ class ElementListAssets extends PureComponent {
               <div className={styles.holdingTitleText}>Amount</div>
             </Col>
             <Col xs={12}>
-              {toUnitAmount(
-                new BigNumber(token.balances.total),
-                token.decimals
-              ).toFixed(5)}{' '}
+              {formatPrice(
+                toUnitAmount(
+                  new BigNumber(token.balances.total),
+                  token.decimals
+                ).toFixed(5)
+              )}{' '}
               <small className={styles.symbolLegendText}>
                 {token.symbol.toUpperCase()}
               </small>
@@ -288,14 +314,7 @@ class ElementListAssets extends PureComponent {
               <div className={styles.holdingTitleText}>Price</div>
             </Col>
             <Col xs={12}>
-              {typeof this.props.assetsPrices[token.symbol] !== 'undefined' ? (
-                new BigNumber(
-                  this.props.assetsPrices[token.symbol].priceEth
-                ).toFixed(5)
-              ) : (
-                <small>N/A</small>
-              )}{' '}
-              <small className={styles.symbolLegendText}>ETH</small>
+              {price} <small className={styles.symbolLegendText}>ETH</small>
             </Col>
           </Row>
         </Col>
@@ -343,16 +362,25 @@ class ElementListAssets extends PureComponent {
 
   renderValue(token) {
     if (typeof this.props.assetsPrices[token.symbol] !== 'undefined') {
+      if (!Number(this.props.assetsPrices[token.symbol].priceEth)) {
+        return (
+          <div className={styles.valueText}>
+            <small>N/A</small>
+          </div>
+        )
+      }
       return (
         <div className={styles.valueText}>
-          {new BigNumber(this.props.assetsPrices[token.symbol].priceEth)
-            .times(
-              toUnitAmount(
-                new BigNumber(token.balances.total),
-                token.decimals
-              ).toFixed(5)
-            )
-            .toFixed(5)}{' '}
+          {formatPrice(
+            new BigNumber(this.props.assetsPrices[token.symbol].priceEth)
+              .times(
+                toUnitAmount(
+                  new BigNumber(token.balances.total),
+                  token.decimals
+                ).toFixed(5)
+              )
+              .toFixed(5)
+          )}{' '}
           <small className={styles.symbolLegendText}>ETH</small>
         </div>
       )

@@ -9,7 +9,9 @@ import BoxTitle from '../atoms/boxTitle'
 import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
+import SectionTitleExchange from '../atoms/sectionTitleExchange'
 import TableOpenOrders from '../molecules/tableOpenOrders'
+import TableOrdersHistory from '../molecules/tableOrdersHistory'
 import serializeError from 'serialize-error'
 import styles from './ordersHistoryBox.module.css'
 
@@ -86,11 +88,35 @@ class OrdersHistoryBox extends Component {
               <Paper style={paperStyle} zDepth={1}>
                 <Row>
                   <Col xs={12}>
-                    <p className={styles.titleSection}>Open Orders</p>
-                    <TableOpenOrders
-                      orders={this.props.fundOrders.open}
-                      onCancelOrder={this.onCancelOrder}
-                    />
+                    <div className={styles.section}>
+                      <Row>
+                        {' '}
+                        <Col xs={12}>
+                          <SectionTitleExchange titleText="OPEN ORDERS" />
+                        </Col>
+                        <Col xs={12}>
+                          <TableOpenOrders
+                            orders={this.props.fundOrders.open}
+                            onCancelOrder={this.onCancelOrder}
+                          />
+                        </Col>
+                      </Row>
+                    </div>
+                  </Col>
+                  <Col xs={12}>
+                    <div className={styles.section}>
+                      <Row>
+                        <Col xs={12}>
+                          <SectionTitleExchange titleText="ORDER HISTORY" />
+                        </Col>
+                        <Col xs={12}>
+                          <TableOpenOrders
+                            orders={this.props.fundOrders.open}
+                            onCancelOrder={this.onCancelOrder}
+                          />
+                        </Col>
+                      </Row>
+                    </div>
                   </Col>
                 </Row>
               </Paper>

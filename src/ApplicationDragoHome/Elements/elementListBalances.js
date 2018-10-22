@@ -90,7 +90,6 @@ class ElementListBalances extends PureComponent {
     } = this.state
 
     const rowGetter = ({ index }) => this._getDatum(sortedList, index)
-
     return (
       <Row>
         <Col xs={12}>

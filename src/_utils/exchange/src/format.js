@@ -87,12 +87,20 @@ const calculateSpread = (asksOrders, bidsOrders) => {
 
 export const tickers = {
   [ERCdEX]: tickers => {
-    let tickersList = tickers.map(ticker => {
-      return {
-        priceEth: ticker.priceEth,
-        priceUsd: ticker.usdPrice,
-        symbol: ticker.symbol
+    let tickersList = []
+    tickers.forEach(ticker => {
+      if (ticker.quoteTokenSymbol === 'WETH') {
+        tickersList.push({
+          priceEth: ticker.last,
+          priceUsd: null,
+          symbol: ticker.baseTokenSymbol
+        })
       }
+    })
+    tickersList.push({
+      priceEth: 1,
+      priceUsd: null,
+      symbol: 'WETH'
     })
     return tickersList
   },
@@ -113,16 +121,6 @@ export const tickers = {
       priceEth: '1',
       priceUsd: '',
       symbol: 'ETH'
-    })
-    tickersList.push({
-      priceEth: '0.25',
-      priceUsd: '',
-      symbol: 'GRG'
-    })
-    tickersList.push({
-      priceEth: '0.065',
-      priceUsd: '',
-      symbol: 'USDT'
     })
     return tickersList
   }

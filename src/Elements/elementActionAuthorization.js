@@ -66,7 +66,6 @@ export default class ElementActionAuthorization extends Component {
       lineHeight: '20px',
       fontSize: 16
     }
-    console.log(this.props)
     const actions = [
       <FlatButton
         key="CloseButton"

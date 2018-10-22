@@ -31,7 +31,7 @@ export const getAggregatedOrders = {
       method: 'GET',
       url: `${
         SupportedExchanges.Ethfinex.http[NETWORKS_ID[networkId]]
-      }/v2/book/t${baseToken}${quoteToken}/P0`,
+      }/v2/book/t${baseToken}${quoteToken}/P2`,
       qs: {},
       json: true
     }
@@ -116,7 +116,7 @@ export const getTickers = {
       method: 'GET',
       url: `${
         SupportedExchanges.ERCdEX.http[NETWORKS_ID[networkId]]
-      }/reports/ticker?networkId=${networkId}`,
+      }/ticker?networkId=${networkId}`,
       qs: {},
       json: true
     }
@@ -129,7 +129,7 @@ export const getTickers = {
         SupportedExchanges.Ethfinex.http[NETWORKS_ID[networkId]]
       }/v2/tickers`,
       qs: {
-        symbols: `${symbols},tETHUSD`
+        symbols: `${symbols}`
       },
       json: true
     }

@@ -4,12 +4,12 @@ import { Col, Row } from 'react-flexbox-grid'
 import { MenuItem, SelectField } from 'material-ui'
 import ExchangeTokenSelectItem from '../atoms/exchangeTokenSelectItem'
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import styles from './tokenTradeSelector.module.css'
 
 // const tradableTokens = ["WETH / ZRX", "WETH / GRG"]
 
-export default class TokenTradeSelector extends Component {
+export default class TokenTradeSelector extends PureComponent {
   static propTypes = {
     tradableTokens: PropTypes.object.isRequired,
     selectedTradeTokensPair: PropTypes.object.isRequired,
@@ -17,13 +17,12 @@ export default class TokenTradeSelector extends Component {
   }
 
   onSelectTokenTrade = (event, key, payload) => {
-    // console.log(payload)
     this.props.onSelectTokenTrade(payload)
   }
 
   renderTokens = () => {
     let menu = []
-    for (var quoteToken in this.props.tradableTokens) {
+    for (let quoteToken in this.props.tradableTokens) {
       Object.keys(this.props.tradableTokens[quoteToken]).forEach(baseToken => {
         let baseTokenSymbol = this.props.tradableTokens[quoteToken][baseToken]
           .symbol
@@ -47,6 +46,7 @@ export default class TokenTradeSelector extends Component {
 
   render() {
     // console.log(this.props.selectedTradeTokensPair)
+
     return (
       <Row>
         <Col xs={12}>

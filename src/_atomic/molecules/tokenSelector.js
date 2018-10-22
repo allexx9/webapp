@@ -29,6 +29,7 @@ export default class TokenSelector extends Component {
 
   render() {
     const { account } = this.props
+
     return (
       <div>
         <SelectField

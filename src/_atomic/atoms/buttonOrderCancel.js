@@ -1,12 +1,12 @@
 import FlatButton from 'material-ui/FlatButton'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
-import styles from './buttonOrderCancel.module.css'
+import styles from './buttonOrder.module.css'
 
 class ButtonOrderCancel extends Component {
   static propTypes = {
     onCancelOrder: PropTypes.func.isRequired,
-    disabled: PropTypes.bool
+    disabled: PropTypes.bool.isRequired
   }
 
   render() {

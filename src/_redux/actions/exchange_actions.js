@@ -12,11 +12,17 @@ const exchange = {
       quoteToken
     }
     return {
-      type: TYPE_.FETCH_FUND_ORDERS,
+      type: TYPE_.FETCH_ACCOUNT_ORDERS,
       payload: payload
     }
   },
-  getChartData: (relay, networkId, baseToken, quoteToken, startDate) => {
+  fetchCandleDataSingle: (
+    relay,
+    networkId,
+    baseToken,
+    quoteToken,
+    startDate
+  ) => {
     const payload = {
       relay,
       networkId,
@@ -76,9 +82,20 @@ const exchange = {
       }
     }
   },
-  relayOpenWs: (relay, networkId, baseToken, quoteToken) => {
+  relayOpenWsTicker: (relay, networkId, baseToken, quoteToken) => {
     return {
-      type: TYPE_.RELAY_OPEN_WEBSOCKET,
+      type: TYPE_.RELAY_OPEN_WEBSOCKET_TICKER,
+      payload: {
+        relay,
+        networkId,
+        baseToken,
+        quoteToken
+      }
+    }
+  },
+  relayOpenWsBook: (relay, networkId, baseToken, quoteToken) => {
+    return {
+      type: TYPE_.RELAY_OPEN_WEBSOCKET_BOOK,
       payload: {
         relay,
         networkId,
@@ -93,9 +110,15 @@ const exchange = {
       payload: isInputChecked
     }
   },
-  updateSelectedRelayAction: payload => {
+  updateSelectedRelay: payload => {
     return {
       type: TYPE_.UPDATE_SELECTED_RELAY,
+      payload: payload
+    }
+  },
+  updateSelectedExchange: payload => {
+    return {
+      type: TYPE_.UPDATE_SELECTED_EXCHANGE,
       payload: payload
     }
   },
@@ -111,9 +134,58 @@ const exchange = {
       payload: payload
     }
   },
+
+  updateLiquidityAndTokenBalances: (api, task, dragoAddress) => {
+    switch (task) {
+      case 'START':
+        return {
+          type: TYPE_.UPDATE_LIQUIDITY_AND_TOKENS_BALANCE_START,
+          payload: {
+            api
+            // dragoAddress
+          }
+        }
+      case 'STOP':
+        return {
+          type: TYPE_.UPDATE_LIQUIDITY_AND_TOKENS_BALANCE_STOP,
+          payload: {
+            api
+            // dragoAddress
+          }
+        }
+      case 'RESET':
+        return {
+          type: TYPE_.UPDATE_LIQUIDITY_AND_TOKENS_BALANCE_RESET,
+          payload: {
+            api
+            // dragoAddress
+          }
+        }
+      default:
+        return {
+          type: TYPE_.UPDATE_LIQUIDITY_AND_TOKENS_BALANCE,
+          payload: {
+            api,
+            dragoAddress
+          }
+        }
+    }
+  },
+  updateAvailableFunds: payload => {
+    return {
+      type: TYPE_.UPDATE_AVAILABLE_FUNDS,
+      payload: payload
+    }
+  },
   updateAvailableRelays: payload => {
     return {
       type: TYPE_.UPDATE_AVAILABLE_RELAYS,
+      payload: payload
+    }
+  },
+  updateAccountSignature: payload => {
+    return {
+      type: TYPE_.UPDATE_ACCOUNT_SIGNATURE,
       payload: payload
     }
   }

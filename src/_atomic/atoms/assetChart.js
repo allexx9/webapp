@@ -21,11 +21,12 @@ import { fitWidth } from 'react-stockcharts/lib/helper'
 // 	// { stop: 0.7, color: hexToRGBA("#6fa4fc", 0.4) },
 // 	{ stop: 1, color: hexToRGBA("#0D47A1", 1) },
 // ]);
+import moment from 'moment'
 
 class AssetChart extends React.Component {
   render() {
-    // let now = new Date()
-    // let yesterday = now.setDate(now.getDate() - 1)
+    let now = moment()
+    let yesterday = moment().subtract(1, 'days')
     const { data, type, width, ratio } = this.props
     return (
       <ChartCanvas
@@ -39,7 +40,7 @@ class AssetChart extends React.Component {
         xAccessor={d => d.date}
         displayXAccessor={d => d.date}
         xScale={scaleTime()}
-        // xExtents={[yesterday, now]}
+        xExtents={[yesterday, now]}
         // xExtents={[new Date(2018,8,16), now]}
         mouseMoveEvent={false}
         panEvent={false}

@@ -96,7 +96,15 @@
   font-weight: 700 !important;
   font-size: 14px !important;
   width: 200px !important;
-}
+  .holdings {
+    padding-left: 5px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    width: 100%;
+    text-align: center;
+    height: 32px;
+    /* color: #616161; */
+  }}
 
 
 .detailsTabs {
@@ -158,12 +166,10 @@
 .holdings {
   padding-left: 5px;
   padding-top: 10px;
-  font-size: 22px;
   padding-bottom: 10px;
   width: 100%;
   text-align: center;
-  font-weight: 700;
-  opacity: 0.8;
+  height: 32px;
   /* color: #616161; */
 }
 

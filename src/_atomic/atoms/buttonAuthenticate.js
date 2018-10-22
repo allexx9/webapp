@@ -6,11 +6,13 @@ import PropTypes from 'prop-types'
 class ButtonAuthenticate extends Component {
   static propTypes = {
     onAuthEF: PropTypes.func.isRequired,
-    selected: PropTypes.bool
+    selected: PropTypes.bool,
+    disabled: PropTypes.bool
   }
 
   static defaultProps = {
-    selected: false
+    selected: false,
+    disabled: false
   }
 
   buttonAuthClick = () => {
@@ -40,6 +42,7 @@ class ButtonAuthenticate extends Component {
           labelStyle={labelStyle}
           onClick={this.buttonAuthClick}
           style={buttonBuyStyle}
+          // disabled={this.props.disabled}
           // hoverColor={Colors.lightGreen50}
         />
       </div>
