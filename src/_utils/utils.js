@@ -348,12 +348,19 @@ class utilities {
     })
   }
 
-  availableTradeTokensPair = (tradeTokensPairs, selectedRelayName) => {
+  availableTradeTokensPair = (
+    tradeTokensPairs,
+    selectedRelayName,
+    networkId
+  ) => {
     let availableTokens = {}
     for (let baseToken in tradeTokensPairs) {
       Object.keys(tradeTokensPairs[baseToken]).forEach(key => {
         let quoteToken = tradeTokensPairs[baseToken][key]
-        if (quoteToken.exchanges.includes(selectedRelayName)) {
+        if (
+          quoteToken.exchanges.includes(selectedRelayName) &&
+          quoteToken.networks.includes(networkId)
+        ) {
           if (typeof availableTokens[baseToken] === 'undefined') {
             availableTokens[baseToken] = {}
           }

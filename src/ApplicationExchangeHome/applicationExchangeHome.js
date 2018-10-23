@@ -37,7 +37,7 @@ import exchangeConnector, {
 
 import {
   CANCEL_SELECTED_ORDER,
-  FETCH_ACCOUNT_ORDERS,
+  FETCH_ACCOUNT_ORDERS_START,
   RELAY_CLOSE_WEBSOCKET,
   UPDATE_FUND_LIQUIDITY,
   UPDATE_SELECTED_FUND
@@ -116,10 +116,10 @@ class ApplicationExchangeHome extends Component {
       quoteTokenAddress
     }
     console.log(payload)
-    return {
-      type: FETCH_ACCOUNT_ORDERS,
-      payload: payload
-    }
+    // return {
+    //   type: FETCH_ACCOUNT_ORDERS_START,
+    //   payload: payload
+    // }
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -227,7 +227,11 @@ class ApplicationExchangeHome extends Component {
       // Set available trade tokens pairs
       this.props.dispatch(
         Actions.exchange.updateAvailableTradeTokensPairs(
-          utils.availableTradeTokensPair(TRADE_TOKENS_PAIRS, defaultRelay.name)
+          utils.availableTradeTokensPair(
+            TRADE_TOKENS_PAIRS,
+            defaultRelay.name,
+            api._rb.network.id
+          )
         )
       )
 
@@ -286,6 +290,7 @@ class ApplicationExchangeHome extends Component {
     this.props.dispatch(
       Actions.exchange.updateLiquidityAndTokenBalances(api, 'STOP')
     )
+    this.props.dispatch(Actions.exchange.getAccountOrdersStop())
   }
 
   UNSAFE_componentWillUpdate() {

@@ -564,22 +564,26 @@ export const ERC20_TOKENS = {
 export const TRADE_TOKENS_PAIRS = {
   WETH: {
     GNT: {
+      networks: [42],
       symbol: 'GNT',
       exchanges: [ERCdEX]
     },
     ZRX: {
+      networks: [42],
       symbol: 'ZRX',
       exchanges: [ERCdEX]
     }
   },
   USDT: {
     ETH: {
+      networks: [1, 3],
       symbol: 'ETH',
       exchanges: [Ethfinex]
     }
   },
   ETH: {
     GRG: {
+      networks: [3],
       symbol: 'GRG',
       exchanges: [Ethfinex]
     }

@@ -127,7 +127,7 @@ class ExchangeBox extends PureComponent {
       )
       // Fetch active orders
       this.props.dispatch(
-        Actions.exchange.getAccountOrders(
+        Actions.exchange.getAccountOrdersStart(
           this.props.exchange.selectedRelay,
           api._rb.network.id,
           accountSignature,

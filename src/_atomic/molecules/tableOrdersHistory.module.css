@@ -25,3 +25,15 @@ font-weight: 700;
 .tableCell{
 text-align: left;
 }
+
+.tableCellUnderline {
+  border-bottom: 1px dotted #A9A9A9;
+  text-decoration: none;
+}
+
+.right {
+  text-align: right;
+}
+.baseToken {
+  font-weight: 700;
+}

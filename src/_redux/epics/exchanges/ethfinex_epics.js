@@ -666,14 +666,14 @@ const getAccountOrdersFromRelay$ = (
     from(exchange.getAccountOrders(account, baseToken, quoteToken)),
     from(exchange.getAccountHistory(account, baseToken, quoteToken))
   )
-  // return from(exchange.getAccountOrders(account, baseToken, quoteToken))
+  // return from(exchange.getAccountOrdersStart(account, baseToken, quoteToken))
 }
 
 export const getAccountOrdersEpic = action$ => {
   return action$.pipe(
-    ofType(customRelayAction(TYPE_.FETCH_ACCOUNT_ORDERS)),
+    ofType(customRelayAction(TYPE_.FETCH_ACCOUNT_ORDERS_START)),
     mergeMap(action => {
-      // console.log(customRelayAction(TYPE_.FETCH_ACCOUNT_ORDERS))
+      // console.log(customRelayAction(TYPE_.FETCH_ACCOUNT_ORDERS_START))
       return timer(0, 5000).pipe(
         takeUntil(
           action$.ofType(customRelayAction(TYPE_.FETCH_ACCOUNT_ORDERS_STOP))
