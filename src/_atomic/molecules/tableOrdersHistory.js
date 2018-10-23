@@ -65,7 +65,6 @@ class TableOpenOrders extends Component {
               <Col
                 xs={2}
                 className={classNames(styles.tableCell, styles.right)}
-                v
               >
                 {formatPrice(order.orderPrice)}
               </Col>
