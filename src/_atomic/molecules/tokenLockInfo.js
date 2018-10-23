@@ -159,12 +159,34 @@ class TokenLockInfo extends PureComponent {
             time,
             isOldERC20
           )
-          console.log('executed')
           console.log(receipt)
           transactionDetails.status = 'executed'
           transactionDetails.receipt = receipt
           transactionDetails.hash = receipt.transactionHash
           transactionDetails.timestamp = new Date()
+
+          // Getting token wrapper lock time
+          let baseTokenLockWrapExpire = await utils.updateTokenWrapperLockTime(
+            api,
+            selectedTokensPair.baseToken.wrappers[selectedRelay.name].address,
+            selectedFund.details.address
+          )
+          let quoteTokenLockWrapExpire = await utils.updateTokenWrapperLockTime(
+            api,
+            selectedTokensPair.quoteToken.wrappers[selectedRelay.name].address,
+            selectedFund.details.address
+          )
+
+          const payload = {
+            baseTokenLockWrapExpire: baseTokenLockWrapExpire,
+            quoteTokenLockWrapExpire: quoteTokenLockWrapExpire
+          }
+
+          this.props.dispatch(
+            Actions.exchange.updateSelectedTradeTokensPair(payload)
+          )
+
+          // Updating selected tokens pair balances and fund liquidity (ETH, ZRX)
           this.props.dispatch(
             Actions.exchange.updateLiquidityAndTokenBalances(
               api,
@@ -252,6 +274,24 @@ class TokenLockInfo extends PureComponent {
           transactionDetails.receipt = receipt
           transactionDetails.hash = receipt.transactionHash
           transactionDetails.timestamp = new Date()
+
+          // Getting token wrapper lock time
+          let baseTokenLockWrapExpire = await utils.updateTokenWrapperLockTime(
+            api,
+            selectedTokensPair.baseToken.wrappers[selectedRelay.name].address,
+            selectedFund.details.address
+          )
+          let quoteTokenLockWrapExpire = await utils.updateTokenWrapperLockTime(
+            api,
+            selectedTokensPair.quoteToken.wrappers[selectedRelay.name].address,
+            selectedFund.details.address
+          )
+
+          const payload = {
+            baseTokenLockWrapExpire: baseTokenLockWrapExpire,
+            quoteTokenLockWrapExpire: quoteTokenLockWrapExpire
+          }
+
           // Updating selected tokens pair balances and fund liquidity (ETH, ZRX)
           this.props.dispatch(
             Actions.exchange.updateLiquidityAndTokenBalances(

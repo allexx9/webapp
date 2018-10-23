@@ -8,6 +8,7 @@ import {
 import { connect } from 'react-redux'
 import { sha3_512 } from 'js-sha3'
 import BoxTitle from '../atoms/boxTitle'
+import ElementListWrapper from '../../Elements/elementListWrapper'
 import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
@@ -119,7 +120,6 @@ class OrdersHistoryBox extends Component {
   }
 
   render() {
-    // console.log(this.props.fundOrders)
     return (
       <Row>
         <Col xs={12}>
@@ -136,10 +136,17 @@ class OrdersHistoryBox extends Component {
                           <SectionTitleExchange titleText="OPEN ORDERS" />
                         </Col>
                         <Col xs={12}>
-                          <TableOpenOrders
-                            orders={this.props.fundOrders.open}
+                          <ElementListWrapper
+                            list={this.props.fundOrders.open}
+                            autoLoading={false}
                             onCancelOrder={this.onCancelOrder}
-                          />
+                            pagination={{
+                              display: 10,
+                              number: 1
+                            }}
+                          >
+                            <TableOpenOrders />
+                          </ElementListWrapper>
                         </Col>
                       </Row>
                     </div>
@@ -151,10 +158,17 @@ class OrdersHistoryBox extends Component {
                           <SectionTitleExchange titleText="ORDER HISTORY" />
                         </Col>
                         <Col xs={12}>
-                          <TableOrdersHistory
-                            orders={this.props.fundOrders.history}
+                          <ElementListWrapper
+                            list={this.props.fundOrders.history}
+                            autoLoading={false}
                             onCancelOrder={this.onCancelOrder}
-                          />
+                            pagination={{
+                              display: 10,
+                              number: 1
+                            }}
+                          >
+                            <TableOrdersHistory />
+                          </ElementListWrapper>
                         </Col>
                       </Row>
                     </div>

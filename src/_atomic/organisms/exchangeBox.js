@@ -46,7 +46,8 @@ class ExchangeBox extends PureComponent {
     const selectedRelay = RELAYS[relay]
     const availableTradeTokensPair = utils.availableTradeTokensPair(
       TRADE_TOKENS_PAIRS,
-      RELAYS[relay].name
+      RELAYS[relay].name,
+      api._rb.network.id
     )
     const baseToken =
       ERC20_TOKENS[api._rb.network.name][

@@ -510,7 +510,7 @@ export const monitorAccountsEpic = (action$, state$) => {
       ).pipe(
         takeUntil(action$.pipe(ofType(TYPE_.MONITOR_ACCOUNTS_STOP))),
         tap(val => {
-          console.log(val)
+          // console.log(val)
           return val
         }),
         flatMap(accountsUpdate => {

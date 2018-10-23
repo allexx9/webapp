@@ -240,8 +240,8 @@ const reconnectingWebsocketBook$ = (
     })
 
     websocket.onmessage = msgWs => {
-      console.log('WebSocket message.')
-      console.log(msgWs)
+      // console.log('WebSocket message.')
+      // console.log(msgWs)
       let msg = JSON.parse(msgWs.data)
       if (msg.event) return
       if (msg[1] === 'hb') {
@@ -421,6 +421,7 @@ export const initRelayWebSocketBookEpic = action$ =>
         ),
         throttleTime(2000),
         map(payload => {
+          console.log('*** Orderbook epic update ***')
           const calculateSpread = (asksOrders, bidsOrders) => {
             let spread = 0
             if (bidsOrders.length !== 0 && asksOrders.length !== 0) {
@@ -583,7 +584,7 @@ export const initRelayWebSocketTickerEpic = (action$, state$) =>
           // console.log(customRelayAction((RELAY_MSG_FROM_WEBSOCKET)))
           const currentState = state$.value
           const lastItem = ticker[0].pop()
-          console.log(currentState)
+          // console.log(currentState)
           // return [ lastItem, currentState ]
           return updateCurrentTokenPrice(
             lastItem,

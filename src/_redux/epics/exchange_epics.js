@@ -220,6 +220,7 @@ const updateLiquidityAndTokenBalances$ = (api, fundAddress, currentState) => {
           }
         }
       }
+      console.log(payload)
       return Observable.concat(
         Observable.of({
           type: TYPE_.UPDATE_SELECTED_FUND,
@@ -284,10 +285,6 @@ export const updateLiquidityAndTokenBalancesEpic = (action$, state$) => {
     ofType(TYPE_.UPDATE_LIQUIDITY_AND_TOKENS_BALANCE_START),
     switchMap(action => {
       return timer(0, 10000).pipe(
-        tap(val => {
-          console.log('update liquidity')
-          return val
-        }),
         takeUntil(
           action$.pipe(ofType(TYPE_.UPDATE_LIQUIDITY_AND_TOKENS_BALANCE_STOP))
         ),
@@ -296,6 +293,11 @@ export const updateLiquidityAndTokenBalancesEpic = (action$, state$) => {
             typeof state$.value.exchange.selectedFund.details.address ===
             'undefined'
         ),
+        tap(val => {
+          console.log('*** Update liquidity ***')
+          console.log(val)
+          return val
+        }),
         exhaustMap(() => {
           const currentState = state$.value
           return updateLiquidityAndTokenBalances$(

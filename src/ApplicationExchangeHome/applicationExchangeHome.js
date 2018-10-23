@@ -402,9 +402,6 @@ class ApplicationExchangeHome extends Component {
       this.props.dispatch(
         Actions.exchange.updateLiquidityAndTokenBalances(api, '', fund.address)
       )
-
-      console.log(selectedRelay)
-
       let allowanceBaseToken,
         allowanceQuoteToken = 0
 
@@ -446,13 +443,9 @@ class ApplicationExchangeHome extends Component {
         quoteTokenLockWrapExpire: quoteTokenLockWrapExpire
       }
 
-      console.log(payload)
-
       this.props.dispatch(
         Actions.exchange.updateSelectedTradeTokensPair(payload)
       )
-
-      console.log(fund)
       // Getting fund orders
       // this.props.dispatch(this.getFundOrders(
       //   this.props.exchange.relay.networkId,
@@ -462,7 +455,7 @@ class ApplicationExchangeHome extends Component {
       // )
       // )
     } catch (error) {
-      console.log(error)
+      console.warn(error)
     }
   }
 

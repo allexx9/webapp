@@ -3,13 +3,13 @@
   /* padding: 5px; */
 }
 
-.tableTitle{
+.tableHeader{
 font-size: 14px;
 font-weight: 700;
-padding-bottom: 4px;
+padding-bottom: 10px;
 }
 
-.tableTitleCellAction{
+.tableHeaderCellAction{
   text-align: right;
   }
 

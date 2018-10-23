@@ -9,10 +9,15 @@ import { formatPrice } from '../../_utils/format'
 
 import styles from './tableOrdersHistory.module.css'
 
-class TableOpenOrders extends Component {
+class TableOrdersHistory extends Component {
   static propTypes = {
-    orders: PropTypes.array.isRequired,
-    onCancelOrder: PropTypes.func.isRequired
+    list: PropTypes.array,
+    onCancelOrder: PropTypes.func
+  }
+
+  static defaultProps = {
+    list: [],
+    onCancelOrder: () => {}
   }
 
   renderTableRows = orders => {
@@ -97,7 +102,7 @@ class TableOpenOrders extends Component {
   renderTableHeader = () => {
     console.log(this.constructor.name)
     return (
-      <Row className={styles.tableTitle}>
+      <Row className={styles.tableHeader}>
         <Col xs={12}>
           <Row>
             <Col xs={2}>DATE</Col>
@@ -122,18 +127,18 @@ class TableOpenOrders extends Component {
   }
 
   render() {
-    const { orders } = this.props
+    const { list } = this.props
     // console.log(orders)
 
     return (
       <Row className={styles.containerOrders}>
         <Col xs={12}>
           {this.renderTableHeader()}
-          {this.renderTableRows(orders)}
+          {this.renderTableRows(list)}
         </Col>
       </Row>
     )
   }
 }
 
-export default TableOpenOrders
+export default TableOrdersHistory

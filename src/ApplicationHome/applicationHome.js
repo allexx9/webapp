@@ -251,7 +251,7 @@ class ApplicationHome extends PureComponent {
                     </a>
                   </div> */}
                   <h2 style={{ color: '#054186' }}>
-                    The leader crypto platform for asset management.
+                    The leading crypto platform for asset management.
                   </h2>
                   <p className={styles.subHeadline}>
                     <b className={styles.txtDotted}>Simple</b>,{' '}
