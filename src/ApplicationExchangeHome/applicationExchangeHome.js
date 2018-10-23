@@ -35,6 +35,7 @@ import exchangeConnector, {
   supportedExchanges
 } from '@rigoblock/exchange-connector'
 
+import * as TYPE_ from '../_redux/actions/const'
 import {
   CANCEL_SELECTED_ORDER,
   FETCH_ACCOUNT_ORDERS_START,
@@ -138,25 +139,25 @@ class ApplicationExchangeHome extends Component {
     return stateUpdate || propsUpdate
   }
 
-  getConf = () => {
-    let request = new XMLHttpRequest()
+  // getConf = () => {
+  //   let request = new XMLHttpRequest()
 
-    request.open('GET', 'http://api.ethfinex.com/trustless/v1/r/get/conf')
+  //   request.open('GET', 'http://api.ethfinex.com/trustless/v1/r/get/conf')
 
-    request.setRequestHeader('Content-Type', 'application/json')
+  //   request.setRequestHeader('Content-Type', 'application/json')
 
-    request.onreadystatechange = function() {
-      if (this.readyState === 4) {
-        console.log('Status:', this.status)
-        console.log('Headers:', this.getAllResponseHeaders())
-        console.log('Body:', this.responseText)
-      }
-    }
+  //   request.onreadystatechange = function() {
+  //     if (this.readyState === 4) {
+  //       console.log('Status:', this.status)
+  //       console.log('Headers:', this.getAllResponseHeaders())
+  //       console.log('Body:', this.responseText)
+  //     }
+  //   }
 
-    let body = {}
+  //   let body = {}
 
-    request.send(JSON.stringify(body))
-  }
+  //   request.send(JSON.stringify(body))
+  // }
 
   componentDidMount = async () => {
     // console.log(this.getConf())
@@ -264,20 +265,6 @@ class ApplicationExchangeHome extends Component {
       //   this.props.exchange.selectedTokensPair.quoteToken.address,
       // )
       // )
-
-      // Getting chart data
-      let tsYesterday = new Date(
-        (Math.floor(Date.now() / 1000) - 86400 * 7) * 1000
-      ).toISOString()
-      this.props.dispatch(
-        Actions.exchange.fetchCandleDataSingle(
-          defaultRelay,
-          api._rb.network.id,
-          defaultTokensPair.baseToken,
-          defaultTokensPair.quoteToken,
-          tsYesterday
-        )
-      )
     } catch (error) {
       console.warn(error)
     }
@@ -314,7 +301,6 @@ class ApplicationExchangeHome extends Component {
 
   connectToExchange = async (defaultRelay, defaultTokensPair) => {
     const { api } = this.context
-    console.log(defaultRelay)
     // this.props.dispatch(
     //   Actions.exchange.relayGetOrders(
     //     defaultRelay,
@@ -324,6 +310,22 @@ class ApplicationExchangeHome extends Component {
     //     defaultRelay.initOrdeBookAggregated
     //   )
     // )
+
+    this.props.dispatch({
+      type: TYPE_.CHART_MARKET_DATA_INIT,
+      payload: []
+    })
+
+    this.props.dispatch({
+      type: TYPE_.ORDERBOOK_INIT,
+      payload: {
+        asks: [],
+        bids: [],
+        spread: '0'
+      }
+    })
+
+    // Getting price ticker
     this.props.dispatch(
       Actions.exchange.relayOpenWsTicker(
         defaultRelay,
@@ -332,12 +334,26 @@ class ApplicationExchangeHome extends Component {
         defaultTokensPair.quoteToken
       )
     )
+    // Getting order book
     this.props.dispatch(
       Actions.exchange.relayOpenWsBook(
         defaultRelay,
         api._rb.network.id,
         defaultTokensPair.baseToken,
         defaultTokensPair.quoteToken
+      )
+    )
+    // Getting chart data
+    let tsYesterday = new Date(
+      (Math.floor(Date.now() / 1000) - 86400 * 7) * 1000
+    ).toISOString()
+    this.props.dispatch(
+      Actions.exchange.fetchCandleDataSingle(
+        defaultRelay,
+        api._rb.network.id,
+        defaultTokensPair.baseToken,
+        defaultTokensPair.quoteToken,
+        tsYesterday
       )
     )
   }

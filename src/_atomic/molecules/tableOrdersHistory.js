@@ -34,14 +34,11 @@ class TableOpenOrders extends Component {
         fontWeight: 700
       }
     }
-    console.log(orders)
 
     return orders.map((order, key) => {
-      // console.log(order)
       let orderStatus = order.order.status.split(' ')
       let orderStatusInfo = orderStatus.join(' ')
       let baseTokenSymbol = order.order.pair.slice(0, -3)
-      console.log(orderStatus)
       return (
         <Row key={'order' + key} className={styles.rowText}>
           <Col xs={12}>
@@ -98,6 +95,7 @@ class TableOpenOrders extends Component {
   }
 
   renderTableHeader = () => {
+    console.log(this.constructor.name)
     return (
       <Row className={styles.tableTitle}>
         <Col xs={12}>
