@@ -111,6 +111,7 @@
     "eslint-plugin-standard": "^3.0.1",
     "eslint-watch": "^4.0.2",
     "jest-extended": "^0.8.1",
+    "mock-socket": "^8.0.4",
     "prettier": "^1.14.0"
   },
   "jest": {

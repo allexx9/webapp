@@ -371,6 +371,8 @@ class TokenLockInfo extends PureComponent {
       selectedFund.liquidity.quoteToken.balanceWrapper,
       selectedTokensPair.quoteToken.decimals
     ).toFixed(4)
+
+    console.log(baseTokenWrappedBalance)
     return (
       <div key="lockedTokenInfo">
         <Row>

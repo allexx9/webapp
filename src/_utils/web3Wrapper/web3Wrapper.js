@@ -69,6 +69,7 @@ let Web3Wrapper = (function() {
     const VAULTEVENTFUL = 'vaulteventful-v2'
     networkName = networkName.toUpperCase()
     const transport = endpoints[protocol][networkName].prod
+    console.log(transport)
     let provider = new Web3.providers.WebsocketProvider(transport)
     web3 = new Web3(provider)
 

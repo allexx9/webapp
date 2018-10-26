@@ -205,6 +205,7 @@ const updateLiquidityAndTokenBalances$ = (api, fundAddress, currentState) => {
     )
   ).pipe(
     mergeMap(liquidity => {
+      console.log(liquidity)
       const payload = {
         loading: false,
         liquidity: {

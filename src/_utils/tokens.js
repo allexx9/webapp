@@ -297,7 +297,7 @@ export const MOCK_ERC20_TOKENS = {
         Ethfinex: {
           symbol: 'GRGW',
           decimals: 18,
-          address: '0x5959f2036608d693B4d085020ACAdBBf664C793E',
+          address: '0xacfb4c79259e3c2c1bf054f136e6d75f7cc2b07e',
           name: 'GRG Wrapper'
         }
       }
@@ -550,7 +550,7 @@ export const ERC20_TOKENS = {
         Ethfinex: {
           symbol: 'GRGW',
           decimals: 18,
-          address: '0x5959f2036608d693B4d085020ACAdBBf664C793E',
+          address: '0xacfb4c79259e3c2c1bf054f136e6d75f7cc2b07e',
           name: 'GRG Wrapper'
         }
       }
