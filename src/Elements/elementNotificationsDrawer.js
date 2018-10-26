@@ -140,7 +140,7 @@ class ElementNotificationsDrawer extends Component {
           : utils.dateFromTimeStamp(value.timestamp)
         txHash = value.hash.length !== 0 ? (txHash = value.hash) : ''
         switch (value.action) {
-          case '':
+          case 'BuyDrago':
             drgvalue = value.amount
             symbol = value.symbol
             primaryText = 'Buy ' + drgvalue + ' ' + symbol
