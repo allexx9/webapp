@@ -89,7 +89,8 @@ let Web3Wrapper = (function() {
       })
       provider.on('error', function(event) {
         console.log('WSS error')
-        observer.next(event)
+        console.log('Attempting to reconnect...')
+        return observer.error(event)
       })
       provider.on('end', event => {
         console.log('WS end')
@@ -279,7 +280,7 @@ let Web3Wrapper = (function() {
       web3,
       endpoint: transport,
       eventfull$,
-      nodeStatus$: nodeStatus$
+      nodeStatus$
     }
   }
 
