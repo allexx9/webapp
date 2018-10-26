@@ -34,55 +34,17 @@ import utils from '../../_utils/utils'
 // CHECK IF THE APP If NETWORK IS UP AND THERE IS A CONNECTION TO A NODE
 //
 
-export const isConnectedToNode$ = api => {
-  let nodeStatus = {
-    isConnected: false,
-    isSyncing: false,
-    syncStatus: {}
-  }
-  return defer(() => api.eth.syncing()).pipe(
-    timeout(2500),
-    map(result => {
-      // console.log(result)
-      if (result !== false) {
-        if (result.highestBlock.minus(result.currentBlock).gt(2)) {
-          nodeStatus.isConnected = true
-          nodeStatus.isSyncing = true
-          nodeStatus.syncStatus = result
-        } else {
-          nodeStatus.isConnected = true
-          nodeStatus.isSyncing = false
-          nodeStatus.syncStatus = {}
-        }
-      } else {
-        nodeStatus.isConnected = true
-        nodeStatus.isSyncing = false
-        nodeStatus.syncStatus = {}
-      }
-      return nodeStatus
-    }),
-    catchError(error => {
-      console.log(error)
-      nodeStatus.isConnected = false
-      nodeStatus.isSyncing = false
-      nodeStatus.syncStatus = {}
-      throw new Error(nodeStatus)
-    })
-  )
-}
-
 export const isConnectedToNodeWeb3Wrapper$ = state$ => {
   return Observable.create(observer => {
     Web3Wrapper.getInstance(
       state$.value.endpoint.networkInfo.name.toUpperCase()
     ).then(instance => {
       instance.nodeStatus$.subscribe(val => {
-        console.log(Object.keys(val.error).length)
         if (Object.keys(val.error).length === 0) {
-          console.log('Msg: ', val)
+          // console.log('Msg: ', val)
           observer.next(val)
         } else {
-          console.log('Err: ', val)
+          // console.log('Err: ', val)
           observer.next(val)
         }
       })
@@ -94,7 +56,7 @@ export const isConnectedToNodeEpic = (action$, state$) =>
   action$.ofType(TYPE_.CHECK_APP_IS_CONNECTED).switchMap(action => {
     return isConnectedToNodeWeb3Wrapper$(state$).pipe(
       tap(result => {
-        console.log(result)
+        // console.log(result)
         return result
       }),
       flatMap(result => {
