@@ -482,6 +482,7 @@ class ElementFundActions extends React.Component {
       symbol: dragoDetails.symbol.toUpperCase(),
       amount: this.state.amountSummary
     }
+    console.log(transactionDetails)
     this.props.dispatch(
       Actions.transactions.addTransactionToQueueAction(
         transactionId,
@@ -494,6 +495,7 @@ class ElementFundActions extends React.Component {
     poolApi.contract.drago
       .buyDrago(account.address, amount)
       .then(receipt => {
+        console.log('executed')
         console.log(receipt)
         // Adding transaciont to the queue
         // Parity returns an internal transaction ID straighaway. The transaction then needs to be authorized inside the wallet.

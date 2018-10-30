@@ -165,3 +165,31 @@ export const getAccountOrders = {
     return options
   }
 }
+
+export const getAccountHistory = {
+  // ERCdEX: (networkId = 1) => {
+  //   const options = {
+  //     method: 'GET',
+  //     url: `${SupportedExchanges.ERCdEX.http[NETWORKS_ID[networkId]]}/reports/ticker?networkId=${networkId}`,
+  //     qs: {},
+  //     json: true
+  //   }
+  //   return options
+  // },
+  Ethfinex: (networkId = 1, account, protocol = '0x') => {
+    console.log(networkId)
+    const options = {
+      method: 'POST',
+      url: `${
+        SupportedExchanges.Ethfinex.http[NETWORKS_ID[networkId]]
+      }/trustless/v1/r/orders/hist`,
+      body: {
+        signature: account.signature,
+        nonce: account.nonce,
+        protocol: protocol
+      },
+      json: true
+    }
+    return options
+  }
+}

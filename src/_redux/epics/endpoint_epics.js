@@ -5,7 +5,7 @@ import * as TYPE_ from '../actions/const'
 import { Actions } from '../actions/'
 import { DEBUGGING, INFURA, LOCAL, RIGOBLOCK } from '../../_utils/const'
 import { Interfaces } from '../../_utils/interfaces'
-import { Observable, defer, from, merge, observable, timer } from 'rxjs'
+import { Observable, defer, from, merge, timer } from 'rxjs'
 import {
   catchError,
   delay,
@@ -27,89 +27,44 @@ import { sha3_512 } from 'js-sha3'
 import BigNumber from 'bignumber.js'
 import PoolsApi from '../../PoolsApi/src'
 import Web3 from 'web3'
+import Web3Wrapper from '../../_utils/web3Wrapper'
 import utils from '../../_utils/utils'
 
 //
 // CHECK IF THE APP If NETWORK IS UP AND THERE IS A CONNECTION TO A NODE
 //
 
-export const isConnectedToNode$ = api => {
-  let nodeStatus = {
-    isConnected: false,
-    isSyncing: false,
-    syncStatus: {}
-  }
-  return defer(() => api.eth.syncing()).pipe(
-    timeout(2500),
-    map(result => {
-      // console.log(result)
-      if (result !== false) {
-        if (result.highestBlock.minus(result.currentBlock).gt(2)) {
-          nodeStatus.isConnected = true
-          nodeStatus.isSyncing = true
-          nodeStatus.syncStatus = result
+export const isConnectedToNodeWeb3Wrapper$ = state$ => {
+  return Observable.create(observer => {
+    Web3Wrapper.getInstance(
+      state$.value.endpoint.networkInfo.name.toUpperCase()
+    ).then(instance => {
+      instance.nodeStatus$.subscribe(val => {
+        if (Object.keys(val.error).length === 0) {
+          // console.log('Msg: ', val)
+          observer.next(val)
         } else {
-          nodeStatus.isConnected = true
-          nodeStatus.isSyncing = false
-          nodeStatus.syncStatus = {}
+          // console.log('Err: ', val)
+          observer.next(val)
         }
-      } else {
-        nodeStatus.isConnected = true
-        nodeStatus.isSyncing = false
-        nodeStatus.syncStatus = {}
-      }
-      return nodeStatus
-    }),
-    catchError(error => {
-      console.log(error)
-      nodeStatus.isConnected = false
-      nodeStatus.isSyncing = false
-      nodeStatus.syncStatus = {}
-      throw new Error(nodeStatus)
+      })
     })
-  )
+  })
 }
 
-export const isConnectedToNodeEpic = (action$, $state) =>
+export const isConnectedToNodeEpic = (action$, state$) =>
   action$.ofType(TYPE_.CHECK_APP_IS_CONNECTED).switchMap(action => {
-    let scalingDuration = 1000
-    let timeInterval = 0
-    let retryAttempt = 0
-    return timer(0, 2000).pipe(
-      exhaustMap(() => {
-        return isConnectedToNode$(action.payload.api, $state).pipe(
-          tap(result => {
-            // console.log(result)
-            return result
-          }),
-          flatMap(result => {
-            retryAttempt = 0
-            timeInterval = 0
-            let actionsArray = Array(0)
-            actionsArray = [
-              Observable.of(Actions.app.updateAppStatus({ ...result }))
-            ]
-            return Observable.concat(...actionsArray)
-          }),
-          catchError(() => {
-            console.warn('Connection error to node. Retrying.')
-            retryAttempt++
-            retryAttempt > 5
-              ? (timeInterval = scalingDuration * 5)
-              : (timeInterval = scalingDuration * retryAttempt)
-            return Observable.concat(
-              Observable.of(
-                Actions.app.updateAppStatus({
-                  isConnected: false,
-                  isSyncing: false,
-                  // syncStatus: {},
-                  retryTimeInterval: timeInterval,
-                  connectionRetries: retryAttempt
-                })
-              )
-            )
-          })
-        )
+    return isConnectedToNodeWeb3Wrapper$(state$).pipe(
+      tap(result => {
+        // console.log(result)
+        return result
+      }),
+      flatMap(result => {
+        let actionsArray = Array(0)
+        actionsArray = [
+          Observable.of(Actions.app.updateAppStatus({ ...result }))
+        ]
+        return Observable.concat(...actionsArray)
       })
     )
   })
@@ -225,112 +180,110 @@ const monitorEventful$ = (web3, api, state$) => {
 
   return merge(
     Observable.create(observer => {
-      console.log('subscription Create event DRAGO')
-      let web3New = new Web3(window.web3._rb.wss)
-      const poolApi = new PoolsApi(api)
-      // DRAGO
-      poolApi.contract.dragoeventful.init().then(() => {
-        let subscriptionCreate = web3New.eth.subscribe(
-          'logs',
-          {
-            address: poolApi.contract.dragoeventful._contract._address[0].toLocaleLowerCase(),
-            topics: [null, null, null, hexAccounts]
-          },
-          function(error, result) {
-            if (!error) {
-              console.log(result)
-              return observer.next(result)
-            } else {
-              return observer.error(error)
-            }
-          }
-        )
-        return () => {
-          subscriptionCreate.unsubscribe(function(error, success) {
-            if (success) console.log('Successfully unsubscribed!')
-          })
-        }
-      })
-
-      console.log('subscription Create event VAULT')
-
-      // VAULT
-      poolApi.contract.vaulteventful.init().then(() => {
-        let subscriptionCreate = web3New.eth.subscribe(
-          'logs',
-          {
-            address: poolApi.contract.vaulteventful._contract._address[0].toLocaleLowerCase(),
-            topics: [null, null, null, hexAccounts]
-          },
-          function(error, result) {
-            if (!error) {
-              console.log(result)
-              return observer.next(result)
-            } else {
-              return observer.error(error)
-            }
-          }
-        )
-        return () => {
-          subscriptionCreate.unsubscribe(function(error, success) {
-            if (success) console.log('Successfully unsubscribed!')
-          })
-        }
-      })
+      return observer.next('1')
+      // console.log('subscription Create event DRAGO')
+      // let web3New = new Web3(window.web3._rb.wss)
+      // const poolApi = new PoolsApi(api)
+      // // DRAGO
+      // poolApi.contract.dragoeventful.init().then(() => {
+      //   let subscriptionCreate = web3New.eth.subscribe(
+      //     'logs',
+      //     {
+      //       address: poolApi.contract.dragoeventful._contract._address[0].toLocaleLowerCase(),
+      //       topics: [null, null, null, hexAccounts]
+      //     },
+      //     function(error, result) {
+      //       if (!error) {
+      //         console.log(result)
+      //         return observer.next(result)
+      //       } else {
+      //         return observer.error(error)
+      //       }
+      //     }
+      //   )
+      //   return () => {
+      //     subscriptionCreate.unsubscribe(function(error, success) {
+      //       if (success) console.log('Successfully unsubscribed!')
+      //     })
+      //   }
+      // })
+      // console.log('subscription Create event VAULT')
+      // // VAULT
+      // poolApi.contract.vaulteventful.init().then(() => {
+      //   let subscriptionCreate = web3New.eth.subscribe(
+      //     'logs',
+      //     {
+      //       address: poolApi.contract.vaulteventful._contract._address[0].toLocaleLowerCase(),
+      //       topics: [null, null, null, hexAccounts]
+      //     },
+      //     function(error, result) {
+      //       if (!error) {
+      //         console.log(result)
+      //         return observer.next(result)
+      //       } else {
+      //         return observer.error(error)
+      //       }
+      //     }
+      //   )
+      //   return () => {
+      //     subscriptionCreate.unsubscribe(function(error, success) {
+      //       if (success) console.log('Successfully unsubscribed!')
+      //     })
+      //   }
+      // })
     }),
     Observable.create(observer => {
-      console.log('subscription BuySell DRAGO events')
-      let web3New = new Web3(window.web3._rb.wss)
-      const poolApi = new PoolsApi(api)
-      // DRAGO
-      poolApi.contract.dragoeventful.init().then(() => {
-        let subscriptionBuySell = web3New.eth.subscribe(
-          'logs',
-          {
-            address: poolApi.contract.dragoeventful._contract._address[0].toLocaleLowerCase(),
-            topics: [null, null, hexAccounts, null]
-          },
-          function(error, result) {
-            if (!error) {
-              console.log(result)
-              return observer.next(result)
-            } else {
-              return observer.error(error)
-            }
-          }
-        )
-        return () => {
-          subscriptionBuySell.unsubscribe(function(error, success) {
-            if (success) console.log('Successfully unsubscribed!')
-          })
-        }
-      })
-
-      console.log('subscription BuySell VAULT events')
-
-      // VAULT
-      poolApi.contract.vaulteventful.init().then(() => {
-        let subscriptionBuySell = web3New.eth.subscribe(
-          'logs',
-          {
-            address: poolApi.contract.vaulteventful._contract._address[0].toLocaleLowerCase(),
-            topics: [null, null, hexAccounts, null]
-          },
-          function(error, result) {
-            if (!error) {
-              console.log(result)
-              return observer.next(result)
-            } else {
-              return observer.error(error)
-            }
-          }
-        )
-        return () => {
-          subscriptionBuySell.unsubscribe(function(error, success) {
-            if (success) console.log('Successfully unsubscribed!')
-          })
-        }
-      })
+      return observer.next('1')
+      // console.log('subscription BuySell DRAGO events')
+      // let web3New = new Web3(window.web3._rb.wss)
+      // const poolApi = new PoolsApi(api)
+      // // DRAGO
+      // poolApi.contract.dragoeventful.init().then(() => {
+      //   let subscriptionBuySell = web3New.eth.subscribe(
+      //     'logs',
+      //     {
+      //       address: poolApi.contract.dragoeventful._contract._address[0].toLocaleLowerCase(),
+      //       topics: [null, null, hexAccounts, null]
+      //     },
+      //     function(error, result) {
+      //       if (!error) {
+      //         console.log(result)
+      //         return observer.next(result)
+      //       } else {
+      //         return observer.error(error)
+      //       }
+      //     }
+      //   )
+      //   return () => {
+      //     subscriptionBuySell.unsubscribe(function(error, success) {
+      //       if (success) console.log('Successfully unsubscribed!')
+      //     })
+      //   }
+      // })
+      // console.log('subscription BuySell VAULT events')
+      // // VAULT
+      // poolApi.contract.vaulteventful.init().then(() => {
+      //   let subscriptionBuySell = web3New.eth.subscribe(
+      //     'logs',
+      //     {
+      //       address: poolApi.contract.vaulteventful._contract._address[0].toLocaleLowerCase(),
+      //       topics: [null, null, hexAccounts, null]
+      //     },
+      //     function(error, result) {
+      //       if (!error) {
+      //         console.log(result)
+      //         return observer.next(result)
+      //       } else {
+      //         return observer.error(error)
+      //       }
+      //     }
+      //   )
+      //   return () => {
+      //     subscriptionBuySell.unsubscribe(function(error, success) {
+      //       if (success) console.log('Successfully unsubscribed!')
+      //     })
+      //   }
+      // })
     })
   )
 }
@@ -346,13 +299,13 @@ export const monitorEventfulEpic = (action$, state$) => {
       ).pipe(
         takeUntil(action$.pipe(ofType(TYPE_.MONITOR_ACCOUNTS_STOP))),
         tap(val => {
-          console.log(val)
+          // console.log(val)
           return val
         }),
         flatMap(event => {
           const observablesArray = Array(0)
           const currentState = state$.value
-          console.log(event)
+          // console.log(event)
           console.log(
             'Eventful subscription - > DRAGO transactions fetch trader'
           )
@@ -510,7 +463,7 @@ export const monitorAccountsEpic = (action$, state$) => {
       ).pipe(
         takeUntil(action$.pipe(ofType(TYPE_.MONITOR_ACCOUNTS_STOP))),
         tap(val => {
-          console.log(val)
+          // console.log(val)
           return val
         }),
         flatMap(accountsUpdate => {
@@ -753,6 +706,7 @@ const checkMetaMaskIsUnlocked$ = (api, web3, endpoint) => {
             newEndpoint.accounts = newAccounts
             return newEndpoint
           }
+          // return newEndpoint
         }
       }
       resolve(getAccounts())

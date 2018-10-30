@@ -223,12 +223,12 @@ export const accountOrders = {
         orderAmount,
         remainingAmount,
         orderType,
-        orderPrice
+        orderPrice,
+        active: order.active
       }
 
       return orderObject
     })
-    console.log(formattedOrders)
     return formattedOrders
   }
 }

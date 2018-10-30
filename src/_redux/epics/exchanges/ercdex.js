@@ -52,7 +52,7 @@ import { ERCdEX } from '../../../_utils/const'
 
 import {
   CHART_MARKET_DATA_UPDATE,
-  FETCH_ACCOUNT_ORDERS,
+  FETCH_ACCOUNT_ORDERS_START,
   FETCH_ASSETS_PRICE_DATA,
   FETCH_CANDLES_DATA_SINGLE,
   RELAY_CLOSE_WEBSOCKET,
@@ -277,7 +277,7 @@ const getAccountOrdersFromRelay$ = (
 
 export const getAccountOrdersEpic = action$ => {
   return action$
-    .ofType(customRelayAction(FETCH_ACCOUNT_ORDERS))
+    .ofType(customRelayAction(FETCH_ACCOUNT_ORDERS_START))
     .mergeMap(action => {
       return Observable.concat(
         // Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: true }}),

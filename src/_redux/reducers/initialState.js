@@ -118,7 +118,6 @@ const initialState = {
       valid: false
     },
     walletAddress: '',
-    walletSelectedAddress: '',
     selectedExchange: EXCHANGES.ERCdEX[NETWORK_NAME],
     selectedRelay: RELAYS[ERCdEX],
     availableRelays: {},
@@ -147,6 +146,7 @@ const initialState = {
     availableTradeTokensPairs: TRADE_TOKENS_PAIRS,
     fundOrders: {
       open: [],
+      history: [],
       cancelled: [],
       executed: []
     },

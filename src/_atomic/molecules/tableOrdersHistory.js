@@ -1,22 +1,23 @@
 import * as Colors from 'material-ui/styles/colors'
 import { Col, Row } from 'react-flexbox-grid'
-import BigNumber from 'bignumber.js'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
+import ReactTooltip from 'react-tooltip'
+import classNames from 'classnames'
+
+import { formatPrice } from '../../_utils/format'
 
 import styles from './tableOrdersHistory.module.css'
 
 class TableOrdersHistory extends Component {
   static propTypes = {
-    orders: PropTypes.array.isRequired,
-    onCancelOrder: PropTypes.func.isRequired
+    list: PropTypes.array,
+    onCancelOrder: PropTypes.func
   }
 
-  onCancelOrder = (event, id) => {
-    event.preventDefault()
-    console.log(id)
-    console.log(this.props.orders[id])
-    // this.props.onCancelOrder(this.props.orders[id])
+  static defaultProps = {
+    list: [],
+    onCancelOrder: () => {}
   }
 
   renderTableRows = orders => {
@@ -28,32 +29,68 @@ class TableOrdersHistory extends Component {
       bids: {
         color: Colors.green400,
         fontWeight: 700
+      },
+      CANCELED: {
+        color: Colors.grey400,
+        fontWeight: 700
+      },
+      EXECUTED: {
+        color: Colors.green400,
+        fontWeight: 700
       }
     }
-    // console.log(orders)
+
     return orders.map((order, key) => {
-      // console.log(order)
+      let orderStatus = order.order.status.split(' ')
+      let orderStatusInfo = orderStatus.join(' ')
+      let baseTokenSymbol = order.order.pair.slice(0, -3)
       return (
         <Row key={'order' + key} className={styles.rowText}>
           <Col xs={12}>
             <Row>
-              <Col xs={2} style={orderTypeStyle[order.orderType]}>
+              <Col xs={2} className={styles.tableCell}>
+                {order.dateCreated}
+              </Col>
+              <Col xs={2} className={styles.tableCell}>
+                <span className={styles.baseToken}>{baseTokenSymbol}</span> /
+                <span>
+                  <small> {order.order.fiat_currency}</small>
+                </span>
+              </Col>
+              <Col
+                xs={2}
+                style={orderTypeStyle[order.orderType]}
+                className={styles.tableCell}
+              >
                 {order.orderType === 'asks' ? 'SELL' : 'BUY'}
               </Col>
-              <Col xs={2}>{order.orderPrice}</Col>
-              <Col xs={2}>{order.orderAmount}</Col>
+              <Col
+                xs={2}
+                className={classNames(styles.tableCell, styles.right)}
+              >
+                {formatPrice(order.orderPrice)}
+              </Col>
+              <Col
+                xs={2}
+                className={classNames(styles.tableCell, styles.right)}
+              >
+                {formatPrice(Math.abs(order.order.originalamount).toString())}
+              </Col>
               {/* <Col xs={2}>
                   {new Date(order.order.expirationUnixTimestampSec*1000).toLocaleString()}
                 </Col> */}
-              <Col xs={6} className={styles.tableTitleCellAction}>
-                <a
-                  id={key}
-                  href="#"
-                  onClick={event => this.onCancelOrder(event, key)}
-                  className={styles.cancelLink}
-                >
-                  Cancel
-                </a>
+              <Col
+                xs={2}
+                className={classNames(styles.tableCell, styles.right)}
+                style={orderTypeStyle[orderStatus[0].trim()]}
+              >
+                <div data-tip={orderStatusInfo}>
+                  <span className={styles.tableCellUnderline}>
+                    {orderStatus[0].trim()}
+                  </span>
+
+                  <ReactTooltip effect="solid" place="top" />
+                </div>
               </Col>
             </Row>
           </Col>
@@ -63,18 +100,25 @@ class TableOrdersHistory extends Component {
   }
 
   renderTableHeader = () => {
+    console.log(this.constructor.name)
     return (
-      <Row className={styles.tableTitle}>
+      <Row className={styles.tableHeader}>
         <Col xs={12}>
           <Row>
+            <Col xs={2}>DATE</Col>
+            <Col xs={2}>PAIR</Col>
             <Col xs={2}>TYPE</Col>
-            <Col xs={2}>PRICE</Col>
-            <Col xs={2}>QUANTITY</Col>
+            <Col xs={2} className={styles.right}>
+              PRICE
+            </Col>
+            <Col xs={2} className={styles.right}>
+              QUANTITY
+            </Col>
             {/* <Col xs={2}>
                 EXPIRES
               </Col> */}
-            <Col xs={6} className={styles.tableTitleCellAction}>
-              ACTION
+            <Col xs={2} className={styles.right}>
+              STATUS
             </Col>
           </Row>
         </Col>
@@ -83,14 +127,14 @@ class TableOrdersHistory extends Component {
   }
 
   render() {
-    const { orders } = this.props
+    const { list } = this.props
     // console.log(orders)
 
     return (
       <Row className={styles.containerOrders}>
         <Col xs={12}>
           {this.renderTableHeader()}
-          {this.renderTableRows(orders)}
+          {this.renderTableRows(list)}
         </Col>
       </Row>
     )

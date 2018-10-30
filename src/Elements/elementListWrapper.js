@@ -75,7 +75,6 @@ class ElementListWrapper extends Component {
     // Exstracting the list form props
     // and checking if the list === null
     const { list, ...rest } = this.props
-    // console.log(list)
     if (
       Object.keys(list).length === 0 &&
       this.state.loading &&
