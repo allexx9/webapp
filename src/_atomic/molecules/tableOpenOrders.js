@@ -4,19 +4,28 @@ import BigNumber from 'bignumber.js'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
+import { formatPrice } from '../../_utils/format'
+
 import styles from './tableOpenOrders.module.css'
 
 class TableOpenOrders extends Component {
   static propTypes = {
-    orders: PropTypes.array.isRequired,
-    onCancelOrder: PropTypes.func.isRequired
+    list: PropTypes.array,
+    onCancelOrder: PropTypes.func
+  }
+
+  static defaultProps = {
+    list: [],
+    onCancelOrder: () => {}
   }
 
   onCancelOrder = (event, id) => {
+    const { list } = this.props
     event.preventDefault()
     console.log(id)
-    console.log(this.props.orders[id])
-    // this.props.onCancelOrder(this.props.orders[id])
+    console.log(list[id].order.id)
+
+    this.props.onCancelOrder(list[id])
   }
 
   renderTableRows = orders => {
@@ -40,12 +49,12 @@ class TableOpenOrders extends Component {
               <Col xs={2} style={orderTypeStyle[order.orderType]}>
                 {order.orderType === 'asks' ? 'SELL' : 'BUY'}
               </Col>
-              <Col xs={2}>{order.orderPrice}</Col>
-              <Col xs={2}>{order.orderAmount}</Col>
+              <Col xs={2}>{formatPrice(order.orderPrice)}</Col>
+              <Col xs={2}>{Math.abs(order.orderAmount).toString()}</Col>
               {/* <Col xs={2}>
                   {new Date(order.order.expirationUnixTimestampSec*1000).toLocaleString()}
                 </Col> */}
-              <Col xs={6} className={styles.tableTitleCellAction}>
+              <Col xs={6} className={styles.tableHeaderCellAction}>
                 <a
                   id={key}
                   href="#"
@@ -64,7 +73,7 @@ class TableOpenOrders extends Component {
 
   renderTableHeader = () => {
     return (
-      <Row className={styles.tableTitle}>
+      <Row className={styles.tableHeader}>
         <Col xs={12}>
           <Row>
             <Col xs={2}>TYPE</Col>
@@ -73,7 +82,7 @@ class TableOpenOrders extends Component {
             {/* <Col xs={2}>
                 EXPIRES
               </Col> */}
-            <Col xs={6} className={styles.tableTitleCellAction}>
+            <Col xs={6} className={styles.tableHeaderCellAction}>
               ACTION
             </Col>
           </Row>
@@ -83,14 +92,14 @@ class TableOpenOrders extends Component {
   }
 
   render() {
-    const { orders } = this.props
-    // console.log(orders)
+    const { list } = this.props
+    console.log(this.props)
 
     return (
       <Row className={styles.containerOrders}>
         <Col xs={12}>
           {this.renderTableHeader()}
-          {this.renderTableRows(orders)}
+          {this.renderTableRows(list)}
         </Col>
       </Row>
     )

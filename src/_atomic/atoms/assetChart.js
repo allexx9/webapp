@@ -28,6 +28,7 @@ class AssetChart extends React.Component {
     let now = moment()
     let yesterday = moment().subtract(1, 'days')
     const { data, type, width, ratio } = this.props
+    console.log(data)
     return (
       <ChartCanvas
         ratio={ratio}

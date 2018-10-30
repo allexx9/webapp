@@ -508,6 +508,10 @@ class PageFundDetailsDragoTrader extends Component {
                       renderCopyButton={this.renderCopyButton}
                       renderEtherscanButton={this.renderEtherscanButton}
                       autoLoading={false}
+                      pagination={{
+                        display: 10,
+                        number: 1
+                      }}
                     >
                       <ElementListTransactions />
                     </ElementListWrapper>

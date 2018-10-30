@@ -52,6 +52,14 @@ class NotificationAlert extends Component {
 }
 
 class utilities {
+  sign = (toSign, account) => {
+    // metamask will take care of the 3rd parameter, "password"
+    if (window.web3.currentProvider.isMetaMask) {
+      return window.web3.eth.personal.sign(toSign, account)
+    } else {
+      return window.web3.eth.sign(toSign, account)
+    }
+  }
   generateMockAssets = (network = 'mainnet') => {
     let mockAssets = MOCK_ERC20_TOKENS[network]
     delete mockAssets.ETH
@@ -340,12 +348,19 @@ class utilities {
     })
   }
 
-  availableTradeTokensPair = (tradeTokensPairs, selectedRelayName) => {
+  availableTradeTokensPair = (
+    tradeTokensPairs,
+    selectedRelayName,
+    networkId
+  ) => {
     let availableTokens = {}
     for (let baseToken in tradeTokensPairs) {
       Object.keys(tradeTokensPairs[baseToken]).forEach(key => {
         let quoteToken = tradeTokensPairs[baseToken][key]
-        if (quoteToken.exchanges.includes(selectedRelayName)) {
+        if (
+          quoteToken.exchanges.includes(selectedRelayName) &&
+          quoteToken.networks.includes(networkId)
+        ) {
           if (typeof availableTokens[baseToken] === 'undefined') {
             availableTokens[baseToken] = {}
           }
@@ -712,68 +727,7 @@ class utilities {
         options.drago ? 'DRAGO' : 'VAULT'
       } events fetching started *****`
     )
-    // const logToEvent = log => {
-    //   const key = api.util.sha3(JSON.stringify(log))
-    //   const {
-    //     blockNumber,
-    //     logIndex,
-    //     transactionHash,
-    //     transactionIndex,
-    //     params,
-    //     type
-    //   } = log
 
-    //   // Getting the transaction amounts if it's a buy or sell event
-    //   let ethvalue,
-    //     drgvalue = 0
-
-    //   if (
-    //     typeof params.amount !== 'undefined' &&
-    //     typeof params.revenue !== 'undefined'
-    //   ) {
-    //     ethvalue =
-    //       log.event === 'BuyVault'
-    //         ? formatEth(params.amount.value, null, api)
-    //         : formatEth(params.revenue.value, null, api)
-    //     drgvalue =
-    //       log.event === 'SellVault'
-    //         ? formatCoins(params.amount.value, null, api)
-    //         : formatCoins(params.revenue.value, null, api)
-    //   }
-    //   // Creating a map with list of vaults
-    //   if (log.event === 'BuyVault' || log.event === 'VaultCreated') {
-    //     const vaultData = {
-    //       symbol: params.symbol.value,
-    //       vaultId: null,
-    //       name: null,
-    //       address: params.vault.value
-    //     }
-    //     !dragoSymbolRegistry.has(params.vault.value)
-    //       ? dragoSymbolRegistry.set(params.vault.value, vaultData)
-    //       : null
-    //   }
-    //   let symbol
-    //   if (typeof params.symbol.value === 'string') {
-    //     symbol = params.symbol.value
-    //   } else {
-    //     for (let i = 0; i < params.symbol.value.length; ++i) {
-    //       symbol += String.fromCharCode(params.symbol.value[i])
-    //     }
-    //   }
-    //   return {
-    //     type: log.event,
-    //     state: type,
-    //     blockNumber,
-    //     logIndex,
-    //     transactionHash,
-    //     transactionIndex,
-    //     params,
-    //     key,
-    //     ethvalue,
-    //     drgvalue,
-    //     symbol: symbol
-    //   }
-    // }
 
     const logToEvent = log => {
       return this.logToEvent(log, dragoSymbolRegistry, api)

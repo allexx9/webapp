@@ -131,8 +131,7 @@ function exchangeReducer(state = initialState.exchange, action) {
     case TYPE_.SET_MAKER_ADDRESS:
       return {
         ...state,
-        walletAddress: action.payload,
-        walletSelectedAddress: action.payload
+        walletAddress: action.payload
       }
 
     case TYPE_.CANCEL_SELECTED_ORDER:

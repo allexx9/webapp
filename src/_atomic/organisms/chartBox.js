@@ -2,6 +2,7 @@ import { Col, Row } from 'react-flexbox-grid'
 import { fitWidth } from 'react-stockcharts/lib/helper'
 import BoxTitle from '../atoms/boxTitle'
 import CandleStickChartWithMACDIndicator from './CandleStickChartWithMACDIndicator'
+import ErrorBoundary from './errorBoundary'
 import Loading from '../atoms/loading'
 import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types'
@@ -30,7 +31,7 @@ class ChartBox extends Component {
   }
 
   render() {
-    console.log('render chart')
+    console.log('*** Render chart ***')
     if (this.props.data.length === 0 || this.props.loading) {
       return (
         <Row>
@@ -61,7 +62,12 @@ class ChartBox extends Component {
               <Paper style={paperStyle} zDepth={1}>
                 <Row className={styles.marketBoxContainer}>
                   <Col xs={12}>
-                    <CandleStickChartWithMACDIndicator data={this.props.data} />
+                    <ErrorBoundary>
+                      {' '}
+                      <CandleStickChartWithMACDIndicator
+                        data={this.props.data}
+                      />
+                    </ErrorBoundary>
                   </Col>
                 </Row>
               </Paper>

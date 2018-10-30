@@ -401,6 +401,37 @@ export const submitOrderToRelayEFX = async (efxOrder, networkId) => {
   return rp(options)
 }
 
+export const cancelOrderFromRelayEFX = async (
+  orderId,
+  signature,
+  networkId
+) => {
+  console.log(signature)
+  // const ZeroExConfig = {
+  //   networkId: 42
+  //   // exchangeContractAddress: this._network.id
+  // }
+  let relayerApiUrl
+  switch (networkId) {
+    case 1:
+      relayerApiUrl = `https://api.ethfinex.com/trustless/v1/w/oc`
+      break
+    case 3:
+      relayerApiUrl = `https://test.ethfinex.com/trustless/v1/w/oc`
+      break
+    default:
+      relayerApiUrl = `https://test.ethfinex.com/trustless/v1/w/oc`
+  }
+
+  let options = {
+    method: 'POST',
+    uri: relayerApiUrl,
+    body: { orderId, signature, protocol: '0x' },
+    json: true // Automatically stringifies the body to JSON
+  }
+  return rp(options)
+}
+
 export const submitOrderToRelay = async signedOrder => {
   console.log(signedOrder)
   const ZeroExConfig = {

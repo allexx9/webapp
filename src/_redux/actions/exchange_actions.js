@@ -3,7 +3,7 @@
 import * as TYPE_ from './const'
 
 const exchange = {
-  getAccountOrders: (relay, networkId, account, baseToken, quoteToken) => {
+  getAccountOrdersStart: (relay, networkId, account, baseToken, quoteToken) => {
     const payload = {
       relay,
       networkId,
@@ -12,7 +12,14 @@ const exchange = {
       quoteToken
     }
     return {
-      type: TYPE_.FETCH_ACCOUNT_ORDERS,
+      type: TYPE_.FETCH_ACCOUNT_ORDERS_START,
+      payload: payload
+    }
+  },
+  getAccountOrdersStop: () => {
+    const payload = {}
+    return {
+      type: TYPE_.FETCH_ACCOUNT_ORDERS_STOP,
       payload: payload
     }
   },

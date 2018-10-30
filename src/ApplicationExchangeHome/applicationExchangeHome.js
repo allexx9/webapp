@@ -35,9 +35,10 @@ import exchangeConnector, {
   supportedExchanges
 } from '@rigoblock/exchange-connector'
 
+import * as TYPE_ from '../_redux/actions/const'
 import {
   CANCEL_SELECTED_ORDER,
-  FETCH_ACCOUNT_ORDERS,
+  FETCH_ACCOUNT_ORDERS_START,
   RELAY_CLOSE_WEBSOCKET,
   UPDATE_FUND_LIQUIDITY,
   UPDATE_SELECTED_FUND
@@ -116,10 +117,10 @@ class ApplicationExchangeHome extends Component {
       quoteTokenAddress
     }
     console.log(payload)
-    return {
-      type: FETCH_ACCOUNT_ORDERS,
-      payload: payload
-    }
+    // return {
+    //   type: FETCH_ACCOUNT_ORDERS_START,
+    //   payload: payload
+    // }
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -138,25 +139,25 @@ class ApplicationExchangeHome extends Component {
     return stateUpdate || propsUpdate
   }
 
-  getConf = () => {
-    let request = new XMLHttpRequest()
+  // getConf = () => {
+  //   let request = new XMLHttpRequest()
 
-    request.open('GET', 'http://api.ethfinex.com/trustless/v1/r/get/conf')
+  //   request.open('GET', 'http://api.ethfinex.com/trustless/v1/r/get/conf')
 
-    request.setRequestHeader('Content-Type', 'application/json')
+  //   request.setRequestHeader('Content-Type', 'application/json')
 
-    request.onreadystatechange = function() {
-      if (this.readyState === 4) {
-        console.log('Status:', this.status)
-        console.log('Headers:', this.getAllResponseHeaders())
-        console.log('Body:', this.responseText)
-      }
-    }
+  //   request.onreadystatechange = function() {
+  //     if (this.readyState === 4) {
+  //       console.log('Status:', this.status)
+  //       console.log('Headers:', this.getAllResponseHeaders())
+  //       console.log('Body:', this.responseText)
+  //     }
+  //   }
 
-    let body = {}
+  //   let body = {}
 
-    request.send(JSON.stringify(body))
-  }
+  //   request.send(JSON.stringify(body))
+  // }
 
   componentDidMount = async () => {
     // console.log(this.getConf())
@@ -227,7 +228,11 @@ class ApplicationExchangeHome extends Component {
       // Set available trade tokens pairs
       this.props.dispatch(
         Actions.exchange.updateAvailableTradeTokensPairs(
-          utils.availableTradeTokensPair(TRADE_TOKENS_PAIRS, defaultRelay.name)
+          utils.availableTradeTokensPair(
+            TRADE_TOKENS_PAIRS,
+            defaultRelay.name,
+            api._rb.network.id
+          )
         )
       )
 
@@ -260,20 +265,6 @@ class ApplicationExchangeHome extends Component {
       //   this.props.exchange.selectedTokensPair.quoteToken.address,
       // )
       // )
-
-      // Getting chart data
-      let tsYesterday = new Date(
-        (Math.floor(Date.now() / 1000) - 86400 * 7) * 1000
-      ).toISOString()
-      this.props.dispatch(
-        Actions.exchange.fetchCandleDataSingle(
-          defaultRelay,
-          api._rb.network.id,
-          defaultTokensPair.baseToken,
-          defaultTokensPair.quoteToken,
-          tsYesterday
-        )
-      )
     } catch (error) {
       console.warn(error)
     }
@@ -286,6 +277,7 @@ class ApplicationExchangeHome extends Component {
     this.props.dispatch(
       Actions.exchange.updateLiquidityAndTokenBalances(api, 'STOP')
     )
+    this.props.dispatch(Actions.exchange.getAccountOrdersStop())
   }
 
   UNSAFE_componentWillUpdate() {
@@ -309,7 +301,6 @@ class ApplicationExchangeHome extends Component {
 
   connectToExchange = async (defaultRelay, defaultTokensPair) => {
     const { api } = this.context
-    console.log(defaultRelay)
     // this.props.dispatch(
     //   Actions.exchange.relayGetOrders(
     //     defaultRelay,
@@ -319,6 +310,22 @@ class ApplicationExchangeHome extends Component {
     //     defaultRelay.initOrdeBookAggregated
     //   )
     // )
+
+    this.props.dispatch({
+      type: TYPE_.CHART_MARKET_DATA_INIT,
+      payload: []
+    })
+
+    this.props.dispatch({
+      type: TYPE_.ORDERBOOK_INIT,
+      payload: {
+        asks: [],
+        bids: [],
+        spread: '0'
+      }
+    })
+
+    // Getting price ticker
     this.props.dispatch(
       Actions.exchange.relayOpenWsTicker(
         defaultRelay,
@@ -327,12 +334,26 @@ class ApplicationExchangeHome extends Component {
         defaultTokensPair.quoteToken
       )
     )
+    // Getting order book
     this.props.dispatch(
       Actions.exchange.relayOpenWsBook(
         defaultRelay,
         api._rb.network.id,
         defaultTokensPair.baseToken,
         defaultTokensPair.quoteToken
+      )
+    )
+    // Getting chart data
+    let tsYesterday = new Date(
+      (Math.floor(Date.now() / 1000) - 86400 * 7) * 1000
+    ).toISOString()
+    this.props.dispatch(
+      Actions.exchange.fetchCandleDataSingle(
+        defaultRelay,
+        api._rb.network.id,
+        defaultTokensPair.baseToken,
+        defaultTokensPair.quoteToken,
+        tsYesterday
       )
     )
   }
@@ -381,9 +402,6 @@ class ApplicationExchangeHome extends Component {
       this.props.dispatch(
         Actions.exchange.updateLiquidityAndTokenBalances(api, '', fund.address)
       )
-
-      console.log(selectedRelay)
-
       let allowanceBaseToken,
         allowanceQuoteToken = 0
 
@@ -425,13 +443,9 @@ class ApplicationExchangeHome extends Component {
         quoteTokenLockWrapExpire: quoteTokenLockWrapExpire
       }
 
-      console.log(payload)
-
       this.props.dispatch(
         Actions.exchange.updateSelectedTradeTokensPair(payload)
       )
-
-      console.log(fund)
       // Getting fund orders
       // this.props.dispatch(this.getFundOrders(
       //   this.props.exchange.relay.networkId,
@@ -441,7 +455,7 @@ class ApplicationExchangeHome extends Component {
       // )
       // )
     } catch (error) {
-      console.log(error)
+      console.warn(error)
     }
   }
 
@@ -866,7 +880,7 @@ class ApplicationExchangeHome extends Component {
         })
 
         this.props.dispatch(Actions.exchange.updateAvailableFunds(dragoList))
-        this.onSelectFund(dragoList[0])
+        this.onSelectFund(dragoList[1])
       }
     } catch (error) {
       console.warn(error)

@@ -20,10 +20,21 @@ import {
   poolCalculateValueMiddleWare,
   relayActionsMiddleWare
 } from './_redux/middlewares'
+import Web3Wrapper from './_utils/web3Wrapper'
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2'
 import storage from 'redux-persist/lib/storage'
 
 import './index.module.css'
+
+// Web3Wrapper.getInstance('KOVAN').then(instance => {
+//   // console.log(instance)
+//   instance.eventfull$.subscribe(val => {
+//     console.log('Eventful: ' + JSON.stringify(val))
+//   })
+//   instance.nodeStatus$.subscribe(val => {
+//     console.log('NodeStatus: ' + JSON.stringify(val))
+//   })
+// })
 
 function noop() {}
 

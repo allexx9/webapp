@@ -24,3 +24,6 @@ yarn-error.log*
 
 .vscode/*
 webapp.code-workspace
+
+# certificates
+*.pem

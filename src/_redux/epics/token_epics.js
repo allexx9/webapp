@@ -37,6 +37,7 @@ import {
   UPDATE_TRADE_TOKENS_PAIR
 } from '../actions/const'
 import Exchange from '../../_utils/exchange/src/index'
+import exchangeConnector from '@rigoblock/exchange-connector'
 import utils from '../../_utils/utils'
 
 // Setting allowance for a token
