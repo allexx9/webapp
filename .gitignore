@@ -24,3 +24,5 @@ yarn-error.log*
 
 .vscode/*
 webapp.code-workspace
+*.pem
+*.key

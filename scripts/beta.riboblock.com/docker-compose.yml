@@ -1,0 +1,9 @@
+version: "3.2"
+services:
+  nginx-proxy:
+    image: nginx
+    container_name: nginx-proxy
+    ports:
+      - "443:443"
+    volumes:
+      - "./:/etc/nginx/conf.d"
