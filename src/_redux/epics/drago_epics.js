@@ -1,7 +1,7 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
 import { Actions } from '../actions/'
-import { Observable, from, merge } from 'rxjs'
+import { Observable, from } from 'rxjs'
 import PoolApi from '../../PoolsApi/src'
 
 import * as TYPE_ from '../actions/const'
@@ -9,7 +9,8 @@ import { catchError, flatMap, map, mergeMap, tap } from 'rxjs/operators'
 import { ofType } from 'redux-observable'
 
 import { BigNumber } from '../../../node_modules/bignumber.js/bignumber'
-import { DEBUGGING, ERCdEX, Ethfinex } from '../../_utils/const'
+import { ERCdEX, Ethfinex } from '../../_utils/const'
+// import { DEBUGGING } from '../../_utils/const'
 import { ERC20_TOKENS } from '../../_utils/tokens'
 import utils from '../../_utils/utils'
 
@@ -157,7 +158,6 @@ const getPoolDetails$ = (poolId, api, options, state$) => {
               dragoId: details[0][3].toFixed(),
               addressOwner: details[0][4],
               addressGroup: details[0][5],
-              balanceDRG: '0.0000',
               buyPrice: null,
               sellPrice: null,
               totalSupply: null,
@@ -172,7 +172,6 @@ const getPoolDetails$ = (poolId, api, options, state$) => {
               vaultId: details[0][3].toFixed(),
               addressOwner: details[0][4],
               addressGroup: details[0][5],
-              balanceDRG: '0.0000',
               buyPrice: null,
               sellPrice: null,
               totalSupply: null,
@@ -235,6 +234,8 @@ export const getPoolDetailsEpic = (action$, state$) => {
             case 42:
               relayName = ERCdEX
               break
+            default:
+              relayName = Ethfinex
           }
           const relay = {
             name: relayName
@@ -242,7 +243,9 @@ export const getPoolDetailsEpic = (action$, state$) => {
           let observablesArray = []
           if (drago) {
             observablesArray.push(
-              Actions.drago.updateSelectedDrago({ details })
+              Actions.drago.updateSelectedDrago({
+                details
+              })
             )
             if (details.totalSupply !== null) {
               observablesArray.push(
@@ -261,7 +264,9 @@ export const getPoolDetailsEpic = (action$, state$) => {
             }
           } else {
             observablesArray.push(
-              Actions.vault.updateSelectedVault({ details })
+              Actions.vault.updateSelectedVault({
+                details
+              })
             )
             if (details.totalSupply !== null) {
               observablesArray.push(

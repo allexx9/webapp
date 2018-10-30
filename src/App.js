@@ -122,6 +122,7 @@ export class App extends Component {
         Actions.endpoint.checkMetaMaskIsUnlocked(this._api, web3)
       )
     }
+    this.props.dispatch(Actions.endpoint.monitorAccountsStart(this._api))
   }
 
   render() {
