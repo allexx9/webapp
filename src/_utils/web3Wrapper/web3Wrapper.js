@@ -2,7 +2,7 @@ const Web3 = require('web3')
 const dragoeventfulAbi = require('./dragoEventful-v2.json')
 const vaulteventfulAbi = require('./vaultEventful-v2.json')
 const parityregisterAbi = require('./parityRegister.json')
-const { Observable, from, timer, of } = require('rxjs')
+const { Observable, from, timer, of, interval } = require('rxjs')
 const {
   mergeMap,
   retryWhen,
@@ -11,7 +11,8 @@ const {
   map,
   catchError,
   exhaustMap,
-  tap
+  tap,
+  throttle
 } = require('rxjs/operators')
 
 let Web3Wrapper = (function() {
@@ -48,6 +49,10 @@ let Web3Wrapper = (function() {
         MAINNET: {
           dev: 'wss://mainnet.infura.io/ws',
           prod: 'wss://mainnet.infura.io/ws'
+        },
+        LOCAL: {
+          dev: 'ws://localhost:8546',
+          prod: 'ws://localhost:8546'
         }
       }
     }
@@ -106,6 +111,7 @@ let Web3Wrapper = (function() {
       retryWhen(error => {
         let scalingDuration = 2000
         return error.pipe(
+          throttle(val => interval(2000)),
           mergeMap((error, i) => {
             // console.log(error)
             const retryAttempt = i + 1
@@ -304,3 +310,9 @@ let Web3Wrapper = (function() {
 })()
 
 export default Web3Wrapper
+
+// Web3Wrapper.getInstance('LOCAL').then(instance => {
+//   instance.nodeStatus$.subscribe(val => {
+//     console.log(JSON.stringify(val))
+//   })
+// })

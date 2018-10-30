@@ -2,6 +2,7 @@
 
 import { Server } from 'mock-socket'
 import Web3Wrapper from './web3Wrapper'
+import WebSocket from 'ws'
 
 beforeEach(function() {})
 
