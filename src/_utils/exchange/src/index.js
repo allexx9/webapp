@@ -117,10 +117,40 @@ class Exchange {
     }
     return this.returnResults(() => {
       switch (this._exchange) {
-        // case ERCdEX:
-        //   return this._call[this._transport].getAccountOrders[this._exchange](this._network, baseToken, quoteToken)
+        case ERCdEX:
+          throw new Error(
+            `getAccountOrders not implemented fo ${this._exchange}`
+          )
         case Ethfinex:
           return this._call[this._transport].getAccountOrders[this._exchange](
+            this._network,
+            account
+          )
+        default:
+          throw new Error('Relay unknown')
+      }
+    }, FORMAT.accountOrders[this._exchange])
+  }
+
+  getAccountHistory = (account, baseToken, quoteToken) => {
+    console.log(`${this._exchange}: Fetching account orders.`)
+    if (!account) {
+      throw new Error('account needs to be set')
+    }
+    if (!baseToken) {
+      throw new Error('baseToken needs to be set')
+    }
+    if (!quoteToken) {
+      throw new Error('quoteToken needs to be set')
+    }
+    return this.returnResults(() => {
+      switch (this._exchange) {
+        case ERCdEX:
+          throw new Error(
+            `getAccountHistory not implemented fo ${this._exchange}`
+          )
+        case Ethfinex:
+          return this._call[this._transport].getAccountHistory[this._exchange](
             this._network,
             account
           )

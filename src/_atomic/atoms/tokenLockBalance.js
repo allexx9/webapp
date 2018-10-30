@@ -1,5 +1,6 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
+import { formatPrice } from '../../_utils/format'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import ReactTooltip from 'react-tooltip'
@@ -17,10 +18,17 @@ export default class TokenLockBalance extends Component {
   }
   render() {
     const now = Math.floor(Date.now() / 1000)
-    // console.log(now, Number(this.props.lockTime))
-    // now > Number(this.props.lockTime)
-    //   ? console.log('red')
-    //   : console.log('green')
+    console.log(`Now: ${moment().format('MMMM Do YYYY, h:mm:ss a')}`)
+    console.log(
+      `Exp: ${moment
+        .unix(this.props.lockTime)
+        .format('MMMM Do YYYY, h:mm:ss a')}`
+    )
+    console.log(now, Number(this.props.lockTime))
+    now > Number(this.props.lockTime)
+      ? console.log('red')
+      : console.log('green')
+
     return now > Number(this.props.lockTime) ? (
       <div
         data-tip={
@@ -40,7 +48,7 @@ export default class TokenLockBalance extends Component {
               textDecoration: 'none'
             }}
           >
-            {this.props.balance}
+            {formatPrice(this.props.balance)}
           </span>
         </div>
         <ReactTooltip effect="solid" place="top" />
@@ -64,7 +72,7 @@ export default class TokenLockBalance extends Component {
               textDecoration: 'none'
             }}
           >
-            {this.props.balance}
+            {formatPrice(this.props.balance)}
           </span>
         </div>
         <ReactTooltip effect="solid" place="top" />

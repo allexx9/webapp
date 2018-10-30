@@ -1,0 +1,36 @@
+
+.containerOrders {
+  /* padding: 5px; */
+}
+
+.tableHeader{
+  font-size: 14px;
+  font-weight: 700;
+  padding-bottom: 10px;
+  }
+  
+
+.rowText{
+  font-size: 14px;
+  }
+.cancelLink{
+  color: rgb(255, 64, 129);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.tableCell{
+text-align: left;
+}
+
+.tableCellUnderline {
+  border-bottom: 1px dotted #A9A9A9;
+  text-decoration: none;
+}
+
+.right {
+  text-align: right;
+}
+.baseToken {
+  font-weight: 700;
+}

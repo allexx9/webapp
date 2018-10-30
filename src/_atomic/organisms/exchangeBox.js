@@ -46,7 +46,8 @@ class ExchangeBox extends PureComponent {
     const selectedRelay = RELAYS[relay]
     const availableTradeTokensPair = utils.availableTradeTokensPair(
       TRADE_TOKENS_PAIRS,
-      RELAYS[relay].name
+      RELAYS[relay].name,
+      api._rb.network.id
     )
     const baseToken =
       ERC20_TOKENS[api._rb.network.name][
@@ -110,7 +111,7 @@ class ExchangeBox extends PureComponent {
       console.log(token)
       let result = await web3.eth.personal.sign(
         token,
-        this.props.exchange.walletSelectedAddress
+        this.props.exchange.walletAddress
       )
       // .then((result) => {
       //   console.log(result)
@@ -127,7 +128,7 @@ class ExchangeBox extends PureComponent {
       )
       // Fetch active orders
       this.props.dispatch(
-        Actions.exchange.getAccountOrders(
+        Actions.exchange.getAccountOrdersStart(
           this.props.exchange.selectedRelay,
           api._rb.network.id,
           accountSignature,

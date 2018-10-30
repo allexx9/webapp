@@ -42,7 +42,7 @@ class ButtonAuthenticate extends Component {
           labelStyle={labelStyle}
           onClick={this.buttonAuthClick}
           style={buttonBuyStyle}
-          // disabled={this.props.disabled}
+          disabled={this.props.disabled}
           // hoverColor={Colors.lightGreen50}
         />
       </div>

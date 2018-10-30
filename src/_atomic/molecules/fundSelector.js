@@ -23,7 +23,6 @@ export default class FundSelector extends PureComponent {
     this.setState({
       value: key
     })
-    console.log(key)
     this.props.onSelectFund(funds[key.toString()])
   }
 
@@ -41,7 +40,6 @@ export default class FundSelector extends PureComponent {
   }
 
   render() {
-    console.log(this.props)
     return (
       <Row>
         <Col xs={12}>
