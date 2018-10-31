@@ -3,7 +3,7 @@
 // import { Observable } from 'rxjs';
 import * as TYPE_ from '../actions/const'
 import { Actions } from '../actions'
-import { DEBUGGING } from '../../_utils/const'
+// import { DEBUGGING } from '../../_utils/const'
 import { Observable, from, timer } from 'rxjs'
 import {
   catchError,
@@ -40,7 +40,7 @@ const getVaultsChunkedEvents$ = (api, options, state$) => {
           startBlock = '3000000'
           break
         default:
-          '3000000'
+          startBlock = '3000000'
       }
     }
 
@@ -138,7 +138,7 @@ const getDragosChunkedEvents$ = (api, options, state$) => {
           startBlock = '3000000'
           break
         default:
-          '3000000'
+          startBlock = '3000000'
       }
     }
 
@@ -173,7 +173,7 @@ const getDragosChunkedEvents$ = (api, options, state$) => {
       api.eth.blockNumber().then(lastBlock => {
         lastBlock = lastBlock.toFixed()
         let chunck = 100000
-        console.log(startBlock, lastBlock, chunck)
+        // console.log(startBlock, lastBlock, chunck)
         const chunks = utils.blockChunks(startBlock, lastBlock, chunck)
         chunks.map(async (chunk, key) => {
           // Pushing chunk logs into array
@@ -246,7 +246,7 @@ export const getPoolsListEpic = (action$, state$) =>
             case 'vault':
               return Actions.drago.updateVaultsSearchList(results)
             default:
-              throw 'No poolType defined'
+              throw Error('No poolType defined')
           }
         }),
         catchError(error => {

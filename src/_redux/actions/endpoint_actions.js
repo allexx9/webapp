@@ -41,11 +41,10 @@ const endpoint = {
       }
     }
   },
-  monitorAccountsStart: (web3, api) => {
+  monitorAccountsStart: api => {
     return {
       type: TYPE_.MONITOR_ACCOUNTS_START,
       payload: {
-        web3,
         api
       }
     }

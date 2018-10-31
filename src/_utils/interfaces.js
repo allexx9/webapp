@@ -130,7 +130,10 @@ class Interfaces {
           isMetaMaskLocked,
           warnMsg: MSG_NO_SUPPORTED_NETWORK
         }
-        this._success = { ...currentState, ...stateUpdate }
+        this._success = {
+          ...currentState,
+          ...stateUpdate
+        }
         return accountsMetaMask
       } else {
         // Get MetaMask accounts
@@ -139,7 +142,10 @@ class Interfaces {
           warnMsg: '',
           isMetaMaskLocked
         }
-        this._success = { ...currentState, ...stateUpdate }
+        this._success = {
+          ...currentState,
+          ...stateUpdate
+        }
         // Return empty object if MetaMask is locked.
         if (accounts.length === 0) {
           return {}
@@ -195,7 +201,9 @@ class Interfaces {
     const api = this._api
     try {
       const accountsMetaMask = await this.getAccountsMetamask(api)
-      const allAccounts = { ...accountsMetaMask }
+      const allAccounts = {
+        ...accountsMetaMask
+      }
       const blockNumber = await api.eth.blockNumber()
       console.log(
         'Metamask account loaded: ',
@@ -220,7 +228,10 @@ class Interfaces {
           }
         })
       }
-      const result = { ...this._success, ...stateUpdate }
+      const result = {
+        ...this._success,
+        ...stateUpdate
+      }
       this._success = result
       return result
     } catch (error) {
@@ -229,7 +240,10 @@ class Interfaces {
         networkError: NETWORK_WARNING,
         networkStatus: MSG_NETWORK_STATUS_ERROR
       }
-      this._error = { ...currentState, ...stateUpdate }
+      this._error = {
+        ...currentState,
+        ...stateUpdate
+      }
       console.log('attachInterface', error)
       throw this._error
     }
@@ -254,7 +268,10 @@ class Interfaces {
       const blockNumber = await api.eth.blockNumber()
       console.log('Parity accounts loaded: ', accountsParity)
       console.log('MetaMask account loaded: ', accountsMetaMask)
-      const allAccounts = { ...accountsParity, ...accountsMetaMask }
+      const allAccounts = {
+        ...accountsParity,
+        ...accountsMetaMask
+      }
       const stateUpdate = {
         loading: false,
         prevBlockNumber: blockNumber.toFixed(),
@@ -276,7 +293,10 @@ class Interfaces {
               })
             : []
       }
-      const result = { ...this._success, ...stateUpdate }
+      const result = {
+        ...this._success,
+        ...stateUpdate
+      }
       this._success = result
       return result
     } catch (error) {
@@ -285,78 +305,13 @@ class Interfaces {
         networkError: NETWORK_WARNING,
         networkStatus: MSG_NETWORK_STATUS_ERROR
       }
-      this._error = { ...currentState, ...stateUpdate }
+      this._error = {
+        ...currentState,
+        ...stateUpdate
+      }
       console.log('Error attachInterfaceRigoBlock', error)
       throw new Error(this._error)
     }
-
-    // Check if the parity node is running in --public-mode
-    // return api.parity.nodeKind()
-    //   .then(result => {
-    //     if (result.availability === 'public') {
-    //       // if Parity in --public-node then getting only MetaMask accounts
-    //       return [this.getAccountsMetamask(api)]
-    //       // return [this.getAccountsParity(api), this.getAccountsMetamask(api)]
-    //     }
-    //     else {
-    //       // if Parity NOT in --public-node then getting both Parity and MetaMask accounts
-    //       return [this.getAccountsParity(api), this.getAccountsMetamask(api)]
-    //     }
-    //   })
-    //   .then((getAccounts) => {
-    //     return Promise
-    //       .all(getAccounts)
-    //       .then(([accountsParity, accountsMetaMask]) => {
-    //         const allAccounts = { ...accountsParity, ...accountsMetaMask }
-    //         console.log('Parity accounts loaded: ', accountsParity)
-    //         console.log('MetaMask account loaded: ', accountsMetaMask)
-    //         const stateUpdate = {
-    //           loading: false,
-    //           ethBalance: new BigNumber(0),
-    //           accounts: Object.keys(allAccounts).length !== 0
-    //             ? Object
-    //               .keys(allAccounts)
-    //               .map((address) => {
-    //                 const info = allAccounts[address] || {};
-    //                 return {
-    //                   address,
-    //                   name: info.name,
-    //                   source: info.source,
-    //                   ethBalance: info.ethBalance,
-    //                   ethBalanceWei: info.ethBalanceWei,
-    //                   grgBalance: info.grgBalance,
-    //                   grgBalanceWei: info.grgBalanceWei,
-    //                   nonce: info.nonce
-    //                 };
-    //               })
-    //             : []
-    //         }
-    //         const result = { ...this._success, ...stateUpdate }
-    //         this._success = result
-    //         return result
-    //       })
-    //       .catch((error) => {
-    //         let currentState = this._error
-    //         const stateUpdate = {
-    //           networkError: NETWORK_WARNING,
-    //           networkStatus: MSG_NETWORK_STATUS_ERROR,
-    //         }
-    //         this._error = { ...currentState, ...stateUpdate }
-    //         console.log('attachInterfaceRigoBlock', error)
-    //         return this._error
-
-    //       });
-    //   })
-    //   .catch((error) => {
-    //     let currentState = this._error
-    //     const stateUpdate = {
-    //       networkError: NETWORK_WARNING,
-    //       networkStatus: MSG_NETWORK_STATUS_ERROR,
-    //     }
-    //     this._error = { ...currentState, ...stateUpdate }
-    //     console.log('attachInterfaceRigoBlock', error)
-    //     return this._error
-    //   });
   }
 
   detachInterface = (api, subscriptionData) => {

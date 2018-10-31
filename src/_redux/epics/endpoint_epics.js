@@ -19,14 +19,11 @@ import {
   retryWhen,
   switchMap,
   takeUntil,
-  tap,
-  timeout
+  tap
 } from 'rxjs/operators'
 import { ofType } from 'redux-observable'
 import { sha3_512 } from 'js-sha3'
 import BigNumber from 'bignumber.js'
-import PoolsApi from '../../PoolsApi/src'
-import Web3 from 'web3'
 import Web3Wrapper from '../../_utils/web3Wrapper'
 import utils from '../../_utils/utils'
 
@@ -62,7 +59,11 @@ export const isConnectedToNodeEpic = (action$, state$) =>
       flatMap(result => {
         let actionsArray = Array(0)
         actionsArray = [
-          Observable.of(Actions.app.updateAppStatus({ ...result }))
+          Observable.of(
+            Actions.app.updateAppStatus({
+              ...result
+            })
+          )
         ]
         return Observable.concat(...actionsArray)
       })
@@ -102,17 +103,10 @@ const attachInterfacePromise = async (api, endpoint) => {
 }
 
 const attachInterface$ = (api, endpoint) => {
-  return defer(() => attachInterfacePromise(api, endpoint))
-}
-
-export const delayShowAppEpic = action$ =>
-  action$.pipe(
-    ofType(TYPE_.ATTACH_INTERFACE),
-    delay(7000),
-    map(() => {
-      return Actions.app.updateAppStatus({ appLoading: false })
-    })
+  return defer(() =>
+    attachInterfacePromise(api, endpoint).catch(error => error)
   )
+}
 
 export const attacheInterfaceEpic = action$ =>
   action$.pipe(
@@ -120,7 +114,6 @@ export const attacheInterfaceEpic = action$ =>
     switchMap(action => {
       return attachInterface$(action.payload.api, action.payload.endpoint).pipe(
         flatMap(endpoint => {
-          console.log(action.payload)
           return Observable.concat(
             Observable.of(
               Actions.app.updateAppStatus({
@@ -128,13 +121,13 @@ export const attacheInterfaceEpic = action$ =>
                 isConnected: true
               })
             ),
-            Observable.of(Actions.endpoint.updateInterface(endpoint)),
-            Observable.of(
-              Actions.endpoint.monitorAccountsStart(
-                action.payload.web3,
-                action.payload.api
-              )
-            )
+            Observable.of(Actions.endpoint.updateInterface(endpoint))
+            // Observable.of(
+            //   Actions.endpoint.monitorAccountsStart(
+            //     action.payload.web3,
+            //     action.payload.api
+            //   )
+            // )
           )
         })
       )
@@ -162,12 +155,22 @@ export const attacheInterfaceEpic = action$ =>
     })
   )
 
+export const delayShowAppEpic = action$ =>
+  action$.pipe(
+    ofType(TYPE_.ATTACH_INTERFACE),
+    delay(7000),
+    map(() => {
+      return Actions.app.updateAppStatus({
+        appLoading: false
+      })
+    })
+  )
+
 //
 // SUBSCRIBES TO EVENTFULL CONTRACTS AND EMIT NEW EVENTS
 //
 
 const monitorEventful$ = (web3, api, state$) => {
-  console.log('monitorEventful$')
   let hexAccounts = state$.value.endpoint.accounts.map(account => {
     const hexAccount =
       '0x' +
@@ -429,26 +432,18 @@ export const monitorEventfulEpic = (action$, state$) => {
 // SUBSCRIBE TO NEW BLOCK AND MONITOR ACCOUNTS
 //
 
-const monitorAccounts$ = (web3, api, state$) => {
+const monitorAccounts$ = (api, state$) => {
+  console.log('monitorAccounts2$')
   return Observable.create(observer => {
-    let web3New = new Web3(window.web3._rb.wss)
-    let subscription = web3New.eth.subscribe(
-      'newBlockHeaders',
-      (_error, blockNumber) => {
-        if (!_error) {
-          utils.updateAccounts(api, blockNumber, state$).then(result => {
-            return observer.next(result)
-          })
-        } else {
-          return observer.error(_error)
-        }
-      }
-    )
-    return () => {
-      subscription.unsubscribe(function(error, success) {
-        if (success) console.log('Successfully unsubscribed!')
+    Web3Wrapper.getInstance(
+      state$.value.endpoint.networkInfo.name.toUpperCase()
+    ).then(instance => {
+      instance.newBlock$.subscribe(newBlock => {
+        utils.updateAccounts(api, newBlock, state$).then(result => {
+          return observer.next(result)
+        })
       })
-    }
+    })
   })
 }
 
@@ -456,11 +451,7 @@ export const monitorAccountsEpic = (action$, state$) => {
   return action$.pipe(
     ofType(TYPE_.MONITOR_ACCOUNTS_START),
     mergeMap(action => {
-      return monitorAccounts$(
-        action.payload.web3,
-        action.payload.api,
-        state$
-      ).pipe(
+      return monitorAccounts$(action.payload.api, state$).pipe(
         takeUntil(action$.pipe(ofType(TYPE_.MONITOR_ACCOUNTS_STOP))),
         tap(val => {
           // console.log(val)
@@ -675,7 +666,9 @@ const checkMetaMaskIsUnlocked$ = (api, web3, endpoint) => {
                 if (result.accounts.length !== 0) {
                   newAccounts.push(result.accounts[0])
                 }
-                newEndpoint = { ...result }
+                newEndpoint = {
+                  ...result
+                }
                 newEndpoint.accounts = newAccounts
                 // Update total ETH and GRG balance
                 newEndpoint.ethBalance = newEndpoint.accounts.reduce(
@@ -776,7 +769,12 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
                       action.payload.api,
                       null,
                       newEndpoint.accounts,
-                      { ...optionsHolder, ...{ drago: false } }
+                      {
+                        ...optionsHolder,
+                        ...{
+                          drago: false
+                        }
+                      }
                     )
                   ),
                   Observable.of(
@@ -784,7 +782,12 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
                       action.payload.api,
                       null,
                       newEndpoint.accounts,
-                      { ...optionsManager, ...{ drago: false } }
+                      {
+                        ...optionsManager,
+                        ...{
+                          drago: false
+                        }
+                      }
                     )
                   )
                 ]

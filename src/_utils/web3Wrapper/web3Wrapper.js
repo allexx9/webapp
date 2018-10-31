@@ -3,6 +3,7 @@ const dragoeventfulAbi = require('./dragoEventful-v2.json')
 const vaulteventfulAbi = require('./vaultEventful-v2.json')
 const parityregisterAbi = require('./parityRegister.json')
 const { Observable, from, timer, of, interval } = require('rxjs')
+const BigNumber = require('bignumber.js')
 const {
   mergeMap,
   retryWhen,
@@ -75,47 +76,59 @@ let Web3Wrapper = (function() {
     networkName = networkName.toUpperCase()
     const transport = endpoints[protocol][networkName].prod
     console.log(transport)
-    let provider = new Web3.providers.WebsocketProvider(transport)
+    let provider = new Web3.providers.WebsocketProvider(transport, {
+      timeout: 5000
+    })
     web3 = new Web3(provider)
 
+    let retryAttemptWebSocket$ = 0
     const webSocket$ = Observable.create(observer => {
-      provider = new Web3.providers.WebsocketProvider(transport)
+      provider = new Web3.providers.WebsocketProvider(transport, {
+        timeout: 5000
+      })
       web3.setProvider(provider)
       provider.on('connect', function(event) {
-        console.log('WSS connected')
+        console.log('**** WSS connected ****')
+        retryAttemptWebSocket$ = 0
         observer.next(event)
       })
       provider.on('open', function(event) {
-        console.log('WSS open')
+        console.log('**** WSS open ****')
         observer.next(event)
       })
       provider.on('data', function(event) {
-        console.log('WSS data')
+        console.log('**** WSS data ****')
         observer.next(event)
       })
       provider.on('error', function(event) {
-        console.log('WSS error')
-        console.log('Attempting to reconnect...')
-        return observer.error(event)
+        console.log('**** WSS error ****')
+        console.log('**** Attempting to reconnect error... **** ')
+        observer.error(event)
       })
       provider.on('end', event => {
-        console.log('WS end')
-        console.log('Attempting to reconnect...')
-        return observer.error(event)
+        console.log('**** WS end ****')
+        console.log('**** Attempting to reconnect end... ****')
+        observer.error(event)
       })
 
       return () => {
-        console.log(`Observable exit`)
+        console.log(`**** webSocket$ exit ****`)
       }
     }).pipe(
+      tap(val => {
+        return val
+      }),
+      timeout(50000),
       retryWhen(error => {
-        let scalingDuration = 2000
+        let scalingDuration = 10000
         return error.pipe(
           throttle(val => interval(2000)),
-          mergeMap((error, i) => {
-            // console.log(error)
-            const retryAttempt = i + 1
-            console.log(`webSocket$ Attempt ${retryAttempt}`)
+          mergeMap(error => {
+            console.log(error)
+            retryAttemptWebSocket$++
+            console.log(
+              `**** webSocket$ Attempt ${retryAttemptWebSocket$} ****`
+            )
             return timer(scalingDuration)
           }),
           finalize(() => console.log('We are done!'))
@@ -134,7 +147,7 @@ let Web3Wrapper = (function() {
 
     let scalingDuration = 1000
     let timeInterval = 0
-    let retryAttempt = 0
+    let retryAttemptNodeStatus$ = 0
     const nodeStatus$ = timer(0, 2000).pipe(
       exhaustMap(() => {
         return from(
@@ -149,10 +162,15 @@ let Web3Wrapper = (function() {
             return result
           }),
           map(result => {
-            retryAttempt = 0
+            retryAttemptNodeStatus$ = 0
             timeInterval = 0
             if (result !== false) {
-              if (result.highestBlock.minus(result.currentBlock).gt(2)) {
+              // console.log(result)
+              if (
+                new BigNumber(result.highestBlock)
+                  .minus(result.currentBlock)
+                  .gt(2)
+              ) {
                 nodeStatus.isConnected = true
                 nodeStatus.isSyncing = true
                 nodeStatus.syncStatus = result
@@ -172,19 +190,82 @@ let Web3Wrapper = (function() {
             return nodeStatus
           }),
           catchError(error => {
-            console.log('Error nodeStatus$ -> ' + error.message)
-            retryAttempt++
-            retryAttempt > 5
+            console.log('**** Error nodeStatus$ -> ' + error.message + ' ****')
+            retryAttemptNodeStatus$++
+            retryAttemptNodeStatus$ > 5
               ? (timeInterval = scalingDuration * 5)
-              : (timeInterval = scalingDuration * retryAttempt)
+              : (timeInterval = scalingDuration * retryAttemptNodeStatus$)
             nodeStatus.isConnected = false
             nodeStatus.isSyncing = false
             nodeStatus.syncStatus = {}
             nodeStatus.error = error.message
             nodeStatus.retryTimeInterval = timeInterval
-            nodeStatus.connectionRetries = retryAttempt
+            nodeStatus.connectionRetries = retryAttemptNodeStatus$
             return of(nodeStatus)
           })
+        )
+      })
+    )
+
+    let subscription = null
+    let retryAttemptNewBlock$ = 0
+    const newBlock$ = Observable.create(observer => {
+      if (subscription !== null) {
+        subscription.unsubscribe(function(error, success) {
+          if (success) {
+            console.log('**** newBlock$ Successfully UNSUBSCRIBED! ****')
+          }
+          if (error) {
+            console.log('**** newBlock$ UNSUBSCRIBE error ****')
+            console.log(error)
+          }
+        })
+      }
+      subscription = web3.eth
+        .subscribe('newBlockHeaders', function(error) {
+          if (error !== null) {
+            console.warn(`****  WS newBlockHeaders error 1 ${error} ****`)
+            return observer.error(error)
+          }
+        })
+        .on('data', function(blockHeader) {
+          retryAttemptNewBlock$ = 0
+          return observer.next(blockHeader)
+        })
+        .on('error', function(error) {
+          console.warn(`WS newBlockHeaders 2 ${error}`)
+          return observer.error(error)
+        })
+        .on('end', function(error) {
+          console.warn(`WS newBlockHeaders 3 ${error}`)
+          return observer.error(error)
+        })
+      return () => {
+        console.log(`**** newBlock$ exit ****`)
+      }
+    }).pipe(
+      timeout(60000),
+      retryWhen(error => {
+        let scalingDuration = 5000
+        return error.pipe(
+          mergeMap(error => {
+            if (subscription !== null) {
+              subscription.unsubscribe(function(error, success) {
+                if (success) {
+                  console.log('**** newBlock$ Successfully UNSUBSCRIBED! ****')
+                }
+                if (error) {
+                  console.log('**** newBlock$ UNSUBSCRIBE error ****')
+                  console.log(error)
+                }
+              })
+            }
+            console.log(`****  newBlock$ error: ${error.message} ****`)
+            retryAttemptNewBlock$++
+            console.log(`**** newBlock$ Attempt ${retryAttemptNewBlock$} ****`)
+            return timer(scalingDuration)
+          }),
+          finalize(() => console.log('We are done!'))
         )
       })
     )
@@ -287,7 +368,8 @@ let Web3Wrapper = (function() {
       web3,
       endpoint: transport,
       eventfull$,
-      nodeStatus$
+      nodeStatus$,
+      newBlock$
     }
   }
 
@@ -314,5 +396,9 @@ export default Web3Wrapper
 // Web3Wrapper.getInstance('LOCAL').then(instance => {
 //   instance.nodeStatus$.subscribe(val => {
 //     console.log(JSON.stringify(val))
+//   })
+//   instance.newBlock$.subscribe(val => {
+//     console.log(val.number)
+//     // console.log(JSON.stringify(val))
 //   })
 // })

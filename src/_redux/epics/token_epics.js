@@ -12,7 +12,6 @@
 import { Observable, from, timer } from 'rxjs'
 import {
   catchError,
-  concat,
   exhaustMap,
   filter,
   map,
@@ -37,7 +36,7 @@ import {
   UPDATE_TRADE_TOKENS_PAIR
 } from '../actions/const'
 import Exchange from '../../_utils/exchange/src/index'
-import exchangeConnector from '@rigoblock/exchange-connector'
+// import exchangeConnector from '@rigoblock/exchange-connector'
 import utils from '../../_utils/utils'
 
 // Setting allowance for a token
@@ -61,7 +60,9 @@ export const setTokenAllowanceEpic = action$ => {
     ).map(() => {
       return {
         type: UPDATE_TRADE_TOKENS_PAIR,
-        payload: { baseTokenAllowance: true }
+        payload: {
+          baseTokenAllowance: true
+        }
       }
     })
   })
@@ -115,7 +116,10 @@ const candlesGroupWebsocket$ = (relay, networkId, symbols) => {
       console.log('WebSocket error.')
       return observer.error(error)
     }
-    return () => websocket.close(1000, 'Closed by client', { keepClosed: true })
+    return () =>
+      websocket.close(1000, 'Closed by client', {
+        keepClosed: true
+      })
   })
 }
 
@@ -129,7 +133,9 @@ const updateGroupCandles = ticker => {
     return symbol === USDT ? 1 / value : value
   }
   // We need to express USD valuation in ETH
-  symbol === 'ETH' ? (symbol = USDT) : null
+  if (symbol === 'ETH') {
+    symbol = USDT
+  }
   // console.log(symbol)
   // INITIAL SHAPSHOT
   if (Array.isArray(ticker[1][0])) {
@@ -154,7 +160,9 @@ const updateGroupCandles = ticker => {
     return {
       type: UPDATE_SELECTED_DRAGO_DETAILS_CHART_ASSETS_MARKET_DATA_INIT,
       payload: {
-        [symbol]: { data: candles.reverse() }
+        [symbol]: {
+          data: candles.reverse()
+        }
       }
     }
   }
@@ -176,7 +184,9 @@ const updateGroupCandles = ticker => {
     return {
       type: UPDATE_SELECTED_DRAGO_DETAILS_CHART_ASSETS_MARKET_ADD_DATAPOINT,
       payload: {
-        [symbol]: { data: candles }
+        [symbol]: {
+          data: candles
+        }
       }
     }
   }
@@ -292,7 +302,10 @@ const getTickersWs$ = (relay, networkId, symbols) => {
       console.log('WebSocket error.')
       return observer.error(error)
     }
-    return () => websocket.close(1000, 'Closed by client', { keepClosed: true })
+    return () =>
+      websocket.close(1000, 'Closed by client', {
+        keepClosed: true
+      })
   })
 }
 
@@ -340,7 +353,9 @@ export const getPricesEpic = (action$, state$) =>
                 const arrayToObject = (arr, keyField) =>
                   Object.assign(
                     {},
-                    ...arr.map(item => ({ [item[keyField]]: item }))
+                    ...arr.map(item => ({
+                      [item[keyField]]: item
+                    }))
                   )
                 const tokenList = arrayToObject(message, 'symbol')
                 tokenList.WETH = {
@@ -363,7 +378,10 @@ export const getPricesEpic = (action$, state$) =>
               // console.log(val)
               return val
             }),
-            map(payload => ({ type: TOKENS_TICKERS_UPDATE, payload })),
+            map(payload => ({
+              type: TOKENS_TICKERS_UPDATE,
+              payload
+            })),
             catchError(error => {
               console.warn(error)
               return Observable.of({
