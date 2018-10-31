@@ -10,6 +10,7 @@ import { formatPrice } from '../../_utils/format'
 import ActionAssessment from 'material-ui/svg-icons/action/assessment'
 import ActionList from 'material-ui/svg-icons/action/list'
 import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
+import AssetChartChartist from '../../_atomic/atoms/assetChartChartist'
 import AssetsPieChart from '../../_atomic/atoms/assetsPieChart'
 import BigNumber from 'bignumber.js'
 import CopyContent from 'material-ui/svg-icons/content/content-copy'
@@ -34,6 +35,7 @@ import Sticky from 'react-stickynode'
 import scrollToElement from 'scroll-to-element'
 import styles from './pageFundDetailsDragoTrader.module.css'
 import utils from '../../_utils/utils'
+
 // import { Action } from '../../../node_modules/rxjs/internal/scheduler/Action';
 
 function mapStateToProps(state) {
@@ -345,6 +347,20 @@ class PageFundDetailsDragoTrader extends Component {
                       <SectionHeader titleText="SUMMARY" />
                     </Col>
                   </Row>
+                  {/* <Row>
+                    <Col xs={12} md={6}>
+                      {' '}
+                      {typeof this.props.transactionsDrago.selectedDrago
+                        .assetsCharts.USDT !== 'undefined' && (
+                        <AssetChartChartist
+                          data={
+                            this.props.transactionsDrago.selectedDrago
+                              .assetsCharts.USDT
+                          }
+                        />
+                      )}
+                    </Col>
+                  </Row> */}
                   <Row>
                     <Col xs={12} md={6}>
                       <SectionTitle titleText="DETAILS" />

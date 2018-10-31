@@ -433,7 +433,6 @@ export const monitorEventfulEpic = (action$, state$) => {
 //
 
 const monitorAccounts$ = (api, state$) => {
-  console.log('monitorAccounts2$')
   return Observable.create(observer => {
     Web3Wrapper.getInstance(
       state$.value.endpoint.networkInfo.name.toUpperCase()
