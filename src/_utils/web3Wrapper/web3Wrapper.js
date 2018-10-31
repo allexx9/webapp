@@ -118,7 +118,7 @@ let Web3Wrapper = (function() {
       tap(val => {
         return val
       }),
-      timeout(50000),
+      timeout(120000),
       retryWhen(error => {
         let scalingDuration = 10000
         return error.pipe(
@@ -244,7 +244,7 @@ let Web3Wrapper = (function() {
         console.log(`**** newBlock$ exit ****`)
       }
     }).pipe(
-      timeout(60000),
+      timeout(120000),
       retryWhen(error => {
         let scalingDuration = 5000
         return error.pipe(

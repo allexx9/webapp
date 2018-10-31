@@ -6,14 +6,14 @@ import LeftSideDrawerConfig from '../Elements/leftSideDrawerConfig'
 import PageAppConfig from './pageAppConfig'
 import PageNetworkConfig from './pageNetworkConfig'
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import styles from './applicationConfigHome.module.css'
 
 function mapStateToProps(state) {
   return state
 }
 
-class ApplicationConfigHome extends Component {
+class ApplicationConfigHome extends PureComponent {
   static propTypes = {
     endpoint: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
@@ -22,13 +22,13 @@ class ApplicationConfigHome extends Component {
 
   render() {
     const { match, endpoint } = this.props
-    console.log(this.props)
+    console.log(this.props.endpoint.networkInfo)
     return (
       <div>
         <Row className={styles.container}>
           <Col xs={2}>
-            <LeftSideDrawerConfig location={this.props.location} />
-          </Col>
+            <LeftSideDrawerConfig location={this.props.location} />{' '}
+          </Col>{' '}
           <Col xs={10}>
             <Switch>
               <Route
@@ -41,16 +41,16 @@ class ApplicationConfigHome extends Component {
                 exact
                 render={props => <PageAppConfig {...props} />}
               />
-              <Redirect from={match.path} to={match.path + '/network'} />
-            </Switch>
-          </Col>
-        </Row>
+              <Redirect from={match.path} to={match.path + '/network'} />{' '}
+            </Switch>{' '}
+          </Col>{' '}
+        </Row>{' '}
         <ElementBottomStatusBar
           blockNumber={endpoint.prevBlockNumber}
           networkName={endpoint.networkInfo.name}
           networkError={endpoint.networkError}
           networkStatus={endpoint.networkStatus}
-        />
+        />{' '}
       </div>
     )
   }
