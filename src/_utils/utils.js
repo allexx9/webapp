@@ -2344,19 +2344,24 @@ class utilities {
           selectedTokensPair.baseToken.address
         )
       : await poolApi.contract.drago.getBalance())
-    let baseTokenWrapperBalance = await poolApi.contract.drago.getBalanceToken(
-      selectedTokensPair.baseToken.wrappers[exchange.name].address
-    )
+
     let quoteTokenBalance = await (selectedTokensPair.quoteToken.address !==
     '0x0'
       ? await poolApi.contract.drago.getBalanceToken(
           selectedTokensPair.quoteToken.address
         )
       : await poolApi.contract.drago.getBalance())
-    let quoteTokenWrapperBalance = await poolApi.contract.drago.getBalanceToken(
-      selectedTokensPair.quoteToken.wrappers[exchange.name].address
-    )
+
+    let baseTokenWrapperBalance, quoteTokenWrapperBalance = new BigNumber(0)
     if (exchange.isTokenWrapper) {
+
+      // Getting token wrapper balance
+      baseTokenWrapperBalance = await poolApi.contract.drago.getBalanceToken(
+        selectedTokensPair.baseToken.wrappers[exchange.name].address
+      )
+      quoteTokenWrapperBalance = await poolApi.contract.drago.getBalanceToken(
+        selectedTokensPair.quoteToken.wrappers[exchange.name].address
+      )
       // Getting token wrapper lock time
       baseTokenLockWrapExpire = await utils.updateTokenWrapperLockTime(
         api,

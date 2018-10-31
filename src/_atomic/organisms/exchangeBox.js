@@ -4,16 +4,13 @@ import { connect } from 'react-redux'
 import { getTokenAllowance } from '../../_utils/exchange'
 import BigNumber from 'bignumber.js'
 import BoxTitle from '../atoms/boxTitle'
-import ButtonAuthenticate from '../atoms/buttonAuthenticate'
 import ExchangeSelector from '../molecules/exchangeSelector'
 // import FlatButton from 'material-ui/FlatButton'
+import EthfinexAuth from '../molecules/ethfinexAuth'
 import Paper from 'material-ui/Paper'
-import PoolApi from '../../PoolsApi/src'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import SectionTitleExchange from '../atoms/sectionTitleExchange'
-import TokensLockBox from '../../_atomic/organisms/tockensLockBox'
-import Web3 from 'web3'
 import styles from './exchangeBox.module.css'
 import utils from '../../_utils/utils'
 
@@ -101,55 +98,18 @@ class ExchangeBox extends PureComponent {
     )
   }
 
-  onAuthEF = async () => {
-    const { api } = this.context
-    console.log('auth')
-    try {
-      // var provider = account.source === 'MetaMask' ? window.web3 : api
-      const token = Date.now() / 1000 + 3600 + ''
-      let web3 = new Web3(window.web3)
-      console.log(token)
-      let result = await web3.eth.personal.sign(
-        token,
-        this.props.exchange.walletAddress
-      )
-      // .then((result) => {
-      //   console.log(result)
-      // })
-      console.log(result)
-      const accountSignature = {
-        signature: result,
-        nonce: token,
-        valid: true
-      }
-      // Fetch active orders
-      this.props.dispatch(
-        Actions.exchange.updateAccountSignature(accountSignature)
-      )
-      // Fetch active orders
-      this.props.dispatch(
-        Actions.exchange.getAccountOrdersStart(
-          this.props.exchange.selectedRelay,
-          api._rb.network.id,
-          accountSignature,
-          this.props.exchange.selectedTokensPair.baseToken,
-          this.props.exchange.selectedTokensPair.quoteToken
-        )
-      )
-    } catch (error) {
-      console.log(error)
+  showRelayActions = relay => {
+    switch (relay.name) {
+      case 'Ethfinex':
+        return <EthfinexAuth />
+      default:
+        return <div />
     }
   }
 
   render() {
-    const {
-      availableRelays,
-      selectedRelay,
-      accountSignature,
-      selectedFund,
-      selectedTokensPair,
-      selectedExchange
-    } = this.props.exchange
+    const { availableRelays, selectedRelay } = this.props.exchange
+    console.log(selectedRelay)
     return (
       <Row>
         <Col xs={12}>
@@ -166,23 +126,8 @@ class ExchangeBox extends PureComponent {
                       onSelectExchange={this.onSelectExchange}
                     />
                   </Col>
-                  <Col xs={12}>
-                    <div className={styles.section}>
-                      <ButtonAuthenticate
-                        onAuthEF={this.onAuthEF}
-                        disabled={accountSignature.valid}
-                      />
-                    </div>
-                  </Col>
-                  <Col xs={12}>
-                    <TokensLockBox
-                      selectedFund={selectedFund}
-                      selectedTokensPair={selectedTokensPair}
-                      selectedExchange={selectedExchange}
-                      selectedRelay={selectedRelay}
-                    />
-                  </Col>
                 </Row>
+                <Row>{this.showRelayActions(selectedRelay)}</Row>
               </Paper>
             </Col>
           </Row>

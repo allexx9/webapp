@@ -555,11 +555,12 @@ class ApplicationExchangeHome extends Component {
       //   )
       // )
     } catch (error) {
-      console.log(error)
+      console.warn(error)
     }
   }
 
   render() {
+    console.log('application exchange 2')
     const {
       user,
       location,
@@ -572,39 +573,6 @@ class ApplicationExchangeHome extends Component {
       return <Loading />
     }
     // console.log(this.props)
-
-    // if (endpoint.networkInfo.name !== 'kovan') {
-    //   return (
-    //     <div ref={node => this.node = node}>
-    //       <Row className={styles.maincontainer}>
-    //         <Col xs={12}>
-    //           <Paper className={styles.paperTopBarContainer} zDepth={1}>
-    //             <div style={{ paddingTop: '16px', paddingBottom: '16px' }}>
-    //               The exchange is only available on Ethereum Kovan network.
-    //           </div>
-    //           </Paper>
-    //         </Col>
-    //       </Row>
-    //       <Row>
-    //         <Col xs={12}>
-    //           {notificationsOpen ? (
-    //             <ElementNotificationsDrawer
-    //               handleToggleNotifications={handleToggleNotifications}
-    //               notificationsOpen={notificationsOpen}
-    //             />
-    //           ) : (
-    //               null
-    //             )}
-    //         </Col>
-    //       </Row>
-    //       <ElementBottomStatusBar
-    //         blockNumber={endpoint.prevBlockNumber}
-    //         networkName={endpoint.networkInfo.name}
-    //         networkError={endpoint.networkError}
-    //         networkStatus={endpoint.networkStatus} />
-    //     </div>
-    //   )
-    // }
 
     if (endpoint.accounts.length === 0 || !endpoint.isMetaMaskNetworkCorrect) {
       return (
@@ -641,12 +609,6 @@ class ApplicationExchangeHome extends Component {
               ) : null}
             </Col>
           </Row>
-          <ElementBottomStatusBar
-            blockNumber={endpoint.prevBlockNumber}
-            networkName={endpoint.networkInfo.name}
-            networkError={endpoint.networkError}
-            networkStatus={endpoint.networkStatus}
-          />
         </div>
       )
     }
@@ -778,12 +740,6 @@ class ApplicationExchangeHome extends Component {
               ) : null}
             </Col>
           </Row>
-          <ElementBottomStatusBar
-            blockNumber={endpoint.prevBlockNumber}
-            networkName={endpoint.networkInfo.name}
-            networkError={endpoint.networkError}
-            networkStatus={endpoint.networkStatus}
-          />
         </div>
       )
     }
@@ -804,12 +760,6 @@ class ApplicationExchangeHome extends Component {
               ) : null}
             </Col>
           </Row>
-          <ElementBottomStatusBar
-            blockNumber={endpoint.prevBlockNumber}
-            networkName={endpoint.networkInfo.name}
-            networkError={endpoint.networkError}
-            networkStatus={endpoint.networkStatus}
-          />
         </div>
       )
     }

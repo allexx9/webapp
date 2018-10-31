@@ -11,6 +11,7 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import { connect } from 'react-redux'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 // import TestComponent from '../_atomic/atoms/testComponent'
+import ElementBottomStatusBar from '../Elements/elementBottomStatusBar'
 import WalletSetup from '../_atomic/organisms/walletSetup'
 import classNames from 'classnames'
 import styles from './application.module.css'
@@ -80,33 +81,35 @@ class ApplicationExchangePage extends Component {
     const { notificationsOpen } = this.state
     const { location, endpoint } = this.props
 
-    if (endpoint.networkInfo.id === 42) {
-      return (
-        <MuiThemeProvider muiTheme={muiTheme}>
-          <Grid fluid className={styles.maincontainer}>
-            <Row>
-              <Col xs={12}>
-                <ApplicationTopBar
-                  handleTopBarSelectAccountType={
-                    this.handleTopBarSelectAccountType
-                  }
-                  handleToggleNotifications={this.handleToggleNotifications}
-                />
-              </Col>
-            </Row>
-            <MuiThemeProvider muiTheme={muiThemeExchange}>
-              <Row className={classNames(styles.content)}>
-                <Col xs={12}>
-                  <div style={{ textAlign: 'center', marginTop: '25px' }}>
-                    Exchange only available on Ropsten and Mainnet network.
-                  </div>
-                </Col>
-              </Row>
-            </MuiThemeProvider>
-          </Grid>
-        </MuiThemeProvider>
-      )
-    }
+    // if (endpoint.networkInfo.id === 42) {
+    //   return (
+    //     <MuiThemeProvider muiTheme={muiTheme}>
+    //       <Grid fluid className={styles.maincontainer}>
+    //         <Row>
+    //           <Col xs={12}>
+    //             <ApplicationTopBar
+    //               handleTopBarSelectAccountType={
+    //                 this.handleTopBarSelectAccountType
+    //               }
+    //               handleToggleNotifications={this.handleToggleNotifications}
+    //             />
+    //           </Col>
+    //         </Row>
+    //         <MuiThemeProvider muiTheme={muiThemeExchange}>
+    //           <Row className={classNames(styles.content)}>
+    //             <Col xs={12}>
+    //               <div style={{ textAlign: 'center', marginTop: '25px' }}>
+    //                 Exchange only available on Ropsten and Mainnet network.
+    //               </div>
+    //             </Col>
+    //           </Row>
+    //         </MuiThemeProvider>
+    //       </Grid>
+    //     </MuiThemeProvider>
+    //   )
+    // }
+    console.log('application exchange')
+    const allowedNetworks = [1, 3, 42]
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
         <Grid fluid className={styles.maincontainer}>
@@ -134,7 +137,7 @@ class ApplicationExchangePage extends Component {
                 !endpoint.isMetaMaskNetworkCorrect ? (
                   <WalletSetup />
                 ) : (
-                  endpoint.networkInfo.id !== 42 && (
+                  allowedNetworks.includes(endpoint.networkInfo.id) && (
                     <div>
                       <ApplicationExchangeHome
                         key={'Exchange' + endpoint.lastMetaMaskUpdateTime}
@@ -150,6 +153,14 @@ class ApplicationExchangePage extends Component {
               </Col>
             </Row>
           </MuiThemeProvider>
+          <Row>
+            <ElementBottomStatusBar
+              blockNumber={endpoint.prevBlockNumber}
+              networkName={endpoint.networkInfo.name}
+              networkError={endpoint.networkError}
+              networkStatus={endpoint.networkStatus}
+            />
+          </Row>
         </Grid>
       </MuiThemeProvider>
     )

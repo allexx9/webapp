@@ -129,6 +129,8 @@ const initialState = {
       quoteToken: QUOTE_TOKEN,
       quoteTokenLockedAmount: new BigNumber(0),
       quoteTokenAvailableAmount: new BigNumber(0),
+      baseTokenWrapperBalance: new BigNumber(0),
+      quoteTokenWrapperBalance: new BigNumber(0),
       baseTokenAllowance: false,
       quoteTokenAllowance: false,
       baseTokenLockWrapExpire: '0',
