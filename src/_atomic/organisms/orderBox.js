@@ -15,10 +15,6 @@ import Paper from 'material-ui/Paper'
 import styles from './orderBox.module.css'
 // import OrderTypeSelector from '../atoms/orderTypeSelector'
 import { Actions } from '../../_redux/actions'
-import {
-  CANCEL_SELECTED_ORDER,
-  UPDATE_SELECTED_ORDER
-} from '../../_redux/actions/const'
 import { connect } from 'react-redux'
 import {
   fillOrderToExchangeViaProxy,
@@ -71,26 +67,13 @@ class OrderBox extends Component {
     })
   }
 
-  updateSelectedOrder = payload => {
-    return {
-      type: UPDATE_SELECTED_ORDER,
-      payload: payload
-    }
-  }
-
-  cancelSelectedOrder = () => {
-    return {
-      type: CANCEL_SELECTED_ORDER
-    }
-  }
-
   onChangeAmount = (amount, error) => {
     const payload = {
       orderAmountError: error,
       orderFillAmount: amount
     }
     console.log(amount)
-    this.props.dispatch(this.updateSelectedOrder(payload))
+    this.props.dispatch(Actions.exchange.updateSelectedOrder(payload))
   }
 
   onChangePrice = (amount, error) => {
@@ -99,7 +82,7 @@ class OrderBox extends Component {
       orderPrice: amount
     }
     console.log(amount)
-    this.props.dispatch(this.updateSelectedOrder(payload))
+    this.props.dispatch(Actions.exchange.updateSelectedOrder(payload))
   }
 
   // onSendOrder = async () => {
@@ -160,7 +143,7 @@ class OrderBox extends Component {
     const payload = {
       details: { order: signedOrder }
     }
-    this.props.dispatch(this.updateSelectedOrder(payload))
+    this.props.dispatch(Actions.exchange.updateSelectedOrder(payload))
     this.setState({
       orderRawDialogOpen: true
     })
@@ -306,7 +289,7 @@ class OrderBox extends Component {
     this.setState({
       orderRawDialogOpen: false
     })
-    this.props.dispatch(this.cancelSelectedOrder())
+    this.props.dispatch(Actions.exchange.cancelSelectedOrder())
   }
 
   onSelectOrderType = () => {}
@@ -342,7 +325,7 @@ class OrderBox extends Component {
       selectedTokensPair: selectedTokensPair
     }
     console.log(makerOrder)
-    this.props.dispatch(this.updateSelectedOrder(makerOrder))
+    this.props.dispatch(Actions.exchange.updateSelectedOrder(makerOrder))
     // this.setState({
     //   orderRawDialogOpen: true
     // })

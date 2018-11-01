@@ -3,6 +3,17 @@
 import * as TYPE_ from './const'
 
 const exchange = {
+  updateSelectedOrder: payload => {
+    return {
+      type: TYPE_.UPDATE_SELECTED_ORDER,
+      payload: payload
+    }
+  },
+  cancelSelectedOrder: () => {
+    return {
+      type: TYPE_.CANCEL_SELECTED_ORDER
+    }
+  },
   getAccountOrdersStart: (relay, networkId, account, baseToken, quoteToken) => {
     const payload = {
       relay,
