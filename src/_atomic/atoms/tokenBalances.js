@@ -43,7 +43,7 @@ export default class TokenBalances extends PureComponent {
 
   render() {
     const { liquidity, selectedTradeTokensPair } = this.props
-    console.log(liquidity.baseToken.balance.toFixed())
+    // console.log(liquidity.baseToken.balance.toFixed())
     return (
       <div className={styles.balancesContainer}>
         <Row>

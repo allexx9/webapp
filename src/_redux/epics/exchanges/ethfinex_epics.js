@@ -29,7 +29,8 @@ import { Ethfinex } from '../../../_utils/const'
 
 import * as TYPE_ from '../../actions/const'
 
-import exchangeConnector, { exchanges } from '@rigoblock/exchange-connector'
+import ExchangeConnectorWrapper from '../../../_utils/exchangeConnector'
+// import exchangeConnector, { exchanges } from '@rigoblock/exchange-connector'
 
 const customRelayAction = action => {
   // console.log(`${Ethfinex.toUpperCase()}_${action}`)
@@ -47,9 +48,14 @@ const candlesSingleWebsocket$ = (relay, networkId, baseToken, quoteToken) => {
       relay.name,
       quoteToken
     )
-    const ethfinex = exchangeConnector(relay.name, {
-      networkId: networkId
-    })
+
+    const ethfinex = ExchangeConnectorWrapper.getInstance().getExchange(
+      relay.name,
+      {
+        networkId: networkId
+      }
+    )
+    let chanId = 0
 
     return ethfinex.raw.ws
       .getCandles(
@@ -61,7 +67,12 @@ const candlesSingleWebsocket$ = (relay, networkId, baseToken, quoteToken) => {
           if (error) {
             return observer.error(error)
           }
-          return observer.next(msgWs)
+          if (msgWs.event === 'subscribed' && msgWs.channel === 'candles') {
+            chanId = msgWs.chanId
+          }
+          if (msgWs[0] === chanId) {
+            return observer.next(msgWs)
+          }
         }
       )
       .then(() => {
@@ -175,9 +186,12 @@ const reconnectingWebsocketBook$ = (
     let pair =
       utils.getTockenSymbolForRelay(relay.name, baseToken) +
       utils.getTockenSymbolForRelay(relay.name, quoteToken)
-    const ethfinex = exchangeConnector(relay.name, {
-      networkId: networkId
-    })
+    const ethfinex = ExchangeConnectorWrapper.getNewInstance().getExchange(
+      relay.name,
+      {
+        networkId: networkId
+      }
+    )
     const BOOK = {
       bids: [],
       asks: [],
@@ -193,6 +207,7 @@ const reconnectingWebsocketBook$ = (
         console.log(lm.join('/'))
       }
     }
+    let chanId = 0
     return ethfinex.raw.ws
       .getAggregatedOrders(
         {
@@ -207,7 +222,14 @@ const reconnectingWebsocketBook$ = (
             return observer.error(error)
           }
           let msg = msgWs
+          if (msg.event === 'subscribed' && msg.channel === 'book') {
+            chanId = msg.chanId
+          }
+
           if (!Array.isArray(msg)) {
+            return
+          }
+          if (msg[0] !== chanId) {
             return
           }
           if (msg[1] === 'hb') {
@@ -370,7 +392,6 @@ const reconnectingWebsocketBook$ = (
         }
       )
       .then(unsubscribe => {
-        console.log(unsubscribe)
         return () => ethfinex.ws.close()
       })
   })
@@ -457,27 +478,36 @@ const reconnectingWebsocketTicker$ = (
   quoteToken
 ) => {
   return Observable.create(observer => {
-    const ethfinex = exchangeConnector(relay.name, {
-      networkId: networkId
-    })
+    const ethfinex = ExchangeConnectorWrapper.getInstance().getExchange(
+      relay.name,
+      {
+        networkId: networkId
+      }
+    )
     const baseTokenSymbol = utils.getTockenSymbolForRelay(relay.name, baseToken)
     const quoteTokenSymbol = utils.getTockenSymbolForRelay(
       relay.name,
       quoteToken
     )
+    let chanId = 0
     return ethfinex.raw.ws
       .getTickers(
         {
           symbols: baseTokenSymbol + quoteTokenSymbol
         },
-        (error, msg) => {
+        (error, msgWs) => {
           if (error) {
             return observer.error(error)
           } else {
-            if (Array.isArray(msg)) {
-              return observer.next(msg)
+            if (msgWs.event === 'subscribed' && msgWs.channel === 'ticker') {
+              chanId = msgWs.chanId
             }
-            return observer.next('')
+            if (msgWs[0] === chanId) {
+              if (Array.isArray(msgWs)) {
+                return observer.next(msgWs)
+              }
+            }
+            // return observer.next('')
           }
         }
       )
@@ -516,21 +546,20 @@ export const initRelayWebSocketTickerEpic = (action$, state$) =>
         action.payload.baseToken,
         action.payload.quoteToken
       ).pipe(
+        tap(val => {
+          return val
+        }),
         takeUntil(
           action$.ofType(customRelayAction(TYPE_.RELAY_CLOSE_WEBSOCKET))
         ),
         bufferTime(1000),
         filter(value => {
-          // console.log(value)
           return value.length !== 0
         }),
         bufferCount(1),
         map(ticker => {
-          // console.log(customRelayAction((RELAY_MSG_FROM_WEBSOCKET)))
           const currentState = state$.value
           const lastItem = ticker[0].pop()
-          // console.log(currentState)
-          // return [ lastItem, currentState ]
           return updateCurrentTokenPrice(
             lastItem,
             currentState.exchange.selectedTokensPair.baseToken

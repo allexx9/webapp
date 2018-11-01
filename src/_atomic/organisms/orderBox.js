@@ -17,18 +17,13 @@ import styles from './orderBox.module.css'
 import { Actions } from '../../_redux/actions'
 import {
   CANCEL_SELECTED_ORDER,
-  UPDATE_FUND_LIQUIDITY,
-  UPDATE_SELECTED_ORDER,
-  UPDATE_TRADE_TOKENS_PAIR
+  UPDATE_SELECTED_ORDER
 } from '../../_redux/actions/const'
-import { UNLIMITED_ALLOWANCE_IN_BASE_UNITS } from '../../_utils/const'
 import { connect } from 'react-redux'
 import {
   fillOrderToExchangeViaProxy,
   newMakerOrder,
-  setAllowaceOnExchangeThroughDrago,
   signOrder,
-  submitOrderToRelay,
   submitOrderToRelayEFX
 } from '../../_utils/exchange'
 import { sha3_512 } from 'js-sha3'
@@ -58,25 +53,6 @@ class OrderBox extends Component {
 
   static contextTypes = {
     api: PropTypes.object.isRequired
-  }
-
-  updateSelectedTradeTokensPair = (token, allowance) => {
-    switch (token) {
-      case 'base':
-        return {
-          type: UPDATE_TRADE_TOKENS_PAIR,
-          payload: {
-            baseTokenAllowance: allowance
-          }
-        }
-      case 'quote':
-        return {
-          type: UPDATE_TRADE_TOKENS_PAIR,
-          payload: {
-            quoteTokenAllowance: allowance
-          }
-        }
-    }
   }
 
   // updateSelectedFundLiquidity = (fundAddress, api) => {
@@ -335,79 +311,6 @@ class OrderBox extends Component {
 
   onSelectOrderType = () => {}
 
-  onToggleAllowQuoteTokenTrade = async (event, isInputChecked) => {
-    const {
-      selectedFund,
-      selectedTokensPair,
-      selectedExchange
-    } = this.props.exchange
-    let amount
-    isInputChecked
-      ? (amount = UNLIMITED_ALLOWANCE_IN_BASE_UNITS)
-      : (amount = '0')
-    try {
-      const result = await setAllowaceOnExchangeThroughDrago(
-        selectedFund,
-        selectedTokensPair.quoteToken,
-        selectedExchange,
-        amount
-      )
-      console.log(result)
-      this.props.dispatch(
-        this.updateSelectedTradeTokensPair('quote', isInputChecked)
-      )
-    } catch (error) {
-      console.log(error)
-      utils.notificationError(
-        this.props.notifications.engine,
-        serializeError(error).message
-      )
-    }
-  }
-
-  onToggleAllowanceBaseTokenTrade = async (event, isInputChecked) => {
-    // const { selectedFund, selectedTokensPair } = this.props.exchange
-    // try {
-    //   // var provider = account.source === 'MetaMask' ? window.web3 : api
-    //   var poolApi = null;
-    //   poolApi = new PoolApi(window.web3)
-    //   poolApi.contract.drago.init(selectedFund.details.address)
-    //   const result = await poolApi.contract.drago.setInfiniteAllowace(
-    //     selectedFund.managerAccount,
-    //     this.props.exchange.selectedExchange.tokenTransferProxyAddress,
-    //     selectedTokensPair.baseToken.address,
-    //   )
-    //   console.log(result)
-    //   this.props.dispatch(this.updateSelectedTradeTokensPair('base', true))
-    // } catch (error) {
-    //   console.log(error)
-    // }
-
-    const {
-      selectedFund,
-      selectedTokensPair,
-      selectedExchange
-    } = this.props.exchange
-    let amount
-    isInputChecked
-      ? (amount = UNLIMITED_ALLOWANCE_IN_BASE_UNITS)
-      : (amount = '0')
-    try {
-      const result = await setAllowaceOnExchangeThroughDrago(
-        selectedFund,
-        selectedTokensPair.baseToken,
-        selectedExchange,
-        amount
-      )
-      console.log(result)
-      this.props.dispatch(
-        this.updateSelectedTradeTokensPair('base', isInputChecked)
-      )
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
   onBuySell = async orderType => {
     const {
       selectedTokensPair,
@@ -446,7 +349,7 @@ class OrderBox extends Component {
   }
 
   render() {
-    const { selectedOrder, selectedTokensPair } = this.props.exchange
+    const { selectedOrder } = this.props.exchange
     let buySelected = selectedOrder.orderType === 'bids'
     let sellSelected = selectedOrder.orderType === 'asks'
     if (selectedOrder.takerOrder) {

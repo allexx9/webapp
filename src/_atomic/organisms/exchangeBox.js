@@ -6,6 +6,7 @@ import BigNumber from 'bignumber.js'
 import BoxTitle from '../atoms/boxTitle'
 import ExchangeSelector from '../molecules/exchangeSelector'
 // import FlatButton from 'material-ui/FlatButton'
+import ErcdexAllowance from '../molecules/ercdexAllowance'
 import EthfinexAuth from '../molecules/ethfinexAuth'
 import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types'
@@ -103,13 +104,12 @@ class ExchangeBox extends PureComponent {
       case 'Ethfinex':
         return <EthfinexAuth />
       default:
-        return <div />
+        return <ErcdexAllowance />
     }
   }
 
   render() {
     const { availableRelays, selectedRelay } = this.props.exchange
-    console.log(selectedRelay)
     return (
       <Row>
         <Col xs={12}>

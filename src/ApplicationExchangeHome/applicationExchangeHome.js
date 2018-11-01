@@ -560,7 +560,6 @@ class ApplicationExchangeHome extends Component {
   }
 
   render() {
-    console.log('application exchange 2')
     const {
       user,
       location,

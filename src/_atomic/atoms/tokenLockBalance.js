@@ -18,16 +18,16 @@ export default class TokenLockBalance extends Component {
   }
   render() {
     const now = Math.floor(Date.now() / 1000)
-    console.log(`Now: ${moment().format('MMMM Do YYYY, h:mm:ss a')}`)
-    console.log(
-      `Exp: ${moment
-        .unix(this.props.lockTime)
-        .format('MMMM Do YYYY, h:mm:ss a')}`
-    )
-    console.log(now, Number(this.props.lockTime))
-    now > Number(this.props.lockTime)
-      ? console.log('red')
-      : console.log('green')
+    // console.log(`Now: ${moment().format('MMMM Do YYYY, h:mm:ss a')}`)
+    // console.log(
+    //   `Exp: ${moment
+    //     .unix(this.props.lockTime)
+    //     .format('MMMM Do YYYY, h:mm:ss a')}`
+    // )
+    // console.log(now, Number(this.props.lockTime))
+    // now > Number(this.props.lockTime)
+    //   ? console.log('red')
+    //   : console.log('green')
 
     return now > Number(this.props.lockTime) ? (
       <div

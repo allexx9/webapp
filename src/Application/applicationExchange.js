@@ -108,7 +108,6 @@ class ApplicationExchangePage extends Component {
     //     </MuiThemeProvider>
     //   )
     // }
-    console.log('application exchange')
     const allowedNetworks = [1, 3, 42]
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
