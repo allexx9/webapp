@@ -54,13 +54,6 @@ class ElementNotificationsDrawer extends Component {
     return stateUpdate || propsUpdate
   }
 
-  UNSAFE_componentWillReceiveProps() {
-    // console.log(nextProps.recentTransactions)
-    // if (nextProps.notificationsOpen) {
-    //   // this.detachInterface()
-    // }
-  }
-
   componentDidMount() {
     const that = this
     let runTick = () => {

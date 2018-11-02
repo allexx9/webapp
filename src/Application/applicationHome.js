@@ -11,6 +11,7 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import { connect } from 'react-redux'
 import ElementNotConnected from '../Elements/elementNotConnected'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+import TopMenuLinkDrawer from '../_atomic/molecules/topMenuLinkDrawer'
 import classNames from 'classnames'
 import styles from './application.module.css'
 
@@ -53,8 +54,6 @@ class ApplicationHomePage extends Component {
     api: PropTypes.object.isRequired
   }
 
-  UNSAFE_componentWillMount() {}
-
   componentWillUnmount() {}
 
   static propTypes = {
@@ -70,9 +69,10 @@ class ApplicationHomePage extends Component {
     const { isSyncing, syncStatus, isConnected } = this.props.app
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
-        <Grid fluid className={styles.maincontainer}>
+        <div>
+          {/* <Grid fluid className={styles.maincontainer}> */}
           <Row>
-            <Col xs={12}>
+            <Col xs={12} className={styles.fix}>
               <ApplicationTopBar
                 handleTopBarSelectAccountType={
                   this.handleTopBarSelectAccountType
@@ -92,7 +92,9 @@ class ApplicationHomePage extends Component {
               )}
             </Col>
           </Row>
-        </Grid>
+          {this.props.label === 'VAULT' && <TopMenuLinkDrawer />}
+          {/* </Grid> */}
+        </div>
       </MuiThemeProvider>
     )
   }

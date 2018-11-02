@@ -8,13 +8,13 @@ import ActionAccountBalance from 'material-ui/svg-icons/action/account-balance'
 import ActionHome from 'material-ui/svg-icons/action/home'
 import ActionPolymer from 'material-ui/svg-icons/action/polymer'
 import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
-import FlatButton from 'material-ui/FlatButton'
 import IconButton from 'material-ui/IconButton'
 import IconMenu from 'material-ui/IconMenu'
 import MenuItem from 'material-ui/MenuItem'
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
+import TopMenuLinkLong from '../_atomic/molecules/topMenuLinkLong'
 import styles from './topBarMenuLinksLeft.module.css'
 import utils from '../_utils/utils'
 
@@ -53,27 +53,25 @@ class NavLinksLeft extends Component {
   renderTopLinksLong = links => {
     const activeLink = this.activeSectionPath()
     // let backgroundColorActive = '#054186'
-    const { location } = this.props
-    let labelSytle = { fontWeight: 700 }
-    let buttonStyle
+    let selected
     return links.map(link => {
-      link.to === activeLink
-        ? (buttonStyle = styles.topBarButtonSelected)
-        : (buttonStyle = styles.topBarButton)
+      link.to === activeLink ? (selected = true) : (selected = false)
       return (
-        <FlatButton
+        <TopMenuLinkLong
           key={link.label}
           label={link.label.toUpperCase()}
-          containerElement={
-            <Link
-              to={DS + APP + DS + this.buildUrlPath(location) + DS + link.to}
-            />
+          link={
+            DS +
+            APP +
+            DS +
+            this.buildUrlPath(this.props.location) +
+            DS +
+            link.to
           }
           disableTouchRipple={true}
           hoverColor={THEME_COLOR.drago}
-          className={buttonStyle}
+          selected={selected}
           icon={link.icon}
-          labelStyle={labelSytle}
           // backgroundColor={backgroundColorActive}
         />
       )

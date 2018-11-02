@@ -19,8 +19,7 @@
   float: 'left';
 }
 
-.tab {
-}
+.tab {}
 
 .copyright {
   font-size: 0.9em;
@@ -36,9 +35,10 @@
 
 .maincontainer {
   display: flex !important;
-  min-height: 100vh !important;
   flex-direction: column !important;
   height: 100%;
+  padding-left: 0px !important;
+  padding-right: 0px !important;
 }
 
 .content {
@@ -47,9 +47,15 @@
 }
 
 .comingSoonBlur {
-    max-width: 100%;
-    height: auto;
-    width: auto\9; /* ie8 */
-    padding-left: 5px;
-    /* padding-right: 5px; */
+  max-width: 100%;
+  height: auto;
+  width: auto\9;
+  /* ie8 */
+  padding-left: 5px;
+  /* padding-right: 5px; */
+}
+
+.fix {
+  padding-right: 0px !important;
+  padding-left: 0px !important;
 }

@@ -172,7 +172,7 @@ class NavLinks extends Component {
       menuStyles = { ...menuStyles, ...enabledUserType }
     }
     return (
-      <Toolbar style={{ background: '' }}>
+      <Toolbar style={{ background: '', padding: '0px' }}>
         <ToolbarGroup>
           <ToolbarSeparator style={menuStyles.separator} />
           <ToolbarGroup>

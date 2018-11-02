@@ -189,7 +189,7 @@ class ApplicationHome extends PureComponent {
         </div>
         <Row>
           <Col xs={12}>
-            <div className={styles.shadow}>
+            <div>
               <Row>
                 <Col xs={12}>
                   <div className={styles.mainlogo}>
@@ -387,15 +387,13 @@ class ApplicationHome extends PureComponent {
               </Row> */}
             </div>
           </Col>
-          <Col xs={12}>
-            <ElementBottomStatusBar
-              blockNumber={endpoint.prevBlockNumber}
-              networkName={endpoint.networkInfo.name}
-              networkError={endpoint.networkError}
-              networkStatus={endpoint.networkStatus}
-            />
-          </Col>
         </Row>
+        <ElementBottomStatusBar
+          blockNumber={endpoint.prevBlockNumber}
+          networkName={endpoint.networkInfo.name}
+          networkError={endpoint.networkError}
+          networkStatus={endpoint.networkStatus}
+        />
         {this.state.showCommunityButtons && (
           <div className={styles.telegramButtonContainer}>
             <div>

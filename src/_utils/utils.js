@@ -2390,10 +2390,10 @@ class utilities {
     return liquidity
   }
 
-  shallowEqual(objA, objB) {
+  shallowEqual(objA, objB, component = '') {
     //
     if (objA === objB) {
-      // console.log(`${this.constructor.name} -> objA === objB`)
+      // console.log(`${this.constructor.name} -> objA === objB -> ${component}`)
       return true
     }
 
@@ -2403,7 +2403,7 @@ class utilities {
       typeof objB !== 'object' ||
       objB === null
     ) {
-      // console.log(`${this.constructor.name} -> objA !== 'object'`)
+      // console.log(`${this.constructor.name} -> objA !== 'object' -> ${component}`)
       return false
     }
 
@@ -2411,7 +2411,7 @@ class utilities {
     let keysB = Object.keys(objB)
 
     if (keysA.length !== keysB.length) {
-      // console.log(`${this.constructor.name} -> keysA.length`)
+      // console.log(`${this.constructor.name} -> keysA.length  -> ${component}`)
       return false
     }
 
@@ -2421,7 +2421,7 @@ class utilities {
       if (!bHasOwnProperty(keysA[i]) || objA[keysA[i]] !== objB[keysA[i]]) {
         // console.log(objA[keysA[i]], objB[keysA[i]])
         // console.log(
-        //   `${this.constructor.name} -> Test for A's keys different from B`
+        //   `${this.constructor.name} -> Test for A's keys different from B  -> ${component}`
         // )
         return false
       }

@@ -81,7 +81,7 @@ class ApplicationConfigPage extends Component {
       <MuiThemeProvider muiTheme={muiTheme}>
         <Grid fluid className={styles.maincontainer}>
           <Row>
-            <Col xs={12}>
+            <Col xs={12} className={styles.fix}>
               {/* <ApplicationTabsMenu /> */}
               <ApplicationTopBar
                 handleTopBarSelectAccountType={

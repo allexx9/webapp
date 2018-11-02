@@ -1,5 +1,5 @@
-
 @keyframes checked-anim {
+
     /* 50% {
         width: 3000px;
         height: 3000px;
@@ -10,6 +10,7 @@
         border-bottom-right-radius: 90%;
     }
 }
+
 @keyframes not-checked-anim {
     0% {
         width: 300px;
@@ -53,7 +54,7 @@
 .trigger {
     position: absolute;
     top: 12px;
-    left: 25px;
+    left: 8px;
     /* background: #03A9F4; */
     width: 30px;
     height: 5px;
@@ -68,34 +69,37 @@
     display: none;
 }
 
-.menuToggle:checked + .trigger {
+.menuToggle:checked+.trigger {
     top: 35px;
 }
 
-.menuToggle:checked + .trigger {
+.menuToggle:checked+.trigger {
     width: 20px;
     top: 2px;
     left: 18px;
 }
+
 .menu {
     z-index: 1500;
     position: absolute;
-    margin: 0; padding: 0;
-    width: 65px;
-    height: 65px;
+    margin: 0;
+    padding: 0;
+    width: 66px;
+    height: 66px;
     background-color: #fff;
     border-bottom-right-radius: 85%;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.26);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.26);
 }
 
 .burgerContainer {
     display: none;
 }
 
-.menuToggle:checked + .trigger + .menu  {
+.menuToggle:checked+.trigger+.menu {
     animation: checked-anim .2s ease both;
 }
-.menuToggle:checked + .trigger + .menu > .burgerContainer {
+
+.menuToggle:checked+.trigger+.menu>.burgerContainer {
     display: block;
 }
 

@@ -201,10 +201,10 @@ export class App extends Component {
           </div>
         ) : (
           <div>
-            <NotificationSystem
+            {/* <NotificationSystem
               ref={n => (this._notificationSystem = n)}
               style={notificationStyle}
-            />
+            /> */}
             <Router history={history}>
               <Switch>
                 <Route

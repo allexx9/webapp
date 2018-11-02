@@ -2,31 +2,36 @@
 
 @-webkit-keyframes slideInFromBottom {
   0% {
-    opacity:0;
+    opacity: 0;
     transform: translateX(-100%);
   }
+
   100% {
-    opacity:1;
+    opacity: 1;
     transform: translateX(0);
   }
 }
+
 @-moz-keyframes slideInFromBottom {
   0% {
-    opacity:0;
+    opacity: 0;
     transform: translateX(-100%);
   }
+
   100% {
-    opacity:1;
+    opacity: 1;
     transform: translateX(0);
   }
 }
+
 @keyframes slideInFromBottom {
   0% {
-    opacity:0;
+    opacity: 0;
     transform: translateX(-100%);
   }
+
   100% {
-    opacity:1;
+    opacity: 1;
     transform: translateX(0);
   }
 }
@@ -36,7 +41,7 @@
   padding-left: 2px;
 }
 
-.progressBarContainer{
+.progressBarContainer {
   padding-bottom: 10px;
 }
 
@@ -46,7 +51,7 @@
   padding-top: 8px;
   position: absolute;
   right: 5px;
-  overflow:hidden;
+  overflow: hidden;
 
 }
 
@@ -54,35 +59,37 @@
   padding-left: 5px;
 }
 
-.actionsContainer{
-padding-top: 25px;
+.actionsContainer {
+  padding-top: 25px;
 }
 
 .telegramButtonContainer {
   /* opacity:0;  make things invisible upon start */
-  -webkit-animation: slideInFromBottom ease-in 1;  /* call our keyframe named slideInFromBottom, use animattion ease-in and repeat it only 1 time */
+  -webkit-animation: slideInFromBottom ease-in 1;
+  /* call our keyframe named slideInFromBottom, use animattion ease-in and repeat it only 1 time */
   -moz-animation: slideInFromBottom ease-in 1;
   animation: slideInFromBottom ease-in 1;
 
-  -webkit-animation-fill-mode:forwards;  /* this makes sure that after animation is done we remain at the last keyframe value (opacity: 1)*/
-  -moz-animation-fill-mode:forwards;
-  animation-fill-mode:forwards;
+  -webkit-animation-fill-mode: forwards;
+  /* this makes sure that after animation is done we remain at the last keyframe value (opacity: 1)*/
+  -moz-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
 
-  -webkit-animation-duration:0.5s;
-  -moz-animation-duration:0.5s;
-  animation-duration:0.5s;
-  opacity:0;  /* make things invisible upon start */
+  -webkit-animation-duration: 0.5s;
+  -moz-animation-duration: 0.5s;
+  animation-duration: 0.5s;
+  opacity: 0;
+  /* make things invisible upon start */
   padding-top: 24px;
   padding-bottom: 24px;
   position: fixed;
-    right: 25px;
-    bottom: 15px;
+  right: 25px;
+  bottom: 15px;
 }
 
 .body {
-  background-color: cornflower;
-  background-size: cover;
-  background-repeat: no-repeat;
+  /* background-size: cover;
+  background-repeat: no-repeat; */
   width: 100%;
   height: 100%;
   text-align: center;
@@ -95,10 +102,10 @@ padding-top: 25px;
 }
 
 @supports (-webkit-appearance:none) {
-  .shadow {  
+  .shadow {
     box-shadow: -60px 0px 90px -90px #000000, 60px 0px 90px -90px #000000 !important;
   }
-} 
+}
 
 .cards {
   padding-right: 10px;
@@ -117,11 +124,11 @@ padding-top: 25px;
 
 }
 
-.sloganContainer{
+.sloganContainer {
   height: 100%;
 }
 
-.slogan{
+.slogan {
   margin: auto;
 }
 
@@ -135,7 +142,7 @@ padding-top: 25px;
 .txtDottedYellow {
   color: #ffae00;
   text-decoration: underline dotted;
-  text--position: under;
+  text-underline-position: under;
 }
 
 .txtDotted {
