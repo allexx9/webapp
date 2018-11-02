@@ -19,6 +19,7 @@ import styles from './elementListAssets.module.css'
 
 import * as Colors from 'material-ui/styles/colors'
 // import AssetChart from '../../_atomic/atoms/assetChart'
+import AssetChartChartist from '../../_atomic/atoms/assetChartChartist'
 import AssetChartPlotly from '../../_atomic/atoms/assetChartPlotly'
 import BigNumber from 'bignumber.js'
 import TokenIcon from '../../_atomic/atoms/tokenIcon'
@@ -219,7 +220,8 @@ class ElementListAssets extends PureComponent {
             //   <AssetChart data={data} />
             // </div>
             <div className={styles.chart}>
-              <AssetChartPlotly data={data} />{' '}
+              {/* <AssetChartPlotly data={data} />{' '} */}
+              <AssetChartChartist data={data} />
             </div>
           )
         } else {

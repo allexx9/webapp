@@ -96,7 +96,7 @@ const candlesGroupWebsocket$ = (relay, networkId, symbols) => {
       })
     })
     websocket.onmessage = msg => {
-      // console.log('WebSocket message.');
+      // console.log('WebSocket message.', msg.data)
       let data = JSON.parse(msg.data)
       if (typeof data.event !== undefined) {
         if (data.event === 'subscribed') {

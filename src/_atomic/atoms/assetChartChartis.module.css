@@ -1,0 +1,14 @@
+.ct-series-a .ct-line {
+  /* Set the colour of this series line */
+  stroke: blue;
+  /* Control the thikness of your lines */
+  stroke-width: 2px;
+}
+
+.ct-series-a .ct-area {
+  fill: blue;
+}
+
+.divider {
+  display: flex;
+}

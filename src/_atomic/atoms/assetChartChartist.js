@@ -1,166 +1,180 @@
+import Chartist from 'chartist'
 import ChartistGraph from 'react-chartist'
-import PropTypes from 'prop-types'
 import React, { Component } from 'react'
+// import dataSerie from './dataSerie.json'
+// import dataSerie2 from './dataSerie2.json'
+import './assetChartChartis.module.css'
+import PropTypes from 'prop-types'
 import moment from 'moment'
+import styles from './assetChartChartis.module.css'
 
 class AssetChartChartist extends Component {
-  static propTypes = {
-    data: PropTypes.object.isRequired
-  }
+  // static propTypes = {
+  //   data: PropTypes.array.isRequired
+  // }
 
-  unpack = data => {
-    return Object.keys(data).map(key => {
+  mapData = arr => {
+    return arr.map(el => {
+      console.log(el)
       return {
-        y: data[key].close,
-        x: new Date(data[key].date)
+        x: new Date(el[0]),
+        y: el[2]
       }
     })
   }
+  getHour = (dayOffset, hourOffset) =>
+    parseInt(
+      moment()
+        .startOf('day')
+        .add(dayOffset, 'days')
+        .add(hourOffset, 'hours')
+        .format('x')
+    )
 
-  unpackY = data => {
-    return Object.keys(data).map(key => {
-      return data[key].close
-    })
+  getTicks = () => {
+    const oneDayAgo = moment()
+      .startOf('hour')
+      .subtract(24, 'hours')
+      .format('x')
+    // calculating timestamps for yesterday and today
+    const ticks = [
+      this.getHour(-1, 0), // 00:00
+      this.getHour(-1, 6), // 06:00
+      this.getHour(-1, 12), // 12:00
+      this.getHour(-1, 18), // 18:00
+      this.getHour(0, 0), // 00:00
+      this.getHour(0, 6), // 06:00
+      this.getHour(0, 12), // 12:00
+      this.getHour(0, 18) // 18:00
+    ]
+    // return only the tickers relevant to the last 24 hours
+    return ticks.filter(tick => tick >= oneDayAgo)
   }
-
-  unpackX = data => {
-    return Object.keys(data).map(key => {
-      return data[key].date
-    })
-  }
-
   render() {
-    // console.log(this.props.data.data)
-    let formatData = this.unpack(this.props.data.data)
-    console.log(formatData)
-    // let lineChartData = {
-    //   // labels: [1, 2, 3, 4, 5, 6, 7, 8],
-    //   series: [this.unpack(this.props.data)]
-    // }
-
-    let dataX = this.unpackX(this.props.data.data)
-    let dataY = this.unpackY(this.props.data.data)
-    let testData2 = {
-      labels: dataX,
-      series: [{ name: 'series-1', data: dataY }]
+    const dataSerie = [
+      [
+        1540998000000,
+        0.00085441,
+        0.0008476,
+        0.00085441,
+        0.0008476,
+        233.56335304
+      ],
+      [
+        1540980000000,
+        0.00085454,
+        0.00085454,
+        0.00085454,
+        0.00085454,
+        972.01405623
+      ],
+      [
+        1540958400000,
+        0.00086321,
+        0.0008632,
+        0.00086321,
+        0.0008632,
+        1566.59222941
+      ],
+      [
+        1540929600000,
+        0.00087003,
+        0.00086322,
+        0.00087003,
+        0.00086322,
+        102.63868104
+      ],
+      [
+        1540926000000,
+        0.00087008,
+        0.00087003,
+        0.00087008,
+        0.00087003,
+        103.59862629
+      ],
+      [1540922400000, 0.00087008, 0.00087009, 0.00087009, 0.00087008, 636]
+    ]
+    const dataSerie2 = [
+      [1541001600000, 0.0038948, 0.0039, 0.0039, 0.0038926, 1376.37723787],
+      [
+        1540998000000,
+        0.0039051,
+        0.0038735,
+        0.0039051,
+        0.0038735,
+        3034.99852747
+      ],
+      [1540994400000, 0.0039277, 0.0039299, 0.0039299, 0.003907, 7905.73302115],
+      [1540983600000, 0.0039292, 0.0039169, 0.0039292, 0.0039169, 7994.29988],
+      [1540972800000, 0.0039412, 0.0039412, 0.0039412, 0.0039412, 676.35704018],
+      [1540969200000, 0.0039412, 0.0039412, 0.0039412, 0.0039412, 337.4761908],
+      [1540962000000, 0.0039257, 0.0039257, 0.0039257, 0.0039257, 52.64],
+      [1540954800000, 0.0039412, 0.003933, 0.0039412, 0.003933, 319.14428208],
+      [1540951200000, 0.0039412, 0.0039412, 0.0039412, 0.003941, 11217],
+      [1540944000000, 0.0039344, 0.0039348, 0.0039354, 0.0039344, 686.53491082],
+      [1540940400000, 0.0039314, 0.0039314, 0.0039314, 0.0039314, 25.40714957],
+      [1540936800000, 0.0039428, 0.0039425, 0.0039428, 0.0039425, 9812.3193431],
+      [1540922400000, 0.0039523, 0.0039514, 0.0039762, 0.0039514, 224.24263975]
+    ]
+    const type = 'Line'
+    let options = {
+      axisY: {
+        showGrid: false, // removes the grid
+        // labelOffset: {
+        //   x: 10
+        // }
+        showLabel: false // removes the Y label
+      },
+      axisX: {
+        type: Chartist.FixedScaleAxis,
+        low: parseInt(
+          moment()
+            .startOf('hour')
+            .subtract(24, 'hours')
+            .format('x')
+        ),
+        high: parseInt(
+          moment()
+            .startOf('hour')
+            .format('x')
+        ),
+        ticks: this.getTicks(),
+        labelInterpolationFnc: value => moment(value).format('HH:mm'),
+        showGrid: false,
+        labelOffset: {
+          x: -20
+        }
+      },
+      showPoint: false,
+      showArea: true,
+      lineSmooth: false
     }
-
-    let testData = {
-      // labels: ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7', 'W8', 'W9', 'W10'],
+    const firstChart = {
       series: [
-        [
-          { x: new Date(143134652600), y: 53 },
-          { x: new Date(143334652600), y: 40 },
-          { x: new Date(143354652600), y: 45 },
-          { x: new Date(143356652600), y: 41 },
-          { x: new Date(143366652600), y: 40 },
-          { x: new Date(143368652600), y: 38 },
-          { x: new Date(143378652600), y: 34 },
-          { x: new Date(143568652600), y: 32 },
-          { x: new Date(143569652600), y: 18 },
-          { x: new Date(143579652600), y: 11 }
-        ]
-
-        // name: 'remaining',
-        // data: [formatData]
-        // data: [
-        //   { x: new Date('2015-01-27T15:00:00Z'), y: 531 },
-        //   { x: new Date('2015-01-27T16:00:00Z'), y: 534 },
-        //   { x: new Date('2015-01-27T17:00:00Z'), y: 532 },
-        //   { x: new Date('2015-01-27T18:00:00Z'), y: 535 },
-        //   { x: new Date('2015-01-27T19:00:00Z'), y: 533 },
-        //   { x: new Date('2015-01-27T20:00:00Z'), y: 533 },
-        //   { x: new Date('2015-01-27T21:00:00Z'), y: 532 },
-        //   { x: new Date('2015-01-27T22:00:00Z'), y: 527 },
-        //   { x: new Date('2015-01-27T23:00:00Z'), y: 532 },
-        //   { x: new Date('2015-01-28T01:00:00Z'), y: 533 },
-        //   { x: new Date('2015-01-28T02:00:00Z'), y: 527 },
-        //   { x: new Date('2015-01-28T03:00:00Z'), y: 528 },
-        //   { x: new Date('2015-01-28T04:00:00Z'), y: 524 },
-        //   { x: new Date('2015-01-28T05:00:00Z'), y: 531 },
-        //   { x: new Date('2015-01-28T06:00:00Z'), y: 526 },
-        //   { x: new Date('2015-01-28T07:00:00Z'), y: 529 },
-        //   { x: new Date('2015-01-28T08:00:00Z'), y: 524 },
-        //   { x: new Date('2015-01-28T09:00:00Z'), y: 524 },
-        //   { x: new Date('2015-01-28T10:00:00Z'), y: 516 },
-        //   { x: new Date('2015-01-28T11:00:00Z'), y: 517 },
-        //   { x: new Date('2015-01-28T12:00:00Z'), y: 517 },
-        //   { x: new Date('2015-01-28T13:00:00Z'), y: 512 },
-        //   { x: new Date('2015-01-28T14:00:00Z'), y: 510 },
-        //   { x: new Date('2015-01-28T15:00:00Z'), y: 504 },
-        //   { x: new Date('2015-01-28T16:00:00Z'), y: 509 },
-        //   { x: new Date('2015-01-28T17:00:00Z'), y: 506 },
-        //   { x: new Date('2015-01-28T18:00:00Z'), y: 501 },
-        //   { x: new Date('2015-01-28T19:00:00Z'), y: 501 },
-        //   { x: new Date('2015-01-28T20:00:00Z'), y: 500 },
-        //   { x: new Date('2015-01-28T21:00:00Z'), y: 500 },
-        //   { x: new Date('2015-01-28T22:00:00Z'), y: 498 },
-        //   { x: new Date('2015-01-28T23:00:00Z'), y: 496 },
-        //   { x: new Date('2015-01-29T01:00:00Z'), y: 497 },
-        //   { x: new Date('2015-01-29T02:00:00Z'), y: 506 },
-        //   { x: new Date('2015-01-29T03:00:00Z'), y: 508 },
-        //   { x: new Date('2015-01-29T04:00:00Z'), y: 514 },
-        //   { x: new Date('2015-01-29T05:00:00Z'), y: 511 },
-        //   { x: new Date('2015-01-29T06:00:00Z'), y: 515 },
-        //   { x: new Date('2015-01-29T07:00:00Z'), y: 515 },
-        //   { x: new Date('2015-01-29T08:00:00Z'), y: 521 },
-        //   { x: new Date('2015-01-29T09:00:00Z'), y: 521 },
-        //   { x: new Date('2015-01-29T10:00:00Z'), y: 519 },
-        //   { x: new Date('2015-01-29T11:00:00Z'), y: 512 },
-        //   { x: new Date('2015-01-29T12:00:00Z'), y: 510 },
-        //   { x: new Date('2015-01-29T13:00:00Z'), y: 512 },
-        //   { x: new Date('2015-01-29T14:00:00Z'), y: 511 },
-        //   { x: new Date('2015-01-29T15:00:00Z'), y: 503 },
-        //   { x: new Date('2015-01-29T16:00:00Z'), y: 508 },
-        //   { x: new Date('2015-01-29T17:00:00Z'), y: 503 },
-        //   { x: new Date('2015-01-29T18:00:00Z'), y: 504 },
-        //   { x: new Date('2015-01-29T19:00:00Z'), y: 505 },
-        //   { x: new Date('2015-01-29T20:00:00Z'), y: 508 },
-        //   { x: new Date('2015-01-29T21:00:00Z'), y: 501 },
-        //   { x: new Date('2015-01-29T22:00:00Z'), y: 506 },
-        //   { x: new Date('2015-01-29T23:00:00Z'), y: 505 },
-        //   { x: new Date('2015-01-30T01:00:00Z'), y: 507 },
-        //   { x: new Date('2015-01-30T02:00:00Z'), y: 511 },
-        //   { x: new Date('2015-01-30T03:00:00Z'), y: 512 },
-        //   { x: new Date('2015-01-30T04:00:00Z'), y: 511 },
-        //   { x: new Date('2015-01-30T05:00:00Z'), y: 513 },
-        //   { x: new Date('2015-01-30T06:00:00Z'), y: 512 },
-        //   { x: new Date('2015-01-30T07:00:00Z'), y: 518 },
-        //   { x: new Date('2015-01-30T08:00:00Z'), y: 520 },
-        //   { x: new Date('2015-01-30T09:00:00Z'), y: 519 },
-        //   { x: new Date('2015-01-30T10:00:00Z'), y: 518 },
-        //   { x: new Date('2015-01-30T11:00:00Z'), y: 523 },
-        //   { x: new Date('2015-01-30T12:00:00Z'), y: 522 },
-        //   { x: new Date('2015-01-30T13:00:00Z'), y: 521 },
-        //   { x: new Date('2015-01-30T14:00:00Z'), y: 524 },
-        //   { x: new Date('2015-01-30T15:00:00Z'), y: 522 }
-        // ]
+        {
+          name: 'series-1',
+          data: this.mapData(dataSerie)
+        }
+      ]
+    }
+    const secondChart = {
+      series: [
+        {
+          name: 'series-2',
+          data: this.mapData(dataSerie2)
+        }
       ]
     }
 
-    let lineChartOptions = {
-      fullWidth: true,
-      // showArea: false,
-      // lineSmooth: false,
-      fullWidth: true,
-      axisX: {
-        divisor: 5,
-        labelInterpolationFnc: function(value) {
-          return moment(value).format('H')
-        }
-      }
-      // axisY: {
-      //   onlyInteger: true
-      // }
-      // showArea: true
-    }
     return (
-      <ChartistGraph
-        data={testData2}
-        options={lineChartOptions}
-        type={'Line'}
-      />
+      <div className="divider">
+        <div className="chart">
+          <ChartistGraph data={firstChart} options={options} type={type} />
+          <ChartistGraph data={secondChart} options={options} type={type} />
+        </div>
+      </div>
     )
   }
 }
+
 export default AssetChartChartist
