@@ -5,11 +5,13 @@ import TextField from 'material-ui/TextField'
 class FilterPoolsField extends Component {
   static propTypes = {
     filter: PropTypes.func.isRequired,
-    floatingLabelText: PropTypes.string.isRequired
+    floatingLabelText: PropTypes.string.isRequired,
+    hintText: PropTypes.object.isRequired || PropTypes.string.isRequired
   }
 
   static defaultProps = {
-    floatingLabelText: 'Search pools'
+    floatingLabelText: 'Search pools',
+    hintText: ''
   }
 
   filter = (event, newValue) => {
@@ -19,7 +21,7 @@ class FilterPoolsField extends Component {
   render() {
     return (
       <TextField
-        hintText=""
+        hintText={this.props.hintText}
         floatingLabelText={this.props.floatingLabelText}
         floatingLabelFixed={true}
         onChange={this.filter}

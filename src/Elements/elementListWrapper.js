@@ -1,8 +1,11 @@
 // import Immutable from 'immutable'
+import { Col, Grid, Row } from 'react-flexbox-grid'
 import ContentLoader from 'react-content-loader'
+import FilterPoolsField from '../_atomic/atoms/filterPoolsField'
 import Pagination from 'material-ui-pagination'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
+import SearchIcon from '../_atomic/atoms/searchIcon'
 import styles from './elementListWrapper.module.css'
 import utils from '../_utils/utils'
 
@@ -14,7 +17,9 @@ class ElementListWrapper extends Component {
     autoLoading: PropTypes.bool,
     pagination: PropTypes.object,
     tableHeight: PropTypes.number,
-    renderOptimization: PropTypes.bool
+    renderOptimization: PropTypes.bool,
+    filterTool: PropTypes.bool,
+    filterKeys: PropTypes.array
   }
 
   static defaultProps = {
@@ -25,6 +30,8 @@ class ElementListWrapper extends Component {
       display: 5,
       number: 1
     },
+    filterTool: false,
+    filterKeys: [],
     tableHeight: 650,
     renderOptimization: true
   }
@@ -33,7 +40,8 @@ class ElementListWrapper extends Component {
     total: Math.ceil(this.props.list.length / 5),
     display: this.props.pagination.display,
     number: this.props.pagination.number,
-    loading: true
+    loading: true,
+    filter: ''
   }
 
   td = null
@@ -71,6 +79,32 @@ class ElementListWrapper extends Component {
     return stateUpdate || propsUpdate
   }
 
+  filter = filter => {
+    console.log(filter)
+    this.setState(
+      {
+        filter
+      },
+      this.filterFunds
+    )
+  }
+
+  filterPools = list => {
+    const { filter } = this.state
+    const filterValue = filter.trim().toLowerCase()
+    const filterLength = filterValue.length
+    return filterLength === 0
+      ? list
+      : list.filter(item =>
+          this.props.filterKeys.reduce((acc, key) => {
+            return (
+              acc ||
+              item[key].toLowerCase().slice(0, filterLength) === filterValue
+            )
+          }, false)
+        )
+  }
+
   render() {
     // Exstracting the list form props
     // and checking if the list === null
@@ -101,23 +135,40 @@ class ElementListWrapper extends Component {
         </div>
       )
     }
-    const slicedList = list.slice(
-      this.state.number * this.state.display - this.state.display,
-      this.state.number * this.state.display
+    const slicedList = this.filterPools(
+      list.slice(
+        this.state.number * this.state.display - this.state.display,
+        this.state.number * this.state.display
+      )
     )
     const newProps = { list: slicedList, ...rest }
     return (
-      <div>
-        <div className={styles.paginatorContainer}>
-          <Pagination
-            total={this.state.total}
-            current={this.state.number}
-            display={this.state.display}
-            onChange={number => this.setState({ number })}
-          />
-        </div>
-        <div>{React.cloneElement(this.props.children, newProps)}</div>
-      </div>
+      <Row>
+        <Col xs={12}>
+          <div className={styles.toolsContainer}>
+            <div className={styles.paginatorTool}>
+              <Pagination
+                total={this.state.total}
+                current={this.state.number}
+                display={this.state.display}
+                onChange={number => this.setState({ number })}
+              />
+            </div>
+            <div className={styles.filterTool}>
+              {this.props.filterTool && (
+                <FilterPoolsField
+                  filter={this.filter}
+                  hintText={<SearchIcon text={'Search...'} />}
+                  floatingLabelText=""
+                />
+              )}
+            </div>
+          </div>
+        </Col>
+        <Col xs={12} className={styles.list}>
+          <div>{React.cloneElement(this.props.children, newProps)}</div>
+        </Col>
+      </Row>
     )
   }
 }
