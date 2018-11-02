@@ -109,6 +109,7 @@ class ElementListWrapper extends Component {
     // Exstracting the list form props
     // and checking if the list === null
     const { list, ...rest } = this.props
+    const { filter } = this.state
     if (
       Object.keys(list).length === 0 &&
       this.state.loading &&
@@ -135,12 +136,21 @@ class ElementListWrapper extends Component {
         </div>
       )
     }
-    const slicedList = this.filterPools(
-      list.slice(
-        this.state.number * this.state.display - this.state.display,
-        this.state.number * this.state.display
-      )
-    )
+    // const slicedList = this.filterPools(
+    //   list.slice(
+    //     this.state.number * this.state.display - this.state.display,
+    //     this.state.number * this.state.display
+    //   )
+    // )
+
+    const slicedList =
+      filter === ''
+        ? list.slice(
+            this.state.number * this.state.display - this.state.display,
+            this.state.number * this.state.display
+          )
+        : this.filterPools(list)
+
     const newProps = { list: slicedList, ...rest }
     return (
       <Row>

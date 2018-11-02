@@ -258,6 +258,8 @@ class PageDashboardDragoManager extends Component {
                     <ElementListWrapper
                       list={dragoList}
                       loading={this.state.loading}
+                      filterTool={true}
+                      filterKeys={['name', 'symbol']}
                       autoLoading={false}
                     >
                       <ElementListSupply />

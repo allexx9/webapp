@@ -16,6 +16,7 @@ import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types'
 import RaisedButton from 'material-ui/RaisedButton'
 import React, { PureComponent } from 'react'
+import SearchIcon from '../_atomic/atoms/searchIcon'
 import WalletSetup from '../_atomic/organisms/walletSetup'
 import _ from 'lodash'
 import styles from './applicationHome.module.css'
@@ -268,7 +269,11 @@ class ApplicationHome extends PureComponent {
                       <Col xs={12}>
                         <div className={styles.filterBox}>
                           Search for pools
-                          <FilterPoolsField filter={this.filter} />
+                          <FilterPoolsField
+                            filter={this.filter}
+                            hintText={<SearchIcon text={'Search...'} />}
+                            floatingLabelText=""
+                          />
                         </div>
                       </Col>
                       <Col xs={12}>
