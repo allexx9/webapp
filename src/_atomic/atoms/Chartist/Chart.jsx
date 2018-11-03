@@ -1,26 +1,48 @@
+import './chart.css'
 import Chartist from 'chartist'
 import ChartistGraph from 'react-chartist'
 import React, { Component } from 'react'
 // import dataSerie from './dataSerie.json'
 // import dataSerie2 from './dataSerie2.json'
-import './assetChartChartis.module.css'
 // import 'chartist/dist/chartist.min.css'
 import PropTypes from 'prop-types'
 import moment from 'moment'
 // import styles from './assetChartChartis.module.css'
 
 class AssetChartChartist extends Component {
-  // static propTypes = {
-  //   data: PropTypes.array.isRequired
-  // }
+  static propTypes = {
+    data: PropTypes.array.isRequired
+  }
 
-  shouldComponentUpdate = () => {
+  state = {
+    prevLastPointEpoch: {}
+  }
+
+  componentDidMount = () => {
+    const data = this.props.data
+    this.setState({
+      prevLastPointEpoch: data[data.length - 1].epoch
+    })
+  }
+
+  shouldComponentUpdate = nextProps => {
+    const nextData = nextProps.data
+    // console.log(nextData[nextData.length - 1].epoch)
+    // console.log(this.state.prevLastPointEpoch)
+    if (nextData[nextData.length - 1].epoch === this.state.prevLastPointEpoch) {
+      // console.log('No new data in chart')
+      return false
+    }
+    this.setState({
+      prevLastPointEpoch: nextData[nextData.length - 1].epoch
+    })
+    console.log('NEW data in chart')
     return false
   }
 
   mapData = arr => {
+    // console.log(arr)
     return arr.map(el => {
-      console.log(el)
       return {
         x: new Date(el.date),
         y: el.close
@@ -59,11 +81,16 @@ class AssetChartChartist extends Component {
     const dataSerie = this.props.data
     const type = 'Line'
     let options = {
+      chartPadding: 0,
+      width: 332,
+      height: 94,
+      fullWidth: true,
       axisY: {
         showGrid: false, // removes the grid
-        // labelOffset: {
-        //   x: 10
-        // }
+        labelOffset: {
+          x: 10
+        },
+        offset: 2,
         showLabel: false // removes the Y label
       },
       axisX: {
@@ -83,11 +110,13 @@ class AssetChartChartist extends Component {
         labelInterpolationFnc: value => moment(value).format('HH:mm'),
         showGrid: false,
         labelOffset: {
-          x: -20
+          x: 0,
+          y: 0
         }
+        // offset: 0
       },
       showPoint: false,
-      showArea: true,
+      showArea: false,
       lineSmooth: false
     }
     const firstChart = {

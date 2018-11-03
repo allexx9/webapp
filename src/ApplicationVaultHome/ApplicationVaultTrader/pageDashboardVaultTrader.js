@@ -258,6 +258,8 @@ class PageDashboardVaultTrader extends Component {
                     <div className={styles.sectionParagraph}>Your vaults:</div>
                     <ElementListWrapper
                       list={vaultBalances}
+                      filterTool={true}
+                      filterKeys={['name', 'symbol']}
                       autoLoading={false}
                     >
                       <ElementListBalances />

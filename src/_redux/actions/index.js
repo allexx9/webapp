@@ -11,7 +11,7 @@ import drago from './drago_actions'
 import endpoint from './endpoint_actions'
 import exchange from './exchange_actions'
 import notifications from './notifications_actions'
-import tokens from './tokens'
+import tokens from './tokens_actions'
 import transactions from './transactions'
 import vault from './vault_actions'
 

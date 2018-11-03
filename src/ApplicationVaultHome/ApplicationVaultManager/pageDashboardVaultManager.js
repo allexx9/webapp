@@ -268,6 +268,8 @@ class PageDashboardVaultManager extends Component {
                     <ElementListWrapper
                       list={vaultList}
                       autoLoading={false}
+                      filterTool={true}
+                      filterKeys={['name', 'symbol']}
                       renderOptimization={false}
                     >
                       <ElementListSupply />
