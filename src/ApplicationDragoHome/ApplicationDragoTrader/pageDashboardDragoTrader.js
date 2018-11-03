@@ -153,9 +153,6 @@ class PageDashboardDragoTrader extends Component {
         zIndex: 1000
       }
     }
-    // console.log(this.props)
-    // console.log(this.props.endpoint.accounts[0].address)
-
     const listAccounts = accounts.map((account, key) => {
       return (
         <Col xs={6} key={account.name + key}>
@@ -259,7 +256,8 @@ class PageDashboardDragoTrader extends Component {
                     <ElementListWrapper
                       list={dragoBalances}
                       autoLoading={false}
-                      // dragoDetails={}
+                      filterTool={true}
+                      filterKeys={['name', 'symbol']}
                       // loading={this.state.loading}
                     >
                       <ElementListBalances />

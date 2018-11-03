@@ -1,6 +1,3 @@
-// Copyright 2016-2017 Gabrele Rigo
-
-import * as Colors from 'material-ui/styles/colors'
 import { CircularProgress } from 'material-ui'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'

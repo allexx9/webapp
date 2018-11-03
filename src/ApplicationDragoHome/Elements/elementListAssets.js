@@ -19,10 +19,11 @@ import styles from './elementListAssets.module.css'
 
 import * as Colors from 'material-ui/styles/colors'
 // import AssetChart from '../../_atomic/atoms/assetChart'
-import AssetChartPlotly from '../../_atomic/atoms/assetChartPlotly'
+import AssetChartChartist from '../../_atomic/atoms/Chartist/Chart'
+// import AssetChartPlotly from '../../_atomic/atoms/assetChartPlotly'
 import BigNumber from 'bignumber.js'
 import TokenIcon from '../../_atomic/atoms/tokenIcon'
-import moment from 'moment'
+// import moment from 'moment'
 
 // import ChartBox from '../../_atomic/organisms/chartBox'
 
@@ -70,6 +71,15 @@ class ElementListAssets extends PureComponent {
     this._sort = this._sort.bind(this)
   }
 
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   let stateUpdate = true
+  //   let propsUpdate = true
+  //   propsUpdate = !utils.shallowEqual(this.props.list, nextProps.list)
+  //   stateUpdate = !utils.shallowEqual(this.state, nextState)
+  //   console.log(nextProps.assetsChart)
+  //   return true
+  // }
+
   UNSAFE_componentWillReceiveProps(nextProps) {
     const { list } = nextProps
     const sortedList = list
@@ -96,6 +106,7 @@ class ElementListAssets extends PureComponent {
       useDynamicRowHeight
     } = this.state
     const rowGetter = ({ index }) => this._getDatum(sortedList, index)
+    // console.log('render asset list')
     return (
       <Row>
         <Col xs={12}>
@@ -219,7 +230,8 @@ class ElementListAssets extends PureComponent {
             //   <AssetChart data={data} />
             // </div>
             <div className={styles.chart}>
-              <AssetChartPlotly data={data} />{' '}
+              {/* <AssetChartPlotly data={data} />{' '} */}
+              <AssetChartChartist data={data} key={'chart' + token.symbol} />
             </div>
           )
         } else {

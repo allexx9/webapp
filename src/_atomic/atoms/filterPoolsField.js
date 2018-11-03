@@ -2,9 +2,16 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import TextField from 'material-ui/TextField'
 
-class FilterFunds extends Component {
+class FilterPoolsField extends Component {
   static propTypes = {
-    filter: PropTypes.func.isRequired
+    filter: PropTypes.func.isRequired,
+    floatingLabelText: PropTypes.string.isRequired,
+    hintText: PropTypes.object.isRequired || PropTypes.string.isRequired
+  }
+
+  static defaultProps = {
+    floatingLabelText: 'Search pools',
+    hintText: ''
   }
 
   filter = (event, newValue) => {
@@ -14,8 +21,8 @@ class FilterFunds extends Component {
   render() {
     return (
       <TextField
-        hintText=""
-        floatingLabelText="Search pools"
+        hintText={this.props.hintText}
+        floatingLabelText={this.props.floatingLabelText}
         floatingLabelFixed={true}
         onChange={this.filter}
         style={{
@@ -27,4 +34,4 @@ class FilterFunds extends Component {
   }
 }
 
-export default FilterFunds
+export default FilterPoolsField

@@ -4,7 +4,7 @@ s
 import React, { Component } from 'react'
 import TextField from 'material-ui/TextField'
 
-class FilterFunds extends Component {
+class FilterPoolsField extends Component {
   static propTypes = {
     fundsList: PropTypes.object,
     filterList: PropTypes.func.isRequired
@@ -43,4 +43,4 @@ class FilterFunds extends Component {
   }
 }
 
-export default FilterFunds
+export default FilterPoolsField
