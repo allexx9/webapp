@@ -37,6 +37,7 @@ import {
 } from '../actions/const'
 import Exchange from '../../_utils/exchange/src/index'
 // import exchangeConnector from '@rigoblock/exchange-connector'
+import moment from 'moment'
 import utils from '../../_utils/utils'
 
 // Setting allowance for a token
@@ -86,6 +87,7 @@ const candlesGroupWebsocket$ = (relay, networkId, symbols) => {
     )
     symbols.push('tETHUSD')
     websocket.addEventListener('open', function() {
+      console.log(`Candles WS open`)
       symbols.forEach(function(symbol) {
         let msg = JSON.stringify({
           event: `subscribe`,
@@ -96,7 +98,7 @@ const candlesGroupWebsocket$ = (relay, networkId, symbols) => {
       })
     })
     websocket.onmessage = msg => {
-      // console.log('WebSocket message.');
+      // console.log('WebSocket message.', msg.data)
       let data = JSON.parse(msg.data)
       if (typeof data.event !== undefined) {
         if (data.event === 'subscribed') {
@@ -126,9 +128,10 @@ const candlesGroupWebsocket$ = (relay, networkId, symbols) => {
 const updateGroupCandles = ticker => {
   const USDT = 'USDT'
   let symbol = ticker[0]
-  let now = new Date()
-  let yesterday = now.setDate(now.getDate() - 1)
-
+  const oneDayAgo = moment()
+    .startOf('hour')
+    .subtract(24, 'hours')
+    .valueOf()
   const convertToETH = (symbol, value) => {
     return symbol === USDT ? 1 / value : value
   }
@@ -139,10 +142,10 @@ const updateGroupCandles = ticker => {
   // console.log(symbol)
   // INITIAL SHAPSHOT
   if (Array.isArray(ticker[1][0])) {
-    // console.log('snapshot:', ticker)
+    // console.log(`snapshot full ${symbol}:`, ticker[1])
     let candles = ticker[1]
       .filter(tick => {
-        return tick[0] >= yesterday
+        return tick[0] >= oneDayAgo
       })
       .map(tick => {
         let entry = {
@@ -157,6 +160,17 @@ const updateGroupCandles = ticker => {
         // console.log(entry)
         return entry
       })
+    const nowPrice = {
+      ...candles[0],
+      ...{ date: moment().toDate(), epoch: moment().valueOf() }
+    }
+    candles.unshift(nowPrice)
+    const oneDayAgoPrice = {
+      ...candles[candles.length - 1],
+      ...{ date: moment(oneDayAgo).toDate(), epoch: oneDayAgo }
+    }
+    candles.push(oneDayAgoPrice)
+    // console.log(`snapshot 24h ${symbol}:`, candles)
     return {
       type: UPDATE_SELECTED_DRAGO_DETAILS_CHART_ASSETS_MARKET_DATA_INIT,
       payload: {
@@ -171,7 +185,7 @@ const updateGroupCandles = ticker => {
   if (!Array.isArray[ticker[1][0]]) {
     // console.log(`${ticker[1][0]} -> ${date}`)
     // console.log(new Date(ticker[1][0]))
-    console.log('update:', ticker)
+    // console.log('update:', ticker)
     let candles = {
       date: new Date(ticker[1][0]),
       low: convertToETH(symbol, ticker[1][4]),
@@ -242,6 +256,7 @@ const getTickersWs$ = (relay, networkId, symbols) => {
     websocket.addEventListener('open', msg => {
       // console.log(msg)
       // console.log(symbols)
+      console.log(`Tickers WS open`)
       let symbolsArray = symbols.split(',')
       if (symbolsArray.length !== 0) {
         symbolsArray.forEach(function(symbol) {
@@ -294,7 +309,7 @@ const getTickersWs$ = (relay, networkId, symbols) => {
       }
     }
     websocket.onclose = msg => {
-      console.log(`Candle WS closed`)
+      console.log(`Tickers WS closed`)
       return msg.wasClean ? observer.complete() : null
     }
     websocket.onerror = error => {
@@ -317,80 +332,72 @@ const getTickers$ = (relay, networkId, symbols, protocol = 'ws') => {
     return getTickersWs$(relay, networkId, symbols)
   }
   const exchange = new Exchange(relay.name, networkId, 'http')
-  return from(exchange.getTickers(symbols))
+  return timer(0, 3000).pipe(
+    exhaustMap(() => {
+      return from(exchange.getTickers(symbols))
+    })
+  )
 }
 
 export const getPricesEpic = (action$, state$) =>
   action$.pipe(
     ofType(TOKEN_PRICE_TICKERS_FETCH_START),
     switchMap(action => {
-      return timer(0, 3000).pipe(
+      const currentState = state$.value
+      const symbols =
+        Object.keys(action.payload.assetsList).length === 0
+          ? utils
+              .ethfinexTickersToArray(
+                currentState.transactionsDrago.selectedDrago.assets
+              )
+              .toString()
+          : utils.ethfinexTickersToArray(action.payload.assetsList).toString()
+
+      return getTickers$(
+        action.payload.relay,
+        action.payload.networkId,
+        symbols,
+        'ws'
+      ).pipe(
         takeUntil(action$.ofType(TOKEN_PRICE_TICKERS_FETCH_STOP)),
-        exhaustMap(() => {
-          const currentState = state$.value
-          const symbols =
-            Object.keys(action.payload.assetsList).length === 0
-              ? utils
-                  .ethfinexTickersToArray(
-                    currentState.transactionsDrago.selectedDrago.assets
-                  )
-                  .toString()
-              : utils
-                  .ethfinexTickersToArray(action.payload.assetsList)
-                  .toString()
-          return getTickers$(
-            action.payload.relay,
-            action.payload.networkId,
-            symbols,
-            'ws'
-          ).pipe(
-            tap(val => {
-              // console.log(val)
-              return val
-            }),
-            map(message => {
-              try {
-                const arrayToObject = (arr, keyField) =>
-                  Object.assign(
-                    {},
-                    ...arr.map(item => ({
-                      [item[keyField]]: item
-                    }))
-                  )
-                const tokenList = arrayToObject(message, 'symbol')
-                tokenList.WETH = {
-                  priceEth: 1,
-                  priceUsd: '',
-                  symbol: 'WETH'
-                }
-                tokenList.ETHW = {
-                  priceEth: 1,
-                  priceUsd: '',
-                  symbol: 'ETHW'
-                }
-                return tokenList
-              } catch (error) {
-                console.warn(error)
-                return {}
-              }
-            }),
-            tap(val => {
-              // console.log(val)
-              return val
-            }),
-            map(payload => ({
-              type: TOKENS_TICKERS_UPDATE,
-              payload
-            })),
-            catchError(error => {
-              console.warn(error)
-              return Observable.of({
-                type: 'QUEUE_ERROR_NOTIFICATION_SILENT',
-                payload: 'Error fetching tickers data.'
-              })
-            })
-          )
+        tap(val => {
+          // console.log(val)
+          return val
         }),
+        map(message => {
+          try {
+            const arrayToObject = (arr, keyField) =>
+              Object.assign(
+                {},
+                ...arr.map(item => ({
+                  [item[keyField]]: item
+                }))
+              )
+            const tokenList = arrayToObject(message, 'symbol')
+            tokenList.WETH = {
+              priceEth: 1,
+              priceUsd: '',
+              symbol: 'WETH'
+            }
+            tokenList.ETHW = {
+              priceEth: 1,
+              priceUsd: '',
+              symbol: 'ETHW'
+            }
+            return tokenList
+          } catch (error) {
+            console.warn(error)
+            return {}
+          }
+        }),
+        tap(val => {
+          // console.log(val)
+          return val
+        }),
+        map(payload => ({
+          type: TOKENS_TICKERS_UPDATE,
+          payload
+        })),
         catchError(error => {
           console.warn(error)
           return Observable.of({
@@ -399,5 +406,164 @@ export const getPricesEpic = (action$, state$) =>
           })
         })
       )
+
+      // return timer(0, 3000).pipe(
+      //   // takeUntil(action$.ofType(TOKEN_PRICE_TICKERS_FETCH_STOP)),
+      //   exhaustMap(() => {
+      //     // const currentState = state$.value
+      //     // const symbols =
+      //     //   Object.keys(action.payload.assetsList).length === 0
+      //     //     ? utils
+      //     //         .ethfinexTickersToArray(
+      //     //           currentState.transactionsDrago.selectedDrago.assets
+      //     //         )
+      //     //         .toString()
+      //     //     : utils
+      //     //         .ethfinexTickersToArray(action.payload.assetsList)
+      //     //         .toString()
+      //     return getTickers$(
+      //       action.payload.relay,
+      //       action.payload.networkId,
+      //       symbols,
+      //       'ws'
+      //     ).pipe(
+      //       takeUntil(action$.ofType(TOKEN_PRICE_TICKERS_FETCH_STOP)),
+      //       tap(val => {
+      //         console.log(val)
+      //         return val
+      //       }),
+      //       map(message => {
+      //         try {
+      //           const arrayToObject = (arr, keyField) =>
+      //             Object.assign(
+      //               {},
+      //               ...arr.map(item => ({
+      //                 [item[keyField]]: item
+      //               }))
+      //             )
+      //           const tokenList = arrayToObject(message, 'symbol')
+      //           tokenList.WETH = {
+      //             priceEth: 1,
+      //             priceUsd: '',
+      //             symbol: 'WETH'
+      //           }
+      //           tokenList.ETHW = {
+      //             priceEth: 1,
+      //             priceUsd: '',
+      //             symbol: 'ETHW'
+      //           }
+      //           return tokenList
+      //         } catch (error) {
+      //           console.warn(error)
+      //           return {}
+      //         }
+      //       }),
+      //       tap(val => {
+      //         // console.log(val)
+      //         return val
+      //       }),
+      //       map(payload => ({
+      //         type: TOKENS_TICKERS_UPDATE,
+      //         payload
+      //       })),
+      //       catchError(error => {
+      //         console.warn(error)
+      //         return Observable.of({
+      //           type: 'QUEUE_ERROR_NOTIFICATION_SILENT',
+      //           payload: 'Error fetching tickers data.'
+      //         })
+      //       })
+      //     )
+      //   }),
+      //   catchError(error => {
+      //     console.warn(error)
+      //     return Observable.of({
+      //       type: 'QUEUE_ERROR_NOTIFICATION_SILENT',
+      //       payload: 'Error fetching tickers data.'
+      //     })
+      //   })
+      // )
     })
   )
+
+// export const getPricesEpic = (action$, state$) =>
+//   action$.pipe(
+//     ofType(TOKEN_PRICE_TICKERS_FETCH_START),
+//     switchMap(action => {
+//       return timer(0, 3000).pipe(
+//         takeUntil(action$.ofType(TOKEN_PRICE_TICKERS_FETCH_STOP)),
+//         exhaustMap(() => {
+//           const currentState = state$.value
+//           const symbols =
+//             Object.keys(action.payload.assetsList).length === 0
+//               ? utils
+//                   .ethfinexTickersToArray(
+//                     currentState.transactionsDrago.selectedDrago.assets
+//                   )
+//                   .toString()
+//               : utils
+//                   .ethfinexTickersToArray(action.payload.assetsList)
+//                   .toString()
+//           return getTickers$(
+//             action.payload.relay,
+//             action.payload.networkId,
+//             symbols,
+//             'ws'
+//           ).pipe(
+//             tap(val => {
+//               console.log(val)
+//               return val
+//             }),
+//             map(message => {
+//               try {
+//                 const arrayToObject = (arr, keyField) =>
+//                   Object.assign(
+//                     {},
+//                     ...arr.map(item => ({
+//                       [item[keyField]]: item
+//                     }))
+//                   )
+//                 const tokenList = arrayToObject(message, 'symbol')
+//                 tokenList.WETH = {
+//                   priceEth: 1,
+//                   priceUsd: '',
+//                   symbol: 'WETH'
+//                 }
+//                 tokenList.ETHW = {
+//                   priceEth: 1,
+//                   priceUsd: '',
+//                   symbol: 'ETHW'
+//                 }
+//                 return tokenList
+//               } catch (error) {
+//                 console.warn(error)
+//                 return {}
+//               }
+//             }),
+//             tap(val => {
+//               // console.log(val)
+//               return val
+//             }),
+//             map(payload => ({
+//               type: TOKENS_TICKERS_UPDATE,
+//               payload
+//             })),
+//             catchError(error => {
+//               console.warn(error)
+//               return Observable.of({
+//                 type: 'QUEUE_ERROR_NOTIFICATION_SILENT',
+//                 payload: 'Error fetching tickers data.'
+//               })
+//             })
+//           )
+//         }),
+//         catchError(error => {
+//           console.warn(error)
+//           return Observable.of({
+//             type: 'QUEUE_ERROR_NOTIFICATION_SILENT',
+//             payload: 'Error fetching tickers data.'
+//           })
+//         })
+//       )
+//     })
+//   )
