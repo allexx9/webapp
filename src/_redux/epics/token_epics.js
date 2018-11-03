@@ -361,7 +361,7 @@ export const getPricesEpic = (action$, state$) =>
       ).pipe(
         takeUntil(action$.ofType(TOKEN_PRICE_TICKERS_FETCH_STOP)),
         tap(val => {
-          console.log(val)
+          // console.log(val)
           return val
         }),
         map(message => {
