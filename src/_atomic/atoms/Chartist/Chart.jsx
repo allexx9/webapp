@@ -41,7 +41,7 @@ class AssetChartChartist extends Component {
   }
 
   mapData = arr => {
-    console.log(arr)
+    // console.log(arr)
     return arr.map(el => {
       return {
         x: new Date(el.date),
