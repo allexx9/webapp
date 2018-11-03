@@ -2,16 +2,50 @@ import './chart.css'
 import Chartist from 'chartist'
 import ChartistGraph from 'react-chartist'
 import React, { Component } from 'react'
-import dataSerie from './dataSerie.json'
-import dataSerie2 from './dataSerie2.json'
+// import dataSerie from './dataSerie.json'
+// import dataSerie2 from './dataSerie2.json'
+// import 'chartist/dist/chartist.min.css'
+import PropTypes from 'prop-types'
 import moment from 'moment'
+// import styles from './assetChartChartis.module.css'
 
-class Chart extends Component {
+class AssetChartChartist extends Component {
+  static propTypes = {
+    data: PropTypes.array.isRequired
+  }
+
+  state = {
+    prevLastPointEpoch: {}
+  }
+
+  componentDidMount = () => {
+    const data = this.props.data
+    this.setState({
+      prevLastPointEpoch: data[data.length - 1].epoch
+    })
+  }
+
+  shouldComponentUpdate = nextProps => {
+    const nextData = nextProps.data
+    // console.log(nextData[nextData.length - 1].epoch)
+    // console.log(this.state.prevLastPointEpoch)
+    if (nextData[nextData.length - 1].epoch === this.state.prevLastPointEpoch) {
+      // console.log('No new data in chart')
+      return false
+    }
+    this.setState({
+      prevLastPointEpoch: nextData[nextData.length - 1].epoch
+    })
+    console.log('NEW data in chart')
+    return false
+  }
+
   mapData = arr => {
+    console.log(arr)
     return arr.map(el => {
       return {
-        x: new Date(el[0]),
-        y: el[2]
+        x: new Date(el.date),
+        y: el.close
       }
     })
   }
@@ -44,13 +78,19 @@ class Chart extends Component {
     return ticks.filter(tick => tick >= oneDayAgo)
   }
   render() {
+    const dataSerie = this.props.data
     const type = 'Line'
     let options = {
+      chartPadding: 0,
+      width: 332,
+      height: 94,
+      fullWidth: true,
       axisY: {
-        showGrid: true, // removes the grid
-        // labelOffset: {
-        //   x: 10
-        // }
+        showGrid: false, // removes the grid
+        labelOffset: {
+          x: 10
+        },
+        offset: 2,
         showLabel: false // removes the Y label
       },
       axisX: {
@@ -68,13 +108,15 @@ class Chart extends Component {
         ),
         ticks: this.getTicks(),
         labelInterpolationFnc: value => moment(value).format('HH:mm'),
-        showGrid: true,
+        showGrid: false,
         labelOffset: {
-          x: -20
+          x: 0,
+          y: 0
         }
+        // offset: 0
       },
       showPoint: false,
-      showArea: true,
+      showArea: false,
       lineSmooth: false
     }
     const firstChart = {
@@ -85,24 +127,14 @@ class Chart extends Component {
         }
       ]
     }
-    const secondChart = {
-      series: [
-        {
-          name: 'series-2',
-          data: this.mapData(dataSerie2)
-        }
-      ]
-    }
-
     return (
       <div className="divider">
         <div className="chart">
           <ChartistGraph data={firstChart} options={options} type={type} />
-          <ChartistGraph data={secondChart} options={options} type={type} />
         </div>
       </div>
     )
   }
 }
 
-export default Chart
+export default AssetChartChartist

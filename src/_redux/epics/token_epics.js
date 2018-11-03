@@ -37,6 +37,7 @@ import {
 } from '../actions/const'
 import Exchange from '../../_utils/exchange/src/index'
 // import exchangeConnector from '@rigoblock/exchange-connector'
+import moment from 'moment'
 import utils from '../../_utils/utils'
 
 // Setting allowance for a token
@@ -126,9 +127,10 @@ const candlesGroupWebsocket$ = (relay, networkId, symbols) => {
 const updateGroupCandles = ticker => {
   const USDT = 'USDT'
   let symbol = ticker[0]
-  let now = new Date()
-  let yesterday = now.setDate(now.getDate() - 1)
-
+  const oneDayAgo = moment()
+    .startOf('hour')
+    .subtract(24, 'hours')
+    .valueOf()
   const convertToETH = (symbol, value) => {
     return symbol === USDT ? 1 / value : value
   }
@@ -139,10 +141,10 @@ const updateGroupCandles = ticker => {
   // console.log(symbol)
   // INITIAL SHAPSHOT
   if (Array.isArray(ticker[1][0])) {
-    // console.log('snapshot:', ticker)
+    console.log(`snapshot full ${symbol}:`, ticker[1])
     let candles = ticker[1]
       .filter(tick => {
-        return tick[0] >= yesterday
+        return tick[0] >= oneDayAgo
       })
       .map(tick => {
         let entry = {
@@ -157,6 +159,17 @@ const updateGroupCandles = ticker => {
         // console.log(entry)
         return entry
       })
+    const nowPrice = {
+      ...candles[0],
+      ...{ date: moment().toDate(), epoch: moment().valueOf() }
+    }
+    candles.unshift(nowPrice)
+    const oneDayAgoPrice = {
+      ...candles[candles.length - 1],
+      ...{ date: moment(oneDayAgo).toDate(), epoch: oneDayAgo }
+    }
+    candles.push(oneDayAgoPrice)
+    console.log(`snapshot 24h ${symbol}:`, candles)
     return {
       type: UPDATE_SELECTED_DRAGO_DETAILS_CHART_ASSETS_MARKET_DATA_INIT,
       payload: {

@@ -1,14 +1,18 @@
-.ct-series-a .ct-line {
-  /* Set the colour of this series line */
-  stroke: blue;
-  /* Control the thikness of your lines */
-  stroke-width: 2px;
-}
-
 .ct-series-a .ct-area {
-  fill: blue;
+  fill: #053e80;
+  fill-opacity: 0.1;
+  stroke: none;
 }
 
 .divider {
   display: flex;
+}
+
+.ct-series-a .ct-line {
+  stroke: #053e80;
+  stroke-width: 2px;
+}
+
+.ct-label {
+  font-size: 8px;
 }
