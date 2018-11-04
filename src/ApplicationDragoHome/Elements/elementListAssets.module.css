@@ -1,11 +1,3 @@
-.noDataChart {
-  font-size: 14px;
-  font-weight: 700;
-  opacity: 0.5;
-  margin: auto;
-  text-align: center;
-}
-
 .valueText {
   text-align: right;
   font-size: 18px;
@@ -93,20 +85,4 @@
   justify-content: center;
   font-size: 1em;
   color: #bdbdbd;
-}
-
-.chart {
-  /* min-width: 200px; */
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 10px 1px;
-  border-radius: 4px 4px 4px 4px;
-  margin-top: 2px;
-  margin-left: 2px;
-  margin-bottom: 2px;
-  height: 80px;
-  width: 340px;
-  position: absolute;
-  right: 25px;
-  top: 5px;
-  /* padding-top: 5px; */
-  padding-left: 2px;
 }

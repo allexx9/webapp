@@ -10,8 +10,7 @@ import { formatPrice } from '../../_utils/format'
 import ActionAssessment from 'material-ui/svg-icons/action/assessment'
 import ActionList from 'material-ui/svg-icons/action/list'
 import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
-import AssetChartChartist from '../../_atomic/atoms/assetChartChartist'
-import AssetsPieChart from '../../_atomic/atoms/assetsPieChart'
+import AssetsPieChartWrapper from '../../_atomic/atoms/assetsPieChartWrapper'
 import BigNumber from 'bignumber.js'
 import CopyContent from 'material-ui/svg-icons/content/content-copy'
 import ElementFundActions from '../Elements/elementFundActions'
@@ -181,6 +180,7 @@ class PageFundDetailsDragoTrader extends Component {
     const dragoValues = this.props.transactionsDrago.selectedDrago.values
     const dragoTransactionsList = this.props.transactionsDrago.selectedDrago
       .transactions
+    const assetsPrices = this.props.exchange.prices
     const tabButtons = {
       inkBarStyle: {
         margin: 'auto',
@@ -264,11 +264,6 @@ class PageFundDetailsDragoTrader extends Component {
         formatPrice(totalAssetsValue),
         [<small key="dragoPortTotEth">ETH</small>]
       ]
-      assetsValues = utils.calculatePieChartPortfolioValue(
-        dragoAssetsList,
-        this.props.exchange.prices.current,
-        dragoDetails.dragoETHBalance
-      )
     }
 
     // Show estimated prices
@@ -469,7 +464,11 @@ class PageFundDetailsDragoTrader extends Component {
                                 />
                               </Col>
                               <Col xs={6}>
-                                <AssetsPieChart data={assetsValues} />
+                                <AssetsPieChartWrapper
+                                  poolAssetsList={dragoAssetsList}
+                                  assetsPrices={assetsPrices.current}
+                                  poolETHBalance={dragoDetails.dragoETHBalance}
+                                />
                               </Col>
                             </Row>
                           </Col>

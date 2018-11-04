@@ -1,19 +1,15 @@
 import { Actions } from '../../_redux/actions'
 import { Col, Grid, Row } from 'react-flexbox-grid'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
-import { ENDPOINTS, Ethfinex, PROD } from '../../_utils/const'
 import { Link, withRouter } from 'react-router-dom'
 import { Tab, Tabs } from 'material-ui/Tabs'
 import { connect } from 'react-redux'
-import { formatCoins, formatEth } from '../../_utils/format'
 import { formatPrice } from '../../_utils/format'
 import ActionAssessment from 'material-ui/svg-icons/action/assessment'
 import ActionList from 'material-ui/svg-icons/action/list'
 import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
-// import AssetChartChartist from '../../_atomic/atoms/assetChartChartist'
-import AssetsPieChart from '../../_atomic/atoms/assetsPieChart'
+import AssetsPieChartWrapper from '../../_atomic/atoms/assetsPieChartWrapper'
 import BigNumber from 'bignumber.js'
-// import Chart from '../../_atomic/atoms/Chartist/Chart'
 import CopyContent from 'material-ui/svg-icons/content/content-copy'
 import ElementFundActionsList from '../Elements/elementFundActionsList'
 import ElementFundNotFound from '../../Elements/elementFundNotFound'
@@ -26,7 +22,6 @@ import FundHeader from '../../_atomic/molecules/fundHeader'
 import InfoTable from '../../Elements/elementInfoTable'
 import Loading from '../../_atomic/atoms/loading'
 import Paper from 'material-ui/Paper'
-import PoolApi from '../../PoolsApi/src'
 import PoolHoldingSupply from '../../_atomic/molecules/poolHoldingSupply'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
@@ -35,7 +30,6 @@ import SectionHeader from '../../_atomic/atoms/sectionHeader'
 import SectionTitle from '../../_atomic/atoms/sectionTitle'
 import Snackbar from 'material-ui/Snackbar'
 import Sticky from 'react-stickynode'
-import Web3 from 'web3'
 import scrollToElement from 'scroll-to-element'
 import styles from './pageFundDetailsDragoManager.module.css'
 import utils from '../../_utils/utils'
@@ -179,6 +173,7 @@ class PageFundDetailsDragoManager extends Component {
     const dragoValues = this.props.transactionsDrago.selectedDrago.values
     const dragoTransactionsList = this.props.transactionsDrago.selectedDrago
       .transactions
+    const assetsPrices = this.props.exchange.prices
     const tabButtons = {
       inkBarStyle: {
         margin: 'auto',
@@ -262,11 +257,6 @@ class PageFundDetailsDragoManager extends Component {
         formatPrice(totalAssetsValue),
         [<small key="dragoPortTotEth">ETH</small>]
       ]
-      assetsValues = utils.calculatePieChartPortfolioValue(
-        dragoAssetsList,
-        this.props.exchange.prices.current,
-        dragoDetails.dragoETHBalance
-      )
     }
 
     // Show estimated prices
@@ -368,7 +358,11 @@ class PageFundDetailsDragoManager extends Component {
                   </Row>
                   {/* <Row>
                     <Col xs={12}>
-                      <Chart />
+                      <AssetsPieChartWrapper
+                        poolAssetsList={dragoAssetsList}
+                        assetsPrices={assetsPrices.current}
+                        poolETHBalance={dragoDetails.dragoETHBalance}
+                      />
                     </Col>
                   </Row> */}
                   <Row>
@@ -470,7 +464,11 @@ class PageFundDetailsDragoManager extends Component {
                                 />
                               </Col>
                               <Col xs={6}>
-                                <AssetsPieChart data={assetsValues} />
+                                <AssetsPieChartWrapper
+                                  poolAssetsList={dragoAssetsList}
+                                  assetsPrices={assetsPrices.current}
+                                  poolETHBalance={dragoDetails.dragoETHBalance}
+                                />
                               </Col>
                             </Row>
                           </Col>

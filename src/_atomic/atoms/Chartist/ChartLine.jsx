@@ -1,43 +1,13 @@
 import './chart.css'
 import Chartist from 'chartist'
 import ChartistGraph from 'react-chartist'
-import React, { Component } from 'react'
-// import dataSerie from './dataSerie.json'
-// import dataSerie2 from './dataSerie2.json'
-// import 'chartist/dist/chartist.min.css'
 import PropTypes from 'prop-types'
+import React, { Component } from 'react'
 import moment from 'moment'
-// import styles from './assetChartChartis.module.css'
 
-class AssetChartChartist extends Component {
+class ChartLine extends Component {
   static propTypes = {
-    data: PropTypes.array.isRequired
-  }
-
-  state = {
-    prevLastPointEpoch: {}
-  }
-
-  componentDidMount = () => {
-    const data = this.props.data
-    this.setState({
-      prevLastPointEpoch: data[data.length - 1].epoch
-    })
-  }
-
-  shouldComponentUpdate = nextProps => {
-    const nextData = nextProps.data
-    // console.log(nextData[nextData.length - 1].epoch)
-    // console.log(this.state.prevLastPointEpoch)
-    if (nextData[nextData.length - 1].epoch === this.state.prevLastPointEpoch) {
-      // console.log('No new data in chart')
-      return false
-    }
-    this.setState({
-      prevLastPointEpoch: nextData[nextData.length - 1].epoch
-    })
-    console.log('NEW data in chart')
-    return false
+    data: PropTypes.object.isRequired
   }
 
   mapData = arr => {
@@ -78,7 +48,7 @@ class AssetChartChartist extends Component {
     return ticks.filter(tick => tick >= oneDayAgo)
   }
   render() {
-    const dataSerie = this.props.data
+    const dataChart = this.props.data
     const type = 'Line'
     let options = {
       chartPadding: 0,
@@ -119,22 +89,15 @@ class AssetChartChartist extends Component {
       showArea: false,
       lineSmooth: false
     }
-    const firstChart = {
-      series: [
-        {
-          name: 'series-1',
-          data: this.mapData(dataSerie)
-        }
-      ]
-    }
+
     return (
       <div className="divider">
         <div className="chart">
-          <ChartistGraph data={firstChart} options={options} type={type} />
+          <ChartistGraph data={dataChart} options={options} type={type} />
         </div>
       </div>
     )
   }
 }
 
-export default AssetChartChartist
+export default ChartLine

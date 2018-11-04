@@ -19,7 +19,8 @@ import styles from './elementListAssets.module.css'
 
 import * as Colors from 'material-ui/styles/colors'
 // import AssetChart from '../../_atomic/atoms/assetChart'
-import AssetChartChartist from '../../_atomic/atoms/Chartist/Chart'
+// import AssetChartChartist from '../../_atomic/atoms/Chartist/ChartLine'
+import AssetsLineChartWrapper from '../../_atomic/atoms/assetsLineChartWrapper'
 // import AssetChartPlotly from '../../_atomic/atoms/assetChartPlotly'
 import BigNumber from 'bignumber.js'
 import TokenIcon from '../../_atomic/atoms/tokenIcon'
@@ -217,31 +218,21 @@ class ElementListAssets extends PureComponent {
   }
 
   renderChart(token) {
-    // const data = this.props.assetsChart[token.symbol].data
-    if (token.symbol === 'WETH' || token.symbol === 'ETHW') {
-      return <div className={styles.noDataChart}> No data </div>
-    }
     try {
       if (typeof this.props.assetsChart[token.symbol] !== 'undefined') {
         const data = this.props.assetsChart[token.symbol].data
-        if (data.length > 2) {
-          return (
-            // <div className={styles.chart}>
-            //   <AssetChart data={data} />
-            // </div>
-            <div className={styles.chart}>
-              {/* <AssetChartPlotly data={data} />{' '} */}
-              <AssetChartChartist data={data} key={'chart' + token.symbol} />
-            </div>
-          )
-        } else {
-          return <div className={styles.noDataChart}> No data </div>
-        }
+        return (
+          <AssetsLineChartWrapper
+            data={data}
+            token={token}
+            key={'chart' + token.symbol}
+            borderWrapper={true}
+          />
+        )
       }
     } catch (error) {
       console.warn(error)
     }
-    return <div className={styles.noDataChart}> No data </div>
   }
 
   actionButton(cellData, rowData) {
