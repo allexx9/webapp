@@ -455,24 +455,26 @@ export const initRelayWebSocketBookEpic = action$ =>
             }
             return spread
           }
-          let asks = Object.values(payload.asks)
-            .map(element => {
-              return {
-                orderAmount: element.amount,
-                orderPrice: element.price,
-                orderCount: element.cnt
-              }
-            })
-            .reverse()
-          let bids = Object.values(payload.bids)
-            .map(element => {
-              return {
-                orderAmount: element.amount,
-                orderPrice: element.price,
-                orderCount: element.cnt
-              }
-            })
-            .reverse()
+          let asks = Object.values(payload.asks).map(element => {
+            return {
+              orderAmount: element.amount,
+              orderPrice: element.price,
+              orderCount: element.cnt
+            }
+          })
+          asks.sort(function(a, b) {
+            return b.orderPrice - a.orderPrice
+          })
+          let bids = Object.values(payload.bids).map(element => {
+            return {
+              orderAmount: element.amount,
+              orderPrice: element.price,
+              orderCount: element.cnt
+            }
+          })
+          bids.sort(function(a, b) {
+            return b.orderPrice - a.orderPrice
+          })
           const spread = calculateSpread(asks, bids)
           return {
             type: TYPE_.ORDERBOOK_INIT,
