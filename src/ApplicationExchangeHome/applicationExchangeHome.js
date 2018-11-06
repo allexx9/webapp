@@ -268,6 +268,7 @@ class ApplicationExchangeHome extends Component {
   componentWillUnmount = () => {
     console.log('***** UNMOUNT *****')
     const { api } = this.context
+    this.props.dispatch(Actions.exchange.fetchCandleDataSingleStop())
     this.props.dispatch(Actions.exchange.relayCloseWs())
     this.props.dispatch(
       Actions.exchange.updateLiquidityAndTokenBalances(api, 'STOP')
@@ -538,20 +539,6 @@ class ApplicationExchangeHome extends Component {
 
       // Reconnecting to the exchange
       this.connectToExchange(selectedExchange, tradeTokensPair)
-
-      // Getting chart data
-      // let tsYesterday = new Date(
-      //   (Math.floor(Date.now() / 1000) - 86400 * 7) * 1000
-      // ).toISOString()
-      // this.props.dispatch(
-      //   Actions.exchange.fetchCandleDataSingleStart(
-      //     this.props.exchange.selectedRelay,
-      //     this.props.exchange.relay.networkId,
-      //     this.props.exchange.selectedTokensPair.baseToken,
-      //     this.props.exchange.selectedTokensPair.quoteToken,
-      //     tsYesterday
-      //   )
-      // )
     } catch (error) {
       console.warn(error)
     }
@@ -603,7 +590,6 @@ class ApplicationExchangeHome extends Component {
       }
 
       let dragoList = await getDragoDetails(...(await getDragoList()))
-      console.log(dragoList)
       if (dragoList.lenght) {
         this.setState({
           managerHasNoFunds: true

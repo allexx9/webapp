@@ -20,10 +20,12 @@ export default class FundSelector extends PureComponent {
 
   onSelectFund = (event, key) => {
     const { funds } = this.props
-    this.setState({
-      value: key
-    })
-    this.props.onSelectFund(funds[key.toString()])
+    if (this.props.selectedFund.details.dragoId !== key) {
+      this.setState({
+        value: key
+      })
+      this.props.onSelectFund(funds[key.toString()])
+    }
   }
 
   renderFunds = () => {
