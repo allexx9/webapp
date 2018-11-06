@@ -254,11 +254,13 @@ class DragoParity {
       throw new Error('sellPrice needs to be provided')
     }
     const api = this._api
-    console.log(api)
+    const block = 1
+    const hash = api.util.fromAscii('random')
+    const data = api.util.fromAscii('random')
     const buyPriceWei = api.util.toWei(buyPrice, 'ether')
     const sellPriceWei = api.util.toWei(sellPrice, 'ether')
     const instance = this._instance
-    const values = [sellPriceWei, buyPriceWei, null, null, null]
+    const values = [sellPriceWei, buyPriceWei, block, hash, data]
     const options = {
       from: accountAddress
     }

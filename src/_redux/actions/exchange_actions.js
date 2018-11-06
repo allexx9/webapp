@@ -34,7 +34,7 @@ const exchange = {
       payload: payload
     }
   },
-  fetchCandleDataSingle: (
+  fetchCandleDataSingleStart: (
     relay,
     networkId,
     baseToken,
@@ -49,8 +49,14 @@ const exchange = {
       startDate
     }
     return {
-      type: TYPE_.FETCH_CANDLES_DATA_SINGLE,
+      type: TYPE_.FETCH_CANDLES_DATA_SINGLE_START,
       payload: payload
+    }
+  },
+  fetchCandleDataSingleStop: () => {
+    return {
+      type: TYPE_.FETCH_CANDLES_DATA_SINGLE_STOP,
+      payload: ''
     }
   },
   // Starts collecting chart data for Drago details pages

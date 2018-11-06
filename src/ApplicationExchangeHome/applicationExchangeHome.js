@@ -26,24 +26,19 @@ import OrderBook from '../_atomic/organisms/orderBook'
 import OrderBox from '../_atomic/organisms/orderBox'
 import OrdersHistoryBox from '../_atomic/organisms/ordersHistoryBox'
 import TokenBalances from '../_atomic/atoms/tokenBalances'
-import TokenLiquidity from '../_atomic/atoms/tokenLiquidity'
+// import TokenLiquidity from '../_atomic/atoms/tokenLiquidity'
 import TokenPrice from '../_atomic/atoms/tokenPrice'
 import TokenTradeSelector from '../_atomic/molecules/tokenTradeSelector'
-import exchangeConnector, {
-  NETWORKS,
-  exchanges,
-  supportedExchanges
-} from '@rigoblock/exchange-connector'
 
 import * as TYPE_ from '../_redux/actions/const'
 import {
   CANCEL_SELECTED_ORDER,
-  FETCH_ACCOUNT_ORDERS_START,
+  // FETCH_ACCOUNT_ORDERS_START,
   RELAY_CLOSE_WEBSOCKET,
   UPDATE_FUND_LIQUIDITY,
   UPDATE_SELECTED_FUND
 } from '../_redux/actions/const'
-import { getAvailableAccounts, getTokenAllowance } from '../_utils/exchange'
+import { getTokenAllowance } from '../_utils/exchange'
 import ExchangeBox from '../_atomic/organisms/exchangeBox'
 import styles from './applicationExchangeHome.module.css'
 import utils from '../_utils/utils'
@@ -348,7 +343,7 @@ class ApplicationExchangeHome extends Component {
       (Math.floor(Date.now() / 1000) - 86400 * 7) * 1000
     ).toISOString()
     this.props.dispatch(
-      Actions.exchange.fetchCandleDataSingle(
+      Actions.exchange.fetchCandleDataSingleStart(
         defaultRelay,
         api._rb.network.id,
         defaultTokensPair.baseToken,
@@ -538,6 +533,9 @@ class ApplicationExchangeHome extends Component {
         type: RELAY_CLOSE_WEBSOCKET
       })
 
+      // Terminating chart candles fetching
+      this.props.dispatch(Actions.exchange.fetchCandleDataSingleStop())
+
       // Reconnecting to the exchange
       this.connectToExchange(selectedExchange, tradeTokensPair)
 
@@ -546,7 +544,7 @@ class ApplicationExchangeHome extends Component {
       //   (Math.floor(Date.now() / 1000) - 86400 * 7) * 1000
       // ).toISOString()
       // this.props.dispatch(
-      //   Actions.exchange.fetchCandleDataSingle(
+      //   Actions.exchange.fetchCandleDataSingleStart(
       //     this.props.exchange.selectedRelay,
       //     this.props.exchange.relay.networkId,
       //     this.props.exchange.selectedTokensPair.baseToken,
@@ -559,10 +557,76 @@ class ApplicationExchangeHome extends Component {
     }
   }
 
+  // Getting last transactions
+  getSelectedFundDetails = async (dragoAddress, accounts) => {
+    console.log(dragoAddress, accounts)
+    const { api } = this.context
+    try {
+      let poolApi = new PoolApi(api)
+      await poolApi.contract.dragofactory.init()
+      await poolApi.contract.dragoregistry.init()
+
+      const getDragoList = async () => {
+        let arrayPromises = accounts.map(async account => {
+          return poolApi.contract.dragofactory
+            .getDragosByAddress(account.address)
+            .then(results => {
+              return results
+            })
+            .catch(error => {
+              console.warn(error)
+              return error
+            })
+        })
+        return Promise.all(arrayPromises)
+      }
+
+      const getDragoDetails = async dragoList => {
+        let arrayPromises = dragoList.map(drago => {
+          return poolApi.contract.dragoregistry
+            .fromAddress(drago.value)
+            .then(dragoDetails => {
+              const dragoData = {
+                symbol: dragoDetails[2].trim(),
+                dragoId: dragoDetails[3].toFixed(),
+                name: dragoDetails[1].trim(),
+                address: drago.value
+              }
+              return dragoData
+            })
+            .catch(error => {
+              console.warn(error)
+              return error
+            })
+        })
+        return Promise.all(arrayPromises)
+      }
+
+      let dragoList = await getDragoDetails(...(await getDragoList()))
+      console.log(dragoList)
+      if (dragoList.lenght) {
+        this.setState({
+          managerHasNoFunds: true
+        })
+      } else {
+        dragoList.sort(function(a, b) {
+          let keyA = a.symbol,
+            keyB = b.symbol
+          if (keyA < keyB) return -1
+          if (keyA > keyB) return 1
+          return 0
+        })
+        this.props.dispatch(Actions.exchange.updateAvailableFunds(dragoList))
+        this.onSelectFund(dragoList[1])
+      }
+    } catch (error) {
+      console.warn(error)
+    }
+  }
+
   render() {
     const {
       user,
-      location,
       handleToggleNotifications,
       notificationsOpen,
       endpoint,
@@ -761,78 +825,6 @@ class ApplicationExchangeHome extends Component {
           </Row>
         </div>
       )
-    }
-  }
-
-  // onNewEventZeroExExchange = (error, event) => {
-
-  // }
-
-  // Getting last transactions
-  getSelectedFundDetails = async (dragoAddress, accounts) => {
-    console.log(dragoAddress, accounts)
-    const { api } = this.context
-    try {
-      let poolApi = new PoolApi(api)
-      await poolApi.contract.dragofactory.init()
-      await poolApi.contract.dragoregistry.init()
-
-      const getDragoList = async () => {
-        let arrayPromises = accounts.map(async account => {
-          return poolApi.contract.dragofactory
-            .getDragosByAddress(account.address)
-            .then(results => {
-              return results
-            })
-            .catch(error => {
-              console.warn(error)
-              return error
-            })
-        })
-        return Promise.all(arrayPromises)
-      }
-
-      const getDragoDetails = async dragoList => {
-        let arrayPromises = dragoList.map(drago => {
-          return poolApi.contract.dragoregistry
-            .fromAddress(drago.value)
-            .then(dragoDetails => {
-              const dragoData = {
-                symbol: dragoDetails[2].trim(),
-                dragoId: dragoDetails[3].toFixed(),
-                name: dragoDetails[1].trim(),
-                address: drago.value
-              }
-              return dragoData
-            })
-            .catch(error => {
-              console.warn(error)
-              return error
-            })
-        })
-        return Promise.all(arrayPromises)
-      }
-
-      let dragoList = await getDragoDetails(...(await getDragoList()))
-      console.log(dragoList)
-      if (dragoList.lenght) {
-        this.setState({
-          managerHasNoFunds: true
-        })
-      } else {
-        dragoList.sort(function(a, b) {
-          let keyA = a.symbol,
-            keyB = b.symbol
-          if (keyA < keyB) return -1
-          if (keyA > keyB) return 1
-          return 0
-        })
-
-        this.props.dispatch(Actions.exchange.updateAvailableFunds(dragoList))
-        this.onSelectFund(dragoList[1])
-      }
-    } catch (error) {
-      console.warn(error)
     }
   }
 }

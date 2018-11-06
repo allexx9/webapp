@@ -258,7 +258,7 @@ export const MOCK_ERC20_TOKENS = {
         Ethfinex: {
           symbol: 'ETHW',
           decimals: 18,
-          address: '0x965808e7F815CfffD4c018ef2Ba4C5A65EBa087e',
+          address: '0x06da2eb72279c1cec53c251bbff4a06fbfb93a5b',
           name: 'ETH Wrapper'
         }
       }
@@ -277,7 +277,7 @@ export const MOCK_ERC20_TOKENS = {
         Ethfinex: {
           symbol: 'USDTW',
           decimals: 6,
-          address: '0x83E42e6d1ac009285376340ef64BaC1C7d106C89',
+          address: '0x84442a4518126ed25a548fe3392f6021e3ccd5bb',
           name: 'USDT Wrapper'
         }
       }
@@ -513,7 +513,7 @@ export const ERC20_TOKENS = {
         Ethfinex: {
           symbol: 'ETHW',
           decimals: 18,
-          address: '0x965808e7F815CfffD4c018ef2Ba4C5A65EBa087e',
+          address: '0x06da2eb72279c1cec53c251bbff4a06fbfb93a5b',
           name: 'ETH Wrapper'
         }
       }
@@ -531,7 +531,7 @@ export const ERC20_TOKENS = {
         Ethfinex: {
           symbol: 'USDTW',
           decimals: 6,
-          address: '0x83E42e6d1ac009285376340ef64BaC1C7d106C89',
+          address: '0x84442a4518126ed25a548fe3392f6021e3ccd5bb',
           name: 'USDT Wrapper'
         }
       }

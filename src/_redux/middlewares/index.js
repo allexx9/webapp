@@ -21,7 +21,7 @@ export const relayActionsMiddleWare = store => next => action => {
     action.type = `${state.exchange.selectedRelay.name.toUpperCase()}_${
       action.type
     }`
-    console.log(action.type)
+    // console.log(action.type)
   }
   next(action)
 }

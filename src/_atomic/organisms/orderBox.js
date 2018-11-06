@@ -125,6 +125,7 @@ class OrderBox extends Component {
     } = this.props.exchange
     if (!selectedOrder.takerOrder) {
     }
+    console.log('Selected order', selectedOrder)
     let signedOrder = await signOrder(
       selectedOrder,
       selectedExchange,
@@ -245,6 +246,8 @@ class OrderBox extends Component {
             price: selectedOrder.orderPrice,
             meta: signedOrder,
             protocol: '0x'
+            // cid: 1541448835729,
+            // gid: 1
           }
           efxOrder.meta.sigType = 'contract'
           this.setState({

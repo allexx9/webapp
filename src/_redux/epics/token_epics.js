@@ -37,6 +37,7 @@ import {
 } from '../actions/const'
 import Exchange from '../../_utils/exchange/src/index'
 // import exchangeConnector from '@rigoblock/exchange-connector'
+import ExchangeConnectorWrapper from '../../_utils/exchangeConnector'
 import moment from 'moment'
 import utils from '../../_utils/utils'
 
@@ -250,77 +251,69 @@ export const getCandlesGroupDataEpic = (action$, state$) => {
 
 const getTickersWs$ = (relay, networkId, symbols) => {
   return Observable.create(observer => {
+    const ethfinex = ExchangeConnectorWrapper.getNewInstance().getExchange(
+      relay.name,
+      {
+        networkId: networkId
+      }
+    )
     let subscribedSymbols = Array(0)
-    const exchange = new Exchange(relay.name, networkId, 'ws')
-    const websocket = exchange.getTicker('test', 'test')
-    websocket.addEventListener('open', msg => {
-      // console.log(msg)
-      // console.log(symbols)
-      console.log(`Tickers WS open`)
-      let symbolsArray = symbols.split(',')
-      if (symbolsArray.length !== 0) {
-        symbolsArray.forEach(function(symbol) {
-          // console.log(`ticker subcribe ${symbol}`)
-          let msg = JSON.stringify({
-            event: `subscribe`,
-            channel: `ticker`,
-            symbol: `${symbol}`
-            // event: `subscribe`,
-            // channel: `candles`,
-            // key: `trade:15m:${symbol}`
-          })
-          websocket.send(msg)
-        })
-      }
-    })
-    websocket.onmessage = msg => {
-      // console.log('WebSocket message.', msg.data)
-      let data = JSON.parse(msg.data)
-      if (typeof data.event !== undefined) {
-        if (data.event === 'subscribed') {
-          subscribedSymbols[data.chanId] = data.symbol
-            .split('t')[1]
-            .slice(0, -3)
-        }
-      }
-      if (Array.isArray(data)) {
-        let tick = []
-        if (data[1] !== 'hb') {
-          if (subscribedSymbols[data[0]] === 'ETH') {
-            tick = [
-              {
-                priceEth: 1 / data[1][6],
-                priceUsd: '',
-                symbol: 'USDT'
+    let unsubscribeArray = Array(0)
+    let symbolsArray = symbols.split(',').map(symbol => symbol.slice(1))
+    if (symbolsArray.length !== 0) {
+      ethfinex.raw.ws
+        .getTickers(
+          {
+            symbols: symbolsArray
+          },
+          (error, msgWs) => {
+            if (error) {
+              return observer.error(error)
+            } else {
+              // console.log(msgWs)
+              if (msgWs.event === 'subscribed') {
+                subscribedSymbols[msgWs.chanId] = msgWs.symbol
+                  .split('t')[1]
+                  .slice(0, -3)
               }
-            ]
-          } else {
-            tick = [
-              {
-                priceEth: data[1][6],
-                priceUsd: '',
-                symbol: subscribedSymbols[data[0]]
+              if (Array.isArray(msgWs)) {
+                let tick = []
+                if (msgWs[1] !== 'hb') {
+                  if (subscribedSymbols[msgWs[0]] === 'ETH') {
+                    tick = [
+                      {
+                        priceEth: 1 / msgWs[1][6],
+                        priceUsd: '',
+                        symbol: 'USDT'
+                      }
+                    ]
+                  } else {
+                    tick = [
+                      {
+                        priceEth: msgWs[1][6],
+                        priceUsd: '',
+                        symbol: subscribedSymbols[msgWs[0]]
+                      }
+                    ]
+                  }
+                  // console.log(tick)
+                  return observer.next(tick)
+                }
               }
-            ]
+              // return observer.next('')
+            }
           }
-          // console.log(tick)
-          return observer.next(tick)
-        }
-      }
+        )
+        .then(unsubscribe => {
+          unsubscribeArray.push(unsubscribe)
+        })
+        .then(() => {
+          return () => {
+            unsubscribeArray.forEach(item => item.unsubscribe())
+            return ethfinex.ws.close()
+          }
+        })
     }
-    websocket.onclose = msg => {
-      console.log(`Tickers WS closed`)
-      return msg.wasClean ? observer.complete() : null
-    }
-    websocket.onerror = error => {
-      // console.log(error)
-      console.log('WebSocket error.')
-      return observer.error(error)
-    }
-    return () =>
-      websocket.close(1000, 'Closed by client', {
-        keepClosed: true
-      })
   })
 }
 
@@ -406,164 +399,5 @@ export const getPricesEpic = (action$, state$) =>
           })
         })
       )
-
-      // return timer(0, 3000).pipe(
-      //   // takeUntil(action$.ofType(TOKEN_PRICE_TICKERS_FETCH_STOP)),
-      //   exhaustMap(() => {
-      //     // const currentState = state$.value
-      //     // const symbols =
-      //     //   Object.keys(action.payload.assetsList).length === 0
-      //     //     ? utils
-      //     //         .ethfinexTickersToArray(
-      //     //           currentState.transactionsDrago.selectedDrago.assets
-      //     //         )
-      //     //         .toString()
-      //     //     : utils
-      //     //         .ethfinexTickersToArray(action.payload.assetsList)
-      //     //         .toString()
-      //     return getTickers$(
-      //       action.payload.relay,
-      //       action.payload.networkId,
-      //       symbols,
-      //       'ws'
-      //     ).pipe(
-      //       takeUntil(action$.ofType(TOKEN_PRICE_TICKERS_FETCH_STOP)),
-      //       tap(val => {
-      //         console.log(val)
-      //         return val
-      //       }),
-      //       map(message => {
-      //         try {
-      //           const arrayToObject = (arr, keyField) =>
-      //             Object.assign(
-      //               {},
-      //               ...arr.map(item => ({
-      //                 [item[keyField]]: item
-      //               }))
-      //             )
-      //           const tokenList = arrayToObject(message, 'symbol')
-      //           tokenList.WETH = {
-      //             priceEth: 1,
-      //             priceUsd: '',
-      //             symbol: 'WETH'
-      //           }
-      //           tokenList.ETHW = {
-      //             priceEth: 1,
-      //             priceUsd: '',
-      //             symbol: 'ETHW'
-      //           }
-      //           return tokenList
-      //         } catch (error) {
-      //           console.warn(error)
-      //           return {}
-      //         }
-      //       }),
-      //       tap(val => {
-      //         // console.log(val)
-      //         return val
-      //       }),
-      //       map(payload => ({
-      //         type: TOKENS_TICKERS_UPDATE,
-      //         payload
-      //       })),
-      //       catchError(error => {
-      //         console.warn(error)
-      //         return Observable.of({
-      //           type: 'QUEUE_ERROR_NOTIFICATION_SILENT',
-      //           payload: 'Error fetching tickers data.'
-      //         })
-      //       })
-      //     )
-      //   }),
-      //   catchError(error => {
-      //     console.warn(error)
-      //     return Observable.of({
-      //       type: 'QUEUE_ERROR_NOTIFICATION_SILENT',
-      //       payload: 'Error fetching tickers data.'
-      //     })
-      //   })
-      // )
     })
   )
-
-// export const getPricesEpic = (action$, state$) =>
-//   action$.pipe(
-//     ofType(TOKEN_PRICE_TICKERS_FETCH_START),
-//     switchMap(action => {
-//       return timer(0, 3000).pipe(
-//         takeUntil(action$.ofType(TOKEN_PRICE_TICKERS_FETCH_STOP)),
-//         exhaustMap(() => {
-//           const currentState = state$.value
-//           const symbols =
-//             Object.keys(action.payload.assetsList).length === 0
-//               ? utils
-//                   .ethfinexTickersToArray(
-//                     currentState.transactionsDrago.selectedDrago.assets
-//                   )
-//                   .toString()
-//               : utils
-//                   .ethfinexTickersToArray(action.payload.assetsList)
-//                   .toString()
-//           return getTickers$(
-//             action.payload.relay,
-//             action.payload.networkId,
-//             symbols,
-//             'ws'
-//           ).pipe(
-//             tap(val => {
-//               console.log(val)
-//               return val
-//             }),
-//             map(message => {
-//               try {
-//                 const arrayToObject = (arr, keyField) =>
-//                   Object.assign(
-//                     {},
-//                     ...arr.map(item => ({
-//                       [item[keyField]]: item
-//                     }))
-//                   )
-//                 const tokenList = arrayToObject(message, 'symbol')
-//                 tokenList.WETH = {
-//                   priceEth: 1,
-//                   priceUsd: '',
-//                   symbol: 'WETH'
-//                 }
-//                 tokenList.ETHW = {
-//                   priceEth: 1,
-//                   priceUsd: '',
-//                   symbol: 'ETHW'
-//                 }
-//                 return tokenList
-//               } catch (error) {
-//                 console.warn(error)
-//                 return {}
-//               }
-//             }),
-//             tap(val => {
-//               // console.log(val)
-//               return val
-//             }),
-//             map(payload => ({
-//               type: TOKENS_TICKERS_UPDATE,
-//               payload
-//             })),
-//             catchError(error => {
-//               console.warn(error)
-//               return Observable.of({
-//                 type: 'QUEUE_ERROR_NOTIFICATION_SILENT',
-//                 payload: 'Error fetching tickers data.'
-//               })
-//             })
-//           )
-//         }),
-//         catchError(error => {
-//           console.warn(error)
-//           return Observable.of({
-//             type: 'QUEUE_ERROR_NOTIFICATION_SILENT',
-//             payload: 'Error fetching tickers data.'
-//           })
-//         })
-//       )
-//     })
-//   )

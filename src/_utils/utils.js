@@ -2330,9 +2330,9 @@ class utilities {
     // }
 
     poolApi.contract.drago.init(dragoAddress)
-    console.log('fetchDragoLiquidityAndTokenBalances ')
-    console.log(selectedTokensPair)
-    console.log(exchange.name)
+    // console.log('fetchDragoLiquidityAndTokenBalances ')
+    // console.log(selectedTokensPair)
+    // console.log(exchange.name)
     let {
       baseTokenLockWrapExpire,
       quoteTokenLockWrapExpire
@@ -2368,13 +2368,13 @@ class utilities {
         selectedTokensPair.baseToken.wrappers[exchange.name].address,
         dragoAddress
       )
-      console.log(baseTokenLockWrapExpire)
+      // console.log(baseTokenLockWrapExpire)
       quoteTokenLockWrapExpire = await utils.updateTokenWrapperLockTime(
         api,
         selectedTokensPair.quoteToken.wrappers[exchange.name].address,
         dragoAddress
       )
-      console.log(quoteTokenLockWrapExpire)
+      // console.log(quoteTokenLockWrapExpire)
     }
     const liquidity = {
       dragoETHBalance,

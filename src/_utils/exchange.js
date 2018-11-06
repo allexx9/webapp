@@ -397,7 +397,7 @@ export const submitOrderToRelayEFX = async (efxOrder, networkId) => {
     body: efxOrder,
     json: true // Automatically stringifies the body to JSON
   }
-  post(relayerApiUrl, { json: efxOrder })
+  // post(relayerApiUrl, { json: efxOrder })
   return rp(options)
 }
 
@@ -587,6 +587,11 @@ export const newMakerOrder = async (
   //   Math.round(new Date().getTime() / 1000) + (defaultExpiry || 60) * 60 * 12
   // ).toNumber()
 
+  let defaultConfig = 3600
+  let expiration
+  expiration = Math.round(new Date().getTime() / 1000)
+  expiration += defaultConfig
+
   const expirationUnixTimestampSec = new BigNumber(
     Math.round(new Date().getTime() / 1000) + (defaultExpiry || 60) * 60 * 12
   )
@@ -597,9 +602,10 @@ export const newMakerOrder = async (
     expirationUnixTimestampSec: web3.utils
       .toBN(
         Math.round(new Date().getTime() / 1000) +
-          (defaultExpiry || 60) * 60 * 12
+          (defaultExpiry || 60) * 60 * 24
       )
       .toString(10),
+    expirationUnixTimestampSec: web3.utils.toBN(expiration).toString(10),
     feeRecipient: selectedExchange.feeRecipient.toLowerCase(),
 
     maker: selectedFund.details.address.toLowerCase(),

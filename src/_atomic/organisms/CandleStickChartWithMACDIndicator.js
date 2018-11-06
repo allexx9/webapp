@@ -29,6 +29,7 @@ import {
 import { discontinuousTimeScaleProvider } from 'react-stockcharts/lib/scale'
 import { ema, macd, sma } from 'react-stockcharts/lib/indicator'
 import { fitWidth } from 'react-stockcharts/lib/helper'
+import ErrorBoundary from './errorBoundary'
 
 const macdAppearance = {
   stroke: {
@@ -50,6 +51,17 @@ const mouseEdgeAppearance = {
 }
 
 class CandleStickChartWithMACDIndicator extends React.Component {
+  static propTypes = {
+    data: PropTypes.array.isRequired,
+    width: PropTypes.number.isRequired,
+    ratio: PropTypes.number.isRequired,
+    type: PropTypes.oneOf(['svg', 'hybrid']).isRequired
+  }
+
+  static defaultProps = {
+    type: 'svg'
+  }
+
   render() {
     const { type, data: initialData, width, ratio } = this.props
     const ema26 = ema()
@@ -99,7 +111,6 @@ class CandleStickChartWithMACDIndicator extends React.Component {
     const { data, xScale, xAccessor, displayXAccessor } = xScaleProvider(
       calculatedData
     )
-
     return (
       <ChartCanvas
         height={550}
@@ -234,8 +245,10 @@ class CandleStickChartWithMACDIndicator extends React.Component {
             displayFormat={format('.2f')}
             {...mouseEdgeAppearance}
           />
+          {/* <ErrorBoundary>
+            <MACDSeries yAccessor={d => d.macd} {...macdAppearance} />
+          </ErrorBoundary> */}
 
-          <MACDSeries yAccessor={d => d.macd} {...macdAppearance} />
           <MACDTooltip
             origin={[-38, 15]}
             yAccessor={d => d.macd}
@@ -247,17 +260,6 @@ class CandleStickChartWithMACDIndicator extends React.Component {
       </ChartCanvas>
     )
   }
-}
-
-CandleStickChartWithMACDIndicator.propTypes = {
-  data: PropTypes.array.isRequired,
-  width: PropTypes.number.isRequired,
-  ratio: PropTypes.number.isRequired,
-  type: PropTypes.oneOf(['svg', 'hybrid']).isRequired
-}
-
-CandleStickChartWithMACDIndicator.defaultProps = {
-  type: 'svg'
 }
 
 CandleStickChartWithMACDIndicator = fitWidth(CandleStickChartWithMACDIndicator)

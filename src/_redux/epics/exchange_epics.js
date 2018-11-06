@@ -36,7 +36,7 @@ const getOrderBookFromRelay$ = (
   quoteToken,
   aggregated
 ) => {
-  console.log(aggregated)
+  // console.log(aggregated)
   if (aggregated) {
     const exchange = new Exchange(relay.name, networkId)
     return from(
@@ -73,7 +73,7 @@ const getOrderBookFromRelay$ = (
     // )
   } else {
     const exchange = new Exchange(relay.name, networkId)
-    console.log('not aggregated')
+    // console.log('not aggregated')
     return from(
       exchange.getOrders(
         utils.getTockenSymbolForRelay(relay.name, baseToken),
@@ -96,7 +96,7 @@ export const getOrderBookFromRelayEpic = action$ => {
         action.payload.aggregated
       ).pipe(
         map(payload => {
-          console.log(payload)
+          // console.log(payload)
           return { type: TYPE_.ORDERBOOK_INIT, payload: { ...payload } }
         }),
         catchError(error => {
@@ -205,7 +205,7 @@ const updateLiquidityAndTokenBalances$ = (api, fundAddress, currentState) => {
     )
   ).pipe(
     mergeMap(liquidity => {
-      console.log(liquidity)
+      // console.log(liquidity)
       const payload = {
         loading: false,
         liquidity: {
@@ -221,7 +221,7 @@ const updateLiquidityAndTokenBalances$ = (api, fundAddress, currentState) => {
           }
         }
       }
-      console.log(payload)
+      // console.log(payload)
       return Observable.concat(
         Observable.of({
           type: TYPE_.UPDATE_SELECTED_FUND,
@@ -295,8 +295,8 @@ export const updateLiquidityAndTokenBalancesEpic = (action$, state$) => {
             'undefined'
         ),
         tap(val => {
-          console.log('*** Update liquidity ***')
-          console.log(val)
+          // console.log('*** Update liquidity ***')
+          // console.log(val)
           return val
         }),
         exhaustMap(() => {
@@ -348,7 +348,7 @@ export const getTradeHistoryLogsFromRelayERCdEXEpic = action$ => {
               //   return entry
               // })
               // console.log(payload)
-              console.log(logs)
+              // console.log(logs)
               return {
                 type: TYPE_.UPDATE_HISTORY_TRANSACTION_LOGS,
                 payload: logs

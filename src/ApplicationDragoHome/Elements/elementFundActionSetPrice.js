@@ -38,9 +38,12 @@ class ElementFundActionSetPrice extends Component {
   }
 
   state = {
-    account: {},
+    account: this.props.accounts.filter(
+      account => account.address === this.props.dragoDetails.addressOwner
+    )[0],
     openAuth: false,
-    accountError: ERRORS.invalidAccount,
+    // accountError: ERRORS.invalidAccount,
+    accountError: '',
     // amountErrorBuy: ERRORS.invalidAmount,
     // amountErrorSell: ERRORS.invalidAmount,
     amountErrorBuy: null,
@@ -56,49 +59,6 @@ class ElementFundActionSetPrice extends Component {
     marginTop: 12,
     marginBottom: 12,
     color: 'white'
-  }
-
-  render() {
-    const { complete, openAuth, authMsg, authAccount } = this.state
-    const { dragoDetails } = this.props
-
-    if (complete) {
-      return null
-    }
-
-    const titleStyle = {
-      padding: 0,
-      lineHeight: '20px',
-      fontSize: 16
-    }
-
-    if (openAuth) {
-      return (
-        <div>
-          <ElementFundActionAuthorization
-            dragoDetails={dragoDetails}
-            authMsg={authMsg}
-            account={authAccount}
-            onClose={this.onClose}
-          />
-        </div>
-      )
-    }
-
-    return (
-      <div key="setPriceDialoDiv">
-        <Dialog
-          key="setPriceDialog"
-          title={this.renderHeader()}
-          titleStyle={titleStyle}
-          modal
-          open={true}
-          actions={this.renderActions()}
-        >
-          {this.renderFields()}
-        </Dialog>
-      </div>
-    )
   }
 
   renderHeader = () => {
@@ -176,10 +136,10 @@ class ElementFundActionSetPrice extends Component {
       fontSize: 25,
       fontWeight: 600
     }
-
+    console.log(this.state.account)
     return (
       <div key="inputFields">
-        <AccountSelector
+        {/* <AccountSelector
           key="accountSelector"
           accounts={this.props.accounts}
           account={this.state.account}
@@ -187,69 +147,73 @@ class ElementFundActionSetPrice extends Component {
           floatingLabelText="From account"
           hintText="The account the transaction will be made from"
           onSelect={this.onChangeAddress}
-        />
+        /> */}
         <Row>
           <Col xs={12}>
-            <Paper zDepth={1}>
-              <Row>
-                <Col xs={4}>
-                  <AppBar
-                    title="BUY"
-                    showMenuIconButton={false}
-                    style={priceBoxHeader.buy}
-                    titleStyle={priceBoxHeaderTitleStyle}
-                  />
-                  <div className={styles.currentPriceText}>
-                    {isNaN(this.state.buyPrice) ? '-' : this.state.buyPrice} ETH
-                  </div>
-                </Col>
-                <Col xs={8}>
-                  <TextField
-                    key="setFundBuyPriceField"
-                    autoComplete="off"
-                    floatingLabelFixed
-                    floatingLabelText="The BUY price for this Drago"
-                    fullWidth
-                    hintText={amountLabel}
-                    errorText={this.state.amountErrorBuy}
-                    name="setFundBuyPriceField"
-                    id="setFundBuyPriceField"
-                    value={this.state.buyPrice}
-                    onChange={this.onChangeBuyPrice}
-                  />
-                </Col>
-              </Row>
-            </Paper>
-            <Paper zDepth={1}>
-              <Row>
-                <Col xs={4}>
-                  <AppBar
-                    title="SELL"
-                    showMenuIconButton={false}
-                    style={priceBoxHeader.sell}
-                    titleStyle={priceBoxHeaderTitleStyle}
-                  />
-                  <div className={styles.currentPriceText}>
-                    {this.state.sellPrice} ETH
-                  </div>
-                </Col>
-                <Col xs={8}>
-                  <TextField
-                    key="setFundSellPriceField"
-                    autoComplete="off"
-                    floatingLabelFixed
-                    floatingLabelText="The SELL price for this Drago"
-                    fullWidth
-                    hintText={amountLabel}
-                    errorText={this.state.amountErrorSell}
-                    name="setFundSellPriceField"
-                    id="setFundSellPriceField"
-                    value={this.state.sellPrice}
-                    onChange={this.onChangeSellPrice}
-                  />
-                </Col>
-              </Row>
-            </Paper>
+            <div className={styles.pricesWrapper}>
+              <Paper zDepth={1}>
+                <Row>
+                  <Col xs={4}>
+                    <AppBar
+                      title="BUY"
+                      showMenuIconButton={false}
+                      style={priceBoxHeader.buy}
+                      titleStyle={priceBoxHeaderTitleStyle}
+                    />
+                    <div className={styles.currentPriceText}>
+                      {isNaN(this.state.buyPrice) ? '-' : this.state.buyPrice}{' '}
+                      ETH
+                    </div>
+                  </Col>
+                  <Col xs={8}>
+                    <TextField
+                      key="setFundBuyPriceField"
+                      autoComplete="off"
+                      floatingLabelFixed
+                      floatingLabelText="The BUY price for this Drago"
+                      fullWidth
+                      hintText={amountLabel}
+                      errorText={this.state.amountErrorBuy}
+                      name="setFundBuyPriceField"
+                      id="setFundBuyPriceField"
+                      value={this.state.buyPrice}
+                      onChange={this.onChangeBuyPrice}
+                    />
+                  </Col>
+                </Row>
+              </Paper>
+              <br />
+              <Paper zDepth={1}>
+                <Row>
+                  <Col xs={4}>
+                    <AppBar
+                      title="SELL"
+                      showMenuIconButton={false}
+                      style={priceBoxHeader.sell}
+                      titleStyle={priceBoxHeaderTitleStyle}
+                    />
+                    <div className={styles.currentPriceText}>
+                      {this.state.sellPrice} ETH
+                    </div>
+                  </Col>
+                  <Col xs={8}>
+                    <TextField
+                      key="setFundSellPriceField"
+                      autoComplete="off"
+                      floatingLabelFixed
+                      floatingLabelText="The SELL price for this Drago"
+                      fullWidth
+                      hintText={amountLabel}
+                      errorText={this.state.amountErrorSell}
+                      name="setFundSellPriceField"
+                      id="setFundSellPriceField"
+                      value={this.state.sellPrice}
+                      onChange={this.onChangeSellPrice}
+                    />
+                  </Col>
+                </Row>
+              </Paper>
+            </div>
           </Col>
         </Row>
       </div>
@@ -435,6 +399,49 @@ class ElementFundActionSetPrice extends Component {
     })
     // this.onClose()
     // this.props.snackBar('Instruction awaiting for authorization')
+  }
+
+  render() {
+    const { complete, openAuth, authMsg, authAccount } = this.state
+    const { dragoDetails } = this.props
+
+    if (complete) {
+      return null
+    }
+
+    const titleStyle = {
+      padding: 0,
+      lineHeight: '20px',
+      fontSize: 16
+    }
+
+    if (openAuth) {
+      return (
+        <div>
+          <ElementFundActionAuthorization
+            dragoDetails={dragoDetails}
+            authMsg={authMsg}
+            account={authAccount}
+            onClose={this.onClose}
+          />
+        </div>
+      )
+    }
+
+    return (
+      <div key="setPriceDialoDiv">
+        <Dialog
+          key="setPriceDialog"
+          title={this.renderHeader()}
+          titleStyle={titleStyle}
+          modal
+          open={true}
+          actions={this.renderActions()}
+        >
+          {this.renderFields()}
+        </Dialog>
+      </div>
+    )
   }
 }
 

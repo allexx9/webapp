@@ -18,8 +18,13 @@ class EthfinexAuth extends Component {
     dispatch: PropTypes.func.isRequired
   }
 
+  static contextTypes = {
+    api: PropTypes.object.isRequired
+  }
+
   onAuthEF = async () => {
     const { api } = this.context
+    console.log(api)
     console.log('auth')
     try {
       // var provider = account.source === 'MetaMask' ? window.web3 : api

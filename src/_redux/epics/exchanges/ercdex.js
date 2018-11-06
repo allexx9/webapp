@@ -54,7 +54,8 @@ import {
   CHART_MARKET_DATA_UPDATE,
   FETCH_ACCOUNT_ORDERS_START,
   FETCH_ASSETS_PRICE_DATA,
-  FETCH_CANDLES_DATA_SINGLE,
+  FETCH_CANDLES_DATA_SINGLE_START,
+  FETCH_CANDLES_DATA_SINGLE_STOP,
   RELAY_CLOSE_WEBSOCKET,
   RELAY_GET_ORDERS,
   RELAY_MSG_FROM_WEBSOCKET,
@@ -225,7 +226,10 @@ const getCandlesData$ = (
 
 export const getCandlesSingleDataEpic = action$ => {
   return action$.pipe(
-    ofType(customRelayAction(FETCH_CANDLES_DATA_SINGLE)),
+    ofType(customRelayAction(FETCH_CANDLES_DATA_SINGLE_START)),
+    takeUntil(
+      action$.ofType(customRelayAction(FETCH_CANDLES_DATA_SINGLE_STOP))
+    ),
     mergeMap(action => {
       console.log(action)
       return Observable.concat(

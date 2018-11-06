@@ -63,7 +63,6 @@ class ChartBox extends Component {
                 <Row className={styles.marketBoxContainer}>
                   <Col xs={12}>
                     <ErrorBoundary>
-                      {' '}
                       <CandleStickChartWithMACDIndicator
                         data={this.props.data}
                       />

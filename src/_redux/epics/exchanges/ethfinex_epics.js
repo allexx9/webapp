@@ -7,11 +7,12 @@ import {
   bufferCount,
   bufferTime,
   catchError,
-  concat,
   exhaustMap,
   filter,
+  first,
   map,
   mergeMap,
+  skipWhile,
   takeUntil,
   tap,
   throttleTime
@@ -30,7 +31,6 @@ import { Ethfinex } from '../../../_utils/const'
 import * as TYPE_ from '../../actions/const'
 
 import ExchangeConnectorWrapper from '../../../_utils/exchangeConnector'
-// import exchangeConnector, { exchanges } from '@rigoblock/exchange-connector'
 
 const customRelayAction = action => {
   // console.log(`${Ethfinex.toUpperCase()}_${action}`)
@@ -57,28 +57,59 @@ const candlesSingleWebsocket$ = (relay, networkId, baseToken, quoteToken) => {
     )
     let chanId = 0
 
-    return ethfinex.raw.ws
-      .getCandles(
-        {
-          timeframe: '1m',
-          symbols: baseTokenSymbol + quoteTokenSymbol
-        },
-        (error, msgWs) => {
-          if (error) {
-            return observer.error(error)
+    let value = 0
+    const interval = setInterval(() => {
+      // if (value % 2 === 0) {
+      //   observer.next(value)
+      // }
+      console.log(ethfinex.raw.wsInstance)
+      if (ethfinex.raw.wsInstance !== null) {
+        ethfinex.raw.ws.getCandles(
+          {
+            timeframe: '1m',
+            symbols: baseTokenSymbol + quoteTokenSymbol
+          },
+          (error, msgWs) => {
+            if (error) {
+              return observer.error(error)
+            }
+            if (msgWs.event === 'subscribed' && msgWs.channel === 'candles') {
+              chanId = msgWs.chanId
+            }
+            if (msgWs[0] === chanId) {
+              return observer.next(msgWs)
+            }
           }
-          if (msgWs.event === 'subscribed' && msgWs.channel === 'candles') {
-            chanId = msgWs.chanId
-          }
-          if (msgWs[0] === chanId) {
-            return observer.next(msgWs)
-          }
-        }
+        )
+        clearInterval(interval)
+      }
+    }, 1000)
+
+    // ethfinex.raw.ws.getCandles(
+    //   {
+    //     timeframe: '1m',
+    //     symbols: baseTokenSymbol + quoteTokenSymbol
+    //   },
+    //   (error, msgWs) => {
+    //     if (error) {
+    //       return observer.error(error)
+    //     }
+    //     if (msgWs.event === 'subscribed' && msgWs.channel === 'candles') {
+    //       chanId = msgWs.chanId
+    //     }
+    //     if (msgWs[0] === chanId) {
+    //       return observer.next(msgWs)
+    //     }
+    //   }
+    // )
+    return () =>
+      from(
+        ethfinex.ws.close().then(result => {
+          clearInterval(interval)
+          console.log(result)
+          return observer.complete()
+        })
       )
-      .then(() => {
-        // console.log(unsubscribe)
-        return () => ethfinex.ws.close()
-      })
   })
 }
 
@@ -124,10 +155,138 @@ const updateSingleCandles = tickerOutput => {
   }
 }
 
+const candlesSingleWebsocket2$ = (relay, networkId, baseToken, quoteToken) => {
+  return Observable.create(function(observer) {
+    const ethfinex = ExchangeConnectorWrapper.getInstance().getExchange(
+      relay.name,
+      {
+        networkId: networkId
+      }
+    )
+    let subscribe
+    let chanId = 0
+
+    observer.next(ethfinex)
+    // ethfinex.raw.ws
+    //   .getCandles(
+    //     {
+    //       timeframe: '1m',
+    //       symbols: baseTokenSymbol + quoteTokenSymbol
+    //     },
+    //     (error, msgWs) => {
+    //       if (error) {
+    //         return observer.error(error)
+    //       }
+    //       console.log('WS OPEN')
+    //       console.log(ethfinex.raw.ws.status())
+    //       if (msgWs.event === 'subscribed' && msgWs.channel === 'candles') {
+    //         chanId = msgWs.chanId
+    //       }
+    //       if (msgWs[0] === chanId) {
+    //         return observer.next(msgWs)
+    //       }
+    //     }
+    //   )
+    //   .then(unsubscribe => {
+    //     unsubscribe
+    //   })
+    // return () =>
+    //   from(
+    //     ethfinex.ws.close().then(result => {
+    //       clearInterval(interval)
+    //       console.log(result)
+    //       return observer.complete()
+    //     })
+    //   )
+    return () => {
+      // console.log('WS CLOSED')
+      // observer.complete(ethfinex)
+      // clearInterval(interval)
+      // return ethfinex.ws.close().then(result => {
+      //   console.log(result)
+      //   return observer.complete()
+      // })
+    }
+  }).pipe(
+    tap(val => {
+      console.log(val)
+      return val
+    }),
+    first(),
+    skipWhile(ethfinex => {
+      console.log(ethfinex.raw.ws.status())
+      return ethfinex.raw.ws.status() !== 'closed'
+    }),
+    tap(val => {
+      console.log(val)
+      return val
+    }),
+    mergeMap(val => {
+      const baseTokenSymbol = utils.getTockenSymbolForRelay(
+        relay.name,
+        baseToken
+      )
+      const quoteTokenSymbol = utils.getTockenSymbolForRelay(
+        relay.name,
+        quoteToken
+      )
+      return Observable.concat(
+        candlesSingleWebsocketUntil2$(val, baseTokenSymbol, quoteTokenSymbol)
+      )
+    })
+  )
+}
+
+const candlesSingleWebsocketUntil2$ = (
+  ethfinex,
+  baseTokenSymbol,
+  quoteTokenSymbol
+) => {
+  let chanId = 0
+  return Observable.create(function(observer) {
+    console.log(ethfinex)
+    ethfinex.raw.ws
+      .getCandles(
+        {
+          timeframe: '1m',
+          symbols: baseTokenSymbol + quoteTokenSymbol
+        },
+        (error, msgWs) => {
+          if (error) {
+            return observer.error(error)
+          }
+          console.log(msgWs)
+          console.log('WS OPEN')
+          // console.log(ethfinex.ws.status())
+          if (msgWs.event === 'subscribed' && msgWs.channel === 'candles') {
+            chanId = msgWs.chanId
+          }
+          if (msgWs[0] === chanId) {
+            return observer.next(msgWs)
+          }
+        }
+      )
+      .then(unsubscribe => {
+        unsubscribe
+      })
+    return () =>
+      from(
+        ethfinex.ws.close().then(result => {
+          return observer.complete()
+        })
+      )
+  })
+}
+
 export const getCandlesSingleDataEpic = action$ => {
   return action$.pipe(
-    ofType(customRelayAction(TYPE_.FETCH_CANDLES_DATA_SINGLE)),
+    tap(val => {
+      // console.log(val)
+      return val
+    }),
+    ofType(customRelayAction(TYPE_.FETCH_CANDLES_DATA_SINGLE_START)),
     mergeMap(action => {
+      console.log(action.type)
       return Observable.concat(
         // Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: true } }),
         candlesSingleWebsocket$(
@@ -138,7 +297,12 @@ export const getCandlesSingleDataEpic = action$ => {
           action.payload.startDate
         ).pipe(
           takeUntil(
-            action$.ofType(customRelayAction(TYPE_.RELAY_CLOSE_WEBSOCKET))
+            action$.ofType(
+              customRelayAction(TYPE_.FETCH_CANDLES_DATA_SINGLE_STOP)
+            ),
+            tap(val => {
+              console.log(val)
+            })
           ),
           filter(tick => {
             return tick[1] !== 'hb'
@@ -399,7 +563,7 @@ const reconnectingWebsocketBook$ = (
 
 export const initRelayWebSocketBookEpic = action$ =>
   action$.pipe(
-    ofType(customRelayAction(TYPE_.RELAY_OPEN_WEBSOCKET_BOOK)),
+    ofType(customRelayAction('TYPE_.RELAY_OPEN_WEBSOCKET_BOOK_SILENT')),
     mergeMap(action => {
       return reconnectingWebsocketBook$(
         action.payload.relay,
@@ -493,7 +657,7 @@ const reconnectingWebsocketTicker$ = (
     return ethfinex.raw.ws
       .getTickers(
         {
-          symbols: baseTokenSymbol + quoteTokenSymbol
+          symbols: [baseTokenSymbol + quoteTokenSymbol]
         },
         (error, msgWs) => {
           if (error) {
@@ -512,7 +676,10 @@ const reconnectingWebsocketTicker$ = (
         }
       )
       .then(unsubscribe => {
-        return () => ethfinex.ws.close()
+        return () => {
+          unsubscribe()
+          return ethfinex.ws.close()
+        }
       })
   })
 }
@@ -538,7 +705,7 @@ const updateCurrentTokenPrice = ticker => {
 
 export const initRelayWebSocketTickerEpic = (action$, state$) =>
   action$.pipe(
-    ofType(customRelayAction(TYPE_.RELAY_OPEN_WEBSOCKET_TICKER)),
+    ofType(customRelayAction('TYPE_.RELAY_OPEN_WEBSOCKET_TICKER_SILENT')),
     mergeMap(action => {
       return reconnectingWebsocketTicker$(
         action.payload.relay,
