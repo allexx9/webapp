@@ -19,7 +19,7 @@ import { getTradeHistoryLogsFromRelayERCdEX } from '../../_utils/exchange'
 import { ofType } from 'redux-observable'
 import BigNumber from 'bignumber.js'
 import Exchange from '../../_utils/exchange/src/index'
-import exchangeConnector, { exchanges } from '@rigoblock/exchange-connector'
+
 import utils from '../../_utils/utils'
 
 export * from './exchanges'
@@ -103,7 +103,7 @@ export const getOrderBookFromRelayEpic = action$ => {
           console.log(error)
           return Observable.of({
             type: TYPE_.QUEUE_ERROR_NOTIFICATION,
-            payload: ERRORS.E001
+            payload: ERRORS.ERR_EXCHANGE_ORDER_BOOK_FETCH
           })
         })
       )
@@ -226,13 +226,13 @@ const updateLiquidityAndTokenBalances$ = (api, fundAddress, currentState) => {
         Observable.of({
           type: TYPE_.UPDATE_SELECTED_FUND,
           payload
-        })
-        // Observable.of(
-        //   Actions.exchange.updateSelectedTradeTokensPair({
-        //     baseTokenLockWrapExpire: liquidity.baseTokenLockWrapExpire,
-        //     quoteTokenLockWrapExpire: liquidity.quoteTokenLockWrapExpire
-        //   })
-        // )
+        }),
+        Observable.of(
+          Actions.exchange.updateSelectedTradeTokensPair({
+            baseTokenLockWrapExpire: liquidity.baseTokenLockWrapExpire,
+            quoteTokenLockWrapExpire: liquidity.quoteTokenLockWrapExpire
+          })
+        )
       )
     })
   )

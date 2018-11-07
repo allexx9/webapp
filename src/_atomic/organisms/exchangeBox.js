@@ -39,6 +39,7 @@ class ExchangeBox extends PureComponent {
   }
 
   onSelectExchange = async relay => {
+    if (this.props.exchange.selectedRelay.name === relay) return
     const { api } = this.context
     const { selectedExchange, selectedFund } = this.props.exchange
     const selectedRelay = RELAYS[relay]

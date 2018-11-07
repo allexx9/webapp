@@ -92,7 +92,7 @@ class DragoWeb3 {
     console.log(`exchangeContractAddres ${exchangeContractAddress}`)
     console.log(`tokenAddress ${tokenAddress}`)
     console.log(`tokenWrapper ${tokenWrapper}`)
-    console.log(`toBeWrapped ${toBeWrapped}`)
+    console.log(`toBeWrapped ${toBeWrapped.toString()}`)
     console.log(`time ${time}`)
     console.log(`isOldERC20 ${isOldERC20}`)
 

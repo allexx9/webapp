@@ -189,12 +189,12 @@ export class App extends Component {
     }
     return (
       <div>
+        <NotificationSystem
+          ref={n => (this._notificationSystem = n)}
+          style={notificationStyle}
+        />
         {this.props.app.appLoading ? (
           <div>
-            <NotificationSystem
-              ref={n => (this._notificationSystem = n)}
-              style={notificationStyle}
-            />
             <Router history={history}>
               <AppLoading />
             </Router>

@@ -2301,38 +2301,9 @@ class utilities {
     selectedTokensPair,
     exchange
   ) => {
-    // We update the expire epoch time if current time > expire lock tim
-    // let baseTokenLockWrapExpire = selectedTokensPair.baseTokenLockWrapExpire
-    // let quoteTokenLockWrapExpire = selectedTokensPair.quoteTokenLockWrapExpire
     let provider = api
     const poolApi = new PoolApi(provider)
-    // const now = Math.floor(Date.now() / 1000)
-    // console.log(`now ${now}`)
-    // console.log(baseTokenLockWrapExpire)
-    // console.log(quoteTokenLockWrapExpire)
-    // if (now > baseTokenLockWrapExpire) {
-    //   await poolApi.contract.tokenwrapper.init(
-    //     selectedTokensPair.baseToken.wrappers[exchange].address
-    //   )
-    //   baseTokenLockWrapExpire = (await poolApi.contract.tokenwrapper.depositLock(
-    //     dragoAddress
-    //   )).toFixed()
-    //   console.log(baseTokenLockWrapExpire)
-    // }
-    // if (now > quoteTokenLockWrapExpire) {
-    //   await poolApi.contract.tokenwrapper.init(
-    //     selectedTokensPair.quoteToken.wrappers[exchange].address
-    //   )
-    //   quoteTokenLockWrapExpire = (await poolApi.contract.tokenwrapper.depositLock(
-    //     dragoAddress
-    //   )).toFixed()
-    //   console.log(quoteTokenLockWrapExpire)
-    // }
-
     poolApi.contract.drago.init(dragoAddress)
-    // console.log('fetchDragoLiquidityAndTokenBalances ')
-    // console.log(selectedTokensPair)
-    // console.log(exchange.name)
     let {
       baseTokenLockWrapExpire,
       quoteTokenLockWrapExpire
@@ -2368,13 +2339,21 @@ class utilities {
         selectedTokensPair.baseToken.wrappers[exchange.name].address,
         dragoAddress
       )
-      // console.log(baseTokenLockWrapExpire)
+      console.log(
+        `Exp base token: ${moment
+          .unix(baseTokenLockWrapExpire)
+          .format('MMMM Do YYYY, h:mm:ss a')}`
+      )
       quoteTokenLockWrapExpire = await utils.updateTokenWrapperLockTime(
         api,
         selectedTokensPair.quoteToken.wrappers[exchange.name].address,
         dragoAddress
       )
-      // console.log(quoteTokenLockWrapExpire)
+      console.log(
+      `Exp quote token: ${moment
+        .unix(quoteTokenLockWrapExpire)
+        .format('MMMM Do YYYY, h:mm:ss a')}`
+    )
     }
     const liquidity = {
       dragoETHBalance,
@@ -2386,7 +2365,7 @@ class utilities {
       baseTokenLockWrapExpire,
       quoteTokenLockWrapExpire
     }
-    // console.log(liquidity)
+    console.log(liquidity)
     return liquidity
   }
 

@@ -163,7 +163,7 @@ class OrdersHistoryBox extends Component {
                             autoLoading={false}
                             onCancelOrder={this.onCancelOrder}
                             pagination={{
-                              display: 10,
+                              display: 5,
                               number: 1
                             }}
                           >

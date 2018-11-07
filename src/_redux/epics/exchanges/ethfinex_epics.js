@@ -9,10 +9,8 @@ import {
   catchError,
   exhaustMap,
   filter,
-  first,
   map,
   mergeMap,
-  skipWhile,
   takeUntil,
   tap,
   throttleTime
@@ -28,6 +26,7 @@ import utils from '../../../_utils/utils'
 import { Actions } from '../../actions/'
 import { Ethfinex } from '../../../_utils/const'
 
+import * as ERRORS from '../../../_const/errors'
 import * as TYPE_ from '../../actions/const'
 
 import ExchangeConnectorWrapper from '../../../_utils/exchangeConnector'
@@ -62,23 +61,28 @@ const candlesSingleWebsocket$ = (relay, networkId, baseToken, quoteToken) => {
         ethfinex.raw.wsStatus === 'closed' ||
         ethfinex.raw.wsStatus === 'open'
       ) {
-        ethfinex.raw.ws.getCandles(
-          {
-            timeframe: '1m',
-            symbols: baseTokenSymbol + quoteTokenSymbol
-          },
-          (error, msgWs) => {
-            if (error) {
-              return observer.error(error)
+        ethfinex.raw.ws
+          .getCandles(
+            {
+              timeframe: '1m',
+              symbols: baseTokenSymbol + quoteTokenSymbol
+            },
+            (error, msgWs) => {
+              if (error) {
+                return observer.error(error)
+              }
+              if (msgWs.event === 'subscribed' && msgWs.channel === 'candles') {
+                chanId = msgWs.chanId
+              }
+              if (msgWs[0] === chanId) {
+                return observer.next(msgWs)
+              }
             }
-            if (msgWs.event === 'subscribed' && msgWs.channel === 'candles') {
-              chanId = msgWs.chanId
-            }
-            if (msgWs[0] === chanId) {
-              return observer.next(msgWs)
-            }
-          }
-        )
+          )
+          .cath(() => {
+            observer.error(ERRORS.ERR_EXCHANGE_WS_CANDLE_FETCH)
+          })
+
         clearInterval(interval)
       }
     }, 500)
@@ -143,7 +147,7 @@ export const getCandlesSingleDataEpic = action$ => {
     }),
     ofType(customRelayAction(TYPE_.FETCH_CANDLES_DATA_SINGLE_START)),
     mergeMap(action => {
-      console.log(action.type)
+      // console.log(action.type)
       return Observable.concat(
         // Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: true } }),
         candlesSingleWebsocket$(
@@ -176,7 +180,7 @@ export const getCandlesSingleDataEpic = action$ => {
             console.warn(error)
             return Observable.of({
               type: TYPE_.QUEUE_ERROR_NOTIFICATION,
-              payload: 'Error fetching candles data.'
+              payload: error
             })
           })
         )
@@ -229,55 +233,75 @@ const reconnectingWebsocketBook$ = (
 
     const interval = setInterval(() => {
       if (ethfinex.raw.wsStatus === 'closed') {
-        ethfinex.raw.ws.getAggregatedOrders(
-          {
-            symbols: pair,
-            precision: 'P2',
-            frequency: 'F1',
-            len: 25
-          },
-          (error, msgWs) => {
-            if (error) {
-              console.warn('WebSocket order book error.')
-              return observer.error(error)
-            }
-            let msg = msgWs
-            if (msg.event === 'subscribed' && msg.channel === 'book') {
-              chanId = msg.chanId
-            }
-
-            if (!Array.isArray(msg)) {
-              return
-            }
-            if (msg[0] !== chanId) {
-              return
-            }
-            if (msg[1] === 'hb') {
-              seq = +msg[2]
-              return
-            } else if (msg[1] === 'cs') {
-              seq = +msg[3]
-
-              const checksum = msg[2]
-              const csdata = []
-              const bids_keys = BOOK.psnap['bids']
-              const asks_keys = BOOK.psnap['asks']
-
-              for (let i = 0; i < 25; i++) {
-                if (bids_keys[i]) {
-                  const price = bids_keys[i]
-                  const pp = BOOK.bids[price]
-                  csdata.push(pp.price, pp.amount)
-                }
-                if (asks_keys[i]) {
-                  const price = asks_keys[i]
-                  const pp = BOOK.asks[price]
-                  csdata.push(pp.price, -pp.amount)
-                }
+        ethfinex.raw.ws
+          .getAggregatedOrders(
+            {
+              symbols: pair,
+              precision: 'P2',
+              frequency: 'F1',
+              len: 25
+            },
+            (error, msgWs) => {
+              if (error) {
+                console.warn('WebSocket order book error.')
+                return observer.error(error)
+              }
+              let msg = msgWs
+              if (msg.event === 'subscribed' && msg.channel === 'book') {
+                chanId = msg.chanId
               }
 
-              const cs_str = csdata.join(':')
-              const cs_calc = CRC.str(cs_str)
+              if (!Array.isArray(msg)) {
+                return
+              }
+              if (msg[0] !== chanId) {
+                return
+              }
+              if (msg[1] === 'hb') {
+                seq = +msg[2]
+                return
+              } else if (msg[1] === 'cs') {
+                seq = +msg[3]
+
+                const checksum = msg[2]
+                const csdata = []
+                const bids_keys = BOOK.psnap['bids']
+                const asks_keys = BOOK.psnap['asks']
+
+                for (let i = 0; i < 25; i++) {
+                  if (bids_keys[i]) {
+                    const price = bids_keys[i]
+                    const pp = BOOK.bids[price]
+                    csdata.push(pp.price, pp.amount)
+                  }
+                  if (asks_keys[i]) {
+                    const price = asks_keys[i]
+                    const pp = BOOK.asks[price]
+                    csdata.push(pp.price, -pp.amount)
+                  }
+                }
+
+                const cs_str = csdata.join(':')
+                const cs_calc = CRC.str(cs_str)
+
+                // erroronsole.log(
+                // error '[' +
+                // error   moment().format('YYYY-MM-DDTHH:mm:ss.SSS') +
+                // error   '] ' +
+                // error   pair +
+                // error   ' | ' +
+                //     JSON.stringify([
+                //       'cs_string=' + cs_str,
+                //       'cs_calc=' + cs_calc,
+                //       'server_checksum=' + checksum
+                //     ]) +
+                //     '\n'
+                // )
+                if (cs_calc !== checksum) {
+                  console.error('CHECKSUM_FAILED')
+                }
+                return
+              }
 
               // console.log(
               //   '[' +
@@ -285,132 +309,116 @@ const reconnectingWebsocketBook$ = (
               //     '] ' +
               //     pair +
               //     ' | ' +
-              //     JSON.stringify([
-              //       'cs_string=' + cs_str,
-              //       'cs_calc=' + cs_calc,
-              //       'server_checksum=' + checksum
-              //     ]) +
+              //     JSON.stringify(msg) +
               //     '\n'
               // )
-              if (cs_calc !== checksum) {
-                console.error('CHECKSUM_FAILED')
-              }
-              return
-            }
 
-            // console.log(
-            //   '[' +
-            //     moment().format('YYYY-MM-DDTHH:mm:ss.SSS') +
-            //     '] ' +
-            //     pair +
-            //     ' | ' +
-            //     JSON.stringify(msg) +
-            //     '\n'
-            // )
-
-            if (BOOK.mcnt === 0) {
-              _.each(msg[1], function(pp) {
-                pp = {
-                  price: pp[0],
-                  cnt: pp[1],
-                  amount: pp[2]
-                }
-                const side = pp.amount >= 0 ? 'bids' : 'asks'
-                pp.amount = Math.abs(pp.amount)
-                if (BOOK[side][pp.price]) {
-                  console.log(
-                    '[' +
-                      moment().format() +
-                      '] ' +
-                      pair +
-                      ' | ' +
-                      JSON.stringify(pp) +
-                      ' BOOK snap existing bid override\n'
-                  )
-                }
-                BOOK[side][pp.price] = pp
-              })
-            } else {
-              const cseq = +msg[2]
-              msg = msg[1]
-
-              if (!seq) {
-                seq = cseq - 1
-              }
-
-              if (cseq - seq !== 1) {
-                console.error('OUT OF SEQUENCE', seq, cseq)
-              }
-
-              seq = cseq
-
-              let pp = {
-                price: msg[0],
-                cnt: msg[1],
-                amount: msg[2]
-              }
-
-              if (!pp.cnt) {
-                let found = true
-
-                if (pp.amount > 0) {
-                  if (BOOK['bids'][pp.price]) {
-                    delete BOOK['bids'][pp.price]
-                  } else {
-                    found = false
+              if (BOOK.mcnt === 0) {
+                _.each(msg[1], function(pp) {
+                  pp = {
+                    price: pp[0],
+                    cnt: pp[1],
+                    amount: pp[2]
                   }
-                } else if (pp.amount < 0) {
-                  if (BOOK['asks'][pp.price]) {
-                    delete BOOK['asks'][pp.price]
-                  } else {
-                    found = false
+                  const side = pp.amount >= 0 ? 'bids' : 'asks'
+                  pp.amount = Math.abs(pp.amount)
+                  if (BOOK[side][pp.price]) {
+                    console.log(
+                      '[' +
+                        moment().format() +
+                        '] ' +
+                        pair +
+                        ' | ' +
+                        JSON.stringify(pp) +
+                        ' BOOK snap existing bid override\n'
+                    )
                   }
-                }
-
-                if (!found) {
-                  console.log(
-                    '[' +
-                      moment().format() +
-                      '] ' +
-                      pair +
-                      ' | ' +
-                      JSON.stringify(pp) +
-                      ' BOOK delete fail side not found\n'
-                  )
-                }
+                  BOOK[side][pp.price] = pp
+                })
               } else {
-                let side = pp.amount >= 0 ? 'bids' : 'asks'
-                pp.amount = Math.abs(pp.amount)
-                BOOK[side][pp.price] = pp
-              }
-            }
+                const cseq = +msg[2]
+                msg = msg[1]
 
-            _.each(['bids', 'asks'], function(side) {
-              let sbook = BOOK[side]
-              let bprices = Object.keys(sbook)
-
-              let prices = bprices.sort(function(a, b) {
-                if (side === 'bids') {
-                  return +a >= +b ? -1 : 1
-                } else {
-                  return +a <= +b ? -1 : 1
+                if (!seq) {
+                  seq = cseq - 1
                 }
+
+                if (cseq - seq !== 1) {
+                  console.error('OUT OF SEQUENCE', seq, cseq)
+                }
+
+                seq = cseq
+
+                let pp = {
+                  price: msg[0],
+                  cnt: msg[1],
+                  amount: msg[2]
+                }
+
+                if (!pp.cnt) {
+                  let found = true
+
+                  if (pp.amount > 0) {
+                    if (BOOK['bids'][pp.price]) {
+                      delete BOOK['bids'][pp.price]
+                    } else {
+                      found = false
+                    }
+                  } else if (pp.amount < 0) {
+                    if (BOOK['asks'][pp.price]) {
+                      delete BOOK['asks'][pp.price]
+                    } else {
+                      found = false
+                    }
+                  }
+
+                  if (!found) {
+                    console.log(
+                      '[' +
+                        moment().format() +
+                        '] ' +
+                        pair +
+                        ' | ' +
+                        JSON.stringify(pp) +
+                        ' BOOK delete fail side not found\n'
+                    )
+                  }
+                } else {
+                  let side = pp.amount >= 0 ? 'bids' : 'asks'
+                  pp.amount = Math.abs(pp.amount)
+                  BOOK[side][pp.price] = pp
+                }
+              }
+
+              _.each(['bids', 'asks'], function(side) {
+                let sbook = BOOK[side]
+                let bprices = Object.keys(sbook)
+
+                let prices = bprices.sort(function(a, b) {
+                  if (side === 'bids') {
+                    return +a >= +b ? -1 : 1
+                  } else {
+                    return +a <= +b ? -1 : 1
+                  }
+                })
+                BOOK.psnap[side] = prices
               })
-              BOOK.psnap[side] = prices
-            })
 
-            BOOK.mcnt++
-            // const now = moment.utc().format('YYYYMMDDHHmmss')
-            // console.log('bids', now, { bids: BOOK.bids })
-            // console.log('asks', now, { asks: BOOK.asks })
+              BOOK.mcnt++
+              // const now = moment.utc().format('YYYYMMDDHHmmss')
+              // console.log('bids', now, { bids: BOOK.bids })
+              // console.log('asks', now, { asks: BOOK.asks })
 
-            checkCross(msg)
-            return observer.next({
-              asks: BOOK.asks,
-              bids: BOOK.bids
-            })
-          }
-        )
+              checkCross(msg)
+              return observer.next({
+                asks: BOOK.asks,
+                bids: BOOK.bids
+              })
+            }
+          )
+          .catch(() => {
+            observer.error(ERRORS.ERR_EXCHANGE_WS_ORDERBOOK_FETCH)
+          })
 
         clearInterval(interval)
       }
@@ -489,7 +497,7 @@ export const initRelayWebSocketBookEpic = action$ =>
           console.warn(error)
           return Observable.of({
             type: TYPE_.QUEUE_ERROR_NOTIFICATION,
-            payload: 'Error connecting to order book.'
+            payload: error
           })
         })
       )
@@ -502,12 +510,7 @@ export const initRelayWebSocketBookEpic = action$ =>
 // THIS EPIC IS CALLED WHEN THE EXCHANGE IS INITALIZED
 //
 
-const reconnectingWebsocketTicker$ = (
-  relay,
-  networkId,
-  baseToken,
-  quoteToken
-) => {
+const websocketTicker$ = (relay, networkId, baseToken, quoteToken) => {
   return Observable.create(observer => {
     const ethfinex = ExchangeConnectorWrapper.getInstance().getExchange(
       relay.name,
@@ -527,26 +530,33 @@ const reconnectingWebsocketTicker$ = (
         ethfinex.raw.wsStatus === 'closed' ||
         ethfinex.raw.wsStatus === 'open'
       ) {
-        ethfinex.raw.ws.getTickers(
-          {
-            symbols: [baseTokenSymbol + quoteTokenSymbol]
-          },
-          (error, msgWs) => {
-            if (error) {
-              return observer.error(error)
-            } else {
-              if (msgWs.event === 'subscribed' && msgWs.channel === 'ticker') {
-                chanId = msgWs.chanId
-              }
-              if (msgWs[0] === chanId) {
-                if (Array.isArray(msgWs)) {
-                  return observer.next(msgWs)
+        ethfinex.raw.ws
+          .getTickers(
+            {
+              symbols: [baseTokenSymbol + quoteTokenSymbol]
+            },
+            (error, msgWs) => {
+              if (error) {
+                return observer.error(error)
+              } else {
+                if (
+                  msgWs.event === 'subscribed' &&
+                  msgWs.channel === 'ticker'
+                ) {
+                  chanId = msgWs.chanId
                 }
+                if (msgWs[0] === chanId) {
+                  if (Array.isArray(msgWs)) {
+                    return observer.next(msgWs)
+                  }
+                }
+                // return observer.next('')
               }
-              // return observer.next('')
             }
-          }
-        )
+          )
+          .catch(() => {
+            observer.error(ERRORS.ERR_EXCHANGE_WS_TICKER_FETCH)
+          })
 
         clearInterval(interval)
       }
@@ -585,7 +595,7 @@ export const initRelayWebSocketTickerEpic = (action$, state$) =>
   action$.pipe(
     ofType(customRelayAction(TYPE_.RELAY_OPEN_WEBSOCKET_TICKER)),
     mergeMap(action => {
-      return reconnectingWebsocketTicker$(
+      return websocketTicker$(
         action.payload.relay,
         action.payload.networkId,
         action.payload.baseToken,

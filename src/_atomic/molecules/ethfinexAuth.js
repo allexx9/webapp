@@ -6,6 +6,7 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import TokensLockBox from '../organisms/tockensLockBox'
 import Web3 from 'web3'
+import moment from 'moment'
 import styles from './ethfinexAuth.module.css'
 
 function mapStateToProps(state) {
@@ -24,8 +25,7 @@ class EthfinexAuth extends Component {
 
   onAuthEF = async () => {
     const { api } = this.context
-    console.log(api)
-    console.log('auth')
+
     try {
       // var provider = account.source === 'MetaMask' ? window.web3 : api
       const token = Date.now() / 1000 + 3600 + ''
@@ -70,6 +70,16 @@ class EthfinexAuth extends Component {
       selectedTokensPair,
       selectedExchange
     } = this.props.exchange
+    console.log(
+      `Exp base token: ${moment
+        .unix(selectedTokensPair.baseTokenLockWrapExpire)
+        .format('MMMM Do YYYY, h:mm:ss a')}`
+    )
+    console.log(
+      `Exp quote token: ${moment
+        .unix(selectedTokensPair.quoteTokenLockWrapExpire)
+        .format('MMMM Do YYYY, h:mm:ss a')}`
+    )
     return (
       <Row>
         {' '}

@@ -13,11 +13,11 @@ export const relayActionsMiddleWare = store => next => action => {
   // console.log(state.exchange.selectedRelay.name)
   // console.log(TYPE_.CUSTOM_EXCHANGE_ACTIONS)
   if (TYPE_.CUSTOM_EXCHANGE_ACTIONS.includes(action.type)) {
-    console.log(
-      `relayActionsMiddleWare  action: ${state.exchange.selectedRelay.name.toUpperCase()}_${
-        action.type
-      }`
-    )
+    // console.log(
+    //   `relayActionsMiddleWare  action: ${state.exchange.selectedRelay.name.toUpperCase()}_${
+    //     action.type
+    //   }`
+    // )
     action.type = `${state.exchange.selectedRelay.name.toUpperCase()}_${
       action.type
     }`
