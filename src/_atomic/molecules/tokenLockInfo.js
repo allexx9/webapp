@@ -16,11 +16,11 @@ import TokenAmountInputField from '../atoms/tokenLockAmountField'
 import TokenLockBalance from '../atoms/tokenLockBalance'
 import TokenLockTimeField from '../atoms/tokenLockTimeField'
 import Web3 from 'web3'
+import Web3Wrapper from '../../_utils/web3Wrapper'
 import moment from 'moment'
 import serializeError from 'serialize-error'
 import styles from './tokenLockInfo.module.css'
 import utils from '../../_utils/utils'
-// import utils from '../../_utils/utils'
 
 class TokenLockInfo extends Component {
   static propTypes = {
@@ -144,6 +144,7 @@ class TokenLockInfo extends Component {
       isOldERC20 = selectedTokensPair.quoteToken.isOldERC20
     }
     console.log(action)
+    const web3 = new Web3Wrapper()
     const poolApi = await new PoolApi(window.web3)
     switch (action) {
       case 'lock':
@@ -198,12 +199,6 @@ class TokenLockInfo extends Component {
             transactionDetails
           )
         )
-        let web3 = new Web3()
-
-        console.log(
-          web3.utils.toHex(toBaseUnitAmount(new BigNumber(amount), decimals))
-        )
-        console.log(toBaseUnitAmount(new BigNumber(amount), decimals))
         try {
           await poolApi.contract.drago.init(selectedFund.details.address)
           receipt = await poolApi.contract.drago.operateOnExchangeEFXLock(
@@ -212,7 +207,9 @@ class TokenLockInfo extends Component {
             selectedExchange.exchangeContractAddress,
             tokenAddress,
             tokenWrapperAddress,
-            web3.utils.toHex(toBaseUnitAmount(new BigNumber(amount), decimals)),
+            web3.web3.utils.toHex(
+              toBaseUnitAmount(new BigNumber(amount), decimals)
+            ),
             time,
             isOldERC20
           )
@@ -325,7 +322,9 @@ class TokenLockInfo extends Component {
             selectedExchange.exchangeContractAddress,
             tokenAddress,
             tokenWrapperAddress,
-            toBaseUnitAmount(new BigNumber(amount), decimals)
+            web3.web3.utils.toHex(
+              toBaseUnitAmount(new BigNumber(amount), decimals)
+            )
           )
           transactionDetails.status = 'executed'
           transactionDetails.receipt = receipt

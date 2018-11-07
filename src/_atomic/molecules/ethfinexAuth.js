@@ -70,16 +70,16 @@ class EthfinexAuth extends Component {
       selectedTokensPair,
       selectedExchange
     } = this.props.exchange
-    console.log(
-      `Exp base token: ${moment
-        .unix(selectedTokensPair.baseTokenLockWrapExpire)
-        .format('MMMM Do YYYY, h:mm:ss a')}`
-    )
-    console.log(
-      `Exp quote token: ${moment
-        .unix(selectedTokensPair.quoteTokenLockWrapExpire)
-        .format('MMMM Do YYYY, h:mm:ss a')}`
-    )
+    // console.log(
+    //   `Exp base token: ${moment
+    //     .unix(selectedTokensPair.baseTokenLockWrapExpire)
+    //     .format('MMMM Do YYYY, h:mm:ss a')}`
+    // )
+    // console.log(
+    //   `Exp quote token: ${moment
+    //     .unix(selectedTokensPair.quoteTokenLockWrapExpire)
+    //     .format('MMMM Do YYYY, h:mm:ss a')}`
+    // )
     return (
       <Row>
         {' '}
