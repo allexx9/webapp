@@ -70,8 +70,8 @@ export const RELAYS = {
     initOrdeBookAggregated: true,
     onlyAggregateOrderbook: true,
     defaultTokensPair: {
-      baseTokenSymbol: 'ETH',
-      quoteTokenSymbol: 'USDT'
+      baseTokenSymbol: 'GRG',
+      quoteTokenSymbol: 'ETH'
     },
     supportedNetworks: ['1', '3'],
     isTokenWrapper: true

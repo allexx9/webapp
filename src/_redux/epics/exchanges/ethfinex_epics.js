@@ -99,7 +99,8 @@ const candlesSingleWebsocket$ = (relay, networkId, baseToken, quoteToken) => {
 
 const updateSingleCandles = tickerOutput => {
   let ticker = tickerOutput
-  if (ticker[1].length !== 6 && ticker[1] !== 'hb') {
+  console.log(ticker)
+  if (Array.isArray(ticker[1][0]) && ticker[1] !== 'hb') {
     let candles = ticker[1].map(tick => {
       let entry = {
         date: new Date(tick[0]),
@@ -117,7 +118,7 @@ const updateSingleCandles = tickerOutput => {
       payload: candles.reverse()
     }
   }
-  if (ticker[1].length === 6 && ticker[1] !== 'hb') {
+  if (!Array.isArray(ticker[1][0]) && ticker[1] !== 'hb') {
     let candles = {
       date: new Date(ticker[1][0]),
       low: ticker[1][4],

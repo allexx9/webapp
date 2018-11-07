@@ -38,11 +38,16 @@ class TableOpenOrders extends Component {
     }
     // console.log(orders)
     return orders.map((order, key) => {
-      // console.log(order)
       return (
         <Row key={'order' + key} className={styles.rowText}>
           <Col xs={12}>
-            <Row>
+            <Row
+              style={
+                !(key % 2)
+                  ? { backgroundColor: '#cccccc24' }
+                  : { backgroundColor: '#fff' }
+              }
+            >
               <Col xs={2} style={orderTypeStyle[order.orderType]}>
                 {order.orderType === 'asks' ? 'SELL' : 'BUY'}
               </Col>

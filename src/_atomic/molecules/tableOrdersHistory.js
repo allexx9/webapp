@@ -1,5 +1,5 @@
 import * as Colors from 'material-ui/styles/colors'
-import { Col, Row } from 'react-flexbox-grid'
+import { Col, Grid, Row } from 'react-flexbox-grid'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import ReactTooltip from 'react-tooltip'
@@ -45,7 +45,15 @@ class TableOrdersHistory extends Component {
       let orderStatusInfo = orderStatus.join(' ')
       let baseTokenSymbol = order.order.pair.slice(0, -3)
       return (
-        <Row key={'order' + key} className={styles.rowText}>
+        <Row
+          key={'order' + key}
+          className={styles.rowText}
+          style={
+            !(key % 2)
+              ? { backgroundColor: '#cccccc24' }
+              : { backgroundColor: '#fff' }
+          }
+        >
           <Col xs={12}>
             <Row>
               <Col xs={2} className={styles.tableCell}>
@@ -77,8 +85,8 @@ class TableOrdersHistory extends Component {
                 {formatPrice(Math.abs(order.order.originalamount).toString())}
               </Col>
               {/* <Col xs={2}>
-                  {new Date(order.order.expirationUnixTimestampSec*1000).toLocaleString()}
-                </Col> */}
+                    {new Date(order.order.expirationUnixTimestampSec*1000).toLocaleString()}
+                  </Col> */}
               <Col
                 xs={2}
                 className={classNames(styles.tableCell, styles.right)}

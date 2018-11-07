@@ -1,4 +1,4 @@
-.titleSection{
+.titleSection {
   margin-bottom: 5px;
   margin-top: 5px;
 }
@@ -6,4 +6,9 @@
 .section {
   padding-top: 5px;
   padding-bottom: 5px;
+}
+
+.title {
+  padding-right: 0px;
+  padding-left: 0px;
 }

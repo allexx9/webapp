@@ -7,6 +7,7 @@ import ButtonOrderBuy from '../atoms/buttonOrderBuy'
 import ButtonOrderConfirm from '../atoms/buttonOrderConfirm'
 import ButtonOrderReset from '../atoms/buttonOrderReset'
 import ButtonOrderSell from '../atoms/buttonOrderSell'
+import CheckBoxQuickOrder from '../molecules/checkBoxQuickOrder'
 import OrderAmountInputField from '../atoms/orderAmountInputField'
 import OrderPrice from '../atoms/orderPrice'
 import OrderRawDialog from '../molecules/orderRawDialog'
@@ -45,16 +46,30 @@ class OrderBox extends Component {
   state = {
     orderRawDialogOpen: false,
     efxOrder: {},
-    orderSubmitStep: 0
+    orderSubmitStep: 0,
+    orderOptions: {
+      quickOrder: false
+    }
   }
 
   static contextTypes = {
     api: PropTypes.object.isRequired
   }
 
-  onCloseOrderRawDialog = open => {
+  onCloseOrderRawDialog = (dialogOpen, cancelOrder) => {
+    if (cancelOrder) {
+      this.onCancelOrder()
+      return
+    }
     this.setState({
-      orderRawDialogOpen: open
+      orderRawDialogOpen: dialogOpen
+    })
+  }
+
+  onSetOrderOptions = option => {
+    let newOrderOptions = { ...this.state.orderOptions, ...option }
+    this.setState({
+      orderOptions: newOrderOptions
     })
   }
 
@@ -84,9 +99,11 @@ class OrderBox extends Component {
     } = this.props.exchange
     if (!selectedOrder.takerOrder) {
     }
-    this.setState({
-      orderRawDialogOpen: true
-    })
+    if (!this.state.orderOptions.quickOrder) {
+      this.setState({
+        orderRawDialogOpen: true
+      })
+    }
     console.log('Selected order', selectedOrder)
     try {
       let signedOrder = await signOrder(
@@ -101,6 +118,11 @@ class OrderBox extends Component {
         details: { order: signedOrder }
       }
       this.props.dispatch(Actions.exchange.updateSelectedOrder(payload))
+
+      if (this.state.orderOptions.quickOrder) {
+        this.onSubmitOrder(null, null, { ...selectedOrder, ...payload })
+        return
+      }
 
       this.setState({
         orderSubmitStep: 1
@@ -122,19 +144,13 @@ class OrderBox extends Component {
     })
   }
 
-  onSubmitOrder = async () => {
-    // this.setState({
-    //   orderSubmitStep: 3
-    // })
-
-    // utils.notificationError(this.props.notifications.engine, 'test error')
-
+  onSubmitOrder = async (event = null, value = null, order = null) => {
     const {
-      selectedOrder,
       selectedExchange,
       selectedFund,
       selectedRelay
     } = this.props.exchange
+    const selectedOrder = order || this.props.exchange.selectedOrder
     const { endpoint } = this.props
     const { api } = this.context
 
@@ -246,6 +262,9 @@ class OrderBox extends Component {
               transactionDetails
             )
           )
+          if (this.state.orderOptions.quickOrder) {
+            this.onCancelOrder()
+          }
           console.log(parsedBody)
         }
       } catch (error) {
@@ -270,6 +289,9 @@ class OrderBox extends Component {
   onCancelOrder = () => {
     this.props.dispatch(Actions.exchange.cancelSelectedOrder())
     this.setState({
+      orderOptions: {
+        quickOrder: false
+      },
       orderSubmitStep: 0,
       orderRawDialogOpen: false
     })
@@ -330,6 +352,14 @@ class OrderBox extends Component {
             <Col xs={12}>
               <BoxTitle titleText={'ORDER BOX'} />
               <Paper style={paperStyle} zDepth={1}>
+                <Row>
+                  <Col xs={12}>
+                    <CheckBoxQuickOrder
+                      onCheck={this.onSetOrderOptions}
+                      checked={this.state.orderOptions.quickOrder}
+                    />
+                  </Col>
+                </Row>
                 <Row className={styles.orderBookContainer}>
                   <Col xs={12}>
                     <Row className={styles.sectionHeaderOrderTable}>

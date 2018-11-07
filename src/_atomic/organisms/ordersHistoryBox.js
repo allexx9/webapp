@@ -1,5 +1,5 @@
 import { Actions } from '../../_redux/actions'
-import { Col, Row } from 'react-flexbox-grid'
+import { Col, Grid, Row } from 'react-flexbox-grid'
 import { cancelOrderFromRelayEFX } from '../../_utils/exchange'
 import {
   cancelOrderOnExchangeViaProxy
@@ -127,53 +127,55 @@ class OrdersHistoryBox extends Component {
             <Col xs={12}>
               <BoxTitle titleText={'MY ORDERS'} />
               <Paper style={paperStyle} zDepth={1}>
-                <Row>
-                  <Col xs={12}>
-                    <div className={styles.section}>
-                      <Row>
-                        {' '}
-                        <Col xs={12}>
-                          <SectionTitleExchange titleText="OPEN ORDERS" />
-                        </Col>
-                        <Col xs={12}>
-                          <ElementListWrapper
-                            list={this.props.fundOrders.open}
-                            autoLoading={false}
-                            onCancelOrder={this.onCancelOrder}
-                            pagination={{
-                              display: 10,
-                              number: 1
-                            }}
-                          >
-                            <TableOpenOrders />
-                          </ElementListWrapper>
-                        </Col>
-                      </Row>
-                    </div>
-                  </Col>
-                  <Col xs={12}>
-                    <div className={styles.section}>
-                      <Row>
-                        <Col xs={12}>
-                          <SectionTitleExchange titleText="ORDER HISTORY" />
-                        </Col>
-                        <Col xs={12}>
-                          <ElementListWrapper
-                            list={this.props.fundOrders.history}
-                            autoLoading={false}
-                            onCancelOrder={this.onCancelOrder}
-                            pagination={{
-                              display: 5,
-                              number: 1
-                            }}
-                          >
-                            <TableOrdersHistory />
-                          </ElementListWrapper>
-                        </Col>
-                      </Row>
-                    </div>
-                  </Col>
-                </Row>
+                <Grid fluid>
+                  <Row>
+                    <Col xs={12}>
+                      <div className={styles.section}>
+                        <Row>
+                          {' '}
+                          <Col xs={12} className={styles.title}>
+                            <SectionTitleExchange titleText="OPEN ORDERS" />
+                          </Col>
+                          <Col xs={12}>
+                            <ElementListWrapper
+                              list={this.props.fundOrders.open}
+                              autoLoading={false}
+                              onCancelOrder={this.onCancelOrder}
+                              pagination={{
+                                display: 10,
+                                number: 1
+                              }}
+                            >
+                              <TableOpenOrders />
+                            </ElementListWrapper>
+                          </Col>
+                        </Row>
+                      </div>
+                    </Col>
+                    <Col xs={12}>
+                      <div className={styles.section}>
+                        <Row>
+                          <Col xs={12} className={styles.title}>
+                            <SectionTitleExchange titleText="ORDER HISTORY" />
+                          </Col>
+                          <Col xs={12}>
+                            <ElementListWrapper
+                              list={this.props.fundOrders.history}
+                              autoLoading={false}
+                              onCancelOrder={this.onCancelOrder}
+                              pagination={{
+                                display: 5,
+                                number: 1
+                              }}
+                            >
+                              <TableOrdersHistory />
+                            </ElementListWrapper>
+                          </Col>
+                        </Row>
+                      </div>
+                    </Col>
+                  </Row>
+                </Grid>
               </Paper>
             </Col>
           </Row>

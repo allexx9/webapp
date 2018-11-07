@@ -139,7 +139,7 @@ class OrderStepper extends Component {
             </StepLabel>
             <StepContent>
               <div className={styles.orderContainer}>
-                <OrderJsonView orderJson={this.props.orderJson} />
+                <OrderJsonView orderJson={this.props.orderJson.details.order} />
               </div>
             </StepContent>
           </Step>

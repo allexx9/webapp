@@ -40,7 +40,7 @@ class OrderRawDialog extends Component {
   }
 
   handleClose = () => {
-    this.props.onClose(false)
+    this.props.onClose(false, true)
   }
 
   renderStepActions(step) {

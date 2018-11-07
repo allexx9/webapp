@@ -92,7 +92,7 @@ class DragoWeb3 {
     console.log(`exchangeContractAddres ${exchangeContractAddress}`)
     console.log(`tokenAddress ${tokenAddress}`)
     console.log(`tokenWrapper ${tokenWrapper}`)
-    console.log(`toBeWrapped ${toBeWrapped.toString()}`)
+    console.log(`toBeWrapped ${toBeWrapped}`)
     console.log(`time ${time}`)
     console.log(`isOldERC20 ${isOldERC20}`)
 
@@ -130,7 +130,7 @@ class DragoWeb3 {
     const encodedABI = await api.eth.abi.encodeFunctionCall(contractMethod, [
       tokenAddress,
       tokenWrapper,
-      toBeWrapped.toString(),
+      toBeWrapped,
       time,
       isOldERC20
     ])
@@ -242,7 +242,7 @@ class DragoWeb3 {
     const encodedABI = await api.eth.abi.encodeFunctionCall(contractMethod, [
       tokenAddress,
       tokenWrapper,
-      toBeUnwrapped.toString(),
+      toBeUnwrapped,
       v,
       r,
       s,

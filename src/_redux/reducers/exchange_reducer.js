@@ -44,6 +44,7 @@ function exchangeReducer(state = initialState.exchange, action) {
 
     case TYPE_.CHART_MARKET_DATA_ADD_DATAPOINT:
       let newChartData = [...state.chartData]
+      console.log(newChartData)
       if (
         action.payload.epoch === newChartData[newChartData.length - 1].epoch
       ) {
