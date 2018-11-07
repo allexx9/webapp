@@ -22,9 +22,6 @@ class TableOpenOrders extends Component {
   onCancelOrder = (event, id) => {
     const { list } = this.props
     event.preventDefault()
-    console.log(id)
-    console.log(list[id].order.id)
-
     this.props.onCancelOrder(list[id])
   }
 
@@ -93,8 +90,6 @@ class TableOpenOrders extends Component {
 
   render() {
     const { list } = this.props
-    console.log(this.props)
-
     return (
       <Row className={styles.containerOrders}>
         <Col xs={12}>

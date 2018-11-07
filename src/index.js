@@ -2,7 +2,7 @@
 // By the Power of Grayskull! I Have the Power!
 
 import { Provider } from 'react-redux'
-import { Reducers } from './_redux/reducers/root'
+import { Reducers } from './_redux/reducers/root_reducer'
 import { applyMiddleware, compose, createStore } from 'redux'
 import { createEpicMiddleware } from 'redux-observable'
 import { persistReducer, persistStore } from 'redux-persist'
@@ -20,21 +20,10 @@ import {
   poolCalculateValueMiddleWare,
   relayActionsMiddleWare
 } from './_redux/middlewares'
-import Web3Wrapper from './_utils/web3Wrapper'
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2'
 import storage from 'redux-persist/lib/storage'
 
 import './index.module.css'
-
-// Web3Wrapper.getInstance('KOVAN').then(instance => {
-//   // console.log(instance)
-//   instance.eventfull$.subscribe(val => {
-//     console.log('Eventful: ' + JSON.stringify(val))
-//   })
-//   instance.nodeStatus$.subscribe(val => {
-//     console.log('NodeStatus: ' + JSON.stringify(val))
-//   })
-// })
 
 function noop() {}
 

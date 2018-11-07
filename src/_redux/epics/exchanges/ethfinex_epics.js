@@ -79,7 +79,7 @@ const candlesSingleWebsocket$ = (relay, networkId, baseToken, quoteToken) => {
               }
             }
           )
-          .cath(() => {
+          .catch(() => {
             observer.error(ERRORS.ERR_EXCHANGE_WS_CANDLE_FETCH)
           })
 

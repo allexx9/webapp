@@ -100,7 +100,6 @@ class TableOrdersHistory extends Component {
   }
 
   renderTableHeader = () => {
-    console.log(this.constructor.name)
     return (
       <Row className={styles.tableHeader}>
         <Col xs={12}>

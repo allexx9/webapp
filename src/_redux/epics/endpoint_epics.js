@@ -309,9 +309,9 @@ export const monitorEventfulEpic = (action$, state$) => {
           const observablesArray = Array(0)
           const currentState = state$.value
           // console.log(event)
-          console.log(
-            'Eventful subscription - > DRAGO transactions fetch trader'
-          )
+          // console.log(
+          //   'Eventful subscription - > DRAGO transactions fetch trader'
+          // )
           observablesArray.push(Observable.of(DEBUGGING.DUMB_ACTION))
           // observablesArray.push(
           //   Observable.of(
@@ -329,9 +329,9 @@ export const monitorEventfulEpic = (action$, state$) => {
           //     )
           //   )
           // )
-          console.log(
-            'Eventful subscription - > DRAGO transactions fetch manager'
-          )
+          // console.log(
+          //   'Eventful subscription - > DRAGO transactions fetch manager'
+          // )
           // observablesArray.push(
           //   Observable.of(
           //     Actions.endpoint.getAccountsTransactions(
@@ -349,9 +349,9 @@ export const monitorEventfulEpic = (action$, state$) => {
           //   )
           // )
 
-          console.log(
-            'Eventful subscription - > VAULT transactions fetch trader'
-          )
+          // console.log(
+          //   'Eventful subscription - > VAULT transactions fetch trader'
+          // )
           observablesArray.push(Observable.of(DEBUGGING.DUMB_ACTION))
           // observablesArray.push(
           //   Observable.of(
@@ -369,9 +369,9 @@ export const monitorEventfulEpic = (action$, state$) => {
           //     )
           //   )
           // )
-          console.log(
-            'Eventful subscription - > VAULT transactions fetch manager'
-          )
+          // console.log(
+          //   'Eventful subscription - > VAULT transactions fetch manager'
+          // )
           // observablesArray.push(
           //   Observable.of(
           //     Actions.endpoint.getAccountsTransactions(

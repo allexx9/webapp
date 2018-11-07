@@ -6,7 +6,6 @@ import initialState from './initialState'
 function notificationsReducer(state = initialState.notifications, action) {
   switch (action.type) {
     case INIT_NOTIFICATION:
-      console.log(action)
       return {
         ...state,
         engine: action.payload
