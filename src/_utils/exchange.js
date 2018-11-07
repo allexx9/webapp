@@ -386,19 +386,15 @@ export const submitOrderToRelayEFX = async (efxOrder, networkId) => {
     default:
       relayerApiUrl = `https://test.ethfinex.com/trustless/v1/w/on`
   }
-
-  let efxOderStingified = JSON.stringify(efxOrder)
-  console.log(efxOderStingified)
-
-  console.log(efxOrder)
   let options = {
     method: 'POST',
     uri: relayerApiUrl,
     body: efxOrder,
     json: true // Automatically stringifies the body to JSON
   }
-  // post(relayerApiUrl, { json: efxOrder })
-  return rp(options)
+  return rp(options).catch(error => {
+    throw Error(error)
+  })
 }
 
 export const cancelOrderFromRelayEFX = async (
@@ -429,7 +425,9 @@ export const cancelOrderFromRelayEFX = async (
     body: { orderId, signature, protocol: '0x' },
     json: true // Automatically stringifies the body to JSON
   }
-  return rp(options)
+  return rp(options).catch(error => {
+    throw Error(error)
+  })
 }
 
 export const submitOrderToRelay = async signedOrder => {

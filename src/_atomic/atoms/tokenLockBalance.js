@@ -9,13 +9,26 @@ import moment from 'moment'
 export default class TokenLockBalance extends Component {
   static propTypes = {
     balance: PropTypes.string.isRequired,
-    lockTime: PropTypes.string.isRequired
+    lockTime: PropTypes.string.isRequired,
+    onClick: PropTypes.func,
+    isBaseToken: PropTypes.bool
   }
 
   static defaultProps = {
     balance: 0,
-    lockTime: '0'
+    lockTime: '0',
+    onClick: () => {},
+    isBaseToken: true
   }
+
+  onSetMaxAmount = () => {
+    this.props.onClick(
+      formatPrice(this.props.balance),
+      this.props.isBaseToken,
+      ''
+    )
+  }
+
   render() {
     const now = Math.floor(Date.now() / 1000)
     // console.log(`Now: ${moment().format('MMMM Do YYYY, h:mm:ss a')}`)
@@ -37,8 +50,10 @@ export default class TokenLockBalance extends Component {
         }
       >
         <div
+          onClick={this.onSetMaxAmount}
           style={{
-            textAlign: 'right'
+            textAlign: 'right',
+            cursor: 'pointer'
           }}
         >
           <span
@@ -61,8 +76,10 @@ export default class TokenLockBalance extends Component {
         }
       >
         <div
+          onClick={this.onSetMaxAmount}
           style={{
-            textAlign: 'right'
+            textAlign: 'right',
+            cursor: 'pointer'
           }}
         >
           <span

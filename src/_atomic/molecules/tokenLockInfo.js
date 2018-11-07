@@ -15,7 +15,6 @@ import SectionTitleExchange from '../atoms/sectionTitleExchange'
 import TokenAmountInputField from '../atoms/tokenLockAmountField'
 import TokenLockBalance from '../atoms/tokenLockBalance'
 import TokenLockTimeField from '../atoms/tokenLockTimeField'
-import Web3 from 'web3'
 import Web3Wrapper from '../../_utils/web3Wrapper'
 import moment from 'moment'
 import serializeError from 'serialize-error'
@@ -143,8 +142,8 @@ class TokenLockInfo extends Component {
       time = quoteTokenLockTime
       isOldERC20 = selectedTokensPair.quoteToken.isOldERC20
     }
-    console.log(action)
-    const web3 = new Web3Wrapper()
+    const web3 = await Web3Wrapper.getInstance()
+    console.log(web3)
     const poolApi = await new PoolApi(window.web3)
     switch (action) {
       case 'lock':
@@ -481,6 +480,8 @@ class TokenLockInfo extends Component {
                   key="baseTokenBalance"
                   balance={baseTokenWrappedBalance}
                   lockTime={selectedTokensPair.baseTokenLockWrapExpire}
+                  onClick={this.onChangeAmount}
+                  isBaseToken={true}
                 />
               </Col>
               <Col xs={4}>
@@ -528,6 +529,8 @@ class TokenLockInfo extends Component {
                   key="quoteTokenBalance"
                   balance={quoteTokenWrappedBalance}
                   lockTime={selectedTokensPair.quoteTokenLockWrapExpire}
+                  onClick={this.onChangeAmount}
+                  isBaseToken={false}
                 />
               </Col>
               <Col xs={4}>

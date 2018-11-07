@@ -4,9 +4,10 @@ import React, { Component } from 'react'
 import { Col, Row } from 'react-flexbox-grid'
 import BoxTitle from '../atoms/boxTitle'
 import ButtonOrderCancel from '../atoms/buttonOrderCancel'
+import ButtonOrderNext from '../atoms/buttonOrderNext'
 import ButtonOrderSubmit from '../atoms/buttonOrderSubmit'
 import Dialog from 'material-ui/Dialog'
-import OrderJsonView from './orderJsonView'
+import OrderStepper from './orderStepper'
 import OrderSummary from '../molecules/orderSummary'
 import utils from '../../_utils/utils'
 
@@ -24,10 +25,16 @@ class OrderRawDialog extends Component {
     efxOrder: PropTypes.object,
     onClose: PropTypes.func.isRequired,
     onSubmitOrder: PropTypes.func.isRequired,
-    open: PropTypes.bool.isRequired
+    onCheckOrder: PropTypes.func.isRequired,
+    open: PropTypes.bool.isRequired,
+    orderSubmitStep: PropTypes.number.isRequired
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
+  static defaultProps = {
+    efxOrder: {}
+  }
+
+  shouldComponentUpdate(nextProps) {
     let propsUpdate = utils.shallowEqual(this.props, nextProps)
     return propsUpdate
   }
@@ -36,11 +43,56 @@ class OrderRawDialog extends Component {
     this.props.onClose(false)
   }
 
+  renderStepActions(step) {
+    const { orderSubmitStep } = this.props
+    // const buttonDisable = () => {
+    //   switch (step) {
+    //     case 0:
+    //       return !orderSubmitStep === 1 ? true : false
+    //     default:
+    //       return false
+    //   }
+    // }
+
+    return (
+      <Row center="xs">
+        <Col xs={6}>
+          {orderSubmitStep !== 3 && (
+            <ButtonOrderCancel onClick={this.handleClose} disabled={false} />
+          )}
+          {orderSubmitStep === 3 && <ButtonOrderCancel disabled={true} />}
+        </Col>
+        <Col xs={6}>
+          {orderSubmitStep === 0 && <ButtonOrderNext disabled={true} />}
+          {orderSubmitStep === 1 && (
+            <ButtonOrderNext
+              onClick={this.props.onCheckOrder}
+              disabled={false}
+            />
+          )}
+          {orderSubmitStep === 2 && (
+            <ButtonOrderSubmit
+              onClick={this.props.onSubmitOrder}
+              disabled={false}
+            />
+          )}
+          {orderSubmitStep === 3 && (
+            <ButtonOrderCancel
+              onClick={this.handleClose}
+              disabled={false}
+              label="Close"
+            />
+          )}
+        </Col>
+      </Row>
+    )
+  }
+
   render() {
-    const { order } = this.props
+    const { order, orderSubmitStep } = this.props
     return (
       <div>
-        {/* <RaisedButton label="Alert" onClick={this.handleOpen} /> */}
+        {' '}
         <Dialog
           title={<BoxTitle titleText={'CONFIRM ORDER'} />}
           modal={true}
@@ -52,16 +104,15 @@ class OrderRawDialog extends Component {
           <div className={styles.summaryContainer}>
             <OrderSummary order={order} />
           </div>
-
-          <div className={styles.orderContainer}>
-            <OrderJsonView orderJson={this.props.efxOrder} />
+          <div>
+            <OrderStepper
+              stepIndex={this.props.orderSubmitStep}
+              orderJson={this.props.order}
+            />
           </div>
-          <Row center="xs">
+          {/* <Row center="xs">
             <Col xs={6}>
-              <ButtonOrderCancel
-                onCancelOrder={this.handleClose}
-                disabled={false}
-              />
+              <ButtonOrderCancel onClick={this.handleClose} disabled={false} />
             </Col>
             <Col xs={6}>
               <ButtonOrderSubmit
@@ -69,8 +120,8 @@ class OrderRawDialog extends Component {
                 disabled={false}
               />
             </Col>
-          </Row>
-          {/* <div>{JSON.stringify(this.props.order, null, 4)}</div> */}
+          </Row> */}
+          {this.renderStepActions(orderSubmitStep)}
         </Dialog>
       </div>
     )

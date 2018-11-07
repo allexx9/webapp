@@ -44,22 +44,13 @@ class OrderBox extends Component {
 
   state = {
     orderRawDialogOpen: false,
-    efxOrder: {}
+    efxOrder: {},
+    orderSubmitStep: 0
   }
 
   static contextTypes = {
     api: PropTypes.object.isRequired
   }
-
-  // updateSelectedFundLiquidity = (fundAddress, api) => {
-  //   return {
-  //     type: UPDATE_FUND_LIQUIDITY,
-  //     payload: {
-  //       fundAddress,
-  //       api
-  //     }
-  //   }
-  // }
 
   onCloseOrderRawDialog = open => {
     this.setState({
@@ -85,38 +76,6 @@ class OrderBox extends Component {
     this.props.dispatch(Actions.exchange.updateSelectedOrder(payload))
   }
 
-  // onSendOrder = async () => {
-  //   const { selectedOrder } = this.props.exchange
-  //   submitOrderToRelay(selectedOrder.details.order.signedOrder)
-  //     .then(parsedBody => {
-  //       // transactionDetails.status = 'executed'
-  //       // transactionDetails.timestamp = new Date()
-  //       // this.props.dispatch(
-  //       //   Actions.transactions.addTransactionToQueueAction(
-  //       //     transactionId,
-  //       //     transactionDetails
-  //       //   )
-  //       // )
-  //       console.log(parsedBody)
-  //     })
-  //     .catch(error => {
-  //       // const errorArray = serializeError(error).message.split(/\r?\n/)
-  //       // transactionDetails.status = 'error'
-  //       // transactionDetails.error = errorArray[0]
-  //       // this.props.dispatch(
-  //       //   Actions.transactions.addTransactionToQueueAction(
-  //       //     transactionId,
-  //       //     transactionDetails
-  //       //   )
-  //       // )
-  //       console.log(error)
-  //       utils.notificationError(
-  //         this.props.notifications.engine,
-  //         serializeError(error).message
-  //       )
-  //     })
-  // }
-
   onConfirmOrder = async () => {
     const {
       selectedOrder,
@@ -125,32 +84,51 @@ class OrderBox extends Component {
     } = this.props.exchange
     if (!selectedOrder.takerOrder) {
     }
-    console.log('Selected order', selectedOrder)
-    let signedOrder = await signOrder(
-      selectedOrder,
-      selectedExchange,
-      walletAddress
-    )
-    console.log('Selected order', selectedOrder)
-    console.log('Signed order', signedOrder)
-    console.log(signedOrder)
-    let { expirationUnixTimestampSec } = signedOrder
-    console.log(expirationUnixTimestampSec)
-    // expirationUnixTimestampSec = expirationUnixTimestampSec.toNumber()
-    console.log(expirationUnixTimestampSec)
-    expirationUnixTimestampSec = parseInt(expirationUnixTimestampSec)
-    // signedOrder.expirationUnixTimestampSec = expirationUnixTimestampSec
-    console.log(signedOrder)
-    const payload = {
-      details: { order: signedOrder }
-    }
-    this.props.dispatch(Actions.exchange.updateSelectedOrder(payload))
     this.setState({
       orderRawDialogOpen: true
+    })
+    console.log('Selected order', selectedOrder)
+    try {
+      let signedOrder = await signOrder(
+        selectedOrder,
+        selectedExchange,
+        walletAddress
+      )
+      console.log('Selected order', selectedOrder)
+      console.log('Signed order', signedOrder)
+      console.log(signedOrder)
+      const payload = {
+        details: { order: signedOrder }
+      }
+      this.props.dispatch(Actions.exchange.updateSelectedOrder(payload))
+
+      this.setState({
+        orderSubmitStep: 1
+      })
+    } catch (error) {
+      utils.notificationError(
+        this.props.notifications.engine,
+        serializeError(error).message
+      )
+      this.setState({
+        orderRawDialogOpen: false
+      })
+    }
+  }
+
+  onCheckOrder = async () => {
+    this.setState({
+      orderSubmitStep: 2
     })
   }
 
   onSubmitOrder = async () => {
+    // this.setState({
+    //   orderSubmitStep: 3
+    // })
+
+    // utils.notificationError(this.props.notifications.engine, 'test error')
+
     const {
       selectedOrder,
       selectedExchange,
@@ -246,8 +224,6 @@ class OrderBox extends Component {
             price: selectedOrder.orderPrice,
             meta: signedOrder,
             protocol: '0x'
-            // cid: 1541448835729,
-            // gid: 1
           }
           efxOrder.meta.sigType = 'contract'
           this.setState({
@@ -259,6 +235,9 @@ class OrderBox extends Component {
             efxOrder,
             endpoint.networkInfo.id
           )
+          this.setState({
+            orderSubmitStep: 3
+          })
           transactionDetails.status = 'executed'
           transactionDetails.timestamp = new Date()
           this.props.dispatch(
@@ -289,10 +268,11 @@ class OrderBox extends Component {
   }
 
   onCancelOrder = () => {
+    this.props.dispatch(Actions.exchange.cancelSelectedOrder())
     this.setState({
+      orderSubmitStep: 0,
       orderRawDialogOpen: false
     })
-    this.props.dispatch(Actions.exchange.cancelSelectedOrder())
   }
 
   onSelectOrderType = () => {}
@@ -367,50 +347,6 @@ class OrderBox extends Component {
                       </Col>
                     </Row>
                   </Col>
-
-                  {/* <Col xs={12} className={styles.tokenNameSymbol}>
-                    <div className={styles.tokenSymbol}>
-                      {selectedTokensPair.baseToken.symbol}
-                    </div>
-                    <div className={styles.tokenName}>
-                      {selectedTokensPair.baseToken.name}
-                    </div>
-                    <div>
-                      <ToggleSwitch
-                        label={
-                          'ACTIVATE ' + selectedTokensPair.baseToken.symbol
-                        }
-                        onToggle={this.onToggleAllowanceBaseTokenTrade}
-                        toggled={selectedTokensPair.baseTokenAllowance}
-                        toolTip={
-                          'Activate ' +
-                          selectedTokensPair.baseToken.symbol +
-                          ' trading'
-                        }
-                      />
-                      <ToggleSwitch
-                        label={
-                          'ACTIVATE ' + selectedTokensPair.quoteToken.symbol
-                        }
-                        onToggle={this.onToggleAllowQuoteTokenTrade}
-                        toggled={selectedTokensPair.quoteTokenAllowance}
-                        toolTip={
-                          'Activate ' +
-                          selectedTokensPair.quoteToken.symbol +
-                          ' trading'
-                        }
-                      />
-                    </div>
-                  </Col> */}
-
-                  {/* <Col xs={12}>
-                    <OrderTypeSelector
-                      orderTypes={['Market', 'Limit']}
-                      onSelectOrderType={this.onSelectOrderType}
-                    />
-
-                  </Col> */}
-
                   <Col xs={12}>
                     <OrderAmountInputField
                       orderMaxAmount={Number(selectedOrder.orderMaxAmount)}
@@ -465,7 +401,10 @@ class OrderBox extends Component {
         <OrderRawDialog
           order={selectedOrder}
           efxOrder={this.state.efxOrder}
+          exchange={this.props.exchange}
           onSubmitOrder={this.onSubmitOrder}
+          onCheckOrder={this.onCheckOrder}
+          orderSubmitStep={this.state.orderSubmitStep}
           onClose={this.onCloseOrderRawDialog}
           open={this.state.orderRawDialogOpen}
           // open={true}

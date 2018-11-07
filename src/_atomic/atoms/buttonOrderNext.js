@@ -1,18 +1,17 @@
+import * as Colors from 'material-ui/styles/colors'
 import FlatButton from 'material-ui/FlatButton'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import styles from './buttonOrder.module.css'
 
-class ButtonOrderCancel extends Component {
+class ButtonOrderNext extends Component {
   static propTypes = {
     onClick: PropTypes.func,
-    disabled: PropTypes.bool.isRequired,
-    label: PropTypes.string
+    disabled: PropTypes.bool.isRequired
   }
 
   static defaultProps = {
-    onClick: () => {},
-    label: 'Cancel'
+    onClick: () => {}
   }
 
   render() {
@@ -23,7 +22,7 @@ class ButtonOrderCancel extends Component {
     return this.props.disabled ? (
       <div className={styles.buttonContainer}>
         <FlatButton
-          label={this.props.label}
+          label="Next"
           labelStyle={{ fontWeight: 700, fontSize: '18px' }}
           onClick={this.props.onClick}
           style={buttonOrderSubmitStyle}
@@ -34,16 +33,17 @@ class ButtonOrderCancel extends Component {
       <div className={styles.buttonContainer}>
         <FlatButton
           primary={true}
-          label={this.props.label}
-          labelStyle={{ fontWeight: 700, fontSize: '18px' }}
+          label="Next"
+          labelStyle={{ fontWeight: 700, fontSize: '18px', color: '#ffffff' }}
           onClick={this.props.onClick}
           style={buttonOrderSubmitStyle}
-          // hoverColor={Colors.blue400}
-          // backgroundColor={'#054186'}
+          hoverColor={Colors.blue400}
+          backgroundColor={'#054186'}
+          disabled={this.props.disabled}
         />
       </div>
     )
   }
 }
 
-export default ButtonOrderCancel
+export default ButtonOrderNext
