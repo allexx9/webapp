@@ -1,7 +1,7 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
 import ApplicationConfigHome from '../ApplicationConfig'
-import ApplicationTopBar from './ApplicationTopBar'
+import TopBarMenu from '../Elements/topBarMenu'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
@@ -83,7 +83,7 @@ class ApplicationConfigPage extends Component {
           <Row>
             <Col xs={12} className={styles.fix}>
               {/* <ApplicationTabsMenu /> */}
-              <ApplicationTopBar
+              <TopBarMenu
                 handleTopBarSelectAccountType={
                   this.handleTopBarSelectAccountType
                 }

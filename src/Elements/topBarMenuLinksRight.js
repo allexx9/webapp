@@ -64,9 +64,9 @@ class NavLinks extends Component {
     location: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
     user: PropTypes.object.isRequired,
-    handleToggleNotifications: PropTypes.func.isRequired,
     transactions: PropTypes.object.isRequired,
-    endpoint: PropTypes.object.isRequired
+    endpoint: PropTypes.object.isRequired,
+    app: PropTypes.object.isRequired
   }
 
   static contextTypes = {
@@ -74,7 +74,6 @@ class NavLinks extends Component {
   }
 
   state = {
-    notificationsOpen: false,
     allEvents: null,
     minedEvents: null,
     pendingEvents: null,
@@ -135,21 +134,27 @@ class NavLinks extends Component {
   }
 
   handleToggleNotifications = () => {
+    const { transactionsDrawerOpen } = this.props.app
     let transactionsDrawerNetworkButtonStyle,
       transactionsDrawerNetworkButtonIconStyle
-    !this.state.transactionsDrawerOpen
+    !transactionsDrawerOpen
       ? (transactionsDrawerNetworkButtonStyle = styles.networkIconOpen)
       : (transactionsDrawerNetworkButtonStyle = styles.networkIconClosed)
-    !this.state.transactionsDrawerOpen
+    !transactionsDrawerOpen
       ? (transactionsDrawerNetworkButtonIconStyle = menuStyles.profileIcon.open)
       : (transactionsDrawerNetworkButtonIconStyle =
           menuStyles.profileIcon.closed)
     this.setState({
-      transactionsDrawerOpen: !this.state.transactionsDrawerOpen,
+      transactionsDrawerOpen: !transactionsDrawerOpen,
       transactionsDrawerNetworkButtonStyle,
       transactionsDrawerNetworkButtonIconStyle
     })
-    this.props.handleToggleNotifications()
+    this.props.dispatch(
+      Actions.app.updateAppStatus({
+        transactionsDrawerOpen: !this.props.app.transactionsDrawerOpen
+      })
+    )
+    // this.props.handleToggleNotifications()
   }
 
   render() {

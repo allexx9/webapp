@@ -1,7 +1,7 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
 import ApplicationDragoHome from '../ApplicationDragoHome'
-import ApplicationTopBar from './ApplicationTopBar'
+import TopBarMenu from '../Elements/topBarMenu'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
@@ -76,7 +76,7 @@ class ApplicationDragoPage extends Component {
         <Grid fluid className={styles.maincontainer}>
           <Row>
             <Col xs={12} className={styles.fix}>
-              <ApplicationTopBar
+              <TopBarMenu
                 handleTopBarSelectAccountType={
                   this.handleTopBarSelectAccountType
                 }

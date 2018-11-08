@@ -1,12 +1,13 @@
 import { withRouter } from 'react-router-dom'
 import AppBar from 'material-ui/AppBar'
-import NavLinksLeft from '../../Elements/topBarMenuLinksLeft'
-import NavLinksRight from '../../Elements/topBarMenuLinksRight'
+import ElementNotificationsDrawer from '../Elements/elementNotificationsDrawer'
+import NavLinksLeft from './topBarMenuLinksLeft'
+import NavLinksRight from './topBarMenuLinksRight'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
-import styles from './applicationTopBar.module.css'
+import styles from './topBarMenu.module.css'
 
-class ApplicationTopBar extends Component {
+class TopBarMenu extends Component {
   constructor(props) {
     super(props)
   }
@@ -14,7 +15,7 @@ class ApplicationTopBar extends Component {
   static propTypes = {
     location: PropTypes.object.isRequired,
     handleTopBarSelectAccountType: PropTypes.func.isRequired,
-    handleToggleNotifications: PropTypes.func.isRequired
+    transactionsDrawerOpen: PropTypes.bool.isRequired
   }
 
   static defaultProps = {
@@ -78,7 +79,6 @@ class ApplicationTopBar extends Component {
     return (
       <div>
         <div>{this.renderBurgerMenu()}</div>
-
         <AppBar
           title={<NavLinksLeft location={location} />}
           showMenuIconButton={false}
@@ -94,9 +94,13 @@ class ApplicationTopBar extends Component {
             background: 'linear-gradient(135deg,rgb(5, 65, 134),rgb(1, 17, 36))'
           }}
         />
+        <ElementNotificationsDrawer
+          handleToggleNotifications={handleToggleNotifications}
+          notificationsOpen={this.props.transactionsDrawerOpen}
+        />
       </div>
     )
   }
 }
 
-export default withRouter(ApplicationTopBar)
+export default withRouter(TopBarMenu)

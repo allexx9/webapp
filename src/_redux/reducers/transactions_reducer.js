@@ -8,10 +8,12 @@ function transactionsReducer(state = initialState.transactions, action) {
   switch (action.type) {
     case ADD_TRANSACTION:
       let transactions = Object.assign({}, state)
-      transactions.queue.set(
-        action.payload.transactionId,
-        action.payload.transactionDetails
+      const newTransaction = { ...action.payload.transactionDetails }
+      const oldTransaction = transactions.queue.get(
+        action.payload.transactionId
       )
+      const updatedTransaction = { ...oldTransaction, ...newTransaction }
+      transactions.queue.set(action.payload.transactionId, updatedTransaction)
       transactions.queue.forEach(value => {
         if (value.status !== 'executed' && value.status !== 'error') {
           pendingTransactions = pendingTransactions + 1

@@ -1,7 +1,7 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
 import ApplicationExchangeHome from '../ApplicationExchangeHome'
-import ApplicationTopBar from './ApplicationTopBar'
+import TopBarMenu from '../Elements/topBarMenu'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
@@ -13,7 +13,6 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 // import TestComponent from '../_atomic/atoms/testComponent'
 import ElementBottomStatusBar from '../Elements/elementBottomStatusBar'
 import WalletSetup from '../_atomic/organisms/walletSetup'
-import classNames from 'classnames'
 import styles from './application.module.css'
 
 const muiTheme = getMuiTheme({
@@ -73,12 +72,7 @@ class ApplicationExchangePage extends Component {
     app: PropTypes.object.isRequired
   }
 
-  handleToggleNotifications = () => {
-    this.setState({ notificationsOpen: !this.state.notificationsOpen })
-  }
-
   render() {
-    const { notificationsOpen } = this.state
     const { location, endpoint } = this.props
 
     // if (endpoint.networkInfo.id === 42) {
@@ -87,7 +81,7 @@ class ApplicationExchangePage extends Component {
     //       <Grid fluid className={styles.maincontainer}>
     //         <Row>
     //           <Col xs={12}>
-    //             <ApplicationTopBar
+    //             <TopBarMenu
     //               handleTopBarSelectAccountType={
     //                 this.handleTopBarSelectAccountType
     //               }
@@ -114,11 +108,11 @@ class ApplicationExchangePage extends Component {
         <Grid fluid className={styles.maincontainer}>
           <Row>
             <Col xs={12} className={styles.fix}>
-              <ApplicationTopBar
+              <TopBarMenu
                 handleTopBarSelectAccountType={
                   this.handleTopBarSelectAccountType
                 }
-                handleToggleNotifications={this.handleToggleNotifications}
+                transactionsDrawerOpen={this.props.app.transactionsDrawerOpen}
               />
             </Col>
           </Row>
@@ -141,10 +135,6 @@ class ApplicationExchangePage extends Component {
                       <ApplicationExchangeHome
                         key={'Exchange' + endpoint.lastMetaMaskUpdateTime}
                         location={location}
-                        notificationsOpen={notificationsOpen}
-                        handleToggleNotifications={
-                          this.handleToggleNotifications
-                        }
                       />
                     </div>
                   )

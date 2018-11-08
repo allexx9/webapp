@@ -1,3 +1,4 @@
+import { Actions } from '../_redux/actions'
 import { Col, Row } from 'react-flexbox-grid'
 import { List } from 'material-ui/List'
 import { connect } from 'react-redux'
@@ -20,7 +21,6 @@ function mapStateToProps(state) {
 
 class ElementNotificationsDrawer extends Component {
   static propTypes = {
-    handleToggleNotifications: PropTypes.func.isRequired,
     notificationsOpen: PropTypes.bool.isRequired,
     dispatch: PropTypes.func.isRequired,
     recentTransactions: PropTypes.object.isRequired,
@@ -65,6 +65,14 @@ class ElementNotificationsDrawer extends Component {
     runTick()
   }
 
+  removeNotification = noticationKey => {
+    const { recentTransactions } = this.props
+    const transaction = recentTransactions.get(noticationKey)
+    const updatedTransaction = { ...transaction, ...{ deleted: true } }
+    recentTransactions.set(noticationKey, updatedTransaction)
+    this.props.dispatch(this.updateTransactionsQueueAction(recentTransactions))
+  }
+
   updateTransactionsQueue = () => {
     // Processing the queue in order to update the transactions status
     const { api } = this.context
@@ -88,7 +96,11 @@ class ElementNotificationsDrawer extends Component {
     // the state would not be updated fast enough and the element could crash
     // setTimeout(this.detachInterface, 3000)
     this.detachInterface()
-    this.props.handleToggleNotifications()
+    this.props.dispatch(
+      Actions.app.updateAppStatus({
+        transactionsDrawerOpen: false
+      })
+    )
   }
 
   renderPlaceHolder = () => {
@@ -124,6 +136,10 @@ class ElementNotificationsDrawer extends Component {
     }
     return Array.from(recentTransactions)
       .reverse()
+      .filter(value => {
+        console.log(value[1])
+        return typeof value[1].deleted === 'undefined'
+      })
       .map(transaction => {
         secondaryText = []
         let value = transaction.pop()
@@ -317,12 +333,14 @@ class ElementNotificationsDrawer extends Component {
         return (
           <ElementNotification
             key={key}
+            transactionKey={key}
             primaryText={primaryText}
             secondaryText={secondaryText}
             eventType={eventType}
             eventStatus={eventStatus}
             txHash={txHash}
             networkName={this.props.endpoint.networkInfo.name}
+            removeNotification={this.removeNotification}
           />
         )
       })
@@ -337,7 +355,7 @@ class ElementNotificationsDrawer extends Component {
     return (
       <span>
         <Drawer
-          width={300}
+          width={350}
           openSecondary={true}
           open={notificationsOpen}
           zDepth={1}

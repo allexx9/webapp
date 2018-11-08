@@ -1,7 +1,7 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
 import * as Colors from 'material-ui/styles/colors'
-import ApplicationTopBar from './ApplicationTopBar'
+import TopBarMenu from '../Elements/topBarMenu'
 import ApplicationVaultHome from '../ApplicationVaultHome'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
@@ -69,8 +69,6 @@ class ApplicationDragoPage extends Component {
     app: PropTypes.object.isRequired
   }
 
-  UNSAFE_componentWillMount() {}
-
   componentWillUnmount() {}
 
   handleToggleNotifications = () => {
@@ -86,7 +84,7 @@ class ApplicationDragoPage extends Component {
         <Grid fluid className={styles.maincontainer}>
           <Row>
             <Col xs={12} className={styles.fix}>
-              <ApplicationTopBar
+              <TopBarMenu
                 handleTopBarSelectAccountType={
                   this.handleTopBarSelectAccountType
                 }
