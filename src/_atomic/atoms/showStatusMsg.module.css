@@ -1,0 +1,13 @@
+.authMsg {
+  border-radius: 4px;
+  margin-top: 2px;
+  color: rgba(0, 0, 0, 0.88);
+  font-weight: 700;
+  padding-left: 4px;
+  padding: 2px;
+  opacity: 0.6;
+}
+
+.warning {
+  background-color: rgb(255, 174, 0, 9);
+}

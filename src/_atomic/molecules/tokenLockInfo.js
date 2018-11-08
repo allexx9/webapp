@@ -15,6 +15,7 @@ import SectionTitleExchange from '../atoms/sectionTitleExchange'
 import TokenAmountInputField from '../atoms/tokenLockAmountField'
 import TokenLockBalance from '../atoms/tokenLockBalance'
 import TokenLockTimeField from '../atoms/tokenLockTimeField'
+import Web3 from 'web3'
 import Web3Wrapper from '../../_utils/web3Wrapper'
 import moment from 'moment'
 import serializeError from 'serialize-error'
@@ -142,7 +143,7 @@ class TokenLockInfo extends Component {
       time = quoteTokenLockTime
       isOldERC20 = selectedTokensPair.quoteToken.isOldERC20
     }
-    const web3 = await Web3Wrapper.getInstance()
+    const web3 = new Web3()
     console.log(web3)
     const poolApi = await new PoolApi(window.web3)
     switch (action) {
@@ -156,7 +157,6 @@ class TokenLockInfo extends Component {
               : selectedFund.liquidity.quoteToken.balance
           )
         ) {
-          console.log(amount, selectedFund.liquidity.baseToken.balanceWrapper)
           this.setState({
             errorText: 'The amount is greater then the available balance'
           })
@@ -199,6 +199,9 @@ class TokenLockInfo extends Component {
           )
         )
         try {
+          let toBeLocked =
+            '0x' +
+            toBaseUnitAmount(new BigNumber(amount), decimals).toString(16)
           await poolApi.contract.drago.init(selectedFund.details.address)
           receipt = await poolApi.contract.drago.operateOnExchangeEFXLock(
             selectedFund.managerAccount,
@@ -206,9 +209,7 @@ class TokenLockInfo extends Component {
             selectedExchange.exchangeContractAddress,
             tokenAddress,
             tokenWrapperAddress,
-            web3.web3.utils.toHex(
-              toBaseUnitAmount(new BigNumber(amount), decimals)
-            ),
+            toBeLocked,
             time,
             isOldERC20
           )
@@ -254,8 +255,7 @@ class TokenLockInfo extends Component {
             )
           )
         } catch (error) {
-          console.log(error)
-          console.log('error')
+          console.warn(error)
           errorArray = serializeError(error).message.split(/\r?\n/)
           transactionDetails.status = 'error'
           transactionDetails.error = errorArray[0]
@@ -288,6 +288,30 @@ class TokenLockInfo extends Component {
           return
         }
         console.log(
+          `Exp base token: ${moment
+            .unix(selectedTokensPair.baseTokenLockWrapExpire)
+            .format('MMMM Do YYYY, h:mm:ss a')}`
+        )
+        console.log(
+          `Exp quote token: ${moment
+            .unix(selectedTokensPair.quoteTokenLockWrapExpire)
+            .format('MMMM Do YYYY, h:mm:ss a')}`
+        )
+        if (
+          baseTokenSelected
+            ? moment
+                .unix(selectedTokensPair.baseTokenLockWrapExpire)
+                .isAfter(moment())
+            : moment
+                .unix(selectedTokensPair.quoteTokenLockWrapExpire)
+                .isAfter(moment())
+        ) {
+          this.setState({
+            errorText: 'You cannot unlock ealier than the expiry time.'
+          })
+          return
+        }
+        console.log(
           selectedFund.managerAccount,
           selectedFund.details.address,
           selectedExchange.exchangeContractAddress,
@@ -314,6 +338,19 @@ class TokenLockInfo extends Component {
           )
         )
         try {
+          console.log(amount)
+          console.log(BigNumber(amount))
+          console.log(toBaseUnitAmount(new BigNumber(amount), decimals))
+          console.log(
+            web3.utils.toHex(toBaseUnitAmount(new BigNumber(amount), decimals))
+          )
+          console.log(
+            '0x' +
+              toBaseUnitAmount(new BigNumber(amount), decimals).toString(16)
+          )
+          const toBeUnlocked =
+            '0x' +
+            toBaseUnitAmount(new BigNumber(amount), decimals).toString(16)
           await poolApi.contract.drago.init(selectedFund.details.address)
           receipt = await poolApi.contract.drago.operateOnExchangeEFXUnlock(
             selectedFund.managerAccount,
@@ -321,9 +358,7 @@ class TokenLockInfo extends Component {
             selectedExchange.exchangeContractAddress,
             tokenAddress,
             tokenWrapperAddress,
-            web3.web3.utils.toHex(
-              toBaseUnitAmount(new BigNumber(amount), decimals)
-            )
+            toBeUnlocked
           )
           transactionDetails.status = 'executed'
           transactionDetails.receipt = receipt
@@ -366,6 +401,7 @@ class TokenLockInfo extends Component {
             )
           )
         } catch (error) {
+          console.warn(error)
           errorArray = serializeError(error).message.split(/\r?\n/)
           transactionDetails.status = 'error'
           transactionDetails.error = errorArray[0]

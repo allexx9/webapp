@@ -28,25 +28,6 @@ const QUOTE_TOKEN = ERC20_TOKENS[NETWORK_NAME].WETH
 // const ERCdEX = 'ERCdEX'
 // const Ethfinex = 'Ethfinex'
 
-const fakeTicker = () => {
-  let arr = Array()
-  let now = new Date().getTime()
-  let yesterday = new Date().setDate(new Date().getDate() - 1)
-  let _15minEpoch = 15 * 60 * 1000
-  for (let i = now; i > yesterday; i -= _15minEpoch) {
-    arr.push({
-      date: new Date(i),
-      low: 70.2,
-      high: 100,
-      open: 70,
-      close: 80,
-      volume: 1000,
-      epoch: i
-    })
-  }
-  return arr.reverse()
-}
-
 const initialState = {
   app: {
     isConnected: false,
@@ -60,7 +41,8 @@ const initialState = {
     errorEventfulSubscription: false,
     config: {
       isMock: false
-    }
+    },
+    notificationsOpen: false
   },
   notifications: {
     engine: ''
@@ -72,26 +54,6 @@ const initialState = {
       orderBox: true,
       marketBox: true
     },
-    // chartData: [
-    //   {
-    //     date: new Date(),
-    //     low: 1,
-    //     high: 2,
-    //     open: 1,
-    //     close: 2,
-    //     volume: 2,
-    //     epoch: 0
-    //   },
-    //   {
-    //     date: new Date(),
-    //     low: 2,
-    //     high: 3,
-    //     open: 2,
-    //     close: 2,
-    //     volume: 3,
-    //     epoch: 0
-    //   }
-    // ],
     availableFunds: [],
     chartData: [],
     selectedFund: {

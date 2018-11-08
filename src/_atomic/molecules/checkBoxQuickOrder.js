@@ -28,10 +28,12 @@ class CheckBoxQuickOrder extends Component {
               onCheck={this.onCheck}
               key="checkBoxQuickOrder"
               label="Quick order"
+              labelStyle={{ fontSize: '14px' }}
               iconStyle={{
                 width: '18px',
                 height: '18px',
-                marginTop: '1px'
+                marginTop: '1px',
+                marginRight: '4px'
               }}
             />
             <ReactTooltip effect="solid" place="top" />

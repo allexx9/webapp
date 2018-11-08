@@ -20,7 +20,7 @@ import { ERC20_TOKENS, RELAYS, TRADE_TOKENS_PAIRS } from '../../_utils/const'
 import { CANCEL_SELECTED_ORDER } from '../../_redux/actions/const'
 
 const paperStyle = {
-  padding: '10px'
+  padding: '5px'
 }
 
 function mapStateToProps(state) {
@@ -112,26 +112,22 @@ class ExchangeBox extends PureComponent {
   render() {
     const { availableRelays, selectedRelay } = this.props.exchange
     return (
-      <Row>
+      <Row className={styles.sectionTitle}>
         <Col xs={12}>
-          <Row className={styles.sectionTitle}>
-            <Col xs={12}>
-              <BoxTitle titleText={'RELAY'} />
-              <Paper style={paperStyle} zDepth={1}>
-                <Row>
-                  <Col xs={12}>
-                    <SectionTitleExchange titleText="RELAYS" />
-                    <ExchangeSelector
-                      availableRelays={availableRelays}
-                      selectedRelay={selectedRelay.name}
-                      onSelectExchange={this.onSelectExchange}
-                    />
-                  </Col>
-                </Row>
-                <Row>{this.showRelayActions(selectedRelay)}</Row>
-              </Paper>
-            </Col>
-          </Row>
+          <BoxTitle titleText={'RELAY'} />
+          <Paper style={paperStyle} zDepth={1}>
+            <Row>
+              <Col xs={12}>
+                <SectionTitleExchange titleText="RELAYS" />
+                <ExchangeSelector
+                  availableRelays={availableRelays}
+                  selectedRelay={selectedRelay.name}
+                  onSelectExchange={this.onSelectExchange}
+                />
+              </Col>
+            </Row>
+            {this.showRelayActions(selectedRelay)}
+          </Paper>
         </Col>
       </Row>
     )

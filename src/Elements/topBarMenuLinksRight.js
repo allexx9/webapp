@@ -284,13 +284,17 @@ class NavLinks extends Component {
                 <Badge
                   badgeContent={transactions.pending}
                   secondary={true}
-                  style={{ padding: '0px !important' }}
+                  style={{
+                    padding: '0px !important'
+                  }}
                   badgeStyle={{
                     top: 0,
                     right: 0,
                     fontSize: '10px',
                     width: '20px',
-                    height: '20px'
+                    height: '20px',
+                    backgroundColor: 'rgb(255, 174, 0)',
+                    fontWeight: '700'
                   }}
                 >
                   <IconButton
@@ -312,11 +316,6 @@ class NavLinks extends Component {
                   iconStyle={
                     this.state.transactionsDrawerNetworkButtonIconStyle
                   }
-                  // style={{
-                  //   marginTop: "-5px",
-                  //   marginBottom: "-5px"
-                  // }
-                  // }
                 >
                   <NotificationWifi />
                 </IconButton>

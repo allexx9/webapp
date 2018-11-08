@@ -1,12 +1,12 @@
 import { Actions } from '../../_redux/actions'
 import { Col, Row } from 'react-flexbox-grid'
 import { connect } from 'react-redux'
-import ButtonAuthenticate from '../atoms/buttonAuthenticate'
+import ButtonAuthenticate from './buttonAuthenticate'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
+import ShowStatusMsg from '../atoms/showStatusMsg'
 import TokensLockBox from '../organisms/tockensLockBox'
 import Web3 from 'web3'
-import moment from 'moment'
 import styles from './ethfinexAuth.module.css'
 
 function mapStateToProps(state) {
@@ -14,6 +14,9 @@ function mapStateToProps(state) {
 }
 
 class EthfinexAuth extends Component {
+  state = {
+    showSignMsg: false
+  }
   static propTypes = {
     exchange: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired
@@ -25,6 +28,7 @@ class EthfinexAuth extends Component {
 
   onAuthEF = async () => {
     const { api } = this.context
+    this.setState({ showSignMsg: true })
 
     try {
       // var provider = account.source === 'MetaMask' ? window.web3 : api
@@ -39,6 +43,8 @@ class EthfinexAuth extends Component {
       //   console.log(result)
       // })
       console.log(result)
+
+      this.setState({ showSignMsg: false })
       const accountSignature = {
         signature: result,
         nonce: token,
@@ -59,7 +65,8 @@ class EthfinexAuth extends Component {
         )
       )
     } catch (error) {
-      console.log(error)
+      this.setState({ showSignMsg: false })
+      console.warn(error)
     }
   }
   render() {
@@ -82,23 +89,34 @@ class EthfinexAuth extends Component {
     // )
     return (
       <Row>
-        {' '}
-        <Col xs={12}>
-          <div className={styles.section}>
-            <ButtonAuthenticate
-              onAuthEF={this.onAuthEF}
-              disabled={accountSignature.valid}
+        <div className={styles.section}>
+          <Col xs={12}>
+            <Row>
+              <Col xs={12}>
+                <ButtonAuthenticate
+                  onAuthEF={this.onAuthEF}
+                  disabled={accountSignature.valid}
+                />
+              </Col>
+              <Col xs={12}>
+                {this.state.showSignMsg && (
+                  <ShowStatusMsg
+                    msg="Please sign the auth token."
+                    status="warning"
+                  />
+                )}
+              </Col>
+            </Row>
+          </Col>
+          <Col xs={12}>
+            <TokensLockBox
+              selectedFund={selectedFund}
+              selectedTokensPair={selectedTokensPair}
+              selectedExchange={selectedExchange}
+              selectedRelay={selectedRelay}
             />
-          </div>
-        </Col>
-        <Col xs={12}>
-          <TokensLockBox
-            selectedFund={selectedFund}
-            selectedTokensPair={selectedTokensPair}
-            selectedExchange={selectedExchange}
-            selectedRelay={selectedRelay}
-          />
-        </Col>
+          </Col>
+        </div>
       </Row>
     )
   }
