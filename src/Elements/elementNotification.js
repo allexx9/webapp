@@ -106,6 +106,7 @@ export default class ElementNotification extends Component {
           }
           anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
           targetOrigin={{ horizontal: 'right', vertical: 'top' }}
+          style={{ cursor: 'pointer', height: '20px' }}
         >
           <MenuItem
             leftIcon={<Search />}
@@ -116,7 +117,7 @@ export default class ElementNotification extends Component {
           {/* <MenuItem primaryText="Receipt" /> */}
         </IconMenu>
         <CloseIcon
-          style={{ cursor: 'pointer' }}
+          style={{ cursor: 'pointer', height: '20px' }}
           onClick={this.removeNotification}
         />
       </div>

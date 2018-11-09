@@ -71,11 +71,7 @@ class TopBarMenu extends Component {
   }
 
   render() {
-    const {
-      location,
-      handleTopBarSelectAccountType,
-      handleToggleNotifications
-    } = this.props
+    const { location, handleTopBarSelectAccountType } = this.props
     return (
       <div>
         <div>{this.renderBurgerMenu()}</div>
@@ -85,7 +81,6 @@ class TopBarMenu extends Component {
           iconElementLeft={<NavLinksLeft location={location} />}
           iconElementRight={
             <NavLinksRight
-              handleToggleNotifications={handleToggleNotifications}
               location={location}
               handleTopBarSelectAccountType={handleTopBarSelectAccountType}
             />
@@ -95,7 +90,6 @@ class TopBarMenu extends Component {
           }}
         />
         <ElementNotificationsDrawer
-          handleToggleNotifications={handleToggleNotifications}
           notificationsOpen={this.props.transactionsDrawerOpen}
         />
       </div>

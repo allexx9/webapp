@@ -15,7 +15,12 @@ function transactionsReducer(state = initialState.transactions, action) {
       const updatedTransaction = { ...oldTransaction, ...newTransaction }
       transactions.queue.set(action.payload.transactionId, updatedTransaction)
       transactions.queue.forEach(value => {
-        if (value.status !== 'executed' && value.status !== 'error') {
+        if (
+          value.status !== 'executed' &&
+          value.status !== 'error' &&
+          value.cancelled !== true &&
+          typeof value.cancelled === 'undefined'
+        ) {
           pendingTransactions = pendingTransactions + 1
         }
       })

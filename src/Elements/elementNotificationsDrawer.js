@@ -1,8 +1,8 @@
 import { Actions } from '../_redux/actions'
-import { Col, Row } from 'react-flexbox-grid'
+import { Col, Grid, Row } from 'react-flexbox-grid'
 import { List } from 'material-ui/List'
 import { connect } from 'react-redux'
-import Drawer from 'material-ui/Drawer'
+// import Drawer from 'material-ui/Drawer'
 import ElementNotification from './elementNotification'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
@@ -127,17 +127,9 @@ class ElementNotificationsDrawer extends Component {
     let timeStamp = ''
     let txHash = ''
     const { recentTransactions } = this.props
-    if (recentTransactions.size === 0) {
-      return (
-        <div className={styles.noRecentTransactions}>
-          <p className={styles.noTransacationsMsg}>No recent transactions.</p>
-        </div>
-      )
-    }
-    return Array.from(recentTransactions)
+    let transactionsList = Array.from(recentTransactions)
       .reverse()
       .filter(value => {
-        console.log(value[1])
         return typeof value[1].deleted === 'undefined'
       })
       .map(transaction => {
@@ -344,41 +336,31 @@ class ElementNotificationsDrawer extends Component {
           />
         )
       })
+    return transactionsList.length !== 0 ? (
+      transactionsList
+    ) : (
+      <div className={styles.noRecentTransactions}>
+        <p className={styles.noTransacationsMsg}>No recent transactions.</p>
+      </div>
+    )
   }
 
   render() {
-    const { notificationsOpen, recentTransactions } = this.props
-    let drawerHeight = 72
-    if (recentTransactions.size !== 0) {
-      drawerHeight = 72 * recentTransactions.size
-    }
+    const { notificationsOpen } = this.props
     return (
       <span>
-        <Drawer
-          width={350}
-          openSecondary={true}
-          open={notificationsOpen}
-          zDepth={1}
-          docked={true}
-          containerClassName={styles.notifications}
-          onRequestChange={this.handleToggleNotifications}
-          containerStyle={{ height: drawerHeight.toString() }}
+        <div
+          className={classNames([
+            styles.notificationsPanel,
+            notificationsOpen ? styles.show : styles.noShow
+          ])}
         >
-          {/* <Row>
-            <Col xs={12}>
-              <AppBar
-                title={<span>Network ok</span>}
-                showMenuIconButton={false}
-              />
-            </Col>
-          </Row> */}
-
           <Row>
             <Col xs={12}>
               <List>{this.renderNotifications()}</List>
             </Col>
           </Row>
-        </Drawer>
+        </div>
       </span>
     )
   }

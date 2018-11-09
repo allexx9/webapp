@@ -11,7 +11,7 @@
     z-index: 999;
     float: right;
     margin-top: -10px;
-    padding-right: 5px;
+    /* padding-right: 5px; */
 }
 
 @keyframes pulse {

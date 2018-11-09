@@ -139,7 +139,7 @@ class PageFundDetailsDragoManager extends Component {
             key={'addressether' + address1}
             href={
               this.props.endpoint.networkInfo.etherscan +
-              'token' +
+              '/token' +
               '/' +
               address1 +
               '?a=' +

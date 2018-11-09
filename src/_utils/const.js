@@ -264,7 +264,7 @@ export const NETWORKS = {
   mainnet: {
     id: 1,
     name: 'mainnet',
-    etherscan: 'https://etherscan.io',
+    etherscan: 'https://etherscan.io/',
     zeroExExchangeContractAddress: '0x12459c951127e0c374ff9105dda097662a027093'
   }
 }

@@ -78,9 +78,13 @@ class NavLinks extends Component {
     minedEvents: null,
     pendingEvents: null,
     subscriptionIDDrago: null,
-    transactionsDrawerOpen: false,
-    transactionsDrawerNetworkButtonStyle: styles.networkIconClosed,
-    transactionsDrawerNetworkButtonIconStyle: menuStyles.profileIcon.closed
+    transactionsDrawerNetworkButtonStyle: this.props.app.transactionsDrawerOpen
+      ? styles.networkIconOpen
+      : styles.networkIconClosed,
+    transactionsDrawerNetworkButtonIconStyle: this.props.app
+      .transactionsDrawerOpen
+      ? menuStyles.profileIcon.open
+      : menuStyles.profileIcon.closed
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -97,7 +101,6 @@ class NavLinks extends Component {
   // value = 1 = Trader
   // value = 2 = Manager
   handleTopBarSelectAccountType = (event, value) => {
-    console.log(value)
     this.props.dispatch(Actions.users.isManagerAction(value))
   }
 
@@ -145,7 +148,6 @@ class NavLinks extends Component {
       : (transactionsDrawerNetworkButtonIconStyle =
           menuStyles.profileIcon.closed)
     this.setState({
-      transactionsDrawerOpen: !transactionsDrawerOpen,
       transactionsDrawerNetworkButtonStyle,
       transactionsDrawerNetworkButtonIconStyle
     })
@@ -154,7 +156,6 @@ class NavLinks extends Component {
         transactionsDrawerOpen: !this.props.app.transactionsDrawerOpen
       })
     )
-    // this.props.handleToggleNotifications()
   }
 
   render() {

@@ -591,23 +591,47 @@ class DragoWeb3 {
     return instance.methods.totalSupply.call({})
   }
 
-  depositToExchange = (exchangeAddress, fromAddress, amount) => {
-    if (!fromAddress) {
-      throw new Error('toAddress needs to be provided')
+  wrapETHZeroEx = async (wrapperAddress, managerAccountAddress, amount) => {
+    if (!managerAccountAddress) {
+      throw new Error('accountAddress needs to be provided')
+    }
+    if (!wrapperAddress) {
+      throw new Error('wrapperAddress needs to be provided')
     }
     if (!amount) {
       throw new Error('amount needs to be provided')
     }
-    if (!exchangeAddress) {
-      throw new Error('exchangeAddress needs to be provided')
-    }
+    console.log(`wrapperAddress ${wrapperAddress}`)
+    console.log(`managerAccountAddress ${managerAccountAddress}`)
+    console.log(`amount ${amount}`)
+
     const instance = this._instance
-    const options = {
-      from: fromAddress
+    const api = this._api
+    let options = {
+      from: managerAccountAddress
     }
-    console.log(exchangeAddress)
+    const contractMethod = {
+      name: 'wrapEth',
+      type: 'function',
+      inputs: [
+        {
+          type: 'address',
+          name: 'wrapper'
+        },
+        {
+          type: 'uint256',
+          name: 'amount'
+        }
+      ]
+    }
+
+    const encodedABI = await api.eth.abi.encodeFunctionCall(contractMethod, [
+      wrapperAddress,
+      amount
+    ])
+    console.log(encodedABI)
     return instance.methods
-      .depositToExchange(exchangeAddress, amount)
+      .operateOnExchange(wrapperAddress, encodedABI)
       .estimateGas(options)
       .then(gasEstimate => {
         console.log(gasEstimate)
@@ -615,28 +639,52 @@ class DragoWeb3 {
       })
       .then(() => {
         return instance.methods
-          .depositToExchange(exchangeAddress, amount)
+          .operateOnExchange(wrapperAddress, encodedABI)
           .send(options)
       })
   }
 
-  withdrawFromExchange = (exchangeAddress, fromAddress, amount) => {
-    if (!fromAddress) {
-      throw new Error('toAddress needs to be provided')
+  unWrapETHZeroEx = async (wrapperAddress, managerAccountAddress, amount) => {
+    if (!wrapperAddress) {
+      throw new Error('wrapperAddress needs to be provided')
+    }
+    if (!managerAccountAddress) {
+      throw new Error('accountAddress needs to be provided')
     }
     if (!amount) {
       throw new Error('amount needs to be provided')
     }
-    if (!exchangeAddress) {
-      throw new Error('exchangeAddress needs to be provided')
-    }
+    console.log(`wrapperAddress ${wrapperAddress}`)
+    console.log(`managerAccountAddress ${managerAccountAddress}`)
+    console.log(`amount ${amount}`)
+
     const instance = this._instance
-    const options = {
-      from: fromAddress
+    const api = this._api
+    let options = {
+      from: managerAccountAddress
     }
-    console.log(exchangeAddress)
+    const contractMethod = {
+      name: 'unwrapEth',
+      type: 'function',
+      inputs: [
+        {
+          type: 'address',
+          name: 'wrapper'
+        },
+        {
+          type: 'uint256',
+          name: 'amount'
+        }
+      ]
+    }
+
+    const encodedABI = await api.eth.abi.encodeFunctionCall(contractMethod, [
+      wrapperAddress,
+      amount
+    ])
+    console.log(encodedABI)
     return instance.methods
-      .withdrawFromExchange(exchangeAddress, amount)
+      .operateOnExchange(wrapperAddress, encodedABI)
       .estimateGas(options)
       .then(gasEstimate => {
         console.log(gasEstimate)
@@ -644,10 +692,39 @@ class DragoWeb3 {
       })
       .then(() => {
         return instance.methods
-          .withdrawFromExchange(exchangeAddress, amount)
+          .operateOnExchange(wrapperAddress, encodedABI)
           .send(options)
       })
   }
+
+  // withdrawFromExchange = (exchangeAddress, fromAddress, amount) => {
+  //   if (!fromAddress) {
+  //     throw new Error('toAddress needs to be provided')
+  //   }
+  //   if (!amount) {
+  //     throw new Error('amount needs to be provided')
+  //   }
+  //   if (!exchangeAddress) {
+  //     throw new Error('exchangeAddress needs to be provided')
+  //   }
+  //   const instance = this._instance
+  //   const options = {
+  //     from: fromAddress
+  //   }
+  //   console.log(exchangeAddress)
+  //   return instance.methods
+  //     .withdrawFromExchange(exchangeAddress, amount)
+  //     .estimateGas(options)
+  //     .then(gasEstimate => {
+  //       console.log(gasEstimate)
+  //       options.gas = gasEstimate
+  //     })
+  //     .then(() => {
+  //       return instance.methods
+  //         .withdrawFromExchange(exchangeAddress, amount)
+  //         .send(options)
+  //     })
+  // }
 }
 
 export default DragoWeb3
