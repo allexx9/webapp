@@ -1,9 +1,9 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
 import ApplicationHome from '../ApplicationHome'
-import ApplicationTopBar from './ApplicationTopBar'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
+import TopBarMenu from '../Elements/topBarMenu'
 
 import { Col, Grid, Row } from 'react-flexbox-grid'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
@@ -32,13 +32,6 @@ function mapStateToProps(state) {
 }
 
 class ApplicationHomePage extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      notificationsOpen: false
-    }
-  }
-
   // Context
   static childContextTypes = {
     muiTheme: PropTypes.object
@@ -53,8 +46,6 @@ class ApplicationHomePage extends Component {
   static contextTypes = {
     api: PropTypes.object.isRequired
   }
-
-  componentWillUnmount() {}
 
   static propTypes = {
     location: PropTypes.object.isRequired,
@@ -73,11 +64,11 @@ class ApplicationHomePage extends Component {
           {/* <Grid fluid className={styles.maincontainer}> */}
           <Row>
             <Col xs={12} className={styles.fix}>
-              <ApplicationTopBar
+              <TopBarMenu
                 handleTopBarSelectAccountType={
                   this.handleTopBarSelectAccountType
                 }
-                handleToggleNotifications={this.handleToggleNotifications}
+                transactionsDrawerOpen={this.props.app.transactionsDrawerOpen}
               />
             </Col>
           </Row>

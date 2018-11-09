@@ -42,7 +42,7 @@ const initialState = {
     config: {
       isMock: false
     },
-    notificationsOpen: false
+    transactionsDrawerOpen: false
   },
   notifications: {
     engine: ''

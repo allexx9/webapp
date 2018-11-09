@@ -64,9 +64,9 @@ class NavLinks extends Component {
     location: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
     user: PropTypes.object.isRequired,
-    handleToggleNotifications: PropTypes.func.isRequired,
     transactions: PropTypes.object.isRequired,
-    endpoint: PropTypes.object.isRequired
+    endpoint: PropTypes.object.isRequired,
+    app: PropTypes.object.isRequired
   }
 
   static contextTypes = {
@@ -74,14 +74,17 @@ class NavLinks extends Component {
   }
 
   state = {
-    notificationsOpen: false,
     allEvents: null,
     minedEvents: null,
     pendingEvents: null,
     subscriptionIDDrago: null,
-    transactionsDrawerOpen: false,
-    transactionsDrawerNetworkButtonStyle: styles.networkIconClosed,
-    transactionsDrawerNetworkButtonIconStyle: menuStyles.profileIcon.closed
+    transactionsDrawerNetworkButtonStyle: this.props.app.transactionsDrawerOpen
+      ? styles.networkIconOpen
+      : styles.networkIconClosed,
+    transactionsDrawerNetworkButtonIconStyle: this.props.app
+      .transactionsDrawerOpen
+      ? menuStyles.profileIcon.open
+      : menuStyles.profileIcon.closed
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -98,7 +101,6 @@ class NavLinks extends Component {
   // value = 1 = Trader
   // value = 2 = Manager
   handleTopBarSelectAccountType = (event, value) => {
-    console.log(value)
     this.props.dispatch(Actions.users.isManagerAction(value))
   }
 
@@ -135,21 +137,25 @@ class NavLinks extends Component {
   }
 
   handleToggleNotifications = () => {
+    const { transactionsDrawerOpen } = this.props.app
     let transactionsDrawerNetworkButtonStyle,
       transactionsDrawerNetworkButtonIconStyle
-    !this.state.transactionsDrawerOpen
+    !transactionsDrawerOpen
       ? (transactionsDrawerNetworkButtonStyle = styles.networkIconOpen)
       : (transactionsDrawerNetworkButtonStyle = styles.networkIconClosed)
-    !this.state.transactionsDrawerOpen
+    !transactionsDrawerOpen
       ? (transactionsDrawerNetworkButtonIconStyle = menuStyles.profileIcon.open)
       : (transactionsDrawerNetworkButtonIconStyle =
           menuStyles.profileIcon.closed)
     this.setState({
-      transactionsDrawerOpen: !this.state.transactionsDrawerOpen,
       transactionsDrawerNetworkButtonStyle,
       transactionsDrawerNetworkButtonIconStyle
     })
-    this.props.handleToggleNotifications()
+    this.props.dispatch(
+      Actions.app.updateAppStatus({
+        transactionsDrawerOpen: !this.props.app.transactionsDrawerOpen
+      })
+    )
   }
 
   render() {

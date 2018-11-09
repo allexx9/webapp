@@ -1,7 +1,8 @@
-import { Col, Row } from 'react-flexbox-grid'
+import { Actions } from '../_redux/actions'
+import { Col, Grid, Row } from 'react-flexbox-grid'
 import { List } from 'material-ui/List'
 import { connect } from 'react-redux'
-import Drawer from 'material-ui/Drawer'
+// import Drawer from 'material-ui/Drawer'
 import ElementNotification from './elementNotification'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
@@ -20,7 +21,6 @@ function mapStateToProps(state) {
 
 class ElementNotificationsDrawer extends Component {
   static propTypes = {
-    handleToggleNotifications: PropTypes.func.isRequired,
     notificationsOpen: PropTypes.bool.isRequired,
     dispatch: PropTypes.func.isRequired,
     recentTransactions: PropTypes.object.isRequired,
@@ -65,6 +65,14 @@ class ElementNotificationsDrawer extends Component {
     runTick()
   }
 
+  removeNotification = noticationKey => {
+    const { recentTransactions } = this.props
+    const transaction = recentTransactions.get(noticationKey)
+    const updatedTransaction = { ...transaction, ...{ deleted: true } }
+    recentTransactions.set(noticationKey, updatedTransaction)
+    this.props.dispatch(this.updateTransactionsQueueAction(recentTransactions))
+  }
+
   updateTransactionsQueue = () => {
     // Processing the queue in order to update the transactions status
     const { api } = this.context
@@ -88,7 +96,11 @@ class ElementNotificationsDrawer extends Component {
     // the state would not be updated fast enough and the element could crash
     // setTimeout(this.detachInterface, 3000)
     this.detachInterface()
-    this.props.handleToggleNotifications()
+    this.props.dispatch(
+      Actions.app.updateAppStatus({
+        transactionsDrawerOpen: false
+      })
+    )
   }
 
   renderPlaceHolder = () => {
@@ -115,15 +127,11 @@ class ElementNotificationsDrawer extends Component {
     let timeStamp = ''
     let txHash = ''
     const { recentTransactions } = this.props
-    if (recentTransactions.size === 0) {
-      return (
-        <div className={styles.noRecentTransactions}>
-          <p className={styles.noTransacationsMsg}>No recent transactions.</p>
-        </div>
-      )
-    }
-    return Array.from(recentTransactions)
+    let transactionsList = Array.from(recentTransactions)
       .reverse()
+      .filter(value => {
+        return typeof value[1].deleted === 'undefined'
+      })
       .map(transaction => {
         secondaryText = []
         let value = transaction.pop()
@@ -317,50 +325,42 @@ class ElementNotificationsDrawer extends Component {
         return (
           <ElementNotification
             key={key}
+            transactionKey={key}
             primaryText={primaryText}
             secondaryText={secondaryText}
             eventType={eventType}
             eventStatus={eventStatus}
             txHash={txHash}
             networkName={this.props.endpoint.networkInfo.name}
+            removeNotification={this.removeNotification}
           />
         )
       })
+    return transactionsList.length !== 0 ? (
+      transactionsList
+    ) : (
+      <div className={styles.noRecentTransactions}>
+        <p className={styles.noTransacationsMsg}>No recent transactions.</p>
+      </div>
+    )
   }
 
   render() {
-    const { notificationsOpen, recentTransactions } = this.props
-    let drawerHeight = 72
-    if (recentTransactions.size !== 0) {
-      drawerHeight = 72 * recentTransactions.size
-    }
+    const { notificationsOpen } = this.props
     return (
       <span>
-        <Drawer
-          width={300}
-          openSecondary={true}
-          open={notificationsOpen}
-          zDepth={1}
-          docked={true}
-          containerClassName={styles.notifications}
-          onRequestChange={this.handleToggleNotifications}
-          containerStyle={{ height: drawerHeight.toString() }}
+        <div
+          className={classNames([
+            styles.notificationsPanel,
+            notificationsOpen ? styles.show : styles.noShow
+          ])}
         >
-          {/* <Row>
-            <Col xs={12}>
-              <AppBar
-                title={<span>Network ok</span>}
-                showMenuIconButton={false}
-              />
-            </Col>
-          </Row> */}
-
           <Row>
             <Col xs={12}>
               <List>{this.renderNotifications()}</List>
             </Col>
           </Row>
-        </Drawer>
+        </div>
       </span>
     )
   }

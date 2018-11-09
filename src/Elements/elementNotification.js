@@ -1,6 +1,7 @@
 import * as Colors from 'material-ui/styles/colors'
 import { ListItem } from 'material-ui/List'
 import Avatar from 'material-ui/Avatar'
+import CloseIcon from 'material-ui/svg-icons/navigation/close'
 import IconButton from 'material-ui/IconButton'
 import IconMenu from 'material-ui/IconMenu'
 import LinearProgress from 'material-ui/LinearProgress'
@@ -57,7 +58,7 @@ const transactionStyle = {
     }
   },
   innerDiv: {
-    padding: '8px 8px 8px 72px'
+    padding: '4px 8px 8px 72px'
   }
 }
 
@@ -69,11 +70,17 @@ export default class ElementNotification extends Component {
     eventType: PropTypes.string.isRequired,
     eventStatus: PropTypes.string.isRequired,
     txHash: PropTypes.string.isRequired,
-    networkName: PropTypes.string.isRequired
+    networkName: PropTypes.string.isRequired,
+    removeNotification: PropTypes.func.isRequired,
+    transactionKey: PropTypes.string.isRequired
   }
 
   static defaultProps = {
     networkName: ''
+  }
+
+  removeNotification = () => {
+    this.props.removeNotification(this.props.transactionKey)
   }
 
   etherscanLink = () => {
@@ -89,7 +96,7 @@ export default class ElementNotification extends Component {
     const { txHash } = this.props
     const etherScanDisabled = txHash.length === 0 ? true : false
     return (
-      <div className={styles.menu}>
+      <div className={styles.menu} key={this.props.transactionKey}>
         <IconMenu
           desktop={true}
           iconButtonElement={
@@ -99,6 +106,7 @@ export default class ElementNotification extends Component {
           }
           anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
           targetOrigin={{ horizontal: 'right', vertical: 'top' }}
+          style={{ cursor: 'pointer', height: '20px' }}
         >
           <MenuItem
             leftIcon={<Search />}
@@ -108,6 +116,10 @@ export default class ElementNotification extends Component {
           />
           {/* <MenuItem primaryText="Receipt" /> */}
         </IconMenu>
+        <CloseIcon
+          style={{ cursor: 'pointer', height: '20px' }}
+          onClick={this.removeNotification}
+        />
       </div>
     )
   }
@@ -117,7 +129,6 @@ export default class ElementNotification extends Component {
     const showProgressBar = ['pending', 'authorization']
     return (
       <div style={transactionStyle[eventStatus]}>
-        {this.props.networkName ? this.transactionMenu() : null}
         <ListItem
           disabled={true}
           primaryText={primaryText}
@@ -131,7 +142,9 @@ export default class ElementNotification extends Component {
           leftAvatar={<Avatar src="img/ETH.svg" />}
           secondaryTextLines={2}
           style={transactionStyle.innerDiv}
-        />
+        >
+          {this.props.networkName ? this.transactionMenu() : null}
+        </ListItem>
         <div className={styles.progressBar}>
           {showProgressBar.includes(eventStatus) ? (
             <LinearProgress

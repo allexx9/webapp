@@ -4,7 +4,6 @@ import { Col, Row } from 'react-flexbox-grid'
 import { connect } from 'react-redux'
 import BigNumber from 'bignumber.js'
 import ElementBottomStatusBar from '../Elements/elementBottomStatusBar'
-import ElementNotificationsDrawer from '../Elements/elementNotificationsDrawer'
 import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
@@ -63,9 +62,7 @@ class ApplicationExchangeHome extends Component {
     location: PropTypes.object.isRequired,
     endpoint: PropTypes.object.isRequired,
     transactionsDrago: PropTypes.object.isRequired,
-    handleToggleNotifications: PropTypes.func.isRequired,
     user: PropTypes.object.isRequired,
-    notificationsOpen: PropTypes.bool.isRequired,
     dispatch: PropTypes.func.isRequired,
     exchange: PropTypes.object.isRequired
   }
@@ -648,16 +645,6 @@ class ApplicationExchangeHome extends Component {
               </Paper>
             </Col>
           </Row>
-          <Row>
-            <Col xs={12}>
-              {notificationsOpen ? (
-                <ElementNotificationsDrawer
-                  handleToggleNotifications={handleToggleNotifications}
-                  notificationsOpen={notificationsOpen}
-                />
-              ) : null}
-            </Col>
-          </Row>
         </div>
       )
     }
@@ -779,16 +766,6 @@ class ApplicationExchangeHome extends Component {
               </Row>
             </Col>
           </Row>
-          <Row>
-            <Col xs={12}>
-              {notificationsOpen ? (
-                <ElementNotificationsDrawer
-                  handleToggleNotifications={handleToggleNotifications}
-                  notificationsOpen={notificationsOpen}
-                />
-              ) : null}
-            </Col>
-          </Row>
         </div>
       )
     }
@@ -798,16 +775,6 @@ class ApplicationExchangeHome extends Component {
         <div ref={node => (this.node = node)}>
           <Row className={styles.maincontainer}>
             <Col xs={12}>Only wizards can access this section.</Col>
-          </Row>
-          <Row>
-            <Col xs={12}>
-              {notificationsOpen ? (
-                <ElementNotificationsDrawer
-                  handleToggleNotifications={handleToggleNotifications}
-                  notificationsOpen={notificationsOpen}
-                />
-              ) : null}
-            </Col>
           </Row>
         </div>
       )

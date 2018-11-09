@@ -201,10 +201,6 @@ export class App extends Component {
           </div>
         ) : (
           <div>
-            {/* <NotificationSystem
-              ref={n => (this._notificationSystem = n)}
-              style={notificationStyle}
-            /> */}
             <Router history={history}>
               <Switch>
                 <Route
@@ -244,20 +240,6 @@ export class App extends Component {
           </div>
         )}
       </div>
-    )
-  }
-
-  notificationAlert = (primaryText, secondaryText, eventType = 'transfer') => {
-    return (
-      <MuiThemeProvider>
-        <ElementNotification
-          primaryText={primaryText}
-          secondaryText={secondaryText}
-          eventType={eventType}
-          eventStatus="executed"
-          txHash=""
-        />
-      </MuiThemeProvider>
     )
   }
 }
