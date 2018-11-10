@@ -12,7 +12,7 @@ export default class TokenLockTimeField extends Component {
     isBaseToken: PropTypes.bool.isRequired,
     onChangeTime: PropTypes.func.isRequired,
     amount: PropTypes.string.isRequired,
-    disabled: PropTypes.string
+    disabled: PropTypes.bool
   }
 
   static defaultProps = {

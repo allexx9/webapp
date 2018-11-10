@@ -23,88 +23,53 @@ import _ from 'lodash'
 import exchangeEfxV0Abi from '../../../../PoolsApi/src/contracts/abi/v2/exchange-efx-v0.json'
 import utils from '../../../../_utils/utils'
 
-const getPastExchangeEvents$ = state$ => {
+const getPastExchangeEvents$ = (fund, tokens, exchange, state$) => {
   return defer(async () => {
     const web3 = await Web3Wrapper.getInstance(
       state$.value.endpoint.networkInfo.name.toLowerCase()
     )
     const efxEchangeContract = new web3.eth.Contract(
       exchangeEfxV0Abi,
-      state$.value.exchange.selectedExchange.exchangeContractAddress.toLowerCase()
+      exchange.exchangeContractAddress.toLowerCase()
     )
-    console.log(
-      state$.value.exchange.selectedExchange.exchangeContractAddress.toLowerCase()
-    )
-    console.log(state$.value.exchange.selectedTokensPair)
-    console.log(
-      state$.value.exchange.selectedTokensPair.baseToken.wrappers.Ethfinex.address
-        .toLowerCase()
-        .substring(2)
-    )
-    console.log(
-      state$.value.exchange.selectedTokensPair.quoteToken.wrappers.Ethfinex.address
-        .toLowerCase()
-        .substring(2)
-    )
-    console.log(
-      web3.utils.soliditySha3(
-        {
-          t: 'address',
-          v: state$.value.exchange.selectedTokensPair.baseToken.wrappers.Ethfinex.address.toLowerCase()
-        },
-        {
-          t: 'address',
-          v: state$.value.exchange.selectedTokensPair.quoteToken.wrappers.Ethfinex.address.toLowerCase()
-        }
-      )
-    )
-    console.log(
-      web3.utils.soliditySha3(
-        {
-          t: 'address',
-          v: state$.value.exchange.selectedTokensPair.quoteToken.wrappers.Ethfinex.address.toLowerCase()
-        },
-        {
-          t: 'address',
-          v: state$.value.exchange.selectedTokensPair.baseToken.wrappers.Ethfinex.address.toLowerCase()
-        }
-      )
-    )
+
     // console.log(
     //   '0x3f3fb7135a4e1512b508f90733145ab182cc196e127cd9281a8e9f636de79a67'
     // )
     let tokens1 = web3.utils.soliditySha3(
       {
         t: 'address',
-        v: state$.value.exchange.selectedTokensPair.quoteToken.wrappers.Ethfinex.address.toLowerCase()
+        v: tokens.quoteToken.wrappers.Ethfinex.address.toLowerCase()
       },
       {
         t: 'address',
-        v: state$.value.exchange.selectedTokensPair.baseToken.wrappers.Ethfinex.address.toLowerCase()
+        v: tokens.baseToken.wrappers.Ethfinex.address.toLowerCase()
       }
     )
     tokens1 = web3.utils.padLeft(tokens1, 64)
-    console.log(tokens1)
+    // console.log(tokens1)
     let tokens2 = web3.utils.soliditySha3(
       {
         t: 'address',
-        v: state$.value.exchange.selectedTokensPair.baseToken.wrappers.Ethfinex.address.toLowerCase()
+        v: tokens.baseToken.wrappers.Ethfinex.address.toLowerCase()
       },
       {
         t: 'address',
-        v: state$.value.exchange.selectedTokensPair.quoteToken.wrappers.Ethfinex.address.toLowerCase()
+        v: tokens.quoteToken.wrappers.Ethfinex.address.toLowerCase()
       }
     )
     tokens2 = web3.utils.padLeft(tokens2, 64)
-    console.log(tokens2)
+    // console.log(tokens2)
     // 0x3f3fb7135a4e1512b508f90733145ab182cc196e127cd9281a8e9f636de79a67
+    // console.log(fund)
+    const makerAddress = '0x' + fund.address.substr(2).padStart(64, '0')
     return efxEchangeContract
       .getPastEvents(
         'allEvents',
         {
           fromBlock: 0,
           toBlock: 'latest',
-          topics: [null, null, null, tokens2]
+          topics: [null, makerAddress, null, [tokens1, tokens2]]
         },
         function(error) {
           if (error) {
@@ -121,7 +86,7 @@ const getPastExchangeEvents$ = state$ => {
   })
 }
 
-const monitorExchangeEvents$ = state$ => {
+const monitorExchangeEvents$ = (fund, tokens, state$) => {
   return Observable.create(async observer => {
     const instance = await Web3Wrapper.getInstance(
       state$.value.endpoint.networkInfo.name.toUpperCase()
@@ -142,10 +107,20 @@ const monitorExchangeEvents$ = state$ => {
 export const monitorExchangeEventsEpic = (action$, state$) => {
   return action$.pipe(
     ofType(utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_START)),
-    mergeMap(() => {
+    mergeMap(action => {
+      // console.log(action)
       return Observable.concat(
-        getPastExchangeEvents$(state$),
-        monitorExchangeEvents$(state$)
+        getPastExchangeEvents$(
+          action.payload.fund,
+          action.payload.tokens,
+          action.payload.exchange,
+          state$
+        ),
+        monitorExchangeEvents$(
+          action.payload.fund,
+          action.payload.tokens,
+          state$
+        )
       ).pipe(
         tap(val => {
           console.log(val)

@@ -199,9 +199,6 @@ class ApplicationExchangeHome extends Component {
       ]
       console.log(walletAddress.address)
 
-      // Get funds details (balance, transactions)
-      this.getSelectedFundDetails(null, accounts)
-
       // Set available relays
       this.props.dispatch(
         Actions.exchange.updateAvailableRelays(
@@ -238,25 +235,15 @@ class ApplicationExchangeHome extends Component {
         Actions.exchange.updateLiquidityAndTokenBalances(api, 'START')
       )
 
-      this.connectToExchange(defaultRelay, defaultTokensPair)
+      // Get funds details (balance, transactions)
+      let selectedFund = await this.getSelectedFundDetails(null, accounts)
 
-      // Getting trade history logs
-      // this.props.dispatch(
-      //   Actions.exchange.getTradeHistoryLogs(
-      //     defaultRelay,
-      //     api._rb.network.id,
-      //     defaultTokensPair.baseToken.address,
-      //     defaultTokensPair.quoteToken.address
-      //   )
-      // )
-
-      // // Getting history logs
-      // this.props.dispatch(this.getTradeHistoryLogs(
-      //   this.props.exchange.relay.networkId,
-      //   this.props.exchange.selectedTokensPair.baseToken.address,
-      //   this.props.exchange.selectedTokensPair.quoteToken.address,
-      // )
-      // )
+      this.connectToExchange(
+        selectedFund,
+        defaultTokensPair,
+        defaultRelay,
+        selectedExchange
+      )
     } catch (error) {
       console.warn(error)
     }
@@ -292,18 +279,13 @@ class ApplicationExchangeHome extends Component {
     }
   }
 
-  connectToExchange = async (relay, defaultTokensPair) => {
+  connectToExchange = async (
+    selectedFund,
+    tokensPair,
+    relay,
+    selectedExchange
+  ) => {
     const { api } = this.context
-    // this.props.dispatch(
-    //   Actions.exchange.relayGetOrders(
-    //     defaultRelay,
-    //     api._rb.network.id,
-    //     defaultTokensPair.baseToken,
-    //     defaultTokensPair.quoteToken,
-    //     defaultRelay.initOrdeBookAggregated
-    //   )
-    // )
-
     this.props.dispatch({
       type: TYPE_.CHART_MARKET_DATA_INIT,
       payload: []
@@ -319,15 +301,21 @@ class ApplicationExchangeHome extends Component {
     })
 
     // Getting exchange contract events
-    this.props.dispatch(Actions.exchange.monitorEventsStart(relay))
+    this.props.dispatch(
+      Actions.exchange.monitorEventsStart(
+        selectedFund,
+        tokensPair,
+        selectedExchange
+      )
+    )
 
     // Getting price ticker
     this.props.dispatch(
       Actions.exchange.relayOpenWsTicker(
         relay,
         api._rb.network.id,
-        defaultTokensPair.baseToken,
-        defaultTokensPair.quoteToken
+        tokensPair.baseToken,
+        tokensPair.quoteToken
       )
     )
     // Getting order book
@@ -335,8 +323,8 @@ class ApplicationExchangeHome extends Component {
       Actions.exchange.relayOpenWsBook(
         relay,
         api._rb.network.id,
-        defaultTokensPair.baseToken,
-        defaultTokensPair.quoteToken
+        tokensPair.baseToken,
+        tokensPair.quoteToken
       )
     )
     // Getting chart data
@@ -347,8 +335,8 @@ class ApplicationExchangeHome extends Component {
       Actions.exchange.fetchCandleDataSingleStart(
         relay,
         api._rb.network.id,
-        defaultTokensPair.baseToken,
-        defaultTokensPair.quoteToken,
+        tokensPair.baseToken,
+        tokensPair.quoteToken,
         tsYesterday
       )
     )
@@ -604,6 +592,7 @@ class ApplicationExchangeHome extends Component {
         })
         this.props.dispatch(Actions.exchange.updateAvailableFunds(dragoList))
         this.onSelectFund(dragoList[0])
+        return dragoList[0]
       }
     } catch (error) {
       console.warn(error)
