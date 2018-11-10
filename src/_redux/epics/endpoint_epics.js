@@ -36,7 +36,7 @@ export const isConnectedToNodeWeb3Wrapper$ = state$ => {
     Web3Wrapper.getInstance(
       state$.value.endpoint.networkInfo.name.toUpperCase()
     ).then(instance => {
-      instance.nodeStatus$.subscribe(val => {
+      instance.ob.nodeStatus$.subscribe(val => {
         if (Object.keys(val.error).length === 0) {
           // console.log('Msg: ', val)
           observer.next(val)
@@ -437,7 +437,7 @@ const monitorAccounts$ = (api, state$) => {
     Web3Wrapper.getInstance(
       state$.value.endpoint.networkInfo.name.toUpperCase()
     ).then(instance => {
-      instance.newBlock$.subscribe(newBlock => {
+      instance.ob.newBlock$.subscribe(newBlock => {
         utils.updateAccounts(api, newBlock, state$).then(result => {
           return observer.next(result)
         })

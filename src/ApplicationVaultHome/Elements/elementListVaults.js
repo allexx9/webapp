@@ -387,6 +387,12 @@ class ElementListFunds extends PureComponent {
             CREATED
           </span>
         )
+      default:
+        return (
+          <span style={{ color: Colors.blue300, fontWeight: 600 }}>
+            UNKNOWN
+          </span>
+        )
     }
   }
 

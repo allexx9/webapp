@@ -123,9 +123,9 @@ let palette = (function() {
    * @return {Array<string>} Array of abs(number) 'RRGGBB' strings or null if
    *     no matching scheme was found.
    */
-  var palette = function(scheme, number, opt_index, varargs) {
+  let palette = function(scheme, number, opt_index, varargs) {
     number |= 0
-    if (number == 0) {
+    if (number === 0) {
       return []
     }
 
@@ -213,7 +213,7 @@ let palette = (function() {
      * @param {...*} varargs Additional arguments to pass to palette or colour
      *     generator (if the chosen scheme uses those).
      */
-    var self = function(number, varargs) {
+    let self = function(number, varargs) {
       number |= 0
       if (!number) {
         return []
@@ -223,7 +223,8 @@ let palette = (function() {
       number = Math.abs(number)
 
       if (number <= palettes_max) {
-        for (var i = Math.max(number, palettes_min); !(i in palettes); ++i) {
+        let i
+        for (i = Math.max(number, palettes_min); !(i in palettes); ++i) {
           /* nop */
         }
         let colors = palettes[i]
@@ -740,7 +741,7 @@ let palette = (function() {
     return [r, g, b]
       .map(function(v) {
         v = Number(Math.round(clamp(v) * 255)).toString(16)
-        return v.length == 1 ? '0' + v : v
+        return v.length === 1 ? '0' + v : v
       })
       .join('')
   }
@@ -763,7 +764,7 @@ let palette = (function() {
           v = 1.055 * Math.pow(v, 1 / 2.4) - 0.055
         }
         v = Number(Math.round(v * 255)).toString(16)
-        return v.length == 1 ? '0' + v : v
+        return v.length === 1 ? '0' + v : v
       })
       .join('')
   }

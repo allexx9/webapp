@@ -10,7 +10,6 @@ import {
   validatePositiveNumber
 } from '../../_utils/validation'
 import { connect } from 'react-redux'
-import AccountSelector from '../../Elements/elementAccountSelector'
 import ActionsDialogHeader from '../../_atomic/molecules/actionsDialogHeader'
 import AppBar from 'material-ui/AppBar'
 import BigNumber from 'bignumber.js'

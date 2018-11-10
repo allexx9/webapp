@@ -1,4 +1,3 @@
-import * as Colors from 'material-ui/styles/colors'
 import { Actions } from '../../_redux/actions'
 import { Col, Row } from 'react-flexbox-grid'
 import {
@@ -254,10 +253,6 @@ class ElementVaultCreateAction extends React.Component {
 
   render() {
     const { openAuth, authMsg, authAccount, vaultDetails } = this.state
-    const labelStyle = {
-      color: '#FFFFFF',
-      fontWeight: 700
-    }
     const titleStyle = {
       padding: 0,
       lineHeight: '20px',

@@ -2339,21 +2339,21 @@ class utilities {
         selectedTokensPair.baseToken.wrappers[exchange.name].address,
         dragoAddress
       )
-      console.log(
-        `Exp base token: ${moment
-          .unix(baseTokenLockWrapExpire)
-          .format('MMMM Do YYYY, h:mm:ss a')}`
-      )
+      // console.log(
+      //   `Exp base token: ${moment
+      //     .unix(baseTokenLockWrapExpire)
+      //     .format('MMMM Do YYYY, h:mm:ss a')}`
+      // )
       quoteTokenLockWrapExpire = await utils.updateTokenWrapperLockTime(
         api,
         selectedTokensPair.quoteToken.wrappers[exchange.name].address,
         dragoAddress
       )
-      console.log(
-      `Exp quote token: ${moment
-        .unix(quoteTokenLockWrapExpire)
-        .format('MMMM Do YYYY, h:mm:ss a')}`
-    )
+    //   console.log(
+    //   `Exp quote token: ${moment
+    //     .unix(quoteTokenLockWrapExpire)
+    //     .format('MMMM Do YYYY, h:mm:ss a')}`
+    // )
     }
     const liquidity = {
       dragoETHBalance,
@@ -2365,7 +2365,7 @@ class utilities {
       baseTokenLockWrapExpire,
       quoteTokenLockWrapExpire
     }
-    console.log(liquidity)
+    // console.log(liquidity)
     return liquidity
   }
 

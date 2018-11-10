@@ -75,7 +75,6 @@ let Web3Wrapper = (function() {
     const VAULTEVENTFUL = 'vaulteventful-v2'
     networkName = networkName.toUpperCase()
     const transport = endpoints[protocol][networkName].prod
-    console.log(transport)
     let provider = new Web3.providers.WebsocketProvider(transport, {
       timeout: 5000
     })
@@ -233,11 +232,11 @@ let Web3Wrapper = (function() {
           return observer.next(blockHeader)
         })
         .on('error', function(error) {
-          console.warn(`WS newBlockHeaders 2 ${error}`)
+          console.warn(`WS newBlockHeaders error 2 ${error}`)
           return observer.error(error)
         })
         .on('end', function(error) {
-          console.warn(`WS newBlockHeaders 3 ${error}`)
+          console.warn(`WS newBlockHeaders error 3 ${error}`)
           return observer.error(error)
         })
       return () => {
@@ -365,11 +364,15 @@ let Web3Wrapper = (function() {
     )
 
     return {
-      web3,
-      endpoint: transport,
-      eventfull$,
-      nodeStatus$,
-      newBlock$
+      ...web3,
+      rb: {
+        ob: eventfull$,
+        endpoint: transport
+      },
+      ob: {
+        nodeStatus$,
+        newBlock$
+      }
     }
   }
 
