@@ -3,6 +3,18 @@
 import * as TYPE_ from './const'
 
 const exchange = {
+  monitorEventsStart: relay => {
+    return {
+      type: TYPE_.MONITOR_EXCHANGE_EVENTS_START,
+      payload: relay
+    }
+  },
+  monitorEventsStop: relay => {
+    return {
+      type: TYPE_.MONITOR_EXCHANGE_EVENTS_STOP,
+      payload: relay
+    }
+  },
   updateSelectedOrder: payload => {
     return {
       type: TYPE_.UPDATE_SELECTED_ORDER,

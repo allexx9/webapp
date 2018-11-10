@@ -16,7 +16,7 @@ import TokenAmountInputField from '../atoms/tokenLockAmountField'
 import TokenLockBalance from '../atoms/tokenLockBalance'
 import TokenLockTimeField from '../atoms/tokenLockTimeField'
 import Web3 from 'web3'
-import Web3Wrapper from '../../_utils/web3Wrapper'
+// import Web3Wrapper from '../../_utils/web3Wrapper'
 import moment from 'moment'
 import serializeError from 'serialize-error'
 import styles from './tokenLockInfo.module.css'
@@ -46,7 +46,9 @@ class TokenLockInfo extends Component {
     baseTokenLockTime: this.props.selectedTokensPair.baseTokenLockWrapExpire,
     quoteTokenLockTime: this.props.selectedTokensPair.quoteTokenLockWrapExpire,
     baseTokenSelected: true,
-    errorText: ''
+    errorText: '',
+    baseTokenRelock: false,
+    quoteTokenRelock: false
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -129,7 +131,7 @@ class TokenLockInfo extends Component {
       tokenWrapperAddress =
         selectedTokensPair.baseToken.wrappers[selectedRelay.name].address
       decimals = selectedTokensPair.baseToken.decimals
-      amount = baseTokenLockAmount
+      amount = this.state.baseTokenRelock ? '0' : baseTokenLockAmount
       minTime = minBaseTokenLockTime
       time = baseTokenLockTime
       isOldERC20 = selectedTokensPair.baseToken.isOldERC20
@@ -138,11 +140,19 @@ class TokenLockInfo extends Component {
       tokenWrapperAddress =
         selectedTokensPair.quoteToken.wrappers[selectedRelay.name].address
       decimals = selectedTokensPair.quoteToken.decimals
-      amount = quoteTokenLockAmount
+      amount = this.state.quoteTokenRelock ? '0' : quoteTokenLockAmount
       minTime = minQuoteTokenLockTime
       time = quoteTokenLockTime
       isOldERC20 = selectedTokensPair.quoteToken.isOldERC20
     }
+    try {
+      if (isNaN(amount - parseFloat(amount))) {
+        this.setState({
+          errorText: 'Please enter a valid positive number'
+        })
+        return
+      }
+    } catch (error) {}
     const web3 = new Web3()
     console.log(web3)
     const poolApi = await new PoolApi(window.web3)
@@ -422,11 +432,20 @@ class TokenLockInfo extends Component {
     }
   }
 
-  onChangeAmount = (amount, baseToken, errorText) => {
-    console.log(amount, baseToken, errorText)
+  onChangeAmount = (amount, baseToken, errorText, options = {}) => {
+    console.log(amount, baseToken, errorText, options)
+    let relock = options.relock || false
     baseToken === true
-      ? this.setState({ baseTokenLockAmount: amount, errorText })
-      : this.setState({ quoteTokenLockAmount: amount, errorText })
+      ? this.setState({
+          baseTokenLockAmount: amount,
+          errorText,
+          baseTokenRelock: relock
+        })
+      : this.setState({
+          quoteTokenLockAmount: amount,
+          errorText,
+          quoteTokenRelock: relock
+        })
   }
 
   onChangeTime = (amount, baseToken, errorText) => {
@@ -526,7 +545,7 @@ class TokenLockInfo extends Component {
                   lockMaxAmount={selectedFund.liquidity.baseToken.balance}
                   isBaseToken={true}
                   onChangeAmount={this.onChangeAmount}
-                  disabled={false}
+                  disabled={!this.state.baseTokenSelected}
                   amount={this.state.baseTokenLockAmount}
                 />
               </Col>
@@ -535,7 +554,7 @@ class TokenLockInfo extends Component {
                   key="baseTokenTimeField"
                   isBaseToken={true}
                   onChangeTime={this.onChangeTime}
-                  disabled={false}
+                  disabled={!this.state.baseTokenSelected}
                   amount={this.state.baseTokenLockTime}
                 />
               </Col>
@@ -575,7 +594,7 @@ class TokenLockInfo extends Component {
                   lockMaxAmount={selectedFund.liquidity.baseToken.balance}
                   isBaseToken={false}
                   onChangeAmount={this.onChangeAmount}
-                  disabled={false}
+                  disabled={this.state.baseTokenSelected}
                   amount={this.state.quoteTokenLockAmount}
                 />
               </Col>
@@ -584,7 +603,7 @@ class TokenLockInfo extends Component {
                   key="quoteTokenTimeField"
                   isBaseToken={false}
                   onChangeTime={this.onChangeTime}
-                  disabled={false}
+                  disabled={this.state.baseTokenSelected}
                   amount={this.state.quoteTokenLockTime}
                 />
               </Col>
@@ -608,15 +627,15 @@ class TokenLockInfo extends Component {
                       onLockTocken={this.onLockTocken}
                       className={styles.buttonsLock}
                       disabled={
-                        this.state.errorText !== '' ||
-                        (new BigNumber(
-                          selectedFund.liquidity.baseToken.balance
-                        ).eq(0) &&
-                          this.state.baseTokenSelected) ||
-                        (new BigNumber(
-                          selectedFund.liquidity.quoteToken.balance
-                        ).eq(0) &&
-                          !this.state.baseTokenSelected)
+                        this.state.errorText !== ''
+                        // (new BigNumber(
+                        //   selectedFund.liquidity.baseToken.balance
+                        // ).eq(0) &&
+                        //   this.state.baseTokenSelected) ||
+                        // (new BigNumber(
+                        //   selectedFund.liquidity.quoteToken.balance
+                        // ).eq(0) &&
+                        //   !this.state.baseTokenSelected)
                       }
                     />
                   </div>

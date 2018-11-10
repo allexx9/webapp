@@ -16,7 +16,7 @@ import * as Drago from './drago_epics'
 import * as Endpoint from './endpoint_epics'
 import * as Eventful from './eventful_epics'
 import * as Tokens from './token_epics'
-import { ERCdEX, Ethfinex } from './exchanges'
+import { ERCdEX, Ethfinex, monitorExchangeEventsEpic } from './exchanges'
 
 const ERCdEX_Epics = [
   ERCdEX.getCandlesSingleDataEpic,
@@ -35,7 +35,8 @@ const Ethfinex_Epics = [
   Ethfinex.getCandlesSingleDataEpic,
   Ethfinex.initRelayWebSocketTickerEpic,
   Ethfinex.initRelayWebSocketBookEpic,
-  Ethfinex.getAccountOrdersEpic
+  Ethfinex.getAccountOrdersEpic,
+  monitorExchangeEventsEpic
 ]
 
 const Endpoint_Epics = [

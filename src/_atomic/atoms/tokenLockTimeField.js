@@ -11,12 +11,14 @@ export default class TokenLockTimeField extends Component {
   static propTypes = {
     isBaseToken: PropTypes.bool.isRequired,
     onChangeTime: PropTypes.func.isRequired,
-    amount: PropTypes.string.isRequired
+    amount: PropTypes.string.isRequired,
+    disabled: PropTypes.string
   }
 
   static defaultProps = {
     amount: 1,
-    baseToken: true
+    baseToken: true,
+    disabled: true
   }
 
   static contextTypes = {
@@ -75,6 +77,7 @@ export default class TokenLockTimeField extends Component {
                 : 'quoteTokenTimeFieldKey'
             }
             autoComplete="off"
+            disabled={this.props.disabled}
             fullWidth
             // errorText={this.state.amountError}
             name="tokenLockAmount"

@@ -2424,6 +2424,11 @@ class utilities {
     return path.pathname.split('/').pop()
   }
 
+  customRelayAction = action => {
+    // console.log(`${Ethfinex.toUpperCase()}_${action}`)
+    return `${Ethfinex.toUpperCase()}_${action}`
+  }
+
   dragoISIN(symbol, dragoId) {
     return DRG_ISIN + dragoId.toString().padStart(7, '0') + symbol.toUpperCase()
   }

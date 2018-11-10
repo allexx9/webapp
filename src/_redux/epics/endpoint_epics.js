@@ -24,7 +24,7 @@ import {
 import { ofType } from 'redux-observable'
 import { sha3_512 } from 'js-sha3'
 import BigNumber from 'bignumber.js'
-import Web3Wrapper from '../../_utils/web3Wrapper'
+import Web3Wrapper from '../../_utils/web3Wrapper/src'
 import utils from '../../_utils/utils'
 
 //
@@ -36,6 +36,7 @@ export const isConnectedToNodeWeb3Wrapper$ = state$ => {
     Web3Wrapper.getInstance(
       state$.value.endpoint.networkInfo.name.toUpperCase()
     ).then(instance => {
+      console.log(instance)
       instance.ob.nodeStatus$.subscribe(val => {
         if (Object.keys(val.error).length === 0) {
           // console.log('Msg: ', val)
@@ -50,7 +51,7 @@ export const isConnectedToNodeWeb3Wrapper$ = state$ => {
 }
 
 export const isConnectedToNodeEpic = (action$, state$) =>
-  action$.ofType(TYPE_.CHECK_APP_IS_CONNECTED).switchMap(action => {
+  action$.ofType(TYPE_.CHECK_APP_IS_CONNECTED).switchMap(() => {
     return isConnectedToNodeWeb3Wrapper$(state$).pipe(
       tap(result => {
         // console.log(result)

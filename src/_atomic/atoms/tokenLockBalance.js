@@ -25,7 +25,8 @@ export default class TokenLockBalance extends Component {
     this.props.onClick(
       formatPrice(this.props.balance),
       this.props.isBaseToken,
-      ''
+      '',
+      { relock: true }
     )
   }
 

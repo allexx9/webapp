@@ -292,7 +292,7 @@ class ApplicationExchangeHome extends Component {
     }
   }
 
-  connectToExchange = async (defaultRelay, defaultTokensPair) => {
+  connectToExchange = async (relay, defaultTokensPair) => {
     const { api } = this.context
     // this.props.dispatch(
     //   Actions.exchange.relayGetOrders(
@@ -318,10 +318,13 @@ class ApplicationExchangeHome extends Component {
       }
     })
 
+    // Getting exchange contract events
+    this.props.dispatch(Actions.exchange.monitorEventsStart(relay))
+
     // Getting price ticker
     this.props.dispatch(
       Actions.exchange.relayOpenWsTicker(
-        defaultRelay,
+        relay,
         api._rb.network.id,
         defaultTokensPair.baseToken,
         defaultTokensPair.quoteToken
@@ -330,7 +333,7 @@ class ApplicationExchangeHome extends Component {
     // Getting order book
     this.props.dispatch(
       Actions.exchange.relayOpenWsBook(
-        defaultRelay,
+        relay,
         api._rb.network.id,
         defaultTokensPair.baseToken,
         defaultTokensPair.quoteToken
@@ -342,7 +345,7 @@ class ApplicationExchangeHome extends Component {
     ).toISOString()
     this.props.dispatch(
       Actions.exchange.fetchCandleDataSingleStart(
-        defaultRelay,
+        relay,
         api._rb.network.id,
         defaultTokensPair.baseToken,
         defaultTokensPair.quoteToken,

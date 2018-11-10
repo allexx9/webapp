@@ -1,0 +1,181 @@
+// Copyright 2016-2017 Rigo Investment Sagl.
+
+// import { Observable } from 'rxjs';
+import * as ERRORS from '../../../../_const/errors'
+import * as TYPE_ from '../../../actions/const'
+import { Actions } from '../../../actions/'
+import { BigNumber } from '@0xproject/utils'
+import { Observable, defer, from, timer, zip } from 'rxjs'
+import {
+  concat,
+  finalize,
+  flatMap,
+  map,
+  mergeMap,
+  retryWhen,
+  takeUntil,
+  tap
+} from 'rxjs/operators'
+import { ofType } from 'redux-observable'
+import Web3Wrapper from '../../../../_utils/web3Wrapper/src'
+import _ from 'lodash'
+// import moment from 'moment'
+import exchangeEfxV0Abi from '../../../../PoolsApi/src/contracts/abi/v2/exchange-efx-v0.json'
+import utils from '../../../../_utils/utils'
+
+const getPastExchangeEvents$ = state$ => {
+  return defer(async () => {
+    const web3 = await Web3Wrapper.getInstance(
+      state$.value.endpoint.networkInfo.name.toLowerCase()
+    )
+    const efxEchangeContract = new web3.eth.Contract(
+      exchangeEfxV0Abi,
+      state$.value.exchange.selectedExchange.exchangeContractAddress.toLowerCase()
+    )
+    console.log(
+      state$.value.exchange.selectedExchange.exchangeContractAddress.toLowerCase()
+    )
+    console.log(state$.value.exchange.selectedTokensPair)
+    console.log(
+      state$.value.exchange.selectedTokensPair.baseToken.wrappers.Ethfinex.address
+        .toLowerCase()
+        .substring(2)
+    )
+    console.log(
+      state$.value.exchange.selectedTokensPair.quoteToken.wrappers.Ethfinex.address
+        .toLowerCase()
+        .substring(2)
+    )
+    console.log(
+      web3.utils.soliditySha3(
+        {
+          t: 'address',
+          v: state$.value.exchange.selectedTokensPair.baseToken.wrappers.Ethfinex.address.toLowerCase()
+        },
+        {
+          t: 'address',
+          v: state$.value.exchange.selectedTokensPair.quoteToken.wrappers.Ethfinex.address.toLowerCase()
+        }
+      )
+    )
+    console.log(
+      web3.utils.soliditySha3(
+        {
+          t: 'address',
+          v: state$.value.exchange.selectedTokensPair.quoteToken.wrappers.Ethfinex.address.toLowerCase()
+        },
+        {
+          t: 'address',
+          v: state$.value.exchange.selectedTokensPair.baseToken.wrappers.Ethfinex.address.toLowerCase()
+        }
+      )
+    )
+    // console.log(
+    //   '0x3f3fb7135a4e1512b508f90733145ab182cc196e127cd9281a8e9f636de79a67'
+    // )
+    let tokens1 = web3.utils.soliditySha3(
+      {
+        t: 'address',
+        v: state$.value.exchange.selectedTokensPair.quoteToken.wrappers.Ethfinex.address.toLowerCase()
+      },
+      {
+        t: 'address',
+        v: state$.value.exchange.selectedTokensPair.baseToken.wrappers.Ethfinex.address.toLowerCase()
+      }
+    )
+    tokens1 = web3.utils.padLeft(tokens1, 64)
+    console.log(tokens1)
+    let tokens2 = web3.utils.soliditySha3(
+      {
+        t: 'address',
+        v: state$.value.exchange.selectedTokensPair.baseToken.wrappers.Ethfinex.address.toLowerCase()
+      },
+      {
+        t: 'address',
+        v: state$.value.exchange.selectedTokensPair.quoteToken.wrappers.Ethfinex.address.toLowerCase()
+      }
+    )
+    tokens2 = web3.utils.padLeft(tokens2, 64)
+    console.log(tokens2)
+    // 0x3f3fb7135a4e1512b508f90733145ab182cc196e127cd9281a8e9f636de79a67
+    return efxEchangeContract
+      .getPastEvents(
+        'allEvents',
+        {
+          fromBlock: 0,
+          toBlock: 'latest',
+          topics: [null, null, null, tokens2]
+        },
+        function(error) {
+          if (error) {
+            return error
+          }
+        }
+      )
+      .then(function(events) {
+        return events
+      })
+      .catch(error => {
+        return error
+      })
+  })
+}
+
+const monitorExchangeEvents$ = state$ => {
+  return Observable.create(async observer => {
+    const instance = await Web3Wrapper.getInstance(
+      state$.value.endpoint.networkInfo.name.toUpperCase()
+    )
+    instance.rb.ob.exchangeEfxV0$.subscribe(val => {
+      if (Object.keys(val.error).length === 0) {
+        observer.next(val)
+      } else {
+        observer.next(val)
+      }
+    })
+    return () => {
+      instance.rb.ob.exchangeEfxV0$.unsubscribe()
+    }
+  })
+}
+
+export const monitorExchangeEventsEpic = (action$, state$) => {
+  return action$.pipe(
+    ofType(utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_START)),
+    mergeMap(() => {
+      return Observable.concat(
+        getPastExchangeEvents$(state$),
+        monitorExchangeEvents$(state$)
+      ).pipe(
+        tap(val => {
+          console.log(val)
+          return val
+        }),
+        map(event => {
+          return {
+            type: 'DUMB',
+            payload: 'Dumb'
+          }
+          // return Observable.concat(...observablesArray)
+        }),
+        retryWhen(error => {
+          let scalingDuration = 10000
+          return error.pipe(
+            mergeMap((error, i) => {
+              console.warn(error)
+              const retryAttempt = i + 1
+              console.log(`monitorExchangeEventsEpic Attempt ${retryAttempt}`)
+              return timer(scalingDuration)
+            }),
+            finalize(() => console.log('We are done!'))
+          )
+        }),
+        takeUntil(
+          action$.pipe(
+            ofType(utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_STOP))
+          )
+        )
+      )
+    })
+  )
+}
