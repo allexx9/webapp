@@ -11,6 +11,7 @@ import React, { Component } from 'react'
 import Loading from '../_atomic/atoms/loading'
 import PoolApi from '../PoolsApi/src'
 // import DragoComingSoon from '../Elements/elementDragoComingSoon'
+import * as TYPE_ from '../_redux/actions/const'
 import { Actions } from '../_redux/actions'
 import {
   DEFAULT_RELAY,
@@ -19,25 +20,16 @@ import {
   RELAYS,
   TRADE_TOKENS_PAIRS
 } from '../_utils/const'
+import { getTokenAllowance } from '../_utils/exchange'
 import ChartBox from '../_atomic/organisms/chartBox'
+import ExchangeBox from '../_atomic/organisms/exchangeBox'
 import FundSelector from '../_atomic/molecules/fundSelector'
 import OrderBook from '../_atomic/organisms/orderBook'
 import OrderBox from '../_atomic/organisms/orderBox'
 import OrdersHistoryBox from '../_atomic/organisms/ordersHistoryBox'
 import TokenBalances from '../_atomic/atoms/tokenBalances'
-// import TokenLiquidity from '../_atomic/atoms/tokenLiquidity'
 import TokenPrice from '../_atomic/atoms/tokenPrice'
 import TokenTradeSelector from '../_atomic/molecules/tokenTradeSelector'
-
-import * as TYPE_ from '../_redux/actions/const'
-import {
-  // FETCH_ACCOUNT_ORDERS_START,
-  RELAY_CLOSE_WEBSOCKET,
-  UPDATE_FUND_LIQUIDITY,
-  UPDATE_SELECTED_FUND
-} from '../_redux/actions/const'
-import { getTokenAllowance } from '../_utils/exchange'
-import ExchangeBox from '../_atomic/organisms/exchangeBox'
 import styles from './applicationExchangeHome.module.css'
 import utils from '../_utils/utils'
 
@@ -73,20 +65,6 @@ class ApplicationExchangeHome extends Component {
 
   scrollPosition = 0
   activeElement = null
-
-  getFundOrders = (networkId, maker, baseTokenAddress, quoteTokenAddress) => {
-    const payload = {
-      networkId,
-      maker,
-      baseTokenAddress,
-      quoteTokenAddress
-    }
-    console.log(payload)
-    // return {
-    //   type: FETCH_ACCOUNT_ORDERS_START,
-    //   payload: payload
-    // }
-  }
 
   shouldComponentUpdate(nextProps, nextState) {
     let stateUpdate = true
@@ -398,14 +376,6 @@ class ApplicationExchangeHome extends Component {
       this.props.dispatch(
         Actions.exchange.updateSelectedTradeTokensPair(payload)
       )
-      // Getting fund orders
-      // this.props.dispatch(this.getFundOrders(
-      //   this.props.exchange.relay.networkId,
-      //   fund.address.toLowerCase(),
-      //   this.props.exchange.selectedTokensPair.baseToken.address,
-      //   this.props.exchange.selectedTokensPair.quoteToken.address,
-      // )
-      // )
     } catch (error) {
       console.warn(error)
     }
@@ -489,9 +459,7 @@ class ApplicationExchangeHome extends Component {
       this.props.dispatch(Actions.exchange.monitorEventsStop())
 
       // Terminating connection to the exchange
-      this.props.dispatch({
-        type: RELAY_CLOSE_WEBSOCKET
-      })
+      this.props.dispatch(Actions.exchange.relayCloseWs())
 
       // Terminating chart candles fetching
       this.props.dispatch(Actions.exchange.fetchCandleDataSingleStop())
