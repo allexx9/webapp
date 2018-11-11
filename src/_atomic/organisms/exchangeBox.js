@@ -83,9 +83,7 @@ class ExchangeBox extends PureComponent {
     }
 
     // Resetting current order
-    this.props.dispatch({
-      type: CANCEL_SELECTED_ORDER
-    })
+    this.props.dispatch(Actions.exchange.cancelSelectedOrder())
 
     // Updating selected relay
     this.props.dispatch(Actions.exchange.updateSelectedRelay(selectedRelay))

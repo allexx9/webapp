@@ -323,6 +323,7 @@ class utilities {
   }
 
   notificationError = (notificationEngine, message, level = 'error') => {
+    console.log(message)
     const messageFirstLine = message.split(/\r?\n/)
     notificationEngine.addNotification({
       level: level,

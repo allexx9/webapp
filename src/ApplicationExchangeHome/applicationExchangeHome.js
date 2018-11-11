@@ -31,7 +31,6 @@ import TokenTradeSelector from '../_atomic/molecules/tokenTradeSelector'
 
 import * as TYPE_ from '../_redux/actions/const'
 import {
-  CANCEL_SELECTED_ORDER,
   // FETCH_ACCOUNT_ORDERS_START,
   RELAY_CLOSE_WEBSOCKET,
   UPDATE_FUND_LIQUIDITY,
@@ -74,32 +73,6 @@ class ApplicationExchangeHome extends Component {
 
   scrollPosition = 0
   activeElement = null
-
-  updateSelectedFundDetails = (fund, managerAccount) => {
-    const payload = {
-      details: fund,
-      // liquidity: {
-      //   ETH: liquidity[0],
-      //   WETH: liquidity[1],
-      //   ZRX: liquidity[2]
-      // },
-      managerAccount
-    }
-    return {
-      type: UPDATE_SELECTED_FUND,
-      payload: payload
-    }
-  }
-
-  updateSelectedFundLiquidity = (fundAddress, api) => {
-    return {
-      type: UPDATE_FUND_LIQUIDITY,
-      payload: {
-        fundAddress,
-        api
-      }
-    }
-  }
 
   getFundOrders = (networkId, maker, baseTokenAddress, quoteTokenAddress) => {
     const payload = {
@@ -365,9 +338,7 @@ class ApplicationExchangeHome extends Component {
     } = this.props.exchange
 
     // Resetting current order
-    this.props.dispatch({
-      type: CANCEL_SELECTED_ORDER
-    })
+    this.props.dispatch(Actions.exchange.cancelSelectedOrder())
 
     try {
       const poolApi = new PoolApi(api)
@@ -376,11 +347,8 @@ class ApplicationExchangeHome extends Component {
       // Getting drago details
       const dragoDetails = await poolApi.contract.drago.getAdminData()
       this.props.dispatch(
-        this.updateSelectedFundDetails(fund, dragoDetails[0].toLowerCase())
+        Actions.exchange.updateSelectedFund(fund, dragoDetails[0].toLowerCase())
       )
-
-      // Getting drago liquidity
-      // this.props.dispatch(this.updateSelectedFundLiquidity(fund.address, api))
 
       // Updating selected tokens pair balances and fund liquidity (ETH, ZRX)
       this.props.dispatch(
@@ -448,6 +416,7 @@ class ApplicationExchangeHome extends Component {
     const {
       selectedTokensPair,
       selectedExchange,
+      selectedRelay,
       selectedFund
     } = this.props.exchange
     const selectedTokens = pair.split('-')
@@ -508,14 +477,16 @@ class ApplicationExchangeHome extends Component {
       }
 
       // Resetting current order
-      this.props.dispatch({
-        type: CANCEL_SELECTED_ORDER
-      })
+      this.props.dispatch(Actions.exchange.cancelSelectedOrder())
 
       // Updating selected tokens pair
       this.props.dispatch(
         Actions.exchange.updateSelectedTradeTokensPair(tradeTokensPair)
       )
+
+      // Terminating exchange contract events fetching
+
+      this.props.dispatch(Actions.exchange.monitorEventsStop())
 
       // Terminating connection to the exchange
       this.props.dispatch({
@@ -526,7 +497,13 @@ class ApplicationExchangeHome extends Component {
       this.props.dispatch(Actions.exchange.fetchCandleDataSingleStop())
 
       // Reconnecting to the exchange
-      this.connectToExchange(selectedExchange, tradeTokensPair)
+      // this.connectToExchange(selectedExchange, tradeTokensPair)
+      this.connectToExchange(
+        selectedFund.details,
+        tradeTokensPair,
+        selectedRelay,
+        selectedExchange
+      )
     } catch (error) {
       console.warn(error)
     }

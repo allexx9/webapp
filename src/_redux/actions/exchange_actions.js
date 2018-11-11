@@ -3,6 +3,21 @@
 import * as TYPE_ from './const'
 
 const exchange = {
+  updateSelectedFund: (fund, managerAccount) => {
+    const payload = {
+      details: fund,
+      // liquidity: {
+      //   ETH: liquidity[0],
+      //   WETH: liquidity[1],
+      //   ZRX: liquidity[2]
+      // },
+      managerAccount
+    }
+    return {
+      type: TYPE_.UPDATE_SELECTED_FUND,
+      payload: payload
+    }
+  },
   monitorEventsStart: (fund, tokens, exchange) => {
     return {
       type: TYPE_.MONITOR_EXCHANGE_EVENTS_START,

@@ -99,6 +99,7 @@ const monitorExchangeEvents$ = (fund, tokens, state$) => {
       }
     })
     return () => {
+      console.log('monitorExchangeEvents$ closed')
       instance.rb.ob.exchangeEfxV0$.unsubscribe()
     }
   })
@@ -108,7 +109,7 @@ export const monitorExchangeEventsEpic = (action$, state$) => {
   return action$.pipe(
     ofType(utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_START)),
     mergeMap(action => {
-      // console.log(action)
+      console.log(action)
       return Observable.concat(
         getPastExchangeEvents$(
           action.payload.fund,
@@ -122,6 +123,15 @@ export const monitorExchangeEventsEpic = (action$, state$) => {
           state$
         )
       ).pipe(
+        takeUntil(
+          action$.pipe(
+            tap(val => {
+              console.log(val)
+              return val
+            }),
+            ofType(utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_STOP))
+          )
+        ),
         tap(val => {
           console.log(val)
           return val
@@ -144,12 +154,7 @@ export const monitorExchangeEventsEpic = (action$, state$) => {
             }),
             finalize(() => console.log('We are done!'))
           )
-        }),
-        takeUntil(
-          action$.pipe(
-            ofType(utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_STOP))
-          )
-        )
+        })
       )
     })
   )
