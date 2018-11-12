@@ -3,6 +3,12 @@
 import * as TYPE_ from './const'
 
 const exchange = {
+  setUiPanelProperties: ui => {
+    return {
+      type: TYPE_.SET_EXCHANGE_PANEL_UI_PROPERTIES,
+      payload: ui
+    }
+  },
   updateSelectedFund: (fund, managerAccount) => {
     const payload = {
       details: fund,

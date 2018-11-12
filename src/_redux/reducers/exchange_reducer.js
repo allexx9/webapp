@@ -6,6 +6,13 @@ import initialState from './initialState'
 
 function exchangeReducer(state = initialState.exchange, action) {
   switch (action.type) {
+    case TYPE_.SET_EXCHANGE_PANEL_UI_PROPERTIES:
+      console.log(action)
+      return {
+        ...state,
+        ui: { ...state.ui, ...action.payload }
+      }
+
     case TYPE_.UPDATE_AVAILABLE_FUNDS:
       return {
         ...state,
