@@ -90,6 +90,7 @@ const candlesSingleWebsocket$ = (relay, networkId, baseToken, quoteToken) => {
     return () =>
       from(
         ethfinex.ws.close().then(() => {
+          console.log('candlesSingleWebsocket$ close')
           clearInterval(interval)
           return observer.complete()
         })
@@ -142,10 +143,6 @@ const updateSingleCandles = tickerOutput => {
 
 export const getCandlesSingleDataEpic = action$ => {
   return action$.pipe(
-    tap(val => {
-      // console.log(val)
-      return val
-    }),
     ofType(customRelayAction(TYPE_.FETCH_CANDLES_DATA_SINGLE_START)),
     mergeMap(action => {
       // console.log(action.type)

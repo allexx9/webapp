@@ -87,29 +87,78 @@ const getPastExchangeEvents$ = (fund, tokens, exchange, state$) => {
 }
 
 const monitorExchangeEvents$ = (fund, tokens, state$) => {
-  return Observable.create(async observer => {
-    const instance = await Web3Wrapper.getInstance(
+  let subscription
+  return Observable.create(observer => {
+    Web3Wrapper.getInstance(
       state$.value.endpoint.networkInfo.name.toUpperCase()
-    )
-    instance.rb.ob.exchangeEfxV0$.subscribe(val => {
-      if (Object.keys(val.error).length === 0) {
-        observer.next(val)
-      } else {
-        observer.next(val)
-      }
+    ).then(web3 => {
+      subscription = web3.rb.ob.exchangeEfxV0$.subscribe(val => {
+        if (Object.keys(val.error).length === 0) {
+          console.log(val)
+          observer.next(val)
+        } else {
+          console.log(val)
+          observer.error(val)
+        }
+      })
     })
     return () => {
       console.log('monitorExchangeEvents$ closed')
-      instance.rb.ob.exchangeEfxV0$.unsubscribe()
+      console.log(subscription)
+      subscription.unsubscribe()
+      observer.complete()
     }
   })
 }
+
+// export const monitorExchangeEventsEpic = (action$, state$) => {
+//   return action$.pipe(
+//     ofType(utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_START)),
+//     mergeMap(action => {
+//       // console.log(action)
+//       return monitorExchangeEvents$(
+//         action.payload.fund,
+//         action.payload.tokens,
+//         state$
+//       ).pipe(
+//         takeUntil(
+//           action$.ofType(
+//             utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_STOP)
+//           )
+//         ),
+//         tap(val => {
+//           console.log(val)
+//           return val
+//         }),
+//         map(event => {
+//           return {
+//             type: 'DUMB',
+//             payload: 'Dumb'
+//           }
+//           // return Observable.concat(...observablesArray)
+//         }),
+//         retryWhen(error => {
+//           let scalingDuration = 10000
+//           return error.pipe(
+//             mergeMap((error, i) => {
+//               console.warn(error)
+//               const retryAttempt = i + 1
+//               console.log(`monitorExchangeEventsEpic Attempt ${retryAttempt}`)
+//               return timer(scalingDuration)
+//             }),
+//             finalize(() => console.log('We are done!'))
+//           )
+//         })
+//       )
+//     })
+//   )
+// }
 
 export const monitorExchangeEventsEpic = (action$, state$) => {
   return action$.pipe(
     ofType(utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_START)),
     mergeMap(action => {
-      console.log(action)
+      // console.log(action)
       return Observable.concat(
         getPastExchangeEvents$(
           action.payload.fund,
@@ -121,17 +170,15 @@ export const monitorExchangeEventsEpic = (action$, state$) => {
           action.payload.fund,
           action.payload.tokens,
           state$
+        ).pipe(
+          takeUntil(
+            action$.ofType(
+              utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_STOP)
+            )
+          )
         )
       ).pipe(
-        takeUntil(
-          action$.pipe(
-            tap(val => {
-              console.log(val)
-              return val
-            }),
-            ofType(utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_STOP))
-          )
-        ),
+        takeUntil(action$.ofType(TYPE_.MONITOR_EXCHANGE_EVENTS_STOP)),
         tap(val => {
           console.log(val)
           return val

@@ -48,6 +48,13 @@ const initialState = {
     engine: ''
   },
   exchange: {
+    ui: {
+      panels: {
+        relayBox: {
+          expanded: true
+        }
+      }
+    },
     loading: {
       liquidity: true,
       orderSummary: true,

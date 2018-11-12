@@ -17,14 +17,11 @@ import utils from '../../_utils/utils'
 
 import { ERC20_TOKENS, RELAYS, TRADE_TOKENS_PAIRS } from '../../_utils/const'
 
-import { CANCEL_SELECTED_ORDER } from '../../_redux/actions/const'
-
-const paperStyle = {
-  padding: '5px'
-}
-
 function mapStateToProps(state) {
-  return state
+  return {
+    exchange: state.exchange,
+    notifications: state.notifications
+  }
 }
 
 class ExchangeBox extends PureComponent {
@@ -108,11 +105,17 @@ class ExchangeBox extends PureComponent {
   }
 
   render() {
-    const { availableRelays, selectedRelay } = this.props.exchange
+    const { availableRelays, selectedRelay, ui } = this.props.exchange
+    console.log('render relayBox')
+    const paperStyle = {
+      padding: '5px',
+      display: ui.panels.relayBox.expanded ? 'inline-block' : 'none'
+    }
+
     return (
       <Row className={styles.sectionTitle}>
         <Col xs={12}>
-          <BoxTitle titleText={'RELAY'} />
+          <BoxTitle titleText={'RELAY'} boxName={'relayBox'} />
           <Paper style={paperStyle} zDepth={1}>
             <Row>
               <Col xs={12}>

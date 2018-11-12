@@ -13,10 +13,12 @@ import {
 } from './exchange_epics'
 
 import * as Drago from './drago_epics'
-import * as Endpoint from './endpoint_epics'
+import * as Endpoint from './endpoint'
 import * as Eventful from './eventful_epics'
 import * as Tokens from './token_epics'
-import { ERCdEX, Ethfinex, monitorExchangeEventsEpic } from './exchanges'
+import { ERCdEX, Ethfinex } from './exchanges'
+
+console.log(Endpoint)
 
 const ERCdEX_Epics = [
   ERCdEX.getCandlesSingleDataEpic,
@@ -35,15 +37,14 @@ const Ethfinex_Epics = [
   Ethfinex.getCandlesSingleDataEpic,
   Ethfinex.initRelayWebSocketTickerEpic,
   Ethfinex.initRelayWebSocketBookEpic,
-  Ethfinex.getAccountOrdersEpic,
-  monitorExchangeEventsEpic
+  Ethfinex.getAccountOrdersEpic
 ]
 
 const Endpoint_Epics = [
   Endpoint.checkMetaMaskIsUnlockedEpic,
   Endpoint.monitorAccountsEpic,
   Endpoint.monitorEventfulEpic,
-  Endpoint.isConnectedToNodeEpic,
+  Endpoint.connectedToNodeEpic,
   Endpoint.attacheInterfaceEpic,
   Endpoint.delayShowAppEpic
 ]

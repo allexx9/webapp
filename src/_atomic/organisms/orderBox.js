@@ -350,7 +350,10 @@ class OrderBox extends Component {
         <Col xs={12}>
           <Row className={styles.sectionTitle}>
             <Col xs={12}>
-              <BoxTitle titleText={'ORDER BOX'} />
+              <BoxTitle
+                titleText={'ORDER BOX'}
+                options={{ expandSwitch: true }}
+              />
               <Paper style={paperStyle} zDepth={1}>
                 <Row>
                   <Col xs={12}>
