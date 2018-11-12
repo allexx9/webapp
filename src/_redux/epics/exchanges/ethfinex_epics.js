@@ -192,208 +192,164 @@ const reconnectingWebsocketBook$ = (
         console.log(lm.join('/'))
       }
     }
-    let chanId = 0
+    const unsubscribePromise = ethfinex.raw.ws
+      .getAggregatedOrders(
+        {
+          symbols: pair,
+          precision: 'P2',
+          frequency: 'F1',
+          len: 25
+        },
+        (err, msgWs) => {
+          let msg = msgWs
+          if (err) {
+            console.warn('WebSocket order book error.')
+            return observer.error(err)
+          }
+          if (!Array.isArray(msg)) {
+            return
+          }
+          if (msg[1] === 'hb') {
+            seq = +msg[2]
+            return
+          } else if (msg[1] === 'cs') {
+            seq = +msg[3]
 
-    const interval = setInterval(() => {
-      if (ethfinex.raw.wsStatus === 'closed') {
-        ethfinex.raw.ws
-          .getAggregatedOrders(
-            {
-              symbols: pair,
-              precision: 'P2',
-              frequency: 'F1',
-              len: 25
-            },
-            (error, msgWs) => {
-              if (error) {
-                console.warn('WebSocket order book error.')
-                return observer.error(error)
+            const checksum = msg[2]
+            const csdata = []
+            const bids_keys = BOOK.psnap['bids']
+            const asks_keys = BOOK.psnap['asks']
+
+            for (let i = 0; i < 25; i++) {
+              if (bids_keys[i]) {
+                const price = bids_keys[i]
+                const pp = BOOK.bids[price]
+                csdata.push(pp.price, pp.amount)
               }
-              let msg = msgWs
-              if (msg.event === 'subscribed' && msg.channel === 'book') {
-                chanId = msg.chanId
+              if (asks_keys[i]) {
+                const price = asks_keys[i]
+                const pp = BOOK.asks[price]
+                csdata.push(pp.price, -pp.amount)
               }
-
-              if (!Array.isArray(msg)) {
-                return
-              }
-              if (msg[0] !== chanId) {
-                return
-              }
-              if (msg[1] === 'hb') {
-                seq = +msg[2]
-                return
-              } else if (msg[1] === 'cs') {
-                seq = +msg[3]
-
-                const checksum = msg[2]
-                const csdata = []
-                const bids_keys = BOOK.psnap['bids']
-                const asks_keys = BOOK.psnap['asks']
-
-                for (let i = 0; i < 25; i++) {
-                  if (bids_keys[i]) {
-                    const price = bids_keys[i]
-                    const pp = BOOK.bids[price]
-                    csdata.push(pp.price, pp.amount)
-                  }
-                  if (asks_keys[i]) {
-                    const price = asks_keys[i]
-                    const pp = BOOK.asks[price]
-                    csdata.push(pp.price, -pp.amount)
-                  }
-                }
-
-                const cs_str = csdata.join(':')
-                const cs_calc = CRC.str(cs_str)
-
-                // erroronsole.log(
-                // error '[' +
-                // error   moment().format('YYYY-MM-DDTHH:mm:ss.SSS') +
-                // error   '] ' +
-                // error   pair +
-                // error   ' | ' +
-                //     JSON.stringify([
-                //       'cs_string=' + cs_str,
-                //       'cs_calc=' + cs_calc,
-                //       'server_checksum=' + checksum
-                //     ]) +
-                //     '\n'
-                // )
-                if (cs_calc !== checksum) {
-                  console.error('CHECKSUM_FAILED')
-                }
-                return
-              }
-
-              // console.log(
-              //   '[' +
-              //     moment().format('YYYY-MM-DDTHH:mm:ss.SSS') +
-              //     '] ' +
-              //     pair +
-              //     ' | ' +
-              //     JSON.stringify(msg) +
-              //     '\n'
-              // )
-
-              if (BOOK.mcnt === 0) {
-                _.each(msg[1], function(pp) {
-                  pp = {
-                    price: pp[0],
-                    cnt: pp[1],
-                    amount: pp[2]
-                  }
-                  const side = pp.amount >= 0 ? 'bids' : 'asks'
-                  pp.amount = Math.abs(pp.amount)
-                  if (BOOK[side][pp.price]) {
-                    console.log(
-                      '[' +
-                        moment().format() +
-                        '] ' +
-                        pair +
-                        ' | ' +
-                        JSON.stringify(pp) +
-                        ' BOOK snap existing bid override\n'
-                    )
-                  }
-                  BOOK[side][pp.price] = pp
-                })
-              } else {
-                const cseq = +msg[2]
-                msg = msg[1]
-
-                if (!seq) {
-                  seq = cseq - 1
-                }
-
-                if (cseq - seq !== 1) {
-                  console.error('OUT OF SEQUENCE', seq, cseq)
-                }
-
-                seq = cseq
-
-                let pp = {
-                  price: msg[0],
-                  cnt: msg[1],
-                  amount: msg[2]
-                }
-
-                if (!pp.cnt) {
-                  let found = true
-
-                  if (pp.amount > 0) {
-                    if (BOOK['bids'][pp.price]) {
-                      delete BOOK['bids'][pp.price]
-                    } else {
-                      found = false
-                    }
-                  } else if (pp.amount < 0) {
-                    if (BOOK['asks'][pp.price]) {
-                      delete BOOK['asks'][pp.price]
-                    } else {
-                      found = false
-                    }
-                  }
-
-                  if (!found) {
-                    console.log(
-                      '[' +
-                        moment().format() +
-                        '] ' +
-                        pair +
-                        ' | ' +
-                        JSON.stringify(pp) +
-                        ' BOOK delete fail side not found\n'
-                    )
-                  }
-                } else {
-                  let side = pp.amount >= 0 ? 'bids' : 'asks'
-                  pp.amount = Math.abs(pp.amount)
-                  BOOK[side][pp.price] = pp
-                }
-              }
-
-              _.each(['bids', 'asks'], function(side) {
-                let sbook = BOOK[side]
-                let bprices = Object.keys(sbook)
-
-                let prices = bprices.sort(function(a, b) {
-                  if (side === 'bids') {
-                    return +a >= +b ? -1 : 1
-                  } else {
-                    return +a <= +b ? -1 : 1
-                  }
-                })
-                BOOK.psnap[side] = prices
-              })
-
-              BOOK.mcnt++
-              // const now = moment.utc().format('YYYYMMDDHHmmss')
-              // console.log('bids', now, { bids: BOOK.bids })
-              // console.log('asks', now, { asks: BOOK.asks })
-
-              checkCross(msg)
-              return observer.next({
-                asks: BOOK.asks,
-                bids: BOOK.bids
-              })
             }
-          )
-          .catch(() => {
-            observer.error(ERRORS.ERR_EXCHANGE_WS_ORDERBOOK_FETCH)
+
+            const cs_str = csdata.join(':')
+            const cs_calc = CRC.str(cs_str)
+
+            if (cs_calc !== checksum) {
+              console.error('CHECKSUM_FAILED')
+            }
+            return
+          }
+
+          if (BOOK.mcnt === 0) {
+            _.each(msg[1], function(pp) {
+              pp = {
+                price: pp[0],
+                cnt: pp[1],
+                amount: pp[2]
+              }
+              const side = pp.amount >= 0 ? 'bids' : 'asks'
+              pp.amount = Math.abs(pp.amount)
+              if (BOOK[side][pp.price]) {
+                console.log(
+                  '[' +
+                    moment().format() +
+                    '] ' +
+                    pair +
+                    ' | ' +
+                    JSON.stringify(pp) +
+                    ' BOOK snap existing bid override\n'
+                )
+              }
+              BOOK[side][pp.price] = pp
+            })
+          } else {
+            const cseq = +msg[2]
+            msg = msg[1]
+
+            if (!seq) {
+              seq = cseq - 1
+            }
+
+            if (cseq - seq !== 1) {
+              console.error('OUT OF SEQUENCE', seq, cseq)
+            }
+
+            seq = cseq
+
+            let pp = {
+              price: msg[0],
+              cnt: msg[1],
+              amount: msg[2]
+            }
+
+            if (!pp.cnt) {
+              let found = true
+
+              if (pp.amount > 0) {
+                if (BOOK['bids'][pp.price]) {
+                  delete BOOK['bids'][pp.price]
+                } else {
+                  found = false
+                }
+              } else if (pp.amount < 0) {
+                if (BOOK['asks'][pp.price]) {
+                  delete BOOK['asks'][pp.price]
+                } else {
+                  found = false
+                }
+              }
+
+              if (!found) {
+                console.log(
+                  '[' +
+                    moment().format() +
+                    '] ' +
+                    pair +
+                    ' | ' +
+                    JSON.stringify(pp) +
+                    ' BOOK delete fail side not found\n'
+                )
+              }
+            } else {
+              let side = pp.amount >= 0 ? 'bids' : 'asks'
+              pp.amount = Math.abs(pp.amount)
+              BOOK[side][pp.price] = pp
+            }
+          }
+
+          _.each(['bids', 'asks'], function(side) {
+            let sbook = BOOK[side]
+            let bprices = Object.keys(sbook)
+
+            let prices = bprices.sort(function(a, b) {
+              if (side === 'bids') {
+                return +a >= +b ? -1 : 1
+              } else {
+                return +a <= +b ? -1 : 1
+              }
+            })
+            BOOK.psnap[side] = prices
           })
 
-        clearInterval(interval)
-      }
-    }, 1000)
+          BOOK.mcnt++
 
-    return () =>
-      from(
-        ethfinex.ws.close().then(() => {
-          clearInterval(interval)
-          return observer.complete()
-        })
+          checkCross(msg)
+          return observer.next({
+            asks: BOOK.asks,
+            bids: BOOK.bids
+          })
+        }
       )
+      .catch(() => {
+        observer.error(ERRORS.ERR_EXCHANGE_WS_ORDERBOOK_FETCH)
+      })
+    return async () => {
+      const unsub = await unsubscribePromise
+      await unsub()
+      return ethfinex.raw.ws.close()
+    }
   })
 }
 
