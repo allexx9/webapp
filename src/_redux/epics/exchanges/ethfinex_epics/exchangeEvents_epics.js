@@ -5,11 +5,9 @@ import * as ERRORS from '../../../../_const/errors'
 import * as TYPE_ from '../../../actions/const'
 import { Actions } from '../../../actions/'
 import { BigNumber } from '@0xproject/utils'
-import { Observable, defer, from, timer, zip } from 'rxjs'
+import { Observable, defer, timer } from 'rxjs'
 import {
-  concat,
   finalize,
-  flatMap,
   map,
   mergeMap,
   retryWhen,
