@@ -1,6 +1,5 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-// import { Observable } from 'rxjs';
 import { BigNumber } from '@0xproject/utils'
 import { Observable, from, timer, zip } from 'rxjs'
 import {
@@ -12,7 +11,6 @@ import {
   map,
   mergeMap,
   takeUntil,
-  tap,
   throttleTime
 } from 'rxjs/operators'
 import { ofType } from 'redux-observable'
@@ -31,10 +29,7 @@ import * as TYPE_ from '../../actions/const'
 
 import ExchangeConnectorWrapper from '../../../_utils/exchangeConnector'
 
-const customRelayAction = action => {
-  // console.log(`${Ethfinex.toUpperCase()}_${action}`)
-  return `${Ethfinex.toUpperCase()}_${action}`
-}
+const customRelayAction = action => `${Ethfinex.toUpperCase()}_${action}`
 
 //
 // FETCH HISTORICAL MARKET DATA FOR A SPECIFIC TRADING PAIR
@@ -422,7 +417,7 @@ const createTickersObservable = (relay, networkId, baseToken, quoteToken) =>
     const ethfinex = ExchangeConnectorWrapper.getInstance().getExchange(
       relay.name,
       {
-        networkId: networkId
+        networkId
       }
     )
     const baseTokenSymbol = utils.getTokenSymbolForRelay(relay.name, baseToken)
@@ -444,7 +439,7 @@ const createTickersObservable = (relay, networkId, baseToken, quoteToken) =>
 
 const updateCurrentTokenPrice = ticker => {
   if (Array.isArray(ticker[1])) {
-    let current = {
+    const current = {
       price: ticker[1][6]
     }
     return {
@@ -453,11 +448,11 @@ const updateCurrentTokenPrice = ticker => {
         current
       }
     }
-  } else {
-    return {
-      type: TYPE_.UPDATE_CURRENT_TOKEN_PRICE,
-      payload: {}
-    }
+  }
+
+  return {
+    type: TYPE_.UPDATE_CURRENT_TOKEN_PRICE,
+    payload: {}
   }
 }
 
