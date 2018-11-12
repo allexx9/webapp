@@ -54,46 +54,17 @@ const candlesSingleWebsocket$ = (relay, networkId, baseToken, quoteToken) => {
         networkId: networkId
       }
     )
-    let chanId = 0
-
-    const interval = setInterval(() => {
-      if (
-        ethfinex.raw.wsStatus === 'closed' ||
-        ethfinex.raw.wsStatus === 'open'
-      ) {
-        ethfinex.raw.ws
-          .getCandles(
-            {
-              timeframe: '1m',
-              symbols: baseTokenSymbol + quoteTokenSymbol
-            },
-            (error, msgWs) => {
-              if (error) {
-                return observer.error(error)
-              }
-              if (msgWs.event === 'subscribed' && msgWs.channel === 'candles') {
-                chanId = msgWs.chanId
-              }
-              if (msgWs[0] === chanId) {
-                return observer.next(msgWs)
-              }
-            }
-          )
-          .catch(() => {
-            observer.error(ERRORS.ERR_EXCHANGE_WS_CANDLE_FETCH)
-          })
-
-        clearInterval(interval)
-      }
-    }, 500)
-
-    return () =>
-      from(
-        ethfinex.ws.close().then(() => {
-          clearInterval(interval)
-          return observer.complete()
-        })
-      )
+    const unsubscribePromise = ethfinex.raw.ws.getCandles(
+      {
+        timeframe: '1m',
+        symbols: baseTokenSymbol + quoteTokenSymbol
+      },
+      (err, msg) => (err ? observer.error(err) : observer.next(msg))
+    )
+    return async () => {
+      const unsub = await unsubscribePromise
+      return unsub()
+    }
   })
 }
 
@@ -140,56 +111,46 @@ const updateSingleCandles = tickerOutput => {
   }
 }
 
-export const getCandlesSingleDataEpic = action$ => {
-  return action$.pipe(
-    tap(val => {
-      // console.log(val)
-      return val
-    }),
+export const getCandlesSingleDataEpic = action$ =>
+  action$.pipe(
     ofType(customRelayAction(TYPE_.FETCH_CANDLES_DATA_SINGLE_START)),
-    mergeMap(action => {
-      // console.log(action.type)
-      return Observable.concat(
-        // Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: true } }),
-        candlesSingleWebsocket$(
-          action.payload.relay,
-          action.payload.networkId,
-          action.payload.baseToken,
-          action.payload.quoteToken,
-          action.payload.startDate
-        ).pipe(
-          takeUntil(
-            action$.ofType(
-              customRelayAction(TYPE_.FETCH_CANDLES_DATA_SINGLE_STOP)
-            )
-          ),
-          filter(tick => {
-            return tick[1] !== 'hb'
-          }),
-          filter(tick => {
-            return (
-              typeof tick[1] !== 'undefined' || typeof tick[0] !== 'undefined'
-            )
-          }),
-          tap(tick => {
-            return tick
-          }),
-          map(historical => {
-            return updateSingleCandles(historical)
-          }),
-          catchError(error => {
-            console.warn(error)
-            return Observable.of({
-              type: TYPE_.QUEUE_ERROR_NOTIFICATION,
-              payload: error
-            })
+    mergeMap(action =>
+      candlesSingleWebsocket$(
+        action.payload.relay,
+        action.payload.networkId,
+        action.payload.baseToken,
+        action.payload.quoteToken,
+        action.payload.startDate
+      ).pipe(
+        takeUntil(
+          action$.ofType(
+            customRelayAction(TYPE_.FETCH_CANDLES_DATA_SINGLE_STOP)
+          )
+        ),
+        filter(tick => {
+          return tick[1] !== 'hb'
+        }),
+        filter(tick => {
+          return (
+            typeof tick[1] !== 'undefined' || typeof tick[0] !== 'undefined'
+          )
+        }),
+        tap(tick => {
+          return tick
+        }),
+        map(historical => {
+          return updateSingleCandles(historical)
+        }),
+        catchError(error => {
+          console.warn(error)
+          return Observable.of({
+            type: TYPE_.QUEUE_ERROR_NOTIFICATION,
+            payload: error
           })
-        )
-        // Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: false } }),
+        })
       )
-    })
+    )
   )
-}
 
 //
 // CONNECTING TO WS AND GETTING BOOK UPDATES
