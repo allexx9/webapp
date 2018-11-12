@@ -41,16 +41,16 @@ const getOrderBookFromRelay$ = (
     const exchange = new Exchange(relay.name, networkId)
     return from(
       exchange.getAggregatedOrders(
-        utils.getTockenSymbolForRelay(relay.name, baseToken),
-        utils.getTockenSymbolForRelay(relay.name, quoteToken)
+        utils.getTokenSymbolForRelay(relay.name, baseToken),
+        utils.getTokenSymbolForRelay(relay.name, quoteToken)
       )
     )
     // console.log(supportedExchanges.ETHFINEX)
     // console.log(supportedExchanges.ETHFINEX_RAW)
     // console.log(relay.name)
 
-    // const baseTokenSymbol = utils.getTockenSymbolForRelay(relay.name, baseToken)
-    // const quoteTokenSymbol = utils.getTockenSymbolForRelay(
+    // const baseTokenSymbol = utils.getTokenSymbolForRelay(relay.name, baseToken)
+    // const quoteTokenSymbol = utils.getTokenSymbolForRelay(
     //   relay.name,
     //   quoteToken
     // )
@@ -76,8 +76,8 @@ const getOrderBookFromRelay$ = (
     // console.log('not aggregated')
     return from(
       exchange.getOrders(
-        utils.getTockenSymbolForRelay(relay.name, baseToken),
-        utils.getTockenSymbolForRelay(relay.name, quoteToken)
+        utils.getTokenSymbolForRelay(relay.name, baseToken),
+        utils.getTokenSymbolForRelay(relay.name, quoteToken)
       )
     )
   }

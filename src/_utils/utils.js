@@ -311,7 +311,7 @@ class utilities {
     }
   }
 
-  getTockenSymbolForRelay = (relayName, token) => {
+  getTokenSymbolForRelay = (relayName, token) => {
     switch (relayName) {
       case ERCdEX:
         return token.address
