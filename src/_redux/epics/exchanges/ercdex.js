@@ -83,8 +83,8 @@ const reconnectingWebsocket$ = (relay, networkId, baseToken, quoteToken) => {
     // }
     const exchange = new Exchange(relay.name, networkId, 'ws')
     const websocket = exchange.getTicker(
-      utils.getTockenSymbolForRelay(relay.name, baseToken),
-      utils.getTockenSymbolForRelay(relay.name, quoteToken)
+      utils.getTokenSymbolForRelay(relay.name, baseToken),
+      utils.getTokenSymbolForRelay(relay.name, quoteToken)
     )
     websocket.onmessage = msg => {
       console.log('WebSocket message.')
@@ -214,8 +214,8 @@ const getCandlesData$ = (
   const exchange = new Exchange(relay.name, networkId)
   return Observable.fromPromise(
     exchange.getHistoricalPricesData(
-      utils.getTockenSymbolForRelay(relay.name, baseToken),
-      utils.getTockenSymbolForRelay(relay.name, quoteToken),
+      utils.getTokenSymbolForRelay(relay.name, baseToken),
+      utils.getTokenSymbolForRelay(relay.name, quoteToken),
       startDate
     )
   )

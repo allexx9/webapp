@@ -80,8 +80,8 @@ const candlesGroupWebsocket$ = (relay, networkId, symbols) => {
     let subscribedSymbols = Array(0)
     const exchange = new Exchange(relay.name, networkId, 'ws')
     const websocket = exchange.getHistoricalPricesData(
-      // utils.getTockenSymbolForRelay(relay.name, baseToken),
-      // utils.getTockenSymbolForRelay(relay.name, quoteToken),
+      // utils.getTokenSymbolForRelay(relay.name, baseToken),
+      // utils.getTokenSymbolForRelay(relay.name, quoteToken),
       'test',
       'test',
       '1m'

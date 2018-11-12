@@ -40,11 +40,10 @@ const customRelayAction = action => {
 // FETCH HISTORICAL MARKET DATA FOR A SPECIFIC TRADING PAIR
 //
 
-const candlesSingleWebsocket$ = (relay, networkId, baseToken, quoteToken) => {
+const createCandlesObservable = (relay, networkId, baseToken, quoteToken) => {
   return Observable.create(observer => {
-    console.log('FEDERICO CALLED')
-    const baseTokenSymbol = utils.getTockenSymbolForRelay(relay.name, baseToken)
-    const quoteTokenSymbol = utils.getTockenSymbolForRelay(
+    const baseTokenSymbol = utils.getTokenSymbolForRelay(relay.name, baseToken)
+    const quoteTokenSymbol = utils.getTokenSymbolForRelay(
       relay.name,
       quoteToken
     )
@@ -115,42 +114,37 @@ const updateSingleCandles = tickerOutput => {
 export const getCandlesSingleDataEpic = action$ =>
   action$.pipe(
     ofType(customRelayAction(TYPE_.FETCH_CANDLES_DATA_SINGLE_START)),
-    mergeMap(action =>
-      candlesSingleWebsocket$(
-        action.payload.relay,
-        action.payload.networkId,
-        action.payload.baseToken,
-        action.payload.quoteToken,
-        action.payload.startDate
+    mergeMap(action => {
+      const {
+        relay,
+        networkId,
+        baseToken,
+        quoteToken,
+        startDate
+      } = action.payload
+      return createCandlesObservable(
+        relay,
+        networkId,
+        baseToken,
+        quoteToken,
+        startDate
       ).pipe(
+        filter(tick => tick[0] && tick[1] && tick[1] !== 'hb'),
+        map(historical => updateSingleCandles(historical)),
         takeUntil(
           action$.ofType(
             customRelayAction(TYPE_.FETCH_CANDLES_DATA_SINGLE_STOP)
           )
         ),
-        filter(tick => {
-          return tick[1] !== 'hb'
-        }),
-        filter(tick => {
-          return (
-            typeof tick[1] !== 'undefined' || typeof tick[0] !== 'undefined'
-          )
-        }),
-        tap(tick => {
-          return tick
-        }),
-        map(historical => {
-          return updateSingleCandles(historical)
-        }),
-        catchError(error => {
-          console.warn(error)
+        catchError(err => {
+          console.warn(err)
           return Observable.of({
             type: TYPE_.QUEUE_ERROR_NOTIFICATION,
-            payload: error
+            payload: err
           })
         })
       )
-    )
+    })
   )
 
 //
@@ -159,18 +153,13 @@ export const getCandlesSingleDataEpic = action$ =>
 // THIS EPIC IS CALLED WHEN THE EXCHANGE IS INITALIZED
 //
 
-const reconnectingWebsocketBook$ = (
-  relay,
-  networkId,
-  baseToken,
-  quoteToken
-) => {
+const createOrderbookObservable = (relay, networkId, baseToken, quoteToken) => {
   return Observable.create(observer => {
     let seq = null
 
     let pair =
-      utils.getTockenSymbolForRelay(relay.name, baseToken) +
-      utils.getTockenSymbolForRelay(relay.name, quoteToken)
+      utils.getTokenSymbolForRelay(relay.name, baseToken) +
+      utils.getTokenSymbolForRelay(relay.name, quoteToken)
     const ethfinex = ExchangeConnectorWrapper.getNewInstance().getExchange(
       relay.name,
       {
@@ -357,32 +346,28 @@ export const initRelayWebSocketBookEpic = action$ =>
   action$.pipe(
     ofType(customRelayAction(TYPE_.RELAY_OPEN_WEBSOCKET_BOOK)),
     mergeMap(action => {
-      return reconnectingWebsocketBook$(
-        action.payload.relay,
-        action.payload.networkId,
-        action.payload.baseToken,
-        action.payload.quoteToken
+      const { relay, networkId, baseToken, quoteToken } = action.payload
+      return createOrderbookObservable(
+        relay,
+        networkId,
+        baseToken,
+        quoteToken
       ).pipe(
-        takeUntil(
-          action$.ofType(customRelayAction(TYPE_.RELAY_CLOSE_WEBSOCKET))
-        ),
         throttleTime(2000),
         map(payload => {
           console.log('*** Orderbook epic update ***')
           const calculateSpread = (asksOrders, bidsOrders) => {
-            let spread = 0
-            if (bidsOrders.length !== 0 && asksOrders.length !== 0) {
+            let spread = new BigNumber(0).toFixed(6)
+            if (bidsOrders.length && asksOrders.length) {
               spread = new BigNumber(
                 asksOrders[asksOrders.length - 1].orderPrice
               )
                 .minus(new BigNumber(bidsOrders[0].orderPrice))
                 .toFixed(6)
-            } else {
-              spread = new BigNumber(0).toFixed(6)
             }
             return spread
           }
-          let asks = Object.values(payload.asks).map(element => {
+          const asks = Object.values(payload.asks).map(element => {
             return {
               orderAmount: element.amount,
               orderPrice: element.price,
@@ -392,7 +377,7 @@ export const initRelayWebSocketBookEpic = action$ =>
           asks.sort(function(a, b) {
             return b.orderPrice - a.orderPrice
           })
-          let bids = Object.values(payload.bids).map(element => {
+          const bids = Object.values(payload.bids).map(element => {
             return {
               orderAmount: element.amount,
               orderPrice: element.price,
@@ -412,6 +397,9 @@ export const initRelayWebSocketBookEpic = action$ =>
             }
           }
         }),
+        takeUntil(
+          action$.ofType(customRelayAction(TYPE_.RELAY_CLOSE_WEBSOCKET))
+        ),
         catchError(error => {
           console.warn(error)
           return Observable.of({
@@ -429,17 +417,16 @@ export const initRelayWebSocketBookEpic = action$ =>
 // THIS EPIC IS CALLED WHEN THE EXCHANGE IS INITALIZED
 //
 
-const websocketTicker$ = (relay, networkId, baseToken, quoteToken) =>
+const createTickersObservable = (relay, networkId, baseToken, quoteToken) =>
   Observable.create(observer => {
-    console.log('FEDERICO CALLED TICKER')
     const ethfinex = ExchangeConnectorWrapper.getInstance().getExchange(
       relay.name,
       {
         networkId: networkId
       }
     )
-    const baseTokenSymbol = utils.getTockenSymbolForRelay(relay.name, baseToken)
-    const quoteTokenSymbol = utils.getTockenSymbolForRelay(
+    const baseTokenSymbol = utils.getTokenSymbolForRelay(relay.name, baseToken)
+    const quoteTokenSymbol = utils.getTokenSymbolForRelay(
       relay.name,
       quoteToken
     )
@@ -478,22 +465,15 @@ export const initRelayWebSocketTickerEpic = (action$, state$) =>
   action$.pipe(
     ofType(customRelayAction(TYPE_.RELAY_OPEN_WEBSOCKET_TICKER)),
     mergeMap(action => {
-      return websocketTicker$(
-        action.payload.relay,
-        action.payload.networkId,
-        action.payload.baseToken,
-        action.payload.quoteToken
+      const { relay, networkId, baseToken, quoteToken } = action.payload
+      return createTickersObservable(
+        relay,
+        networkId,
+        baseToken,
+        quoteToken
       ).pipe(
-        tap(val => {
-          return val
-        }),
-        takeUntil(
-          action$.ofType(customRelayAction(TYPE_.RELAY_CLOSE_WEBSOCKET))
-        ),
         bufferTime(1000),
-        filter(value => {
-          return value.length !== 0
-        }),
+        filter(val => val.length),
         bufferCount(1),
         map(ticker => {
           const currentState = state$.value
@@ -503,6 +483,9 @@ export const initRelayWebSocketTickerEpic = (action$, state$) =>
             currentState.exchange.selectedTokensPair.baseToken
           )
         }),
+        takeUntil(
+          action$.ofType(customRelayAction(TYPE_.RELAY_CLOSE_WEBSOCKET))
+        ),
         catchError(error => {
           console.warn(error)
           return Observable.of({
@@ -537,18 +520,24 @@ export const getAccountOrdersEpic = action$ => {
   return action$.pipe(
     ofType(customRelayAction(TYPE_.FETCH_ACCOUNT_ORDERS_START)),
     mergeMap(action => {
-      // console.log(customRelayAction(TYPE_.FETCH_ACCOUNT_ORDERS_START))
+      const {
+        relay,
+        networkId,
+        account,
+        quoteToken,
+        baseToken
+      } = action.payload
       return timer(0, 5000).pipe(
         takeUntil(
           action$.ofType(customRelayAction(TYPE_.FETCH_ACCOUNT_ORDERS_STOP))
         ),
         exhaustMap(() =>
           getAccountOrdersFromRelay$(
-            action.payload.relay,
-            action.payload.networkId,
-            action.payload.account,
-            action.payload.quoteToken,
-            action.payload.baseToken
+            relay,
+            networkId,
+            account,
+            quoteToken,
+            baseToken
           ).pipe(
             map(orders => {
               return {
