@@ -35,7 +35,7 @@ const customRelayAction = action => `${Ethfinex.toUpperCase()}_${action}`
 // FETCH HISTORICAL MARKET DATA FOR A SPECIFIC TRADING PAIR
 //
 
-const createCandlesObservable = (relay, networkId, baseToken, quoteToken) => {
+const candlesSingleWebsocket$ = (relay, networkId, baseToken, quoteToken) => {
   return Observable.create(observer => {
     const baseTokenSymbol = utils.getTokenSymbolForRelay(relay.name, baseToken)
     const quoteTokenSymbol = utils.getTokenSymbolForRelay(
@@ -106,13 +106,8 @@ const updateSingleCandles = tickerOutput => {
   }
 }
 
-<<<<<<< HEAD
 export const getCandlesSingleDataEpic = action$ =>
   action$.pipe(
-=======
-export const getCandlesSingleDataEpic = action$ => {
-  return action$.pipe(
->>>>>>> feature/exchange-ethfinex-integration
     ofType(customRelayAction(TYPE_.FETCH_CANDLES_DATA_SINGLE_START)),
     mergeMap(action => {
       const {
@@ -122,7 +117,7 @@ export const getCandlesSingleDataEpic = action$ => {
         quoteToken,
         startDate
       } = action.payload
-      return createCandlesObservable(
+      return candlesSingleWebsocket$(
         relay,
         networkId,
         baseToken,
@@ -153,7 +148,12 @@ export const getCandlesSingleDataEpic = action$ => {
 // THIS EPIC IS CALLED WHEN THE EXCHANGE IS INITALIZED
 //
 
-const createOrderbookObservable = (relay, networkId, baseToken, quoteToken) => {
+const reconnectingWebsocketBook$ = (
+  relay,
+  networkId,
+  baseToken,
+  quoteToken
+) => {
   return Observable.create(observer => {
     let seq = null
 
@@ -347,7 +347,7 @@ export const initRelayWebSocketBookEpic = action$ =>
     ofType(customRelayAction(TYPE_.RELAY_OPEN_WEBSOCKET_BOOK)),
     mergeMap(action => {
       const { relay, networkId, baseToken, quoteToken } = action.payload
-      return createOrderbookObservable(
+      return reconnectingWebsocketBook$(
         relay,
         networkId,
         baseToken,
@@ -417,7 +417,7 @@ export const initRelayWebSocketBookEpic = action$ =>
 // THIS EPIC IS CALLED WHEN THE EXCHANGE IS INITALIZED
 //
 
-const createTickersObservable = (relay, networkId, baseToken, quoteToken) =>
+const websocketTicker$ = (relay, networkId, baseToken, quoteToken) =>
   Observable.create(observer => {
     const ethfinex = ExchangeConnectorWrapper.getInstance().getExchange(
       relay.name,
@@ -466,12 +466,7 @@ export const initRelayWebSocketTickerEpic = (action$, state$) =>
     ofType(customRelayAction(TYPE_.RELAY_OPEN_WEBSOCKET_TICKER)),
     mergeMap(action => {
       const { relay, networkId, baseToken, quoteToken } = action.payload
-      return createTickersObservable(
-        relay,
-        networkId,
-        baseToken,
-        quoteToken
-      ).pipe(
+      return websocketTicker$(relay, networkId, baseToken, quoteToken).pipe(
         bufferTime(1000),
         filter(val => val.length),
         bufferCount(1),
