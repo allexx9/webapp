@@ -113,7 +113,7 @@ class CandleStickChartWithMACDIndicator extends React.Component {
     )
     return (
       <ChartCanvas
-        height={550}
+        height={400}
         width={width}
         ratio={ratio}
         margin={{ left: 70, right: 70, top: 20, bottom: 30 }}
@@ -134,8 +134,8 @@ class CandleStickChartWithMACDIndicator extends React.Component {
           <XAxis
             axisAt="bottom"
             orient="bottom"
-            showTicks={false}
-            outerTickSize={0}
+            showTicks={true}
+            // outerTickSize={0}
           />
           <YAxis axisAt="right" orient="right" ticks={5} />
 
@@ -191,12 +191,18 @@ class CandleStickChartWithMACDIndicator extends React.Component {
               }
             ]}
           />
+          {/* <MACDTooltip
+            origin={[-38, 15]}
+            yAccessor={d => d.macd}
+            options={macdCalculator.options()}
+            appearance={macdAppearance}
+          /> */}
         </Chart>
         <Chart
           id={2}
-          height={150}
+          height={80}
           yExtents={[d => d.volume, smaVolume50.accessor()]}
-          origin={(w, h) => [0, h - 300]}
+          origin={(w, h) => [0, h - 80]}
         >
           <YAxis
             axisAt="left"
@@ -222,7 +228,7 @@ class CandleStickChartWithMACDIndicator extends React.Component {
             fill={smaVolume50.fill()}
           />
         </Chart>
-        <Chart
+        {/* <Chart
           id={3}
           height={100}
           yExtents={macdCalculator.accessor()}
@@ -245,9 +251,9 @@ class CandleStickChartWithMACDIndicator extends React.Component {
             displayFormat={format('.2f')}
             {...mouseEdgeAppearance}
           />
-          {/* <ErrorBoundary>
+          <ErrorBoundary>
             <MACDSeries yAccessor={d => d.macd} {...macdAppearance} />
-          </ErrorBoundary> */}
+          </ErrorBoundary>
 
           <MACDTooltip
             origin={[-38, 15]}
@@ -255,7 +261,7 @@ class CandleStickChartWithMACDIndicator extends React.Component {
             options={macdCalculator.options()}
             appearance={macdAppearance}
           />
-        </Chart>
+        </Chart> */}
         <CrossHairCursor />
       </ChartCanvas>
     )
