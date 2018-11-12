@@ -42,6 +42,7 @@ const customRelayAction = action => {
 
 const candlesSingleWebsocket$ = (relay, networkId, baseToken, quoteToken) => {
   return Observable.create(observer => {
+    console.log('FEDERICO CALLED')
     const baseTokenSymbol = utils.getTockenSymbolForRelay(relay.name, baseToken)
     const quoteTokenSymbol = utils.getTockenSymbolForRelay(
       relay.name,
@@ -472,8 +473,9 @@ export const initRelayWebSocketBookEpic = action$ =>
 // THIS EPIC IS CALLED WHEN THE EXCHANGE IS INITALIZED
 //
 
-const websocketTicker$ = (relay, networkId, baseToken, quoteToken) => {
-  return Observable.create(observer => {
+const websocketTicker$ = (relay, networkId, baseToken, quoteToken) =>
+  Observable.create(observer => {
+    console.log('FEDERICO CALLED TICKER')
     const ethfinex = ExchangeConnectorWrapper.getInstance().getExchange(
       relay.name,
       {
@@ -485,54 +487,17 @@ const websocketTicker$ = (relay, networkId, baseToken, quoteToken) => {
       relay.name,
       quoteToken
     )
-    let chanId = 0
-
-    const interval = setInterval(() => {
-      if (
-        ethfinex.raw.wsStatus === 'closed' ||
-        ethfinex.raw.wsStatus === 'open'
-      ) {
-        ethfinex.raw.ws
-          .getTickers(
-            {
-              symbols: [baseTokenSymbol + quoteTokenSymbol]
-            },
-            (error, msgWs) => {
-              if (error) {
-                return observer.error(error)
-              } else {
-                if (
-                  msgWs.event === 'subscribed' &&
-                  msgWs.channel === 'ticker'
-                ) {
-                  chanId = msgWs.chanId
-                }
-                if (msgWs[0] === chanId) {
-                  if (Array.isArray(msgWs)) {
-                    return observer.next(msgWs)
-                  }
-                }
-                // return observer.next('')
-              }
-            }
-          )
-          .catch(() => {
-            observer.error(ERRORS.ERR_EXCHANGE_WS_TICKER_FETCH)
-          })
-
-        clearInterval(interval)
-      }
-    }, 500)
-
-    return () =>
-      from(
-        ethfinex.ws.close().then(() => {
-          clearInterval(interval)
-          return observer.complete()
-        })
-      )
+    const unsubscribePromise = ethfinex.raw.ws.getTickers(
+      {
+        symbols: [baseTokenSymbol + quoteTokenSymbol]
+      },
+      (err, msg) => (err ? observer.error(err) : observer.next(msg))
+    )
+    return async () => {
+      const unsub = await unsubscribePromise
+      return unsub()
+    }
   })
-}
 
 const updateCurrentTokenPrice = ticker => {
   if (Array.isArray(ticker[1])) {
