@@ -1,6 +1,5 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-// import { Observable } from 'rxjs';
 import { BigNumber } from '@0xproject/utils'
 import { Observable, from, timer, zip } from 'rxjs'
 import {
@@ -12,7 +11,6 @@ import {
   map,
   mergeMap,
   takeUntil,
-  tap,
   throttleTime
 } from 'rxjs/operators'
 import { ofType } from 'redux-observable'
@@ -31,10 +29,7 @@ import * as TYPE_ from '../../actions/const'
 
 import ExchangeConnectorWrapper from '../../../_utils/exchangeConnector'
 
-const customRelayAction = action => {
-  // console.log(`${Ethfinex.toUpperCase()}_${action}`)
-  return `${Ethfinex.toUpperCase()}_${action}`
-}
+const customRelayAction = action => `${Ethfinex.toUpperCase()}_${action}`
 
 //
 // FETCH HISTORICAL MARKET DATA FOR A SPECIFIC TRADING PAIR
@@ -42,8 +37,8 @@ const customRelayAction = action => {
 
 const candlesSingleWebsocket$ = (relay, networkId, baseToken, quoteToken) => {
   return Observable.create(observer => {
-    const baseTokenSymbol = utils.getTockenSymbolForRelay(relay.name, baseToken)
-    const quoteTokenSymbol = utils.getTockenSymbolForRelay(
+    const baseTokenSymbol = utils.getTokenSymbolForRelay(relay.name, baseToken)
+    const quoteTokenSymbol = utils.getTokenSymbolForRelay(
       relay.name,
       quoteToken
     )
@@ -54,47 +49,17 @@ const candlesSingleWebsocket$ = (relay, networkId, baseToken, quoteToken) => {
         networkId: networkId
       }
     )
-    let chanId = 0
-
-    const interval = setInterval(() => {
-      if (
-        ethfinex.raw.wsStatus === 'closed' ||
-        ethfinex.raw.wsStatus === 'open'
-      ) {
-        ethfinex.raw.ws
-          .getCandles(
-            {
-              timeframe: '1m',
-              symbols: baseTokenSymbol + quoteTokenSymbol
-            },
-            (error, msgWs) => {
-              if (error) {
-                return observer.error(error)
-              }
-              if (msgWs.event === 'subscribed' && msgWs.channel === 'candles') {
-                chanId = msgWs.chanId
-              }
-              if (msgWs[0] === chanId) {
-                return observer.next(msgWs)
-              }
-            }
-          )
-          .catch(() => {
-            observer.error(ERRORS.ERR_EXCHANGE_WS_CANDLE_FETCH)
-          })
-
-        clearInterval(interval)
-      }
-    }, 500)
-
-    return () =>
-      from(
-        ethfinex.ws.close().then(() => {
-          console.log('candlesSingleWebsocket$ close')
-          clearInterval(interval)
-          return observer.complete()
-        })
-      )
+    const unsubscribePromise = ethfinex.raw.ws.getCandles(
+      {
+        timeframe: '1m',
+        symbols: baseTokenSymbol + quoteTokenSymbol
+      },
+      (err, msg) => (err ? observer.error(err) : observer.next(msg))
+    )
+    return async () => {
+      const unsub = await unsubscribePromise
+      return unsub()
+    }
   })
 }
 
@@ -141,52 +106,41 @@ const updateSingleCandles = tickerOutput => {
   }
 }
 
-export const getCandlesSingleDataEpic = action$ => {
-  return action$.pipe(
+export const getCandlesSingleDataEpic = action$ =>
+  action$.pipe(
     ofType(customRelayAction(TYPE_.FETCH_CANDLES_DATA_SINGLE_START)),
     mergeMap(action => {
-      // console.log(action.type)
-      return Observable.concat(
-        // Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: true } }),
-        candlesSingleWebsocket$(
-          action.payload.relay,
-          action.payload.networkId,
-          action.payload.baseToken,
-          action.payload.quoteToken,
-          action.payload.startDate
-        ).pipe(
-          takeUntil(
-            action$.ofType(
-              customRelayAction(TYPE_.FETCH_CANDLES_DATA_SINGLE_STOP)
-            )
-          ),
-          filter(tick => {
-            return tick[1] !== 'hb'
-          }),
-          filter(tick => {
-            return (
-              typeof tick[1] !== 'undefined' || typeof tick[0] !== 'undefined'
-            )
-          }),
-          tap(tick => {
-            return tick
-          }),
-          map(historical => {
-            return updateSingleCandles(historical)
-          }),
-          catchError(error => {
-            console.warn(error)
-            return Observable.of({
-              type: TYPE_.QUEUE_ERROR_NOTIFICATION,
-              payload: error
-            })
+      const {
+        relay,
+        networkId,
+        baseToken,
+        quoteToken,
+        startDate
+      } = action.payload
+      return candlesSingleWebsocket$(
+        relay,
+        networkId,
+        baseToken,
+        quoteToken,
+        startDate
+      ).pipe(
+        filter(tick => tick[0] && tick[1] && tick[1] !== 'hb'),
+        map(historical => updateSingleCandles(historical)),
+        takeUntil(
+          action$.ofType(
+            customRelayAction(TYPE_.FETCH_CANDLES_DATA_SINGLE_STOP)
+          )
+        ),
+        catchError(err => {
+          console.warn(err)
+          return Observable.of({
+            type: TYPE_.QUEUE_ERROR_NOTIFICATION,
+            payload: err
           })
-        )
-        // Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: false } }),
+        })
       )
     })
   )
-}
 
 //
 // CONNECTING TO WS AND GETTING BOOK UPDATES
@@ -204,8 +158,8 @@ const reconnectingWebsocketBook$ = (
     let seq = null
 
     let pair =
-      utils.getTockenSymbolForRelay(relay.name, baseToken) +
-      utils.getTockenSymbolForRelay(relay.name, quoteToken)
+      utils.getTokenSymbolForRelay(relay.name, baseToken) +
+      utils.getTokenSymbolForRelay(relay.name, quoteToken)
     const ethfinex = ExchangeConnectorWrapper.getNewInstance().getExchange(
       relay.name,
       {
@@ -227,208 +181,164 @@ const reconnectingWebsocketBook$ = (
         console.log(lm.join('/'))
       }
     }
-    let chanId = 0
+    const unsubscribePromise = ethfinex.raw.ws
+      .getAggregatedOrders(
+        {
+          symbols: pair,
+          precision: 'P2',
+          frequency: 'F1',
+          len: 25
+        },
+        (err, msgWs) => {
+          let msg = msgWs
+          if (err) {
+            console.warn('WebSocket order book error.')
+            return observer.error(err)
+          }
+          if (!Array.isArray(msg)) {
+            return
+          }
+          if (msg[1] === 'hb') {
+            seq = +msg[2]
+            return
+          } else if (msg[1] === 'cs') {
+            seq = +msg[3]
 
-    const interval = setInterval(() => {
-      if (ethfinex.raw.wsStatus === 'closed') {
-        ethfinex.raw.ws
-          .getAggregatedOrders(
-            {
-              symbols: pair,
-              precision: 'P2',
-              frequency: 'F1',
-              len: 25
-            },
-            (error, msgWs) => {
-              if (error) {
-                console.warn('WebSocket order book error.')
-                return observer.error(error)
+            const checksum = msg[2]
+            const csdata = []
+            const bids_keys = BOOK.psnap['bids']
+            const asks_keys = BOOK.psnap['asks']
+
+            for (let i = 0; i < 25; i++) {
+              if (bids_keys[i]) {
+                const price = bids_keys[i]
+                const pp = BOOK.bids[price]
+                csdata.push(pp.price, pp.amount)
               }
-              let msg = msgWs
-              if (msg.event === 'subscribed' && msg.channel === 'book') {
-                chanId = msg.chanId
+              if (asks_keys[i]) {
+                const price = asks_keys[i]
+                const pp = BOOK.asks[price]
+                csdata.push(pp.price, -pp.amount)
               }
-
-              if (!Array.isArray(msg)) {
-                return
-              }
-              if (msg[0] !== chanId) {
-                return
-              }
-              if (msg[1] === 'hb') {
-                seq = +msg[2]
-                return
-              } else if (msg[1] === 'cs') {
-                seq = +msg[3]
-
-                const checksum = msg[2]
-                const csdata = []
-                const bids_keys = BOOK.psnap['bids']
-                const asks_keys = BOOK.psnap['asks']
-
-                for (let i = 0; i < 25; i++) {
-                  if (bids_keys[i]) {
-                    const price = bids_keys[i]
-                    const pp = BOOK.bids[price]
-                    csdata.push(pp.price, pp.amount)
-                  }
-                  if (asks_keys[i]) {
-                    const price = asks_keys[i]
-                    const pp = BOOK.asks[price]
-                    csdata.push(pp.price, -pp.amount)
-                  }
-                }
-
-                const cs_str = csdata.join(':')
-                const cs_calc = CRC.str(cs_str)
-
-                // erroronsole.log(
-                // error '[' +
-                // error   moment().format('YYYY-MM-DDTHH:mm:ss.SSS') +
-                // error   '] ' +
-                // error   pair +
-                // error   ' | ' +
-                //     JSON.stringify([
-                //       'cs_string=' + cs_str,
-                //       'cs_calc=' + cs_calc,
-                //       'server_checksum=' + checksum
-                //     ]) +
-                //     '\n'
-                // )
-                if (cs_calc !== checksum) {
-                  console.error('CHECKSUM_FAILED')
-                }
-                return
-              }
-
-              // console.log(
-              //   '[' +
-              //     moment().format('YYYY-MM-DDTHH:mm:ss.SSS') +
-              //     '] ' +
-              //     pair +
-              //     ' | ' +
-              //     JSON.stringify(msg) +
-              //     '\n'
-              // )
-
-              if (BOOK.mcnt === 0) {
-                _.each(msg[1], function(pp) {
-                  pp = {
-                    price: pp[0],
-                    cnt: pp[1],
-                    amount: pp[2]
-                  }
-                  const side = pp.amount >= 0 ? 'bids' : 'asks'
-                  pp.amount = Math.abs(pp.amount)
-                  if (BOOK[side][pp.price]) {
-                    console.log(
-                      '[' +
-                        moment().format() +
-                        '] ' +
-                        pair +
-                        ' | ' +
-                        JSON.stringify(pp) +
-                        ' BOOK snap existing bid override\n'
-                    )
-                  }
-                  BOOK[side][pp.price] = pp
-                })
-              } else {
-                const cseq = +msg[2]
-                msg = msg[1]
-
-                if (!seq) {
-                  seq = cseq - 1
-                }
-
-                if (cseq - seq !== 1) {
-                  console.error('OUT OF SEQUENCE', seq, cseq)
-                }
-
-                seq = cseq
-
-                let pp = {
-                  price: msg[0],
-                  cnt: msg[1],
-                  amount: msg[2]
-                }
-
-                if (!pp.cnt) {
-                  let found = true
-
-                  if (pp.amount > 0) {
-                    if (BOOK['bids'][pp.price]) {
-                      delete BOOK['bids'][pp.price]
-                    } else {
-                      found = false
-                    }
-                  } else if (pp.amount < 0) {
-                    if (BOOK['asks'][pp.price]) {
-                      delete BOOK['asks'][pp.price]
-                    } else {
-                      found = false
-                    }
-                  }
-
-                  if (!found) {
-                    console.log(
-                      '[' +
-                        moment().format() +
-                        '] ' +
-                        pair +
-                        ' | ' +
-                        JSON.stringify(pp) +
-                        ' BOOK delete fail side not found\n'
-                    )
-                  }
-                } else {
-                  let side = pp.amount >= 0 ? 'bids' : 'asks'
-                  pp.amount = Math.abs(pp.amount)
-                  BOOK[side][pp.price] = pp
-                }
-              }
-
-              _.each(['bids', 'asks'], function(side) {
-                let sbook = BOOK[side]
-                let bprices = Object.keys(sbook)
-
-                let prices = bprices.sort(function(a, b) {
-                  if (side === 'bids') {
-                    return +a >= +b ? -1 : 1
-                  } else {
-                    return +a <= +b ? -1 : 1
-                  }
-                })
-                BOOK.psnap[side] = prices
-              })
-
-              BOOK.mcnt++
-              // const now = moment.utc().format('YYYYMMDDHHmmss')
-              // console.log('bids', now, { bids: BOOK.bids })
-              // console.log('asks', now, { asks: BOOK.asks })
-
-              checkCross(msg)
-              return observer.next({
-                asks: BOOK.asks,
-                bids: BOOK.bids
-              })
             }
-          )
-          .catch(() => {
-            observer.error(ERRORS.ERR_EXCHANGE_WS_ORDERBOOK_FETCH)
+
+            const cs_str = csdata.join(':')
+            const cs_calc = CRC.str(cs_str)
+
+            if (cs_calc !== checksum) {
+              console.error('CHECKSUM_FAILED')
+            }
+            return
+          }
+
+          if (BOOK.mcnt === 0) {
+            _.each(msg[1], function(pp) {
+              pp = {
+                price: pp[0],
+                cnt: pp[1],
+                amount: pp[2]
+              }
+              const side = pp.amount >= 0 ? 'bids' : 'asks'
+              pp.amount = Math.abs(pp.amount)
+              if (BOOK[side][pp.price]) {
+                console.log(
+                  '[' +
+                    moment().format() +
+                    '] ' +
+                    pair +
+                    ' | ' +
+                    JSON.stringify(pp) +
+                    ' BOOK snap existing bid override\n'
+                )
+              }
+              BOOK[side][pp.price] = pp
+            })
+          } else {
+            const cseq = +msg[2]
+            msg = msg[1]
+
+            if (!seq) {
+              seq = cseq - 1
+            }
+
+            if (cseq - seq !== 1) {
+              console.error('OUT OF SEQUENCE', seq, cseq)
+            }
+
+            seq = cseq
+
+            let pp = {
+              price: msg[0],
+              cnt: msg[1],
+              amount: msg[2]
+            }
+
+            if (!pp.cnt) {
+              let found = true
+
+              if (pp.amount > 0) {
+                if (BOOK['bids'][pp.price]) {
+                  delete BOOK['bids'][pp.price]
+                } else {
+                  found = false
+                }
+              } else if (pp.amount < 0) {
+                if (BOOK['asks'][pp.price]) {
+                  delete BOOK['asks'][pp.price]
+                } else {
+                  found = false
+                }
+              }
+
+              if (!found) {
+                console.log(
+                  '[' +
+                    moment().format() +
+                    '] ' +
+                    pair +
+                    ' | ' +
+                    JSON.stringify(pp) +
+                    ' BOOK delete fail side not found\n'
+                )
+              }
+            } else {
+              let side = pp.amount >= 0 ? 'bids' : 'asks'
+              pp.amount = Math.abs(pp.amount)
+              BOOK[side][pp.price] = pp
+            }
+          }
+
+          _.each(['bids', 'asks'], function(side) {
+            let sbook = BOOK[side]
+            let bprices = Object.keys(sbook)
+
+            let prices = bprices.sort(function(a, b) {
+              if (side === 'bids') {
+                return +a >= +b ? -1 : 1
+              } else {
+                return +a <= +b ? -1 : 1
+              }
+            })
+            BOOK.psnap[side] = prices
           })
 
-        clearInterval(interval)
-      }
-    }, 1000)
+          BOOK.mcnt++
 
-    return () =>
-      from(
-        ethfinex.ws.close().then(() => {
-          clearInterval(interval)
-          return observer.complete()
-        })
+          checkCross(msg)
+          return observer.next({
+            asks: BOOK.asks,
+            bids: BOOK.bids
+          })
+        }
       )
+      .catch(() => {
+        observer.error(ERRORS.ERR_EXCHANGE_WS_ORDERBOOK_FETCH)
+      })
+    return async () => {
+      const unsub = await unsubscribePromise
+      await unsub()
+      return ethfinex.raw.ws.close()
+    }
   })
 }
 
@@ -436,32 +346,28 @@ export const initRelayWebSocketBookEpic = action$ =>
   action$.pipe(
     ofType(customRelayAction(TYPE_.RELAY_OPEN_WEBSOCKET_BOOK)),
     mergeMap(action => {
+      const { relay, networkId, baseToken, quoteToken } = action.payload
       return reconnectingWebsocketBook$(
-        action.payload.relay,
-        action.payload.networkId,
-        action.payload.baseToken,
-        action.payload.quoteToken
+        relay,
+        networkId,
+        baseToken,
+        quoteToken
       ).pipe(
-        takeUntil(
-          action$.ofType(customRelayAction(TYPE_.RELAY_CLOSE_WEBSOCKET))
-        ),
         throttleTime(2000),
         map(payload => {
           console.log('*** Orderbook epic update ***')
           const calculateSpread = (asksOrders, bidsOrders) => {
-            let spread = 0
-            if (bidsOrders.length !== 0 && asksOrders.length !== 0) {
+            let spread = new BigNumber(0).toFixed(6)
+            if (bidsOrders.length && asksOrders.length) {
               spread = new BigNumber(
                 asksOrders[asksOrders.length - 1].orderPrice
               )
                 .minus(new BigNumber(bidsOrders[0].orderPrice))
                 .toFixed(6)
-            } else {
-              spread = new BigNumber(0).toFixed(6)
             }
             return spread
           }
-          let asks = Object.values(payload.asks).map(element => {
+          const asks = Object.values(payload.asks).map(element => {
             return {
               orderAmount: element.amount,
               orderPrice: element.price,
@@ -471,7 +377,7 @@ export const initRelayWebSocketBookEpic = action$ =>
           asks.sort(function(a, b) {
             return b.orderPrice - a.orderPrice
           })
-          let bids = Object.values(payload.bids).map(element => {
+          const bids = Object.values(payload.bids).map(element => {
             return {
               orderAmount: element.amount,
               orderPrice: element.price,
@@ -491,6 +397,9 @@ export const initRelayWebSocketBookEpic = action$ =>
             }
           }
         }),
+        takeUntil(
+          action$.ofType(customRelayAction(TYPE_.RELAY_CLOSE_WEBSOCKET))
+        ),
         catchError(error => {
           console.warn(error)
           return Observable.of({
@@ -508,71 +417,34 @@ export const initRelayWebSocketBookEpic = action$ =>
 // THIS EPIC IS CALLED WHEN THE EXCHANGE IS INITALIZED
 //
 
-const websocketTicker$ = (relay, networkId, baseToken, quoteToken) => {
-  return Observable.create(observer => {
+const websocketTicker$ = (relay, networkId, baseToken, quoteToken) =>
+  Observable.create(observer => {
     const ethfinex = ExchangeConnectorWrapper.getInstance().getExchange(
       relay.name,
       {
-        networkId: networkId
+        networkId
       }
     )
-    const baseTokenSymbol = utils.getTockenSymbolForRelay(relay.name, baseToken)
-    const quoteTokenSymbol = utils.getTockenSymbolForRelay(
+    const baseTokenSymbol = utils.getTokenSymbolForRelay(relay.name, baseToken)
+    const quoteTokenSymbol = utils.getTokenSymbolForRelay(
       relay.name,
       quoteToken
     )
-    let chanId = 0
-
-    const interval = setInterval(() => {
-      if (
-        ethfinex.raw.wsStatus === 'closed' ||
-        ethfinex.raw.wsStatus === 'open'
-      ) {
-        ethfinex.raw.ws
-          .getTickers(
-            {
-              symbols: [baseTokenSymbol + quoteTokenSymbol]
-            },
-            (error, msgWs) => {
-              if (error) {
-                return observer.error(error)
-              } else {
-                if (
-                  msgWs.event === 'subscribed' &&
-                  msgWs.channel === 'ticker'
-                ) {
-                  chanId = msgWs.chanId
-                }
-                if (msgWs[0] === chanId) {
-                  if (Array.isArray(msgWs)) {
-                    return observer.next(msgWs)
-                  }
-                }
-                // return observer.next('')
-              }
-            }
-          )
-          .catch(() => {
-            observer.error(ERRORS.ERR_EXCHANGE_WS_TICKER_FETCH)
-          })
-
-        clearInterval(interval)
-      }
-    }, 500)
-
-    return () =>
-      from(
-        ethfinex.ws.close().then(() => {
-          clearInterval(interval)
-          return observer.complete()
-        })
-      )
+    const unsubscribePromise = ethfinex.raw.ws.getTickers(
+      {
+        symbols: [baseTokenSymbol + quoteTokenSymbol]
+      },
+      (err, msg) => (err ? observer.error(err) : observer.next(msg))
+    )
+    return async () => {
+      const unsub = await unsubscribePromise
+      return unsub()
+    }
   })
-}
 
 const updateCurrentTokenPrice = ticker => {
   if (Array.isArray(ticker[1])) {
-    let current = {
+    const current = {
       price: ticker[1][6]
     }
     return {
@@ -581,11 +453,11 @@ const updateCurrentTokenPrice = ticker => {
         current
       }
     }
-  } else {
-    return {
-      type: TYPE_.UPDATE_CURRENT_TOKEN_PRICE,
-      payload: {}
-    }
+  }
+
+  return {
+    type: TYPE_.UPDATE_CURRENT_TOKEN_PRICE,
+    payload: {}
   }
 }
 
@@ -593,22 +465,10 @@ export const initRelayWebSocketTickerEpic = (action$, state$) =>
   action$.pipe(
     ofType(customRelayAction(TYPE_.RELAY_OPEN_WEBSOCKET_TICKER)),
     mergeMap(action => {
-      return websocketTicker$(
-        action.payload.relay,
-        action.payload.networkId,
-        action.payload.baseToken,
-        action.payload.quoteToken
-      ).pipe(
-        tap(val => {
-          return val
-        }),
-        takeUntil(
-          action$.ofType(customRelayAction(TYPE_.RELAY_CLOSE_WEBSOCKET))
-        ),
+      const { relay, networkId, baseToken, quoteToken } = action.payload
+      return websocketTicker$(relay, networkId, baseToken, quoteToken).pipe(
         bufferTime(1000),
-        filter(value => {
-          return value.length !== 0
-        }),
+        filter(val => val.length),
         bufferCount(1),
         map(ticker => {
           const currentState = state$.value
@@ -618,6 +478,9 @@ export const initRelayWebSocketTickerEpic = (action$, state$) =>
             currentState.exchange.selectedTokensPair.baseToken
           )
         }),
+        takeUntil(
+          action$.ofType(customRelayAction(TYPE_.RELAY_CLOSE_WEBSOCKET))
+        ),
         catchError(error => {
           console.warn(error)
           return Observable.of({
@@ -652,18 +515,24 @@ export const getAccountOrdersEpic = action$ => {
   return action$.pipe(
     ofType(customRelayAction(TYPE_.FETCH_ACCOUNT_ORDERS_START)),
     mergeMap(action => {
-      // console.log(customRelayAction(TYPE_.FETCH_ACCOUNT_ORDERS_START))
+      const {
+        relay,
+        networkId,
+        account,
+        quoteToken,
+        baseToken
+      } = action.payload
       return timer(0, 5000).pipe(
         takeUntil(
           action$.ofType(customRelayAction(TYPE_.FETCH_ACCOUNT_ORDERS_STOP))
         ),
         exhaustMap(() =>
           getAccountOrdersFromRelay$(
-            action.payload.relay,
-            action.payload.networkId,
-            action.payload.account,
-            action.payload.quoteToken,
-            action.payload.baseToken
+            relay,
+            networkId,
+            account,
+            quoteToken,
+            baseToken
           ).pipe(
             map(orders => {
               return {
