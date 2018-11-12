@@ -106,8 +106,13 @@ const updateSingleCandles = tickerOutput => {
   }
 }
 
+<<<<<<< HEAD
 export const getCandlesSingleDataEpic = action$ =>
   action$.pipe(
+=======
+export const getCandlesSingleDataEpic = action$ => {
+  return action$.pipe(
+>>>>>>> feature/exchange-ethfinex-integration
     ofType(customRelayAction(TYPE_.FETCH_CANDLES_DATA_SINGLE_START)),
     mergeMap(action => {
       const {

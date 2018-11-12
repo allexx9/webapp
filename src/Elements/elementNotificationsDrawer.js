@@ -1,5 +1,5 @@
 import { Actions } from '../_redux/actions'
-import { Col, Grid, Row } from 'react-flexbox-grid'
+import { Col, Row } from 'react-flexbox-grid'
 import { List } from 'material-ui/List'
 import { connect } from 'react-redux'
 // import Drawer from 'material-ui/Drawer'
@@ -45,14 +45,14 @@ class ElementNotificationsDrawer extends Component {
     }
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    let stateUpdate = true
-    let propsUpdate = true
-    // shouldComponentUpdate returns false if no need to update children, true if needed.
-    // propsUpdate = (!utils.shallowEqual(this.props, nextProps))
-    // stateUpdate = (!utils.shallowEqual(this.state, nextState))
-    return stateUpdate || propsUpdate
-  }
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   let stateUpdate = true
+  //   let propsUpdate = true
+  //   // shouldComponentUpdate returns false if no need to update children, true if needed.
+  //   // propsUpdate = (!utils.shallowEqual(this.props, nextProps))
+  //   // stateUpdate = (!utils.shallowEqual(this.state, nextState))
+  //   return stateUpdate || propsUpdate
+  // }
 
   componentDidMount() {
     const that = this

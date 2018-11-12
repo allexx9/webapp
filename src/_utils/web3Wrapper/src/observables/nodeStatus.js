@@ -1,7 +1,7 @@
 import { timer, of, from } from "rxjs";
 import { timeout, map, tap, catchError, exhaustMap } from "rxjs/operators";
 import BigNumber from "bignumber.js";
-import errorMsg from "../utils/utils.ts";
+import { errorMsg } from "../utils/utils.js";
 
 export default web3 => {
   let nodeStatus = {
@@ -19,6 +19,7 @@ export default web3 => {
     exhaustMap(() => {
       return from(
         web3.eth.isSyncing().catch(error => {
+          console.log(error);
           throw new Error(errorMsg(error.message));
         })
       ).pipe(

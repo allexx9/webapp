@@ -6,6 +6,12 @@ import initialState from './initialState'
 
 function exchangeReducer(state = initialState.exchange, action) {
   switch (action.type) {
+    case TYPE_.SET_EXCHANGE_PANEL_UI_PROPERTIES:
+      return {
+        ...state,
+        ui: { ...state.ui, ...action.payload }
+      }
+
     case TYPE_.UPDATE_AVAILABLE_FUNDS:
       return {
         ...state,
@@ -44,7 +50,6 @@ function exchangeReducer(state = initialState.exchange, action) {
 
     case TYPE_.CHART_MARKET_DATA_ADD_DATAPOINT:
       let newChartData = [...state.chartData]
-      console.log(newChartData)
       if (
         action.payload.epoch === newChartData[newChartData.length - 1].epoch
       ) {
