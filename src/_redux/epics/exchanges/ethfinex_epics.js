@@ -35,8 +35,8 @@ const customRelayAction = action => `${Ethfinex.toUpperCase()}_${action}`
 // FETCH HISTORICAL MARKET DATA FOR A SPECIFIC TRADING PAIR
 //
 
-const candlesSingleWebsocket$ = (relay, networkId, baseToken, quoteToken) => {
-  return Observable.create(observer => {
+const candlesSingleWebsocket$ = (relay, networkId, baseToken, quoteToken) =>
+  Observable.create(observer => {
     const baseTokenSymbol = utils.getTokenSymbolForRelay(relay.name, baseToken)
     const quoteTokenSymbol = utils.getTokenSymbolForRelay(
       relay.name,
@@ -49,19 +49,23 @@ const candlesSingleWebsocket$ = (relay, networkId, baseToken, quoteToken) => {
         networkId: networkId
       }
     )
-    const unsubscribePromise = ethfinex.raw.ws.getCandles(
-      {
-        timeframe: '1m',
-        symbols: baseTokenSymbol + quoteTokenSymbol
-      },
-      (err, msg) => (err ? observer.error(err) : observer.next(msg))
-    )
+    const unsubscribePromise = ethfinex.raw.ws
+      .getCandles(
+        {
+          timeframe: '1m',
+          symbols: baseTokenSymbol + quoteTokenSymbol
+        },
+        (err, msg) => (err ? observer.error(err) : observer.next(msg))
+      )
+      .catch(err => console.error(err))
+
     return async () => {
       const unsub = await unsubscribePromise
-      return unsub()
+      if (unsub) {
+        return unsub()
+      }
     }
   })
-}
 
 const updateSingleCandles = tickerOutput => {
   let ticker = tickerOutput
@@ -148,13 +152,8 @@ export const getCandlesSingleDataEpic = action$ =>
 // THIS EPIC IS CALLED WHEN THE EXCHANGE IS INITALIZED
 //
 
-const reconnectingWebsocketBook$ = (
-  relay,
-  networkId,
-  baseToken,
-  quoteToken
-) => {
-  return Observable.create(observer => {
+const reconnectingWebsocketBook$ = (relay, networkId, baseToken, quoteToken) =>
+  Observable.create(observer => {
     let seq = null
 
     let pair =
@@ -331,16 +330,16 @@ const reconnectingWebsocketBook$ = (
           })
         }
       )
-      .catch(() => {
-        observer.error(ERRORS.ERR_EXCHANGE_WS_ORDERBOOK_FETCH)
-      })
+      .catch(() => observer.error(ERRORS.ERR_EXCHANGE_WS_ORDERBOOK_FETCH))
+
     return async () => {
       const unsub = await unsubscribePromise
-      await unsub()
+      if (unsub) {
+        await unsub()
+      }
       return ethfinex.raw.ws.close()
     }
   })
-}
 
 export const initRelayWebSocketBookEpic = action$ =>
   action$.pipe(
@@ -438,7 +437,9 @@ const websocketTicker$ = (relay, networkId, baseToken, quoteToken) =>
     )
     return async () => {
       const unsub = await unsubscribePromise
-      return unsub()
+      if (unsub) {
+        return unsub()
+      }
     }
   })
 
@@ -511,8 +512,8 @@ const getAccountOrdersFromRelay$ = (
   )
 }
 
-export const getAccountOrdersEpic = action$ => {
-  return action$.pipe(
+export const getAccountOrdersEpic = action$ =>
+  action$.pipe(
     ofType(customRelayAction(TYPE_.FETCH_ACCOUNT_ORDERS_START)),
     mergeMap(action => {
       const {
@@ -562,4 +563,4 @@ export const getAccountOrdersEpic = action$ => {
       )
     })
   )
-}
+
