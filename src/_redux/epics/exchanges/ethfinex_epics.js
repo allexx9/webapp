@@ -49,16 +49,21 @@ const candlesSingleWebsocket$ = (relay, networkId, baseToken, quoteToken) => {
         networkId: networkId
       }
     )
-    const unsubscribePromise = ethfinex.raw.ws.getCandles(
-      {
-        timeframe: '1m',
-        symbols: baseTokenSymbol + quoteTokenSymbol
-      },
-      (err, msg) => (err ? observer.error(err) : observer.next(msg))
-    )
+    const unsubscribePromise = ethfinex.raw.ws
+      .getCandles(
+        {
+          timeframe: '1m',
+          symbols: baseTokenSymbol + quoteTokenSymbol
+        },
+        (err, msg) => (err ? observer.error(err) : observer.next(msg))
+      )
+      .catch(err => console.error(err))
+
     return async () => {
       const unsub = await unsubscribePromise
-      return unsub()
+      if (unsub) {
+        return unsub()
+      }
     }
   })
 }
@@ -331,12 +336,13 @@ const reconnectingWebsocketBook$ = (
           })
         }
       )
-      .catch(() => {
-        observer.error(ERRORS.ERR_EXCHANGE_WS_ORDERBOOK_FETCH)
-      })
+      .catch(() => observer.error(ERRORS.ERR_EXCHANGE_WS_ORDERBOOK_FETCH))
+
     return async () => {
       const unsub = await unsubscribePromise
-      await unsub()
+      if (unsub) {
+        await unsub()
+      }
       return ethfinex.raw.ws.close()
     }
   })
@@ -438,7 +444,9 @@ const websocketTicker$ = (relay, networkId, baseToken, quoteToken) =>
     )
     return async () => {
       const unsub = await unsubscribePromise
-      return unsub()
+      if (unsub) {
+        return unsub()
+      }
     }
   })
 
