@@ -5,7 +5,10 @@ import {
   switchMap,
   mergeMap,
   retryWhen,
-  finalize
+  finalize,
+  filter,
+  exhaustMap,
+  map
 } from "rxjs/operators";
 import { race } from "rxjs/observable/race";
 import BigNumber from "bignumber.js";
@@ -13,18 +16,19 @@ import { errorMsg } from "../utils/utils.js";
 import Web3 from "web3";
 
 let retryAttemptNodeStatus$ = 0;
+let scalingDuration = 4000;
 
-const sync$ = transport => {
-  let provider = new Web3.providers.WebsocketProvider(transport, {
-    timeout: 5000
-  });
-  let web3 = new Web3(provider);
+const sync$ = (web3, transport) => {
+  // let provider = new Web3.providers.WebsocketProvider(transport, {
+  //   timeout: 5000
+  // });
+  // let web3 = new Web3(provider);
 
-  let scalingDuration = 4000;
   return Observable.create(observer => {
     web3.eth
       .isSyncing()
       .then(result => {
+        // console.log("*** sync ***");
         retryAttemptNodeStatus$ = 0;
         let nodeStatus = {
           isConnected: false,
@@ -72,6 +76,7 @@ const sync$ = transport => {
         return newNodeStatus;
       })
       .catch(error => {
+        // console.log(error);
         let nodeStatus = {
           isConnected: false,
           isSyncing: false,
@@ -105,10 +110,72 @@ const sync$ = transport => {
       of("done");
     };
   }).pipe(
+    // timeout(5000),
     tap(val => {
+      // console.log(val);
+      return val;
+    })
+    // retryWhen(error => {
+    //   return error.pipe(
+    //     mergeMap(error => {
+    //       console.log(`****  nodeStatus$ error: ${error} ****`);
+    //       // console.log(
+    //       //   `**** nodeStatus$ Attempt ${retryAttemptNodeStatus$} ****`
+    //       // );
+    //       // let provider = new Web3.providers.WebsocketProvider(transport, {
+    //       //   timeout: 5000
+    //       // });
+    //       // web3.setProvider(provider);
+    //       // newWeb3 = new Web3(provider);
+    //       let provider = new Web3.providers.WebsocketProvider(transport);
+    //       console.log("creating new web3 provider");
+    //       web3 = new Web3(provider);
+    //       return timer(scalingDuration);
+    //     }),
+    //     finalize(() => {
+    //       console.log("We are done!");
+    //     })
+    //   );
+    // })
+  );
+};
+
+const nodeStatus$ = transport => {
+  let provider = new Web3.providers.WebsocketProvider(transport);
+  let web3 = new Web3(provider);
+  return timer(0, 3000).pipe(
+    tap(val => {
+      // console.log(val);
       return val;
     }),
-    timeout(4000),
+    switchMap(val => {
+      return race(
+        // timer(2000, 1000).pipe(
+        //   tap(val => {
+        //     return val;
+        //   })
+        // ),
+        sync$(web3, transport)
+      ).pipe(
+        tap(val => {
+          // console.log(val);
+          return val;
+        })
+      );
+    }),
+    timeout(7000),
+    map(val => {
+      console.log(val);
+      // if (val) {
+      //   return {
+      //     isConnected: false,
+      //     isSyncing: false,
+      //     syncStatus: {},
+      //     error: {}
+      //   };
+      // }
+      return val;
+    }),
     retryWhen(error => {
       return error.pipe(
         mergeMap(error => {
@@ -121,6 +188,9 @@ const sync$ = transport => {
           // });
           // web3.setProvider(provider);
           // newWeb3 = new Web3(provider);
+          let provider = new Web3.providers.WebsocketProvider(transport);
+          console.log("creating new web3 provider end of epic");
+          web3 = new Web3(provider);
           return timer(scalingDuration);
         }),
         finalize(() => {
@@ -128,31 +198,9 @@ const sync$ = transport => {
         })
       );
     })
-  );
-};
+    // filter(val =>{
 
-const nodeStatus$ = transport => {
-  return timer(0, 4000).pipe(
-    tap(val => {
-      return val;
-    }),
-    switchMap(val => {
-      return race(
-        timer(4000).pipe(
-          tap(val => {
-            return val;
-          })
-        ),
-        sync$(transport)
-      ).pipe(
-        tap(val => {
-          return val;
-        })
-      );
-    }),
-    tap(val => {
-      return val;
-    })
+    // })
   );
 };
 

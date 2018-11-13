@@ -308,7 +308,7 @@ export const getAccountsTransactionsEpic = action$ =>
         }),
         retryWhen(error => {
           console.log('getAccountsTransactionsEpic')
-          let scalingDuration = 3000
+          let scalingDuration = 10000
           return error.pipe(
             mergeMap((error, i) => {
               console.warn(error)

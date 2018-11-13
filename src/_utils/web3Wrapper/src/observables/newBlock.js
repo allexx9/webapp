@@ -1,7 +1,8 @@
 import { Observable, timer } from "rxjs";
 import { timeout, mergeMap, retryWhen, finalize } from "rxjs/operators";
+import Web3 from "web3";
 
-export default web3 => {
+export default (web3, transport) => {
   let subscription = null;
   let retryAttemptNewBlock$ = 0;
   return Observable.create(observer => {
@@ -58,6 +59,9 @@ export default web3 => {
           console.log(`****  newBlock$ error: ${error.message} ****`);
           retryAttemptNewBlock$++;
           console.log(`**** newBlock$ Attempt ${retryAttemptNewBlock$} ****`);
+          let provider = new Web3.providers.WebsocketProvider(transport);
+          console.log("creating new web3 provider end of epic");
+          web3 = new Web3(provider);
           return timer(scalingDuration);
         }),
         finalize(() => console.log("We are done!"))

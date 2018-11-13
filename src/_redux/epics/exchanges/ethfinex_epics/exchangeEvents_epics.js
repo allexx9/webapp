@@ -23,8 +23,9 @@ import utils from '../../../../_utils/utils'
 
 const getPastExchangeEvents$ = (fund, tokens, exchange, state$) => {
   return defer(async () => {
+    console.log(state$.value.endpoint.networkInfo.id)
     const web3 = await Web3Wrapper.getInstance(
-      state$.value.endpoint.networkInfo.name.toLowerCase()
+      state$.value.endpoint.networkInfo.id
     )
     const efxEchangeContract = new web3.eth.Contract(
       exchangeEfxV0Abi,
@@ -45,7 +46,7 @@ const getPastExchangeEvents$ = (fund, tokens, exchange, state$) => {
       }
     )
     tokens1 = web3.utils.padLeft(tokens1, 64)
-    // console.log(tokens1)
+    console.log(tokens1)
     let tokens2 = web3.utils.soliditySha3(
       {
         t: 'address',
@@ -57,7 +58,7 @@ const getPastExchangeEvents$ = (fund, tokens, exchange, state$) => {
       }
     )
     tokens2 = web3.utils.padLeft(tokens2, 64)
-    // console.log(tokens2)
+    console.log(tokens2)
     // 0x3f3fb7135a4e1512b508f90733145ab182cc196e127cd9281a8e9f636de79a67
     // console.log(fund)
     const makerAddress = '0x' + fund.address.substr(2).padStart(64, '0')
@@ -67,7 +68,8 @@ const getPastExchangeEvents$ = (fund, tokens, exchange, state$) => {
         {
           fromBlock: 0,
           toBlock: 'latest',
-          topics: [null, makerAddress, null, [tokens1, tokens2]]
+          topics: [null, null, null, null]
+          // topics: [null, makerAddress, null, [tokens1, tokens2]]
         },
         function(error) {
           if (error) {
@@ -75,7 +77,8 @@ const getPastExchangeEvents$ = (fund, tokens, exchange, state$) => {
           }
         }
       )
-      .then(function(events) {
+      .then(events => {
+        console.log(events)
         return events
       })
       .catch(error => {
@@ -84,72 +87,27 @@ const getPastExchangeEvents$ = (fund, tokens, exchange, state$) => {
   })
 }
 
-const monitorExchangeEvents$ = (fund, tokens, state$) => {
-  let subscription
-  return Observable.create(observer => {
-    Web3Wrapper.getInstance(
-      state$.value.endpoint.networkInfo.name.toUpperCase()
-    ).then(web3 => {
-      subscription = web3.rb.ob.exchangeEfxV0$.subscribe(val => {
-        if (Object.keys(val.error).length === 0) {
-          console.log(val)
-          observer.next(val)
-        } else {
-          console.log(val)
-          observer.error(val)
-        }
-      })
-    })
-    return () => {
-      console.log('monitorExchangeEvents$ closed')
-      console.log(subscription)
-      subscription.unsubscribe()
-      observer.complete()
-    }
-  })
-}
-
-// export const monitorExchangeEventsEpic = (action$, state$) => {
-//   return action$.pipe(
-//     ofType(utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_START)),
-//     mergeMap(action => {
-//       // console.log(action)
-//       return monitorExchangeEvents$(
-//         action.payload.fund,
-//         action.payload.tokens,
-//         state$
-//       ).pipe(
-//         takeUntil(
-//           action$.ofType(
-//             utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_STOP)
-//           )
-//         ),
-//         tap(val => {
+// const monitorExchangeEvents$ = (fund, tokens, state$) => {
+//   let subscription
+//   return Observable.create(observer => {
+//     Web3Wrapper.getInstance(state$.value.endpoint.networkInfo.id).then(web3 => {
+//       subscription = web3.rb.ob.exchangeEfxV0$.subscribe(val => {
+//         if (Object.keys(val.error).length === 0) {
 //           console.log(val)
-//           return val
-//         }),
-//         map(event => {
-//           return {
-//             type: 'DUMB',
-//             payload: 'Dumb'
-//           }
-//           // return Observable.concat(...observablesArray)
-//         }),
-//         retryWhen(error => {
-//           let scalingDuration = 10000
-//           return error.pipe(
-//             mergeMap((error, i) => {
-//               console.warn(error)
-//               const retryAttempt = i + 1
-//               console.log(`monitorExchangeEventsEpic Attempt ${retryAttempt}`)
-//               return timer(scalingDuration)
-//             }),
-//             finalize(() => console.log('We are done!'))
-//           )
-//         })
-//       )
+//           observer.next(val)
+//         } else {
+//           console.log(val)
+//           observer.error(val)
+//         }
+//       })
 //     })
-//   )
+//     return () => {
+//       console.log('monitorExchangeEvents$ closed')
+//       console.log(subscription)
+//       subscription.unsubscribe()
+//       observer.complete()
+//     }
+//   })
 // }
 
 export const monitorExchangeEventsEpic = (action$, state$) => {
@@ -163,18 +121,18 @@ export const monitorExchangeEventsEpic = (action$, state$) => {
           action.payload.tokens,
           action.payload.exchange,
           state$
-        ),
-        monitorExchangeEvents$(
-          action.payload.fund,
-          action.payload.tokens,
-          state$
-        ).pipe(
-          takeUntil(
-            action$.ofType(
-              utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_STOP)
-            )
-          )
         )
+        // monitorExchangeEvents$(
+        //   action.payload.fund,
+        //   action.payload.tokens,
+        //   state$
+        // ).pipe(
+        //   takeUntil(
+        //     action$.ofType(
+        //       utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_STOP)
+        //     )
+        //   )
+        // )
       ).pipe(
         takeUntil(action$.ofType(TYPE_.MONITOR_EXCHANGE_EVENTS_STOP)),
         tap(val => {

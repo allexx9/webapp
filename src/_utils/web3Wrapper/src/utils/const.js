@@ -20,11 +20,11 @@ export const EFX_EXCHANGE_CONTRACT = {
 
 export const ENDPOINTS = {
   https: {
-    3: {
+    42: {
       dev: "https://kovan.infura.io/metamask",
       prod: "https://kovan.infura.io/metamask"
     },
-    42: {
+    3: {
       dev: "https://ropsten.infura.io/metamask",
       prod: "https://ropsten.infura.io/metamask"
     },
@@ -34,11 +34,11 @@ export const ENDPOINTS = {
     }
   },
   wss: {
-    3: {
+    42: {
       dev: "wss://kovan.infura.io/ws",
       prod: "wss://kovan.infura.io/ws"
     },
-    42: {
+    3: {
       dev: "wss://ropsten.infura.io/ws",
       prod: "wss://ropsten.infura.io/ws"
     },

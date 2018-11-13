@@ -11,11 +11,9 @@ import {
 
 let retryAttemptWebSocket$ = 0;
 
-const webSocket$ = (web3, newWeb3, transport) =>
-  Observable.create(observer => {
-    let provider = new Web3.providers.WebsocketProvider(transport, {
-      timeout: 5000
-    });
+const webSocket$ = (web3, newWeb3, transport) => {
+  let provider = new Web3.providers.WebsocketProvider(transport);
+  return Observable.create(observer => {
     provider.on("connect", function(event) {
       retryAttemptWebSocket$ = 0;
       console.log("**** WSS connected ****");
@@ -60,15 +58,15 @@ const webSocket$ = (web3, newWeb3, transport) =>
           console.log(error);
           retryAttemptWebSocket$++;
           console.log(`**** webSocket$ Attempt ${retryAttemptWebSocket$} ****`);
-          let provider = new Web3.providers.WebsocketProvider(transport, {
-            timeout: 5000
-          });
+          let provider = new Web3.providers.WebsocketProvider(transport);
           web3.setProvider(provider);
+          web3 = new Web3(provider);
           return timer(scalingDuration);
         }),
         finalize(() => console.log("We are done!"))
       );
     })
   );
+};
 
 export default webSocket$;

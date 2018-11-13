@@ -19,21 +19,16 @@ import 'rxjs/add/operator/switchMap'
 import 'rxjs/add/operator/takeUntil'
 import 'rxjs/observable/fromEvent'
 import 'rxjs/observable/timer'
-import { Observable, timer } from 'rxjs'
+import { Observable } from 'rxjs'
 import {
   bufferCount,
   bufferTime,
-  catchError,
-  concat,
-  exhaustMap,
   filter,
   map,
   mergeMap,
-  skip,
   switchMap,
   takeUntil,
-  tap,
-  throttleTime
+  tap
 } from 'rxjs/operators'
 import { ofType } from 'redux-observable'
 // import { timer } from 'rxjs/observable/timer'

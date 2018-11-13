@@ -391,15 +391,15 @@ export const monitorEventfulEpic = (action$, state$) => {
 
 const monitorAccounts$ = (api, state$) => {
   return Observable.create(observer => {
-    Web3Wrapper.getInstance(
-      state$.value.endpoint.networkInfo.name.toUpperCase()
-    ).then(instance => {
-      instance.ob.newBlock$.subscribe(newBlock => {
-        utils.updateAccounts(api, newBlock, state$).then(result => {
-          return observer.next(result)
+    Web3Wrapper.getInstance(state$.value.endpoint.networkInfo.id).then(
+      instance => {
+        instance.ob.newBlock$.subscribe(newBlock => {
+          utils.updateAccounts(api, newBlock, state$).then(result => {
+            return observer.next(result)
+          })
         })
-      })
-    })
+      }
+    )
   })
 }
 

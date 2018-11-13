@@ -148,8 +148,6 @@ class ApplicationExchangeHome extends Component {
           address: walletAddress.address
         }
       ]
-      console.log(walletAddress.address)
-
       // Set available relays
       this.props.dispatch(
         Actions.exchange.updateAvailableRelays(

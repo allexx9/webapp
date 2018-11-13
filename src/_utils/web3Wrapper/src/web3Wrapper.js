@@ -8,25 +8,21 @@ import contract from "./utils/contract";
 import { ENDPOINTS } from "./utils/const";
 import { newWeb3 } from "./utils/utils";
 
-let Web3Wrapper = ((networkId = 1, protocol = "wss", options = {}) => {
+let Web3Wrapper = (() => {
   // Instance stores a reference to the Singleton
 
   let instance;
   let web3;
-  const transport = ENDPOINTS[protocol][networkId].prod;
-  let provider = new Web3.providers.WebsocketProvider(transport, {
-    timeout: 5000
-  });
-  web3 = newWeb3(provider);
 
-  const wsConnection$ = webSocket$(web3, newWeb3, transport);
-
-  wsConnection$.subscribe(status => {
-    console.log(status);
-  });
-
-  const init = async (networkId, protocol) => {
-    console.log(web3);
+  const init = async (networkId, protocol = "wss") => {
+    const transport = ENDPOINTS[protocol][networkId].prod;
+    let provider = new Web3.providers.WebsocketProvider(transport, {
+      timeout: 5000
+    });
+    web3 = newWeb3(provider);
+    webSocket$(web3, newWeb3, transport).subscribe(status => {
+      console.log(status);
+    });
     return {
       ...web3,
       rb: {
@@ -39,13 +35,13 @@ let Web3Wrapper = ((networkId = 1, protocol = "wss", options = {}) => {
       },
       ob: {
         nodeStatus$: nodeStatus$(transport),
-        newBlock$: newBlock$(web3)
+        newBlock$: newBlock$(web3, transport)
       }
     };
   };
 
   return {
-    getInstance: async () => {
+    getInstance: async (networkId, protocol) => {
       if (!networkId) {
         throw new Error("networkId needs to be provided");
       }
