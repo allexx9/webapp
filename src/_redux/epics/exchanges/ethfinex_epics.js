@@ -35,8 +35,8 @@ const customRelayAction = action => `${Ethfinex.toUpperCase()}_${action}`
 // FETCH HISTORICAL MARKET DATA FOR A SPECIFIC TRADING PAIR
 //
 
-const candlesSingleWebsocket$ = (relay, networkId, baseToken, quoteToken) => {
-  return Observable.create(observer => {
+const candlesSingleWebsocket$ = (relay, networkId, baseToken, quoteToken) =>
+  Observable.create(observer => {
     const baseTokenSymbol = utils.getTokenSymbolForRelay(relay.name, baseToken)
     const quoteTokenSymbol = utils.getTokenSymbolForRelay(
       relay.name,
@@ -66,7 +66,6 @@ const candlesSingleWebsocket$ = (relay, networkId, baseToken, quoteToken) => {
       }
     }
   })
-}
 
 const updateSingleCandles = tickerOutput => {
   let ticker = tickerOutput
@@ -153,13 +152,8 @@ export const getCandlesSingleDataEpic = action$ =>
 // THIS EPIC IS CALLED WHEN THE EXCHANGE IS INITALIZED
 //
 
-const reconnectingWebsocketBook$ = (
-  relay,
-  networkId,
-  baseToken,
-  quoteToken
-) => {
-  return Observable.create(observer => {
+const reconnectingWebsocketBook$ = (relay, networkId, baseToken, quoteToken) =>
+  Observable.create(observer => {
     let seq = null
 
     let pair =
@@ -346,7 +340,6 @@ const reconnectingWebsocketBook$ = (
       return ethfinex.raw.ws.close()
     }
   })
-}
 
 export const initRelayWebSocketBookEpic = action$ =>
   action$.pipe(
@@ -519,8 +512,8 @@ const getAccountOrdersFromRelay$ = (
   )
 }
 
-export const getAccountOrdersEpic = action$ => {
-  return action$.pipe(
+export const getAccountOrdersEpic = action$ =>
+  action$.pipe(
     ofType(customRelayAction(TYPE_.FETCH_ACCOUNT_ORDERS_START)),
     mergeMap(action => {
       const {
@@ -569,4 +562,4 @@ export const getAccountOrdersEpic = action$ => {
       )
     })
   )
-}
+
