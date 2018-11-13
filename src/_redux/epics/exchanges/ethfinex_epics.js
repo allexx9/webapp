@@ -535,6 +535,7 @@ export const getAccountOrdersEpic = action$ => {
             baseToken
           ).pipe(
             map(orders => {
+              console.log(orders)
               return {
                 type: TYPE_.UPDATE_FUND_ORDERS,
                 payload: {

@@ -92,12 +92,12 @@ class TableOrdersHistory extends Component {
                 className={classNames(styles.tableCell, styles.right)}
                 style={orderTypeStyle[orderStatus[0].trim()]}
               >
-                <div data-tip={orderStatusInfo}>
+                <div data-tip={orderStatusInfo} data-for="orderTooltip">
                   <span className={styles.tableCellUnderline}>
                     {orderStatus[0].trim()}
                   </span>
 
-                  <ReactTooltip effect="solid" place="top" />
+                  <ReactTooltip effect="solid" place="top" id="orderTooltip" />
                 </div>
               </Col>
             </Row>

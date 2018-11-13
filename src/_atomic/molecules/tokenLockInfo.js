@@ -131,7 +131,10 @@ class TokenLockInfo extends Component {
       tokenWrapperAddress =
         selectedTokensPair.baseToken.wrappers[selectedRelay.name].address
       decimals = selectedTokensPair.baseToken.decimals
-      amount = this.state.baseTokenRelock ? '0' : baseTokenLockAmount
+      amount =
+        this.state.baseTokenRelock && action === 'lock'
+          ? '0'
+          : baseTokenLockAmount
       minTime = minBaseTokenLockTime
       time = baseTokenLockTime
       isOldERC20 = selectedTokensPair.baseToken.isOldERC20
@@ -140,7 +143,10 @@ class TokenLockInfo extends Component {
       tokenWrapperAddress =
         selectedTokensPair.quoteToken.wrappers[selectedRelay.name].address
       decimals = selectedTokensPair.quoteToken.decimals
-      amount = this.state.quoteTokenRelock ? '0' : quoteTokenLockAmount
+      amount =
+        this.state.quoteTokenRelock && action === 'lock'
+          ? '0'
+          : quoteTokenLockAmount
       minTime = minQuoteTokenLockTime
       time = quoteTokenLockTime
       isOldERC20 = selectedTokensPair.quoteToken.isOldERC20

@@ -42,7 +42,11 @@ export default class ToggleSwitch extends Component {
     }
 
     return (
-      <div data-tip={this.props.toolTip} style={aggregatedTogglestyles.block}>
+      <div
+        data-tip={this.props.toolTip}
+        style={aggregatedTogglestyles.block}
+        data-for="aggregatedOrderTolltip"
+      >
         <Toggle
           label={this.props.label}
           style={aggregatedTogglestyles.toggle}
@@ -55,7 +59,7 @@ export default class ToggleSwitch extends Component {
           toggled={this.props.toggled}
           disabled={this.props.disabled}
         />
-        <ReactTooltip effect="solid" place="top" />
+        <ReactTooltip effect="solid" place="top" id="aggregatedOrderTolltip" />
       </div>
     )
   }

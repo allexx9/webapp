@@ -49,6 +49,7 @@ export default class TokenLockBalance extends Component {
           'Exp: ' +
           moment.unix(this.props.lockTime).format('MMMM Do YYYY, h:mm:ss a')
         }
+        data-for="lockBalance"
       >
         <div
           onClick={this.onSetMaxAmount}
@@ -67,7 +68,7 @@ export default class TokenLockBalance extends Component {
             {formatPrice(this.props.balance)}
           </span>
         </div>
-        <ReactTooltip effect="solid" place="top" />
+        <ReactTooltip effect="solid" place="top" id="lockBalance" />
       </div>
     ) : (
       <div
@@ -75,6 +76,7 @@ export default class TokenLockBalance extends Component {
           'Exp: ' +
           moment.unix(this.props.lockTime).format('MMMM Do YYYY, h:mm:ss a')
         }
+        data-for="lockBalance"
       >
         <div
           onClick={this.onSetMaxAmount}
@@ -93,7 +95,7 @@ export default class TokenLockBalance extends Component {
             {formatPrice(this.props.balance)}
           </span>
         </div>
-        <ReactTooltip effect="solid" place="top" />
+        <ReactTooltip effect="solid" place="top" id="lockBalance" />
       </div>
     )
   }

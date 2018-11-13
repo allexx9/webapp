@@ -22,7 +22,10 @@ class CheckBoxQuickOrder extends Component {
     return (
       <Row>
         <Col xs={6}>
-          <div data-tip={'Sign and send without further confirmation'}>
+          <div
+            data-tip={'Sign and send without further confirmation'}
+            data-for="checkBoxTooltip"
+          >
             <Checkbox
               checked={this.props.checked}
               onCheck={this.onCheck}
@@ -36,7 +39,7 @@ class CheckBoxQuickOrder extends Component {
                 marginRight: '4px'
               }}
             />
-            <ReactTooltip effect="solid" place="top" />
+            <ReactTooltip id="checkBoxTooltip" effect="solid" place="top" />
           </div>
         </Col>
       </Row>

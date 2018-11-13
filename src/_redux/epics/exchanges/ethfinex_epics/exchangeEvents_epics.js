@@ -18,12 +18,12 @@ import { ofType } from 'redux-observable'
 import Web3Wrapper from '../../../../_utils/web3Wrapper/src'
 import _ from 'lodash'
 // import moment from 'moment'
+import { toUnitAmount } from '../../../../_utils/format'
 import exchangeEfxV0Abi from '../../../../PoolsApi/src/contracts/abi/v2/exchange-efx-v0.json'
 import utils from '../../../../_utils/utils'
 
 const getPastExchangeEvents$ = (fund, tokens, exchange, state$) => {
   return defer(async () => {
-    console.log(state$.value.endpoint.networkInfo.id)
     const web3 = await Web3Wrapper.getInstance(
       state$.value.endpoint.networkInfo.id
     )
@@ -68,8 +68,8 @@ const getPastExchangeEvents$ = (fund, tokens, exchange, state$) => {
         {
           fromBlock: 0,
           toBlock: 'latest',
-          topics: [null, null, null, null]
-          // topics: [null, makerAddress, null, [tokens1, tokens2]]
+          // topics: [null, null, null, null]
+          topics: [null, makerAddress, null, [tokens1, tokens2]]
         },
         function(error) {
           if (error) {
@@ -110,6 +110,63 @@ const getPastExchangeEvents$ = (fund, tokens, exchange, state$) => {
 //   })
 // }
 
+const processTradeHistory = (trades, tokens) => {
+  console.log(tokens)
+  let tradeHistory = trades.map(trade => {
+    let transaction = {
+      type: '',
+      baseTokenSymbol: tokens.baseToken.symbol,
+      quoteTokenSymbol: tokens.quoteToken.symbol,
+      transactionHash: trade.transactionHash,
+      price: '0',
+      amount: '0'
+    }
+    let makerAmount, takerAmount
+    if (
+      trade.returnValues.makerToken.toLowerCase() ===
+      tokens.baseToken.wrappers.Ethfinex.address.toLowerCase()
+    ) {
+      transaction.type = 'sell'
+      makerAmount = toUnitAmount(
+        new BigNumber(trade.returnValues.filledMakerTokenAmount),
+        tokens.baseToken.decimals
+      )
+      console.log(makerAmount.toFixed(5))
+      takerAmount = toUnitAmount(
+        new BigNumber(trade.returnValues.filledTakerTokenAmount),
+        tokens.quoteToken.decimals
+      )
+      console.log(takerAmount.toFixed(5))
+      transaction.price = takerAmount.div(makerAmount).toFixed(5)
+      transaction.amount = makerAmount.toFixed(5)
+    }
+    if (
+      trade.returnValues.makerToken.toLowerCase() ===
+      tokens.quoteToken.wrappers.Ethfinex.address.toLowerCase()
+    ) {
+      transaction.type = 'buy'
+      makerAmount = toUnitAmount(
+        new BigNumber(trade.returnValues.filledTakerTokenAmount),
+        tokens.quoteToken.decimals
+      )
+      takerAmount = toUnitAmount(
+        new BigNumber(trade.returnValues.filledMakerTokenAmount),
+        tokens.baseToken.decimals
+      )
+      transaction.amount = toUnitAmount(
+        new BigNumber(trade.returnValues.filledTakerTokenAmount),
+        tokens.quoteToken.decimals
+      ).toFixed(5)
+
+      transaction.price = new BigNumber(1)
+        .div(new BigNumber(makerAmount).div(new BigNumber(takerAmount)))
+        .toFixed(5)
+    }
+    return transaction
+  })
+  return tradeHistory
+}
+
 export const monitorExchangeEventsEpic = (action$, state$) => {
   return action$.pipe(
     ofType(utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_START)),
@@ -137,6 +194,7 @@ export const monitorExchangeEventsEpic = (action$, state$) => {
         takeUntil(action$.ofType(TYPE_.MONITOR_EXCHANGE_EVENTS_STOP)),
         tap(val => {
           console.log(val)
+          console.log(processTradeHistory(val, action.payload.tokens))
           return val
         }),
         map(event => {

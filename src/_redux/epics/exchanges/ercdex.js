@@ -287,6 +287,7 @@ export const getAccountOrdersEpic = action$ => {
             action.payload.baseTokenAddress,
             action.payload.quoteTokenAddress
           ).map(orders => {
+            console.log(orders)
             return formatOrders(orders, 'asks')
           }),
           getAccountOrdersFromRelay$(

@@ -5,7 +5,6 @@ import { TextField } from 'material-ui'
 import BigNumber from 'bignumber.js'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
-import styles from './orderAmountInputField.module.css'
 
 export default class OrderAmountInputField extends Component {
   static propTypes = {
@@ -68,7 +67,7 @@ export default class OrderAmountInputField extends Component {
   }
 
   render() {
-    const { symbol, orderFillAmount } = this.props
+    const { orderFillAmount } = this.props
     // const amount = Math.min(orderFillAmount, orderMaxAmount)
     // console.log(orderFillAmount)
     return (

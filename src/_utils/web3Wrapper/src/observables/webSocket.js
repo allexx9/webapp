@@ -12,7 +12,9 @@ import {
 let retryAttemptWebSocket$ = 0;
 
 const webSocket$ = (web3, newWeb3, transport) => {
-  let provider = new Web3.providers.WebsocketProvider(transport);
+  let provider = new Web3.providers.WebsocketProvider(transport, {
+    timeout: 30000
+  });
   return Observable.create(observer => {
     provider.on("connect", function(event) {
       retryAttemptWebSocket$ = 0;
@@ -58,7 +60,9 @@ const webSocket$ = (web3, newWeb3, transport) => {
           console.log(error);
           retryAttemptWebSocket$++;
           console.log(`**** webSocket$ Attempt ${retryAttemptWebSocket$} ****`);
-          let provider = new Web3.providers.WebsocketProvider(transport);
+          let provider = new Web3.providers.WebsocketProvider(transport, {
+            timeout: 30000
+          });
           web3.setProvider(provider);
           web3 = new Web3(provider);
           return timer(scalingDuration);
