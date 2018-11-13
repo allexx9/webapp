@@ -19,10 +19,6 @@ import serializeError from 'serialize-error'
 import styles from './ordersHistoryBox.module.css'
 import utils from '../../_utils/utils'
 
-const paperStyle = {
-  padding: '10px'
-}
-
 function mapStateToProps(state) {
   return state
 }
@@ -120,12 +116,17 @@ class OrdersHistoryBox extends Component {
   }
 
   render() {
+    const { ui } = this.props.exchange
+    const paperStyle = {
+      padding: '5px',
+      display: ui.panels.ordersHistoryBox.expanded ? 'inline-block' : 'none'
+    }
     return (
       <Row>
         <Col xs={12}>
           <Row className={styles.sectionTitle}>
             <Col xs={12}>
-              <BoxTitle titleText={'MY ORDERS'} />
+              <BoxTitle titleText={'MY ORDERS'} boxName={'ordersHistoryBox'} />
               <Paper style={paperStyle} zDepth={1}>
                 <Grid fluid>
                   <Row>

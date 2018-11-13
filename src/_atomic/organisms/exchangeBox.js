@@ -106,7 +106,6 @@ class ExchangeBox extends PureComponent {
 
   render() {
     const { availableRelays, selectedRelay, ui } = this.props.exchange
-    console.log('render relayBox')
     const paperStyle = {
       padding: '5px',
       display: ui.panels.relayBox.expanded ? 'inline-block' : 'none'

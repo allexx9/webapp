@@ -18,8 +18,6 @@ import * as Eventful from './eventful_epics'
 import * as Tokens from './token_epics'
 import { ERCdEX, Ethfinex } from './exchanges'
 
-console.log(Endpoint)
-
 const ERCdEX_Epics = [
   ERCdEX.getCandlesSingleDataEpic,
   ERCdEX.initRelayWebSocketTickerEpic,

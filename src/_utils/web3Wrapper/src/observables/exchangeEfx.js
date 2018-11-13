@@ -3,7 +3,7 @@ import { Observable, timer } from "rxjs";
 import { mergeMap, retryWhen, finalize, timeout } from "rxjs/operators";
 import * as CONST_ from "../utils/const";
 
-const exchangeEfxV0$ = (web3, networkName) => {
+const exchangeEfxV0$ = (web3, networkId) => {
   let subscription = null;
   let retryAttemptNewBlock$ = 0;
   return Observable.create(observer => {
@@ -22,7 +22,7 @@ const exchangeEfxV0$ = (web3, networkName) => {
     try {
       efxEchangeContract = new web3.eth.Contract(
         exchangeEfxV0Abi,
-        CONST_.EFX_EXCHANGE_CONTRACT[networkName].toLowerCase()
+        CONST_.EFX_EXCHANGE_CONTRACT[networkId].toLowerCase()
       );
       // efxEchangeContract
       //   .getPastEvents(

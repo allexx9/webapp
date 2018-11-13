@@ -5,14 +5,14 @@ import { Observable, timer } from "rxjs";
 import { mergeMap, retryWhen, finalize } from "rxjs/operators";
 import * as CONST_ from "../utils/const";
 
-export default (web3, networkName) => {
+export default (web3, networkId) => {
   const DRAGOEVENTFUL = "dragoeventful-v2";
   const VAULTEVENTFUL = "vaulteventful-v2";
   return Observable.create(observer => {
     try {
       const registryContract = new web3.eth.Contract(
         parityregisterAbi,
-        CONST_.PARITY_REGISTRY_ADDRESSES[networkName]
+        CONST_.PARITY_REGISTRY_ADDRESSES[networkId]
       );
       Promise.all([
         registryContract.methods

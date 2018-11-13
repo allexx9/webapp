@@ -31,11 +31,6 @@ import utils from '../../_utils/utils'
 function mapStateToProps(state) {
   return state
 }
-
-const paperStyle = {
-  padding: '10px'
-}
-
 class OrderBox extends Component {
   static propTypes = {
     exchange: PropTypes.object.isRequired,
@@ -337,23 +332,23 @@ class OrderBox extends Component {
   }
 
   render() {
-    const { selectedOrder } = this.props.exchange
+    const { selectedOrder, ui } = this.props.exchange
     let buySelected = selectedOrder.orderType === 'bids'
     let sellSelected = selectedOrder.orderType === 'asks'
     if (selectedOrder.takerOrder) {
       buySelected = selectedOrder.orderType === 'asks'
       sellSelected = selectedOrder.orderType === 'bids'
     }
-
+    const paperStyle = {
+      padding: '5px',
+      display: ui.panels.orderBox.expanded ? 'inline-block' : 'none'
+    }
     return (
       <Row>
         <Col xs={12}>
           <Row className={styles.sectionTitle}>
             <Col xs={12}>
-              <BoxTitle
-                titleText={'ORDER BOX'}
-                options={{ expandSwitch: true }}
-              />
+              <BoxTitle titleText={'ORDER BOX'} boxName={'orderBox'} />
               <Paper style={paperStyle} zDepth={1}>
                 <Row>
                   <Col xs={12}>

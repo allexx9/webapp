@@ -52,6 +52,12 @@ const initialState = {
       panels: {
         relayBox: {
           expanded: true
+        },
+        orderBox: {
+          expanded: true
+        },
+        ordersHistoryBox: {
+          expanded: true
         }
       }
     },

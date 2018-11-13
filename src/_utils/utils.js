@@ -96,7 +96,7 @@ class utilities {
     }
     console.log(`endpoint_epic -> Last block: ` + prevBlockNumber)
     console.log(`endpoint_epic -> New block: ` + newBlockNumber.toFixed())
-    console.log(`endpoint_epic -> Last nonce: ` + prevNonce)
+    // console.log(`endpoint_epic -> Last nonce: ` + prevNonce)
 
     if (new BigNumber(prevBlockNumber).gte(new BigNumber(newBlockNumber))) {
       console.log(
@@ -114,7 +114,7 @@ class utilities {
         endpoint.accounts[0].address
       )
       newNonce = new BigNumber(newNonce).toFixed()
-      console.log(`endpoint_epic -> New nonce: ` + newNonce)
+      // console.log(`endpoint_epic -> New nonce: ` + newNonce)
       try {
         const poolsApi = new PoolsApi(api)
         poolsApi.contract.rigotoken.init()

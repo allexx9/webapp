@@ -17,3 +17,38 @@ export const EFX_EXCHANGE_CONTRACT = {
   [ROPSTEN]: "0x1D8643aaE25841322ecdE826862A9FA922770981",
   [MAINNET]: "0xdcDb42C9a256690bd153A7B409751ADFC8Dd5851"
 };
+
+export const ENDPOINTS = {
+  https: {
+    3: {
+      dev: "https://kovan.infura.io/metamask",
+      prod: "https://kovan.infura.io/metamask"
+    },
+    42: {
+      dev: "https://ropsten.infura.io/metamask",
+      prod: "https://ropsten.infura.io/metamask"
+    },
+    1: {
+      dev: "https://mainnet.infura.io/metamask",
+      prod: "https://mainnet.infura.io/metamask"
+    }
+  },
+  wss: {
+    3: {
+      dev: "wss://kovan.infura.io/ws",
+      prod: "wss://kovan.infura.io/ws"
+    },
+    42: {
+      dev: "wss://ropsten.infura.io/ws",
+      prod: "wss://ropsten.infura.io/ws"
+    },
+    1: {
+      dev: "wss://mainnet.infura.io/ws",
+      prod: "wss://mainnet.infura.io/ws"
+    },
+    0: {
+      dev: "ws://localhost:8546",
+      prod: "ws://localhost:8546"
+    }
+  }
+};

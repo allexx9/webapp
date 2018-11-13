@@ -13,20 +13,21 @@ import Web3Wrapper from '../../../_utils/web3Wrapper/src'
 
 export const isConnectedToNodeWeb3Wrapper$ = state$ => {
   return Observable.create(observer => {
-    Web3Wrapper.getInstance(
-      state$.value.endpoint.networkInfo.name.toUpperCase()
-    ).then(instance => {
-      console.log(instance)
-      instance.ob.nodeStatus$.subscribe(val => {
-        if (Object.keys(val.error).length === 0) {
+    Web3Wrapper.getInstance(state$.value.endpoint.networkInfo.id).then(
+      instance => {
+        instance.ob.nodeStatus$.subscribe(val => {
           // console.log('Msg: ', val)
-          observer.next(val)
-        } else {
-          // console.log('Err: ', val)
-          observer.next(val)
-        }
-      })
-    })
+          if (val === 0) return
+          if (Object.keys(val.error).length === 0) {
+            // console.log('Msg: ', val)
+            observer.next(val)
+          } else {
+            // console.log('Err: ', val)
+            observer.next(val)
+          }
+        })
+      }
+    )
   })
 }
 

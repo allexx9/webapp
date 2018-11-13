@@ -115,13 +115,13 @@ class Interfaces {
     const parityNetworkId = this._parityNetworkId
     let accountsMetaMask = {}
     if (typeof web3 === 'undefined') {
+      console.warn('MetaMask not detected')
       return
     }
     try {
       // Check if MetaMask is connected to the same network as the endpoint
       let accounts = await web3.eth.getAccounts()
       let isMetaMaskLocked = accounts.length === 0 ? true : false
-      // console.log(isMetaMaskLocked)
       let metaMaskNetworkId = await web3.eth.net.getId()
       let currentState = this._success
       if (metaMaskNetworkId !== parityNetworkId) {
@@ -146,35 +146,43 @@ class Interfaces {
           ...currentState,
           ...stateUpdate
         }
+
         // Return empty object if MetaMask is locked.
         if (accounts.length === 0) {
           return {}
         }
-        // Get ETH balance
-        let ethBalance
-        try {
-          ethBalance = await web3.eth.getBalance(accounts[0])
-        } catch (err) {
-          throw new Error(`Cannot get ETH balance of account ${accounts[0]}`)
-        }
 
-        let poolsApi = new PoolsApi(web3)
-        poolsApi.contract.rigotoken.init()
-        // Get GRG balance
-        let grgBalance
-        try {
-          grgBalance = await poolsApi.contract.rigotoken.balanceOf(accounts[0])
-        } catch (err) {
-          throw new Error(`Cannot get GRG balance of account ${accounts[0]}`)
-        }
-        // Getting transactions count
-        let nonce
-        try {
-          nonce = await web3.eth.getTransactionCount(accounts[0])
-        } catch (err) {
-          throw new Error(
-            `Cannot get transactions count of account ${accounts[0]}`
-          )
+        // Get ETH balance
+        let ethBalance = new BigNumber(0)
+        let grgBalance = new BigNumber(0)
+        let nonce = 0
+
+        if (this._api.isConnected) {
+          try {
+            ethBalance = await web3.eth.getBalance(accounts[0])
+          } catch (err) {
+            throw new Error(`Cannot get ETH balance of account ${accounts[0]}`)
+          }
+          let poolsApi = new PoolsApi(web3)
+          poolsApi.contract.rigotoken.init()
+          // Get GRG balance
+
+          try {
+            grgBalance = await poolsApi.contract.rigotoken.balanceOf(
+              accounts[0]
+            )
+          } catch (err) {
+            throw new Error(`Cannot get GRG balance of account ${accounts[0]}`)
+          }
+          // Getting transactions count
+
+          try {
+            nonce = await web3.eth.getTransactionCount(accounts[0])
+          } catch (err) {
+            throw new Error(
+              `Cannot get transactions count of account ${accounts[0]}`
+            )
+          }
         }
 
         let accountsMetaMask = {
@@ -204,7 +212,13 @@ class Interfaces {
       const allAccounts = {
         ...accountsMetaMask
       }
-      const blockNumber = await api.eth.blockNumber()
+      let blockNumber = new BigNumber(0)
+      try {
+        blockNumber = await api.eth.blockNumber()
+      } catch (error) {
+        console.warn(error)
+      }
+
       console.log(
         'Metamask account loaded: ',
         accountsMetaMask,
