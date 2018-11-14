@@ -4,8 +4,10 @@
 import * as TYPE_ from '../../actions/const'
 import { Actions } from '../../actions/'
 import { Observable } from 'rxjs'
-import { flatMap, tap } from 'rxjs/operators'
+import { distinctUntilChanged, flatMap, tap } from 'rxjs/operators'
 import Web3Wrapper from '../../../_utils/web3Wrapper/src'
+import shallowEqualObjects from 'shallow-equal/objects'
+import shallowequal from 'shallowequal'
 
 //
 // CHECK IF THE APP If NETWORK IS UP AND THERE IS A CONNECTION TO A NODE
@@ -38,8 +40,14 @@ export const connectedToNodeEpic = (action$, state$) =>
         // console.log(result)
         return result
       }),
+      distinctUntilChanged((a, b) => {
+        // console.log(JSON.stringify(a), JSON.stringify(b))
+        console.log(shallowequal(JSON.stringify(a), JSON.stringify(b)))
+        return shallowequal(JSON.stringify(a), JSON.stringify(b))
+      }),
       flatMap(result => {
         let actionsArray = Array(0)
+        // console.log('connectedToNodeEpic')
         actionsArray = [
           Observable.of(
             Actions.app.updateAppStatus({

@@ -5,12 +5,21 @@ import * as ERRORS from '../../../../_const/errors'
 import * as TYPE_ from '../../../actions/const'
 import { Actions } from '../../../actions/'
 import { BigNumber } from '@0xproject/utils'
+import {
+  ERC20_TOKENS,
+  Ethfinex,
+  TRADE_TOKENS_PAIRS
+} from '../../../../_utils/tokens'
 import { Observable, defer, timer } from 'rxjs'
 import {
+  buffer,
+  delayWhen,
   finalize,
+  first,
   map,
   mergeMap,
   retryWhen,
+  skipWhile,
   takeUntil,
   tap
 } from 'rxjs/operators'
@@ -68,8 +77,8 @@ const getPastExchangeEvents$ = (fund, tokens, exchange, state$) => {
         {
           fromBlock: 0,
           toBlock: 'latest',
-          // topics: [null, null, null, null]
-          topics: [null, makerAddress, null, [tokens1, tokens2]]
+          topics: [null, makerAddress, null, null]
+          // topics: [null, makerAddress, null, [tokens1, tokens2]]
         },
         function(error) {
           if (error) {
@@ -78,7 +87,7 @@ const getPastExchangeEvents$ = (fund, tokens, exchange, state$) => {
         }
       )
       .then(events => {
-        console.log(events)
+        // console.log(events)
         return events
       })
       .catch(error => {
@@ -110,52 +119,114 @@ const getPastExchangeEvents$ = (fund, tokens, exchange, state$) => {
 //   })
 // }
 
-const processTradeHistory = (trades, tokens) => {
-  console.log(tokens)
+const processTradesHistory = (trades, state$) => {
+  // console.log(tokens)
+  let networkName = state$.value.endpoint.networkInfo.name
+  let quoteTokensWrappers = new Map()
+  let baseTokensWrappers = new Map()
+  let tokensSymbols = new Map()
+  Object.keys(state$.value.exchange.availableTradeTokensPairs).forEach(
+    quoteToken => {
+      quoteTokensWrappers.set(
+        ERC20_TOKENS[networkName][
+          quoteToken
+        ].wrappers.Ethfinex.address.toLowerCase(),
+        ERC20_TOKENS[networkName][quoteToken].wrappers.Ethfinex
+      )
+    }
+  )
+
+  Object.keys(ERC20_TOKENS[networkName]).forEach(token => {
+    if (Object.keys(ERC20_TOKENS[networkName][token].wrappers).length !== 0) {
+      baseTokensWrappers.set(
+        ERC20_TOKENS[networkName][
+          token
+        ].wrappers.Ethfinex.address.toLowerCase(),
+        ERC20_TOKENS[networkName][token].wrappers.Ethfinex
+      )
+      // console.log(
+      //   ERC20_TOKENS[networkName][
+      //     token
+      //   ].wrappers.Ethfinex.address.toLowerCase(),
+      //   ERC20_TOKENS[networkName][token].symbolTicker.Ethfinex
+      // )
+      tokensSymbols.set(
+        ERC20_TOKENS[networkName][
+          token
+        ].wrappers.Ethfinex.address.toLowerCase(),
+        ERC20_TOKENS[networkName][token].symbolTicker.Ethfinex
+      )
+    }
+  })
+
   let tradeHistory = trades.map(trade => {
     let transaction = {
       type: '',
-      baseTokenSymbol: tokens.baseToken.symbol,
-      quoteTokenSymbol: tokens.quoteToken.symbol,
+      baseTokenSymbol: '',
+      quoteTokenSymbol: '',
       transactionHash: trade.transactionHash,
       price: '0',
       amount: '0'
     }
+    // console.log(
+    //   trade.returnValues.makerToken.toLowerCase(),
+    //   tokensSymbols.get(trade.returnValues.makerToken.toLowerCase())
+    // )
+    transaction.baseTokenSymbol = tokensSymbols.get(
+      trade.returnValues.makerToken.toLowerCase()
+    )
+    transaction.quoteTokenSymbol = tokensSymbols.get(
+      trade.returnValues.takerToken.toLowerCase()
+    )
     let makerAmount, takerAmount
     if (
-      trade.returnValues.makerToken.toLowerCase() ===
-      tokens.baseToken.wrappers.Ethfinex.address.toLowerCase()
+      // trade.returnValues.makerToken.toLowerCase() ===
+      // tokens.baseToken.wrappers.Ethfinex.address.toLowerCase()
+      !quoteTokensWrappers.has(trade.returnValues.makerToken.toLowerCase())
     ) {
       transaction.type = 'sell'
+      let makerDecimals = baseTokensWrappers.get(
+        trade.returnValues.makerToken.toLowerCase()
+      ).decimals
+      let takerDecimals = quoteTokensWrappers.get(
+        trade.returnValues.takerToken.toLowerCase()
+      ).decimals
       makerAmount = toUnitAmount(
         new BigNumber(trade.returnValues.filledMakerTokenAmount),
-        tokens.baseToken.decimals
+        makerDecimals
       )
-      console.log(makerAmount.toFixed(5))
+      // console.log(makerAmount.toFixed(5))
       takerAmount = toUnitAmount(
         new BigNumber(trade.returnValues.filledTakerTokenAmount),
-        tokens.quoteToken.decimals
+        takerDecimals
       )
-      console.log(takerAmount.toFixed(5))
+      // console.log(takerAmount.toFixed(5))
       transaction.price = takerAmount.div(makerAmount).toFixed(5)
       transaction.amount = makerAmount.toFixed(5)
     }
     if (
-      trade.returnValues.makerToken.toLowerCase() ===
-      tokens.quoteToken.wrappers.Ethfinex.address.toLowerCase()
+      // trade.returnValues.makerToken.toLowerCase() ===
+      // tokens.quoteToken.wrappers.Ethfinex.address.toLowerCase()
+      quoteTokensWrappers.has(trade.returnValues.makerToken.toLowerCase())
     ) {
       transaction.type = 'buy'
+      let makerDecimals = quoteTokensWrappers.get(
+        trade.returnValues.makerToken.toLowerCase()
+      ).decimals
+      let takerDecimals = baseTokensWrappers.get(
+        trade.returnValues.takerToken.toLowerCase()
+      ).decimals
       makerAmount = toUnitAmount(
         new BigNumber(trade.returnValues.filledTakerTokenAmount),
-        tokens.quoteToken.decimals
+        takerDecimals
       )
       takerAmount = toUnitAmount(
         new BigNumber(trade.returnValues.filledMakerTokenAmount),
-        tokens.baseToken.decimals
+        takerDecimals
       )
       transaction.amount = toUnitAmount(
         new BigNumber(trade.returnValues.filledTakerTokenAmount),
-        tokens.quoteToken.decimals
+        makerDecimals
       ).toFixed(5)
 
       transaction.price = new BigNumber(1)
@@ -168,20 +239,26 @@ const processTradeHistory = (trades, tokens) => {
 }
 
 export const monitorExchangeEventsEpic = (action$, state$) => {
+  const appIsConnected = state$.pipe(
+    map(val => {
+      return typeof val.exchange.selectedFund.details.address === 'undefined'
+    }),
+    skipWhile(val => val === true)
+  )
+
   return action$.pipe(
     ofType(utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_START)),
+    buffer(appIsConnected),
+    first(),
     mergeMap(action => {
+      console.log(action)
+      const { fund, tokens, exchange } = action[0].payload
       // console.log(action)
       return Observable.concat(
-        getPastExchangeEvents$(
-          action.payload.fund,
-          action.payload.tokens,
-          action.payload.exchange,
-          state$
-        )
+        getPastExchangeEvents$(fund, tokens, exchange, state$)
         // monitorExchangeEvents$(
-        //   action.payload.fund,
-        //   action.payload.tokens,
+        //   fund,
+        //   tokens,
         //   state$
         // ).pipe(
         //   takeUntil(
@@ -192,30 +269,22 @@ export const monitorExchangeEventsEpic = (action$, state$) => {
         // )
       ).pipe(
         takeUntil(action$.ofType(TYPE_.MONITOR_EXCHANGE_EVENTS_STOP)),
-        tap(val => {
-          console.log(val)
-          console.log(processTradeHistory(val, action.payload.tokens))
-          return val
-        }),
-        map(event => {
-          return {
-            type: 'DUMB',
-            payload: 'Dumb'
-          }
-          // return Observable.concat(...observablesArray)
-        }),
-        retryWhen(error => {
-          let scalingDuration = 10000
-          return error.pipe(
-            mergeMap((error, i) => {
-              console.warn(error)
-              const retryAttempt = i + 1
-              console.log(`monitorExchangeEventsEpic Attempt ${retryAttempt}`)
-              return timer(scalingDuration)
-            }),
-            finalize(() => console.log('We are done!'))
-          )
+        map(trades => {
+          let tradesHistory = processTradesHistory(trades.reverse(), state$)
+          return Actions.exchange.updateTradesHistory(tradesHistory)
         })
+        // retryWhen(error => {
+        //   let scalingDuration = 10000
+        //   return error.pipe(
+        //     mergeMap((error, i) => {
+        //       console.warn(error)
+        //       const retryAttempt = i + 1
+        //       console.log(`monitorExchangeEventsEpic Attempt ${retryAttempt}`)
+        //       return timer(scalingDuration)
+        //     }),
+        //     finalize(() => console.log('We are done!'))
+        //   )
+        // })
       )
     })
   )

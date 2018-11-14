@@ -164,8 +164,12 @@ const nodeStatus$ = transport => {
       );
     }),
     timeout(7000),
-    map(val => {
+    tap(val => {
       console.log(val);
+      return val;
+    }),
+    map(val => {
+      // console.log(val);
       // if (val) {
       //   return {
       //     isConnected: false,

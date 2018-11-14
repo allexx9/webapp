@@ -3,6 +3,12 @@
 import * as TYPE_ from './const'
 
 const exchange = {
+  updateTradesHistory: payload => {
+    return {
+      type: TYPE_.UPDATE_TRADES_HISTORY,
+      payload: payload
+    }
+  },
   setUiPanelProperties: ui => {
     return {
       type: TYPE_.SET_EXCHANGE_PANEL_UI_PROPERTIES,

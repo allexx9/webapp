@@ -48,7 +48,7 @@ const initialState = {
     engine: ''
   },
   exchange: {
-    tradesHistory: {},
+    tradesHistory: [],
     ui: {
       panels: {
         relayBox: {

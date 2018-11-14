@@ -17,6 +17,7 @@ import TokenLockBalance from '../atoms/tokenLockBalance'
 import TokenLockTimeField from '../atoms/tokenLockTimeField'
 import Web3 from 'web3'
 // import Web3Wrapper from '../../_utils/web3Wrapper'
+import ShowStatusMsg from '../atoms/showStatusMsg'
 import moment from 'moment'
 import serializeError from 'serialize-error'
 import styles from './tokenLockInfo.module.css'
@@ -48,7 +49,8 @@ class TokenLockInfo extends Component {
     baseTokenSelected: true,
     errorText: '',
     baseTokenRelock: false,
-    quoteTokenRelock: false
+    quoteTokenRelock: false,
+    showActionRequestMsg: false
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -184,6 +186,9 @@ class TokenLockInfo extends Component {
           })
           return
         }
+        this.setState({
+          showActionRequestMsg: true
+        })
 
         console.log(time)
         console.log(
@@ -270,6 +275,9 @@ class TokenLockInfo extends Component {
               transactionDetails
             )
           )
+          this.setState({
+            showActionRequestMsg: false
+          })
         } catch (error) {
           console.warn(error)
           errorArray = serializeError(error).message.split(/\r?\n/)
@@ -284,6 +292,9 @@ class TokenLockInfo extends Component {
           this.props.dispatch(
             Actions.app.queueErrorNotification(serializeError(error).message)
           )
+          this.setState({
+            showActionRequestMsg: false
+          })
         }
 
         break
@@ -335,6 +346,9 @@ class TokenLockInfo extends Component {
           tokenWrapperAddress,
           toBaseUnitAmount(new BigNumber(amount), decimals)
         )
+        this.setState({
+          showActionRequestMsg: true
+        })
         transactionId = sha3_512(new Date() + selectedFund.managerAccount)
         transactionDetails = {
           status: 'pending',
@@ -416,6 +430,9 @@ class TokenLockInfo extends Component {
               transactionDetails
             )
           )
+          this.setState({
+            showActionRequestMsg: false
+          })
         } catch (error) {
           console.warn(error)
           errorArray = serializeError(error).message.split(/\r?\n/)
@@ -430,6 +447,9 @@ class TokenLockInfo extends Component {
           this.props.dispatch(
             Actions.app.queueErrorNotification(serializeError(error).message)
           )
+          this.setState({
+            showActionRequestMsg: false
+          })
         }
 
         break
@@ -651,6 +671,14 @@ class TokenLockInfo extends Component {
           </Col>
           <Col xs={12}>
             <LockErrorMessage message={this.state.errorText} />
+          </Col>
+          <Col xs={12}>
+            {this.state.showActionRequestMsg && (
+              <ShowStatusMsg
+                msg="Please authorize the action."
+                status="warning"
+              />
+            )}
           </Col>
         </Row>
       </div>

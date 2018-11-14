@@ -2,6 +2,7 @@ import { BigNumber } from '@0xproject/utils'
 import { ERCdEX, Ethfinex } from './const'
 import { ZeroEx } from '0x.js'
 import Web3 from 'web3'
+import moment from 'moment'
 
 const formatOrdersFromAggregateERCdEX = orders => {
   let orderPrice, orderAmount
@@ -217,9 +218,15 @@ export const accountOrders = {
       orderPrice = new BigNumber(order.price).toFixed(7)
       orderAmount = new BigNumber(order.amount).toFixed(5)
       remainingAmount = new BigNumber(order.amount).toFixed(5)
+      let date = moment(order.created_at)
+      let yesterday = moment()
+        .subtract(1, 'days')
+        .endOf('day')
       let orderObject = {
         order,
-        dateCreated: order.created_at,
+        dateCreated: date.isAfter(yesterday)
+          ? date.format('h:mm:ss')
+          : date.format('YYYY-MM-DD'),
         orderAmount,
         remainingAmount,
         orderType,

@@ -88,8 +88,8 @@ class EthfinexAuth extends Component {
     //     .format('MMMM Do YYYY, h:mm:ss a')}`
     // )
     return (
-      <Row>
-        <div className={styles.section}>
+      <div className={styles.section}>
+        <Row>
           <Col xs={12}>
             <Row>
               <Col xs={12}>
@@ -116,8 +116,8 @@ class EthfinexAuth extends Component {
               selectedRelay={selectedRelay}
             />
           </Col>
-        </div>
-      </Row>
+        </Row>
+      </div>
     )
   }
 }

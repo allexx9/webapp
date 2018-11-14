@@ -1,9 +1,11 @@
 import * as Colors from 'material-ui/styles/colors'
-import { Col, Grid, Row } from 'react-flexbox-grid'
+import { Col, Row } from 'react-flexbox-grid'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import ReactTooltip from 'react-tooltip'
+import TradingPairSymbolsOrders from '../atoms/tradingPairSymbolsOders'
 import classNames from 'classnames'
+import moment from 'moment'
 
 import { formatPrice } from '../../_utils/format'
 
@@ -56,17 +58,17 @@ class TableOrdersHistory extends Component {
         >
           <Col xs={12}>
             <Row>
-              <Col xs={2} className={styles.tableCell}>
+              <Col xs={3} className={styles.tableCell}>
                 {order.dateCreated}
               </Col>
               <Col xs={2} className={styles.tableCell}>
-                <span className={styles.baseToken}>{baseTokenSymbol}</span> /
-                <span>
-                  <small> {order.order.fiat_currency}</small>
-                </span>
+                <TradingPairSymbolsOrders
+                  baseTokenSymbol={baseTokenSymbol}
+                  quoteTokenSymbol={order.order.fiat_currency}
+                />
               </Col>
               <Col
-                xs={2}
+                xs={1}
                 style={orderTypeStyle[order.orderType]}
                 className={styles.tableCell}
               >
@@ -113,8 +115,12 @@ class TableOrdersHistory extends Component {
         <Col xs={12}>
           <Row>
             <Col xs={2}>DATE</Col>
-            <Col xs={2}>PAIR</Col>
-            <Col xs={2}>TYPE</Col>
+            <Col xs={2} className={styles.right}>
+              PAIR
+            </Col>
+            <Col xs={2} className={styles.right}>
+              TYPE
+            </Col>
             <Col xs={2} className={styles.right}>
               PRICE
             </Col>

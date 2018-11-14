@@ -617,25 +617,6 @@ export const newMakerOrder = async (
 
     exchangeContractAddress: selectedExchange.exchangeContractAddress.toLowerCase()
   }
-
-  // const order = {
-  //   expirationUnixTimestampSec: web3.utils.toBN(expiration).toString(10),
-  //   feeRecipient: efx.config['0x'].ethfinexAddress.toLowerCase(),
-
-  //   maker: efx.get('account').toLowerCase(),
-  //   makerFee: web3.utils.toBN('0'),
-  //   makerTokenAddress: sellCurrency.wrapperAddress.toLowerCase(),
-  //   makerTokenAmount: sellAmount,
-
-  //   salt: ZeroEx.generatePseudoRandomSalt(),
-  //   taker: efx.config['0x'].ethfinexAddress.toLowerCase(),
-  //   takerFee: web3.utils.toBN('0'),
-  //   takerTokenAddress: buyCurrency.wrapperAddress.toLowerCase(),
-  //   takerTokenAmount: buyAmount,
-
-  //   exchangeContractAddress: efx.config['0x'].exchangeAddress.toLowerCase()
-  // }
-
   console.log(order)
   return order
 }

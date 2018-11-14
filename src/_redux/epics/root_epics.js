@@ -31,8 +31,6 @@ const Tokens_Epics = [
   Tokens.getCandlesGroupDataEpic
 ]
 
-console.log(Ethfinex)
-
 const Ethfinex_Epics = [
   Ethfinex.getCandlesSingleDataEpic,
   Ethfinex.initRelayWebSocketTickerEpic,

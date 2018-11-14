@@ -593,7 +593,7 @@ class ApplicationExchangeHome extends Component {
       // console.log(this.props.exchange.selectedExchange)
       // const bidsOrderNormalizedFilled = [ ...Array(20 - bidsOrderNormalized.length).fill(null), ...bidsOrderNormalized ]
       // const asksOrderNormalizedFilled = [ ...Array(20 - asksOrderNormalized.length).fill(null), ...asksOrderNormalized]
-      const { chartData, fundOrders } = this.props.exchange
+      const { chartData } = this.props.exchange
       const currentPrice = new BigNumber(
         this.props.exchange.selectedTokensPair.ticker.current.price
       )
@@ -647,9 +647,7 @@ class ApplicationExchangeHome extends Component {
                 </Row>
               </Paper>
             </Col>
-            {/* <Col xs={12}>
-              <ChartBox data={this.state.chartData} />
-            </Col> */}
+
             <Col xs={12}>
               <Row>
                 <Col xs={12} md={12} lg={3}>
@@ -679,7 +677,7 @@ class ApplicationExchangeHome extends Component {
                     </Col>
                     <Col xs={12}>
                       <div className={styles.boxContainer}>
-                        <OrdersHistoryBox fundOrders={fundOrders} />
+                        <OrdersHistoryBox />
                       </div>
                     </Col>
                   </Row>

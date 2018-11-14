@@ -60,6 +60,8 @@
     "rxjs-compat": "^6.3.3",
     "scroll-to-element": "^2.0.0",
     "serialize-error": "^2.1.0",
+    "shallow-equal": "^1.0.0",
+    "shallowequal": "^1.1.0",
     "style-loader": "^0.23.0",
     "web3": "1.0.0-beta.33",
     "web3-core": "1.0.0-beta.33",

@@ -119,6 +119,8 @@ class ExchangeBox extends PureComponent {
             <Row>
               <Col xs={12}>
                 <SectionTitleExchange titleText="RELAYS" />
+              </Col>
+              <Col xs={12}>
                 <ExchangeSelector
                   availableRelays={availableRelays}
                   selectedRelay={selectedRelay.name}
