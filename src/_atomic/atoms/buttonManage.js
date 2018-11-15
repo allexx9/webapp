@@ -16,7 +16,8 @@ class ButtonManage extends Component {
     const buttonActions = {
       border: '1px solid',
       borderColor: Colors.grey200,
-      backgroundColor: '#ffffff'
+      backgroundColor: '#ffffff',
+      zIndex: '999'
     }
 
     return (
