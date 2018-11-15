@@ -1,47 +1,59 @@
+import * as TYPE_ from '../../../actions/const'
+import { Actions } from '../../../actions/'
+import { Observable, of } from 'rxjs'
 import { ZeroEx } from '0x.js'
+import { map, mergeMap } from 'rxjs/operators'
+import { ofType } from 'redux-observable'
 import Web3 from 'web3'
+import moment from 'moment'
 
-const newMakerOrder = (
-  orderType,
-  selectedTokensPair,
-  selectedExchange,
-  selectedFund,
-  isTokenWrapper
-) => {
-  let makerTokenAddress, takerTokenAddress
-  if (isTokenWrapper) {
+import utils from '../../../../_utils/utils'
+
+const newMakerOrderV0 = (orderSide, options, state$) => {
+  const adjustExpirationTime = lockExpirationTime => {
+    return moment
+      .unix(lockExpirationTime)
+      .subtract(10, 'm')
+      .unix()
+  }
+  let makerTokenAddress, takerTokenAddress, orderExpirationTime
+  const {
+    selectedTokensPair,
+    selectedExchange,
+    selectedFund,
+    selectedRelay
+  } = state$.value.exchange
+  if (selectedRelay.isTokenWrapper) {
     makerTokenAddress =
-      orderType === 'asks'
+      orderSide === 'asks'
         ? selectedTokensPair.baseToken.wrappers[selectedExchange.name].address
         : selectedTokensPair.quoteToken.wrappers[selectedExchange.name].address
     takerTokenAddress =
-      orderType === 'asks'
+      orderSide === 'asks'
         ? selectedTokensPair.quoteToken.wrappers[selectedExchange.name].address
         : selectedTokensPair.baseToken.wrappers[selectedExchange.name].address
+    orderExpirationTime =
+      orderSide === 'asks'
+        ? adjustExpirationTime(selectedTokensPair.baseTokenLockWrapExpire)
+        : adjustExpirationTime(selectedTokensPair.quoteTokenLockWrapExpire)
   } else {
     makerTokenAddress =
-      orderType === 'asks'
+      orderSide === 'asks'
         ? selectedTokensPair.baseToken.address
         : selectedTokensPair.quoteToken.address
     takerTokenAddress =
-      orderType === 'asks'
+      orderSide === 'asks'
         ? selectedTokensPair.quoteToken.address
         : selectedTokensPair.baseToken.address
+    orderExpirationTime = moment()
+      .add(24, 'h')
+      .unix()
   }
 
-  // const expirationUnixTimestampSec = new BigNumber(
-  //   Math.round(new Date().getTime() / 1000) + (defaultExpiry || 60) * 60 * 12
-  // ).toNumber()
-
-  let defaultConfig = 3600
-  let expiration
-  expiration = Math.round(new Date().getTime() / 1000)
-  expiration += defaultConfig
-
-  // part after the plus can be replaced, first part is constant
   const web3 = new Web3()
+
   const order = {
-    expirationUnixTimestampSec: web3.utils.toBN(expiration).toString(10),
+    expirationUnixTimestampSec: orderExpirationTime.toString(),
     feeRecipient: selectedExchange.feeRecipient.toLowerCase(),
 
     maker: selectedFund.details.address.toLowerCase(),
@@ -55,49 +67,40 @@ const newMakerOrder = (
 
     exchangeContractAddress: selectedExchange.exchangeContractAddress.toLowerCase()
   }
-  console.log(order)
-  return order
+  const makerOrder = {
+    details: {
+      order: order,
+      orderAmount: 0,
+      orderPrice: 0,
+      orderType: orderSide
+    },
+    orderAmountError: true,
+    orderPriceError: true,
+    orderFillAmount: '0',
+    orderMaxAmount: '0',
+    orderPrice: '0',
+    orderType: orderSide,
+    takerOrder: false,
+    selectedTokensPair: selectedTokensPair
+  }
+  return makerOrder
 }
 
-export const createOrderEthfinexV0 = (action$, state$) => {
+const createOrderEthfinexV0Epic = (action$, state$) => {
   return action$.pipe(
     ofType(utils.customRelayAction(TYPE_.ORDER_CREATE)),
     mergeMap(action => {
-      console.log(action)
-      const { fund, tokens, exchange } = action[0].payload
-      // console.log(action)
+      const { orderSide, options } = action.payload
       return Observable.concat(
-        getPastExchangeEvents$(fund, tokens, exchange, state$)
-        // monitorExchangeEvents$(
-        //   fund,
-        //   tokens,
-        //   state$
-        // ).pipe(
-        //   takeUntil(
-        //     action$.ofType(
-        //       utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_STOP)
-        //     )
-        //   )
-        // )
+        of(newMakerOrderV0(orderSide, options, state$))
       ).pipe(
-        takeUntil(action$.ofType(TYPE_.MONITOR_EXCHANGE_EVENTS_STOP)),
-        map(trades => {
-          let tradesHistory = processTradesHistory(trades.reverse(), state$)
-          return Actions.exchange.updateTradesHistory(tradesHistory)
+        map(order => {
+          console.log(order)
+          return Actions.exchange.updateOrder(order)
         })
-        // retryWhen(error => {
-        //   let scalingDuration = 10000
-        //   return error.pipe(
-        //     mergeMap((error, i) => {
-        //       console.warn(error)
-        //       const retryAttempt = i + 1
-        //       console.log(`monitorExchangeEventsEpic Attempt ${retryAttempt}`)
-        //       return timer(scalingDuration)
-        //     }),
-        //     finalize(() => console.log('We are done!'))
-        //   )
-        // })
       )
     })
   )
 }
+
+export default createOrderEthfinexV0Epic

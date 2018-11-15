@@ -37,6 +37,7 @@ const sync$ = (web3, transport) => {
           error: {}
         };
         let newNodeStatus;
+        console.log(result);
         if (result) {
           if (
             new BigNumber(result.highestBlock).minus(result.currentBlock).gt(2)
@@ -165,7 +166,7 @@ const nodeStatus$ = transport => {
     }),
     timeout(7000),
     tap(val => {
-      console.log(val);
+      // console.log(val);
       return val;
     }),
     map(val => {

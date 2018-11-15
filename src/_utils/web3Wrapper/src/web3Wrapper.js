@@ -20,7 +20,7 @@ let Web3Wrapper = (() => {
       timeout: 5000
     });
     web3 = newWeb3(provider);
-    webSocket$(web3, newWeb3, transport).subscribe(status => {
+    webSocket$(web3, newWeb3, transport, provider).subscribe(status => {
       console.log(status);
     });
     return {
@@ -30,7 +30,7 @@ let Web3Wrapper = (() => {
           eventfull$: eventfull$(web3, networkId),
           exchangeEfxV0$: exchangeEfxV0$(web3, networkId)
         },
-        utils: { contract },
+        utils: { contract: contract(web3) },
         endpoint: transport
       },
       ob: {

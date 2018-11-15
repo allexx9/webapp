@@ -1,8 +1,10 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
-
 import * as TYPE_ from './const'
+import { createOrder, updateOrder } from './exchange'
 
 const exchange = {
+  createOrder,
+  updateOrder,
   updateTradesHistory: payload => {
     return {
       type: TYPE_.UPDATE_TRADES_HISTORY,
@@ -18,11 +20,6 @@ const exchange = {
   updateSelectedFund: (fund, managerAccount) => {
     const payload = {
       details: fund,
-      // liquidity: {
-      //   ETH: liquidity[0],
-      //   WETH: liquidity[1],
-      //   ZRX: liquidity[2]
-      // },
       managerAccount
     }
     return {
@@ -42,15 +39,15 @@ const exchange = {
       payload: exchange
     }
   },
-  updateSelectedOrder: payload => {
-    return {
-      type: TYPE_.UPDATE_SELECTED_ORDER,
-      payload: payload
-    }
-  },
+  // updateOrder: payload => {
+  //   return {
+  //     type: TYPE_.ORDER_UPDATE,
+  //     payload: payload
+  //   }
+  // },
   cancelSelectedOrder: () => {
     return {
-      type: TYPE_.CANCEL_SELECTED_ORDER
+      type: TYPE_.ORDER_CANCEL
     }
   },
   getAccountOrdersStart: (relay, networkId, account, baseToken, quoteToken) => {

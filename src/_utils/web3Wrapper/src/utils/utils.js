@@ -8,6 +8,21 @@ export const errorMsg = error => {
   return error.charAt(0).toUpperCase() + error.slice(1);
 };
 
+export const getBlockChunks = async (start, end, chunkSize, web3) => {
+  const startBlock = start;
+  const chunks = [];
+  let endBlock = end;
+  if (endBlock === "latest") {
+    endBlock = await web3.eth.getBlockNumber();
+  }
+  for (let i = startBlock - 1; i < endBlock; i += chunkSize) {
+    const fromBlock = i + 1;
+    const toBlock = i + chunkSize > end ? end : i + chunkSize;
+    chunks.push([fromBlock, toBlock]);
+  }
+  return chunks;
+};
+
 export const blockChunks = (start, end, chunk) => {
   let rangesArray = [];
   let i = 0;

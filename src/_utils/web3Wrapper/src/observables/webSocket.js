@@ -9,15 +9,15 @@ import {
   throttle
 } from "rxjs/operators";
 
-let retryAttemptWebSocket$ = 0;
+let retryAttemptWebSocket = 0;
 
-const webSocket$ = (web3, newWeb3, transport) => {
-  let provider = new Web3.providers.WebsocketProvider(transport, {
-    timeout: 30000
-  });
+const webSocket$ = (web3, newWeb3, transport, provider) => {
+  // let provider = new Web3.providers.WebsocketProvider(transport, {
+  //   timeout: 30000
+  // });
   return Observable.create(observer => {
     provider.on("connect", function(event) {
-      retryAttemptWebSocket$ = 0;
+      retryAttemptWebSocket = 0;
       console.log("**** WSS connected ****");
       const status = { event, error: false };
       observer.next(status);
@@ -58,8 +58,8 @@ const webSocket$ = (web3, newWeb3, transport) => {
         throttle(val => interval(2000)),
         mergeMap(error => {
           console.log(error);
-          retryAttemptWebSocket$++;
-          console.log(`**** webSocket$ Attempt ${retryAttemptWebSocket$} ****`);
+          retryAttemptWebSocket++;
+          console.log(`**** webSocket$ Attempt ${retryAttemptWebSocket} ****`);
           let provider = new Web3.providers.WebsocketProvider(transport, {
             timeout: 30000
           });

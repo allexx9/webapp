@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
-import { UPDATE_SELECTED_ORDER } from '../../_redux/actions/const'
+import { ORDER_UPDATE } from '../../_redux/actions/const'
 import { connect } from 'react-redux'
 import { detect } from 'detect-browser'
 import styles from './tableOrderBook.module.css'
@@ -25,7 +25,7 @@ class TableTranscationsHistory extends Component {
     api: PropTypes.object.isRequired
   }
 
-  updateSelectedOrder = order => {
+  updateOrder = order => {
     const { selectedTokensPair } = this.props.exchange
     const payload = {
       details: { ...order },
@@ -39,7 +39,7 @@ class TableTranscationsHistory extends Component {
       selectedTokensPair: selectedTokensPair
     }
     return {
-      type: UPDATE_SELECTED_ORDER,
+      type: ORDER_UPDATE,
       payload: payload
     }
   }
@@ -48,7 +48,7 @@ class TableTranscationsHistory extends Component {
     console.log(id)
     let order = this.props.orders[id]
     console.log(order)
-    this.props.dispatch(this.updateSelectedOrder(order))
+    this.props.dispatch(this.updateOrder(order))
   }
 
   renderRows = ordersSorted => {

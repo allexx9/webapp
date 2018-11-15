@@ -25,6 +25,8 @@ import {
 } from '../../_utils/exchange'
 import { sha3_512 } from 'js-sha3'
 // import ToggleSwitch from '../atoms/toggleSwitch'
+import ShowStatusMsg from '../atoms/showStatusMsg'
+import moment from 'moment'
 import serializeError from 'serialize-error'
 import utils from '../../_utils/utils'
 
@@ -44,7 +46,8 @@ class OrderBox extends Component {
     orderSubmitStep: 0,
     orderOptions: {
       quickOrder: false
-    }
+    },
+    showWarnMsg: ''
   }
 
   static contextTypes = {
@@ -74,7 +77,7 @@ class OrderBox extends Component {
       orderFillAmount: amount
     }
     console.log(amount)
-    this.props.dispatch(Actions.exchange.updateSelectedOrder(payload))
+    this.props.dispatch(Actions.exchange.updateOrder(payload))
   }
 
   onChangePrice = (amount, error) => {
@@ -83,7 +86,7 @@ class OrderBox extends Component {
       orderPrice: amount
     }
     console.log(amount)
-    this.props.dispatch(Actions.exchange.updateSelectedOrder(payload))
+    this.props.dispatch(Actions.exchange.updateOrder(payload))
   }
 
   onConfirmOrder = async () => {
@@ -112,7 +115,7 @@ class OrderBox extends Component {
       const payload = {
         details: { order: signedOrder }
       }
-      this.props.dispatch(Actions.exchange.updateSelectedOrder(payload))
+      this.props.dispatch(Actions.exchange.updateOrder(payload))
 
       if (this.state.orderOptions.quickOrder) {
         this.onSubmitOrder(null, null, { ...selectedOrder, ...payload })
@@ -295,40 +298,37 @@ class OrderBox extends Component {
   onSelectOrderType = () => {}
 
   onBuySell = async orderType => {
-    const {
-      selectedTokensPair,
-      selectedExchange,
-      selectedFund,
-      selectedRelay
-    } = this.props.exchange
-    const order = await newMakerOrder(
-      orderType,
-      selectedTokensPair,
-      selectedExchange,
-      selectedFund,
-      selectedRelay.isTokenWrapper
-    )
-    const makerOrder = {
-      details: {
-        order: order,
-        orderAmount: 0,
-        orderPrice: 0,
-        orderType: orderType
-      },
-      orderAmountError: true,
-      orderPriceError: true,
-      orderFillAmount: '0',
-      orderMaxAmount: '0',
-      orderPrice: '0',
-      orderType: orderType,
-      takerOrder: false,
-      selectedTokensPair: selectedTokensPair
+    console.log(orderType)
+    const { selectedTokensPair } = this.props.exchange
+
+    if (orderType === 'asks') {
+      if (
+        moment
+          .unix(selectedTokensPair.baseTokenLockWrapExpire)
+          .isBefore(moment())
+      ) {
+        this.setState({
+          showWarnMsg: 'Please lock some ' + selectedTokensPair.baseToken.symbol
+        })
+        return
+      }
+    } else {
+      if (
+        moment
+          .unix(selectedTokensPair.quoteTokenLockWrapExpire)
+          .isBefore(moment())
+      ) {
+        this.setState({
+          showWarnMsg:
+            'Please lock some ' + selectedTokensPair.quoteToken.symbol
+        })
+        return
+      }
     }
-    console.log(makerOrder)
-    this.props.dispatch(Actions.exchange.updateSelectedOrder(makerOrder))
-    // this.setState({
-    //   orderRawDialogOpen: true
-    // })
+    this.setState({
+      showWarnMsg: ''
+    })
+    this.props.dispatch(Actions.exchange.createOrder('asks'))
   }
 
   render() {
@@ -374,6 +374,14 @@ class OrderBox extends Component {
                         />
                       </Col>
                     </Row>
+                  </Col>
+                  <Col xs={12}>
+                    {this.state.showWarnMsg && (
+                      <ShowStatusMsg
+                        msg={this.state.showWarnMsg}
+                        status="warning"
+                      />
+                    )}
                   </Col>
                   <Col xs={12}>
                     <OrderAmountInputField

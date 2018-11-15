@@ -74,8 +74,8 @@ export const attacheInterfaceEpic = action$ =>
           return Observable.concat(
             Observable.of(
               Actions.app.updateAppStatus({
-                appLoading: false,
-                isConnected: true
+                appLoading: false
+                // isConnected: true
               })
             ),
             Observable.of(Actions.endpoint.updateInterface(endpoint))
