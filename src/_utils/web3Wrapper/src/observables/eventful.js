@@ -27,7 +27,7 @@ export default (web3, networkId) => {
         .call()
     )
   ).pipe(
-    mergeMap(([dragoEventfulAddress, vaultEventfulAddress]) => {
+    map(([dragoEventfulAddress, vaultEventfulAddress]) => {
       const dragoEventful = new web3.eth.Contract(
         dragoeventfulAbi,
         dragoEventfulAddress
@@ -36,11 +36,11 @@ export default (web3, networkId) => {
         vaulteventfulAbi,
         vaultEventfulAddress
       )
-      return merge(
-        createEventful$(dragoEventful),
-        createEventful$(vaultEventful)
-      )
-    })
+      return [dragoEventful, vaultEventful]
+    }),
+    mergeMap(([dragoEventful, vaultEventful]) =>
+      merge(createEventful$(dragoEventful), createEventful$(vaultEventful))
+    )
   )
 }
 

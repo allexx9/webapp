@@ -3,6 +3,12 @@ import Web3 from 'web3'
 import contract from './utils/contract'
 import getEventful$ from './observables/eventful'
 
+const nodeStatus = {
+  isConnected: false,
+  isSyncing: false,
+  syncStatus: {},
+  error: {}
+}
 class Web3Wrapper {
   web3 = null
   instance = null
@@ -11,15 +17,17 @@ class Web3Wrapper {
   get status$() {
     return timer(0, 1000).pipe(
       exhaustMap(() => from(this.web3.eth.isSyncing())),
-      map(status => {
-        console.log(status)
-        return {
-          isConnected: false,
-          isSyncing: false,
-          syncStatus: {},
-          error: {}
-        }
-      })
+      map(
+        syncStatus =>
+          syncStatus
+            ? {
+                ...nodeStatus,
+                isConnected: true,
+                isSyncing: true,
+                syncStatus
+              }
+            : { ...nodeStatus, isConnected: true }
+      )
     )
   }
 
