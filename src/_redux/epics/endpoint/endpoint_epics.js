@@ -674,7 +674,16 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
           currentState.endpoint
         ).pipe(
           filter(val => {
+            console.log(val)
             return Object.keys(val).length !== 0
+          }),
+          filter(val => {
+            console.log(val.isMetaMaskLocked)
+            return !val.isMetaMaskLocked
+          }),
+          tap(results => {
+            console.log(results)
+            return results
           }),
           flatMap(newEndpoint => {
             let optionsManager = {
@@ -758,11 +767,11 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
           }),
           catchError(error => {
             console.warn(error)
-            // return Observable.of({
-            //   type: TYPE_.QUEUE_WARNING_NOTIFICATION,
-            //   payload:
-            //     'Unable to fetch accounts from MetaMask. Is MetaMask unlocket?'
-            // })
+            return Observable.of({
+              type: TYPE_.QUEUE_WARNING_NOTIFICATION,
+              payload:
+                'Unable to fetch accounts from MetaMask. Is MetaMask unlocket?'
+            })
           })
         )
       })

@@ -304,12 +304,7 @@ export const getAccountsTransactionsEpic = (action$, state$) => {
       console.log(results)
       return results
     }),
-    // buffer(isNodeConnected$),
 
-    tap(results => {
-      console.log(results)
-      return results
-    }),
     // first(),
     tap(results => {
       console.log(results)
@@ -323,8 +318,8 @@ export const getAccountsTransactionsEpic = (action$, state$) => {
         action.payload.options
       ).pipe(
         tap(results => {
-          return results
           console.log(results)
+          return results
         }),
         map(results => {
           if (action.payload.options.drago) {
@@ -349,8 +344,9 @@ export const getAccountsTransactionsEpic = (action$, state$) => {
           console.log('getAccountsTransactionsEpic')
           let scalingDuration = 10000
           return error.pipe(
+            buffer(isNodeConnected$),
+            first(),
             mergeMap((error, i) => {
-              console.warn(error)
               const retryAttempt = i + 1
               // if maximum number of retries have been met
               // or response is a status code we don't wish to retry, throw error

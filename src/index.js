@@ -55,7 +55,7 @@ const saveSubsetFilterApp = createFilter('app', [
   // 'isConnected',
   // 'isSyncing',
   'lastBlockNumberUpdate',
-  'accountsAddressHash',
+  // 'accountsAddressHash',
   'config'
 ])
 // const saveSubsetFilterTransactionsDrago = createFilter('transactionsDrago', [
