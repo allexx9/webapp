@@ -39,6 +39,7 @@ const contract = web3 => {
           return contract.getPastEvents(events, chunkOptions);
         });
         return await Promise.all(arrayPromises).then(results => {
+          console.log(results);
           let events = Array(0).concat(...results);
           return events;
         });

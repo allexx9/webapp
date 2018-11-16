@@ -124,6 +124,7 @@ class ApplicationExchangeHome extends Component {
           defaultRelay.defaultTokensPair.quoteTokenSymbol
         ]
     }
+    console.log(defaultTokensPair)
     console.log('***** MOUNT *****')
     try {
       // const address = await getAvailableAccounts(selectedExchange)

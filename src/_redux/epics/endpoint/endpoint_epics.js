@@ -677,10 +677,10 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
             console.log(val)
             return Object.keys(val).length !== 0
           }),
-          filter(val => {
-            console.log(val.isMetaMaskLocked)
-            return !val.isMetaMaskLocked
-          }),
+          // filter(val => {
+          //   console.log(val.isMetaMaskLocked)
+          //   return !val.isMetaMaskLocked
+          // }),
           tap(results => {
             console.log(results)
             return results
@@ -709,52 +709,54 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
               accountsAddressHash = sha3_512(accounts.toString())
             }
             // console.log(newEndpoint)
-            let arrayObservables = DEBUGGING.initAccountsTransactionsInEpic
-              ? [
-                  Observable.of(
-                    Actions.endpoint.getAccountsTransactions(
-                      action.payload.api,
-                      null,
-                      newEndpoint.accounts,
-                      optionsHolder
-                    )
-                  ),
-                  Observable.of(
-                    Actions.endpoint.getAccountsTransactions(
-                      action.payload.api,
-                      null,
-                      newEndpoint.accounts,
-                      optionsManager
-                    )
-                  ),
-                  Observable.of(
-                    Actions.endpoint.getAccountsTransactions(
-                      action.payload.api,
-                      null,
-                      newEndpoint.accounts,
-                      {
-                        ...optionsHolder,
-                        ...{
-                          drago: false
+            let arrayObservables =
+              DEBUGGING.initAccountsTransactionsInEpic &&
+              !newEndpoint.isMetaMaskLocked
+                ? [
+                    Observable.of(
+                      Actions.endpoint.getAccountsTransactions(
+                        action.payload.api,
+                        null,
+                        newEndpoint.accounts,
+                        optionsHolder
+                      )
+                    ),
+                    Observable.of(
+                      Actions.endpoint.getAccountsTransactions(
+                        action.payload.api,
+                        null,
+                        newEndpoint.accounts,
+                        optionsManager
+                      )
+                    ),
+                    Observable.of(
+                      Actions.endpoint.getAccountsTransactions(
+                        action.payload.api,
+                        null,
+                        newEndpoint.accounts,
+                        {
+                          ...optionsHolder,
+                          ...{
+                            drago: false
+                          }
                         }
-                      }
-                    )
-                  ),
-                  Observable.of(
-                    Actions.endpoint.getAccountsTransactions(
-                      action.payload.api,
-                      null,
-                      newEndpoint.accounts,
-                      {
-                        ...optionsManager,
-                        ...{
-                          drago: false
+                      )
+                    ),
+                    Observable.of(
+                      Actions.endpoint.getAccountsTransactions(
+                        action.payload.api,
+                        null,
+                        newEndpoint.accounts,
+                        {
+                          ...optionsManager,
+                          ...{
+                            drago: false
+                          }
                         }
-                      }
+                      )
                     )
-                  )
-                ]
-              : []
+                  ]
+                : []
             return Observable.concat(
               Observable.of(
                 Actions.app.updateAppStatus({
