@@ -48,10 +48,8 @@ class Web3Wrapper {
       .subscribe()
     return Object.assign(this.web3, {
       rigoblock: {
-        ob: {
-          eventful$: getEventful$(this.web3, networkId),
-          nodeStatus$: this.status$
-        },
+        eventful$: getEventful$(this.web3, networkId),
+        nodeStatus$: this.status$,
         utils: { contract },
         endpoint: transport
       }

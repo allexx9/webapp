@@ -24,20 +24,6 @@ const exchangeEfxV0$ = (web3, networkId) => {
         exchangeEfxV0Abi,
         CONST_.EFX_EXCHANGE_CONTRACT[networkId].toLowerCase()
       )
-      // efxEchangeContract
-      //   .getPastEvents(
-      //     "allEvents",
-      //     {
-      //       fromBlock: 0,
-      //       toBlock: "latest"
-      //     },
-      //     function(error, events) {
-      //       console.log(events);
-      //     }
-      //   )
-      //   .then(function(events) {
-      //     console.log(events); // same results as the optional callback above
-      //   });
       subscription = efxEchangeContract.events
         .allEvents(
           {
