@@ -6,11 +6,15 @@ import { Actions } from '../actions'
 // import { DEBUGGING } from '../../_utils/const'
 import { Observable, from, timer } from 'rxjs'
 import {
+  buffer,
   catchError,
   finalize,
+  first,
   map,
   mergeMap,
   retryWhen,
+  skipWhile,
+  switchMap,
   tap
 } from 'rxjs/operators'
 import { ofType } from 'redux-observable'
@@ -274,9 +278,43 @@ const getPoolTransactions$ = (api, dragoAddress, accounts, options) => {
       )
 }
 
-export const getAccountsTransactionsEpic = action$ =>
-  action$.pipe(
+export const getAccountsTransactionsEpic = (action$, state$) => {
+  const isNodeConnected$ = state$.pipe(
+    map(val => {
+      // console.log(val)
+      return !val.app.isConnected
+    }),
+    tap(val => {
+      console.log(val)
+      return val
+    }),
+    skipWhile(val => val === true),
+    tap(val => {
+      console.log('not skipped')
+      return val
+    }),
+    map(val => {
+      return val
+    })
+  )
+
+  return action$.pipe(
     ofType(TYPE_.GET_ACCOUNTS_TRANSACTIONS),
+    tap(results => {
+      console.log(results)
+      return results
+    }),
+    // buffer(isNodeConnected$),
+
+    tap(results => {
+      console.log(results)
+      return results
+    }),
+    // first(),
+    tap(results => {
+      console.log(results)
+      return results
+    }),
     mergeMap(action => {
       return getPoolTransactions$(
         action.payload.api,
@@ -286,6 +324,7 @@ export const getAccountsTransactionsEpic = action$ =>
       ).pipe(
         tap(results => {
           return results
+          console.log(results)
         }),
         map(results => {
           if (action.payload.options.drago) {
@@ -341,6 +380,7 @@ export const getAccountsTransactionsEpic = action$ =>
       )
     })
   )
+}
 
 //
 // FETCH POOL TRANSACTIONS

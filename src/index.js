@@ -52,8 +52,8 @@ const saveSubsetFilterEndpoint = createFilter('endpoint', [
   'networkInfo'
 ])
 const saveSubsetFilterApp = createFilter('app', [
-  'isConnected',
-  'isSyncing',
+  // 'isConnected',
+  // 'isSyncing',
   'lastBlockNumberUpdate',
   'accountsAddressHash',
   'config'

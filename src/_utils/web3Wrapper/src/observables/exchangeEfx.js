@@ -2,8 +2,9 @@ import exchangeEfxV0Abi from "../abis/exchange-efx-v0.json";
 import { Observable, timer } from "rxjs";
 import { mergeMap, retryWhen, finalize, timeout } from "rxjs/operators";
 import * as CONST_ from "../utils/const";
+import Web3 from "web3";
 
-const exchangeEfxV0$ = (web3, networkId) => {
+const exchangeEfxV0$ = (web3, networkId, provider) => {
   let subscription = null;
   let retryAttemptNewBlock$ = 0;
   return Observable.create(observer => {
@@ -24,20 +25,6 @@ const exchangeEfxV0$ = (web3, networkId) => {
         exchangeEfxV0Abi,
         CONST_.EFX_EXCHANGE_CONTRACT[networkId].toLowerCase()
       );
-      // efxEchangeContract
-      //   .getPastEvents(
-      //     "allEvents",
-      //     {
-      //       fromBlock: 0,
-      //       toBlock: "latest"
-      //     },
-      //     function(error, events) {
-      //       console.log(events);
-      //     }
-      //   )
-      //   .then(function(events) {
-      //     console.log(events); // same results as the optional callback above
-      //   });
       subscription = efxEchangeContract.events
         .allEvents(
           {
@@ -67,7 +54,7 @@ const exchangeEfxV0$ = (web3, networkId) => {
       // efxEchangeContract.clearSubscriptions();
       console.log(subscription);
       subscription.unsubscribe();
-      console.log(`Observable exit`);
+      console.log(`**** exchangeEfxV0$ exit ****`);
       // observer.complete();
     };
   }).pipe(
@@ -80,20 +67,25 @@ const exchangeEfxV0$ = (web3, networkId) => {
           if (subscription !== null) {
             subscription.unsubscribe(function(error, success) {
               if (success) {
-                console.log("**** newBlock$ Successfully UNSUBSCRIBED! ****");
+                console.log(
+                  "**** exchangeEfxV0$ Successfully UNSUBSCRIBED! ****"
+                );
               }
               if (error) {
-                console.log("**** newBlock$ UNSUBSCRIBE error ****");
+                console.log("**** exchangeEfxV0$ UNSUBSCRIBE error ****");
                 console.log(error);
               }
             });
           }
-          console.log(`****  newBlock$ error: ${error.message} ****`);
+          console.log(`****  exchangeEfxV0$ error: ${error.message} ****`);
           retryAttemptNewBlock$++;
-          console.log(`**** newBlock$ Attempt ${retryAttemptNewBlock$} ****`);
+          console.log(
+            `**** exchangeEfxV0$ Attempt ${retryAttemptNewBlock$} ****`
+          );
+          // web3 = new Web3(provider);
           return timer(scalingDuration);
         }),
-        finalize(() => console.log("We are done!"))
+        finalize(() => console.log("exchangeEfxV0$ We are done!"))
       );
     })
   );

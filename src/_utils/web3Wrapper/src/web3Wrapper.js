@@ -13,6 +13,7 @@ let Web3Wrapper = (() => {
 
   let instance;
   let web3;
+  let connStatus = false;
 
   const init = async (networkId, protocol = "wss") => {
     const transport = ENDPOINTS[protocol][networkId].prod;
@@ -20,15 +21,18 @@ let Web3Wrapper = (() => {
       timeout: 5000
     });
     web3 = newWeb3(provider);
+    // connStatus = await web3.eth.net.isListening();
+    web3.connStatus = connStatus;
     webSocket$(web3, newWeb3, transport, provider).subscribe(status => {
-      console.log(status);
+      // console.log(status);
     });
     return {
       ...web3,
       rb: {
+        connStatus,
         ob: {
           eventfull$: eventfull$(web3, networkId),
-          exchangeEfxV0$: exchangeEfxV0$(web3, networkId)
+          exchangeEfxV0$: exchangeEfxV0$(web3, networkId, provider)
         },
         utils: { contract: contract(web3) },
         endpoint: transport

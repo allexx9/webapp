@@ -300,31 +300,32 @@ const processTradesHistory = (trades, state$) => {
 
 export const monitorExchangeEventsEpic = (action$, state$) => {
   let retryAttempt
-  const appIsConnected = state$.pipe(
-    map(val => {
-      // console.log(
-      //   val.app.isConnected,
-      //   val.exchange.selectedFund.details.address === 'undefined'
-      // )
-      return (
-        typeof val.exchange.selectedFund.details.address === 'undefined' ||
-        !val.app.isConnected
-      )
-    }),
-    tap(val => {
-      // console.log(val)
-      return val
-    }),
-    skipWhile(val => val === true),
-    tap(val => {
-      // console.log('not skipped')
-      return val
-    })
-  )
+  const isNodeConnected = state$ =>
+    state$.pipe(
+      map(val => {
+        // console.log(
+        //   val.app.isConnected,
+        //   val.exchange.selectedFund.details.address === 'undefined'
+        // )
+        return (
+          typeof val.exchange.selectedFund.details.address === 'undefined' ||
+          !val.app.isConnected
+        )
+      }),
+      tap(val => {
+        // console.log(val)
+        return val
+      }),
+      skipWhile(val => val === true),
+      tap(val => {
+        // console.log('not skipped')
+        return val
+      })
+    )
 
   return action$.pipe(
     ofType(utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_START)),
-    buffer(appIsConnected),
+    buffer(isNodeConnected(state$)),
     first(),
     switchMap(action => {
       // console.log(action)
@@ -333,11 +334,7 @@ export const monitorExchangeEventsEpic = (action$, state$) => {
       // console.log(action)
       return Observable.concat(
         getPastExchangeEvents$(fund, tokens, exchange, state$)
-        // monitorExchangeEvents$(
-        //   fund,
-        //   tokens,
-        //   state$
-        // ).pipe(
+        // monitorExchangeEvents$(fund, tokens, state$).pipe(
         //   takeUntil(
         //     action$.ofType(
         //       utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_STOP)
