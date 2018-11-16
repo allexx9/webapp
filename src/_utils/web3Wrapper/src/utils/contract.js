@@ -1,26 +1,20 @@
 import { getBlockChunks } from '../utils/utils'
 
-const contract = contract => {
-  return {
-    getAllLogs: async options => {
-      let arrayPromises = []
-      let chunck = 100000
-      const chunks = getBlockChunks(options.fromBlock, options.toBlock, chunck)
-      arrayPromises = chunks.map(async chunk => {
-        // Pushing chunk logs into array
-        let chunkOptions = {
-          topics: options.topics,
-          fromBlock: chunk.fromBlock,
-          toBlock: chunk.toBlock
-        }
-        return await contract.getAllLogs(chunkOptions)
+const contract = contract => ({
+  getAllLogs: async options => {
+    let arrayPromises = []
+    let chunkSize = 100000
+    const chunks = getBlockChunks(options.fromBlock, options.toBlock, chunkSize)
+    arrayPromises = chunks.map(async ({ fromBlock, toBlock }) =>
+      contract.getAllLogs({
+        topics: options.topics,
+        fromBlock,
+        toBlock
       })
-
-      return await Promise.all(arrayPromises).then(results => {
-        return results
-      })
-    }
+    )
+    const results = await Promise.all(arrayPromises)
+    return results
   }
-}
+})
 
 export default contract
