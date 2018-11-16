@@ -1,22 +1,22 @@
-import { Observable, timer, of } from "rxjs";
+import { Observable, of, timer } from 'rxjs'
+import { errorMsg } from '../utils/utils.js'
 import {
-  timeout,
-  tap,
-  switchMap,
+  exhaustMap,
+  filter,
+  finalize,
+  map,
   mergeMap,
   retryWhen,
-  finalize,
-  filter,
-  exhaustMap,
-  map
-} from "rxjs/operators";
-import { race } from "rxjs/observable/race";
-import BigNumber from "bignumber.js";
-import { errorMsg } from "../utils/utils.js";
-import Web3 from "web3";
+  switchMap,
+  tap,
+  timeout
+} from 'rxjs/operators'
+import { race } from 'rxjs/observable/race'
+import BigNumber from 'bignumber.js'
+import Web3 from 'web3'
 
-let retryAttemptNodeStatus$ = 0;
-let scalingDuration = 4000;
+let retryAttemptNodeStatus$ = 0
+let scalingDuration = 4000
 
 const sync$ = (web3, transport) => {
   // let provider = new Web3.providers.WebsocketProvider(transport, {
@@ -29,14 +29,14 @@ const sync$ = (web3, transport) => {
       .isSyncing()
       .then(result => {
         // console.log("*** sync ***");
-        retryAttemptNodeStatus$ = 0;
+        retryAttemptNodeStatus$ = 0
         let nodeStatus = {
           isConnected: false,
           isSyncing: false,
           syncStatus: {},
           error: {}
-        };
-        let newNodeStatus;
+        }
+        let newNodeStatus
         if (result) {
           if (
             new BigNumber(result.highestBlock).minus(result.currentBlock).gt(2)
@@ -49,7 +49,7 @@ const sync$ = (web3, transport) => {
                 syncStatus: result,
                 error: {}
               }
-            };
+            }
           } else {
             newNodeStatus = {
               ...nodeStatus,
@@ -59,7 +59,7 @@ const sync$ = (web3, transport) => {
                 syncStatus: {},
                 error: {}
               }
-            };
+            }
           }
         } else {
           newNodeStatus = {
@@ -70,10 +70,10 @@ const sync$ = (web3, transport) => {
               syncStatus: {},
               error: {}
             }
-          };
+          }
         }
-        observer.next(newNodeStatus);
-        return newNodeStatus;
+        observer.next(newNodeStatus)
+        return newNodeStatus
       })
       .catch(error => {
         // console.log(error);
@@ -82,13 +82,13 @@ const sync$ = (web3, transport) => {
           isSyncing: false,
           syncStatus: {},
           error: {}
-        };
-        let newNodeStatus;
-        let timeInterval;
-        retryAttemptNodeStatus$++;
+        }
+        let newNodeStatus
+        let timeInterval
+        retryAttemptNodeStatus$++
         retryAttemptNodeStatus$ > 5
           ? (timeInterval = scalingDuration * 5)
-          : (timeInterval = scalingDuration * retryAttemptNodeStatus$);
+          : (timeInterval = scalingDuration * retryAttemptNodeStatus$)
         newNodeStatus = {
           ...nodeStatus,
           ...{
@@ -99,21 +99,21 @@ const sync$ = (web3, transport) => {
             retryTimeInterval: timeInterval,
             connectionRetries: retryAttemptNodeStatus$
           }
-        };
+        }
 
-        observer.next(newNodeStatus);
-        observer.error(error);
+        observer.next(newNodeStatus)
+        observer.error(error)
         // throw new Error(errorMsg(error.message));
-      });
+      })
     return () => {
       // console.log(`**** nodeStatus$ exit ****`);
-      of("done");
-    };
+      of('done')
+    }
   }).pipe(
     // timeout(5000),
     tap(val => {
       // console.log(val);
-      return val;
+      return val
     })
     // retryWhen(error => {
     //   return error.pipe(
@@ -137,16 +137,16 @@ const sync$ = (web3, transport) => {
     //     })
     //   );
     // })
-  );
-};
+  )
+}
 
 const nodeStatus$ = transport => {
-  let provider = new Web3.providers.WebsocketProvider(transport);
-  let web3 = new Web3(provider);
+  let provider = new Web3.providers.WebsocketProvider(transport)
+  let web3 = new Web3(provider)
   return timer(0, 3000).pipe(
     tap(val => {
       // console.log(val);
-      return val;
+      return val
     }),
     switchMap(val => {
       return race(
@@ -159,14 +159,14 @@ const nodeStatus$ = transport => {
       ).pipe(
         tap(val => {
           // console.log(val);
-          return val;
+          return val
         })
-      );
+      )
     }),
     timeout(7000),
     tap(val => {
-      console.log(val);
-      return val;
+      console.log(val)
+      return val
     }),
     map(val => {
       // console.log(val);
@@ -178,12 +178,12 @@ const nodeStatus$ = transport => {
       //     error: {}
       //   };
       // }
-      return val;
+      return val
     }),
     retryWhen(error => {
       return error.pipe(
         mergeMap(error => {
-          console.log(`****  nodeStatus$ error: ${error} ****`);
+          console.log(`****  nodeStatus$ error: ${error} ****`)
           // console.log(
           //   `**** nodeStatus$ Attempt ${retryAttemptNodeStatus$} ****`
           // );
@@ -192,20 +192,20 @@ const nodeStatus$ = transport => {
           // });
           // web3.setProvider(provider);
           // newWeb3 = new Web3(provider);
-          let provider = new Web3.providers.WebsocketProvider(transport);
-          console.log("creating new web3 provider end of epic");
-          web3 = new Web3(provider);
-          return timer(scalingDuration);
+          let provider = new Web3.providers.WebsocketProvider(transport)
+          console.log('creating new web3 provider end of epic')
+          web3 = new Web3(provider)
+          return timer(scalingDuration)
         }),
         finalize(() => {
-          console.log("We are done!");
+          console.log('We are done!')
         })
-      );
+      )
     })
     // filter(val =>{
 
     // })
-  );
-};
+  )
+}
 
-export default nodeStatus$;
+export default nodeStatus$

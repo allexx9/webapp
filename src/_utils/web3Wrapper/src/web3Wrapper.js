@@ -1,67 +1,69 @@
-import Web3 from "web3";
-import eventfull$ from "./observables/eventfull";
-import nodeStatus$ from "./observables/nodeStatus";
-import newBlock$ from "./observables/newBlock";
-import exchangeEfxV0$ from "./observables/exchangeEfx";
-import webSocket$ from "./observables/webSocket";
-import contract from "./utils/contract";
-import { ENDPOINTS } from "./utils/const";
-import { newWeb3 } from "./utils/utils";
+import { ENDPOINTS } from './utils/const'
+import Web3 from 'web3'
+import contract from './utils/contract'
+import getEventful$ from './observables/eventful'
 
-let Web3Wrapper = (() => {
-  // Instance stores a reference to the Singleton
+class Web3Wrapper {
+  web3 = null
+  instance = null
+  obs
 
-  let instance;
-  let web3;
+  get status$() {
+    return timer(0, 1000).pipe(
+      exhaustMap(() => from(this.web3.eth.isSyncing())),
+      map(status => {
+        console.log(status)
+        return {
+          isConnected: false,
+          isSyncing: false,
+          syncStatus: {},
+          error: {}
+        }
+      })
+    )
+  }
 
-  const init = async (networkId, protocol = "wss") => {
-    const transport = ENDPOINTS[protocol][networkId].prod;
-    let provider = new Web3.providers.WebsocketProvider(transport, {
-      timeout: 5000
-    });
-    web3 = newWeb3(provider);
-    webSocket$(web3, newWeb3, transport).subscribe(status => {
-      console.log(status);
-    });
-    return {
-      ...web3,
-      rb: {
+  init(networkId, protocol = 'wss') {
+    const transport = ENDPOINTS[protocol][networkId].prod
+    const provider = new Web3.providers.WebsocketProvider(transport)
+
+    this.web3 = new Web3(provider)
+    this.status$
+      .pipe(
+        timeout(10000),
+        retryWhen(errors =>
+          errors.pipe(
+            tap(() => {
+              console.error('Websocket disconnected. Setting new provider.')
+            }),
+            map(() =>
+              this.web3.setProvider(
+                new Web3.providers.WebsocketProvider(transport)
+              )
+            ),
+            delay(5000)
+          )
+        )
+      )
+      .subscribe()
+    return Object.assign(this.web3, {
+      rigoblock: {
         ob: {
-          eventfull$: eventfull$(web3, networkId),
-          exchangeEfxV0$: exchangeEfxV0$(web3, networkId)
+          eventful$: getEventful$(this.web3, networkId),
+          nodeStatus$: this.status$
         },
         utils: { contract },
         endpoint: transport
-      },
-      ob: {
-        nodeStatus$: nodeStatus$(transport),
-        newBlock$: newBlock$(web3, transport)
       }
-    };
-  };
+    })
+  }
 
-  return {
-    getInstance: async (networkId, protocol) => {
-      if (!networkId) {
-        throw new Error("networkId needs to be provided");
-      }
-      if (!instance) {
-        instance = await init(networkId, protocol);
-      } else {
-      }
-      return instance;
+  getInstance = (networkId, protocol) => {
+    if (!this.instance) {
+      this.instance = this.init(networkId, protocol)
     }
-  };
-})();
+    return this.instance
+  }
+}
 
-export default Web3Wrapper;
-
-// Web3Wrapper.getInstance('LOCAL').then(instance => {
-//   instance.nodeStatus$.subscribe(val => {
-//     console.log(JSON.stringify(val))
-//   })
-//   instance.newBlock$.subscribe(val => {
-//     console.log(val.number)
-//     // console.log(JSON.stringify(val))
-//   })
-// })
+export default new Web3Wrapper()
