@@ -258,7 +258,7 @@ export const MOCK_ERC20_TOKENS = {
     ETHW: {
       isMock: true,
       symbol: 'ETHW',
-      address: '0x965808e7F815CfffD4c018ef2Ba4C5A65EBa087e',
+      address: '0x06da2eb72279c1cec53c251bbff4a06fbfb93a5b',
       decimals: 18,
       name: 'Wrapped Ether EFX',
       wrappers: {}
@@ -527,7 +527,7 @@ export const ERC20_TOKENS = {
     },
     ETHW: {
       symbol: 'ETHW',
-      address: '0x965808e7F815CfffD4c018ef2Ba4C5A65EBa087e',
+      address: '0x06da2eb72279c1cec53c251bbff4a06fbfb93a5b',
       decimals: 18,
       name: 'Wrapped Ether EFX',
       wrappers: {}
