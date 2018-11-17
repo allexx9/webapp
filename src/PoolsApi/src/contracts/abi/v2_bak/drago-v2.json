@@ -1,27 +1,6 @@
 [{
         "constant": false,
         "inputs": [{
-                "name": "_exchange",
-                "type": "address"
-            },
-            {
-                "components": [{
-                    "name": "assembledData",
-                    "type": "bytes"
-                }],
-                "name": "transactions",
-                "type": "tuple[]"
-            }
-        ],
-        "name": "batchOperateOnExchange",
-        "outputs": [],
-        "payable": false,
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "constant": false,
-        "inputs": [{
             "name": "_transactionFee",
             "type": "uint256"
         }],
@@ -32,27 +11,15 @@
         "type": "function"
     },
     {
-        "constant": false,
-        "inputs": [{
-                "name": "_exchange",
-                "type": "address"
-            },
-            {
-                "components": [{
-                    "name": "assembledData",
-                    "type": "bytes"
-                }],
-                "name": "transaction",
-                "type": "tuple"
-            }
-        ],
-        "name": "operateOnExchange",
+        "constant": true,
+        "inputs": [],
+        "name": "getVersion",
         "outputs": [{
-            "name": "success",
-            "type": "bool"
+            "name": "",
+            "type": "string"
         }],
         "payable": false,
-        "stateMutability": "nonpayable",
+        "stateMutability": "pure",
         "type": "function"
     },
     {
@@ -102,6 +69,41 @@
         }],
         "payable": false,
         "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [{
+            "name": "assembledData",
+            "type": "bytes"
+        }],
+        "name": "findMethod",
+        "outputs": [{
+            "name": "method",
+            "type": "bytes4"
+        }],
+        "payable": false,
+        "stateMutability": "pure",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [{
+                "name": "_exchange",
+                "type": "address"
+            },
+            {
+                "name": "_assembledTransaction",
+                "type": "bytes"
+            }
+        ],
+        "name": "operateOnExchange",
+        "outputs": [{
+            "name": "success",
+            "type": "bool"
+        }],
+        "payable": false,
+        "stateMutability": "nonpayable",
         "type": "function"
     },
     {
@@ -183,6 +185,21 @@
         "type": "function"
     },
     {
+        "constant": true,
+        "inputs": [{
+            "name": "_exchange",
+            "type": "address"
+        }],
+        "name": "getExchangeAdapter",
+        "outputs": [{
+            "name": "",
+            "type": "address"
+        }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
         "constant": false,
         "inputs": [{
             "name": "_minPeriod",
@@ -205,6 +222,27 @@
             "name": "success",
             "type": "bool"
         }],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [{
+                "name": "_tokenTransferProxy",
+                "type": "address"
+            },
+            {
+                "name": "_tokens",
+                "type": "address[]"
+            },
+            {
+                "name": "_amounts",
+                "type": "uint256[]"
+            }
+        ],
+        "name": "SetMultipleAllowances",
+        "outputs": [],
         "payable": false,
         "stateMutability": "nonpayable",
         "type": "function"
@@ -330,27 +368,6 @@
         }],
         "payable": false,
         "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "constant": false,
-        "inputs": [{
-                "name": "_tokenTransferProxy",
-                "type": "address"
-            },
-            {
-                "name": "_tokens",
-                "type": "address[]"
-            },
-            {
-                "name": "_amounts",
-                "type": "uint256[]"
-            }
-        ],
-        "name": "setMultipleAllowances",
-        "outputs": [],
-        "payable": false,
-        "stateMutability": "nonpayable",
         "type": "function"
     },
     {

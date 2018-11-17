@@ -1,9 +1,12 @@
-[{
+[
+	{
 		"constant": false,
-		"inputs": [{
-			"name": "_transactionFee",
-			"type": "uint256"
-		}],
+		"inputs": [
+			{
+				"name": "_transactionFee",
+				"type": "uint256"
+			}
+		],
 		"name": "setTransactionFee",
 		"outputs": [],
 		"payable": false,
@@ -11,35 +14,27 @@
 		"type": "function"
 	},
 	{
-		"constant": false,
-		"inputs": [{
-				"name": "_token",
-				"type": "address"
-			},
+		"constant": true,
+		"inputs": [],
+		"name": "getVersion",
+		"outputs": [
 			{
-				"name": "_value",
-				"type": "uint256"
-			},
-			{
-				"name": "_forTime",
-				"type": "uint8"
+				"name": "",
+				"type": "string"
 			}
 		],
-		"name": "depositToken",
-		"outputs": [{
-			"name": "success",
-			"type": "bool"
-		}],
 		"payable": false,
-		"stateMutability": "nonpayable",
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
 		"constant": false,
-		"inputs": [{
-			"name": "_new",
-			"type": "address"
-		}],
+		"inputs": [
+			{
+				"name": "_new",
+				"type": "address"
+			}
+		],
 		"name": "setOwner",
 		"outputs": [],
 		"payable": false,
@@ -50,60 +45,58 @@
 		"constant": true,
 		"inputs": [],
 		"name": "totalSupply",
-		"outputs": [{
-			"name": "",
-			"type": "uint256"
-		}],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [{
-			"name": "_token",
-			"type": "address"
-		}],
-		"name": "tokensInVault",
-		"outputs": [{
-			"name": "",
-			"type": "uint256"
-		}],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [{
-				"name": "_token",
-				"type": "address"
-			},
+		"outputs": [
 			{
-				"name": "_owner",
-				"type": "address"
+				"name": "",
+				"type": "uint256"
 			}
 		],
-		"name": "tokenBalanceOf",
-		"outputs": [{
-			"name": "",
-			"type": "uint256"
-		}],
 		"payable": false,
 		"stateMutability": "view",
 		"type": "function"
 	},
 	{
 		"constant": false,
-		"inputs": [{
-			"name": "_amount",
-			"type": "uint256"
-		}],
+		"inputs": [
+			{
+				"name": "_validation",
+				"type": "address"
+			},
+			{
+				"name": "_withdrawal",
+				"type": "address"
+			},
+			{
+				"name": "_amount",
+				"type": "uint256"
+			}
+		],
+		"name": "depositCasper",
+		"outputs": [
+			{
+				"name": "success",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_amount",
+				"type": "uint256"
+			}
+		],
 		"name": "sellVault",
-		"outputs": [{
-			"name": "success",
-			"type": "bool"
-		}],
+		"outputs": [
+			{
+				"name": "success",
+				"type": "bool"
+			}
+		],
 		"payable": false,
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -112,7 +105,8 @@
 		"constant": true,
 		"inputs": [],
 		"name": "getData",
-		"outputs": [{
+		"outputs": [
+			{
 				"name": "name",
 				"type": "string"
 			},
@@ -134,31 +128,13 @@
 		"type": "function"
 	},
 	{
-		"constant": true,
-		"inputs": [{
-				"name": "",
-				"type": "address"
-			},
+		"constant": false,
+		"inputs": [
 			{
-				"name": "",
+				"name": "_vaultDao",
 				"type": "address"
 			}
 		],
-		"name": "tokenBalances",
-		"outputs": [{
-			"name": "",
-			"type": "uint256"
-		}],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [{
-			"name": "_vaultDao",
-			"type": "address"
-		}],
 		"name": "changeVaultDao",
 		"outputs": [],
 		"payable": false,
@@ -167,10 +143,12 @@
 	},
 	{
 		"constant": false,
-		"inputs": [{
-			"name": "_minPeriod",
-			"type": "uint32"
-		}],
+		"inputs": [
+			{
+				"name": "_minPeriod",
+				"type": "uint32"
+			}
+		],
 		"name": "changeMinPeriod",
 		"outputs": [],
 		"payable": false,
@@ -188,15 +166,19 @@
 	},
 	{
 		"constant": true,
-		"inputs": [{
-			"name": "_from",
-			"type": "address"
-		}],
+		"inputs": [
+			{
+				"name": "_from",
+				"type": "address"
+			}
+		],
 		"name": "balanceOf",
-		"outputs": [{
-			"name": "",
-			"type": "uint256"
-		}],
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
 		"payable": false,
 		"stateMutability": "view",
 		"type": "function"
@@ -204,31 +186,36 @@
 	{
 		"constant": true,
 		"inputs": [],
-		"name": "getEventful",
-		"outputs": [{
-			"name": "",
-			"type": "address"
-		}],
+		"name": "getCasperDeposit",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
 		"payable": false,
 		"stateMutability": "view",
 		"type": "function"
 	},
 	{
+		"constant": false,
+		"inputs": [],
+		"name": "withdrawCasper",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"constant": true,
-		"inputs": [{
-				"name": "_token",
-				"type": "address"
-			},
+		"inputs": [],
+		"name": "getEventful",
+		"outputs": [
 			{
-				"name": "_user",
+				"name": "",
 				"type": "address"
 			}
 		],
-		"name": "timeToUnlock",
-		"outputs": [{
-			"name": "",
-			"type": "uint256"
-		}],
 		"payable": false,
 		"stateMutability": "view",
 		"type": "function"
@@ -237,10 +224,12 @@
 		"constant": true,
 		"inputs": [],
 		"name": "owner",
-		"outputs": [{
-			"name": "",
-			"type": "address"
-		}],
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
 		"payable": false,
 		"stateMutability": "view",
 		"type": "function"
@@ -249,7 +238,8 @@
 		"constant": true,
 		"inputs": [],
 		"name": "getAdminData",
-		"outputs": [{
+		"outputs": [
+			{
 				"name": "",
 				"type": "address"
 			},
@@ -280,10 +270,12 @@
 	},
 	{
 		"constant": false,
-		"inputs": [{
-			"name": "_feeCollector",
-			"type": "address"
-		}],
+		"inputs": [
+			{
+				"name": "_feeCollector",
+				"type": "address"
+			}
+		],
 		"name": "changeFeeCollector",
 		"outputs": [],
 		"payable": false,
@@ -294,115 +286,57 @@
 		"constant": true,
 		"inputs": [],
 		"name": "calcSharePrice",
-		"outputs": [{
-			"name": "",
-			"type": "uint256"
-		}],
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
 		"payable": false,
 		"stateMutability": "view",
 		"type": "function"
 	},
 	{
 		"constant": false,
-		"inputs": [{
-				"name": "_token",
-				"type": "address"
-			},
-			{
-				"name": "_value",
-				"type": "uint256"
-			}
-		],
-		"name": "withdrawToken",
-		"outputs": [{
-			"name": "success",
-			"type": "bool"
-		}],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [{
-			"name": "_hodler",
-			"type": "address"
-		}],
-		"name": "buyVaultOnBehalf",
-		"outputs": [{
-			"name": "success",
-			"type": "bool"
-		}],
-		"payable": true,
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [{
-				"name": "_token",
-				"type": "address"
-			},
+		"inputs": [
 			{
 				"name": "_hodler",
 				"type": "address"
-			},
-			{
-				"name": "_value",
-				"type": "uint256"
-			},
-			{
-				"name": "_forTime",
-				"type": "uint8"
 			}
 		],
-		"name": "depositTokenOnBehalf",
-		"outputs": [{
-			"name": "success",
-			"type": "bool"
-		}],
-		"payable": false,
-		"stateMutability": "nonpayable",
+		"name": "buyVaultOnBehalf",
+		"outputs": [
+			{
+				"name": "success",
+				"type": "bool"
+			}
+		],
+		"payable": true,
+		"stateMutability": "payable",
 		"type": "function"
 	},
 	{
 		"constant": false,
 		"inputs": [],
 		"name": "buyVault",
-		"outputs": [{
-			"name": "success",
-			"type": "bool"
-		}],
+		"outputs": [
+			{
+				"name": "success",
+				"type": "bool"
+			}
+		],
 		"payable": true,
 		"stateMutability": "payable",
 		"type": "function"
 	},
 	{
-		"constant": true,
-		"inputs": [{
-				"name": "",
-				"type": "address"
-			},
+		"constant": false,
+		"inputs": [
 			{
-				"name": "",
-				"type": "address"
+				"name": "_ratio",
+				"type": "uint256"
 			}
 		],
-		"name": "depositLock",
-		"outputs": [{
-			"name": "",
-			"type": "uint256"
-		}],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [{
-			"name": "_ratio",
-			"type": "uint256"
-		}],
 		"name": "changeRatio",
 		"outputs": [],
 		"payable": false,
@@ -410,7 +344,8 @@
 		"type": "function"
 	},
 	{
-		"inputs": [{
+		"inputs": [
+			{
 				"name": "_vaultName",
 				"type": "string"
 			},
@@ -436,8 +371,14 @@
 		"type": "constructor"
 	},
 	{
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "fallback"
+	},
+	{
 		"anonymous": false,
-		"inputs": [{
+		"inputs": [
+			{
 				"indexed": true,
 				"name": "old",
 				"type": "address"
