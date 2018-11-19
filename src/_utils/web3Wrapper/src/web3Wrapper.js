@@ -57,6 +57,7 @@ class Web3Wrapper {
       rigoblock: {
         ob: {
           eventful$: getEventful$(this.web3, networkId),
+          exchangeEfxV0$: exchangeEfxV0$(this.web3, networkId),
           nodeStatus$: this.status$
         },
         utils: { contract },
