@@ -16,9 +16,14 @@ const defaultStatus = {
 class Web3Wrapper {
   web3 = null
   instance = null
+  status$ = null
 
-  get status$() {
-    return timer(0, 1000).pipe(
+  init(networkId, protocol = 'wss', timeoutMs = 5 * 1000) {
+    const transport = ENDPOINTS[protocol][networkId].prod
+    const provider = new Web3.providers.WebsocketProvider(transport)
+
+    this.web3 = new Web3(provider)
+    this.status$ = timer(0, 1000).pipe(
       exhaustMap(() =>
         Observable.create(async observer => {
           try {
@@ -40,32 +45,23 @@ class Web3Wrapper {
           }
           return () => observer.complete()
         })
-      )
+      ),
+      timeout(timeoutMs),
+      retryWhen(errors => {
+        return errors.pipe(
+          tap(() => console.error('Websocket disconnected.')),
+          tap(() => console.info('Setting new provider...')),
+          map(() =>
+            this.web3.setProvider(
+              new Web3.providers.WebsocketProvider(transport)
+            )
+          ),
+          delay(5000)
+        )
+      })
     )
-  }
 
-  init(networkId, protocol = 'wss', timeoutMs = 5 * 1000) {
-    const transport = ENDPOINTS[protocol][networkId].prod
-    const provider = new Web3.providers.WebsocketProvider(transport)
-
-    this.web3 = new Web3(provider)
-    this.status$
-      .pipe(
-        timeout(timeoutMs),
-        retryWhen(errors => {
-          return errors.pipe(
-            tap(() => console.error('Websocket disconnected.')),
-            tap(() => console.info('Setting new provider...')),
-            map(() =>
-              this.web3.setProvider(
-                new Web3.providers.WebsocketProvider(transport)
-              )
-            ),
-            delay(5000)
-          )
-        })
-      )
-      .subscribe()
+    this.status$.subscribe()
 
     return Object.assign(this.web3, {
       rigoblock: {
