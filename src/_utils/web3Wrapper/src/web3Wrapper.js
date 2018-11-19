@@ -22,7 +22,12 @@ class Web3Wrapper {
           try {
             const status = await this.web3.eth.isSyncing()
             const nodeStatus = status
-              ? { ...defaultStatus, isConnected: true, isSyncing: true }
+              ? {
+                  ...defaultStatus,
+                  isConnected: true,
+                  isSyncing: true,
+                  syncStatus: status
+                }
               : { ...defaultStatus, isConnected: true }
 
             observer.next(nodeStatus)
