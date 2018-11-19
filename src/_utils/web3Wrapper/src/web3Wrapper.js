@@ -1,4 +1,6 @@
 import { ENDPOINTS } from './utils/const'
+import { delay, exhaustMap, map, retryWhen, timeout } from 'rxjs/operators'
+import { from, timer } from 'rxjs'
 import Web3 from 'web3'
 import contract from './utils/contract'
 import getEventful$ from './observables/eventful'
@@ -12,7 +14,6 @@ const nodeStatus = {
 class Web3Wrapper {
   web3 = null
   instance = null
-  obs
 
   get status$() {
     return timer(0, 1000).pipe(
@@ -31,19 +32,16 @@ class Web3Wrapper {
     )
   }
 
-  init(networkId, protocol = 'wss') {
+  init(networkId, protocol = 'wss', timeoutMs = 5 * 1000) {
     const transport = ENDPOINTS[protocol][networkId].prod
     const provider = new Web3.providers.WebsocketProvider(transport)
 
     this.web3 = new Web3(provider)
     this.status$
       .pipe(
-        timeout(10000),
-        retryWhen(errors =>
-          errors.pipe(
-            tap(() => {
-              console.error('Websocket disconnected. Setting new provider.')
-            }),
+        timeout(timeoutMs),
+        retryWhen(errors => {
+          return errors.pipe(
             map(() =>
               this.web3.setProvider(
                 new Web3.providers.WebsocketProvider(transport)
@@ -51,13 +49,16 @@ class Web3Wrapper {
             ),
             delay(5000)
           )
-        )
+        })
       )
       .subscribe()
+
     return Object.assign(this.web3, {
       rigoblock: {
-        eventful$: getEventful$(this.web3, networkId),
-        nodeStatus$: this.status$,
+        ob: {
+          eventful$: getEventful$(this.web3, networkId),
+          nodeStatus$: this.status$
+        },
         utils: { contract },
         endpoint: transport
       }
