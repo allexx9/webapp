@@ -17,10 +17,14 @@ export const exchange = {
   ui: {
     panels: {
       relayBox: {
-        expanded: true
+        expanded: true,
+        disabled: true,
+        disabledMsg: ''
       },
       orderBox: {
-        expanded: true
+        expanded: true,
+        disabled: true,
+        disabledMsg: ''
       },
       ordersHistoryBox: {
         expanded: true

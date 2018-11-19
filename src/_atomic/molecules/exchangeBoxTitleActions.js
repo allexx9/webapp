@@ -7,7 +7,7 @@ import ExpandPanelSwitch from '../atoms/expandPanelSwitch'
 import HelpIcon from '../atoms/helpIcon'
 // import shallowEqualObjects from 'shallow-equal/objects'
 import styles from './exchangeBoxTitleActions.module.css'
-// import utils from '../../_utils/utils'
+import utils from '../../_utils/utils'
 
 function mapStateToProps(state) {
   // console.log(state)
@@ -53,14 +53,11 @@ class ExchangeBoxTitleActions extends Component {
 
   onActionClick = action => {
     const { ui } = this.props.exchange
-    switch (action) {
-      case 'ExpandSwitch':
-        let newUi = Object.assign({}, ui)
-        newUi.panels[this.props.boxName].expanded = !newUi.panels[
-          this.props.boxName
-        ].expanded
-        this.props.dispatch(Actions.exchange.setUiPanelProperties(newUi))
-    }
+    this.props.dispatch(
+      Actions.exchange.setUiPanelProperties(
+        utils.updateUi(ui, this.props.boxName).toggleExpandSwitch()
+      )
+    )
   }
 
   render() {

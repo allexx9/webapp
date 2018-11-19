@@ -135,7 +135,7 @@ class ElementFundActionSetPrice extends Component {
       fontSize: 25,
       fontWeight: 600
     }
-    console.log(this.state.account)
+    // console.log(this.state.account)
     return (
       <div key="inputFields">
         {/* <AccountSelector
@@ -230,7 +230,7 @@ class ElementFundActionSetPrice extends Component {
   onChangeBuyPrice = (event, buyPrice) => {
     const { sellPrice } = this.state
     const error = validatePositiveNumber(buyPrice)
-    console.log(buyPrice)
+    // console.log(buyPrice)
     if (buyPrice === '') {
       this.setState({
         buyPrice: '',
@@ -364,9 +364,9 @@ class ElementFundActionSetPrice extends Component {
             )
           )
         }
-        this.setState({
-          sending: false
-        })
+        // this.setState({
+        //   sending: false
+        // })
       })
       .catch(error => {
         console.warn(error)

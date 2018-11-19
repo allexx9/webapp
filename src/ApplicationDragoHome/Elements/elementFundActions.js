@@ -172,8 +172,6 @@ class ElementFundActions extends React.Component {
     color: Colors.red300
   }
 
-  UNSAFE_componentWillMount() {}
-
   UNSAFE_componentWillReceiveProps(nextProps) {
     // console.log(nextProps)
     if (this.props.actionSelected.action !== nextProps.actionSelected.action) {
@@ -279,8 +277,8 @@ class ElementFundActions extends React.Component {
     const { dragoDetails } = this.props
     const accountError = validateAccount(account, api)
     // Setting variables depending on account source
-    // var provider = account.source === 'MetaMask' ? window.web3 : api
-    let provider = api
+    let provider = account.source === 'MetaMask' ? window.web3 : api
+    // let provider = api
     this.setState(
       {
         account,

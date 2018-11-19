@@ -55,14 +55,14 @@ class ElementNotificationsDrawer extends Component {
   // }
 
   componentDidMount() {
-    const that = this
-    let runTick = () => {
-      timerId = setTimeout(function tick() {
-        that.updateTransactionsQueue()
-        timerId = setTimeout(tick, 2000) // (*)
-      }, 2000)
-    }
-    runTick()
+    // const that = this
+    // let runTick = () => {
+    //   timerId = setTimeout(function tick() {
+    //     that.updateTransactionsQueue()
+    //     timerId = setTimeout(tick, 2000) // (*)
+    //   }, 2000)
+    // }
+    // runTick()
   }
 
   removeNotification = noticationKey => {
@@ -81,6 +81,7 @@ class ElementNotificationsDrawer extends Component {
       api,
       recentTransactions
     )
+    console.log(newRecentTransactions)
     this.props.dispatch(
       this.updateTransactionsQueueAction(newRecentTransactions)
     )

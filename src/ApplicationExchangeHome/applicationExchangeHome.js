@@ -106,7 +106,7 @@ class ApplicationExchangeHome extends Component {
     // console.log(this.getConf())
 
     const { api } = this.context
-    const { selectedExchange } = this.props.exchange
+    const { selectedExchange, ui } = this.props.exchange
     const { endpoint } = this.props
 
     const defaultRelay = RELAYS[DEFAULT_RELAY[api._rb.network.name]]
@@ -187,6 +187,36 @@ class ApplicationExchangeHome extends Component {
 
       // Get funds details (balance, transactions)
       let selectedFund = await this.getSelectedFundDetails(null, accounts)
+      console.log(selectedFund)
+      if (selectedFund) {
+        this.props.dispatch(
+          Actions.exchange.setUiPanelProperties(
+            utils.updateUi(ui, 'relayBox').enableBox()
+          )
+        )
+      } else {
+        this.props.dispatch(
+          Actions.exchange.setUiPanelProperties(
+            utils
+              .updateUi(ui, 'relayBox')
+              .disableBox({ disabledMsg: 'Please create a fund.' })
+          )
+        )
+        this.props.dispatch(
+          Actions.exchange.setUiPanelProperties(
+            utils
+              .updateUi(ui, 'orderBox')
+              .disableBox({ disabledMsg: 'Please create a fund.' })
+          )
+        )
+        // this.props.dispatch(
+        //   Actions.exchange.setUiPanelProperties(
+        //     utils
+        //       .updateUi(ui, 'orderBox')
+        //       .disableBox({ disabledMsg: 'Please create a fund.' })
+        //   )
+        // )
+      }
 
       this.connectToExchange(
         selectedFund,

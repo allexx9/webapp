@@ -6,6 +6,7 @@ import BigNumber from 'bignumber.js'
 import BoxTitle from '../atoms/boxTitle'
 import ExchangeSelector from '../molecules/exchangeSelector'
 // import FlatButton from 'material-ui/FlatButton'
+import BoxDecorator from '../molecules/boxDecorator'
 import ErcdexAllowance from '../molecules/ercdexAllowance'
 import EthfinexAuth from '../molecules/ethfinexAuth'
 import Paper from 'material-ui/Paper'
@@ -112,26 +113,28 @@ class ExchangeBox extends PureComponent {
     }
 
     return (
-      <Row className={styles.sectionTitle}>
-        <Col xs={12}>
-          <BoxTitle titleText={'RELAY'} boxName={'relayBox'} />
-          <Paper style={paperStyle} zDepth={1}>
-            <Row>
-              <Col xs={12}>
-                <SectionTitleExchange titleText="RELAYS" />
-              </Col>
-              <Col xs={12}>
-                <ExchangeSelector
-                  availableRelays={availableRelays}
-                  selectedRelay={selectedRelay.name}
-                  onSelectExchange={this.onSelectExchange}
-                />
-              </Col>
-            </Row>
-            {this.showRelayActions(selectedRelay)}
-          </Paper>
-        </Col>
-      </Row>
+      <BoxDecorator boxName={'relayBox'}>
+        <Row className={styles.sectionTitle}>
+          <Col xs={12}>
+            <BoxTitle titleText={'RELAY'} boxName={'relayBox'} />
+            <Paper style={paperStyle} zDepth={1}>
+              <Row>
+                <Col xs={12}>
+                  <SectionTitleExchange titleText="RELAYS" />
+                </Col>
+                <Col xs={12}>
+                  <ExchangeSelector
+                    availableRelays={availableRelays}
+                    selectedRelay={selectedRelay.name}
+                    onSelectExchange={this.onSelectExchange}
+                  />
+                </Col>
+              </Row>
+              {this.showRelayActions(selectedRelay)}
+            </Paper>
+          </Col>
+        </Row>
+      </BoxDecorator>
     )
   }
 }

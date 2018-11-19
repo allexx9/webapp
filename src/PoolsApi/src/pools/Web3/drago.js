@@ -2,6 +2,7 @@
 // This file is part of RigoBlock.
 
 import * as abis from '../../contracts/abi'
+import { WETH_ADDRESSES, ZRX_ADDRESSES } from '../../utils/const'
 import Registry from '../registry'
 
 class DragoWeb3 {
@@ -34,7 +35,36 @@ class DragoWeb3 {
 
   getData = () => {
     const instance = this._instance
-    return instance.getData.call({})
+    return instance.methods.getData().call({})
+  }
+
+  getBalance = () => {
+    const api = this._api
+    const instance = this._instance
+    return api.eth.getBalance(instance._address)
+  }
+
+  getBalanceWETH = () => {
+    const api = this._api
+    const instance = this._instance
+    const wethInstance = new api.eth.Contract(
+      abis.weth,
+      WETH_ADDRESSES[api._rb.network.id]
+    )
+    return wethInstance.methods.balanceOf(instance._address).call({})
+  }
+
+  balanceOf = accountAddress => {
+    if (!accountAddress) {
+      throw new Error('accountAddress needs to be provided')
+    }
+    const instance = this._instance
+    return instance.methods.balanceOf(accountAddress).call({})
+  }
+
+  totalSupply = () => {
+    const instance = this._instance
+    return instance.methods.totalSupply().call({})
   }
 
   /**
@@ -584,11 +614,6 @@ class DragoWeb3 {
     // .catch((error) => {
     //   console.error('error', error)
     // })
-  }
-
-  totalSupply = () => {
-    const instance = this._instance
-    return instance.methods.totalSupply.call({})
   }
 
   wrapETHZeroEx = async (wrapperAddress, managerAccountAddress, amount) => {

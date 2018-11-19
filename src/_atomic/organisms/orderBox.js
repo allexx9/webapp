@@ -19,12 +19,12 @@ import { Actions } from '../../_redux/actions'
 import { connect } from 'react-redux'
 import {
   fillOrderToExchangeViaProxy,
-  newMakerOrder,
   signOrder,
   submitOrderToRelayEFX
 } from '../../_utils/exchange'
 import { sha3_512 } from 'js-sha3'
 // import ToggleSwitch from '../atoms/toggleSwitch'
+import BoxDecorator from '../molecules/boxDecorator'
 import ShowStatusMsg from '../atoms/showStatusMsg'
 import moment from 'moment'
 import serializeError from 'serialize-error'
@@ -344,108 +344,114 @@ class OrderBox extends Component {
       display: ui.panels.orderBox.expanded ? 'inline-block' : 'none'
     }
     return (
-      <Row>
-        <Col xs={12}>
-          <Row className={styles.sectionTitle}>
-            <Col xs={12}>
-              <BoxTitle titleText={'ORDER BOX'} boxName={'orderBox'} />
-              <Paper style={paperStyle} zDepth={1}>
-                <Row>
-                  <Col xs={12}>
-                    <CheckBoxQuickOrder
-                      onCheck={this.onSetOrderOptions}
-                      checked={this.state.orderOptions.quickOrder}
-                    />
-                  </Col>
-                </Row>
-                <Row className={styles.orderBookContainer}>
-                  <Col xs={12}>
-                    <Row className={styles.sectionHeaderOrderTable}>
-                      <Col sm={12} md={6} className={styles.buyButton}>
-                        <ButtonOrderBuy
-                          selected={buySelected}
-                          onBuySell={this.onBuySell}
-                        />
-                      </Col>
-                      <Col sm={12} md={6} className={styles.sellButton}>
-                        <ButtonOrderSell
-                          selected={sellSelected}
-                          onBuySell={this.onBuySell}
-                        />
-                      </Col>
-                    </Row>
-                  </Col>
-                  <Col xs={12}>
-                    {this.state.showWarnMsg && (
-                      <ShowStatusMsg
-                        msg={this.state.showWarnMsg}
-                        status="warning"
+      <BoxDecorator boxName={'relayBox'}>
+        <Row>
+          <Col xs={12}>
+            <Row className={styles.sectionTitle}>
+              <Col xs={12}>
+                <BoxTitle titleText={'ORDER BOX'} boxName={'orderBox'} />
+                <Paper style={paperStyle} zDepth={1}>
+                  <Row>
+                    <Col xs={12}>
+                      <CheckBoxQuickOrder
+                        onCheck={this.onSetOrderOptions}
+                        checked={this.state.orderOptions.quickOrder}
                       />
-                    )}
-                  </Col>
-                  <Col xs={12}>
-                    <OrderAmountInputField
-                      orderMaxAmount={Number(selectedOrder.orderMaxAmount)}
-                      orderFillAmount={selectedOrder.orderFillAmount}
-                      symbol={selectedOrder.selectedTokensPair.baseToken.symbol}
-                      onChangeAmount={this.onChangeAmount}
-                      disabled={Object.keys(selectedOrder.details).length === 0}
-                      checkMaxAmount={selectedOrder.takerOrder}
-                    />
-                  </Col>
-                  <Col xs={12}>
-                    <OrderPrice
-                      orderPrice={selectedOrder.orderPrice}
-                      onChangePrice={this.onChangePrice}
-                      disabled={
-                        selectedOrder.takerOrder ||
-                        Object.keys(selectedOrder.details).length === 0
-                      }
-                    />
-                  </Col>
-                  <Col xs={12}>
-                    <Row center="xs">
-                      <Col sm={12} md={6}>
-                        <ButtonOrderReset
-                          onClick={this.onCancelOrder}
-                          disabled={
-                            Object.keys(selectedOrder.details).length === 0
-                          }
+                    </Col>
+                  </Row>
+                  <Row className={styles.orderBookContainer}>
+                    <Col xs={12}>
+                      <Row className={styles.sectionHeaderOrderTable}>
+                        <Col sm={12} md={6} className={styles.buyButton}>
+                          <ButtonOrderBuy
+                            selected={buySelected}
+                            onBuySell={this.onBuySell}
+                          />
+                        </Col>
+                        <Col sm={12} md={6} className={styles.sellButton}>
+                          <ButtonOrderSell
+                            selected={sellSelected}
+                            onBuySell={this.onBuySell}
+                          />
+                        </Col>
+                      </Row>
+                    </Col>
+                    <Col xs={12}>
+                      {this.state.showWarnMsg && (
+                        <ShowStatusMsg
+                          msg={this.state.showWarnMsg}
+                          status="warning"
                         />
-                      </Col>
-                      <Col sm={12} md={6}>
-                        <ButtonOrderConfirm
-                          onClick={this.onConfirmOrder}
-                          disabled={
-                            selectedOrder.orderAmountError ||
-                            selectedOrder.orderPriceError
-                          }
-                        />
-                      </Col>
-                    </Row>
-                  </Col>
-                  <Col xs={12}>
-                    {Object.keys(selectedOrder.details).length !== 0 ? (
-                      <OrderSummary order={selectedOrder} />
-                    ) : null}
-                  </Col>
-                </Row>
-              </Paper>
-            </Col>
-          </Row>
-        </Col>
-        <OrderRawDialog
-          order={selectedOrder}
-          efxOrder={this.state.efxOrder}
-          exchange={this.props.exchange}
-          onSubmitOrder={this.onSubmitOrder}
-          onCheckOrder={this.onCheckOrder}
-          orderSubmitStep={this.state.orderSubmitStep}
-          onClose={this.onCloseOrderRawDialog}
-          open={this.state.orderRawDialogOpen}
-          // open={true}
-        />
-      </Row>
+                      )}
+                    </Col>
+                    <Col xs={12}>
+                      <OrderAmountInputField
+                        orderMaxAmount={Number(selectedOrder.orderMaxAmount)}
+                        orderFillAmount={selectedOrder.orderFillAmount}
+                        symbol={
+                          selectedOrder.selectedTokensPair.baseToken.symbol
+                        }
+                        onChangeAmount={this.onChangeAmount}
+                        disabled={
+                          Object.keys(selectedOrder.details).length === 0
+                        }
+                        checkMaxAmount={selectedOrder.takerOrder}
+                      />
+                    </Col>
+                    <Col xs={12}>
+                      <OrderPrice
+                        orderPrice={selectedOrder.orderPrice}
+                        onChangePrice={this.onChangePrice}
+                        disabled={
+                          selectedOrder.takerOrder ||
+                          Object.keys(selectedOrder.details).length === 0
+                        }
+                      />
+                    </Col>
+                    <Col xs={12}>
+                      <Row center="xs">
+                        <Col sm={12} md={6}>
+                          <ButtonOrderReset
+                            onClick={this.onCancelOrder}
+                            disabled={
+                              Object.keys(selectedOrder.details).length === 0
+                            }
+                          />
+                        </Col>
+                        <Col sm={12} md={6}>
+                          <ButtonOrderConfirm
+                            onClick={this.onConfirmOrder}
+                            disabled={
+                              selectedOrder.orderAmountError ||
+                              selectedOrder.orderPriceError
+                            }
+                          />
+                        </Col>
+                      </Row>
+                    </Col>
+                    <Col xs={12}>
+                      {Object.keys(selectedOrder.details).length !== 0 ? (
+                        <OrderSummary order={selectedOrder} />
+                      ) : null}
+                    </Col>
+                  </Row>
+                </Paper>
+              </Col>
+            </Row>
+          </Col>
+          <OrderRawDialog
+            order={selectedOrder}
+            efxOrder={this.state.efxOrder}
+            exchange={this.props.exchange}
+            onSubmitOrder={this.onSubmitOrder}
+            onCheckOrder={this.onCheckOrder}
+            orderSubmitStep={this.state.orderSubmitStep}
+            onClose={this.onCloseOrderRawDialog}
+            open={this.state.orderRawDialogOpen}
+            // open={true}
+          />
+        </Row>
+      </BoxDecorator>
     )
   }
 }

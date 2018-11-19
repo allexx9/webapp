@@ -6,6 +6,7 @@ import { Reducers } from './_redux/reducers/root_reducer'
 import { applyMiddleware, compose, createStore } from 'redux'
 import { createEpicMiddleware } from 'redux-observable'
 import { persistReducer, persistStore } from 'redux-persist'
+import { reduxBatch } from '@manaflair/redux-batch'
 import { rootEpic } from './_redux/epics/root_epics'
 import App from './App'
 import React from 'react'
@@ -83,6 +84,12 @@ const persistedReducer = persistReducer(persistConfig, Reducers.rootReducer)
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 
+// TO DO: test batch action dispatch
+// const enhancer = compose(
+//   reduxBatch,
+//   applyMiddleware(...middlewares),
+//   reduxBatch
+// )
 const enhancer = composeEnhancers(applyMiddleware(...middlewares))
 
 let store = createStore(persistedReducer, enhancer)

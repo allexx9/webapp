@@ -339,33 +339,34 @@ export const getAccountsTransactionsEpic = (action$, state$) => {
             return Actions.vault.updateTransactionsVaultHolder(results)
             // return DEBUGGING.DUMB_ACTION
           }
-        }),
-        retryWhen(error => {
-          console.log('getAccountsTransactionsEpic')
-          let scalingDuration = 10000
-          return error.pipe(
-            buffer(isNodeConnected$),
-            first(),
-            mergeMap((error, i) => {
-              const retryAttempt = i + 1
-              // if maximum number of retries have been met
-              // or response is a status code we don't wish to retry, throw error
-              // if (
-              //   retryAttempt > maxRetryAttempts ||
-              //   excludedStatusCodes.find(e => e === error.status)
-              // ) {
-              //   throw(error);
-              // }
-              // const _rb = window.web3._rb
-              // window.web3 = new Web3(window.web3.currentProvider)
-              // window.web3._rb = _rb
-              console.log(`getAccountsTransactionsEpic Attempt ${retryAttempt}`)
-              // retry after 1s, 2s, etc...
-              return timer(scalingDuration)
-            }),
-            finalize(() => console.log('We are done!'))
-          )
         })
+        // retryWhen(error => {
+        //   console.log('getAccountsTransactionsEpic')
+        //   let scalingDuration = 10000
+        //   return error.pipe(
+        //     buffer(isNodeConnected$),
+        //     first(),
+        //     mergeMap((error, i) => {
+        //       console.log(error)
+        //       const retryAttempt = i + 1
+        //       // if maximum number of retries have been met
+        //       // or response is a status code we don't wish to retry, throw error
+        //       // if (
+        //       //   retryAttempt > maxRetryAttempts ||
+        //       //   excludedStatusCodes.find(e => e === error.status)
+        //       // ) {
+        //       //   throw(error);
+        //       // }
+        //       // const _rb = window.web3._rb
+        //       // window.web3 = new Web3(window.web3.currentProvider)
+        //       // window.web3._rb = _rb
+        //       console.log(`getAccountsTransactionsEpic Attempt ${retryAttempt}`)
+        //       // retry after 1s, 2s, etc...
+        //       return timer(scalingDuration)
+        //     }),
+        //     finalize(() => console.log('We are done!'))
+        //   )
+        // })
         // catchError(error => {
         //   console.warn(error)
         //   return Observable.of({

@@ -24,6 +24,8 @@ import {
 import { ofType } from 'redux-observable'
 import { sha3_512 } from 'js-sha3'
 import BigNumber from 'bignumber.js'
+import PoolApi from '../../../PoolsApi/src'
+import Web3 from 'web3'
 import Web3Wrapper from '../../../_utils/web3Wrapper/src'
 import utils from '../../../_utils/utils'
 
@@ -193,57 +195,62 @@ const monitorEventful$ = (web3, api, state$) => {
       // })
     }),
     Observable.create(observer => {
-      return observer.next('1')
-      // console.log('subscription BuySell DRAGO events')
+      // return observer.next('1')
+
+      console.log('subscription BuySell DRAGO events')
       // let web3New = new Web3(window.web3._rb.wss)
-      // const poolApi = new PoolsApi(api)
-      // // DRAGO
-      // poolApi.contract.dragoeventful.init().then(() => {
-      //   let subscriptionBuySell = web3New.eth.subscribe(
-      //     'logs',
-      //     {
-      //       address: poolApi.contract.dragoeventful._contract._address[0].toLocaleLowerCase(),
-      //       topics: [null, null, hexAccounts, null]
-      //     },
-      //     function(error, result) {
-      //       if (!error) {
-      //         console.log(result)
-      //         return observer.next(result)
-      //       } else {
-      //         return observer.error(error)
-      //       }
-      //     }
-      //   )
-      //   return () => {
-      //     subscriptionBuySell.unsubscribe(function(error, success) {
-      //       if (success) console.log('Successfully unsubscribed!')
-      //     })
-      //   }
-      // })
-      // console.log('subscription BuySell VAULT events')
-      // // VAULT
-      // poolApi.contract.vaulteventful.init().then(() => {
-      //   let subscriptionBuySell = web3New.eth.subscribe(
-      //     'logs',
-      //     {
-      //       address: poolApi.contract.vaulteventful._contract._address[0].toLocaleLowerCase(),
-      //       topics: [null, null, hexAccounts, null]
-      //     },
-      //     function(error, result) {
-      //       if (!error) {
-      //         console.log(result)
-      //         return observer.next(result)
-      //       } else {
-      //         return observer.error(error)
-      //       }
-      //     }
-      //   )
-      //   return () => {
-      //     subscriptionBuySell.unsubscribe(function(error, success) {
-      //       if (success) console.log('Successfully unsubscribed!')
-      //     })
-      //   }
-      // })
+      const poolApi = new PoolApi(api)
+
+      Web3Wrapper.getInstance(state$.value.endpoint.networkInfo.id).then(
+        web3New => {
+          // DRAGO
+          poolApi.contract.dragoeventful.init().then(() => {
+            let subscriptionBuySell = web3New.eth.subscribe(
+              'logs',
+              {
+                address: poolApi.contract.dragoeventful._contract._address[0].toLocaleLowerCase(),
+                topics: [null, null, hexAccounts, null]
+              },
+              function(error, result) {
+                if (!error) {
+                  return observer.next(result)
+                } else {
+                  return observer.error(error)
+                }
+              }
+            )
+            return () => {
+              subscriptionBuySell.unsubscribe(function(error, success) {
+                if (success) console.log('Successfully unsubscribed!')
+              })
+            }
+          })
+          console.log('subscription BuySell VAULT events')
+          // VAULT
+          poolApi.contract.vaulteventful.init().then(() => {
+            let subscriptionBuySell = web3New.eth.subscribe(
+              'logs',
+              {
+                address: poolApi.contract.vaulteventful._contract._address[0].toLocaleLowerCase(),
+                topics: [null, null, hexAccounts, null]
+              },
+              function(error, result) {
+                if (!error) {
+                  console.log(result)
+                  return observer.next(result)
+                } else {
+                  return observer.error(error)
+                }
+              }
+            )
+            return () => {
+              subscriptionBuySell.unsubscribe(function(error, success) {
+                if (success) console.log('Successfully unsubscribed!')
+              })
+            }
+          })
+        }
+      )
     })
   )
 }
@@ -263,13 +270,45 @@ export const monitorEventfulEpic = (action$, state$) => {
           return val
         }),
         flatMap(event => {
+          console.log(event)
           const observablesArray = Array(0)
           const currentState = state$.value
+
+          if (currentState.transactionsDrago.selectedDrago.details.dragoId) {
+            console.log('Account monitoring - > DRAGO details fetch.')
+            observablesArray.push(
+              Observable.of(
+                Actions.drago.getPoolDetails(
+                  currentState.transactionsDrago.selectedDrago.details.dragoId,
+                  action.payload.api,
+                  {
+                    poolType: 'drago'
+                  }
+                )
+              )
+            )
+          }
+
+          if (currentState.transactionsVault.selectedVault.details.vaultId) {
+            console.log('Account monitoring - > VAULT details fetch.')
+            observablesArray.push(
+              Observable.of(
+                Actions.drago.getPoolDetails(
+                  currentState.transactionsVault.selectedVault.details.vaultId,
+                  action.payload.api,
+                  {
+                    poolType: 'vault'
+                  }
+                )
+              )
+            )
+          }
+
           // console.log(event)
           // console.log(
           //   'Eventful subscription - > DRAGO transactions fetch trader'
           // )
-          observablesArray.push(Observable.of(DEBUGGING.DUMB_ACTION))
+          // observablesArray.push(Observable.of(DEBUGGING.DUMB_ACTION))
           // observablesArray.push(
           //   Observable.of(
           //     Actions.endpoint.getAccountsTransactions(
@@ -309,7 +348,7 @@ export const monitorEventfulEpic = (action$, state$) => {
           // console.log(
           //   'Eventful subscription - > VAULT transactions fetch trader'
           // )
-          observablesArray.push(Observable.of(DEBUGGING.DUMB_ACTION))
+          // observablesArray.push(Observable.of(DEBUGGING.DUMB_ACTION))
           // observablesArray.push(
           //   Observable.of(
           //     Actions.endpoint.getAccountsTransactions(
@@ -429,48 +468,45 @@ export const monitorAccountsEpic = (action$, state$) => {
           if (DEBUGGING.initAccountsTransactionsInEpic) {
             const currentState = state$.value
             if (accountsUpdate[2]) {
-              if (
-                currentState.transactionsDrago.selectedDrago.details.dragoId
-              ) {
-                console.log(
-                  'Account monitoring - > DRAGO transactions fetch: Trader: ' +
-                    state$.value.user.isManager
-                )
-                observablesArray.push(
-                  Observable.of(
-                    Actions.drago.getPoolDetails(
-                      currentState.transactionsDrago.selectedDrago.details
-                        .dragoId,
-                      action.payload.api,
-                      {
-                        poolType: 'drago'
-                      }
-                    )
-                  )
-                )
-              }
+              // if (
+              //   currentState.transactionsDrago.selectedDrago.details.dragoId
+              // ) {
+              //   console.log('Account monitoring - > DRAGO details fetch.')
+              //   observablesArray.push(
+              //     Observable.of(
+              //       Actions.drago.getPoolDetails(
+              //         currentState.transactionsDrago.selectedDrago.details
+              //           .dragoId,
+              //         action.payload.api,
+              //         {
+              //           poolType: 'drago'
+              //         }
+              //       )
+              //     )
+              //   )
+              // }
 
-              if (
-                currentState.transactionsVault.selectedVault.details.vaultId
-              ) {
-                console.log(
-                  'Account monitoring - > VAULT transactions fetch. Trader ' +
-                    state$.value.user.isManager
-                )
-                observablesArray.push(
-                  Observable.of(
-                    Actions.drago.getPoolDetails(
-                      currentState.transactionsVault.selectedVault.details
-                        .vaultId,
-                      action.payload.api,
-                      {
-                        poolType: 'vault'
-                      }
-                    )
-                  )
-                )
-              }
+              // if (
+              //   currentState.transactionsVault.selectedVault.details.vaultId
+              // ) {
+              //   console.log('Account monitoring - > VAULT details fetch.')
+              //   observablesArray.push(
+              //     Observable.of(
+              //       Actions.drago.getPoolDetails(
+              //         currentState.transactionsVault.selectedVault.details
+              //           .vaultId,
+              //         action.payload.api,
+              //         {
+              //           poolType: 'vault'
+              //         }
+              //       )
+              //     )
+              //   )
+              // }
               // observablesArray.push(Observable.of(DEBUGGING.DUMB_ACTION))
+              console.log(
+                'Account monitoring - > DRAGO transactions fetch trader'
+              )
               observablesArray.push(
                 Observable.of(
                   Actions.endpoint.getAccountsTransactions(
@@ -481,7 +517,7 @@ export const monitorAccountsEpic = (action$, state$) => {
                       balance: false,
                       supply: true,
                       limit: 20,
-                      trader: false,
+                      trader: true,
                       drago: true
                     }
                   )
@@ -500,7 +536,7 @@ export const monitorAccountsEpic = (action$, state$) => {
                       balance: true,
                       supply: false,
                       limit: 20,
-                      trader: true,
+                      trader: false,
                       drago: true
                     }
                   )
@@ -674,7 +710,7 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
           currentState.endpoint
         ).pipe(
           filter(val => {
-            console.log(val)
+            // console.log(val)
             return Object.keys(val).length !== 0
           }),
           // filter(val => {
