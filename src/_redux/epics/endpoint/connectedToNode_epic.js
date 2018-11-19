@@ -15,21 +15,20 @@ import shallowequal from 'shallowequal'
 
 export const isConnectedToNodeWeb3Wrapper$ = state$ => {
   return Observable.create(observer => {
-    Web3Wrapper.getInstance(state$.value.endpoint.networkInfo.id).then(
-      instance => {
-        instance.ob.nodeStatus$.subscribe(val => {
-          // console.log('Msg: ', val)
-          if (val === 0) return
-          if (Object.keys(val.error).length === 0) {
-            // console.log('Msg: ', val)
-            observer.next(val)
-          } else {
-            // console.log('Err: ', val)
-            observer.next(val)
-          }
-        })
-      }
+    const instance = Web3Wrapper.getInstance(
+      state$.value.endpoint.networkInfo.id
     )
+    instance.rigoblock.ob.nodeStatus$.subscribe(val => {
+      // console.log('Msg: ', val)
+      if (val === 0) return
+      if (Object.keys(val.error).length === 0) {
+        // console.log('Msg: ', val)
+        observer.next(val)
+      } else {
+        // console.log('Err: ', val)
+        observer.next(val)
+      }
+    })
   })
 }
 

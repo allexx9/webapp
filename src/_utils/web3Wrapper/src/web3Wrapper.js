@@ -5,6 +5,7 @@ import Web3 from 'web3'
 import contract from './utils/contract'
 import exchangeEfxV0$ from './observables/exchangeEfx'
 import getEventful$ from './observables/eventful'
+import newBlock from './observables/newBlock'
 
 const defaultStatus = {
   isConnected: false,
@@ -71,7 +72,8 @@ class Web3Wrapper {
         ob: {
           eventful$: getEventful$(this.web3, networkId),
           exchangeEfxV0$: exchangeEfxV0$(this.web3, networkId),
-          nodeStatus$: this.status$
+          nodeStatus$: this.status$,
+          newBlock$: newBlock(this.web3)
         },
         utils: { contract },
         endpoint: transport

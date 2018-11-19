@@ -1,14 +1,13 @@
 import { Observable } from 'rxjs'
-import { retryWhen, tap, timeout } from 'rxjs/operators'
+import { delay, retryWhen, tap, timeout } from 'rxjs/operators'
 
 export default web3 => {
   const timeoutMs = 120000
   const retryDelay = 10000
 
   return Observable.create(observer => {
-    const subscription = web3.eth.subscribe(
-      'newBlockHeaders',
-      (err, msg) => (err ? observer.error(err) : observer.next(msg))
+    const subscription = web3.eth.subscribe('newBlockHeaders', (err, msg) =>
+      err ? observer.error(err) : observer.next(msg)
     )
     return () => subscription.unsubscribe()
   }).pipe(
