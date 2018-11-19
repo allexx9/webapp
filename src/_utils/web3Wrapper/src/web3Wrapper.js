@@ -1,11 +1,11 @@
 import { ENDPOINTS } from './utils/const'
-import { delay, exhaustMap, map, retryWhen, timeout } from 'rxjs/operators'
-import { from, timer } from 'rxjs'
+import { Observable, timer } from 'rxjs'
+import { delay, exhaustMap, map, retryWhen, tap, timeout } from 'rxjs/operators'
 import Web3 from 'web3'
 import contract from './utils/contract'
 import getEventful$ from './observables/eventful'
 
-const nodeStatus = {
+const defaultStatus = {
   isConnected: false,
   isSyncing: false,
   syncStatus: {},
@@ -17,17 +17,22 @@ class Web3Wrapper {
 
   get status$() {
     return timer(0, 1000).pipe(
-      exhaustMap(() => from(this.web3.eth.isSyncing())),
-      map(
-        syncStatus =>
-          syncStatus
-            ? {
-                ...nodeStatus,
-                isConnected: true,
-                isSyncing: true,
-                syncStatus
-              }
-            : { ...nodeStatus, isConnected: true }
+      exhaustMap(() =>
+        Observable.create(async observer => {
+          try {
+            const status = await this.web3.eth.isSyncing()
+            const nodeStatus = status
+              ? { ...defaultStatus, isConnected: true, isSyncing: true }
+              : { ...defaultStatus, isConnected: true }
+
+            observer.next(nodeStatus)
+            observer.complete()
+          } catch (e) {
+            observer.next({ ...defaultStatus, error: e })
+            return observer.error(e)
+          }
+          return () => observer.complete()
+        })
       )
     )
   }
@@ -42,6 +47,8 @@ class Web3Wrapper {
         timeout(timeoutMs),
         retryWhen(errors => {
           return errors.pipe(
+            tap(() => console.error('Websocket disconnected.')),
+            tap(() => console.info('Setting new provider...')),
             map(() =>
               this.web3.setProvider(
                 new Web3.providers.WebsocketProvider(transport)
