@@ -3,6 +3,7 @@ import { Observable, timer } from 'rxjs'
 import { delay, exhaustMap, map, retryWhen, tap, timeout } from 'rxjs/operators'
 import Web3 from 'web3'
 import contract from './utils/contract'
+import exchangeEfxV0$ from './observables/exchangeEfx'
 import getEventful$ from './observables/eventful'
 
 const defaultStatus = {
