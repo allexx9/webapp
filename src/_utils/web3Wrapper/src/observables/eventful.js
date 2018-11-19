@@ -29,7 +29,7 @@ export default (web3, networkId) => {
           if (err) {
             return observer.error(err)
           }
-          // fromBlock = fromBlock < msg.blockNumber ? msg.blockNumber : fromBlock
+          fromBlock = fromBlock > msg.blockNumber ? fromBlock : msg.blockNumber
           return observer.next(msg)
         }
       )

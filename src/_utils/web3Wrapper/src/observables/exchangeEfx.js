@@ -27,7 +27,6 @@ const exchangeEfxV0$ = (web3, networkId) => {
 
   return defer(() => from(web3.eth.getBlockNumber())).pipe(
     tap(latestBlock => (fromBlock = latestBlock)),
-    tap(val => console.log(val)),
     switchMap(() =>
       merge(
         Observable.create(observer => {
@@ -39,7 +38,8 @@ const exchangeEfxV0$ = (web3, networkId) => {
               if (err) {
                 return observer.error(err)
               }
-              // fromBlock = msg.blockNumber
+              fromBlock =
+                fromBlock > msg.blockNumber ? fromBlock : msg.blockNumber
               return observer.next(msg)
             }
           )
