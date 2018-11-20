@@ -1,7 +1,8 @@
+import BigNumber from 'bignumber.js'
 import PoolApi from '../../PoolsApi/src'
 import Web3Wrapper from '../web3Wrapper/src'
 
-export const updateTokenWrapperLockTime = async (
+export const getTokenWrapperLockTime = async (
   api,
   tokenAddress,
   accountAddress
@@ -10,7 +11,8 @@ export const updateTokenWrapperLockTime = async (
   newWeb3._rb = window.web3._rb
   const poolApi = new PoolApi(newWeb3)
   await poolApi.contract.tokenwrapper.init(tokenAddress)
-  return (await poolApi.contract.tokenwrapper.depositLock(
+  const depositLockTime = await poolApi.contract.tokenwrapper.depositLock(
     accountAddress
-  )).toFixed()
+  )
+  return new BigNumber(depositLockTime).toFixed()
 }

@@ -32,8 +32,8 @@ import {
   dateFromTimeStampHuman,
   getTransactionsVaultOptV2,
   getTransactionsSingleVault,
-  fetchDragoLiquidityAndTokenBalances,
-  updateTokenWrapperLockTime,
+  getDragoLiquidityAndTokenBalances,
+  getTokenWrapperLockTime,
   logToEvent
 } from './utils/index'
 import PropTypes from 'prop-types'
@@ -698,7 +698,7 @@ class utilities {
     return details
   }
 
-  updateTokenWrapperLockTime = updateTokenWrapperLockTime
+  getTokenWrapperLockTime = getTokenWrapperLockTime
 
   getDragoLiquidity = async (dragoAddress, api) => {
     const poolApi = new PoolApi(api)
@@ -711,7 +711,7 @@ class utilities {
     return [dragoETHBalance]
   }
 
-  fetchDragoLiquidityAndTokenBalances = fetchDragoLiquidityAndTokenBalances
+  getDragoLiquidityAndTokenBalances = getDragoLiquidityAndTokenBalances
 
   shallowEqual(objA, objB, component = '') {
     //

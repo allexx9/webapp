@@ -2,6 +2,7 @@
 // This file is part of RigoBlock.
 
 import * as abis from '../../contracts/abi'
+import BigNumber from 'bignumber.js'
 import Registry from '../registry'
 
 class TokenWrapperWeb3 {
@@ -34,7 +35,10 @@ class TokenWrapperWeb3 {
       throw new Error('accountAddress needs to be provided')
     }
     const instance = this._instance
-    return instance.methods.balanceOf(accountAddress).call({})
+    return instance.methods
+      .balanceOf(accountAddress)
+      .call({})
+      .then(result => new BigNumber(result))
   }
 
   depositLock = accountAddress => {
@@ -42,8 +46,10 @@ class TokenWrapperWeb3 {
       throw new Error('accountAddress needs to be provided')
     }
     const instance = this._instance
-    console.log(instance)
-    return instance.methods.depositLock(accountAddress).call({})
+    return instance.methods
+      .depositLock(accountAddress)
+      .call({})
+      .then(result => new BigNumber(result))
   }
 }
 

@@ -1,10 +1,10 @@
 // import * as abis from '../PoolsApi/src/contracts/abi'
-import { updateTokenWrapperLockTime } from './updateTokenWrapperLockTime'
+import { getTokenWrapperLockTime } from './getTokenWrapperLockTime'
 import BigNumber from 'bignumber.js'
 import PoolApi from '../../PoolsApi/src'
 import Web3Wrapper from '../web3Wrapper/src'
 
-export const fetchDragoLiquidityAndTokenBalances = async (
+export const getDragoLiquidityAndTokenBalances = async (
   dragoAddress,
   api,
   selectedTokensPair,
@@ -40,7 +40,7 @@ export const fetchDragoLiquidityAndTokenBalances = async (
       selectedTokensPair.quoteToken.wrappers[exchange.name].address
     )
     // Getting token wrapper lock time
-    baseTokenLockWrapExpire = await updateTokenWrapperLockTime(
+    baseTokenLockWrapExpire = await getTokenWrapperLockTime(
       api,
       selectedTokensPair.baseToken.wrappers[exchange.name].address,
       dragoAddress
@@ -50,7 +50,7 @@ export const fetchDragoLiquidityAndTokenBalances = async (
     //     .unix(baseTokenLockWrapExpire)
     //     .format('MMMM Do YYYY, h:mm:ss a')}`
     // )
-    quoteTokenLockWrapExpire = await updateTokenWrapperLockTime(
+    quoteTokenLockWrapExpire = await getTokenWrapperLockTime(
       api,
       selectedTokensPair.quoteToken.wrappers[exchange.name].address,
       dragoAddress
@@ -61,16 +61,21 @@ export const fetchDragoLiquidityAndTokenBalances = async (
     //     .format('MMMM Do YYYY, h:mm:ss a')}`
     // )
   }
+
   const liquidity = {
     dragoETHBalance,
     // dragoZRXBalance: await poolApi.contract.drago.getBalanceZRX(),
     baseTokenBalance,
     baseTokenWrapperBalance,
     quoteTokenBalance,
-    quoteTokenWrapperBalance,
-    baseTokenLockWrapExpire,
-    quoteTokenLockWrapExpire
+    quoteTokenWrapperBalance
   }
-  // console.log(liquidity)
+  for (let key in liquidity) {
+    liquidity[key] = new BigNumber(liquidity[key])
+  }
+
+  liquidity.baseTokenLockWrapExpire = baseTokenLockWrapExpire
+  liquidity.quoteTokenLockWrapExpire = quoteTokenLockWrapExpire
+
   return liquidity
 }

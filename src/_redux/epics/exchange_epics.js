@@ -115,7 +115,7 @@ export const getOrderBookFromRelayEpic = action$ => {
 // UPDATE TOKEN WRAPPER LOCK TIME
 //
 
-// const updateTokenWrapperLockTime$ = (fundAddress, api) =>
+// const getTokenWrapperLockTime$ = (fundAddress, api) =>
 //   Observable.fromPromise(utils.getDragoLiquidity(fundAddress, api)).map(
 //     liquidity => {
 //       const payload = {
@@ -136,7 +136,7 @@ export const getOrderBookFromRelayEpic = action$ => {
 //   return action$.pipe(
 //     ofType(TYPE_.UPDATE_TOKEN_WRAPPER_LOCK_TIME),
 //     switchMap(action => {
-//       return updateTokenWrapperLockTime$(action.payload.api, action.payload.api)
+//       return getTokenWrapperLockTime$(action.payload.api, action.payload.api)
 //     })
 //   )
 // }
@@ -197,7 +197,7 @@ const updateLiquidityAndTokenBalances$ = (api, fundAddress, currentState) => {
     currentState.exchange.selectedTokensPair
   )
   return from(
-    utils.fetchDragoLiquidityAndTokenBalances(
+    utils.getDragoLiquidityAndTokenBalances(
       fundAddress,
       api,
       selectedTokensPair,

@@ -178,7 +178,7 @@ class DragoWeb3 {
     ])
     console.log(encodedABI)
     return instance.methods
-      .operateOnExchange(exchangeContractAddress, encodedABI)
+      .operateOnExchange(exchangeContractAddress, [encodedABI])
       .estimateGas(options)
       .then(gasEstimate => {
         console.log(gasEstimate)
@@ -186,7 +186,7 @@ class DragoWeb3 {
       })
       .then(() => {
         return instance.methods
-          .operateOnExchange(exchangeContractAddress, encodedABI)
+          .operateOnExchange(exchangeContractAddress, [encodedABI])
           .send(options)
       })
   }
@@ -292,7 +292,7 @@ class DragoWeb3 {
     ])
     console.log(encodedABI)
     return instance.methods
-      .operateOnExchange(exchangeContractAddress, encodedABI)
+      .operateOnExchange(exchangeContractAddress, [encodedABI])
       .estimateGas(options)
       .then(gasEstimate => {
         console.log(gasEstimate)
@@ -300,7 +300,7 @@ class DragoWeb3 {
       })
       .then(() => {
         return instance.methods
-          .operateOnExchange(exchangeContractAddress, encodedABI)
+          .operateOnExchange(exchangeContractAddress, [encodedABI])
           .send(options)
       })
   }
@@ -733,35 +733,6 @@ class DragoWeb3 {
           .send(options)
       })
   }
-
-  // withdrawFromExchange = (exchangeAddress, fromAddress, amount) => {
-  //   if (!fromAddress) {
-  //     throw new Error('toAddress needs to be provided')
-  //   }
-  //   if (!amount) {
-  //     throw new Error('amount needs to be provided')
-  //   }
-  //   if (!exchangeAddress) {
-  //     throw new Error('exchangeAddress needs to be provided')
-  //   }
-  //   const instance = this._instance
-  //   const options = {
-  //     from: fromAddress
-  //   }
-  //   console.log(exchangeAddress)
-  //   return instance.methods
-  //     .withdrawFromExchange(exchangeAddress, amount)
-  //     .estimateGas(options)
-  //     .then(gasEstimate => {
-  //       console.log(gasEstimate)
-  //       options.gas = gasEstimate
-  //     })
-  //     .then(() => {
-  //       return instance.methods
-  //         .withdrawFromExchange(exchangeAddress, amount)
-  //         .send(options)
-  //     })
-  // }
 }
 
 export default DragoWeb3
