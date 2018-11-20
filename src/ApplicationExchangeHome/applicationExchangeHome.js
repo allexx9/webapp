@@ -280,7 +280,7 @@ class ApplicationExchangeHome extends Component {
         spread: '0'
       }
     })
-
+    console.log('connectToExchange function')
     // Getting exchange contract events
     this.props.dispatch(
       Actions.exchange.monitorEventsStart(
@@ -619,7 +619,9 @@ class ApplicationExchangeHome extends Component {
       )
     }
 
-    if (user.isManager) {
+    let show = true
+
+    if (show) {
       const { bids, asks, spread } = this.props.exchange.orderBook
       // console.log(asks)
       // console.log(bids)
@@ -738,15 +740,15 @@ class ApplicationExchangeHome extends Component {
       )
     }
 
-    if (!user.isManager) {
-      return (
-        <div ref={node => (this.node = node)}>
-          <Row className={styles.maincontainer}>
-            <Col xs={12}>Only wizards can access this section.</Col>
-          </Row>
-        </div>
-      )
-    }
+    // if (!user.isManager) {
+    //   return (
+    //     <div ref={node => (this.node = node)}>
+    //       <Row className={styles.maincontainer}>
+    //         <Col xs={12}>Only wizards can access this section.</Col>
+    //       </Row>
+    //     </div>
+    //   )
+    // }
   }
 }
 

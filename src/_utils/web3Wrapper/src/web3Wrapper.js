@@ -1,6 +1,7 @@
 import { ENDPOINTS } from './utils/const'
 import { Observable, timer } from 'rxjs'
 import {
+  catchError,
   delay,
   exhaustMap,
   map,
@@ -59,11 +60,11 @@ class Web3Wrapper {
             tap(() =>
               console.error('Websocket disconnected. Setting new provider...')
             ),
-            map(() =>
+            map(() => {
               this.web3.setProvider(
                 new Web3.providers.WebsocketProvider(transport)
               )
-            ),
+            }),
             delay(5000)
           )
         })

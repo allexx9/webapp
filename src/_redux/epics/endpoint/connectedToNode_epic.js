@@ -3,8 +3,15 @@
 // import { Observable } from 'rxjs';
 import * as TYPE_ from '../../actions/const'
 import { Actions } from '../../actions/'
-import { Observable } from 'rxjs'
-import { distinctUntilChanged, flatMap, tap } from 'rxjs/operators'
+import { Observable, timer } from 'rxjs'
+import {
+  distinctUntilChanged,
+  finalize,
+  flatMap,
+  mergeMap,
+  retryWhen,
+  tap
+} from 'rxjs/operators'
 import Web3Wrapper from '../../../_utils/web3Wrapper/src'
 import shallowEqualObjects from 'shallow-equal/objects'
 import shallowequal from 'shallowequal'
@@ -19,7 +26,7 @@ export const isConnectedToNodeWeb3Wrapper$ = state$ => {
       state$.value.endpoint.networkInfo.id
     )
     instance.rigoblock.ob.nodeStatus$.subscribe(val => {
-      // console.log('Msg: ', val)
+      console.log('Msg: ', val)
       if (val === 0) return
       if (Object.keys(val.error).length === 0) {
         // console.log('Msg: ', val)
@@ -55,6 +62,16 @@ export const connectedToNodeEpic = (action$, state$) =>
           )
         ]
         return Observable.concat(...actionsArray)
+      }),
+      retryWhen(error => {
+        let scalingDuration = 5000
+        return error.pipe(
+          mergeMap((error, i) => {
+            console.warn(error)
+            return timer(scalingDuration)
+          }),
+          finalize(() => console.log('We are done!'))
+        )
       })
     )
   })

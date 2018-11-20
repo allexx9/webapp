@@ -1,5 +1,14 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
+import { Observable, of, timer } from 'rxjs'
+import {
+  catchError,
+  delay,
+  finalize,
+  mergeMap,
+  retryWhen,
+  tap
+} from 'rxjs/operators'
 import { combineEpics } from 'redux-observable'
 import {
   // relayWebSocketEpic,
@@ -57,7 +66,25 @@ const Eventful_Epics = [
 
 const Drago_Epics = [Drago.getPoolDetailsEpic, Drago.getTokensBalancesEpic]
 
-export const rootEpic = combineEpics(
+// https://github.com/redux-observable/redux-observable/issues/263#issuecomment-334625730
+
+const combineAndIsolateEpics = (...epics) => (...args) => {
+  const isolatedEpics = epics.map(epic => (...args) =>
+    epic(...args).pipe(
+      catchError((e, source) => {
+        console.warn(
+          `${epic.name} terminated with error: ${e.message}, restarting it...`
+        )
+        return source
+      }),
+      delay(2000)
+    )
+  )
+
+  return combineEpics(...isolatedEpics)(...args)
+}
+
+export const rootEpic = combineAndIsolateEpics(
   ...Endpoint_Epics,
   ...ERCdEX_Epics,
   ...Ethfinex_Epics,
@@ -70,5 +97,41 @@ export const rootEpic = combineEpics(
   updateFundLiquidityEpic,
   resetLiquidityAndTokenBalancesEpic,
   getTradeHistoryLogsFromRelayERCdEXEpic
-  // getAssetsPricesDataFromERCdEXEpic
 )
+
+// export const rootEpic = (...args) =>
+//   combineEpics(
+//     ...Endpoint_Epics,
+//     ...ERCdEX_Epics,
+//     ...Ethfinex_Epics,
+//     ...Tokens_Epics,
+//     ...Eventful_Epics,
+//     ...Drago_Epics,
+//     getOrderBookFromRelayEpic,
+//     getLiquidityAndTokenBalancesEpic,
+//     updateLiquidityAndTokenBalancesEpic,
+//     updateFundLiquidityEpic,
+//     resetLiquidityAndTokenBalancesEpic,
+//     getTradeHistoryLogsFromRelayERCdEXEpic
+//     // getAssetsPricesDataFromERCdEXEpic
+//   )(...args).pipe(
+//     tap(error => {
+//       console.warn(error)
+//     }),
+//     catchError(error => {
+//       console.warn(error)
+//       return Observable.of({
+//         type: 'QUEUE_ERROR_NOTIFICATION',
+//         payload: 'Error from ws.'
+//       })
+//     })
+//     // retryWhen(error => {
+//     //   return error.pipe(
+//     //     mergeMap(error => {
+//     //       console.warn(error)
+//     //       return timer(5000)
+//     //     }),
+//     //     finalize(() => console.log('We are done!'))
+//     //   )
+//     // })
+//   )

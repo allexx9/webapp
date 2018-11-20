@@ -19,7 +19,7 @@ const contract = web3 => {
           'toBlock ' + endBlock,
           'chuckSize ' + chunkSize
         )
-
+        console.log(contract)
         const chunks = blockChunks(3000000, endBlock, chunkSize)
         arrayPromises = chunks.map(async chunk => {
           let chunkOptions = {

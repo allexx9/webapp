@@ -120,39 +120,29 @@ class ElementNotConnected extends Component {
       //   </div>
       // </Dialog>
       <div className={styles.detailsBoxContainer}>
-        <Grid fluid>
-          <Row>
-            <Col xs={12}>
-              <SectionHeader titleText="NODE SYNCING" />
-            </Col>
-          </Row>
-          <Row>
-            <Col xs={12}>
-              <p>
-                <b>Your node is syncing with Ethereum blockchain.</b>
-              </p>
-              <p>Please wait until fully synced before accessing RigoBlock.</p>
-              <p>Syncing progress:</p>
-              <p>
-                <SyncStatusCurrentBlock
-                  syncStatus={this.props.app.syncStatus}
-                />
-              </p>
-              {/* <p><SyncStatusWarpChunksProcessed syncStatus={this.context.syncStatus}/></p> */}
-              <p>
-                Please contact our support or{' '}
-                {
-                  <Link
-                    to={DS + APP + DS + this.buildUrlPath() + DS + 'config'}
-                  >
-                    select
-                  </Link>
-                }{' '}
-                a different endpoint.
-              </p>
-            </Col>
-          </Row>
-        </Grid>
+        <Row>
+          <Col xs={12}>
+            <SectionHeader titleText="NODE SYNCING" />
+          </Col>
+        </Row>
+        <Row>
+          <Col xs={12}>
+            <p>
+              <b>Your node is syncing with Ethereum blockchain.</b>
+            </p>
+            <p>Please wait until fully synced before accessing RigoBlock.</p>
+            {/* <p><SyncStatusWarpChunksProcessed syncStatus={this.context.syncStatus}/></p> */}
+            <p>
+              Please contact our support or{' '}
+              {
+                <Link to={DS + APP + DS + this.buildUrlPath() + DS + 'config'}>
+                  select
+                </Link>
+              }{' '}
+              a different endpoint.
+            </p>
+          </Col>
+        </Row>
       </div>
     )
   }

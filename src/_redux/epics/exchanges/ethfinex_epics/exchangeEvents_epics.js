@@ -14,6 +14,7 @@ import { Observable, defer, timer } from 'rxjs'
 import {
   buffer,
   delayWhen,
+  filter,
   finalize,
   first,
   map,
@@ -28,6 +29,7 @@ import { ofType } from 'redux-observable'
 import Web3Wrapper from '../../../../_utils/web3Wrapper/src'
 import _ from 'lodash'
 // import moment from 'moment'
+import { blockChunks } from '../../../../_utils/utils/blockChunks'
 import { toUnitAmount } from '../../../../_utils/format'
 import exchangeEfxV0Abi from '../../../../PoolsApi/src/contracts/abi/v2/exchange-efx-v0.json'
 import utils from '../../../../_utils/utils'
@@ -46,31 +48,63 @@ const getPastExchangeEvents$ = (fund, tokens, exchange, state$) => {
     // console.log(
     //   '0x3f3fb7135a4e1512b508f90733145ab182cc196e127cd9281a8e9f636de79a67'
     // )
-    let tokens1 = web3.utils.soliditySha3(
-      {
-        t: 'address',
-        v: tokens.quoteToken.wrappers.Ethfinex.address.toLowerCase()
-      },
-      {
-        t: 'address',
-        v: tokens.baseToken.wrappers.Ethfinex.address.toLowerCase()
-      }
-    )
-    tokens1 = web3.utils.padLeft(tokens1, 64)
-    let tokens2 = web3.utils.soliditySha3(
-      {
-        t: 'address',
-        v: tokens.baseToken.wrappers.Ethfinex.address.toLowerCase()
-      },
-      {
-        t: 'address',
-        v: tokens.quoteToken.wrappers.Ethfinex.address.toLowerCase()
-      }
-    )
-    tokens2 = web3.utils.padLeft(tokens2, 64)
+    // let tokens1 = web3.utils.soliditySha3(
+    //   {
+    //     t: 'address',
+    //     v: tokens.quoteToken.wrappers.Ethfinex.address.toLowerCase()
+    //   },
+    //   {
+    //     t: 'address',
+    //     v: tokens.baseToken.wrappers.Ethfinex.address.toLowerCase()
+    //   }
+    // )
+    // tokens1 = web3.utils.padLeft(tokens1, 64)
+    // let tokens2 = web3.utils.soliditySha3(
+    //   {
+    //     t: 'address',
+    //     v: tokens.baseToken.wrappers.Ethfinex.address.toLowerCase()
+    //   },
+    //   {
+    //     t: 'address',
+    //     v: tokens.quoteToken.wrappers.Ethfinex.address.toLowerCase()
+    //   }
+    // )
+    // tokens2 = web3.utils.padLeft(tokens2, 64)
     // 0x3f3fb7135a4e1512b508f90733145ab182cc196e127cd9281a8e9f636de79a67
     // console.log(fund)
+
     const makerAddress = '0x' + fund.address.substr(2).padStart(64, '0')
+
+    let arrayPromises = []
+    await web3.eth.getBlockNumber().then(lastBlock => {
+      let chunck = 100000
+      const chunks = blockChunks(0, lastBlock, chunck)
+      arrayPromises = chunks.map(async chunk => {
+        let options = {
+          fromBlock: chunk.fromBlock,
+          toBlock: chunk.toBlock,
+          topics: [null, makerAddress, null, null]
+        }
+        return await efxEchangeContract.getPastEvents(
+          'allEvents',
+          options,
+          function(error) {
+            if (error) {
+              return error
+            }
+          }
+        )
+      })
+    })
+    return Promise.all(arrayPromises)
+      .then(results => {
+        return [].concat(...results)
+      })
+      .catch(error => {
+        console.warn(error)
+        throw Error(error)
+      })
+
     // return efxEchangeContract
     //   .getPastEvents(
     //     'allEvents',
@@ -93,30 +127,30 @@ const getPastExchangeEvents$ = (fund, tokens, exchange, state$) => {
     //   .catch(error => {
     //     return error
     //   })
-    console.log(web3.rigoblock.utils.contract(efxEchangeContract))
-    return web3.rigoblock.utils
-      .contract(efxEchangeContract)
-      .getPastEvents(
-        'allEvents',
-        {
-          fromBlock: 0,
-          toBlock: 'latest',
-          topics: [null, makerAddress, null, null]
-          // topics: [null, makerAddress, null, [tokens1, tokens2]]
-        },
-        function(error) {
-          if (error) {
-            return error
-          }
-        }
-      )
-      .then(events => {
-        // console.log(events)
-        return events
-      })
-      .catch(error => {
-        return error
-      })
+    // console.log(web3)
+    // return web3.rigoblock.utils
+    //   .contract(efxEchangeContract)
+    //   .getPastEvents(
+    //     'allEvents',
+    //     {
+    //       fromBlock: 0,
+    //       toBlock: 'latest',
+    //       topics: [null, makerAddress, null, null]
+    //       // topics: [null, makerAddress, null, [tokens1, tokens2]]
+    //     },
+    //     function(error) {
+    //       if (error) {
+    //         return error
+    //       }
+    //     }
+    //   )
+    //   .then(events => {
+    //     // console.log(events)
+    //     return events
+    //   })
+    //   .catch(error => {
+    //     return error
+    //   })
   })
 }
 
@@ -347,6 +381,7 @@ export const monitorExchangeEventsEpic = (action$, state$) => {
           return val
         }),
         takeUntil(action$.ofType(TYPE_.MONITOR_EXCHANGE_EVENTS_STOP)),
+        filter(trades => Array.isArray(trades)),
         map(trades => {
           let tradesHistory = processTradesHistory(trades.reverse(), state$)
           return Actions.exchange.updateTradesHistory(tradesHistory)

@@ -147,43 +147,39 @@ class WalletSetupStepper extends Component {
           />
         )}
 
-        {step >= 0 &&
-          step < 3 &&
-          step !== 2 && (
-            <RaisedButton
-              label={'Next'}
-              disabled={buttonDisable(step)}
-              disableTouchRipple={true}
-              disableFocusRipple={true}
-              primary={true}
-              onClick={this.handleNext}
-              style={{ marginRight: 12 }}
-            />
-          )}
-        {step === 2 &&
-          !holdsTokens && (
-            <RaisedButton
-              label={'Get GRG'}
-              disableTouchRipple={true}
-              disableFocusRipple={true}
-              primary={true}
-              onClick={this.getGRGFromFaucet}
-              style={{ marginRight: 12 }}
-            />
-          )}
+        {step >= 0 && step < 3 && step !== 2 && (
+          <RaisedButton
+            label={'Next'}
+            disabled={buttonDisable(step)}
+            disableTouchRipple={true}
+            disableFocusRipple={true}
+            primary={true}
+            onClick={this.handleNext}
+            style={{ marginRight: 12 }}
+          />
+        )}
+        {step === 2 && !holdsTokens && (
+          <RaisedButton
+            label={'Get GRG'}
+            disableTouchRipple={true}
+            disableFocusRipple={true}
+            primary={true}
+            onClick={this.getGRGFromFaucet}
+            style={{ marginRight: 12 }}
+          />
+        )}
 
-        {step === 2 &&
-          holdsTokens && (
-            <RaisedButton
-              label={'Next'}
-              disabled={buttonDisable(step)}
-              disableTouchRipple={true}
-              disableFocusRipple={true}
-              primary={true}
-              onClick={this.handleNext}
-              style={{ marginRight: 12 }}
-            />
-          )}
+        {step === 2 && holdsTokens && (
+          <RaisedButton
+            label={'Next'}
+            disabled={buttonDisable(step)}
+            disableTouchRipple={true}
+            disableFocusRipple={true}
+            primary={true}
+            onClick={this.handleNext}
+            style={{ marginRight: 12 }}
+          />
+        )}
 
         {step === 3 && (
           <RaisedButton

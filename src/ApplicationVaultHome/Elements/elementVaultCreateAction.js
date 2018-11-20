@@ -177,10 +177,10 @@ class ElementVaultCreateAction extends React.Component {
               )
             )
           }
-          this.setState({
-            sending: false,
-            complete: true
-          })
+          // this.setState({
+          //   sending: false,
+          //   complete: true
+          // })
         })
         .catch(error => {
           const errorArray = error.message.split(/\r?\n/)

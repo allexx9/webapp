@@ -106,7 +106,9 @@ ReactDOM.render(
   document.getElementById('root')
 )
 
-registerServiceWorker()
+if (process.env.NODE_ENV !== 'development') {
+  registerServiceWorker()
+}
 
 // Hot Module Reload
 if (module.hot) {

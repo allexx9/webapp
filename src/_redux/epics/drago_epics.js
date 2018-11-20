@@ -1,11 +1,19 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
 import { Actions } from '../actions/'
-import { Observable, from } from 'rxjs'
+import { Observable, from, timer } from 'rxjs'
 import PoolApi from '../../PoolsApi/src'
 
 import * as TYPE_ from '../actions/const'
-import { catchError, flatMap, map, mergeMap, tap } from 'rxjs/operators'
+import {
+  catchError,
+  finalize,
+  flatMap,
+  map,
+  mergeMap,
+  retryWhen,
+  tap
+} from 'rxjs/operators'
 import { ofType } from 'redux-observable'
 
 import { BigNumber } from '../../../node_modules/bignumber.js/bignumber'
@@ -296,12 +304,22 @@ export const getPoolDetailsEpic = (action$, state$) => {
           return Observable.concat(observablesArray)
 
           // return DEBUGGING.DUMB_ACTION
+        }),
+        retryWhen(error => {
+          let scalingDuration = 5000
+          return error.pipe(
+            mergeMap((error, i) => {
+              console.warn(error)
+              return timer(scalingDuration)
+            }),
+            finalize(() => console.log('We are done!'))
+          )
         })
         // catchError(error => {
         //   console.log(error)
         //   return Observable.of({
         //     type: TYPE_.QUEUE_ERROR_NOTIFICATION,
-        //     payload: 'Error fetching Drago details.'
+        //     payload: 'Error fetching Pool details.'
         //   })
         // })
       )
