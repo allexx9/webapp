@@ -1,12 +1,6 @@
 import * as CONSTANTS from '../utils/const'
 import { Observable, defer, from, merge } from 'rxjs'
-import {
-  delay,
-  ignoreElements,
-  retryWhen,
-  switchMap,
-  tap
-} from 'rxjs/operators'
+import { delay, retryWhen, switchMap, tap } from 'rxjs/operators'
 import exchangeEfxV0Abi from '../abis/exchange-efx-v0.json'
 
 const exchangeEfxV0$ = (web3, networkId) => {
@@ -15,6 +9,15 @@ const exchangeEfxV0$ = (web3, networkId) => {
     CONSTANTS.EFX_EXCHANGE_CONTRACT[networkId].toLowerCase()
   )
   let fromBlock
+
+  const connection$ = timer(0, 1000).pipe(
+    exhaustMap(() => {
+      const status = web3.currentProvider.connection.readyState
+      return status === 1
+        ? empty()
+        : throwError(new Error(`Websocket not connected: status ${status}`))
+    })
+  )
 
   const retryStrategy = error$ =>
     error$.pipe(
@@ -45,7 +48,7 @@ const exchangeEfxV0$ = (web3, networkId) => {
           )
           return () => subscription.unsubscribe()
         }),
-        web3.rigoblock.ob.nodeStatus$.pipe(ignoreElements())
+        connection$
       ).pipe(retryWhen(retryStrategy))
     ),
     retryWhen(retryStrategy)

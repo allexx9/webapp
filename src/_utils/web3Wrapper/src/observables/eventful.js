@@ -1,13 +1,6 @@
 import * as CONSTANTS from '../utils/const'
 import { Observable, defer, from, merge, zip } from 'rxjs'
-import {
-  delay,
-  ignoreElements,
-  map,
-  retryWhen,
-  switchMap,
-  tap
-} from 'rxjs/operators'
+import { delay, map, retryWhen, switchMap, tap } from 'rxjs/operators'
 import dragoeventfulAbi from '../abis/dragoEventful-v2.json'
 import parityregisterAbi from '../abis/parityRegister.json'
 import vaulteventfulAbi from '../abis/vaultEventful-v2.json'
@@ -18,6 +11,15 @@ export default (web3, networkId) => {
     CONSTANTS.PARITY_REGISTRY_ADDRESSES[networkId]
   )
   let fromBlock
+
+  const connection$ = timer(0, 1000).pipe(
+    exhaustMap(() => {
+      const status = web3.currentProvider.connection.readyState
+      return status === 1
+        ? empty()
+        : throwError(new Error(`Websocket not connected: status ${status}`))
+    })
+  )
 
   const getEventful$ = eventfulContract =>
     Observable.create(observer => {
@@ -75,7 +77,7 @@ export default (web3, networkId) => {
           merge(
             getEventful$(dragoEventful),
             getEventful$(vaultEventful),
-            web3.rigoblock.ob.nodeStatus$.pipe(ignoreElements())
+            connection$
           ).pipe(retryWhen(retryStrategy))
         )
       )
