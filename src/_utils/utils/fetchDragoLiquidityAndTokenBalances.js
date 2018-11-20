@@ -1,6 +1,7 @@
 // import * as abis from '../PoolsApi/src/contracts/abi'
+import { updateTokenWrapperLockTime } from './updateTokenWrapperLockTime'
 import BigNumber from 'bignumber.js'
-import PoolApi from '../PoolsApi/src'
+import PoolApi from '../../PoolsApi/src'
 import Web3Wrapper from '../web3Wrapper/src'
 
 export const fetchDragoLiquidityAndTokenBalances = async (
@@ -39,7 +40,7 @@ export const fetchDragoLiquidityAndTokenBalances = async (
       selectedTokensPair.quoteToken.wrappers[exchange.name].address
     )
     // Getting token wrapper lock time
-    baseTokenLockWrapExpire = await utils.updateTokenWrapperLockTime(
+    baseTokenLockWrapExpire = await updateTokenWrapperLockTime(
       api,
       selectedTokensPair.baseToken.wrappers[exchange.name].address,
       dragoAddress
@@ -49,7 +50,7 @@ export const fetchDragoLiquidityAndTokenBalances = async (
     //     .unix(baseTokenLockWrapExpire)
     //     .format('MMMM Do YYYY, h:mm:ss a')}`
     // )
-    quoteTokenLockWrapExpire = await utils.updateTokenWrapperLockTime(
+    quoteTokenLockWrapExpire = await updateTokenWrapperLockTime(
       api,
       selectedTokensPair.quoteToken.wrappers[exchange.name].address,
       dragoAddress

@@ -59,6 +59,13 @@ class DragoWeb3 {
     return wethInstance.methods.balanceOf(instance._address).call({})
   }
 
+  getBalanceToken = tokenAddress => {
+    const api = this._api
+    const instance = this._instance
+    const tokenInstance = new api.eth.Contract(abis.erc20, tokenAddress)
+    return tokenInstance.methods.balanceOf(instance._address).call({})
+  }
+
   balanceOf = accountAddress => {
     if (!accountAddress) {
       throw new Error('accountAddress needs to be provided')

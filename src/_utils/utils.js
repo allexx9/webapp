@@ -33,6 +33,7 @@ import {
   getTransactionsVaultOptV2,
   getTransactionsSingleVault,
   fetchDragoLiquidityAndTokenBalances,
+  updateTokenWrapperLockTime,
   logToEvent
 } from './utils/index'
 import PropTypes from 'prop-types'
@@ -697,13 +698,7 @@ class utilities {
     return details
   }
 
-  updateTokenWrapperLockTime = async (api, tokenAddress, accountAddress) => {
-    const poolApi = new PoolApi(api)
-    await poolApi.contract.tokenwrapper.init(tokenAddress)
-    return (await poolApi.contract.tokenwrapper.depositLock(
-      accountAddress
-    )).toFixed()
-  }
+  updateTokenWrapperLockTime = updateTokenWrapperLockTime
 
   getDragoLiquidity = async (dragoAddress, api) => {
     const poolApi = new PoolApi(api)
