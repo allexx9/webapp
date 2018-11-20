@@ -1,6 +1,22 @@
 import * as CONSTANTS from '../utils/const'
-import { Observable, defer, from, merge, zip } from 'rxjs'
-import { delay, map, retryWhen, switchMap, tap } from 'rxjs/operators'
+import {
+  Observable,
+  defer,
+  empty,
+  from,
+  merge,
+  throwError,
+  timer,
+  zip
+} from 'rxjs'
+import {
+  delay,
+  exhaustMap,
+  map,
+  retryWhen,
+  switchMap,
+  tap
+} from 'rxjs/operators'
 import dragoeventfulAbi from '../abis/dragoEventful-v2.json'
 import parityregisterAbi from '../abis/parityRegister.json'
 import vaulteventfulAbi from '../abis/vaultEventful-v2.json'
