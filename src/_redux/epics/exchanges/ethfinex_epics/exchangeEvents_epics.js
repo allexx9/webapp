@@ -93,8 +93,8 @@ const getPastExchangeEvents$ = (fund, tokens, exchange, state$) => {
     //   .catch(error => {
     //     return error
     //   })
-    console.log(web3.rb.utils.contract(efxEchangeContract))
-    return web3.rb.utils
+    console.log(web3.rigoblock.utils.contract(efxEchangeContract))
+    return web3.rigoblock.utils
       .contract(efxEchangeContract)
       .getPastEvents(
         'allEvents',
@@ -124,7 +124,7 @@ const getPastExchangeEvents$ = (fund, tokens, exchange, state$) => {
 //   let subscription
 //   return Observable.create(observer => {
 //     Web3Wrapper.getInstance(state$.value.endpoint.networkInfo.id).then(web3 => {
-//       subscription = web3.rb.ob.exchangeEfxV0$.subscribe(val => {
+//       subscription = web3.rigoblock.ob.exchangeEfxV0$.subscribe(val => {
 //         if (Object.keys(val.error).length === 0) {
 //           console.log(val)
 //           observer.next(val)
