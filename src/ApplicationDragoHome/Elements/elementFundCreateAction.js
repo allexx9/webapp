@@ -183,10 +183,10 @@ class ElementFundCreateAction extends React.Component {
               )
             )
           }
-          this.setState({
-            sending: false,
-            complete: true
-          })
+          // this.setState({
+          //   sending: false,
+          //   complete: true
+          // })
         })
         .catch(error => {
           console.log(error)

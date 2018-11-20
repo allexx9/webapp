@@ -136,7 +136,6 @@ export const getDragoDetails = async (dragoDetails, accounts, api) => {
       balanceDRG = balanceDRG.plus(balance)
     })
   )
-  console.log(`balanceDRG ${balanceDRG}`)
   balanceDRG = formatCoins(balanceDRG, 4, api)
   details = { ...details, balanceDRG }
   // console.log(details)

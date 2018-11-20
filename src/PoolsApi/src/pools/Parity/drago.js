@@ -77,7 +77,7 @@ class DragoParity {
     return tokenInstance.balanceOf.call({}, [instance.address])
   }
 
-  getBalanceToken = tokenAddress => {
+  getPoolBalanceOnToken = tokenAddress => {
     const api = this._api
     const instance = this._instance
     const tokenInstance = api.newContract(abis.erc20, tokenAddress).instance
@@ -280,12 +280,12 @@ class DragoParity {
     return instance.totalSupply.call({}, [])
   }
 
-  getTokenBalance = tokenAddress => {
-    const api = this._api
-    const instance = this._instance
-    const erc20Instance = api.newContract(abis.erc20, tokenAddress).instance
-    return erc20Instance.balanceOf.call({}, [instance.address])
-  }
+  // getTokenBalance = tokenAddress => {
+  //   const api = this._api
+  //   const instance = this._instance
+  //   const erc20Instance = api.newContract(abis.erc20, tokenAddress).instance
+  //   return erc20Instance.balanceOf.call({}, [instance.address])
+  // }
 
   getAssets = () => {}
 }

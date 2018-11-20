@@ -18,13 +18,13 @@ export const getDragoLiquidityAndTokenBalances = async (
   let dragoETHBalance = await poolApi.contract.drago.getBalance()
   // dragoZRXBalance: await poolApi.contract.drago.getBalanceZRX(),
   let baseTokenBalance = await (selectedTokensPair.baseToken.address !== '0x0'
-    ? await poolApi.contract.drago.getBalanceToken(
+    ? await poolApi.contract.drago.getPoolBalanceOnToken(
         selectedTokensPair.baseToken.address
       )
     : await poolApi.contract.drago.getBalance())
 
   let quoteTokenBalance = await (selectedTokensPair.quoteToken.address !== '0x0'
-    ? await poolApi.contract.drago.getBalanceToken(
+    ? await poolApi.contract.drago.getPoolBalanceOnToken(
         selectedTokensPair.quoteToken.address
       )
     : await poolApi.contract.drago.getBalance())
@@ -33,10 +33,10 @@ export const getDragoLiquidityAndTokenBalances = async (
     quoteTokenWrapperBalance = new BigNumber(0)
   if (exchange.isTokenWrapper) {
     // Getting token wrapper balance
-    baseTokenWrapperBalance = await poolApi.contract.drago.getBalanceToken(
+    baseTokenWrapperBalance = await poolApi.contract.drago.getPoolBalanceOnToken(
       selectedTokensPair.baseToken.wrappers[exchange.name].address
     )
-    quoteTokenWrapperBalance = await poolApi.contract.drago.getBalanceToken(
+    quoteTokenWrapperBalance = await poolApi.contract.drago.getPoolBalanceOnToken(
       selectedTokensPair.quoteToken.wrappers[exchange.name].address
     )
     // Getting token wrapper lock time

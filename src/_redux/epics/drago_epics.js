@@ -12,13 +12,18 @@ import { BigNumber } from '../../../node_modules/bignumber.js/bignumber'
 import { ERCdEX, Ethfinex } from '../../_utils/const'
 // import { DEBUGGING } from '../../_utils/const'
 import { ERC20_TOKENS } from '../../_utils/tokens'
+import Web3Wrapper from '../../_utils/web3Wrapper/src'
 import utils from '../../_utils/utils'
 
 const getTokensBalances$ = (dragoAddress, api) => {
   //
   // Initializing Drago API
   //
-  const poolApi = new PoolApi(api)
+
+  let web3 = Web3Wrapper.getInstance(api._rb.network.id)
+  web3._rb = window.web3._rb
+  const poolApi = new PoolApi(web3)
+  // const poolApi = new PoolApi(api)
   try {
     poolApi.contract.drago.init(dragoAddress)
   } catch (err) {
@@ -34,19 +39,23 @@ const getTokensBalances$ = (dragoAddress, api) => {
         wrappers: {},
         total: new BigNumber(0)
       }
-      if (allowedTokens[token].address !== '0x0') {
+      let tokenAddress = allowedTokens[token].address.toLowerCase()
+      if (tokenAddress !== '0x0') {
         let total = new BigNumber(0)
         try {
-          balances.token = await poolApi.contract.drago.getTokenBalance(
-            allowedTokens[token].address
+          balances.token = await poolApi.contract.drago.getPoolBalanceOnToken(
+            tokenAddress
           )
           // console.log(`${token} - ${allowedTokens[token].address} -> ${balances.token}`)
           total = total.plus(balances.token)
           if (typeof allowedTokens[token].wrappers !== 'undefined') {
             for (let wrapper in allowedTokens[token].wrappers) {
+              let wrapperAddess = allowedTokens[token].wrappers[wrapper].address
               balances.wrappers[
                 wrapper
-              ] = await poolApi.contract.drago.getTokenBalance(wrapper.address)
+              ] = await poolApi.contract.drago.getPoolBalanceOnToken(
+                wrapperAddess
+              )
               total = total.plus(balances.wrappers[wrapper])
             }
           }
@@ -74,7 +83,7 @@ const getTokensBalances$ = (dragoAddress, api) => {
 
 export const getTokensBalancesEpic = (action$, state$) => {
   return action$.pipe(
-    ofType('TYPE_.GET_TOKEN_BALANCES_DRAGO_SILENT'),
+    ofType(TYPE_.GET_TOKEN_BALANCES_DRAGO),
     mergeMap(action => {
       return getTokensBalances$(
         action.payload.dragoDetails,

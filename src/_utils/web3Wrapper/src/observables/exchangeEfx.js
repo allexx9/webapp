@@ -1,5 +1,5 @@
 import * as CONSTANTS from '../utils/const'
-import { Observable, defer, from, merge } from 'rxjs'
+import { Observable, defer, from, merge, of } from 'rxjs'
 import {
   delay,
   ignoreElements,
@@ -10,6 +10,7 @@ import {
 import exchangeEfxV0Abi from '../abis/exchange-efx-v0.json'
 
 const exchangeEfxV0$ = (web3, networkId) => {
+  if ((networkId = 42)) return of(1)
   const efxEchangeContract = new web3.eth.Contract(
     exchangeEfxV0Abi,
     CONSTANTS.EFX_EXCHANGE_CONTRACT[networkId].toLowerCase()

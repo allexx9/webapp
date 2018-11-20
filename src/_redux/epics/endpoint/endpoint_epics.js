@@ -168,41 +168,41 @@ export const monitorAccountsEpic = (action$, state$) => {
           if (DEBUGGING.initAccountsTransactionsInEpic) {
             const currentState = state$.value
             if (accountsUpdate[2]) {
-              if (
-                currentState.transactionsDrago.selectedDrago.details.dragoId
-              ) {
-                console.log('Account monitoring - > DRAGO details fetch.')
-                observablesArray.push(
-                  Observable.of(
-                    Actions.drago.getPoolDetails(
-                      currentState.transactionsDrago.selectedDrago.details
-                        .dragoId,
-                      action.payload.api,
-                      {
-                        poolType: 'drago'
-                      }
-                    )
-                  )
-                )
-              }
+              // if (
+              //   currentState.transactionsDrago.selectedDrago.details.dragoId
+              // ) {
+              //   console.log('Account monitoring - > DRAGO details fetch.')
+              //   observablesArray.push(
+              //     Observable.of(
+              //       Actions.drago.getPoolDetails(
+              //         currentState.transactionsDrago.selectedDrago.details
+              //           .dragoId,
+              //         action.payload.api,
+              //         {
+              //           poolType: 'drago'
+              //         }
+              //       )
+              //     )
+              //   )
+              // }
 
-              if (
-                currentState.transactionsVault.selectedVault.details.vaultId
-              ) {
-                console.log('Account monitoring - > VAULT details fetch.')
-                observablesArray.push(
-                  Observable.of(
-                    Actions.drago.getPoolDetails(
-                      currentState.transactionsVault.selectedVault.details
-                        .vaultId,
-                      action.payload.api,
-                      {
-                        poolType: 'vault'
-                      }
-                    )
-                  )
-                )
-              }
+              // if (
+              //   currentState.transactionsVault.selectedVault.details.vaultId
+              // ) {
+              //   console.log('Account monitoring - > VAULT details fetch.')
+              //   observablesArray.push(
+              //     Observable.of(
+              //       Actions.drago.getPoolDetails(
+              //         currentState.transactionsVault.selectedVault.details
+              //           .vaultId,
+              //         action.payload.api,
+              //         {
+              //           poolType: 'vault'
+              //         }
+              //       )
+              //     )
+              //   )
+              // }
               // observablesArray.push(Observable.of(DEBUGGING.DUMB_ACTION))
               console.log(
                 'Account monitoring - > DRAGO transactions fetch trader'
@@ -214,8 +214,8 @@ export const monitorAccountsEpic = (action$, state$) => {
                     null,
                     currentState.endpoint.accounts,
                     {
-                      balance: false,
-                      supply: true,
+                      balance: true,
+                      supply: false,
                       limit: 20,
                       trader: true,
                       drago: true
@@ -233,8 +233,8 @@ export const monitorAccountsEpic = (action$, state$) => {
                     null,
                     currentState.endpoint.accounts,
                     {
-                      balance: true,
-                      supply: false,
+                      balance: false,
+                      supply: true,
                       limit: 20,
                       trader: false,
                       drago: true
@@ -244,7 +244,7 @@ export const monitorAccountsEpic = (action$, state$) => {
               )
 
               console.log(
-                'Account monitoring - > VAULT transactions fetch trader'
+                'Account monitoring - > VAULT transactions fetch manager'
               )
               observablesArray.push(Observable.of(DEBUGGING.DUMB_ACTION))
               observablesArray.push(
@@ -264,7 +264,7 @@ export const monitorAccountsEpic = (action$, state$) => {
                 )
               )
               console.log(
-                'Account monitoring - > VAULT transactions fetch manager'
+                'Account monitoring - > VAULT transactions fetch trader'
               )
               observablesArray.push(
                 Observable.of(

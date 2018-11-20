@@ -49,7 +49,6 @@ class DragoEventfulWeb3 {
     return typeof this._contract !== 'undefined'
       ? this._contract
       : this._registry.instance(contractAbi, contractName).then(contract => {
-          console.log(contract)
           this._contract = contract
           this._contractAddress = contract._address
           let hexSignature = []
