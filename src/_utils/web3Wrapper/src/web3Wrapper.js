@@ -71,7 +71,7 @@ class Web3Wrapper {
           nodeStatus$: this.status$,
           newBlock$: newBlock(this.web3)
         },
-        utils: { contract },
+        utils: { contract: contract(web3) },
         endpoint: transport
       }
     })

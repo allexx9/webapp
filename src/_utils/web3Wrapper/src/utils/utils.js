@@ -8,15 +8,33 @@ export const errorMsg = error => {
   return error.charAt(0).toUpperCase() + error.slice(1)
 }
 
-export const blockChunks = async (start, end, chunkSize, web3) => {
-  const startBlock = start
-  const chunks = []
-  let endBlock = end
-  if (endBlock === 'latest') {
-    try {
-      endBlock = await web3.eth.getBlockNumber()
-    } catch (e) {
-      return console.error(e)
+export const blockChunks = (start, end, chunk) => {
+  let rangesArray = []
+  let i = 0
+  let fromBlock = end - chunk
+  let toBlock = end
+
+  if (end - chunk < start) {
+    rangesArray.push({
+      fromBlock: start,
+      toBlock: 'latest'
+    })
+    // console.log(
+    //   `***** Chunk ${i} -> fromBlock ${start} -> toBlock ${end} ('latest')`
+    // )
+    return rangesArray
+  }
+  while (toBlock > start) {
+    if (i === 0) {
+      rangesArray.push({
+        fromBlock: fromBlock + 1,
+        toBlock: 'latest'
+      })
+    } else {
+      rangesArray.push({
+        fromBlock: fromBlock + 1,
+        toBlock: toBlock
+      })
     }
   }
   for (let i = startBlock - 1; i < endBlock; i += chunkSize) {

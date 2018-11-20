@@ -6,11 +6,15 @@ import { Actions } from '../actions'
 // import { DEBUGGING } from '../../_utils/const'
 import { Observable, from, timer } from 'rxjs'
 import {
+  buffer,
   catchError,
   finalize,
+  first,
   map,
   mergeMap,
   retryWhen,
+  skipWhile,
+  switchMap,
   tap
 } from 'rxjs/operators'
 import { ofType } from 'redux-observable'
@@ -274,9 +278,38 @@ const getPoolTransactions$ = (api, dragoAddress, accounts, options) => {
       )
 }
 
-export const getAccountsTransactionsEpic = action$ =>
-  action$.pipe(
+export const getAccountsTransactionsEpic = (action$, state$) => {
+  const isNodeConnected$ = state$.pipe(
+    map(val => {
+      // console.log(val)
+      return !val.app.isConnected
+    }),
+    tap(val => {
+      console.log(val)
+      return val
+    }),
+    skipWhile(val => val === true),
+    tap(val => {
+      console.log('not skipped')
+      return val
+    }),
+    map(val => {
+      return val
+    })
+  )
+
+  return action$.pipe(
     ofType(TYPE_.GET_ACCOUNTS_TRANSACTIONS),
+    tap(results => {
+      // console.log(results)
+      return results
+    }),
+
+    // first(),
+    tap(results => {
+      // console.log(results)
+      return results
+    }),
     mergeMap(action => {
       return getPoolTransactions$(
         action.payload.api,
@@ -285,6 +318,7 @@ export const getAccountsTransactionsEpic = action$ =>
         action.payload.options
       ).pipe(
         tap(results => {
+          console.log(results)
           return results
         }),
         map(results => {
@@ -305,32 +339,34 @@ export const getAccountsTransactionsEpic = action$ =>
             return Actions.vault.updateTransactionsVaultHolder(results)
             // return DEBUGGING.DUMB_ACTION
           }
-        }),
-        retryWhen(error => {
-          console.log('getAccountsTransactionsEpic')
-          let scalingDuration = 10000
-          return error.pipe(
-            mergeMap((error, i) => {
-              console.warn(error)
-              const retryAttempt = i + 1
-              // if maximum number of retries have been met
-              // or response is a status code we don't wish to retry, throw error
-              // if (
-              //   retryAttempt > maxRetryAttempts ||
-              //   excludedStatusCodes.find(e => e === error.status)
-              // ) {
-              //   throw(error);
-              // }
-              // const _rb = window.web3._rb
-              // window.web3 = new Web3(window.web3.currentProvider)
-              // window.web3._rb = _rb
-              console.log(`getAccountsTransactionsEpic Attempt ${retryAttempt}`)
-              // retry after 1s, 2s, etc...
-              return timer(scalingDuration)
-            }),
-            finalize(() => console.log('We are done!'))
-          )
         })
+        // retryWhen(error => {
+        //   console.log('getAccountsTransactionsEpic')
+        //   let scalingDuration = 10000
+        //   return error.pipe(
+        //     buffer(isNodeConnected$),
+        //     first(),
+        //     mergeMap((error, i) => {
+        //       console.log(error)
+        //       const retryAttempt = i + 1
+        //       // if maximum number of retries have been met
+        //       // or response is a status code we don't wish to retry, throw error
+        //       // if (
+        //       //   retryAttempt > maxRetryAttempts ||
+        //       //   excludedStatusCodes.find(e => e === error.status)
+        //       // ) {
+        //       //   throw(error);
+        //       // }
+        //       // const _rb = window.web3._rb
+        //       // window.web3 = new Web3(window.web3.currentProvider)
+        //       // window.web3._rb = _rb
+        //       console.log(`getAccountsTransactionsEpic Attempt ${retryAttempt}`)
+        //       // retry after 1s, 2s, etc...
+        //       return timer(scalingDuration)
+        //     }),
+        //     finalize(() => console.log('We are done!'))
+        //   )
+        // })
         // catchError(error => {
         //   console.warn(error)
         //   return Observable.of({
@@ -341,6 +377,7 @@ export const getAccountsTransactionsEpic = action$ =>
       )
     })
   )
+}
 
 //
 // FETCH POOL TRANSACTIONS

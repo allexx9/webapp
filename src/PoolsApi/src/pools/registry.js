@@ -65,7 +65,11 @@ class Registry {
       if (typeof api.provider !== 'undefined') {
         if (api.provider._url.includes('infura')) {
           // console.log(`${this.constructor.name} -> Infura/MetaMask detected.`)
-          // console.log(`${this.constructor.name} -> Registry found at ${parityRegistryContractAddress}`)
+          // console.log(
+          //   `${
+          //     this.constructor.name
+          //   } -> Registry found at ${parityRegistryContractAddress}`
+          // )
           const registry = api.newContract(
             abis.parityregister,
             parityRegistryContractAddress
@@ -79,7 +83,11 @@ class Registry {
       return api.parity
         .registryAddress()
         .then(parityRegistryContractAddress => {
-          // console.log(`${this.constructor.name} -> Registry found at ${parityRegistryContractAddress}`)
+          // console.log(
+          //   `${
+          //     this.constructor.name
+          //   } -> Registry found at ${parityRegistryContractAddress}`
+          // )
           const registry = api.newContract(
             abis.parityregister,
             parityRegistryContractAddress
@@ -93,14 +101,18 @@ class Registry {
     if (typeof api.version !== 'undefined') {
       const registryContract = new api.eth.Contract(abis.parityregister)
       // console.log(`${this.constructor.name} -> Web3 detected.`)
-      // console.log(`${this.constructor.name} -> Registry found at ${parityRegistryContractAddress}`)
+      // console.log(
+      //   `${
+      //     this.constructor.name
+      //   } -> Registry found at ${parityRegistryContractAddress}`
+      // )
       registryContract.options.address = parityRegistryContractAddress
       return Promise.all([
         registryContract.methods
           .getAddress(api.utils.sha3(contractName), 'A')
           .call()
       ]).then(address => {
-        console.log(address)
+        // console.log(address)
         return address[0]
       })
     }
@@ -134,10 +146,18 @@ class Registry {
           isMetaMask = api._provider.isMetaMask
         }
         if (isMetaMask) {
-          // console.log(`${this.constructor.name} -> Contract ${contractName} found at ${address}`)
+          // console.log(
+          //   `${
+          //     this.constructor.name
+          //   } -> Contract ${contractName} found at ${address}`
+          // )
           return new api.eth.Contract(abi, address)
         }
-        // console.log(`${this.constructor.name} -> Contract ${contractName} found at ${address}`)
+        // console.log(
+        //   `${
+        //     this.constructor.name
+        //   } -> Contract ${contractName} found at ${address}`
+        // )
         return api.newContract(abi, address)
       }
     )

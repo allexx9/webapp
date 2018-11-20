@@ -41,7 +41,7 @@ export const connectedToNodeEpic = (action$, state$) =>
       }),
       distinctUntilChanged((a, b) => {
         // console.log(JSON.stringify(a), JSON.stringify(b))
-        console.log(shallowequal(JSON.stringify(a), JSON.stringify(b)))
+        // console.log(shallowequal(JSON.stringify(a), JSON.stringify(b)))
         return shallowequal(JSON.stringify(a), JSON.stringify(b))
       }),
       flatMap(result => {

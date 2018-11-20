@@ -5,7 +5,9 @@
   "homepage": "./",
   "dependencies": {
     "0x.js": "^0.38.6",
-    "@parity/api": "^2.1.20",
+    "@manaflair/redux-batch": "^0.1.0",
+    "@parity/abi": "^2.1.4",
+    "@parity/api": "^2.1.24",
     "@types/web3": "^1.0.12",
     "babel-plugin-transform-remove-console": "^6.9.4",
     "babel-register": "^6.26.0",
@@ -52,6 +54,7 @@
     "react-virtualized": "^9.20.1",
     "reconnecting-websocket": "3.2.2",
     "redux": "^4.0.0",
+    "redux-actions": "^2.6.4",
     "redux-observable": "^1.0.0",
     "redux-persist": "5.6.12",
     "redux-persist-transform-filter": "^0.0.18",

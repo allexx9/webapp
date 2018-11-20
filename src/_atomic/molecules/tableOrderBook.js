@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
-import { UPDATE_SELECTED_ORDER } from '../../_redux/actions/const'
+import { ORDER_UPDATE } from '../../_redux/actions/const'
 import { connect } from 'react-redux'
 import { detect } from 'detect-browser'
 import { formatPrice } from '../../_utils/format'
@@ -34,7 +34,7 @@ class TableOrderBook extends Component {
     return propsUpdate
   }
 
-  updateSelectedOrder = order => {
+  updateOrder = order => {
     const { selectedTokensPair } = this.props.exchange
     const payload = {
       details: { ...order },
@@ -48,14 +48,14 @@ class TableOrderBook extends Component {
       selectedTokensPair: selectedTokensPair
     }
     return {
-      type: UPDATE_SELECTED_ORDER,
+      type: ORDER_UPDATE,
       payload: payload
     }
   }
 
   onClickOrder = id => {
     if (!this.props.aggregated && !this.props.onlyAggregated) {
-      this.props.dispatch(this.updateSelectedOrder(this.props.orders[id]))
+      this.props.dispatch(this.updateOrder(this.props.orders[id]))
     }
   }
 

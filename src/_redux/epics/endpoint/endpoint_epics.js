@@ -24,6 +24,8 @@ import {
 import { ofType } from 'redux-observable'
 import { sha3_512 } from 'js-sha3'
 import BigNumber from 'bignumber.js'
+import PoolApi from '../../../PoolsApi/src'
+import Web3 from 'web3'
 import Web3Wrapper from '../../../_utils/web3Wrapper/src'
 import utils from '../../../_utils/utils'
 
@@ -74,8 +76,8 @@ export const attacheInterfaceEpic = action$ =>
           return Observable.concat(
             Observable.of(
               Actions.app.updateAppStatus({
-                appLoading: false,
-                isConnected: true
+                appLoading: false
+                // isConnected: true
               })
             ),
             Observable.of(Actions.endpoint.updateInterface(endpoint))
@@ -193,37 +195,54 @@ const monitorEventful$ = (web3, api, state$) => {
       // })
     }),
     Observable.create(observer => {
-      return observer.next('1')
-      // console.log('subscription BuySell DRAGO events')
+      // return observer.next('1')
+
+      console.log('subscription BuySell DRAGO events')
       // let web3New = new Web3(window.web3._rb.wss)
-      // const poolApi = new PoolsApi(api)
-      // // DRAGO
-      // poolApi.contract.dragoeventful.init().then(() => {
-      //   let subscriptionBuySell = web3New.eth.subscribe(
-      //     'logs',
-      //     {
-      //       address: poolApi.contract.dragoeventful._contract._address[0].toLocaleLowerCase(),
-      //       topics: [null, null, hexAccounts, null]
-      //     },
-      //     function(error, result) {
-      //       if (!error) {
-      //         console.log(result)
-      //         return observer.next(result)
-      //       } else {
-      //         return observer.error(error)
-      //       }
-      //     }
-      //   )
-      //   return () => {
-      //     subscriptionBuySell.unsubscribe(function(error, success) {
-      //       if (success) console.log('Successfully unsubscribed!')
-      //     })
-      //   }
-      // })
-      // console.log('subscription BuySell VAULT events')
-      // // VAULT
+      const poolApi = new PoolApi(api)
+
+      // const poolApiWeb3 = new PoolApi(window.web3)
+      const poolApiWeb3 = new PoolApi(api)
+      console.log(poolApi)
+      console.log(state$.value.transactionsDrago.selectedDrago)
+      const web3 = new Web3(window.web3)
+      // Web3Wrapper.getInstance(state$.value.endpoint.networkInfo.id).then(
+      //   web3New => {
+      // DRAGO
+      poolApiWeb3.contract.dragoeventful.init().then(() => {
+        let subscriptionBuySell = web3.eth.subscribe(
+          'logs',
+          {
+            address: poolApiWeb3.contract.dragoeventful._contract._address[0].toLocaleLowerCase(),
+            topics: [null, null, null, null]
+          },
+          function(error, result) {
+            if (!error) {
+              // poolApiWeb3.contract.drago.init(
+              //   '0x300f68D9aed119b26F3F410cAc78aA7249f41987'
+              // )
+              // poolApiWeb3.contract.drago
+              //   .balanceOf(state$.value.endpoint.accounts[0].address)
+              //   .then(balance => {
+              //     console.log(`balance monitorEventful$ ${balance}`)
+              //   })
+
+              return observer.next(result)
+            } else {
+              return observer.error(error)
+            }
+          }
+        )
+        return () => {
+          subscriptionBuySell.unsubscribe(function(error, success) {
+            if (success) console.log('Successfully unsubscribed!')
+          })
+        }
+      })
+      console.log('subscription BuySell VAULT events')
+      // VAULT
       // poolApi.contract.vaulteventful.init().then(() => {
-      //   let subscriptionBuySell = web3New.eth.subscribe(
+      //   let subscriptionBuySell = web3.eth.subscribe(
       //     'logs',
       //     {
       //       address: poolApi.contract.vaulteventful._contract._address[0].toLocaleLowerCase(),
@@ -244,13 +263,15 @@ const monitorEventful$ = (web3, api, state$) => {
       //     })
       //   }
       // })
+      //   }
+      // )
     })
   )
 }
 
 export const monitorEventfulEpic = (action$, state$) => {
   return action$.pipe(
-    ofType(TYPE_.MONITOR_ACCOUNTS_START),
+    ofType('TYPE_.MONITOR_ACCOUNTS_START_BAK'),
     mergeMap(action => {
       return monitorEventful$(
         action.payload.web3,
@@ -263,13 +284,45 @@ export const monitorEventfulEpic = (action$, state$) => {
           return val
         }),
         flatMap(event => {
+          console.log(event)
           const observablesArray = Array(0)
           const currentState = state$.value
+
+          if (currentState.transactionsDrago.selectedDrago.details.dragoId) {
+            console.log('Account monitoring - > DRAGO details fetch.')
+            observablesArray.push(
+              Observable.of(
+                Actions.drago.getPoolDetails(
+                  currentState.transactionsDrago.selectedDrago.details.dragoId,
+                  action.payload.api,
+                  {
+                    poolType: 'drago'
+                  }
+                )
+              )
+            )
+          }
+
+          if (currentState.transactionsVault.selectedVault.details.vaultId) {
+            console.log('Account monitoring - > VAULT details fetch.')
+            observablesArray.push(
+              Observable.of(
+                Actions.drago.getPoolDetails(
+                  currentState.transactionsVault.selectedVault.details.vaultId,
+                  action.payload.api,
+                  {
+                    poolType: 'vault'
+                  }
+                )
+              )
+            )
+          }
+
           // console.log(event)
           // console.log(
           //   'Eventful subscription - > DRAGO transactions fetch trader'
           // )
-          observablesArray.push(Observable.of(DEBUGGING.DUMB_ACTION))
+          // observablesArray.push(Observable.of(DEBUGGING.DUMB_ACTION))
           // observablesArray.push(
           //   Observable.of(
           //     Actions.endpoint.getAccountsTransactions(
@@ -309,7 +362,7 @@ export const monitorEventfulEpic = (action$, state$) => {
           // console.log(
           //   'Eventful subscription - > VAULT transactions fetch trader'
           // )
-          observablesArray.push(Observable.of(DEBUGGING.DUMB_ACTION))
+          // observablesArray.push(Observable.of(DEBUGGING.DUMB_ACTION))
           // observablesArray.push(
           //   Observable.of(
           //     Actions.endpoint.getAccountsTransactions(
@@ -431,10 +484,7 @@ export const monitorAccountsEpic = (action$, state$) => {
               if (
                 currentState.transactionsDrago.selectedDrago.details.dragoId
               ) {
-                console.log(
-                  'Account monitoring - > DRAGO transactions fetch: Trader: ' +
-                    state$.value.user.isManager
-                )
+                console.log('Account monitoring - > DRAGO details fetch.')
                 observablesArray.push(
                   Observable.of(
                     Actions.drago.getPoolDetails(
@@ -452,10 +502,7 @@ export const monitorAccountsEpic = (action$, state$) => {
               if (
                 currentState.transactionsVault.selectedVault.details.vaultId
               ) {
-                console.log(
-                  'Account monitoring - > VAULT transactions fetch. Trader ' +
-                    state$.value.user.isManager
-                )
+                console.log('Account monitoring - > VAULT details fetch.')
                 observablesArray.push(
                   Observable.of(
                     Actions.drago.getPoolDetails(
@@ -470,6 +517,9 @@ export const monitorAccountsEpic = (action$, state$) => {
                 )
               }
               // observablesArray.push(Observable.of(DEBUGGING.DUMB_ACTION))
+              console.log(
+                'Account monitoring - > DRAGO transactions fetch trader'
+              )
               observablesArray.push(
                 Observable.of(
                   Actions.endpoint.getAccountsTransactions(
@@ -480,7 +530,7 @@ export const monitorAccountsEpic = (action$, state$) => {
                       balance: false,
                       supply: true,
                       limit: 20,
-                      trader: false,
+                      trader: true,
                       drago: true
                     }
                   )
@@ -499,7 +549,7 @@ export const monitorAccountsEpic = (action$, state$) => {
                       balance: true,
                       supply: false,
                       limit: 20,
-                      trader: true,
+                      trader: false,
                       drago: true
                     }
                   )
@@ -673,7 +723,16 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
           currentState.endpoint
         ).pipe(
           filter(val => {
+            // console.log(val)
             return Object.keys(val).length !== 0
+          }),
+          // filter(val => {
+          //   console.log(val.isMetaMaskLocked)
+          //   return !val.isMetaMaskLocked
+          // }),
+          tap(results => {
+            console.log(results)
+            return results
           }),
           flatMap(newEndpoint => {
             let optionsManager = {
@@ -699,52 +758,54 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
               accountsAddressHash = sha3_512(accounts.toString())
             }
             // console.log(newEndpoint)
-            let arrayObservables = DEBUGGING.initAccountsTransactionsInEpic
-              ? [
-                  Observable.of(
-                    Actions.endpoint.getAccountsTransactions(
-                      action.payload.api,
-                      null,
-                      newEndpoint.accounts,
-                      optionsHolder
-                    )
-                  ),
-                  Observable.of(
-                    Actions.endpoint.getAccountsTransactions(
-                      action.payload.api,
-                      null,
-                      newEndpoint.accounts,
-                      optionsManager
-                    )
-                  ),
-                  Observable.of(
-                    Actions.endpoint.getAccountsTransactions(
-                      action.payload.api,
-                      null,
-                      newEndpoint.accounts,
-                      {
-                        ...optionsHolder,
-                        ...{
-                          drago: false
+            let arrayObservables =
+              DEBUGGING.initAccountsTransactionsInEpic &&
+              !newEndpoint.isMetaMaskLocked
+                ? [
+                    Observable.of(
+                      Actions.endpoint.getAccountsTransactions(
+                        action.payload.api,
+                        null,
+                        newEndpoint.accounts,
+                        optionsHolder
+                      )
+                    ),
+                    Observable.of(
+                      Actions.endpoint.getAccountsTransactions(
+                        action.payload.api,
+                        null,
+                        newEndpoint.accounts,
+                        optionsManager
+                      )
+                    ),
+                    Observable.of(
+                      Actions.endpoint.getAccountsTransactions(
+                        action.payload.api,
+                        null,
+                        newEndpoint.accounts,
+                        {
+                          ...optionsHolder,
+                          ...{
+                            drago: false
+                          }
                         }
-                      }
-                    )
-                  ),
-                  Observable.of(
-                    Actions.endpoint.getAccountsTransactions(
-                      action.payload.api,
-                      null,
-                      newEndpoint.accounts,
-                      {
-                        ...optionsManager,
-                        ...{
-                          drago: false
+                      )
+                    ),
+                    Observable.of(
+                      Actions.endpoint.getAccountsTransactions(
+                        action.payload.api,
+                        null,
+                        newEndpoint.accounts,
+                        {
+                          ...optionsManager,
+                          ...{
+                            drago: false
+                          }
                         }
-                      }
+                      )
                     )
-                  )
-                ]
-              : []
+                  ]
+                : []
             return Observable.concat(
               Observable.of(
                 Actions.app.updateAppStatus({
@@ -757,11 +818,11 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
           }),
           catchError(error => {
             console.warn(error)
-            // return Observable.of({
-            //   type: TYPE_.QUEUE_WARNING_NOTIFICATION,
-            //   payload:
-            //     'Unable to fetch accounts from MetaMask. Is MetaMask unlocket?'
-            // })
+            return Observable.of({
+              type: TYPE_.QUEUE_WARNING_NOTIFICATION,
+              payload:
+                'Unable to fetch accounts from MetaMask. Is MetaMask unlocket?'
+            })
           })
         )
       })

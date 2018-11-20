@@ -1,10 +1,12 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
+import * as ACTION_ from '../actions/exchange'
 import * as TYPE_ from '../actions/const'
+import { ordersReducer } from './exchange'
 import BigNumber from 'bignumber.js'
 import initialState from './initialState'
 
-function exchangeReducer(state = initialState.exchange, action) {
+function exchange(state = initialState.exchange, action) {
   switch (action.type) {
     case TYPE_.UPDATE_TRADES_HISTORY: {
       let tradesHistory
@@ -113,14 +115,6 @@ function exchangeReducer(state = initialState.exchange, action) {
         selectedExchange: { ...state.selectedExchange, ...action.payload }
       }
 
-    case TYPE_.UPDATE_SELECTED_ORDER:
-      let orderDetails = action.payload
-      let selectedOrder = { ...state.selectedOrder, ...orderDetails }
-      return {
-        ...state,
-        selectedOrder: selectedOrder
-      }
-
     case TYPE_.UPDATE_TRADE_TOKENS_PAIR:
       return {
         ...state,
@@ -151,7 +145,7 @@ function exchangeReducer(state = initialState.exchange, action) {
         walletAddress: action.payload
       }
 
-    case TYPE_.CANCEL_SELECTED_ORDER:
+    case TYPE_.ORDER_CANCEL:
       return {
         ...state,
         selectedOrder: initialState.exchange.selectedOrder
@@ -213,9 +207,20 @@ function exchangeReducer(state = initialState.exchange, action) {
         }
       }
 
-    default:
-      return state
+    default: {
+      const pipe = (...functions) => (state, action) => {
+        return functions.reduce((currentValue, currentFunction) => {
+          return currentFunction(currentValue, action)
+        }, state)
+      }
+      return pipe(ordersReducer)(state, action)
+    }
+    // return state
   }
 }
 
-export default exchangeReducer
+export default {
+  exchange
+}
+
+// export default exchangeReducer

@@ -29,8 +29,6 @@ import * as TYPE_ from '../../actions/const'
 
 import ExchangeConnectorWrapper from '../../../_utils/exchangeConnector'
 
-const customRelayAction = action => `${Ethfinex.toUpperCase()}_${action}`
-
 //
 // FETCH HISTORICAL MARKET DATA FOR A SPECIFIC TRADING PAIR
 //
@@ -112,7 +110,7 @@ const updateSingleCandles = tickerOutput => {
 
 export const getCandlesSingleDataEpic = action$ =>
   action$.pipe(
-    ofType(customRelayAction(TYPE_.FETCH_CANDLES_DATA_SINGLE_START)),
+    ofType(utils.customRelayAction(TYPE_.FETCH_CANDLES_DATA_SINGLE_START)),
     mergeMap(action => {
       const {
         relay,
@@ -132,7 +130,7 @@ export const getCandlesSingleDataEpic = action$ =>
         map(historical => updateSingleCandles(historical)),
         takeUntil(
           action$.ofType(
-            customRelayAction(TYPE_.FETCH_CANDLES_DATA_SINGLE_STOP)
+            utils.customRelayAction(TYPE_.FETCH_CANDLES_DATA_SINGLE_STOP)
           )
         ),
         catchError(err => {
@@ -343,7 +341,7 @@ const reconnectingWebsocketBook$ = (relay, networkId, baseToken, quoteToken) =>
 
 export const initRelayWebSocketBookEpic = action$ =>
   action$.pipe(
-    ofType(customRelayAction(TYPE_.RELAY_OPEN_WEBSOCKET_BOOK)),
+    ofType(utils.customRelayAction(TYPE_.RELAY_OPEN_WEBSOCKET_BOOK)),
     mergeMap(action => {
       const { relay, networkId, baseToken, quoteToken } = action.payload
       return reconnectingWebsocketBook$(
@@ -397,7 +395,7 @@ export const initRelayWebSocketBookEpic = action$ =>
           }
         }),
         takeUntil(
-          action$.ofType(customRelayAction(TYPE_.RELAY_CLOSE_WEBSOCKET))
+          action$.ofType(utils.customRelayAction(TYPE_.RELAY_CLOSE_WEBSOCKET))
         ),
         catchError(error => {
           console.warn(error)
@@ -464,7 +462,7 @@ const updateCurrentTokenPrice = ticker => {
 
 export const initRelayWebSocketTickerEpic = (action$, state$) =>
   action$.pipe(
-    ofType(customRelayAction(TYPE_.RELAY_OPEN_WEBSOCKET_TICKER)),
+    ofType(utils.customRelayAction(TYPE_.RELAY_OPEN_WEBSOCKET_TICKER)),
     mergeMap(action => {
       const { relay, networkId, baseToken, quoteToken } = action.payload
       return websocketTicker$(relay, networkId, baseToken, quoteToken).pipe(
@@ -480,7 +478,7 @@ export const initRelayWebSocketTickerEpic = (action$, state$) =>
           )
         }),
         takeUntil(
-          action$.ofType(customRelayAction(TYPE_.RELAY_CLOSE_WEBSOCKET))
+          action$.ofType(utils.customRelayAction(TYPE_.RELAY_CLOSE_WEBSOCKET))
         ),
         catchError(error => {
           console.warn(error)
@@ -514,7 +512,7 @@ const getAccountOrdersFromRelay$ = (
 
 export const getAccountOrdersEpic = action$ =>
   action$.pipe(
-    ofType(customRelayAction(TYPE_.FETCH_ACCOUNT_ORDERS_START)),
+    ofType(utils.customRelayAction(TYPE_.FETCH_ACCOUNT_ORDERS_START)),
     mergeMap(action => {
       const {
         relay,
@@ -525,7 +523,9 @@ export const getAccountOrdersEpic = action$ =>
       } = action.payload
       return timer(0, 5000).pipe(
         takeUntil(
-          action$.ofType(customRelayAction(TYPE_.FETCH_ACCOUNT_ORDERS_STOP))
+          action$.ofType(
+            utils.customRelayAction(TYPE_.FETCH_ACCOUNT_ORDERS_STOP)
+          )
         ),
         exhaustMap(() =>
           getAccountOrdersFromRelay$(
@@ -563,4 +563,3 @@ export const getAccountOrdersEpic = action$ =>
       )
     })
   )
-
