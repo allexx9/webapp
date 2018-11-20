@@ -1,6 +1,15 @@
 import * as CONSTANTS from '../utils/const'
-import { Observable, defer, from, merge } from 'rxjs'
-import { delay, retryWhen, switchMap, tap } from 'rxjs/operators'
+import {
+  Observable,
+  defer,
+  empty,
+  from,
+  merge,
+  of,
+  throwError,
+  timer
+} from 'rxjs'
+import { delay, exhaustMap, retryWhen, switchMap, tap } from 'rxjs/operators'
 import exchangeEfxV0Abi from '../abis/exchange-efx-v0.json'
 
 const exchangeEfxV0$ = (web3, networkId) => {
