@@ -104,7 +104,8 @@ export function formatCoins(amount, decimals = 4) {
 }
 
 export function formatEth(eth, decimals = 4, api) {
-  return api.util.fromWei(eth).toFormat(decimals)
+  // console.log(eth)
+  return api.util.fromWei(new BigNumber(eth)).toFormat(decimals)
 }
 
 export function formatHash(hash) {

@@ -6,7 +6,7 @@ class FilterPoolsField extends Component {
   static propTypes = {
     filter: PropTypes.func.isRequired,
     floatingLabelText: PropTypes.string.isRequired,
-    hintText: PropTypes.object.isRequired || PropTypes.string.isRequired
+    hintText: PropTypes.oneOfType([PropTypes.string, PropTypes.object])
   }
 
   static defaultProps = {

@@ -1,0 +1,21 @@
+.disabledBox {
+  pointer-events: none;
+  opacity: 0.1;
+}
+
+.messageContainer {
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  width: 100%;
+  z-index: 1;
+  color: #054186;
+  font-weight: 700;
+  top: 40%;
+  text-transform: uppercase;
+}
+
+.disabledBoxMsg {
+  pointer-events: none;
+  opacity: 0.2;
+}

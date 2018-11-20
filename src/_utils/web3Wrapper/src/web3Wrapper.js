@@ -20,6 +20,7 @@ let Web3Wrapper = (() => {
     let provider = new Web3.providers.WebsocketProvider(transport, {
       timeout: 5000
     });
+    // let provider = window.web3
     web3 = newWeb3(provider);
     // connStatus = await web3.eth.net.isListening();
     web3.connStatus = connStatus;

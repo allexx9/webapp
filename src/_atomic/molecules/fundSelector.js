@@ -20,6 +20,7 @@ export default class FundSelector extends PureComponent {
 
   onSelectFund = (event, key) => {
     const { funds } = this.props
+    if (funds.length === 0) return
     if (this.props.selectedFund.details.dragoId !== key) {
       this.setState({
         value: key
@@ -30,6 +31,14 @@ export default class FundSelector extends PureComponent {
 
   renderFunds = () => {
     const { funds } = this.props
+    if (funds.length === 0) {
+      return (
+        <MenuItem
+          key={'noFundsSelector'}
+          primaryText={'Please create a fund to start trading.'}
+        />
+      )
+    }
     return funds.map(fund => {
       return (
         <MenuItem

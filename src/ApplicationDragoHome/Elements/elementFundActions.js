@@ -25,7 +25,10 @@ import ElementFundActionAuthorization from '../../Elements/elementActionAuthoriz
 import ElementFundActionsHeader from './elementFundActionsHeader'
 import PoolApi from '../../PoolsApi/src'
 
+import { newWeb3 } from '../../_utils/web3Wrapper/src/utils/utils'
+import Web3Wrapper from '../../_utils/web3Wrapper/src'
 import styles from './elementFundActions.module.css'
+import Web3 from  'web3'
 
 const customContentStyle = {
   minHeight: '500px'
@@ -172,8 +175,6 @@ class ElementFundActions extends React.Component {
     color: Colors.red300
   }
 
-  UNSAFE_componentWillMount() {}
-
   UNSAFE_componentWillReceiveProps(nextProps) {
     // console.log(nextProps)
     if (this.props.actionSelected.action !== nextProps.actionSelected.action) {
@@ -279,8 +280,8 @@ class ElementFundActions extends React.Component {
     const { dragoDetails } = this.props
     const accountError = validateAccount(account, api)
     // Setting variables depending on account source
-    // var provider = account.source === 'MetaMask' ? window.web3 : api
-    let provider = api
+    let provider = account.source === 'MetaMask' ? window.web3 : api
+    // let provider = api
     this.setState(
       {
         account,
@@ -453,7 +454,7 @@ class ElementFundActions extends React.Component {
 
   onSendBuy = () => {
     const { api } = this.context
-    const { dragoDetails } = this.props
+    const { dragoDetails, endpoint } = this.props
     const { account } = this.state
     const amount = api.util.toWei(this.state.amountSummary).toString()
     const authMsg =
@@ -492,12 +493,29 @@ class ElementFundActions extends React.Component {
     // Sending the transaction
     poolApi = new PoolApi(provider)
     poolApi.contract.drago.init(dragoDetails.address)
+
+    // const poolApiWeb3 = new PoolApi(window.web3)
+    // poolApiWeb3.contract.drago.init(dragoDetails.address)
+    // let hexAccounts = this.props.endpoint.accounts.map(account => {
+    //   const hexAccount =
+    //     '0x' +
+    //     account.address
+    //       .toLocaleLowerCase()
+    //       .substr(2)
+    //       .padStart(64, '0')
+    //   return hexAccount
+    // })
+
+
     poolApi.contract.drago
       .buyDrago(account.address, amount)
       .then(receipt => {
         console.log('executed')
         console.log(receipt)
-        // Adding transaciont to the queue
+        poolApi.contract.drago.balanceOf(account.address).then(balance => {
+          console.log(balance)
+        })
+        // Adding transaction to the queue
         // Parity returns an internal transaction ID straighaway. The transaction then needs to be authorized inside the wallet.
         // MetaMask returns a receipt of the transaction once it has been mined by the network. It can take a long time.
         if (account.source === 'MetaMask') {

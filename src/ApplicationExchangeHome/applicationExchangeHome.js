@@ -30,6 +30,7 @@ import OrdersHistoryBox from '../_atomic/organisms/ordersHistoryBox'
 import TokenBalances from '../_atomic/atoms/tokenBalances'
 import TokenPrice from '../_atomic/atoms/tokenPrice'
 import TokenTradeSelector from '../_atomic/molecules/tokenTradeSelector'
+import Web3Wrapper from '../_utils/web3Wrapper/src'
 import styles from './applicationExchangeHome.module.css'
 import utils from '../_utils/utils'
 
@@ -106,7 +107,7 @@ class ApplicationExchangeHome extends Component {
     // console.log(this.getConf())
 
     const { api } = this.context
-    const { selectedExchange } = this.props.exchange
+    const { selectedExchange, ui } = this.props.exchange
     const { endpoint } = this.props
 
     const defaultRelay = RELAYS[DEFAULT_RELAY[api._rb.network.name]]
@@ -187,6 +188,36 @@ class ApplicationExchangeHome extends Component {
 
       // Get funds details (balance, transactions)
       let selectedFund = await this.getSelectedFundDetails(null, accounts)
+      console.log(selectedFund)
+      if (selectedFund) {
+        this.props.dispatch(
+          Actions.exchange.setUiPanelProperties(
+            utils.updateUi(ui, 'relayBox').enableBox()
+          )
+        )
+      } else {
+        this.props.dispatch(
+          Actions.exchange.setUiPanelProperties(
+            utils
+              .updateUi(ui, 'relayBox')
+              .disableBox({ disabledMsg: 'Please create a fund.' })
+          )
+        )
+        this.props.dispatch(
+          Actions.exchange.setUiPanelProperties(
+            utils
+              .updateUi(ui, 'orderBox')
+              .disableBox({ disabledMsg: 'Please create a fund.' })
+          )
+        )
+        // this.props.dispatch(
+        //   Actions.exchange.setUiPanelProperties(
+        //     utils
+        //       .updateUi(ui, 'orderBox')
+        //       .disableBox({ disabledMsg: 'Please create a fund.' })
+        //   )
+        // )
+      }
 
       this.connectToExchange(
         selectedFund,
@@ -318,8 +349,11 @@ class ApplicationExchangeHome extends Component {
     this.props.dispatch(Actions.exchange.cancelSelectedOrder())
 
     try {
-      const poolApi = new PoolApi(api)
+      let web3 = await Web3Wrapper.getInstance(api._rb.network.id)
+      web3._rb = window.web3._rb
+      const poolApi = new PoolApi(web3)
       poolApi.contract.drago.init(fund.address)
+      console.log(poolApi)
 
       // Getting drago details
       const dragoDetails = await poolApi.contract.drago.getAdminData()

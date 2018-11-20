@@ -71,12 +71,14 @@ export default class ElementNotification extends Component {
     eventStatus: PropTypes.string.isRequired,
     txHash: PropTypes.string.isRequired,
     networkName: PropTypes.string.isRequired,
-    removeNotification: PropTypes.func.isRequired,
-    transactionKey: PropTypes.string.isRequired
+    removeNotification: PropTypes.func,
+    transactionKey: PropTypes.string
   }
 
   static defaultProps = {
-    networkName: ''
+    networkName: '',
+    removeNotification: () => {},
+    transactionKey: ''
   }
 
   removeNotification = () => {

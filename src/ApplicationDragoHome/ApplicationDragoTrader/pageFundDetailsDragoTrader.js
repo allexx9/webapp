@@ -222,11 +222,7 @@ class PageFundDetailsDragoTrader extends Component {
     let assetsValues = {}
     let tableLiquidity = [
       ['Liquidity', 'Calculating...', [<small key="dragoLiqEth">ETH</small>]],
-      [
-        'Porfolio value',
-        'Calculating...',
-        [<small key="dragoPortEth">ETH</small>]
-      ],
+      ['Porfolio value', 'N/A', [<small key="dragoPortEth">ETH</small>]],
       ['Total', 'Calculating...', [<small key="dragoPortTotEth">ETH</small>]]
     ]
 

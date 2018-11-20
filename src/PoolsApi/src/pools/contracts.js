@@ -2,6 +2,7 @@
 // This file is part of RigoBlock.
 
 import DragoEventfulParity from './Parity/dragoEventful'
+import DragoEventfulWeb3 from './Web3/dragoEventful'
 import DragoFactoryParity from './Parity/dragoFactory'
 import DragoFactoryWeb3 from './Web3/dragoFactory'
 import DragoParity from './Parity/drago'
@@ -32,13 +33,14 @@ class Contract {
     if (!api) {
       throw new Error('API instance needs to be provided to Contract')
     }
-    if (typeof api._provider === 'undefined') {
+    if (typeof api.version === 'undefined') {
       isMetaMask = false
     } else {
-      isMetaMask = api._provider.isMetaMask
+      isMetaMask = true
     }
     if (isMetaMask) {
       this._drago = new DragoWeb3(api)
+      this._dragoeventful = new DragoEventfulWeb3(api)
       this._dragofactory = new DragoFactoryWeb3(api)
       this._ether = new EtherWeb3(api)
       this._vault = new VaultWeb3(api)
