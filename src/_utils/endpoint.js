@@ -103,6 +103,7 @@ class Endpoint {
         api = new Api(transport)
         api._rb = {}
         api._rb.network = this._network
+        api._rb.network.transportWs = this._wss
         console.log(api)
         return api
       } catch (error) {
@@ -117,6 +118,7 @@ class Endpoint {
         api = new Api(transport)
         api._rb = {}
         api._rb.network = this._network
+        api._rb.network.transportWs = this._wss
         console.log(api)
         return api
       } catch (error) {

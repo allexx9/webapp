@@ -28,7 +28,7 @@ export const relayActionsMiddleWare = store => next => action => {
 
 export const notificationsMiddleWare = store => next => action => {
   const state = store.getState()
-  console.log(action)
+  // console.log(action)
   if (action.type === TYPE_.QUEUE_ACCOUNT_NOTIFICATION) {
     action.payload.map(notification => {
       utils.notificationAccount(

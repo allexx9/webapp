@@ -41,6 +41,7 @@ const webSocket$ = (web3, newWeb3, transport, provider) => {
           retryAttemptWebSocket++;
           console.log(`**** webSocket$ Attempt ${retryAttemptWebSocket} ****`);
           web3.setProvider(new Web3.providers.WebsocketProvider(transport));
+          // web3.setProvider(window.web3);
         }),
         delay(5000)
       );

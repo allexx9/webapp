@@ -3,6 +3,8 @@ import { dateFromTimeStampHuman } from './dateFromTimeStampHuman'
 import { formatCoins, formatEth } from './../format'
 import BigNumber from 'bignumber.js'
 import PoolApi from '../../PoolsApi/src'
+import Web3 from 'web3'
+import Web3Wrapper from '../web3Wrapper/src'
 
 export const getDragoDetails = async (dragoDetails, accounts, api) => {
   //
@@ -10,7 +12,17 @@ export const getDragoDetails = async (dragoDetails, accounts, api) => {
   // Passing Parity API
   //
   const poolApi = new PoolApi(api)
-  const poolApiWeb3 = new PoolApi(window.web3)
+  console.log(window.web3)
+  // window.web3.setProvider(
+  //   new Web3.providers.WebsocketProvider(window.web3._rb.wss)
+  // )
+  // let newWeb3 = new Web3(window.web3._rb.wss)
+  // newWeb3._rb = window.web3._rb
+  // console.log(newWeb3)
+  let newWeb3 = await Web3Wrapper.getInstance(api._rb.network.id)
+  newWeb3._rb = window.web3._rb
+  console.log(newWeb3)
+  const poolApiWeb3 = new PoolApi(newWeb3)
   const dragoAddress = dragoDetails[0][0]
   let fromBlock
   switch (api._rb.network.id) {
@@ -34,6 +46,7 @@ export const getDragoDetails = async (dragoDetails, accounts, api) => {
   //
   // Initializing drago contract
   //
+  // await poolApiWeb3.contract.drago.init(dragoAddress)
   await poolApiWeb3.contract.drago.init(dragoAddress)
 
   //
@@ -97,6 +110,7 @@ export const getDragoDetails = async (dragoDetails, accounts, api) => {
     5,
     api
   )
+  // console.log(dragoETHBalance, dragoTotalSupply)
   let details = {
     address: dragoDetails[0][0],
     name:
@@ -117,6 +131,8 @@ export const getDragoDetails = async (dragoDetails, accounts, api) => {
     dragoWETHBalance
   }
 
+  // console.log(details)
+
   //
   // Getting balance for each user account
   //
@@ -129,7 +145,9 @@ export const getDragoDetails = async (dragoDetails, accounts, api) => {
       balanceDRG = balanceDRG.plus(balance)
     })
   )
+  console.log(`balanceDRG ${balanceDRG}`)
   balanceDRG = formatCoins(balanceDRG, 4, api)
   details = { ...details, balanceDRG }
+  // console.log(details)
   return details
 }

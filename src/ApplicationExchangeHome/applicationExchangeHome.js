@@ -30,6 +30,7 @@ import OrdersHistoryBox from '../_atomic/organisms/ordersHistoryBox'
 import TokenBalances from '../_atomic/atoms/tokenBalances'
 import TokenPrice from '../_atomic/atoms/tokenPrice'
 import TokenTradeSelector from '../_atomic/molecules/tokenTradeSelector'
+import Web3Wrapper from '../_utils/web3Wrapper/src'
 import styles from './applicationExchangeHome.module.css'
 import utils from '../_utils/utils'
 
@@ -348,8 +349,11 @@ class ApplicationExchangeHome extends Component {
     this.props.dispatch(Actions.exchange.cancelSelectedOrder())
 
     try {
-      const poolApi = new PoolApi(api)
+      let web3 = await Web3Wrapper.getInstance(api._rb.network.id)
+      web3._rb = window.web3._rb
+      const poolApi = new PoolApi(web3)
       poolApi.contract.drago.init(fund.address)
+      console.log(poolApi)
 
       // Getting drago details
       const dragoDetails = await poolApi.contract.drago.getAdminData()

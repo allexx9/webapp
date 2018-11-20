@@ -192,7 +192,6 @@ export const getTransactionsSingleDrago = async (
         results.sort(function(x, y) {
           return y.timestamp - x.timestamp
         })
-        console.log(results)
         console.log(
           `${
             this.constructor.name

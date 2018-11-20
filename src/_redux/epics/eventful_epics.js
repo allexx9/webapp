@@ -301,13 +301,13 @@ export const getAccountsTransactionsEpic = (action$, state$) => {
   return action$.pipe(
     ofType(TYPE_.GET_ACCOUNTS_TRANSACTIONS),
     tap(results => {
-      console.log(results)
+      // console.log(results)
       return results
     }),
 
     // first(),
     tap(results => {
-      console.log(results)
+      // console.log(results)
       return results
     }),
     mergeMap(action => {

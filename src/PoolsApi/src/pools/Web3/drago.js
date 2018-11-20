@@ -38,6 +38,11 @@ class DragoWeb3 {
     return instance.methods.getData().call({})
   }
 
+  getAdminData = () => {
+    const instance = this._instance
+    return instance.methods.getAdminData().call({})
+  }
+
   getBalance = () => {
     const api = this._api
     const instance = this._instance

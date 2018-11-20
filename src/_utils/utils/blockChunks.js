@@ -49,12 +49,12 @@ export const blockChunks = (start, end, chunk) => {
     toBlock = toBlock - chunk
   }
   // logger.info(`${JSON.stringify(rangesArray)}`)
-  rangesArray.map((chunk, key) => {
-    // console.log(
-    //   `***** Chunk ${key} -> fromBlock ${chunk.fromBlock} -> toBlock ${
-    //     chunk.toBlock
-    //   }`
-    // )
-  })
+  // rangesArray.map((chunk, key) => {
+  //   // console.log(
+  //   //   `***** Chunk ${key} -> fromBlock ${chunk.fromBlock} -> toBlock ${
+  //   //     chunk.toBlock
+  //   //   }`
+  //   // )
+  // })
   return rangesArray
 }

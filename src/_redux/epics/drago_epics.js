@@ -74,7 +74,7 @@ const getTokensBalances$ = (dragoAddress, api) => {
 
 export const getTokensBalancesEpic = (action$, state$) => {
   return action$.pipe(
-    ofType('TYPE_.GET_TOKEN_BALANCES_DRAGOLLL'),
+    ofType('TYPE_.GET_TOKEN_BALANCES_DRAGO_SILENT'),
     mergeMap(action => {
       return getTokensBalances$(
         action.payload.dragoDetails,
@@ -214,7 +214,7 @@ export const getPoolDetailsEpic = (action$, state$) => {
         state$
       ).pipe(
         flatMap(details => {
-          console.log(details)
+          // console.log(details)
           let drago = action.payload.options.poolType === 'drago' ? true : false
           let options = {
             balance: true,
@@ -287,14 +287,14 @@ export const getPoolDetailsEpic = (action$, state$) => {
           return Observable.concat(observablesArray)
 
           // return DEBUGGING.DUMB_ACTION
-        }),
-        catchError(error => {
-          console.log(error)
-          return Observable.of({
-            type: TYPE_.QUEUE_ERROR_NOTIFICATION,
-            payload: 'Error fetching Drago details.'
-          })
         })
+        // catchError(error => {
+        //   console.log(error)
+        //   return Observable.of({
+        //     type: TYPE_.QUEUE_ERROR_NOTIFICATION,
+        //     payload: 'Error fetching Drago details.'
+        //   })
+        // })
       )
     })
   )
