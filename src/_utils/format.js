@@ -3,6 +3,7 @@
 // import { api } from '../parity';
 
 import BigNumber from 'bignumber.js'
+import Web3 from 'web3'
 
 const DIVISOR = 10 ** 6
 const ZERO = new BigNumber(0)
@@ -103,9 +104,18 @@ export function formatCoins(amount, decimals = 4) {
   return adjusted.toFormat(decimals)
 }
 
-export function formatEth(eth, decimals = 4, api) {
-  // console.log(eth)
-  return api.util.fromWei(new BigNumber(eth)).toFormat(decimals)
+export function formatEth(eth, decimals = 4) {
+  // console.log(new BigNumber(eth))
+  // let web3 = new Web3()
+  // let BN = web3.utils.BN
+
+  // console.log(BN(eth))
+
+  // console.log(new BN(1234).toString())
+
+  return toUnitAmount(new BigNumber(eth), 18).toFormat(decimals)
+
+  // return web3.utils.fromWei(new BN(eth)).toFormat(decimals)
 }
 
 export function formatHash(hash) {

@@ -65,6 +65,16 @@ class DragoFactoryWeb3 {
           })
       })
   }
+
+  getDragosByAddress = accountAddress => {
+    if (!accountAddress) {
+      throw new Error('accountAddress needs to be provided')
+    }
+    const instance = this._instance
+    return instance.methods
+      .getDragosByAddress(accountAddress.toLowerCase())
+      .call({})
+  }
 }
 
 export default DragoFactoryWeb3
