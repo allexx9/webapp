@@ -36,11 +36,35 @@ export const blockChunks = (start, end, chunk) => {
         toBlock: toBlock
       })
     }
+    // console.log(
+    //   `***** Chunk ${i} -> fromBlock ${fromBlock + 1} -> toBlock ${toBlock}`
+    // )
+    i++
+    // fromBlock = fromBlock - chunk
+    // toBlock = toBlock - chunk
+    if (i > 100) break
+    if (fromBlock - chunk < start) {
+      rangesArray.push({
+        fromBlock: Number(start),
+        toBlock: fromBlock
+      })
+      // console.log(
+      //   `***** Chunk ${i} -> fromBlock ${Number(
+      //     start
+      //   )} -> toBlock ${fromBlock}`
+      // )
+      break
+    }
+    fromBlock = fromBlock - chunk
+    toBlock = toBlock - chunk
   }
-  for (let i = startBlock - 1; i < endBlock; i += chunkSize) {
-    const fromBlock = i + 1
-    const toBlock = i + chunkSize > endBlock ? end : i + chunkSize
-    chunks.push([fromBlock, toBlock])
-  }
-  return chunks
+  // logger.info(`${JSON.stringify(rangesArray)}`)
+  rangesArray.map((chunk, key) => {
+    // console.log(
+    //   `***** Chunk ${key} -> fromBlock ${chunk.fromBlock} -> toBlock ${
+    //     chunk.toBlock
+    //   }`
+    // )
+  })
+  return rangesArray
 }
