@@ -54,7 +54,7 @@ export const formatPriceTrades = price => {
  */
 export function toUnitAmount(amount, decimals) {
   const aUnit = new BigNumber(10).pow(decimals)
-  const unit = amount.div(aUnit)
+  const unit = new BigNumber(amount).div(aUnit)
   return unit
 }
 /**

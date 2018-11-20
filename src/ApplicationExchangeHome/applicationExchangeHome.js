@@ -387,12 +387,12 @@ class ApplicationExchangeHome extends Component {
 
       if (selectedRelay.isTokenWrapper) {
         // Getting token wrapper lock time
-        baseTokenLockWrapExpire = await utils.updateTokenWrapperLockTime(
+        baseTokenLockWrapExpire = await utils.getTokenWrapperLockTime(
           api,
           selectedTokensPair.baseToken.wrappers[selectedRelay.name].address,
           fund.address
         )
-        quoteTokenLockWrapExpire = await utils.updateTokenWrapperLockTime(
+        quoteTokenLockWrapExpire = await utils.getTokenWrapperLockTime(
           api,
           selectedTokensPair.quoteToken.wrappers[selectedRelay.name].address,
           fund.address

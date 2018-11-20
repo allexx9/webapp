@@ -89,7 +89,9 @@ class TokenLockInfo extends Component {
   }
 
   isBalanceSufficient = (amount, liquidity) => {
-    if (this.state.baseTokenRelock || this.state.quoteTokenLockTime) {
+    console.log(amount, new BigNumber(liquidity).toFixed())
+    console.log(this.state.baseTokenRelock, this.state.quoteTokenRelock)
+    if (this.state.baseTokenRelock || this.state.quoteTokenRelock) {
       return true
     }
     console.log(amount, new BigNumber(liquidity).toFixed())
@@ -259,12 +261,12 @@ class TokenLockInfo extends Component {
           transactionDetails.timestamp = new Date()
 
           // Getting token wrapper lock time
-          let baseTokenLockWrapExpire = await utils.updateTokenWrapperLockTime(
+          let baseTokenLockWrapExpire = await utils.getTokenWrapperLockTime(
             api,
             selectedTokensPair.baseToken.wrappers[selectedRelay.name].address,
             selectedFund.details.address
           )
-          let quoteTokenLockWrapExpire = await utils.updateTokenWrapperLockTime(
+          let quoteTokenLockWrapExpire = await utils.getTokenWrapperLockTime(
             api,
             selectedTokensPair.quoteToken.wrappers[selectedRelay.name].address,
             selectedFund.details.address
@@ -419,12 +421,12 @@ class TokenLockInfo extends Component {
           transactionDetails.timestamp = new Date()
 
           // Getting token wrapper lock time
-          let baseTokenLockWrapExpire = await utils.updateTokenWrapperLockTime(
+          let baseTokenLockWrapExpire = await utils.getTokenWrapperLockTime(
             api,
             selectedTokensPair.baseToken.wrappers[selectedRelay.name].address,
             selectedFund.details.address
           )
-          let quoteTokenLockWrapExpire = await utils.updateTokenWrapperLockTime(
+          let quoteTokenLockWrapExpire = await utils.getTokenWrapperLockTime(
             api,
             selectedTokensPair.quoteToken.wrappers[selectedRelay.name].address,
             selectedFund.details.address
