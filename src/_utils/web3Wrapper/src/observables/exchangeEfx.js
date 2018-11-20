@@ -1,94 +1,55 @@
-import exchangeEfxV0Abi from "../abis/exchange-efx-v0.json";
-import { Observable, timer } from "rxjs";
-import { mergeMap, retryWhen, finalize, timeout } from "rxjs/operators";
-import * as CONST_ from "../utils/const";
-import Web3 from "web3";
+import * as CONSTANTS from '../utils/const'
+import { Observable, defer, from, merge } from 'rxjs'
+import {
+  delay,
+  ignoreElements,
+  retryWhen,
+  switchMap,
+  tap
+} from 'rxjs/operators'
+import exchangeEfxV0Abi from '../abis/exchange-efx-v0.json'
 
-const exchangeEfxV0$ = (web3, networkId, provider) => {
-  let subscription = null;
-  let retryAttemptNewBlock$ = 0;
-  return Observable.create(observer => {
-    if (subscription !== null) {
-      subscription.unsubscribe(function(error, success) {
-        if (success) {
-          console.log("**** exchangeEfxV0$ Successfully UNSUBSCRIBED! ****");
-        }
-        if (error) {
-          console.log("**** exchangeEfxV0$ UNSUBSCRIBE error ****");
-          console.warn(error);
-        }
-      });
-    }
-    let efxEchangeContract;
-    try {
-      efxEchangeContract = new web3.eth.Contract(
-        exchangeEfxV0Abi,
-        CONST_.EFX_EXCHANGE_CONTRACT[networkId].toLowerCase()
-      );
-      subscription = efxEchangeContract.events
-        .allEvents(
-          {
-            fromBlock: "latest"
-          },
-          function(error, event) {
-            if (error !== null) {
-              console.warn(`WS error 1 ${error}`);
-              return observer.error(error);
+const exchangeEfxV0$ = (web3, networkId) => {
+  const efxEchangeContract = new web3.eth.Contract(
+    exchangeEfxV0Abi,
+    CONSTANTS.EFX_EXCHANGE_CONTRACT[networkId].toLowerCase()
+  )
+  let fromBlock
+
+  const retryStrategy = error$ =>
+    error$.pipe(
+      tap(err => {
+        console.error(err)
+        console.info(`Retrying in: ${CONSTANTS.RETRY_DELAY} ms.`)
+      }),
+      delay(CONSTANTS.RETRY_DELAY)
+    )
+
+  return defer(() => from(web3.eth.getBlockNumber())).pipe(
+    tap(latestBlock => (fromBlock = latestBlock)),
+    switchMap(() =>
+      merge(
+        Observable.create(observer => {
+          const subscription = efxEchangeContract.events.allEvents(
+            {
+              fromBlock
+            },
+            (err, msg) => {
+              if (err) {
+                return observer.error(err)
+              }
+              fromBlock =
+                fromBlock > msg.blockNumber ? fromBlock : msg.blockNumber
+              return observer.next(msg)
             }
-            console.log(error, event);
-          }
-        )
-        .on("data", function(event) {
-          console.log("Event: " + JSON.stringify(event)); // same results as the optional callback above
-          return observer.next(event);
-        })
-        .on("error", function(error) {
-          console.warn(`WS error 2 ${error}`);
-          return observer.error(error);
-        });
-    } catch (error) {
-      console.log(`Catch ${error}`);
-      return observer.error(error);
-    }
-    return () => {
-      // efxEchangeContract.clearSubscriptions();
-      console.log(subscription);
-      subscription.unsubscribe();
-      console.log(`**** exchangeEfxV0$ exit ****`);
-      // observer.complete();
-    };
-  }).pipe(
-    timeout(120000),
-    retryWhen(error => {
-      let scalingDuration = 5000;
-      error.error();
-      return error.pipe(
-        mergeMap(error => {
-          if (subscription !== null) {
-            subscription.unsubscribe(function(error, success) {
-              if (success) {
-                console.log(
-                  "**** exchangeEfxV0$ Successfully UNSUBSCRIBED! ****"
-                );
-              }
-              if (error) {
-                console.log("**** exchangeEfxV0$ UNSUBSCRIBE error ****");
-                console.log(error);
-              }
-            });
-          }
-          console.log(`****  exchangeEfxV0$ error: ${error.message} ****`);
-          retryAttemptNewBlock$++;
-          console.log(
-            `**** exchangeEfxV0$ Attempt ${retryAttemptNewBlock$} ****`
-          );
-          // web3 = new Web3(provider);
-          return timer(scalingDuration);
+          )
+          return () => subscription.unsubscribe()
         }),
-        finalize(() => console.log("exchangeEfxV0$ We are done!"))
-      );
-    })
-  );
-};
+        web3.rigoblock.ob.nodeStatus$.pipe(ignoreElements())
+      ).pipe(retryWhen(retryStrategy))
+    ),
+    retryWhen(retryStrategy)
+  )
+}
 
-export default exchangeEfxV0$;
+export default exchangeEfxV0$

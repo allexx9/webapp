@@ -1,4 +1,5 @@
 // https://github.com/redux-observable/redux-observable/issues/477#issuecomment-393516995
+/* eslint-disable */
 
 import { Server } from 'mock-socket'
 import Web3Wrapper from './web3Wrapper'
