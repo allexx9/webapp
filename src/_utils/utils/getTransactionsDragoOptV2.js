@@ -4,6 +4,7 @@ import { getTransactionsSingleDrago } from './getTransactionsSingleDrago'
 import { logToEvent } from './logToEvent'
 import BigNumber from 'bignumber.js'
 import PoolApi from '../../PoolsApi/src'
+import Web3Wrapper from '../../_utils/web3Wrapper/src'
 import moment from 'moment'
 
 /**
@@ -43,7 +44,10 @@ export const getTransactionsDragoOptV2 = async (
   if (accounts.length === 0) {
     return Array(0), Array(0), Array(0)
   }
-  const poolApi = new PoolApi(api)
+  let web3 = await Web3Wrapper.getInstance(api._rb.network.id)
+  web3._rb = window.web3._rb
+  const poolApi = new PoolApi(web3)
+  // const poolApi = new PoolApi(api)
   let dragoSymbolRegistry = new Map()
   let fromBlock
   switch (api._rb.network.id) {
@@ -67,7 +71,7 @@ export const getTransactionsDragoOptV2 = async (
   )
 
   const logToEventInternal = log => {
-    return logToEvent(log, dragoSymbolRegistry, api)
+    return logToEvent(log, dragoSymbolRegistry)
   }
   // Getting all buyDrago and selDrago events since block 0.
   // dragoFactoryEventsSignatures accesses the contract ABI, gets all the events and for each creates a hex signature
@@ -109,10 +113,10 @@ export const getTransactionsDragoOptV2 = async (
           symbol: null,
           dragoId: null,
           name: null,
-          address: v.value
+          address: v
         }
-        !dragoSymbolRegistry.has(v.value)
-          ? dragoSymbolRegistry.set(v.value, dragoData)
+        !dragoSymbolRegistry.has(v)
+          ? dragoSymbolRegistry.set(v, dragoData)
           : null
       })
       return poolsList
@@ -129,7 +133,7 @@ export const getTransactionsDragoOptV2 = async (
     return poolApi.contract.dragoeventful.init().then(() => {
       const getChunkedEvents = topics => {
         let arrayPromises = []
-        return api.eth.blockNumber().then(lastBlock => {
+        return web3.eth.getBlockNumber().then(lastBlock => {
           let chunck = 100000
           const chunks = blockChunks(fromBlock, lastBlock, chunck)
           arrayPromises = chunks.map(async chunk => {
@@ -213,9 +217,10 @@ export const getTransactionsDragoOptV2 = async (
                 poolApi.contract.dragoregistry
                   .fromAddress(k)
                   .then(dragoDetails => {
+                    console.log(dragoDetails)
                     const dragoData = {
                       symbol: dragoDetails[2].trim(),
-                      dragoId: dragoDetails[3].toFixed(),
+                      dragoId: new BigNumber(dragoDetails[3]).toFixed(),
                       name: dragoDetails[1].trim(),
                       address: k.trim()
                     }
@@ -232,55 +237,17 @@ export const getTransactionsDragoOptV2 = async (
             return arrayPromises
           }
 
-          // Getting dragos supply
-          // const getDragoSupply = () => {
-          //   console.log('getDragoSupply')
-          //   let arrayPromises = []
-          //   if (options.supply === false) {
-          //     supply = []
-          //     return arrayPromises
-          //   }
-          //   dragoSymbolRegistry.forEach((v, k) => {
-          //     poolApi.contract.drago.init(k)
-          //     arrayPromises.push(
-          //       poolApi.contract.drago
-          //         .totalSupply()
-          //         .then(dragoSupply => {
-          //           console.log('dragoSupply')
-          //           const {
-          //             symbol,
-          //             name,
-          //             dragoId,
-          //             address
-          //           } = dragoSymbolRegistry.get(k)
-          //           supply.push({
-          //             supply: formatCoins(new BigNumber(dragoSupply), 4, api),
-          //             name: name.trim(),
-          //             symbol: symbol,
-          //             dragoId: dragoId,
-          //             address: address
-          //           })
-          //         })
-          //         .catch(error => {
-          //           console.warn(error)
-          //           throw error
-          //         })
-          //     )
-          //   })
-          //   return arrayPromises
-          // }
-
           const getDragoSupplyWeb3 = () => {
             let arrayPromises = []
             if (options.supply === false) {
               supply = []
               return arrayPromises
             }
-            let poolApiWeb3 = new PoolApi(window.web3)
+            // let poolApi = new PoolApi(window.web3)
             dragoSymbolRegistry.forEach((v, k) => {
-              poolApiWeb3.contract.drago.init(k)
+              poolApi.contract.drago.init(k)
               arrayPromises.push(
-                poolApiWeb3.contract.drago
+                poolApi.contract.drago
                   .totalSupply()
                   .then(dragoSupply => {
                     const {
@@ -308,7 +275,7 @@ export const getTransactionsDragoOptV2 = async (
 
           // Getting dragos balances
           const getDragoBalances = () => {
-            let poolApiWeb3 = new PoolApi(window.web3)
+            // let poolApi = new PoolApi(window.web3)
             let arrayPromises = []
             // Checking if balance return is required
             if (options.balance === false) {
@@ -319,9 +286,9 @@ export const getTransactionsDragoOptV2 = async (
               let accountAddress = account.address
               balances[accountAddress] = []
               dragoSymbolRegistry.forEach((v, k) => {
-                poolApiWeb3.contract.drago.init(k)
+                poolApi.contract.drago.init(k)
                 arrayPromises.push(
-                  poolApiWeb3.contract.drago
+                  poolApi.contract.drago
                     .balanceOf(accountAddress)
                     .then(dragoBalance => {
                       const {
@@ -330,7 +297,6 @@ export const getTransactionsDragoOptV2 = async (
                         dragoId,
                         address
                       } = dragoSymbolRegistry.get(k)
-                      console.log(dragoBalance)
                       balances[accountAddress][dragoId] = {
                         balance: new BigNumber(dragoBalance),
                         name: name.trim(),
@@ -349,28 +315,12 @@ export const getTransactionsDragoOptV2 = async (
             return arrayPromises
           }
 
-          // // Setting symbol
-          // const getSymbols = () => {
-          //   let transLogs = dragoTransactionsLogs.map(log => {
-          //     if (typeof dragoSymbolRegistry.get(log.params.drago.value) !== 'undefined') {
-          //       const symbol = dragoSymbolRegistry.get(log.params.drago.value)
-          //       .symbol
-          //     // const dragoId = dragoSymbolRegistry.get(log.params.drago.value).dragoId
-          //     // const name = dragoSymbolRegistry.get(log.params.drago.value).name
-          //     log.symbol = symbol
-          //     }
-
-          //     return log
-          //   })
-          //   return transLogs
-          // }
-
           const getTimestamp = logs => {
             return logs.map(log => {
-              return api.eth
-                .getBlockByNumber(new BigNumber(log.blockNumber).toFixed(0))
+              return web3.eth
+                .getBlock(new BigNumber(log.blockNumber).toFixed(0))
                 .then(block => {
-                  log.timestamp = block.timestamp
+                  log.timestamp = new Date(block.timestamp * 1000)
                   return log
                 })
                 .catch(() => {
@@ -456,6 +406,7 @@ export const getTransactionsDragoOptV2 = async (
                     let results = [balancesList, logs, supply]
                     return results
                   })
+                  // return dragoTransactionsLogs
                 })
                 .catch(error => {
                   console.warn(error)

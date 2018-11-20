@@ -2,15 +2,21 @@ import { blockChunks } from './blockChunks'
 import { formatCoins, formatEth } from './../format'
 import BigNumber from 'bignumber.js'
 import PoolApi from '../../PoolsApi/src'
+import Web3Wrapper from '../../_utils/web3Wrapper/src'
 
 export const getTransactionsSingleDrago = async (
   dragoAddress,
   api,
   accounts,
-  options
+  options = {
+    limit: 20
+  }
 ) => {
-  const poolApi = new PoolApi(api)
+  let web3 = await Web3Wrapper.getInstance(api._rb.network.id)
+  web3._rb = window.web3._rb
+  const poolApi = new PoolApi(web3)
   await poolApi.contract.dragoeventful.init()
+
   const contract = poolApi.contract.dragoeventful
   let fromBlock
   switch (api._rb.network.id) {
@@ -28,7 +34,7 @@ export const getTransactionsSingleDrago = async (
   }
 
   const logToEvent = log => {
-    const key = api.util.sha3(JSON.stringify(log))
+    const key = web3.utils.sha3(JSON.stringify(log))
     const {
       address,
       blockNumber,
@@ -56,12 +62,12 @@ export const getTransactionsSingleDrago = async (
     ) {
       ethvalue =
         event === 'BuyDrago'
-          ? formatEth(returnValues.amount, null, api)
-          : formatEth(returnValues.revenue, null, api)
+          ? formatEth(returnValues.amount, null)
+          : formatEth(returnValues.revenue, null)
       drgvalue =
         event === 'SellDrago'
-          ? formatCoins(returnValues.amount, null, api)
-          : formatCoins(returnValues.revenue, null, api)
+          ? formatCoins(returnValues.amount, null)
+          : formatCoins(returnValues.revenue, null)
     }
     let symbol
     if (typeof returnValues.symbol === 'string') {
@@ -107,7 +113,7 @@ export const getTransactionsSingleDrago = async (
 
   const getChunkedEvents = topics => {
     let arrayPromises = []
-    return api.eth.blockNumber().then(lastBlock => {
+    return web3.eth.getBlockNumber().then(lastBlock => {
       let chunck = 100000
       const chunks = blockChunks(fromBlock, lastBlock, chunck)
       arrayPromises = chunks.map(async chunk => {
@@ -167,17 +173,21 @@ export const getTransactionsSingleDrago = async (
   //   })
   return Promise.all(promisesEvents)
     .then(logs => {
-      return logs[0]
+      let dragoTransactionsLogs = logs[0].slice(
+        logs[0].length - options.limit,
+        logs[0].length
+      )
+      return dragoTransactionsLogs
     })
     .then(dragoTransactionsLog => {
       // Creating an array of promises that will be executed to add timestamp to each entry
       // Doing so because for each entry we need to make an async call to the client
       // For additional refernce: https://stackoverflow.com/questions/39452083/using-promise-function-inside-javascript-array-map
       let logPromises = dragoTransactionsLog.map(async log => {
-        return await api.eth
-          .getBlockByNumber(new BigNumber(log.blockNumber).toFixed(0))
+        return await web3.eth
+          .getBlock(new BigNumber(log.blockNumber).toFixed(0))
           .then(block => {
-            log.timestamp = block.timestamp
+            log.timestamp = new Date(block.timestamp * 1000)
             return log
           })
           .catch(error => {

@@ -2,9 +2,10 @@
 
 import { formatCoins, formatEth } from './../format'
 import BigNumber from 'bignumber.js'
+import Web3 from 'web3'
 
 export const logToEvent = (log, dragoSymbolRegistry, api) => {
-  const key = api.util.sha3(JSON.stringify(log))
+  const key = Web3.utils.sha3(JSON.stringify(log))
 
   const {
     address,
@@ -34,12 +35,12 @@ export const logToEvent = (log, dragoSymbolRegistry, api) => {
   ) {
     ethvalue =
       event === 'BuyDrago' || event === 'BuyVault'
-        ? formatEth(returnValues.amount, null, api)
-        : formatEth(returnValues.revenue, null, api)
+        ? formatEth(returnValues.amount, null)
+        : formatEth(returnValues.revenue, null)
     drgvalue =
       event === 'SellDrago' || event === 'SellVault'
-        ? formatCoins(returnValues.amount, null, api)
-        : formatCoins(returnValues.revenue, null, api)
+        ? formatCoins(returnValues.amount, null)
+        : formatCoins(returnValues.revenue, null)
   }
   // Creating a map with list of dragos
   if (

@@ -5,6 +5,7 @@
 
 import * as abis from '../contracts/abi'
 import { PARITY_REGISTRY_ADDRESSES } from '../utils/const'
+import { isMetamask } from './../utils/utils'
 
 class Registry {
   constructor(api) {
@@ -18,7 +19,7 @@ class Registry {
     )
     this._parityRegistryContractAddress =
       PARITY_REGISTRY_ADDRESSES[api._rb.network.id]
-    this._isWeb3 = typeof api.version !== 'undefined' ? true : false
+    this._isWeb3 = isMetamask(api)
     this._isParity = typeof api._parity !== 'undefined' ? true : false
     this._isInfura = () => {
       if (typeof api.provider !== 'undefined') {
@@ -130,7 +131,6 @@ class Registry {
       throw new Error('contractName needs to be provided to Registry')
     }
     const api = this._api
-    let isMetaMask = false
     const contract = this._getContractAddressFromRegister(contractName).then(
       address => {
         // console.log(`${contractName} -> ${address}`)
@@ -140,12 +140,7 @@ class Registry {
         if (!api) {
           throw new Error('API instance needs to be provided to Contract')
         }
-        if (typeof api._provider === 'undefined') {
-          isMetaMask = false
-        } else {
-          isMetaMask = api._provider.isMetaMask
-        }
-        if (isMetaMask) {
+        if (isMetamask(api)) {
           // console.log(
           //   `${
           //     this.constructor.name

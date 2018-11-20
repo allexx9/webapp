@@ -9,19 +9,10 @@ import Web3Wrapper from '../web3Wrapper/src'
 export const getDragoDetails = async (dragoDetails, accounts, api) => {
   //
   // Initializing Drago API
-  // Passing Parity API
   //
-  const poolApi = new PoolApi(api)
-  console.log(window.web3)
-  // window.web3.setProvider(
-  //   new Web3.providers.WebsocketProvider(window.web3._rb.wss)
-  // )
-  // let newWeb3 = new Web3(window.web3._rb.wss)
-  // newWeb3._rb = window.web3._rb
-  // console.log(newWeb3)
+
   let newWeb3 = await Web3Wrapper.getInstance(api._rb.network.id)
   newWeb3._rb = window.web3._rb
-  console.log(newWeb3)
   const poolApiWeb3 = new PoolApi(newWeb3)
   const dragoAddress = dragoDetails[0][0]
   let fromBlock
@@ -41,7 +32,7 @@ export const getDragoDetails = async (dragoDetails, accounts, api) => {
   //
   // Getting last transactions
   //
-  await poolApi.contract.dragoeventful.init()
+  await poolApiWeb3.contract.dragoeventful.init()
 
   //
   // Initializing drago contract
@@ -57,7 +48,7 @@ export const getDragoDetails = async (dragoDetails, accounts, api) => {
     const hexPoolAddress = '0x' + address.substr(2).padStart(64, '0')
 
     let topics = [
-      [poolApi.contract.dragoeventful.hexSignature.DragoCreated],
+      [poolApiWeb3.contract.dragoeventful.hexSignature.DragoCreated],
       [hexPoolAddress],
       null,
       null
@@ -74,7 +65,7 @@ export const getDragoDetails = async (dragoDetails, accounts, api) => {
           fromBlock: chunk.fromBlock,
           toBlock: chunk.toBlock
         }
-        return await poolApi.contract.dragoeventful.getAllLogs(options)
+        return await poolApiWeb3.contract.dragoeventful.getAllLogs(options)
       })
 
       return Promise.all(arrayPromises)
