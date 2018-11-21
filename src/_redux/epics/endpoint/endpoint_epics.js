@@ -135,6 +135,7 @@ const monitorAccounts$ = (api, state$) => {
       state$.value.endpoint.networkInfo.id
     )
     instance.rigoblock.ob.newBlock$.subscribe(newBlock => {
+      console.log('DEBUG newBlock$ VALUE: ', newBlock)
       utils
         .updateAccounts(api, newBlock, state$)
         .then(result => observer.next(result))

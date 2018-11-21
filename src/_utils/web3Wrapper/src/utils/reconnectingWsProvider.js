@@ -24,14 +24,8 @@
 
 import { errors } from 'web3-core-helpers'
 import ReconnectingWebSocket from 'reconnecting-websocket/dist/reconnecting-websocket-amd.js'
-import _ from 'underscore'
 
-// let _ = require('underscore')
-// let errors = require('web3-core-helpers').errors
-
-// import errors from 'web3-core-helpers'
-
-let Ws = null
+let Ws
 let _btoa = null
 let parseURL = null
 if (typeof window !== 'undefined' && typeof window.WebSocket !== 'undefined') {
@@ -121,7 +115,7 @@ let WebsocketProvider = function WebsocketProvider(url, options) {
       let id = null
 
       // get the id which matches the returned id
-      if (_.isArray(result)) {
+      if (Array.isArray(result)) {
         result.forEach(function(load) {
           if (_this.responseCallbacks[load.id]) id = load.id
         })
@@ -137,7 +131,7 @@ let WebsocketProvider = function WebsocketProvider(url, options) {
         result.method.indexOf('_subscription') !== -1
       ) {
         _this.notificationCallbacks.forEach(function(callback) {
-          if (_.isFunction(callback)) callback(result)
+          if (typeof callback === 'function') callback(result)
         })
 
         // fire the callback

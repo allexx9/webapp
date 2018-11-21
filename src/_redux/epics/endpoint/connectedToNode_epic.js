@@ -26,7 +26,7 @@ export const isConnectedToNodeWeb3Wrapper$ = state$ => {
       state$.value.endpoint.networkInfo.id
     )
     instance.rigoblock.ob.nodeStatus$.subscribe(val => {
-      console.log('Msg: ', val)
+      console.log('DEBUG NODESTATUS$ VALUE: ', val)
       if (val === 0) return
       if (Object.keys(val.error).length === 0) {
         // console.log('Msg: ', val)
