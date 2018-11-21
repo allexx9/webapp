@@ -358,7 +358,7 @@ export const monitorExchangeEventsEpic = (action$, state$) => {
     )
 
   return action$.pipe(
-    ofType(utils.customRelayAction('TYPE_.MONITOR_EXCHANGE_EVENTS_START_')),
+    ofType(utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_START)),
     buffer(isNodeConnected(state$)),
     first(),
     filter(val => {
