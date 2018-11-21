@@ -2,7 +2,10 @@
 // This file is part of RigoBlock.
 
 import { NETWORKS_ID, SupportedExchanges } from './const'
-import ReconnectingWebSocket from 'reconnecting-websocket'
+// import ReconnectingWebSocket from 'reconnecting-websocket'
+import ReconnectingWebSocket from 'reconnecting-websocket/dist/reconnecting-websocket-amd.js'
+
+const wsOptions = ['', { minReconnectionDelay: 1 }]
 
 export const getAggregatedOrders = {
   // ERCdEX: (networkId = 1, baseTokenAddress, quoteTokenAddress) => {
@@ -31,7 +34,8 @@ export const getAggregatedOrders = {
   // },
   Ethfinex: (networkId = 1, baseTokenSymbol, quoteTokenSymbol) => {
     const websocket = new ReconnectingWebSocket(
-      SupportedExchanges.Ethfinex.ws[NETWORKS_ID[networkId]]
+      SupportedExchanges.Ethfinex.ws[NETWORKS_ID[networkId]],
+      ...wsOptions
     )
     return websocket
   }
@@ -40,7 +44,8 @@ export const getAggregatedOrders = {
 export const getTicker = {
   ERCdEX: (networkId = 1, baseTokenAddress, quoteTokenAddress) => {
     const websocket = new ReconnectingWebSocket(
-      SupportedExchanges.ERCdEX.ws[NETWORKS_ID[networkId]]
+      SupportedExchanges.ERCdEX.ws[NETWORKS_ID[networkId]],
+      ...wsOptions
     )
     websocket.addEventListener('open', () => {
       console.log('WebSocket open.')
@@ -64,7 +69,8 @@ export const getTicker = {
   },
   Ethfinex: (networkId = 1 /* baseTokenSymbol , */ /* quoteTokenSymbol */) => {
     const websocket = new ReconnectingWebSocket(
-      SupportedExchanges.Ethfinex.ws[NETWORKS_ID[networkId]]
+      SupportedExchanges.Ethfinex.ws[NETWORKS_ID[networkId]],
+      ...wsOptions
     )
     return websocket
   }
@@ -78,7 +84,8 @@ export const getTickers = {
   },
   Ethfinex: networkId => {
     const websocket = new ReconnectingWebSocket(
-      SupportedExchanges.Ethfinex.ws[NETWORKS_ID[networkId]]
+      SupportedExchanges.Ethfinex.ws[NETWORKS_ID[networkId]],
+      ...wsOptions
     )
     // websocket.addEventListener('open', () => {
     //   let msg = JSON.stringify({
@@ -100,7 +107,8 @@ export const getHistoricalPricesData = {
   },
   Ethfinex: networkId => {
     const websocket = new ReconnectingWebSocket(
-      SupportedExchanges.Ethfinex.ws[NETWORKS_ID[networkId]]
+      SupportedExchanges.Ethfinex.ws[NETWORKS_ID[networkId]],
+      ...wsOptions
     )
     // websocket.addEventListener('open', () => {
     //   let msg = JSON.stringify({

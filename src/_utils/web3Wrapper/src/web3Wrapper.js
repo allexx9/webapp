@@ -54,8 +54,8 @@ class Web3Wrapper {
     const provider = new Web3.providers.WebsocketProvider(transport)
     const wsProvider = new Web3WsProvider(transport)
     const reconnectingWsProvider = () => new Web3WsProvider(transport)
-    console.log(provider)
-    console.log(wsProvider)
+    // console.log(provider)
+    // console.log(wsProvider)
 
     this.web3 = new Web3(reconnectingWsProvider())
     this.status$

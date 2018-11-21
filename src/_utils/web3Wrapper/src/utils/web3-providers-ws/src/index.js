@@ -23,10 +23,9 @@
 // 'use strict'
 
 import { errors } from 'web3-core-helpers'
-import ReconnectingWebSocket from 'reconnecting-websocket'
+import ReconnectingWebSocket from 'reconnecting-websocket/dist/reconnecting-websocket-amd.js'
 import _ from 'underscore'
 
-console.log(ReconnectingWebSocket)
 // let _ = require('underscore')
 // let errors = require('web3-core-helpers').errors
 
@@ -90,14 +89,25 @@ let WebsocketProvider = function WebsocketProvider(url, options) {
     headers.authorization = 'Basic ' + _btoa(parsedURL.auth)
   }
 
-  this.connection = new Ws(
+  //   let origWs = new Ws(
+  //     url,
+  //     protocol,
+  //     undefined,
+  //     headers,
+  //     undefined,
+  //     clientConfig
+  //   )
+
+  let recWs = new ReconnectingWebSocket(
     url,
     protocol,
-    undefined,
+    { minReconnectionDelay: 1 },
     headers,
     undefined,
     clientConfig
   )
+
+  this.connection = recWs
 
   this.addDefaultEvents()
 
