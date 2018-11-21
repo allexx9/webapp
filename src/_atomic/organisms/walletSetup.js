@@ -51,7 +51,8 @@ class WalletSetup extends Component {
       <div>
         {this.props.location.pathname !== '/app/web/home' && (
           <WalletSetupStepper
-            open={this.state.openWalletSetup}
+            // open={this.state.openWalletSetup}
+            open={true}
             handleClose={this.handleCloseWalletSetup}
           />
         )}
