@@ -7,10 +7,12 @@ import {
   map,
   retryWhen,
   share,
+  switchMap,
   tap,
   timeout
 } from 'rxjs/operators'
 import Web3 from 'web3'
+import Web3WsProvider from './utils/web3-providers-ws/src'
 import contract from './utils/contract'
 import exchangeEfxV0$ from './observables/exchangeEfx'
 import getEventful$ from './observables/eventful'
@@ -26,7 +28,7 @@ const defaultStatus = {
 class Web3Wrapper {
   web3 = null
   instance = null
-  status$ = timer(0, 1000).pipe(
+  status$ = timer(0, 2000).pipe(
     exhaustMap(() =>
       Observable.create(async observer => {
         try {
@@ -50,8 +52,12 @@ class Web3Wrapper {
   init(networkId, protocol = 'wss', timeoutMs = 5 * 1000) {
     const transport = ENDPOINTS[protocol][networkId].prod
     const provider = new Web3.providers.WebsocketProvider(transport)
+    const wsProvider = new Web3WsProvider(transport)
+    const reconnectingWsProvider = () => new Web3WsProvider(transport)
+    console.log(provider)
+    console.log(wsProvider)
 
-    this.web3 = new Web3(provider)
+    this.web3 = new Web3(reconnectingWsProvider())
     this.status$
       .pipe(
         timeout(timeoutMs),
@@ -61,9 +67,10 @@ class Web3Wrapper {
               console.error('Websocket disconnected. Setting new provider...')
             ),
             map(() => {
-              this.web3.setProvider(
-                new Web3.providers.WebsocketProvider(transport)
-              )
+              // this.web3.setProvider(
+              //   new Web3.providers.WebsocketProvider(transport)
+              // )
+              this.web3.setProvider(reconnectingWsProvider())
             }),
             delay(5000)
           )

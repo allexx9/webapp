@@ -358,9 +358,16 @@ export const monitorExchangeEventsEpic = (action$, state$) => {
     )
 
   return action$.pipe(
-    ofType(utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_START)),
+    ofType(utils.customRelayAction('TYPE_.MONITOR_EXCHANGE_EVENTS_START_')),
     buffer(isNodeConnected(state$)),
     first(),
+    filter(val => {
+      val.length === 0
+    }),
+    tap(val => {
+      console.log(val)
+      return val
+    }),
     switchMap(action => {
       // console.log(action)
       const { fund, tokens, exchange } = action[0].payload

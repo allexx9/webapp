@@ -8,6 +8,7 @@ import { Observable, from, timer } from 'rxjs'
 import {
   buffer,
   catchError,
+  delay,
   finalize,
   first,
   map,
@@ -17,6 +18,7 @@ import {
   switchMap,
   tap
 } from 'rxjs/operators'
+import { exhaustMap } from 'rxjs-compat/operator/exhaustMap'
 import { ofType } from 'redux-observable'
 import PoolsApi from '../../PoolsApi/src'
 import utils from '../../_utils/utils'
@@ -279,6 +281,16 @@ const getPoolTransactions$ = (api, dragoAddress, accounts, options) => {
 }
 
 export const getAccountsTransactionsEpic = (action$, state$) => {
+  const retryStrategy = error$ =>
+    error$.pipe(
+      tap(err => {
+        console.error(err.message)
+        console.info(`Retrying getAccountsTransactionsEpic in: 2000 ms.`)
+      }),
+      exhaustMap(err => err),
+      delay(2000)
+    )
+
   const isNodeConnected$ = state$.pipe(
     map(val => {
       // console.log(val)
@@ -340,20 +352,21 @@ export const getAccountsTransactionsEpic = (action$, state$) => {
             // return DEBUGGING.DUMB_ACTION
           }
         }),
-        retryWhen(error => {
-          console.log('getAccountsTransactionsEpic')
-          let scalingDuration = 10000
-          return error.pipe(
-            buffer(isNodeConnected$),
-            first(),
-            mergeMap((error, i) => {
-              console.log(error)
-              const retryAttempt = i + 1
-              return timer(scalingDuration)
-            }),
-            finalize(() => console.log('We are done!'))
-          )
-        })
+        retryWhen(retryStrategy)
+        // retryWhen(error => {
+        //   console.log('getAccountsTransactionsEpic error')
+        //   let scalingDuration = 10000
+        //   return error.pipe(
+        //     // buffer(isNodeConnected$),
+        //     // first(),
+        //     mergeMap((error, i) => {
+        //       console.log(error)
+        //       const retryAttempt = i + 1
+        //       return timer(scalingDuration)
+        //     }),
+        //     finalize(() => console.log('We are done!'))
+        //   )
+        // })
         // catchError(error => {
         //   console.warn(error)
         //   return Observable.of({
