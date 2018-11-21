@@ -70,7 +70,7 @@ class Web3Wrapper {
               // this.web3.setProvider(
               //   new Web3.providers.WebsocketProvider(transport)
               // )
-              this.web3.setProvider(reconnectingWsProvider())
+              // this.web3.setProvider(reconnectingWsProvider())
             }),
             delay(5000)
           )
