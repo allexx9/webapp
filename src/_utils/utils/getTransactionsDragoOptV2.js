@@ -217,7 +217,6 @@ export const getTransactionsDragoOptV2 = async (
                 poolApi.contract.dragoregistry
                   .fromAddress(k)
                   .then(dragoDetails => {
-                    console.log(dragoDetails)
                     const dragoData = {
                       symbol: dragoDetails[2].trim(),
                       dragoId: new BigNumber(dragoDetails[3]).toFixed(),

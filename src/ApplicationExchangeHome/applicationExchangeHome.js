@@ -83,25 +83,21 @@ class ApplicationExchangeHome extends Component {
     return stateUpdate || propsUpdate
   }
 
-  // getConf = () => {
-  //   let request = new XMLHttpRequest()
-
-  //   request.open('GET', 'http://api.ethfinex.com/trustless/v1/r/get/conf')
-
-  //   request.setRequestHeader('Content-Type', 'application/json')
-
-  //   request.onreadystatechange = function() {
-  //     if (this.readyState === 4) {
-  //       console.log('Status:', this.status)
-  //       console.log('Headers:', this.getAllResponseHeaders())
-  //       console.log('Body:', this.responseText)
-  //     }
-  //   }
-
-  //   let body = {}
-
-  //   request.send(JSON.stringify(body))
-  // }
+  updateUi = (ui, boxName) => {
+    let newUi = Object.assign({}, ui)
+    return {
+      enableBox: () => {
+        newUi.panels[boxName].disabled = false
+        newUi.panels[boxName].disabledMsg = ''
+        return newUi
+      },
+      disableBox: (options = { disabledMsg: '' }) => {
+        newUi.panels[boxName].disabled = true
+        newUi.panels[boxName].disabledMsg = options.disabledMsg
+        return newUi
+      }
+    }
+  }
 
   componentDidMount = async () => {
     // console.log(this.getConf())
@@ -125,7 +121,6 @@ class ApplicationExchangeHome extends Component {
           defaultRelay.defaultTokensPair.quoteTokenSymbol
         ]
     }
-    console.log(defaultTokensPair)
     console.log('***** MOUNT *****')
     try {
       // const address = await getAvailableAccounts(selectedExchange)
@@ -191,27 +186,27 @@ class ApplicationExchangeHome extends Component {
       console.log(selectedFund)
       if (selectedFund) {
         this.props.dispatch(
-          Actions.exchange.setUiPanelProperties(
-            utils.updateUi(ui, 'relayBox').enableBox()
+          Actions.exchange.updateUiPanelProperties(
+            this.updateUi(ui, 'relayBox').enableBox()
           )
         )
       } else {
         this.props.dispatch(
-          Actions.exchange.setUiPanelProperties(
-            utils
-              .updateUi(ui, 'relayBox')
-              .disableBox({ disabledMsg: 'Please create a fund.' })
+          Actions.exchange.updateUiPanelProperties(
+            this.updateUi(ui, 'relayBox').disableBox({
+              disabledMsg: 'Please create a fund.'
+            })
           )
         )
         this.props.dispatch(
-          Actions.exchange.setUiPanelProperties(
-            utils
-              .updateUi(ui, 'orderBox')
-              .disableBox({ disabledMsg: 'Please create a fund.' })
+          Actions.exchange.updateUiPanelProperties(
+            this.updateUi(ui, 'orderBox').disableBox({
+              disabledMsg: 'Please create a fund.'
+            })
           )
         )
         // this.props.dispatch(
-        //   Actions.exchange.setUiPanelProperties(
+        //   Actions.exchange.updateUiPanelProperties(
         //     utils
         //       .updateUi(ui, 'orderBox')
         //       .disableBox({ disabledMsg: 'Please create a fund.' })
@@ -280,7 +275,6 @@ class ApplicationExchangeHome extends Component {
         spread: '0'
       }
     })
-    console.log('connectToExchange function')
     // Getting exchange contract events
     this.props.dispatch(
       Actions.exchange.monitorEventsStart(
@@ -353,7 +347,6 @@ class ApplicationExchangeHome extends Component {
       web3._rb = window.web3._rb
       const poolApi = new PoolApi(web3)
       poolApi.contract.drago.init(fund.address)
-      console.log(poolApi)
 
       // Getting drago details
       const dragoDetails = await poolApi.contract.drago.getAdminData()
@@ -578,13 +571,7 @@ class ApplicationExchangeHome extends Component {
   }
 
   render() {
-    const {
-      user,
-      handleToggleNotifications,
-      notificationsOpen,
-      endpoint,
-      exchange
-    } = this.props
+    const { endpoint, exchange } = this.props
     if (endpoint.loading) {
       return <Loading />
     }

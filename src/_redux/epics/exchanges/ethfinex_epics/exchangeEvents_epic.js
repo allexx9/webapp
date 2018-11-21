@@ -3,7 +3,7 @@
 // import { Observable } from 'rxjs';
 import * as ERRORS from '../../../../_const/errors'
 import * as TYPE_ from '../../../actions/const'
-import { Actions } from '../../../actions/'
+import { Actions } from '../../../actions'
 import { BigNumber } from '@0xproject/utils'
 import {
   ERC20_TOKENS,
