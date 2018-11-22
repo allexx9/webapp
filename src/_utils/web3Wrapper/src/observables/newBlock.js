@@ -1,6 +1,11 @@
 import { CALL_TIMEOUT, RETRY_DELAY } from '../utils/const'
 import { Observable, timer } from 'rxjs'
-import { delay, exhaustMap, retryWhen } from 'rxjs/operators'
+import {
+  delay,
+  distinctUntilChanged,
+  exhaustMap,
+  retryWhen
+} from 'rxjs/operators'
 
 export default web3 =>
   timer(0, 2000).pipe(
@@ -24,5 +29,6 @@ export default web3 =>
         return () => observer.complete()
       })
     ),
+    distinctUntilChanged(),
     retryWhen(error$ => error$.pipe(delay(RETRY_DELAY)))
   )
