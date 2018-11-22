@@ -6,16 +6,12 @@ import { Actions } from '../actions'
 // import { DEBUGGING } from '../../_utils/const'
 import { Observable, from, timer } from 'rxjs'
 import {
-  buffer,
   catchError,
   delay,
-  finalize,
-  first,
   map,
   mergeMap,
   retryWhen,
   skipWhile,
-  switchMap,
   tap
 } from 'rxjs/operators'
 import { exhaustMap } from 'rxjs-compat/operator/exhaustMap'

@@ -1,6 +1,6 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 import * as TYPE_ from './const'
-import { createOrder, updateOrder } from './exchange'
+import { createOrder, updateOrder, updateUiPanelProperties } from './exchange'
 
 const exchange = {
   createOrder,
@@ -11,12 +11,7 @@ const exchange = {
       payload: payload
     }
   },
-  setUiPanelProperties: ui => {
-    return {
-      type: TYPE_.SET_EXCHANGE_PANEL_UI_PROPERTIES,
-      payload: ui
-    }
-  },
+  updateUiPanelProperties,
   updateSelectedFund: (fund, managerAccount) => {
     const payload = {
       details: fund,
@@ -39,12 +34,6 @@ const exchange = {
       payload: exchange
     }
   },
-  // updateOrder: payload => {
-  //   return {
-  //     type: TYPE_.ORDER_UPDATE,
-  //     payload: payload
-  //   }
-  // },
   cancelSelectedOrder: () => {
     return {
       type: TYPE_.ORDER_CANCEL

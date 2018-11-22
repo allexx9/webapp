@@ -65,26 +65,6 @@ class NotificationAlert extends Component {
 class utilities {
   blockChunks = blockChunks
 
-  updateUi = (ui, boxName) => {
-    let newUi = { ...ui }
-    return {
-      toggleExpandSwitch: () => {
-        newUi.panels[boxName].expanded = !newUi.panels[boxName].expanded
-        return newUi
-      },
-      enableBox: () => {
-        newUi.panels[boxName].disabled = false
-        newUi.panels[boxName].disabledMsg = ''
-        return newUi
-      },
-      disableBox: (options = { disabledMsg: '' }) => {
-        console.log(options)
-        newUi.panels[boxName].disabled = true
-        newUi.panels[boxName].disabledMsg = options.disabledMsg
-        return newUi
-      }
-    }
-  }
   sign = (toSign, account) => {
     // metamask will take care of the 3rd parameter, "password"
     if (window.web3.currentProvider.isMetaMask) {
