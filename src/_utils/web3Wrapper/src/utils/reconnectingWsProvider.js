@@ -1,27 +1,3 @@
-/*
- This file is part of web3.js.
-
- web3.js is free software: you can redistribute it and/or modify
- it under the terms of the GNU Lesser General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
-
- web3.js is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Lesser General Public License for more details.
-
- You should have received a copy of the GNU Lesser General Public License
- along with web3.js.  If not, see <http://www.gnu.org/licenses/>.
- */
-/** @file WebsocketProvider.js
- * @authors:
- *   Fabian Vogelsteller <fabian@ethereum.org>
- * @date 2017
- */
-
-// 'use strict'
-
 import { errors } from 'web3-core-helpers'
 import ReconnectingWebSocket from 'reconnecting-websocket/dist/reconnecting-websocket-amd.js'
 
@@ -82,15 +58,6 @@ let WebsocketProvider = function WebsocketProvider(url, options) {
   if (parsedURL.auth) {
     headers.authorization = 'Basic ' + _btoa(parsedURL.auth)
   }
-
-  //   let origWs = new Ws(
-  //     url,
-  //     protocol,
-  //     undefined,
-  //     headers,
-  //     undefined,
-  //     clientConfig
-  //   )
 
   let recWs = new ReconnectingWebSocket(
     url
@@ -269,29 +236,6 @@ WebsocketProvider.prototype._timeout = function() {
 }
 
 WebsocketProvider.prototype.send = function(payload, callback) {
-  let _this = this
-
-  //   if (this.connection.readyState === this.connection.CONNECTING) {
-  //     setTimeout(function() {
-  //       _this.send(payload, callback)
-  //     }, 10)
-  //     return
-  //   }
-
-  // try reconnect, when connection is gone
-  // if(!this.connection.writable)
-  //     this.connection.connect({url: this.url});
-  //   if (this.connection.readyState !== this.connection.OPEN) {
-  //     console.error('connection not open on send()')
-  //     if (typeof this.connection.onerror === 'function') {
-  //       this.connection.onerror(new Error('connection not open'))
-  //     } else {
-  //       console.error('no error callback')
-  //     }
-  //     callback(new Error('connection not open'))
-  //     return
-  //   }
-
   this.connection.send(JSON.stringify(payload))
   this._addResponseCallback(payload, callback)
 }
@@ -325,8 +269,8 @@ WebsocketProvider.prototype.on = function(type, callback) {
       break
 
     // default:
-    //     this.connection.on(type, callback);
-    //     break;
+    //   this.connection.on(type, callback)
+    //   break
   }
 }
 
@@ -384,7 +328,7 @@ WebsocketProvider.prototype.removeAllListeners = function(type) {
       break
 
     default:
-      // this.connection.removeAllListeners(type);
+      // this.connection.removeAllListeners(type)
       break
   }
 }
@@ -398,9 +342,9 @@ WebsocketProvider.prototype.reset = function() {
   this._timeout()
   this.notificationCallbacks = []
 
-  // this.connection.removeAllListeners('error');
-  // this.connection.removeAllListeners('end');
-  // this.connection.removeAllListeners('timeout');
+  // this.connection.removeAllListeners('error')
+  // this.connection.removeAllListeners('end')
+  // this.connection.removeAllListeners('timeout')
 
   this.addDefaultEvents()
 }
