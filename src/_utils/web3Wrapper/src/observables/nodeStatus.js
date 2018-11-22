@@ -1,12 +1,5 @@
-import { Observable, throwError, timer } from 'rxjs'
-import {
-  catchError,
-  delay,
-  exhaustMap,
-  map,
-  retryWhen,
-  timeout
-} from 'rxjs/operators'
+import { Observable, timer } from 'rxjs'
+import { delay, exhaustMap, retryWhen } from 'rxjs/operators'
 
 const defaultStatus = {
   isConnected: false,
@@ -19,7 +12,6 @@ export default web3 =>
   timer(0, 2000).pipe(
     exhaustMap(() =>
       Observable.create(async observer => {
-        console.log('DEBUG INSIDE OBSERVABLE')
         const syncPromise = web3.eth.isSyncing()
         const timeoutPromise = new Promise((resolve, reject) =>
           setTimeout(() => reject(new Error('Request timed out.')), 10000)
