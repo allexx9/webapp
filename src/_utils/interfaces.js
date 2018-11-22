@@ -7,6 +7,7 @@ import {
 } from './const'
 import BigNumber from 'bignumber.js'
 import PoolsApi from '../PoolsApi/src'
+import Web3Wrapper from '../_utils/web3Wrapper/src'
 import utils from '../_utils/utils'
 
 class Interfaces {
@@ -207,6 +208,7 @@ class Interfaces {
   attachInterfaceInfuraV2 = async () => {
     // console.log(`${this.constructor.name} -> Interface Infura`)
     const api = this._api
+    const web3 = await Web3Wrapper.getInstance(api._rb.network.id)
     try {
       const accountsMetaMask = await this.getAccountsMetamask(api)
       const allAccounts = {
@@ -214,7 +216,7 @@ class Interfaces {
       }
       let blockNumber = new BigNumber(0)
       try {
-        blockNumber = await api.eth.blockNumber()
+        blockNumber = await web3.eth.getBlockNumber()
       } catch (error) {
         console.warn(error)
       }
