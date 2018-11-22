@@ -104,78 +104,31 @@ const getPastExchangeEvents$ = (fund, tokens, exchange, state$) => {
         console.warn(error)
         throw Error(error)
       })
-
-    // return efxEchangeContract
-    //   .getPastEvents(
-    //     'allEvents',
-    //     {
-    //       fromBlock: 0,
-    //       toBlock: 'latest',
-    //       topics: [null, makerAddress, null, null]
-    //       // topics: [null, makerAddress, null, [tokens1, tokens2]]
-    //     },
-    //     function(error) {
-    //       if (error) {
-    //         return error
-    //       }
-    //     }
-    //   )
-    //   .then(events => {
-    //     // console.log(events)
-    //     return events
-    //   })
-    //   .catch(error => {
-    //     return error
-    //   })
-    // console.log(web3)
-    // return web3.rigoblock.utils
-    //   .contract(efxEchangeContract)
-    //   .getPastEvents(
-    //     'allEvents',
-    //     {
-    //       fromBlock: 0,
-    //       toBlock: 'latest',
-    //       topics: [null, makerAddress, null, null]
-    //       // topics: [null, makerAddress, null, [tokens1, tokens2]]
-    //     },
-    //     function(error) {
-    //       if (error) {
-    //         return error
-    //       }
-    //     }
-    //   )
-    //   .then(events => {
-    //     // console.log(events)
-    //     return events
-    //   })
-    //   .catch(error => {
-    //     return error
-    //   })
   })
 }
 
-// const monitorExchangeEvents$ = (fund, tokens, state$) => {
-//   let subscription
-//   return Observable.create(observer => {
-//     Web3Wrapper.getInstance(state$.value.endpoint.networkInfo.id).then(web3 => {
-//       subscription = web3.rigoblock.ob.exchangeEfxV0$.subscribe(val => {
-//         if (Object.keys(val.error).length === 0) {
-//           console.log(val)
-//           observer.next(val)
-//         } else {
-//           console.log(val)
-//           observer.error(val)
-//         }
-//       })
-//     })
-//     return () => {
-//       console.log('monitorExchangeEvents$ closed')
-//       console.log(subscription)
-//       subscription.unsubscribe()
-//       observer.complete()
-//     }
-//   })
-// }
+const monitorExchangeEvents$ = (fund, tokens, state$) => {
+  let subscription
+  return Observable.create(observer => {
+    Web3Wrapper.getInstance(state$.value.endpoint.networkInfo.id).then(web3 => {
+      subscription = web3.rigoblock.ob.exchangeEfxV0$.subscribe(val => {
+        if (Object.keys(val.error).length === 0) {
+          console.log(val)
+          observer.next(val)
+        } else {
+          console.log(val)
+          observer.error(val)
+        }
+      })
+    })
+    return () => {
+      console.log('monitorExchangeEvents$ closed')
+      console.log(subscription)
+      subscription.unsubscribe()
+      observer.complete()
+    }
+  })
+}
 
 const processTradesHistory = (trades, state$) => {
   console.log(trades)
@@ -337,10 +290,6 @@ export const monitorExchangeEventsEpic = (action$, state$) => {
   const isNodeConnected = state$ =>
     state$.pipe(
       map(val => {
-        // console.log(
-        //   val.app.isConnected,
-        //   val.exchange.selectedFund.details.address === 'undefined'
-        // )
         return (
           typeof val.exchange.selectedFund.details.address === 'undefined' ||
           !val.app.isConnected
@@ -374,14 +323,14 @@ export const monitorExchangeEventsEpic = (action$, state$) => {
       retryAttempt = 0
       // console.log(action)
       return Observable.concat(
-        getPastExchangeEvents$(fund, tokens, exchange, state$)
-        // monitorExchangeEvents$(fund, tokens, state$).pipe(
-        //   takeUntil(
-        //     action$.ofType(
-        //       utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_STOP)
-        //     )
-        //   )
-        // )
+        // getPastExchangeEvents$(fund, tokens, exchange, state$)
+        monitorExchangeEvents$(fund, tokens, state$).pipe(
+          takeUntil(
+            action$.ofType(
+              utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_STOP)
+            )
+          )
+        )
       ).pipe(
         tap(val => {
           console.log(val)

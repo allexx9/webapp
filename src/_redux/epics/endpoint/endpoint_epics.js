@@ -5,28 +5,31 @@ import * as TYPE_ from '../../actions/const'
 import { Actions } from '../../actions'
 import { DEBUGGING, INFURA, LOCAL, RIGOBLOCK } from '../../../_utils/const'
 import { Interfaces } from '../../../_utils/interfaces'
-import { Observable, defer, from, merge, timer } from 'rxjs'
+import { Observable, defer, from, race, timer } from 'rxjs'
 import {
+  bufferCount,
   catchError,
   delay,
+  distinctUntilChanged,
   exhaustMap,
   filter,
   finalize,
+  first,
   flatMap,
-  map,
   // merge,
+  map,
   mergeMap,
   retryWhen,
   switchMap,
   takeUntil,
-  tap
+  tap,
+  timeout
 } from 'rxjs/operators'
 import { ofType } from 'redux-observable'
 import { sha3_512 } from 'js-sha3'
 import BigNumber from 'bignumber.js'
-import PoolApi from '../../../PoolsApi/src'
-import Web3 from 'web3'
 import Web3Wrapper from '../../../_utils/web3Wrapper/src'
+import shallowequal from 'shallowequal'
 import utils from '../../../_utils/utils'
 
 //
@@ -301,13 +304,6 @@ export const monitorAccountsEpic = (action$, state$) => {
             finalize(() => console.log('We are done!'))
           )
         })
-        // catchError(error => {
-        //   console.log(error)
-        //   return Observable.of({
-        //     type: TYPE_.QUEUE_ERROR_NOTIFICATION,
-        //     payload: 'Error: cannot update accounts balance.'
-        //   })
-        // })
       )
     })
   )
@@ -318,13 +314,14 @@ export const monitorAccountsEpic = (action$, state$) => {
 //
 
 const checkMetaMaskIsUnlocked$ = (api, web3, endpoint) => {
-  let newEndpoint = {}
+  let newEndpoint = { ...endpoint }
   let newAccounts = [].concat(endpoint.accounts)
   return from(
     new Promise(resolve => {
       const getAccounts = async () => {
         try {
           const accountsMetaMask = await web3.eth.getAccounts()
+          console.log(accountsMetaMask)
           // If MetaMask is unlocked then remove from accounts list.
           if (accountsMetaMask.length === 0) {
             // newEndpoint.isMetaMaskLocked = true
@@ -336,7 +333,6 @@ const checkMetaMaskIsUnlocked$ = (api, web3, endpoint) => {
               newAccounts.splice(metaMaskAccountIndex, 1)
               newEndpoint.accounts = newAccounts
               newEndpoint.isMetaMaskLocked = true
-              newEndpoint.lastMetaMaskUpdateTime = new Date().getTime()
             }
           } else {
             // Check if a MetaMask account is already in accounts list.
@@ -370,6 +366,7 @@ const checkMetaMaskIsUnlocked$ = (api, web3, endpoint) => {
                   (total, account) => total.plus(account.grgBalanceWei),
                   new BigNumber(0)
                 )
+                console.log(newEndpoint)
                 return newEndpoint
               })
             }
@@ -377,8 +374,8 @@ const checkMetaMaskIsUnlocked$ = (api, web3, endpoint) => {
           if (!endpoint.isMetaMaskNetworkCorrect) {
             newEndpoint.accounts = Array(0)
             newEndpoint.isMetaMaskLocked = true
-            newEndpoint.lastMetaMaskUpdateTime = new Date().getTime()
           }
+          console.log(newEndpoint)
           return newEndpoint
         } catch (error) {
           console.log(error)
@@ -398,121 +395,351 @@ const checkMetaMaskIsUnlocked$ = (api, web3, endpoint) => {
   )
 }
 
+const checkMetaMaskIsUnlocked2$ = (api, web3, endpoint) => {
+  let newEndpoint = { ...endpoint }
+  let oldAccounts = [].concat(endpoint.accounts)
+  let newAccounts = []
+  let metaMaskAccountAddress = ''
+  //   return race(
+  //     // timeout(5000),
+  //     from(
+  //       new Promise(resolve => {
+  //         const getAccounts = async () => {
+  //           try {
+  //             const accountsMetaMask = await web3.eth.getAccounts()
+  //             console.log(accountsMetaMask)
+
+  //             // MM is not locked
+  //             if (accountsMetaMask.length !== 0) {
+  //               console.log('**** MM unlocked ****')
+  //               metaMaskAccountAddress = accountsMetaMask[0]
+  //               // Check if a MetaMask account is already in accounts list.
+  //               let metaMaskAccountIndex = oldAccounts.findIndex(account => {
+  //                 return account.address === metaMaskAccountAddress
+  //               })
+  //               // If it is NOT then remove any other MetaMask account and add this one to the accounts list.
+  //               if (metaMaskAccountIndex < 0) {
+  //                 // let indexAccountToBeRemove = endpoint.accounts.findIndex(
+  //                 //   account => {
+  //                 //     return account.source === 'MetaMask'
+  //                 //   }
+  //                 // )
+  //                 // newAccounts = oldAccounts.filter(
+  //                 //   account => account.address !== 'MetaMask'
+  //                 // )
+  //                 const networkId = endpoint.networkInfo.id
+  //                 const blockchain = new Interfaces(api, networkId)
+  //                 return blockchain.attachInterfaceInfuraV2().then(result => {
+  //                   if (result.accounts.length !== 0) {
+  //                     newAccounts.push(result.accounts[0])
+  //                   }
+  //                   newEndpoint = {
+  //                     ...result
+  //                   }
+  //                   // newEndpoint.accounts = newAccounts
+  //                   // Update total ETH and GRG balance
+  //                   newEndpoint.ethBalance = newEndpoint.accounts.reduce(
+  //                     (total, account) => total.plus(account.ethBalanceWei),
+  //                     new BigNumber(0)
+  //                   )
+  //                   newEndpoint.grgBalance = newEndpoint.accounts.reduce(
+  //                     (total, account) => total.plus(account.grgBalanceWei),
+  //                     new BigNumber(0)
+  //                   )
+  //                   // console.log('attachInterfaceInfuraV2', newEndpoint)
+  //                   return newEndpoint
+  //                 })
+  //               }
+  //               return newEndpoint
+  //             }
+
+  //             // MM is locked
+  //             if (accountsMetaMask.length === 0) {
+  //               console.log('**** MM locked ****')
+  //               let metaMaskAccountIndex = oldAccounts.findIndex(account => {
+  //                 return account.source === 'MetaMask'
+  //               })
+  //               // console.log(metaMaskAccountIndex)
+  //               if (metaMaskAccountIndex !== -1) {
+  //                 newAccounts = oldAccounts.filter(account => {
+  //                   console.log(account.source)
+  //                   return account.source !== 'MetaMask'
+  //                 })
+  //                 // console.log(newAccounts)
+  //                 newEndpoint.accounts = newAccounts
+  //                 newEndpoint.isMetaMaskLocked = true
+  //               }
+  //               return newEndpoint
+  //             }
+  //           } catch (error) {
+  //             console.warn(error)
+  //             console.log('**** MM error ****')
+  //             let metaMaskAccountIndex = oldAccounts.findIndex(account => {
+  //               return account.source === 'MetaMask'
+  //             })
+  //             // console.log(metaMaskAccountIndex)
+  //             if (metaMaskAccountIndex !== -1) {
+  //               newAccounts = oldAccounts.filter(account => {
+  //                 console.log(account.source)
+  //                 return account.source !== 'MetaMask'
+  //               })
+  //               // console.log(newAccounts)
+  //               newEndpoint.accounts = newAccounts
+  //               newEndpoint.isMetaMaskLocked = true
+  //             }
+  //             return newEndpoint
+  //           }
+  //         }
+  //         resolve(getAccounts())
+  //       })
+  //     )
+  //   )
+  // }
+  return from(
+    new Promise(resolve => {
+      const getAccounts = async () => {
+        try {
+          const accountsMetaMask = await web3.eth.getAccounts()
+          console.log(accountsMetaMask)
+
+          // MM is not locked
+          if (accountsMetaMask.length !== 0) {
+            console.log('**** MM unlocked ****')
+            metaMaskAccountAddress = accountsMetaMask[0]
+            // Check if a MetaMask account is already in accounts list.
+            let metaMaskAccountIndex = oldAccounts.findIndex(account => {
+              return account.address === metaMaskAccountAddress
+            })
+            // If it is NOT then remove any other MetaMask account and add this one to the accounts list.
+            if (metaMaskAccountIndex < 0) {
+              // let indexAccountToBeRemove = endpoint.accounts.findIndex(
+              //   account => {
+              //     return account.source === 'MetaMask'
+              //   }
+              // )
+              // newAccounts = oldAccounts.filter(
+              //   account => account.address !== 'MetaMask'
+              // )
+              const networkId = endpoint.networkInfo.id
+              const blockchain = new Interfaces(api, networkId)
+              return blockchain.attachInterfaceInfuraV2().then(result => {
+                if (result.accounts.length !== 0) {
+                  newAccounts.push(result.accounts[0])
+                }
+                newEndpoint = {
+                  ...result
+                }
+                // newEndpoint.accounts = newAccounts
+                // Update total ETH and GRG balance
+                newEndpoint.ethBalance = newEndpoint.accounts.reduce(
+                  (total, account) => total.plus(account.ethBalanceWei),
+                  new BigNumber(0)
+                )
+                newEndpoint.grgBalance = newEndpoint.accounts.reduce(
+                  (total, account) => total.plus(account.grgBalanceWei),
+                  new BigNumber(0)
+                )
+                console.log('attachInterfaceInfuraV2', newEndpoint)
+                return newEndpoint
+              })
+            }
+            return newEndpoint
+          }
+
+          // MM is locked
+          if (accountsMetaMask.length === 0) {
+            console.log('**** MM locked ****')
+            let metaMaskAccountIndex = oldAccounts.findIndex(account => {
+              return account.source === 'MetaMask'
+            })
+            // console.log(metaMaskAccountIndex)
+            if (metaMaskAccountIndex !== -1) {
+              newAccounts = oldAccounts.filter(account => {
+                console.log(account.source)
+                return account.source !== 'MetaMask'
+              })
+              // console.log(newAccounts)
+              newEndpoint.accounts = newAccounts
+              newEndpoint.isMetaMaskLocked = true
+            }
+            return newEndpoint
+          }
+        } catch (error) {
+          console.warn(error)
+          console.log('**** MM error ****')
+          let metaMaskAccountIndex = oldAccounts.findIndex(account => {
+            return account.source === 'MetaMask'
+          })
+          // console.log(metaMaskAccountIndex)
+          if (metaMaskAccountIndex !== -1) {
+            newAccounts = oldAccounts.filter(account => {
+              console.log(account.source)
+              return account.source !== 'MetaMask'
+            })
+            // console.log(newAccounts)
+            newEndpoint.accounts = newAccounts
+            newEndpoint.isMetaMaskLocked = true
+          }
+          return newEndpoint
+        }
+      }
+      resolve(getAccounts())
+    })
+  )
+}
+
 export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
   return action$.ofType(TYPE_.CHECK_METAMASK_IS_UNLOCKED).mergeMap(action => {
     return timer(0, 1000).pipe(
       exhaustMap(() => {
         const currentState = state$.value
         // console.log(currentState)
-        return checkMetaMaskIsUnlocked$(
+        return checkMetaMaskIsUnlocked2$(
           action.payload.api,
           action.payload.web3,
           currentState.endpoint
-        ).pipe(
-          filter(val => {
-            // console.log(val)
-            return Object.keys(val).length !== 0
-          }),
-          // filter(val => {
-          //   console.log(val.isMetaMaskLocked)
-          //   return !val.isMetaMaskLocked
-          // }),
-          tap(results => {
-            console.log(results)
-            return results
-          }),
-          flatMap(newEndpoint => {
-            let optionsManager = {
-              balance: false,
-              supply: true,
-              limit: 20,
-              trader: false,
-              drago: true
-            }
-            let optionsHolder = {
-              balance: true,
-              supply: false,
-              limit: 20,
-              trader: true,
-              drago: true
-            }
-            let accountsAddressHash
-            if (typeof newEndpoint.accounts !== 'undefined') {
-              let accounts = newEndpoint.accounts.map(element => {
-                return element.address
-              })
-              // console.log(sha3_512(accounts.toString()))
-              accountsAddressHash = sha3_512(accounts.toString())
-            }
-            // console.log(newEndpoint)
-            let arrayObservables =
-              DEBUGGING.initAccountsTransactionsInEpic &&
-              !newEndpoint.isMetaMaskLocked
-                ? [
-                    Observable.of(
-                      Actions.endpoint.getAccountsTransactions(
-                        action.payload.api,
-                        null,
-                        newEndpoint.accounts,
-                        optionsHolder
-                      )
-                    ),
-                    Observable.of(
-                      Actions.endpoint.getAccountsTransactions(
-                        action.payload.api,
-                        null,
-                        newEndpoint.accounts,
-                        optionsManager
-                      )
-                    ),
-                    Observable.of(
-                      Actions.endpoint.getAccountsTransactions(
-                        action.payload.api,
-                        null,
-                        newEndpoint.accounts,
-                        {
-                          ...optionsHolder,
-                          ...{
-                            drago: false
-                          }
-                        }
-                      )
-                    ),
-                    Observable.of(
-                      Actions.endpoint.getAccountsTransactions(
-                        action.payload.api,
-                        null,
-                        newEndpoint.accounts,
-                        {
-                          ...optionsManager,
-                          ...{
-                            drago: false
-                          }
-                        }
-                      )
-                    )
-                  ]
-                : []
-            return Observable.concat(
-              Observable.of(
-                Actions.app.updateAppStatus({
-                  accountsAddressHash: accountsAddressHash
-                })
-              ),
-              Observable.of(Actions.endpoint.updateInterface(newEndpoint)),
-              ...arrayObservables
-            )
-          }),
-          catchError(error => {
-            console.warn(error)
-            return Observable.of({
-              type: TYPE_.QUEUE_WARNING_NOTIFICATION,
-              payload:
-                'Unable to fetch accounts from MetaMask. Is MetaMask unlocket?'
-            })
+        )
+      }),
+      tap(results => {
+        console.log(results)
+        return results
+      }),
+      timeout(5000),
+      // bufferCount(2),
+      // tap(results => {
+      //   // console.log(results)
+      //   return results
+      // }),
+      // filter(val => {
+      //   // console.log(val)
+      //   return !val.isMetaMaskLocked
+      // }),
+      distinctUntilChanged((a, b) => {
+        // console.log(a, b)
+        // console.log(JSON.stringify(a.accounts), JSON.stringify(b.accounts))
+        return shallowequal(
+          JSON.stringify(a.accounts),
+          JSON.stringify(b.accounts)
+        )
+      }),
+      tap(results => {
+        // console.log(results)
+        return results
+      }),
+      flatMap(newEndpoint => {
+        console.log('***** FETCH TRANSACTIONS *****')
+        let optionsManager = {
+          balance: false,
+          supply: true,
+          limit: 20,
+          trader: false,
+          drago: true
+        }
+        let optionsHolder = {
+          balance: true,
+          supply: false,
+          limit: 20,
+          trader: true,
+          drago: true
+        }
+        let accountsAddressHash
+        if (typeof newEndpoint.accounts !== 'undefined') {
+          let accounts = newEndpoint.accounts.map(element => {
+            return element.address
           })
+          // console.log(sha3_512(accounts.toString()))
+          accountsAddressHash = sha3_512(accounts.toString())
+        }
+        // console.log(newEndpoint)
+        let arrayObservables =
+          DEBUGGING.initAccountsTransactionsInEpic &&
+          !newEndpoint.isMetaMaskLocked
+            ? [
+                Observable.of(
+                  Actions.endpoint.getAccountsTransactions(
+                    action.payload.api,
+                    null,
+                    newEndpoint.accounts,
+                    optionsHolder
+                  )
+                ),
+                Observable.of(
+                  Actions.endpoint.getAccountsTransactions(
+                    action.payload.api,
+                    null,
+                    newEndpoint.accounts,
+                    optionsManager
+                  )
+                ),
+                Observable.of(
+                  Actions.endpoint.getAccountsTransactions(
+                    action.payload.api,
+                    null,
+                    newEndpoint.accounts,
+                    {
+                      ...optionsHolder,
+                      ...{
+                        drago: false
+                      }
+                    }
+                  )
+                ),
+                Observable.of(
+                  Actions.endpoint.getAccountsTransactions(
+                    action.payload.api,
+                    null,
+                    newEndpoint.accounts,
+                    {
+                      ...optionsManager,
+                      ...{
+                        drago: false
+                      }
+                    }
+                  )
+                )
+              ]
+            : []
+        return Observable.concat(
+          Observable.of(Actions.endpoint.updateInterface(newEndpoint)),
+          Observable.of(
+            Actions.app.updateAppStatus({
+              accountsAddressHash: accountsAddressHash
+            })
+          ),
+          ...arrayObservables
+        )
+      }),
+      // map(result => {
+      //   exhaustMap(() => {
+      //     return Observable.of({
+      //       type: 'DUMB',
+      //       payload:
+      //         'Unable to fetch accounts from MetaMask. Is MetaMask unlocket?'
+      //     })
+      //   })
+      // }),
+      tap(results => {
+        // console.log(results)
+        return results
+      }),
+      retryWhen(error => {
+        let scalingDuration = 1000
+        return error.pipe(
+          mergeMap((error, i) => {
+            console.warn(error)
+            return timer(scalingDuration)
+          }),
+          finalize(() => console.log('We are done!'))
         )
       })
+      // catchError(error => {
+      //   console.warn(error)
+      //   return Observable.of({
+      //     type: TYPE_.QUEUE_WARNING_NOTIFICATION,
+      //     payload:
+      //       'Unable to fetch accounts from MetaMask. Is MetaMask unlocket?'
+      //   })
+      // })
     )
   })
 }
