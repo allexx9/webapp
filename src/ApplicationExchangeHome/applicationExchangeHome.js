@@ -350,9 +350,11 @@ class ApplicationExchangeHome extends Component {
 
       // Getting drago details
       const dragoDetails = await poolApi.contract.drago.getAdminData()
-      this.props.dispatch(
-        Actions.exchange.updateSelectedFund(fund, dragoDetails[0].toLowerCase())
-      )
+      const fundDetails = {
+        details: fund,
+        managerAccount: dragoDetails[0].toLowerCase()
+      }
+      this.props.dispatch(Actions.exchange.updateSelectedFund(fundDetails))
 
       // Updating selected tokens pair balances and fund liquidity (ETH, ZRX)
       this.props.dispatch(
@@ -418,10 +420,27 @@ class ApplicationExchangeHome extends Component {
     const baseToken = ERC20_TOKENS[api._rb.network.name][selectedTokens[0]]
     const quoteToken = ERC20_TOKENS[api._rb.network.name][selectedTokens[1]]
 
+    const liquidity = {
+      loading: false,
+      liquidity: {
+        ETH: new BigNumber(0),
+        baseToken: {
+          balance: new BigNumber(0),
+          balanceWrapper: new BigNumber(0)
+        },
+        quoteToken: {
+          balance: new BigNumber(0),
+          balanceWrapper: new BigNumber(0)
+        }
+      }
+    }
+
+    this.props.dispatch(Actions.exchange.updateSelectedFund(liquidity))
+
     // Reset balances
-    this.props.dispatch(
-      Actions.exchange.updateLiquidityAndTokenBalances(api, 'RESET')
-    )
+    // this.props.dispatch(
+    //   Actions.exchange.updateLiquidityAndTokenBalances(api, 'RESET')
+    // )
     this.props.dispatch(
       Actions.exchange.updateLiquidityAndTokenBalances(api, 'STOP')
     )

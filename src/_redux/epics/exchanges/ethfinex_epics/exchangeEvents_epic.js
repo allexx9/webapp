@@ -108,6 +108,7 @@ const getPastExchangeEvents$ = (fund, tokens, exchange, state$) => {
 }
 
 const monitorExchangeEvents$ = (fund, tokens, state$) => {
+  console.log('monitorExchangeEvents$')
   let subscription
   return Observable.create(observer => {
     Web3Wrapper.getInstance(state$.value.endpoint.networkInfo.id).then(web3 => {
@@ -321,9 +322,9 @@ export const monitorExchangeEventsEpic = (action$, state$) => {
       // console.log(action)
       const { fund, tokens, exchange } = action[0].payload
       retryAttempt = 0
-      // console.log(action)
+      console.log(action)
       return Observable.concat(
-        // getPastExchangeEvents$(fund, tokens, exchange, state$)
+        getPastExchangeEvents$(fund, tokens, exchange, state$),
         monitorExchangeEvents$(fund, tokens, state$).pipe(
           takeUntil(
             action$.ofType(

@@ -16,7 +16,7 @@ import {
   getOrderBookFromRelayEpic,
   getTradeHistoryLogsFromRelayERCdEXEpic,
   resetLiquidityAndTokenBalancesEpic,
-  updateFundLiquidityEpic,
+  // updateFundLiquidityEpic,
   updateLiquidityAndTokenBalancesEpic
   // getAssetsPricesDataFromERCdEXEpic
 } from './exchange_epics'
@@ -94,7 +94,7 @@ export const rootEpic = combineAndIsolateEpics(
   getOrderBookFromRelayEpic,
   getLiquidityAndTokenBalancesEpic,
   updateLiquidityAndTokenBalancesEpic,
-  updateFundLiquidityEpic,
+  // updateFundLiquidityEpic,
   resetLiquidityAndTokenBalancesEpic,
   getTradeHistoryLogsFromRelayERCdEXEpic
 )

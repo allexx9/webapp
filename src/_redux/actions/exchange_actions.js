@@ -12,14 +12,10 @@ const exchange = {
     }
   },
   updateUiPanelProperties,
-  updateSelectedFund: (fund, managerAccount) => {
-    const payload = {
-      details: fund,
-      managerAccount
-    }
+  updateSelectedFund: payload => {
     return {
       type: TYPE_.UPDATE_SELECTED_FUND,
-      payload: payload
+      payload
     }
   },
   monitorEventsStart: (fund, tokens, exchange) => {

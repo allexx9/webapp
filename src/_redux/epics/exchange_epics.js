@@ -222,10 +222,7 @@ const updateLiquidityAndTokenBalances$ = (api, fundAddress, currentState) => {
       }
       // console.log(payload)
       return Observable.concat(
-        Observable.of({
-          type: TYPE_.UPDATE_SELECTED_FUND,
-          payload
-        }),
+        Observable.of(Actions.exchange.updateSelectedFund(payload)),
         Observable.of(
           Actions.exchange.updateSelectedTradeTokensPair({
             baseTokenLockWrapExpire: liquidity.baseTokenLockWrapExpire,
@@ -271,10 +268,7 @@ export const resetLiquidityAndTokenBalancesEpic = action$ => {
         }
       }
       return Observable.concat(
-        Observable.of({
-          type: TYPE_.UPDATE_SELECTED_FUND,
-          payload
-        })
+        Observable.of(Actions.exchange.updateSelectedFund(payload))
       )
     })
   )
