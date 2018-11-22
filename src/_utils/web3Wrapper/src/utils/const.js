@@ -5,8 +5,8 @@ export const MAINNET = 'MAINNET'
 export const DRAGOEVENTFUL = 'dragoeventful-v2'
 export const VAULTEVENTFUL = 'vaulteventful-v2'
 
-export const RETRY_TIMEOUT = 120000
-export const RETRY_DELAY = 10000
+export const CALL_TIMEOUT = 10000
+export const RETRY_DELAY = 5000
 
 export const PARITY_REGISTRY_ADDRESSES = {
   42: '0xfAb104398BBefbd47752E7702D9fE23047E1Bca3',

@@ -26,14 +26,14 @@ import {
 } from './const'
 import {
   blockChunks,
-  getTransactionsDragoOptV2,
-  getTransactionsSingleDrago,
-  getDragoDetails,
   dateFromTimeStampHuman,
-  getTransactionsVaultOptV2,
-  getTransactionsSingleVault,
+  getDragoDetails,
   getDragoLiquidityAndTokenBalances,
   getTokenWrapperLockTime,
+  getTransactionsDragoOptV2,
+  getTransactionsSingleDrago,
+  getTransactionsSingleVault,
+  getTransactionsVaultOptV2,
   logToEvent
 } from './utils/index'
 import PropTypes from 'prop-types'
@@ -120,7 +120,6 @@ class utilities {
     let newBlockNumber = new BigNumber(0)
     let notifications = Array(0)
     let fetchTransactions = false
-    console.log(currentState)
     // Checking if blockNumber is passed by Parity Api or Web3
     if (typeof blockNumber.number !== 'undefined') {
       newBlockNumber = new BigNumber(blockNumber.number)

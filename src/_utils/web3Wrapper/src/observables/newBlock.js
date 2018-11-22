@@ -1,22 +1,28 @@
-import { Observable } from 'rxjs'
-import { delay, retryWhen, tap, timeout } from 'rxjs/operators'
+import { CALL_TIMEOUT, RETRY_DELAY } from '../utils/const'
+import { Observable, timer } from 'rxjs'
+import { delay, exhaustMap, retryWhen } from 'rxjs/operators'
 
-export default web3 => {
-  const timeoutMs = 120000
-  const retryDelay = 10000
+export default web3 =>
+  timer(0, 2000).pipe(
+    exhaustMap(() =>
+      Observable.create(async observer => {
+        const blockPromise = web3.eth.getBlockNumber()
+        const timeoutPromise = new Promise((resolve, reject) =>
+          setTimeout(
+            () => reject(new Error('Request timed out.')),
+            CALL_TIMEOUT
+          )
+        )
+        try {
+          const blockNumber = await Promise.race([blockPromise, timeoutPromise])
 
-  return Observable.create(observer => {
-    const subscription = web3.eth.subscribe('newBlockHeaders', (err, msg) =>
-      err ? observer.error(err) : observer.next(msg)
-    )
-    return () => subscription.unsubscribe()
-  }).pipe(
-    timeout(timeoutMs),
-    retryWhen(error$ =>
-      error$.pipe(
-        tap(err => console.log(`blockHeaders$ error: ${err.message}`)),
-        delay(retryDelay)
-      )
-    )
+          observer.next(blockNumber)
+          observer.complete()
+        } catch (e) {
+          return observer.error(e)
+        }
+        return () => observer.complete()
+      })
+    ),
+    retryWhen(error$ => error$.pipe(delay(RETRY_DELAY)))
   )
-}

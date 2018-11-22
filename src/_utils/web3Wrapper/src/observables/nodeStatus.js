@@ -1,3 +1,4 @@
+import { CALL_TIMEOUT, RETRY_DELAY } from '../utils/const'
 import { Observable, timer } from 'rxjs'
 import { delay, exhaustMap, retryWhen } from 'rxjs/operators'
 
@@ -14,7 +15,10 @@ export default web3 =>
       Observable.create(async observer => {
         const syncPromise = web3.eth.isSyncing()
         const timeoutPromise = new Promise((resolve, reject) =>
-          setTimeout(() => reject(new Error('Request timed out.')), 10000)
+          setTimeout(
+            () => reject(new Error('Request timed out.')),
+            CALL_TIMEOUT
+          )
         )
         try {
           const status = await Promise.race([syncPromise, timeoutPromise])
@@ -31,5 +35,5 @@ export default web3 =>
         return () => observer.complete()
       })
     ),
-    retryWhen(error$ => error$.pipe(delay(5000)))
+    retryWhen(error$ => error$.pipe(delay(RETRY_DELAY)))
   )

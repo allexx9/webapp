@@ -5,16 +5,14 @@ import * as TYPE_ from '../../actions/const'
 import { Actions } from '../../actions'
 import { DEBUGGING, INFURA, LOCAL, RIGOBLOCK } from '../../../_utils/const'
 import { Interfaces } from '../../../_utils/interfaces'
-import { Observable, defer, from, merge, timer } from 'rxjs'
+import { Observable, defer, from, timer } from 'rxjs'
 import {
   catchError,
   delay,
   exhaustMap,
   filter,
   finalize,
-  flatMap,
   map,
-  // merge,
   mergeMap,
   retryWhen,
   switchMap,
@@ -72,7 +70,7 @@ export const attacheInterfaceEpic = action$ =>
     ofType(TYPE_.ATTACH_INTERFACE),
     switchMap(action => {
       return attachInterface$(action.payload.api, action.payload.endpoint).pipe(
-        flatMap(endpoint => {
+        mergeMap(endpoint => {
           return Observable.concat(
             Observable.of(
               Actions.app.updateAppStatus({
@@ -135,7 +133,7 @@ const monitorAccounts$ = (api, state$) => {
       state$.value.endpoint.networkInfo.id
     )
     instance.rigoblock.ob.newBlock$.subscribe(newBlock => {
-      utils
+      return utils
         .updateAccounts(api, newBlock, state$)
         .then(result => observer.next(result))
     })
@@ -148,11 +146,7 @@ export const monitorAccountsEpic = (action$, state$) => {
     mergeMap(action => {
       return monitorAccounts$(action.payload.api, state$).pipe(
         takeUntil(action$.pipe(ofType(TYPE_.MONITOR_ACCOUNTS_STOP))),
-        tap(val => {
-          // console.log(val)
-          return val
-        }),
-        flatMap(accountsUpdate => {
+        mergeMap(accountsUpdate => {
           const observablesArray = Array(0)
 
           observablesArray.push(
@@ -421,7 +415,7 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
             console.log(results)
             return results
           }),
-          flatMap(newEndpoint => {
+          mergeMap(newEndpoint => {
             let optionsManager = {
               balance: false,
               supply: true,
