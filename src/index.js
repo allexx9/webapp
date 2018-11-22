@@ -6,13 +6,13 @@ import { Reducers } from './_redux/reducers/root_reducer'
 import { applyMiddleware, compose, createStore } from 'redux'
 import { createEpicMiddleware } from 'redux-observable'
 import { persistReducer, persistStore } from 'redux-persist'
-import { reduxBatch } from '@manaflair/redux-batch'
+// import { reduxBatch } from '@manaflair/redux-batch'
 import { rootEpic } from './_redux/epics/root_epics'
 import App from './App'
 import React from 'react'
 import ReactDOM from 'react-dom'
-import logger from 'redux-logger'
-import registerServiceWorker from './registerServiceWorker'
+// import logger from 'redux-logger'
+// import registerServiceWorker, { unregister } from './registerServiceWorker'
 // import { composeWithDevTools } from 'redux-devtools-extension';
 import { PersistGate } from 'redux-persist/integration/react'
 import { createFilter } from 'redux-persist-transform-filter'
@@ -106,9 +106,10 @@ ReactDOM.render(
   document.getElementById('root')
 )
 
-if (process.env.NODE_ENV !== 'development') {
-  registerServiceWorker()
-}
+// if (process.env.NODE_ENV === 'development') {
+//   // registerServiceWorker()
+// }
+// unregister()
 
 // Hot Module Reload
 if (module.hot) {

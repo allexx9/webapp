@@ -133,7 +133,7 @@ class ElementAccountBox extends Component {
                     </Row>
                   </Col>
                   <Col xs={2}>
-                    {account.source == 'MetaMask' ? (
+                    {account.source === 'MetaMask' ? (
                       <Avatar
                         src="img/metamask.png"
                         size={32}

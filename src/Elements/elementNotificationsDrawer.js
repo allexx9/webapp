@@ -1,4 +1,3 @@
-import { Actions } from '../_redux/actions'
 import { Col, Row } from 'react-flexbox-grid'
 import { List } from 'material-ui/List'
 import { connect } from 'react-redux'
@@ -9,8 +8,6 @@ import React, { Component } from 'react'
 import classNames from 'classnames'
 import styles from './elementNotificationsDrawer.module.css'
 import utils from '../_utils/utils'
-
-let timerId = null
 
 function mapStateToProps(state) {
   return {
@@ -45,26 +42,6 @@ class ElementNotificationsDrawer extends Component {
     }
   }
 
-  // shouldComponentUpdate(nextProps, nextState) {
-  //   let stateUpdate = true
-  //   let propsUpdate = true
-  //   // shouldComponentUpdate returns false if no need to update children, true if needed.
-  //   // propsUpdate = (!utils.shallowEqual(this.props, nextProps))
-  //   // stateUpdate = (!utils.shallowEqual(this.state, nextState))
-  //   return stateUpdate || propsUpdate
-  // }
-
-  componentDidMount() {
-    // const that = this
-    // let runTick = () => {
-    //   timerId = setTimeout(function tick() {
-    //     that.updateTransactionsQueue()
-    //     timerId = setTimeout(tick, 2000) // (*)
-    //   }, 2000)
-    // }
-    // runTick()
-  }
-
   removeNotification = noticationKey => {
     const { recentTransactions } = this.props
     const transaction = recentTransactions.get(noticationKey)
@@ -84,23 +61,6 @@ class ElementNotificationsDrawer extends Component {
     console.log(newRecentTransactions)
     this.props.dispatch(
       this.updateTransactionsQueueAction(newRecentTransactions)
-    )
-  }
-
-  componentWillUnmount() {
-    this.detachInterface()
-  }
-
-  handleToggleNotifications = () => {
-    // Setting a small timeout to make sure that the state is updated with
-    // the subscription ID before trying to unsubscribe. Otherwise, if an user opens and closes the element very quickly
-    // the state would not be updated fast enough and the element could crash
-    // setTimeout(this.detachInterface, 3000)
-    this.detachInterface()
-    this.props.dispatch(
-      Actions.app.updateAppStatus({
-        transactionsDrawerOpen: false
-      })
     )
   }
 
@@ -322,6 +282,12 @@ class ElementNotificationsDrawer extends Component {
             secondaryText[1] = timeStamp
             eventStatus = value.status
             break
+          default:
+            drgvalue = 0
+            symbol = 0
+            primaryText = 'NA'
+            secondaryText[1] = timeStamp
+            eventStatus = 'NA'
         }
         return (
           <ElementNotification
@@ -364,10 +330,6 @@ class ElementNotificationsDrawer extends Component {
         </div>
       </span>
     )
-  }
-
-  detachInterface = () => {
-    clearInterval(timerId)
   }
 }
 

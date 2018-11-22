@@ -1,6 +1,5 @@
 import * as Colors from 'material-ui/styles/colors'
 import { Col, Row } from 'react-flexbox-grid'
-import BigNumber from 'bignumber.js'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
@@ -59,7 +58,7 @@ class TableOpenOrders extends Component {
               <Col xs={6} className={styles.tableHeaderCellAction}>
                 <a
                   id={key}
-                  href="#"
+                  href={null}
                   onClick={event => this.onCancelOrder(event, key)}
                   className={styles.cancelLink}
                 >

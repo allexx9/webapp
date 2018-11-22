@@ -6,7 +6,7 @@ import BigNumber from 'bignumber.js'
 import ElementBottomStatusBar from '../Elements/elementBottomStatusBar'
 import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 // import FlatButton from 'material-ui/FlatButton'
 import Loading from '../_atomic/atoms/loading'
 import PoolApi from '../PoolsApi/src'
@@ -37,14 +37,15 @@ import utils from '../_utils/utils'
 // import { getData } from "../_utils/data"
 
 function mapStateToProps(state) {
-  return state
+  return {
+    endpoint: state.endpoint,
+    user: state.user,
+    exchange: state.exchange
+  }
 }
 
-class ApplicationExchangeHome extends Component {
-  constructor() {
-    super()
-    this._notificationSystem = null
-  }
+class ApplicationExchangeHome extends PureComponent {
+
 
   static contextTypes = {
     api: PropTypes.object.isRequired
@@ -53,14 +54,12 @@ class ApplicationExchangeHome extends Component {
   static propTypes = {
     location: PropTypes.object.isRequired,
     endpoint: PropTypes.object.isRequired,
-    transactionsDrago: PropTypes.object.isRequired,
     user: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
     exchange: PropTypes.object.isRequired
   }
 
   state = {
-    chartData: [],
     managerHasNoFunds: false
   }
 
@@ -103,7 +102,7 @@ class ApplicationExchangeHome extends Component {
     // console.log(this.getConf())
 
     const { api } = this.context
-    const { selectedExchange, ui } = this.props.exchange
+    const { ui } = this.props.exchange
     const { endpoint } = this.props
 
     const defaultRelay = RELAYS[DEFAULT_RELAY[api._rb.network.name]]
@@ -218,7 +217,7 @@ class ApplicationExchangeHome extends Component {
         selectedFund,
         defaultTokensPair,
         defaultRelay,
-        selectedExchange
+        defaultExchange
       )
     } catch (error) {
       console.warn(error)
@@ -648,6 +647,7 @@ class ApplicationExchangeHome extends Component {
       ).toFixed(4)
       // console.log(this.props.exchange)
       // console.log(RELAYS)
+      console.log('render main')
       return (
         <div ref={node => (this.node = node)}>
           <Row className={styles.maincontainer}>

@@ -1,5 +1,5 @@
 // import Immutable from 'immutable'
-import { Col, Grid, Row } from 'react-flexbox-grid'
+import { Col, Row } from 'react-flexbox-grid'
 import ContentLoader from 'react-content-loader'
 import FilterPoolsField from '../_atomic/atoms/filterPoolsField'
 import Pagination from 'material-ui-pagination'

@@ -5,7 +5,6 @@ import { Observable, race } from 'rxjs'
 import { catchError, filter, map, mergeMap, takeUntil } from 'rxjs/operators'
 import { ofType } from 'redux-observable'
 import ExchangeConnectorWrapper from '../../../../_utils/exchangeConnector'
-import _ from 'lodash'
 import utils from '../../../../_utils/utils'
 
 //

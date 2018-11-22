@@ -170,7 +170,7 @@ class PageFundDetailsDragoTrader extends Component {
 
   render() {
     const {
-      endpoint: { accounts: accounts },
+      endpoint: { accounts },
       user
     } = this.props
     // const { loading } = this.state
@@ -219,7 +219,6 @@ class PageFundDetailsDragoTrader extends Component {
     ]
 
     let totalAssetsValue = 0
-    let assetsValues = {}
     let tableLiquidity = [
       ['Liquidity', 'Calculating...', [<small key="dragoLiqEth">ETH</small>]],
       ['Porfolio value', 'N/A', [<small key="dragoPortEth">ETH</small>]],

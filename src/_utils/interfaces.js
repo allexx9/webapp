@@ -209,7 +209,6 @@ class Interfaces {
   attachInterfaceInfuraV2 = async () => {
     console.log(`${this.constructor.name} -> Interface Infura`)
     const api = this._api
-    const web3 = await Web3Wrapper.getInstance(api._rb.network.id)
     try {
       const accountsMetaMask = await this.getAccountsMetamask(api)
       const allAccounts = {

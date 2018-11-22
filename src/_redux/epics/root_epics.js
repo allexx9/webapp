@@ -1,14 +1,6 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-import { Observable, of, timer } from 'rxjs'
-import {
-  catchError,
-  delay,
-  finalize,
-  mergeMap,
-  retryWhen,
-  tap
-} from 'rxjs/operators'
+import { catchError, delay } from 'rxjs/operators'
 import { combineEpics } from 'redux-observable'
 import {
   // relayWebSocketEpic,
@@ -26,6 +18,8 @@ import * as Endpoint from './endpoint'
 import * as Eventful from './eventful_epics'
 import * as Tokens from './token_epics'
 import { ERCdEX, Ethfinex } from './exchanges'
+
+console.log(Ethfinex)
 
 const ERCdEX_Epics = [
   ERCdEX.getCandlesSingleDataEpic,

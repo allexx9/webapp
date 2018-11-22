@@ -1,4 +1,3 @@
-import * as Colors from 'material-ui/styles/colors'
 import {
   AutoSizer,
   Column,

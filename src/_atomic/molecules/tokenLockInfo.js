@@ -521,6 +521,11 @@ class TokenLockInfo extends Component {
           errorText: ''
         })
         break
+      default:
+        this.setState({
+          baseTokenSelected: true,
+          errorText: ''
+        })
     }
   }
 

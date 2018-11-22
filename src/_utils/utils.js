@@ -14,10 +14,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import PoolApi from '../PoolsApi/src'
 import Web3 from 'web3'
 import palette from './palete'
-
-import { Actions } from '../_redux/actions'
 import { MOCK_ERC20_TOKENS } from './tokens'
-
 import {
   MSG_NETWORK_STATUS_ERROR,
   MSG_NETWORK_STATUS_OK,
@@ -34,11 +31,10 @@ import {
   getTransactionsSingleVault,
   getDragoLiquidityAndTokenBalances,
   getTokenWrapperLockTime,
-  logToEvent
 } from './utils/index'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
-import moment from 'moment'
+
 
 class NotificationAlert extends Component {
   static propTypes = {
@@ -425,7 +421,7 @@ class utilities {
   ) => {
     let labels = Array(0)
     let data = Array(0)
-    dragoAssetsList.map(asset => {
+    dragoAssetsList.forEach(asset => {
       if (typeof assetsPrices[asset.symbol] !== 'undefined') {
         if (typeof assetsPrices[asset.symbol].priceEth !== 'undefined') {
           const value = new BigNumber(

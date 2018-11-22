@@ -21,7 +21,7 @@ export const relayActionsMiddleWare = store => next => action => {
     action.type = `${state.exchange.selectedRelay.name.toUpperCase()}_${
       action.type
     }`
-    // console.log(action)
+    console.log(action)
   }
   next(action)
 }
@@ -30,13 +30,12 @@ export const notificationsMiddleWare = store => next => action => {
   const state = store.getState()
   // console.log(action)
   if (action.type === TYPE_.QUEUE_ACCOUNT_NOTIFICATION) {
-    action.payload.map(notification => {
+    action.payload.forEach(notification => {
       utils.notificationAccount(
         state.notifications.engine,
         notification,
         'info'
       )
-      return
     })
   }
   if (action.type === TYPE_.QUEUE_ERROR_NOTIFICATION) {

@@ -7,6 +7,7 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import utils from '../_utils/utils'
 
+import BigNumber from 'bignumber.js'
 import classnames from 'classnames'
 import styles from './elementBottomStatusBar.module.css'
 
@@ -41,7 +42,10 @@ export default class ElementBottomStatusBar extends Component {
   UNSAFE_componentWillReceiveProps(nextProps) {
     // console.log(this.props.blockNumber)
     // console.log(nextProps.blockNumber)
-    if (this.props.blockNumber == 0 && nextProps.blockNumber != 0) {
+    if (
+      new BigNumber(this.props.blockNumber).eq(0) &&
+      !new BigNumber(nextProps.blockNumber).eq(0)
+    ) {
       // this.blockNumber(nextProps.blockNumber)
     }
     // (!utils.shallowEqual(this.props.blockNumber, nextProps.blockNumber)) ? this.blockNumber(): null

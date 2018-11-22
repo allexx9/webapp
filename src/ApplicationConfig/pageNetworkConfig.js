@@ -42,6 +42,8 @@ class PageNetworkConfig extends Component {
       case LOCAL:
         selectedEndpoint = 2
         break
+      default:
+        selectedEndpoint = 0
     }
     switch (this.props.endpoint.networkInfo.name) {
       case KOVAN:
@@ -53,6 +55,8 @@ class PageNetworkConfig extends Component {
       case MAINNET:
         selectedNetwork = 2
         break
+      default:
+        selectedNetwork = 2
     }
     // Checking if app is running inside Parity UI. If positive, disable remote endpoint selection
     if (typeof window.parity !== 'undefined') {
@@ -92,6 +96,8 @@ class PageNetworkConfig extends Component {
       case 2:
         endpoint.endpointInfo = ENDPOINTS.local
         break
+      default:
+        endpoint.endpointInfo = ENDPOINTS.infura
     }
     endpoint.prevBlockNumber = '0'
     this.setState({
@@ -114,6 +120,8 @@ class PageNetworkConfig extends Component {
       case 2:
         endpoint.networkInfo = NETWORKS.mainnet
         break
+      default:
+        endpoint.networkInfo = NETWORKS.mainnet
     }
     endpoint.prevBlockNumber = '0'
     this.setState({

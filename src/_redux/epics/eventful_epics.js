@@ -4,7 +4,7 @@
 import * as TYPE_ from '../actions/const'
 import { Actions } from '../actions'
 // import { DEBUGGING } from '../../_utils/const'
-import { Observable, from, timer } from 'rxjs'
+import { Observable, from } from 'rxjs'
 import {
   catchError,
   delay,
@@ -287,24 +287,24 @@ export const getAccountsTransactionsEpic = (action$, state$) => {
       delay(2000)
     )
 
-  const isNodeConnected$ = state$.pipe(
-    map(val => {
-      // console.log(val)
-      return !val.app.isConnected
-    }),
-    tap(val => {
-      console.log(val)
-      return val
-    }),
-    skipWhile(val => val === true),
-    tap(val => {
-      console.log('not skipped')
-      return val
-    }),
-    map(val => {
-      return val
-    })
-  )
+  // const isNodeConnected$ = state$.pipe(
+  //   map(val => {
+  //     // console.log(val)
+  //     return !val.app.isConnected
+  //   }),
+  //   tap(val => {
+  //     console.log(val)
+  //     return val
+  //   }),
+  //   skipWhile(val => val === true),
+  //   tap(val => {
+  //     console.log('not skipped')
+  //     return val
+  //   }),
+  //   map(val => {
+  //     return val
+  //   })
+  // )
 
   return action$.pipe(
     ofType(TYPE_.GET_ACCOUNTS_TRANSACTIONS),

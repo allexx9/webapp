@@ -32,10 +32,6 @@ function mapStateToProps(state) {
 }
 
 class ApplicationDragoPage extends Component {
-  constructor(props) {
-    super(props)
-  }
-
   // Context
   static childContextTypes = {
     muiTheme: PropTypes.object
