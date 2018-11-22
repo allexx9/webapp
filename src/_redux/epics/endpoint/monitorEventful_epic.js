@@ -26,7 +26,6 @@ const monitorEventful$ = (web3, api, state$) => {
         state$.value.endpoint.networkInfo.id
       )
       const subscription = instance.rigoblock.ob.eventful$.subscribe(val => {
-        console.log('DEBUG monitorEventful value', val)
         return observer.next(val)
       })
       return () => subscription.unsubscribe
