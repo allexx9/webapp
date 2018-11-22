@@ -410,7 +410,6 @@ class ApplicationExchangeHome extends Component {
   onSelectTokenTrade = async pair => {
     const { api } = this.context
     const {
-      selectedTokensPair,
       selectedExchange,
       selectedRelay,
       selectedFund
@@ -421,12 +420,15 @@ class ApplicationExchangeHome extends Component {
 
     // Reset balances
     this.props.dispatch(
-      Actions.exchange.updateLiquidityAndTokenBalances(
-        api,
-        'RESET',
-        selectedFund.details.address
-      )
+      Actions.exchange.updateLiquidityAndTokenBalances(api, 'RESET')
     )
+    this.props.dispatch(
+      Actions.exchange.updateLiquidityAndTokenBalances(api, 'STOP')
+    )
+    this.props.dispatch(
+      Actions.exchange.updateLiquidityAndTokenBalances(api, 'START')
+    )
+
     // Updating selected tokens pair
     this.props.dispatch(
       Actions.exchange.updateSelectedTradeTokensPair({
@@ -445,14 +447,15 @@ class ApplicationExchangeHome extends Component {
         }
       })
     )
+
     try {
       const allowanceBaseToken = await getTokenAllowance(
-        selectedTokensPair.baseToken,
+        baseToken,
         selectedFund.details.address,
         selectedExchange
       )
       const allowanceQuoteToken = await getTokenAllowance(
-        selectedTokensPair.quoteToken,
+        quoteToken,
         selectedFund.details.address,
         selectedExchange
       )

@@ -11,7 +11,7 @@ import { rootEpic } from './_redux/epics/root_epics'
 import App from './App'
 import React from 'react'
 import ReactDOM from 'react-dom'
-// import logger from 'redux-logger'
+import logger from 'redux-logger'
 import registerServiceWorker from './registerServiceWorker'
 // import { composeWithDevTools } from 'redux-devtools-extension';
 import { PersistGate } from 'redux-persist/integration/react'
@@ -43,9 +43,9 @@ const middlewares = [
   poolCalculateValueMiddleWare
 ]
 
-// if (process.env.NODE_ENV === `development`) {
-//   middlewares.push(logger);
-// }
+if (process.env.NODE_ENV === `development`) {
+  middlewares.push(logger)
+}
 
 // Redux Persist
 const saveSubsetFilterEndpoint = createFilter('endpoint', [
