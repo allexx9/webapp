@@ -1,34 +1,27 @@
-import { CALL_TIMEOUT, RETRY_DELAY } from '../utils/const'
-import { Observable, timer } from 'rxjs'
-import {
-  delay,
-  distinctUntilChanged,
-  exhaustMap,
-  retryWhen
-} from 'rxjs/operators'
+import { Observable, from, of } from 'rxjs'
+import { catchError, concat, filter, map, timeout } from 'rxjs/operators'
 
-export default web3 =>
-  timer(0, 2000).pipe(
-    exhaustMap(() =>
-      Observable.create(async observer => {
-        const blockPromise = web3.eth.getBlockNumber()
-        const timeoutPromise = new Promise((resolve, reject) =>
-          setTimeout(
-            () => reject(new Error('Request timed out.')),
-            CALL_TIMEOUT
-          )
-        )
-        try {
-          const blockNumber = await Promise.race([blockPromise, timeoutPromise])
+export default web3 => {
+  const timeoutMs = 60000
+  const newBlock$ = Observable.create(observer => {
+    const subscription = web3.eth.subscribe('newBlockHeaders', (err, msg) =>
+      err ? observer.error(err) : observer.next(msg)
+    )
+    return () => subscription.unsubscribe()
+  })
 
-          observer.next(blockNumber)
-          observer.complete()
-        } catch (e) {
-          return observer.error(e)
-        }
-        return () => observer.complete()
-      })
-    ),
-    distinctUntilChanged(),
-    retryWhen(error$ => error$.pipe(delay(RETRY_DELAY)))
-  )
+  const newBlockProxy$ = () =>
+    from(
+      fetch('https://api.endpoint.network/blockNumber').then(res => res.json())
+    ).pipe(
+      map(response => Number(response.result)),
+      catchError(() => of(false))
+    )
+
+  const subScription$ = source$ =>
+    source$.pipe(
+      timeout(timeoutMs),
+      catchError(() => newBlockProxy$().pipe(concat(subScription$(newBlock$))))
+    )
+  return subScription$(newBlock$).pipe(filter(val => !!val))
+}
