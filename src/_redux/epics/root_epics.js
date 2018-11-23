@@ -19,8 +19,6 @@ import * as Eventful from './eventful_epics'
 import * as Tokens from './token_epics'
 import { ERCdEX, Ethfinex } from './exchanges'
 
-console.log(Ethfinex)
-
 const ERCdEX_Epics = [
   ERCdEX.getCandlesSingleDataEpic,
   ERCdEX.initRelayWebSocketTickerEpic,
@@ -70,11 +68,10 @@ const combineAndIsolateEpics = (...epics) => (...args) => {
           `${epic.name} terminated with error: ${e.message}, restarting it...`
         )
         return source
-      }),
-      delay(2000)
+      })
+      // delay(2000)
     )
   )
-
   return combineEpics(...isolatedEpics)(...args)
 }
 
@@ -108,24 +105,4 @@ export const rootEpic = combineAndIsolateEpics(
 //     resetLiquidityAndTokenBalancesEpic,
 //     getTradeHistoryLogsFromRelayERCdEXEpic
 //     // getAssetsPricesDataFromERCdEXEpic
-//   )(...args).pipe(
-//     tap(error => {
-//       console.warn(error)
-//     }),
-//     catchError(error => {
-//       console.warn(error)
-//       return Observable.of({
-//         type: 'QUEUE_ERROR_NOTIFICATION',
-//         payload: 'Error from ws.'
-//       })
-//     })
-//     // retryWhen(error => {
-//     //   return error.pipe(
-//     //     mergeMap(error => {
-//     //       console.warn(error)
-//     //       return timer(5000)
-//     //     }),
-//     //     finalize(() => console.log('We are done!'))
-//     //   )
-//     // })
-//   )
+//   )(...args)

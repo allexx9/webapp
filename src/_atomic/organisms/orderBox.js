@@ -24,8 +24,10 @@ import {
 } from '../../_utils/exchange'
 import { sha3_512 } from 'js-sha3'
 // import ToggleSwitch from '../atoms/toggleSwitch'
+import { ZeroEx } from '0x.js'
 import BoxDecorator from '../molecules/boxDecorator'
 import ShowStatusMsg from '../atoms/showStatusMsg'
+import Web3 from 'web3'
 import moment from 'moment'
 import serializeError from 'serialize-error'
 import utils from '../../_utils/utils'
@@ -364,7 +366,6 @@ class OrderBox extends PureComponent {
       padding: '5px',
       display: orderBox.expanded ? 'inline-block' : 'none'
     }
-    console.log('render order box')
     return (
       <BoxDecorator boxName={'relayBox'}>
         <Row>

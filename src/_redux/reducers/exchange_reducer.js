@@ -19,6 +19,20 @@ function exchangeReducer(state = initialState.exchange, action) {
       }
     }
 
+    // case 'ORDER_UPDATE': {
+    //   console.log(action)
+    //   return {
+    //     ...state,
+    //     selectedOrder: { ...state.selectedOrder, ...action.payload }
+    //   }
+    // }
+
+    // case TYPE_.ORDER_CANCEL:
+    //   return {
+    //     ...state,
+    //     selectedOrder: initialState.exchange.selectedOrder
+    //   }
+
     case TYPE_.UPDATE_AVAILABLE_FUNDS:
       return {
         ...state,
@@ -139,12 +153,6 @@ function exchangeReducer(state = initialState.exchange, action) {
         walletAddress: action.payload
       }
 
-    case TYPE_.ORDER_CANCEL:
-      return {
-        ...state,
-        selectedOrder: initialState.exchange.selectedOrder
-      }
-
     case TYPE_.SET_ORDERBOOK_AGGREGATE_ORDERS:
       return {
         ...state,
@@ -207,10 +215,12 @@ function exchangeReducer(state = initialState.exchange, action) {
           return currentFunction(currentValue, action)
         }, state)
       }
-      return pipe(
+      const pipedActions = pipe(
         ordersReducer,
         uiReducer
       )(state, action)
+      return pipedActions
+
       // return state
     }
   }

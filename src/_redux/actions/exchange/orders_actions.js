@@ -10,3 +10,4 @@ export const createOrder = createAction(
 )
 
 export const updateOrder = createAction(TYPE_.ORDER_UPDATE)
+export const cancelOrder = createAction(TYPE_.ORDER_CANCEL)

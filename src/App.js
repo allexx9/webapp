@@ -45,7 +45,12 @@ const history = createHashHistory()
 // Component Whoops404 is loaded if a page does not exist.
 
 function mapStateToProps(state) {
-  return state
+  return {
+    app: {
+      appLoading: state.app.appLoading
+    },
+    endpoint: state.endpoint
+  }
 }
 
 export class App extends Component {

@@ -2,7 +2,7 @@ import * as TYPE_ from '../../../actions/const'
 import { Actions } from '../../../actions/'
 import { Observable, of } from 'rxjs'
 import { ZeroEx } from '0x.js'
-import { map, mergeMap } from 'rxjs/operators'
+import { map, mergeMap, tap } from 'rxjs/operators'
 import { ofType } from 'redux-observable'
 import Web3 from 'web3'
 import moment from 'moment'
@@ -95,8 +95,10 @@ const createOrderEthfinexV0Epic = (action$, state$) => {
         of(newMakerOrderV0(orderSide, options, state$))
       ).pipe(
         map(order => {
-          console.log(order)
           return Actions.exchange.updateOrder(order)
+        }),
+        tap(val => {
+          return val
         })
       )
     })

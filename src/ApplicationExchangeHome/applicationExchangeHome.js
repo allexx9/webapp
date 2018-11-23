@@ -644,7 +644,6 @@ class ApplicationExchangeHome extends PureComponent {
       ).toFixed(4)
       // console.log(this.props.exchange)
       // console.log(RELAYS)
-      console.log('render main')
       return (
         <div ref={node => (this.node = node)}>
           <Row className={styles.maincontainer}>
