@@ -1,6 +1,7 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 // By the Power of Grayskull! I Have the Power!
 
+import * as Sentry from '@sentry/browser'
 import { Provider } from 'react-redux'
 import { Reducers } from './_redux/reducers/root_reducer'
 import { applyMiddleware, compose, createStore } from 'redux'
@@ -27,6 +28,11 @@ import storage from 'redux-persist/lib/storage'
 import './index.module.css'
 
 function noop() {}
+
+Sentry.init({
+  dsn: 'https://b8304e9d588a477db619fbb026f31549@sentry.io/1329485',
+  environment: process.env.NODE_ENV
+})
 
 if (process.env.NODE_ENV !== 'development') {
   console.log = noop

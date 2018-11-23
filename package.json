@@ -8,6 +8,8 @@
     "@manaflair/redux-batch": "^0.1.0",
     "@parity/abi": "^2.1.4",
     "@parity/api": "^2.1.24",
+    "@rigoblock/exchange-connector": "^0.0.10",
+    "@sentry/browser": "^4.3.4",
     "@types/web3": "^1.0.12",
     "babel-plugin-transform-remove-console": "^6.9.4",
     "babel-register": "^6.26.0",
