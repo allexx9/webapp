@@ -13,7 +13,6 @@ import {
   tap
 } from 'rxjs/operators'
 import Web3Wrapper from '../../../_utils/web3Wrapper/src'
-import shallowEqualObjects from 'shallow-equal/objects'
 import shallowequal from 'shallowequal'
 
 //
@@ -26,7 +25,7 @@ export const isConnectedToNodeWeb3Wrapper$ = state$ => {
       state$.value.endpoint.networkInfo.id
     )
     instance.rigoblock.ob.nodeStatus$.subscribe(val => {
-      console.log('Msg: ', val)
+      // console.log('Msg: ', val)
       if (val === 0) return
       if (Object.keys(val.error).length === 0) {
         // console.log('Msg: ', val)
@@ -43,12 +42,9 @@ export const connectedToNodeEpic = (action$, state$) =>
   action$.ofType(TYPE_.CHECK_APP_IS_CONNECTED).switchMap(() => {
     return isConnectedToNodeWeb3Wrapper$(state$).pipe(
       tap(result => {
-        // console.log(result)
         return result
       }),
       distinctUntilChanged((a, b) => {
-        // console.log(JSON.stringify(a), JSON.stringify(b))
-        // console.log(shallowequal(JSON.stringify(a), JSON.stringify(b)))
         return shallowequal(JSON.stringify(a), JSON.stringify(b))
       }),
       flatMap(result => {

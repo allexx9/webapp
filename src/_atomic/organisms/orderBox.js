@@ -1,6 +1,6 @@
 import { Col, Row } from 'react-flexbox-grid'
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 // import * as Colors from 'material-ui/styles/colors'
 import BoxTitle from '../atoms/boxTitle'
 import ButtonOrderBuy from '../atoms/buttonOrderBuy'
@@ -24,16 +24,33 @@ import {
 } from '../../_utils/exchange'
 import { sha3_512 } from 'js-sha3'
 // import ToggleSwitch from '../atoms/toggleSwitch'
+import { ZeroEx } from '0x.js'
 import BoxDecorator from '../molecules/boxDecorator'
 import ShowStatusMsg from '../atoms/showStatusMsg'
+import Web3 from 'web3'
 import moment from 'moment'
 import serializeError from 'serialize-error'
 import utils from '../../_utils/utils'
 
 function mapStateToProps(state) {
-  return state
+  return {
+    notifications: state.notifications,
+    endpoint: { networkInfo: { id: state.endpoint.networkInfo.id } },
+    exchange: {
+      selectedTokensPair: state.exchange.selectedTokensPair,
+      selectedOrder: state.exchange.selectedOrder,
+      selectedExchange: state.exchange.selectedExchange,
+      walletAddress: state.exchange.walletAddress,
+      selectedExchange: state.exchange.selectedExchange,
+      selectedFund: state.exchange.selectedFund,
+      selectedRelay: state.exchange.selectedRelay,
+      ui: {
+        panels: { orderBox: state.exchange.ui.panels.orderBox }
+      }
+    }
+  }
 }
-class OrderBox extends Component {
+class OrderBox extends PureComponent {
   static propTypes = {
     exchange: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
@@ -332,16 +349,22 @@ class OrderBox extends Component {
   }
 
   render() {
-    const { selectedOrder, ui } = this.props.exchange
+    const {
+      selectedOrder,
+      ui: {
+        panels: { orderBox }
+      }
+    } = this.props.exchange
     let buySelected = selectedOrder.orderType === 'bids'
     let sellSelected = selectedOrder.orderType === 'asks'
     if (selectedOrder.takerOrder) {
       buySelected = selectedOrder.orderType === 'asks'
       sellSelected = selectedOrder.orderType === 'bids'
     }
+    const { showWarnMsg } = this.state
     const paperStyle = {
       padding: '5px',
-      display: ui.panels.orderBox.expanded ? 'inline-block' : 'none'
+      display: orderBox.expanded ? 'inline-block' : 'none'
     }
     return (
       <BoxDecorator boxName={'relayBox'}>
@@ -377,11 +400,8 @@ class OrderBox extends Component {
                       </Row>
                     </Col>
                     <Col xs={12}>
-                      {this.state.showWarnMsg && (
-                        <ShowStatusMsg
-                          msg={this.state.showWarnMsg}
-                          status="warning"
-                        />
+                      {showWarnMsg && (
+                        <ShowStatusMsg msg={showWarnMsg} status="warning" />
                       )}
                     </Col>
                     <Col xs={12}>
@@ -442,7 +462,7 @@ class OrderBox extends Component {
           <OrderRawDialog
             order={selectedOrder}
             efxOrder={this.state.efxOrder}
-            exchange={this.props.exchange}
+            // exchange={this.props.exchange}
             onSubmitOrder={this.onSubmitOrder}
             onCheckOrder={this.onCheckOrder}
             orderSubmitStep={this.state.orderSubmitStep}

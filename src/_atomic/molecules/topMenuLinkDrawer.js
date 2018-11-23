@@ -1,14 +1,8 @@
-import { Col, Row } from 'react-flexbox-grid'
 import Drawer from 'material-ui/Drawer'
-import PropTypes from 'prop-types'
 import React, { Component } from 'react'
-import classNames from 'classnames'
 import styles from './topMenuLinkDrawer.module.css'
-import utils from '../../_utils/utils'
 
 class TopMenuLinkDrawer extends Component {
-  static propTypes = {}
-
   static contextTypes = {}
 
   state = {}

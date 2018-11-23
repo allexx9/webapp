@@ -78,7 +78,7 @@
  *     WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-'use strict'
+
 
 let palette = (function() {
   let proto = Array.prototype
@@ -86,9 +86,7 @@ let palette = (function() {
     return proto.slice.apply(arr, proto.slice.call(arguments, 1))
   }
 
-  let extend = function(arr, arr2) {
-    return proto.push.apply(arr, arr2)
-  }
+
 
   let function_type = typeof function() {}
 

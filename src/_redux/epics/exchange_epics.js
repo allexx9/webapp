@@ -145,43 +145,43 @@ export const getOrderBookFromRelayEpic = action$ => {
 // UPDATE FUND LIQUIDITY
 //
 
-const updateFundLiquidity$ = (fundAddress, api) =>
-  Observable.from(utils.getDragoLiquidity(fundAddress, api)).pipe(
-    map(liquidity => {
-      const payload = {
-        liquidity: {
-          ETH: liquidity[0]
-          // WETH: liquidity[1],
-          // ZRX: liquidity[2]
-        }
-      }
-      return {
-        type: TYPE_.UPDATE_SELECTED_FUND,
-        payload: payload
-      }
-    })
-  )
+// const updateFundLiquidity$ = (fundAddress, api) =>
+//   Observable.from(utils.getDragoLiquidity(fundAddress, api)).pipe(
+//     map(liquidity => {
+//       const payload = {
+//         liquidity: {
+//           ETH: liquidity[0]
+//           // WETH: liquidity[1],
+//           // ZRX: liquidity[2]
+//         }
+//       }
+//       return {
+//         type: TYPE_.UPDATE_SELECTED_FUND,
+//         payload: payload
+//       }
+//     })
+//   )
 
-export const updateFundLiquidityEpic = action$ => {
-  return action$.pipe(
-    ofType(TYPE_.UPDATE_FUND_LIQUIDITY),
-    mergeMap(action => {
-      return Observable.pipe(
-        concat(
-          Observable.of({
-            type: TYPE_.UPDATE_ELEMENT_LOADING,
-            payload: { liquidity: true }
-          }),
-          updateFundLiquidity$(action.payload.fundAddress, action.payload.api),
-          Observable.of({
-            type: TYPE_.UPDATE_ELEMENT_LOADING,
-            payload: { liquidity: false }
-          })
-        )
-      )
-    })
-  )
-}
+// export const updateFundLiquidityEpic = action$ => {
+//   return action$.pipe(
+//     ofType(TYPE_.UPDATE_FUND_LIQUIDITY),
+//     mergeMap(action => {
+//       return Observable.pipe(
+//         concat(
+//           Observable.of({
+//             type: TYPE_.UPDATE_ELEMENT_LOADING,
+//             payload: { liquidity: true }
+//           }),
+//           updateFundLiquidity$(action.payload.fundAddress, action.payload.api),
+//           Observable.of({
+//             type: TYPE_.UPDATE_ELEMENT_LOADING,
+//             payload: { liquidity: false }
+//           })
+//         )
+//       )
+//     })
+//   )
+// }
 
 //
 // UPDATE LIQUIDITY AND TOKEN BALANCES IN FUND
@@ -210,7 +210,6 @@ const updateLiquidityAndTokenBalances$ = (api, fundAddress, currentState) => {
         loading: false,
         liquidity: {
           ETH: liquidity.dragoETHBalance,
-          // ZRX: liquidity.dragoZRXBalance,
           baseToken: {
             balance: liquidity.baseTokenBalance,
             balanceWrapper: liquidity.baseTokenWrapperBalance
@@ -223,10 +222,7 @@ const updateLiquidityAndTokenBalances$ = (api, fundAddress, currentState) => {
       }
       // console.log(payload)
       return Observable.concat(
-        Observable.of({
-          type: TYPE_.UPDATE_SELECTED_FUND,
-          payload
-        }),
+        Observable.of(Actions.exchange.updateSelectedFund(payload)),
         Observable.of(
           Actions.exchange.updateSelectedTradeTokensPair({
             baseTokenLockWrapExpire: liquidity.baseTokenLockWrapExpire,
@@ -252,15 +248,15 @@ export const getLiquidityAndTokenBalancesEpic = (action$, state$) => {
   )
 }
 
-export const resetLiquidityAndTokenBalancesEpic = (action$, state$) => {
+export const resetLiquidityAndTokenBalancesEpic = action$ => {
   return action$.pipe(
     ofType(TYPE_.UPDATE_LIQUIDITY_AND_TOKENS_BALANCE_RESET),
-    exhaustMap(action => {
+    exhaustMap(() => {
+      console.log(TYPE_.UPDATE_LIQUIDITY_AND_TOKENS_BALANCE_RESET)
       const payload = {
         loading: false,
         liquidity: {
           ETH: new BigNumber(0),
-          // ZRX: lnew BigNumber(0),
           baseToken: {
             balance: new BigNumber(0),
             balanceWrapper: new BigNumber(0)
@@ -272,10 +268,7 @@ export const resetLiquidityAndTokenBalancesEpic = (action$, state$) => {
         }
       }
       return Observable.concat(
-        Observable.of({
-          type: TYPE_.UPDATE_SELECTED_FUND,
-          payload
-        })
+        Observable.of(Actions.exchange.updateSelectedFund(payload))
       )
     })
   )

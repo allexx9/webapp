@@ -92,8 +92,8 @@ export default (web3, networkId) => {
         switchMap(([dragoEventful, vaultEventful]) =>
           merge(
             getEventful$(dragoEventful),
-            getEventful$(vaultEventful),
-            connection$
+            getEventful$(vaultEventful)
+            // connection$
           ).pipe(retryWhen(retryStrategy))
         )
       )

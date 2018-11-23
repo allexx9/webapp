@@ -79,7 +79,7 @@ class OrdersHistoryBox extends Component {
     try {
       console.log(order.order.id)
       const sig = await utils.sign(
-        parseInt(order.order.id).toString(16),
+        parseInt(order.order.id, 10).toString(16),
         this.props.exchange.walletAddress
       )
       console.log(sig)

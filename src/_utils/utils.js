@@ -14,10 +14,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import PoolApi from '../PoolsApi/src'
 import Web3 from 'web3'
 import palette from './palete'
-
-import { Actions } from '../_redux/actions'
 import { MOCK_ERC20_TOKENS } from './tokens'
-
 import {
   MSG_NETWORK_STATUS_ERROR,
   MSG_NETWORK_STATUS_OK,
@@ -34,11 +31,10 @@ import {
   getTransactionsSingleVault,
   getDragoLiquidityAndTokenBalances,
   getTokenWrapperLockTime,
-  logToEvent
 } from './utils/index'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
-import moment from 'moment'
+
 
 class NotificationAlert extends Component {
   static propTypes = {
@@ -65,26 +61,6 @@ class NotificationAlert extends Component {
 class utilities {
   blockChunks = blockChunks
 
-  updateUi = (ui, boxName) => {
-    let newUi = { ...ui }
-    return {
-      toggleExpandSwitch: () => {
-        newUi.panels[boxName].expanded = !newUi.panels[boxName].expanded
-        return newUi
-      },
-      enableBox: () => {
-        newUi.panels[boxName].disabled = false
-        newUi.panels[boxName].disabledMsg = ''
-        return newUi
-      },
-      disableBox: (options = { disabledMsg: '' }) => {
-        console.log(options)
-        newUi.panels[boxName].disabled = true
-        newUi.panels[boxName].disabledMsg = options.disabledMsg
-        return newUi
-      }
-    }
-  }
   sign = (toSign, account) => {
     // metamask will take care of the 3rd parameter, "password"
     if (window.web3.currentProvider.isMetaMask) {
@@ -445,7 +421,7 @@ class utilities {
   ) => {
     let labels = Array(0)
     let data = Array(0)
-    dragoAssetsList.map(asset => {
+    dragoAssetsList.forEach(asset => {
       if (typeof assetsPrices[asset.symbol] !== 'undefined') {
         if (typeof assetsPrices[asset.symbol].priceEth !== 'undefined') {
           const value = new BigNumber(
@@ -502,7 +478,7 @@ class utilities {
   // This funcions needs to be rewritten to work async.
   updateTransactionsQueue = (api, recentTransactions) => {
     let checkTransaction = true
-    let shouldTransactionListUpdate = false
+    // let shouldTransactionListUpdate = false
     let newRecentTransactions = new Map(recentTransactions)
     newRecentTransactions.forEach(value => {
       if (value.status === 'executed' || value.status === 'error') {
@@ -534,12 +510,12 @@ class utilities {
                   console.log('executed')
                   value.status = 'executed'
                   value.timestamp = new Date()
-                  shouldTransactionListUpdate = true
+                  // shouldTransactionListUpdate = true
                 } else {
                   console.log('pending')
                   value.status = 'pending'
                   value.timestamp = new Date()
-                  shouldTransactionListUpdate = true
+                  // shouldTransactionListUpdate = true
                 }
               })
             }
@@ -549,7 +525,7 @@ class utilities {
             value.status = 'error'
             value.error = error
             value.timestamp = new Date()
-            shouldTransactionListUpdate = true
+            // shouldTransactionListUpdate = true
           })
       }
     })
@@ -592,7 +568,7 @@ class utilities {
         fromBlock = '3000000'
         break
       default:
-        '3000000'
+      fromBlock = '3000000'
     }
     //
     // Getting last transactions

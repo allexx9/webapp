@@ -148,9 +148,8 @@ export const aggregatedOrders = {
   [Ethfinex]: orders => {
     let bids = new Array(0)
     let asks = new Array(0)
-    orders.map(order => {
+    orders.forEach(order => {
       order[2] > 0 ? bids.push(order) : asks.push(order)
-      return
     })
     const bidsOrders = formatOrdersFromAggregateEthfinex(bids, 'bids')
     const asksOrders = formatOrdersFromAggregateEthfinex(asks.reverse(), 'asks')
@@ -181,9 +180,8 @@ export const orders = {
   [Ethfinex]: orders => {
     let bids = new Array(0)
     let asks = new Array(0)
-    orders.map(order => {
+    orders.forEach(order => {
       order[2] > 0 ? bids.push(order) : asks.push(order)
-      return
     })
     const bidsOrders = formatOrdersFromAggregateEthfinex(bids, 'bids')
     const asksOrders = formatOrdersFromAggregateEthfinex(asks.reverse(), 'asks')

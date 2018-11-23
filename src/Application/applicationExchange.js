@@ -42,10 +42,6 @@ function mapStateToProps(state) {
 }
 
 class ApplicationExchangePage extends Component {
-  constructor(props) {
-    super(props)
-  }
-
   // Context
   static childContextTypes = {
     muiTheme: PropTypes.object

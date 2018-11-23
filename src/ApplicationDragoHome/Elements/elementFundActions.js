@@ -24,11 +24,7 @@ import AccountSelector from '../../Elements/elementAccountSelector'
 import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization'
 import ElementFundActionsHeader from './elementFundActionsHeader'
 import PoolApi from '../../PoolsApi/src'
-
-import { newWeb3 } from '../../_utils/web3Wrapper/src/utils/utils'
-import Web3Wrapper from '../../_utils/web3Wrapper/src'
 import styles from './elementFundActions.module.css'
-import Web3 from  'web3'
 
 const customContentStyle = {
   minHeight: '500px'
@@ -454,7 +450,7 @@ class ElementFundActions extends React.Component {
 
   onSendBuy = () => {
     const { api } = this.context
-    const { dragoDetails, endpoint } = this.props
+    const { dragoDetails } = this.props
     const { account } = this.state
     const amount = api.util.toWei(this.state.amountSummary).toString()
     const authMsg =
@@ -505,7 +501,6 @@ class ElementFundActions extends React.Component {
     //       .padStart(64, '0')
     //   return hexAccount
     // })
-
 
     poolApi.contract.drago
       .buyDrago(account.address, amount)

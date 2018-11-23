@@ -6,7 +6,6 @@ import PoolApi from '../../PoolsApi/src'
 
 import * as TYPE_ from '../actions/const'
 import {
-  catchError,
   finalize,
   flatMap,
   map,

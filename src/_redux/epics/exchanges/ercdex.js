@@ -357,7 +357,7 @@ const getAssetsPricesDataFromERCdEX$ = (
 export const getAssetsPricesDataFromERCdEXEpic = action$ => {
   return action$.ofType(FETCH_ASSETS_PRICE_DATA).mergeMap(action => {
     const observableArray = () => {
-      const observableArray = Array()
+      const observableArray = Array(0)
       for (let property in action.payload.assets) {
         if (action.payload.assets.hasOwnProperty(property)) {
           // console.log(action.payload.assets[property])

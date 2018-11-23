@@ -7,6 +7,7 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import utils from '../_utils/utils'
 
+import BigNumber from 'bignumber.js'
 import classnames from 'classnames'
 import styles from './elementBottomStatusBar.module.css'
 
@@ -41,7 +42,10 @@ export default class ElementBottomStatusBar extends Component {
   UNSAFE_componentWillReceiveProps(nextProps) {
     // console.log(this.props.blockNumber)
     // console.log(nextProps.blockNumber)
-    if (this.props.blockNumber == 0 && nextProps.blockNumber != 0) {
+    if (
+      new BigNumber(this.props.blockNumber).eq(0) &&
+      !new BigNumber(nextProps.blockNumber).eq(0)
+    ) {
       // this.blockNumber(nextProps.blockNumber)
     }
     // (!utils.shallowEqual(this.props.blockNumber, nextProps.blockNumber)) ? this.blockNumber(): null
@@ -56,7 +60,7 @@ export default class ElementBottomStatusBar extends Component {
   renderNetworkStatus = () => {
     const { networkStatus, networkError } = this.props
     let networkIconColor = Colors.green600
-    let toolTipType = 'info'
+
     switch (networkError) {
       case 'networkOk':
         networkIconColor = Colors.green600
@@ -66,16 +70,6 @@ export default class ElementBottomStatusBar extends Component {
         break
       default:
         networkIconColor = Colors.green600
-    }
-    switch (networkError) {
-      case 'networkOk':
-        toolTipType = 'info'
-        break
-      case 'networkWarning':
-        toolTipType = 'error'
-        break
-      default:
-        toolTipType = 'info'
     }
 
     return (
@@ -122,21 +116,11 @@ export default class ElementBottomStatusBar extends Component {
   }
 
   render() {
-    const { blockNumber, networkName, networkStatus, networkError } = this.props
-    let toolTipType = 'info'
+    const { blockNumber, networkName, networkStatus} = this.props
+    // let toolTipType = 'info'
     let networkClass = classnames(styles.networkName, styles[networkName])
     const numberWithCommas = x => {
       return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-    }
-    switch (networkError) {
-      case 'networkOk':
-        toolTipType = 'info'
-        break
-      case 'networkWarning':
-        toolTipType = 'error'
-        break
-      default:
-        toolTipType = 'info'
     }
     return (
       <Row className={styles.networkStatus} between="xs">

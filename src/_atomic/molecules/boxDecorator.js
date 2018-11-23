@@ -1,6 +1,7 @@
 // import Immutable from 'immutable'
 // import { Col, Grid, Row } from 'react-flexbox-grid'
 import { connect } from 'react-redux'
+import Loading from '../atoms/loading'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import classNames from 'classnames'
@@ -25,8 +26,6 @@ class BoxDecorator extends Component {
 
   state = {}
 
-  componentDidMount = () => {}
-
   createClassesArray = () => {
     const {
       boxName,
@@ -42,8 +41,7 @@ class BoxDecorator extends Component {
     return classes
   }
 
-  render() {
-    // console.log(this.props)
+  renderDisabledMsg = () => {
     const {
       boxName,
       exchange: {
@@ -51,11 +49,42 @@ class BoxDecorator extends Component {
       }
     } = this.props
     const { disabledMsg = true } = panels[boxName]
+    return disabledMsg ? (
+      <div className={styles.messageContainer}>
+        <div id={'disabledMessage' + boxName}>{disabledMsg}</div>
+      </div>
+    ) : (
+      <div />
+    )
+  }
+
+  renderLoadingMsg = () => {
+    const {
+      boxName,
+      exchange: {
+        ui: { panels }
+      }
+    } = this.props
+    const { loading = {} } = panels[boxName]
+    if (loading.isloading) {
+      return <Loading size={35} />
+    }
+    if (loading.isError) {
+      return (
+        <div className={styles.messageContainer}>
+          <div id={'errorMessage' + boxName}>{loading.errorMsg}</div>
+        </div>
+      )
+    }
+    return <div />
+  }
+
+  render() {
+    // console.log(this.props)
+    const { boxName } = this.props
     return (
       <div style={{ width: '100%', position: 'relative' }}>
-        <div className={styles.messageContainer}>
-          <div id={'disabledMessage' + boxName}>{disabledMsg}</div>
-        </div>
+        {this.renderDisabledMsg()}
         <div
           id={'boxDecoratorContainer' + boxName}
           className={classNames(this.createClassesArray())}

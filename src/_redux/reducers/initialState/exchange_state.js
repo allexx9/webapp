@@ -27,7 +27,20 @@ export const exchange = {
         disabledMsg: ''
       },
       ordersHistoryBox: {
-        expanded: true
+        expanded: true,
+        disabled: false,
+        disabledMsg: ''
+      },
+      chartBox: {
+        expanded: true,
+        disabled: false,
+        disabledMsg: '',
+        loading: {
+          isLoading: true,
+          isError: false,
+          errorMsg: '',
+          reduxRetryAction: {}
+        }
       }
     }
   },

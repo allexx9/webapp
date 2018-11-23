@@ -15,7 +15,7 @@ export default class ExchangeItem extends Component {
     return (
       <div className={styles.account}>
         <div className={styles.image}>
-          <img src={'/img/' + exchange.icon} />
+          <img src={'/img/' + exchange.icon} alt="exchange-icon" />
         </div>
         <div className={styles.details}>
           <div className={styles.name}>{exchange.name}</div>

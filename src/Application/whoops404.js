@@ -1,9 +1,8 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-import * as Colors from 'material-ui/styles/colors'
-import TopBarMenu from '../Elements/topBarMenu'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
+import TopBarMenu from '../Elements/topBarMenu'
 
 import { Col, Grid, Row } from 'react-flexbox-grid'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'

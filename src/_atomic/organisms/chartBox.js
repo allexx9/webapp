@@ -1,5 +1,6 @@
 import { Col, Row } from 'react-flexbox-grid'
 import { fitWidth } from 'react-stockcharts/lib/helper'
+import BoxDecorator from '../molecules/boxDecorator'
 import BoxTitle from '../atoms/boxTitle'
 import CandleStickChartWithMACDIndicator from './CandleStickChartWithMACDIndicator'
 import ErrorBoundary from './errorBoundary'
@@ -34,22 +35,24 @@ class ChartBox extends Component {
     console.log('*** Render chart ***')
     if (this.props.data.length === 0 || this.props.loading) {
       return (
-        <Row>
-          <Col xs={12}>
-            <Row className={styles.sectionTitle}>
-              <Col xs={12}>
-                <BoxTitle titleText={'MARKET'} />
-                <Paper style={paperStyle} zDepth={1}>
-                  <Row className={styles.marketBoxContainer}>
-                    <Col xs={12}>
-                      <Loading size={35} />
-                    </Col>
-                  </Row>
-                </Paper>
-              </Col>
-            </Row>
-          </Col>
-        </Row>
+        <BoxDecorator boxName={'chartBox'}>
+          <Row>
+            <Col xs={12}>
+              <Row className={styles.sectionTitle}>
+                <Col xs={12}>
+                  <BoxTitle titleText={'MARKET'} />
+                  <Paper style={paperStyle} zDepth={1}>
+                    <Row className={styles.marketBoxContainer}>
+                      <Col xs={12}>
+                        <Loading size={35} />
+                      </Col>
+                    </Row>
+                  </Paper>
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+        </BoxDecorator>
       )
     }
 

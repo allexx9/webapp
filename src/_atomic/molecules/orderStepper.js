@@ -117,6 +117,7 @@ class OrderStepper extends Component {
             <Looks4 style={style} color="#054186" />
           </div>
         )
+      default:
     }
   }
 

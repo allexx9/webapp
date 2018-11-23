@@ -29,7 +29,6 @@ import Sticky from 'react-stickynode'
 import Web3 from 'web3'
 import scrollToElement from 'scroll-to-element'
 import styles from './pageVaultDetailsVaultTrader.module.css'
-import utils from '../../_utils/utils'
 
 function mapStateToProps(state) {
   return state
@@ -214,16 +213,7 @@ class PageFundDetailsVaultTrader extends Component {
       return <ElementFundNotFound />
     }
 
-    // const holdingFadeStyle =
-    //   Object.keys(this.state.prevProps).length !== 0 &&
-    //   this.state.prevProps.transactionsVault.selectedVault.details
-    //     .balanceDRG !== vaultDetails.balanceDRG
-    //     ? styles.fadeNewHolding
-    //     : styles.noFadeNewHolding
-    const holdingFadeStyle = styles.noFadeNewHolding
-    // console.log(this.props)
-    // console.log(this.state)
-    // console.log(vaultTransactionsList)
+    // const holdingFadeStyle = styles.noFadeNewHolding
     return (
       <Row>
         <Col xs={12}>

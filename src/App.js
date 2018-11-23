@@ -9,7 +9,6 @@ import ApplicationExchangePage from './Application/applicationExchange'
 import ApplicationHomePage from './Application/applicationHome'
 import ApplicationVaultPage from './Application/applicationVault'
 import Endpoint from './_utils/endpoint'
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import NotificationSystem from 'react-notification-system'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
@@ -19,7 +18,6 @@ import createHashHistory from 'history/createHashHistory'
 
 import { connect } from 'react-redux'
 import AppLoading from './Elements/elementAppLoading'
-import ElementNotification from './Elements/elementNotification'
 import utils from './_utils/utils'
 // import ElementNotConnected from './Elements/elementNotConnected'
 import { Actions } from './_redux/actions'
@@ -47,7 +45,12 @@ const history = createHashHistory()
 // Component Whoops404 is loaded if a page does not exist.
 
 function mapStateToProps(state) {
-  return state
+  return {
+    app: {
+      appLoading: state.app.appLoading
+    },
+    endpoint: state.endpoint
+  }
 }
 
 export class App extends Component {

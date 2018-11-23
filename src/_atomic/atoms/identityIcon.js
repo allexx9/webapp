@@ -29,6 +29,7 @@ export default class IdentityIcon extends Component {
         className={styles.icon}
         style={{ width: size, height: size, ...this.props.customStyle }}
         src={api.util.createIdentityImg(address, 4)}
+        alt='identity-icon'
       />
     )
   }

@@ -23,10 +23,9 @@
 // 'use strict'
 
 import { errors } from 'web3-core-helpers'
-import ReconnectingWebSocket from 'reconnecting-websocket'
+import ReconnectingWebSocket from 'reconnecting-websocket/dist/reconnecting-websocket-amd.js'
 import _ from 'underscore'
 
-console.log(ReconnectingWebSocket)
 // let _ = require('underscore')
 // let errors = require('web3-core-helpers').errors
 
@@ -90,14 +89,22 @@ let WebsocketProvider = function WebsocketProvider(url, options) {
     headers.authorization = 'Basic ' + _btoa(parsedURL.auth)
   }
 
-  this.connection = new Ws(
-    url,
-    protocol,
-    undefined,
-    headers,
-    undefined,
-    clientConfig
+  //   let origWs = new Ws(
+  //     url,
+  //     protocol,
+  //     undefined,
+  //     headers,
+  //     undefined,
+  //     clientConfig
+  //   )
+
+  let recWs = new ReconnectingWebSocket(
+    url
+    // [],
+    // { minReconnectionDelay: 1 }
   )
+
+  this.connection = recWs
 
   this.addDefaultEvents()
 
@@ -266,26 +273,26 @@ WebsocketProvider.prototype._timeout = function() {
 WebsocketProvider.prototype.send = function(payload, callback) {
   let _this = this
 
-  if (this.connection.readyState === this.connection.CONNECTING) {
-    setTimeout(function() {
-      _this.send(payload, callback)
-    }, 10)
-    return
-  }
+  //   if (this.connection.readyState === this.connection.CONNECTING) {
+  //     setTimeout(function() {
+  //       _this.send(payload, callback)
+  //     }, 10)
+  //     return
+  //   }
 
   // try reconnect, when connection is gone
   // if(!this.connection.writable)
   //     this.connection.connect({url: this.url});
-  if (this.connection.readyState !== this.connection.OPEN) {
-    console.error('connection not open on send()')
-    if (typeof this.connection.onerror === 'function') {
-      this.connection.onerror(new Error('connection not open'))
-    } else {
-      console.error('no error callback')
-    }
-    callback(new Error('connection not open'))
-    return
-  }
+  //   if (this.connection.readyState !== this.connection.OPEN) {
+  //     console.error('connection not open on send()')
+  //     if (typeof this.connection.onerror === 'function') {
+  //       this.connection.onerror(new Error('connection not open'))
+  //     } else {
+  //       console.error('no error callback')
+  //     }
+  //     callback(new Error('connection not open'))
+  //     return
+  //   }
 
   this.connection.send(JSON.stringify(payload))
   this._addResponseCallback(payload, callback)

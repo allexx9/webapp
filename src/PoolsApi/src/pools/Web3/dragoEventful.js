@@ -3,10 +3,9 @@
 
 import * as abis from '../../contracts/abi'
 import { DRAGOEVENTFUL } from '../../utils/const'
-import { toHex } from '../../utils'
 import Registry from '../registry'
 
-const Web3 = require('web3')
+
 
 class DragoEventfulWeb3 {
   constructor(api) {

@@ -3,7 +3,6 @@ import { dateFromTimeStampHuman } from './dateFromTimeStampHuman'
 import { formatCoins, formatEth } from './../format'
 import BigNumber from 'bignumber.js'
 import PoolApi from '../../PoolsApi/src'
-import Web3 from 'web3'
 import Web3Wrapper from '../web3Wrapper/src'
 
 export const getDragoDetails = async (dragoDetails, accounts, api) => {
@@ -27,7 +26,7 @@ export const getDragoDetails = async (dragoDetails, accounts, api) => {
       fromBlock = '3000000'
       break
     default:
-      '3000000'
+      fromBlock = '3000000'
   }
   //
   // Getting last transactions

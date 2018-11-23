@@ -1,9 +1,6 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-// import { api } from '../parity';
-
 import BigNumber from 'bignumber.js'
-import Web3 from 'web3'
 
 const DIVISOR = 10 ** 6
 const ZERO = new BigNumber(0)

@@ -263,6 +263,12 @@ class ElementListTransactions extends PureComponent {
             CREATED
           </span>
         )
+      default:
+        return (
+          <span style={{ color: Colors.blue300, fontWeight: 600 }}>
+            UNKNOWN
+          </span>
+        )
     }
   }
 
@@ -343,8 +349,8 @@ class ElementListTransactions extends PureComponent {
     const { list } = this.props
     return list
       .sortBy(item => item.timestamp)
-      .update(
-        list => (sortDirection === SortDirection.DESC ? list : list.reverse())
+      .update(list =>
+        sortDirection === SortDirection.DESC ? list : list.reverse()
       )
   }
 
