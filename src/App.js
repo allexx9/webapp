@@ -1,6 +1,7 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 import 'babel-polyfill'
 import 'react-virtualized/styles.css'
+import * as Sentry from '@sentry/browser'
 import { PROD } from './_utils/const'
 import { Redirect, Route, Router, Switch } from 'react-router-dom'
 import ApplicationConfigPage from './Application/applicationConfig'
@@ -98,6 +99,15 @@ export class App extends Component {
     const stateUpdate = !utils.shallowEqual(this.state, nextState)
     // console.log(`${this.constructor.name} -> propsUpdate: %c${propsUpdate}.%c stateUpdate: %c${stateUpdate}`, `color: ${propsUpdate ? 'green' : 'red'}; font-weight: bold;`,'',`color: ${stateUpdate ? 'green' : 'red'}; font-weight: bold;`)
     return stateUpdate || propsUpdate
+  }
+
+  componentDidCatch(error, errorInfo) {
+    Sentry.withScope(scope => {
+      Object.keys(errorInfo).forEach(key => {
+        scope.setExtra(key, errorInfo[key])
+      })
+      Sentry.captureException(error)
+    })
   }
 
   componentDidMount = async () => {
