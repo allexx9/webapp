@@ -11,7 +11,7 @@ function exchangeReducer(state = initialState.exchange, action) {
     case TYPE_.UPDATE_TRADES_HISTORY: {
       return {
         ...state,
-        tradesHistory: [...state.tradesHistory, ...action.payload]
+        tradesHistory: [...action.payload, ...state.tradesHistory]
       }
     }
 
