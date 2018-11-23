@@ -300,13 +300,11 @@ export const monitorExchangeEventsEpic = (action$, state$) => {
     //   val.length === 0
     // }),
     tap(val => {
-      console.log(val)
       return val
     }),
     switchMap(action => {
       const { fund, tokens, exchange } = action.payload
       retryAttempt = 0
-      console.log(action)
       return Observable.concat(
         // getPastExchangeEvents$(fund, tokens, exchange, state$),
         monitorExchangeEvents$(fund, tokens, state$).pipe(
@@ -318,7 +316,6 @@ export const monitorExchangeEventsEpic = (action$, state$) => {
         )
       ).pipe(
         tap(val => {
-          console.log(val)
           return val
         }),
         takeUntil(action$.ofType(TYPE_.MONITOR_EXCHANGE_EVENTS_STOP)),
