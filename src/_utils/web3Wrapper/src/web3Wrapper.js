@@ -23,7 +23,7 @@ class Web3Wrapper {
           eventful$: getEventful$(this.web3, networkId),
           exchangeEfxV0$: exchangeEfxV0$(this.web3, networkId),
           nodeStatus$: nodeStatus$(this.web3),
-          newBlock$: newBlock(this.web3)
+          newBlock$: newBlock(this.web3, networkId)
         },
         utils: { contract: contract(this.web3) },
         endpoint: transport

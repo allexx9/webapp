@@ -107,6 +107,9 @@ const getPastExchangeEvents$ = (fund, tokens, exchange, state$) => {
 }
 
 const monitorExchangeEvents$ = (fund, tokens, state$) => {
+  console.log('monitorExchangeEvents$')
+  console.log(tokens)
+  console.log(state$.value.endpoint.networkInfo.id)
   const instance = Web3Wrapper.getInstance(state$.value.endpoint.networkInfo.id)
   return instance.rigoblock.ob.exchangeEfxV0$
 }
