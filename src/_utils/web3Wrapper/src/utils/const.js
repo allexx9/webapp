@@ -17,7 +17,7 @@ export const PARITY_REGISTRY_ADDRESSES = {
   [MAINNET]: '0xe3389675d0338462dC76C6f9A3e432550c36A142'
 }
 
-export const ETHERSCAN_API = {
+export const RB_API = {
   3: 'https://api-ropsten.endpoint.network',
   1: 'https://api.endpoint.network',
   [ROPSTEN]: 'https://api-ropsten.endpoint.network',

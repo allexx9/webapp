@@ -3,7 +3,7 @@ import { Observable, from, of } from 'rxjs'
 import { catchError, concat, filter, map, timeout } from 'rxjs/operators'
 
 export default (web3, networkId) => {
-  const etherscanApiUrl = CONSTANTS.ETHERSCAN_API[networkId]
+  const etherscanApiUrl = CONSTANTS.RB_API[networkId]
   const timeoutMs = 120000
   const newBlock$ = Observable.create(observer => {
     const subscription = web3.eth.subscribe('newBlockHeaders', (err, msg) =>
