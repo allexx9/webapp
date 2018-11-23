@@ -6,7 +6,7 @@ import BigNumber from 'bignumber.js'
 import ElementBottomStatusBar from '../Elements/elementBottomStatusBar'
 import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 // import FlatButton from 'material-ui/FlatButton'
 import Loading from '../_atomic/atoms/loading'
 import PoolApi from '../PoolsApi/src'
@@ -37,15 +37,14 @@ import utils from '../_utils/utils'
 // import { getData } from "../_utils/data"
 
 function mapStateToProps(state) {
-  return state
+  return {
+    endpoint: state.endpoint,
+    user: state.user,
+    exchange: state.exchange
+  }
 }
 
-class ApplicationExchangeHome extends Component {
-  constructor() {
-    super()
-    this._notificationSystem = null
-  }
-
+class ApplicationExchangeHome extends PureComponent {
   static contextTypes = {
     api: PropTypes.object.isRequired
   }
@@ -53,14 +52,12 @@ class ApplicationExchangeHome extends Component {
   static propTypes = {
     location: PropTypes.object.isRequired,
     endpoint: PropTypes.object.isRequired,
-    transactionsDrago: PropTypes.object.isRequired,
     user: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
     exchange: PropTypes.object.isRequired
   }
 
   state = {
-    chartData: [],
     managerHasNoFunds: false
   }
 
@@ -83,31 +80,27 @@ class ApplicationExchangeHome extends Component {
     return stateUpdate || propsUpdate
   }
 
-  // getConf = () => {
-  //   let request = new XMLHttpRequest()
-
-  //   request.open('GET', 'http://api.ethfinex.com/trustless/v1/r/get/conf')
-
-  //   request.setRequestHeader('Content-Type', 'application/json')
-
-  //   request.onreadystatechange = function() {
-  //     if (this.readyState === 4) {
-  //       console.log('Status:', this.status)
-  //       console.log('Headers:', this.getAllResponseHeaders())
-  //       console.log('Body:', this.responseText)
-  //     }
-  //   }
-
-  //   let body = {}
-
-  //   request.send(JSON.stringify(body))
-  // }
+  updateUi = (ui, boxName) => {
+    let newUi = Object.assign({}, ui)
+    return {
+      enableBox: () => {
+        newUi.panels[boxName].disabled = false
+        newUi.panels[boxName].disabledMsg = ''
+        return newUi
+      },
+      disableBox: (options = { disabledMsg: '' }) => {
+        newUi.panels[boxName].disabled = true
+        newUi.panels[boxName].disabledMsg = options.disabledMsg
+        return newUi
+      }
+    }
+  }
 
   componentDidMount = async () => {
     // console.log(this.getConf())
 
     const { api } = this.context
-    const { selectedExchange, ui } = this.props.exchange
+    const { ui } = this.props.exchange
     const { endpoint } = this.props
 
     const defaultRelay = RELAYS[DEFAULT_RELAY[api._rb.network.name]]
@@ -125,7 +118,6 @@ class ApplicationExchangeHome extends Component {
           defaultRelay.defaultTokensPair.quoteTokenSymbol
         ]
     }
-    console.log(defaultTokensPair)
     console.log('***** MOUNT *****')
     try {
       // const address = await getAvailableAccounts(selectedExchange)
@@ -191,27 +183,27 @@ class ApplicationExchangeHome extends Component {
       console.log(selectedFund)
       if (selectedFund) {
         this.props.dispatch(
-          Actions.exchange.setUiPanelProperties(
-            utils.updateUi(ui, 'relayBox').enableBox()
+          Actions.exchange.updateUiPanelProperties(
+            this.updateUi(ui, 'relayBox').enableBox()
           )
         )
       } else {
         this.props.dispatch(
-          Actions.exchange.setUiPanelProperties(
-            utils
-              .updateUi(ui, 'relayBox')
-              .disableBox({ disabledMsg: 'Please create a fund.' })
+          Actions.exchange.updateUiPanelProperties(
+            this.updateUi(ui, 'relayBox').disableBox({
+              disabledMsg: 'Please create a fund.'
+            })
           )
         )
         this.props.dispatch(
-          Actions.exchange.setUiPanelProperties(
-            utils
-              .updateUi(ui, 'orderBox')
-              .disableBox({ disabledMsg: 'Please create a fund.' })
+          Actions.exchange.updateUiPanelProperties(
+            this.updateUi(ui, 'orderBox').disableBox({
+              disabledMsg: 'Please create a fund.'
+            })
           )
         )
         // this.props.dispatch(
-        //   Actions.exchange.setUiPanelProperties(
+        //   Actions.exchange.updateUiPanelProperties(
         //     utils
         //       .updateUi(ui, 'orderBox')
         //       .disableBox({ disabledMsg: 'Please create a fund.' })
@@ -223,7 +215,7 @@ class ApplicationExchangeHome extends Component {
         selectedFund,
         defaultTokensPair,
         defaultRelay,
-        selectedExchange
+        defaultExchange
       )
     } catch (error) {
       console.warn(error)
@@ -280,7 +272,6 @@ class ApplicationExchangeHome extends Component {
         spread: '0'
       }
     })
-    console.log('connectToExchange function')
     // Getting exchange contract events
     this.props.dispatch(
       Actions.exchange.monitorEventsStart(
@@ -353,13 +344,14 @@ class ApplicationExchangeHome extends Component {
       web3._rb = window.web3._rb
       const poolApi = new PoolApi(web3)
       poolApi.contract.drago.init(fund.address)
-      console.log(poolApi)
 
       // Getting drago details
       const dragoDetails = await poolApi.contract.drago.getAdminData()
-      this.props.dispatch(
-        Actions.exchange.updateSelectedFund(fund, dragoDetails[0].toLowerCase())
-      )
+      const fundDetails = {
+        details: fund,
+        managerAccount: dragoDetails[0].toLowerCase()
+      }
+      this.props.dispatch(Actions.exchange.updateSelectedFund(fundDetails))
 
       // Updating selected tokens pair balances and fund liquidity (ETH, ZRX)
       this.props.dispatch(
@@ -417,7 +409,6 @@ class ApplicationExchangeHome extends Component {
   onSelectTokenTrade = async pair => {
     const { api } = this.context
     const {
-      selectedTokensPair,
       selectedExchange,
       selectedRelay,
       selectedFund
@@ -426,14 +417,34 @@ class ApplicationExchangeHome extends Component {
     const baseToken = ERC20_TOKENS[api._rb.network.name][selectedTokens[0]]
     const quoteToken = ERC20_TOKENS[api._rb.network.name][selectedTokens[1]]
 
+    const liquidity = {
+      loading: false,
+      liquidity: {
+        ETH: new BigNumber(0),
+        baseToken: {
+          balance: new BigNumber(0),
+          balanceWrapper: new BigNumber(0)
+        },
+        quoteToken: {
+          balance: new BigNumber(0),
+          balanceWrapper: new BigNumber(0)
+        }
+      }
+    }
+
+    this.props.dispatch(Actions.exchange.updateSelectedFund(liquidity))
+
     // Reset balances
+    // this.props.dispatch(
+    //   Actions.exchange.updateLiquidityAndTokenBalances(api, 'RESET')
+    // )
     this.props.dispatch(
-      Actions.exchange.updateLiquidityAndTokenBalances(
-        api,
-        'RESET',
-        selectedFund.details.address
-      )
+      Actions.exchange.updateLiquidityAndTokenBalances(api, 'STOP')
     )
+    this.props.dispatch(
+      Actions.exchange.updateLiquidityAndTokenBalances(api, 'START')
+    )
+
     // Updating selected tokens pair
     this.props.dispatch(
       Actions.exchange.updateSelectedTradeTokensPair({
@@ -452,14 +463,15 @@ class ApplicationExchangeHome extends Component {
         }
       })
     )
+
     try {
       const allowanceBaseToken = await getTokenAllowance(
-        selectedTokensPair.baseToken,
+        baseToken,
         selectedFund.details.address,
         selectedExchange
       )
       const allowanceQuoteToken = await getTokenAllowance(
-        selectedTokensPair.quoteToken,
+        quoteToken,
         selectedFund.details.address,
         selectedExchange
       )
@@ -512,7 +524,6 @@ class ApplicationExchangeHome extends Component {
 
   // Getting last transactions
   getSelectedFundDetails = async (dragoAddress, accounts) => {
-    console.log(dragoAddress, accounts)
     const { api } = this.context
     try {
       let poolApi = new PoolApi(api)
@@ -578,13 +589,7 @@ class ApplicationExchangeHome extends Component {
   }
 
   render() {
-    const {
-      user,
-      handleToggleNotifications,
-      notificationsOpen,
-      endpoint,
-      exchange
-    } = this.props
+    const { endpoint, exchange } = this.props
     if (endpoint.loading) {
       return <Loading />
     }

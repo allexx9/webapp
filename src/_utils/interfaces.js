@@ -121,8 +121,9 @@ class Interfaces {
     try {
       // Check if MetaMask is connected to the same network as the endpoint
       let accounts = await web3.eth.getAccounts()
-      let isMetaMaskLocked = accounts.length === 0 ? true : false
       let metaMaskNetworkId = await web3.eth.net.getId()
+      console.log(accounts, metaMaskNetworkId)
+      let isMetaMaskLocked = accounts.length === 0 ? true : false
       let currentState = this._success
       if (metaMaskNetworkId !== parityNetworkId) {
         const stateUpdate = {
@@ -205,20 +206,19 @@ class Interfaces {
   }
 
   attachInterfaceInfuraV2 = async () => {
-    // console.log(`${this.constructor.name} -> Interface Infura`)
+    console.log(`${this.constructor.name} -> Interface Infura`)
     const api = this._api
     try {
       const accountsMetaMask = await this.getAccountsMetamask(api)
       const allAccounts = {
         ...accountsMetaMask
       }
-      let blockNumber = new BigNumber(0)
+      let blockNumber = 0
       try {
         blockNumber = await api.eth.blockNumber()
       } catch (error) {
         console.warn(error)
       }
-
       console.log(
         'Metamask account loaded: ',
         accountsMetaMask,
@@ -247,6 +247,7 @@ class Interfaces {
         ...stateUpdate
       }
       this._success = result
+      console.log(`${this.constructor.name} -> Done`)
       return result
     } catch (error) {
       let currentState = this._error
@@ -258,7 +259,7 @@ class Interfaces {
         ...currentState,
         ...stateUpdate
       }
-      console.log('attachInterface', error)
+      console.log(`${this.constructor.name} -> Error`, error)
       throw this._error
     }
   }

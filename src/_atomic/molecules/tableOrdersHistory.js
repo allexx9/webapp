@@ -5,10 +5,7 @@ import React, { Component } from 'react'
 import ReactTooltip from 'react-tooltip'
 import TradingPairSymbolsOrders from '../atoms/tradingPairSymbolsOders'
 import classNames from 'classnames'
-import moment from 'moment'
-
 import { formatPrice } from '../../_utils/format'
-
 import styles from './tableOrdersHistory.module.css'
 
 class TableOrdersHistory extends Component {

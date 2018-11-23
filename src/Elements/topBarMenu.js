@@ -8,10 +8,6 @@ import React, { Component } from 'react'
 import styles from './topBarMenu.module.css'
 
 class TopBarMenu extends Component {
-  constructor(props) {
-    super(props)
-  }
-
   static propTypes = {
     location: PropTypes.object.isRequired,
     handleTopBarSelectAccountType: PropTypes.func.isRequired,
@@ -31,6 +27,7 @@ class TopBarMenu extends Component {
           <img
             style={{ height: '38px', marginLeft: '-5px', marginTop: '-5px' }}
             src="/img/rb-logo-final.png"
+            alt="logo"
           />
         </label>
         <div className={styles.menu}>

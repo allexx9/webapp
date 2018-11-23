@@ -1,12 +1,12 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-import * as ACTION_ from '../actions/exchange'
+// import * as ACTION_ from '../actions/exchange'
 import * as TYPE_ from '../actions/const'
-import { ordersReducer } from './exchange'
+import { ordersReducer, uiReducer } from './exchange'
 import BigNumber from 'bignumber.js'
 import initialState from './initialState'
 
-function exchange(state = initialState.exchange, action) {
+function exchangeReducer(state = initialState.exchange, action) {
   switch (action.type) {
     case TYPE_.UPDATE_TRADES_HISTORY: {
       let tradesHistory
@@ -19,11 +19,19 @@ function exchange(state = initialState.exchange, action) {
       }
     }
 
-    case TYPE_.SET_EXCHANGE_PANEL_UI_PROPERTIES:
-      return {
-        ...state,
-        ui: { ...state.ui, ...action.payload }
-      }
+    // case 'ORDER_UPDATE': {
+    //   console.log(action)
+    //   return {
+    //     ...state,
+    //     selectedOrder: { ...state.selectedOrder, ...action.payload }
+    //   }
+    // }
+
+    // case TYPE_.ORDER_CANCEL:
+    //   return {
+    //     ...state,
+    //     selectedOrder: initialState.exchange.selectedOrder
+    //   }
 
     case TYPE_.UPDATE_AVAILABLE_FUNDS:
       return {
@@ -145,12 +153,6 @@ function exchange(state = initialState.exchange, action) {
         walletAddress: action.payload
       }
 
-    case TYPE_.ORDER_CANCEL:
-      return {
-        ...state,
-        selectedOrder: initialState.exchange.selectedOrder
-      }
-
     case TYPE_.SET_ORDERBOOK_AGGREGATE_ORDERS:
       return {
         ...state,
@@ -213,14 +215,19 @@ function exchange(state = initialState.exchange, action) {
           return currentFunction(currentValue, action)
         }, state)
       }
-      return pipe(ordersReducer)(state, action)
+      const pipedActions = pipe(
+        ordersReducer,
+        uiReducer
+      )(state, action)
+      return pipedActions
+
+      // return state
     }
-    // return state
   }
 }
 
-export default {
-  exchange
-}
+// export default {
+//   exchange
+// }
 
-// export default exchangeReducer
+export default exchangeReducer

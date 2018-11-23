@@ -8,7 +8,7 @@ import { ZeroEx } from '0x.js'
 import Web3 from 'web3'
 // import ReconnectingWebSocket from 'reconnectingwebsocket'
 import PoolApi from '../PoolsApi/src'
-import rp, { post } from 'request-promise'
+import rp from 'request-promise'
 
 export const setAllowaceOnExchangeThroughDrago = (
   selectedFund,
@@ -283,6 +283,16 @@ export const formatOrders = (orders, orderType) => {
           web3.utils.fromWei(order.remainingTakerTokenAmount, 'ether')
         ).toFixed(5)
         break
+      default:
+        orderPrice = new BigNumber(order.takerTokenAmount)
+          .div(new BigNumber(order.makerTokenAmount))
+          .toFixed(7)
+        orderAmount = new BigNumber(
+          web3.utils.fromWei(order.makerTokenAmount, 'ether')
+        ).toFixed(5)
+        remainingAmount = new BigNumber(
+          web3.utils.fromWei(order.remainingTakerTokenAmount, 'ether')
+        ).toFixed(5)
     }
     let orderHash = ZeroEx.getOrderHashHex(order)
     let orderObject = {
@@ -335,6 +345,21 @@ export const signOrder = async (order, selectedExchange, walletAddress) => {
       takerTokenAmount = ZeroEx.toBaseUnitAmount(
         takerTokenAmount,
         baseTokenDecimals
+      )
+      break
+    default:
+      console.log('asks')
+      makerTokenAmount = new BigNumber(order.orderFillAmount)
+      takerTokenAmount = new BigNumber(order.orderFillAmount).times(
+        new BigNumber(order.orderPrice)
+      )
+      makerTokenAmount = ZeroEx.toBaseUnitAmount(
+        makerTokenAmount,
+        baseTokenDecimals
+      )
+      takerTokenAmount = ZeroEx.toBaseUnitAmount(
+        takerTokenAmount,
+        quoteTokenDecimals
       )
       break
   }
@@ -549,76 +574,6 @@ export const getMarketTakerOrder = async (
   }
   console.log(options.qs)
   return rp(options)
-}
-
-export const newMakerOrder = async (
-  orderType,
-  selectedTokensPair,
-  selectedExchange,
-  selectedFund,
-  isTokenWrapper
-) => {
-  let makerTokenAddress, takerTokenAddress
-  // let web3 = new Web3(Web3.currentProvider)
-  const defaultExpiry = ''
-  if (isTokenWrapper) {
-    makerTokenAddress =
-      orderType === 'asks'
-        ? selectedTokensPair.baseToken.wrappers[selectedExchange.name].address
-        : selectedTokensPair.quoteToken.wrappers[selectedExchange.name].address
-    takerTokenAddress =
-      orderType === 'asks'
-        ? selectedTokensPair.quoteToken.wrappers[selectedExchange.name].address
-        : selectedTokensPair.baseToken.wrappers[selectedExchange.name].address
-  } else {
-    makerTokenAddress =
-      orderType === 'asks'
-        ? selectedTokensPair.baseToken.address
-        : selectedTokensPair.quoteToken.address
-    takerTokenAddress =
-      orderType === 'asks'
-        ? selectedTokensPair.quoteToken.address
-        : selectedTokensPair.baseToken.address
-  }
-
-  // const expirationUnixTimestampSec = new BigNumber(
-  //   Math.round(new Date().getTime() / 1000) + (defaultExpiry || 60) * 60 * 12
-  // ).toNumber()
-
-  let defaultConfig = 3600
-  let expiration
-  expiration = Math.round(new Date().getTime() / 1000)
-  expiration += defaultConfig
-
-  const expirationUnixTimestampSec = new BigNumber(
-    Math.round(new Date().getTime() / 1000) + (defaultExpiry || 60) * 60 * 12
-  )
-
-  // part after the plus can be replaced, first part is constant
-  const web3 = new Web3()
-  const order = {
-    expirationUnixTimestampSec: web3.utils
-      .toBN(
-        Math.round(new Date().getTime() / 1000) +
-          (defaultExpiry || 60) * 60 * 24
-      )
-      .toString(10),
-    expirationUnixTimestampSec: web3.utils.toBN(expiration).toString(10),
-    feeRecipient: selectedExchange.feeRecipient.toLowerCase(),
-
-    maker: selectedFund.details.address.toLowerCase(),
-    makerFee: web3.utils.toBN('0'),
-    makerTokenAddress: makerTokenAddress.toLowerCase(),
-
-    salt: ZeroEx.generatePseudoRandomSalt(),
-    taker: selectedExchange.taker.toLowerCase(),
-    takerFee: web3.utils.toBN('0'),
-    takerTokenAddress: takerTokenAddress.toLowerCase(),
-
-    exchangeContractAddress: selectedExchange.exchangeContractAddress.toLowerCase()
-  }
-  console.log(order)
-  return order
 }
 
 export const fillOrderToExchange = async (
@@ -860,92 +815,6 @@ class Exchange {
     }
   }
 
-  // getOrderBookFromRelay = (relay = 'wss://ws.kovan.radarrelay.com/0x/v0/ws') => {
-  //   if (!this._baseTokenAddress) {
-  //     throw new Error('baseTokenAddress needs to be set')
-  //   }
-  //   if (!this._quoteTokenAddress) {
-  //     throw new Error('quoteTokenAddress needs to be set')
-  //   }
-  //   const subscribeMsg = `{
-  //     "type": "subscribe",
-  //     "channel": "orderbook",
-  //     "requestId": 1,
-  //     "payload": {
-  //         "baseTokenAddress": "${this._baseTokenAddress}",
-  //         "quoteTokenAddress": "${this._quoteTokenAddress}",
-  //         "snapshot": true,
-  //         "limit": 100
-  //     }
-  //   }`
-  //   // console.log(subscribeMsg)
-  //   var ws = new ReconnectingWebSocket(relay);
-  //   ws.onopen = function () {
-  //     console.log(`Connected to ${relay}`);
-  //     ws.send(subscribeMsg);
-  //   };
-  //   ws.onerror = (event) => {
-  //     console.log(event)
-  //     console.log('Connection error')
-  //   }
-  //   ws.onclose = async (event) => {
-  //     console.log(event)
-  //     console.log('Connection closed')
-  //   }
-  //   return ws
-  // }
-
-  // getOrderBookFromRelayERCdEX = (relay = 'https://api.ercdex.com/api/standard') => {
-  //   console.log('Fetching from ERCdEX')
-  //   if (!this._baseTokenAddress) {
-  //     throw new Error('baseTokenAddress needs to be set')
-  //   }
-  //   if (!this._quoteTokenAddress) {
-  //     throw new Error('quoteTokenAddress needs to be set')
-  //   }
-  //   var options = {
-  //     method: 'GET',
-  //     uri: `${relay}/${this._network.id}/v0/orderbook`,
-  //     qs: {
-  //       baseTokenAddress: this._baseTokenAddress, // -> uri + '?access_token=xxxxx%20xxxxx'
-  //       quoteTokenAddress: this._quoteTokenAddress
-  //     },
-  //     json: true // Automatically stringifies the body to JSON
-  //   };
-  //   console.log(options)
-  //   return rp(options)
-  //     .then((ordersERCdEX) => {
-  //       var ws = new ReconnectingWebSocket('wss://api.ercdex.com');
-  //       ws.onopen = () => {
-  //         console.log(`Connected to wss://api.ercdex.com`);
-  //         console.log((`sub:pair-order-change/${this._baseTokenAddress}/${this._quoteTokenAddress}`))
-  //         console.log((`sub:pair-order-change/${this._quoteTokenAddress}/${this._baseTokenAddress}`))
-  //         ws.send(`sub:pair-order-change/${this._baseTokenAddress}/${this._quoteTokenAddress}`);
-  //         ws.send(`sub:pair-order-change/${this._quoteTokenAddress}/${this._baseTokenAddress}`);
-  //         // ws.send(`sub:pair-taker-event/${this._quoteTokenAddress}/${this._baseTokenAddress}`);
-  //         // ws.send(`sub:account-order-change/0xec4ee1bcf8107480815b08b530e0ead75b9f804f`);
-  //         // ws.send(`sub:ticker`);
-  //         // ws.send(subscribeMsg);
-  //       };
-  //       ws.onerror = (event) => {
-  //         console.log(event)
-  //         console.log('Connection error')
-  //       }
-  //       ws.onclose = async (event) => {
-  //         console.log(event)
-  //         console.log('Connection closed')
-  //       }
-  //       ordersERCdEX.ws = ws
-  //       return ordersERCdEX
-  //       // POST succeeded...
-  //     })
-  //     .catch(function (err) {
-  //       console.log(err)
-  //       return err
-  //       // POST failed...
-  //     });
-  // }
-
   formatOrders = (orders, orderType) => {
     let orderPrice, orderAmount
     let formattedOrders = orders.map(order => {
@@ -959,6 +828,18 @@ class Exchange {
           ).toFixed(5)
           break
         case 'bids':
+          orderPrice = new BigNumber(1)
+            .div(
+              new BigNumber(order.takerTokenAmount).div(
+                new BigNumber(order.makerTokenAmount)
+              )
+            )
+            .toFixed(7)
+          orderAmount = new BigNumber(
+            this.api.utils.fromWei(order.takerTokenAmount, 'ether')
+          ).toFixed(5)
+          break
+        default:
           orderPrice = new BigNumber(1)
             .div(
               new BigNumber(order.takerTokenAmount).div(
@@ -984,105 +865,9 @@ class Exchange {
     return formattedOrders
   }
 
-  // fillOrderToExchange = async (signedOrder, amount) =>{
-  //   // const zeroEx = this._zeroEx
-  //   const DECIMALS = 18;
-  //   const shouldThrowOnInsufficientBalanceOrAllowance = true;
-  //   const ZeroExConfig = {
-  //     networkId: this._network.id,
-  //     exchangeContractAddress: '0xf307de6528fa16473d8f6509b7b1d8851320dba5',
-  //     tokenTransferProxyContractAddress: '0xcc040edf6e508c4372a62b1a902c69dcc52ceb1d'
-  //   }
-  //   const zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig);
-  //   const fillTakerTokenAmount = ZeroEx.toBaseUnitAmount(new BigNumber(amount), DECIMALS)
-  //   const takerAddress = await zeroEx.getAvailableAddressesAsync()
-  //   console.log(takerAddress)
-  //   console.log(fillTakerTokenAmount)
-
-  //   const txHash = await zeroEx.exchange.fillOrderAsync(
-  //     signedOrder,
-  //     fillTakerTokenAmount,
-  //     shouldThrowOnInsufficientBalanceOrAllowance,
-  //     takerAddress[0],
-  //     {
-  //       shouldValidate: false
-  //     }
-  //   );
-  //   const txReceipt = await this._zeroEx.awaitTransactionMinedAsync(txHash);
-  //   console.log('FillOrder transaction receipt: ', txReceipt);
-  // }
-
-  // signOrder = async (order) => {
-  //   const zeroEx = this._zeroEx
-  //   const DECIMALS = 18;
-  //   var makerTokenAmount, takerTokenAmount
-  //   switch (order.orderType) {
-  //     case "asks":
-  //       makerTokenAmount = new BigNumber(order.orderFillAmount)
-  //       takerTokenAmount = new BigNumber(makerTokenAmount).times(new BigNumber(order.orderPrice))
-  //       break;
-  //     case "bids":
-  //       makerTokenAmount = new BigNumber(order.orderFillAmount).times(new BigNumber(order.orderPrice))
-  //       takerTokenAmount = new BigNumber(order.orderFillAmount)
-  //       break;
-  //   }
-  //   const tokensAmounts = {
-  //     makerTokenAmount: ZeroEx.toBaseUnitAmount(makerTokenAmount, DECIMALS), // Base 18 decimals
-  //     takerTokenAmount: ZeroEx.toBaseUnitAmount(takerTokenAmount, DECIMALS), // Base 18 decimals
-  //   };
-  //   var orderToBeSigned = { ...order.details.order, ...tokensAmounts }
-  //   const fees = await this.getFees(orderToBeSigned)
-  //   console.log(fees)
-  //   const orderToBeSignedWithFees = {
-  //     ...orderToBeSigned,
-  //     ...fees
-  //   }
-  //   console.log(orderToBeSignedWithFees)
-  //   const orderHash = ZeroEx.getOrderHashHex(orderToBeSignedWithFees);
-  //   console.log(ZeroEx.isValidOrderHash(orderHash))
-  //   const shouldAddPersonalMessagePrefix = true;
-  //   const signer = await zeroEx.getAvailableAddressesAsync();
-  //   const ecSignature = await zeroEx.signOrderHashAsync(orderHash, signer[0], shouldAddPersonalMessagePrefix);
-  //   console.log(ZeroEx.isValidSignature(
-  //     orderHash,
-  //     ecSignature,
-  //     orderToBeSigned.maker
-  //   )
-  // )
-
-  //   // Append signature to order
-  //   const signedOrder = {
-  //     ...orderToBeSignedWithFees,
-  //     ecSignature,
-  //   };
-  //   return signedOrder
-  // }
-
-  // getFees = async (feesRequest) => {
-
-  //   const relayerApiUrl = 'https://api.kovan.radarrelay.com/0x/v0/'
-  //   const relayerClient = new HttpClient(relayerApiUrl);
-  //   const relayerFees = await relayerClient.getFeesAsync(feesRequest)
-  //   return relayerFees
-  //   // {
-  //   //   exchangeContractAddress: string,
-  //   //   expirationUnixTimestampSec: BigNumber,
-  //   //   maker: string,
-  //   //   makerTokenAddress: string,
-  //   //   makerTokenAmount: BigNumber,
-  //   //   salt: BigNumber,
-  //   //   taker: string,
-  //   //   takerTokenAddress: string,
-  //   //   takerTokenAmount: BigNumber,
-  //   // }
-  // }
-
   submitOrderToRelay = async signedOrder => {
     console.log(signedOrder)
     const relayerApiUrl = 'https://api.kovan.radarrelay.com/0x/v0/order'
-    // const relayerClient = new HttpClient(relayerApiUrl);
-    // const response = await relayerClient.submitOrderAsync(signedOrder);
-    // console.log(response)
     let options = {
       method: 'POST',
       uri: relayerApiUrl,
@@ -1093,42 +878,11 @@ class Exchange {
     rp(options)
       .then(function(parsedBody) {
         console.log(parsedBody)
-        // POST succeeded...
       })
       .catch(function(err) {
         console.log(err)
-        // POST failed...
       })
   }
-
-  // newMakerOrder = async (orderType) => {
-  //   const zeroEx = this._zeroEx
-  //   const DECIMALS = 18;
-  //   const EXCHANGE_ADDRESS = zeroEx.exchange.getContractAddress();
-  //   const accounts = await zeroEx.getAvailableAddressesAsync();
-  //   const walletAddress = accounts[0]
-  //   const makerTokenAddress = (orderType === 'asks') ? this._baseTokenAddress : this._quoteTokenAddress
-  //   const takerTokenAddress = (orderType === 'asks') ? this._quoteTokenAddress : this._baseTokenAddress
-
-  //   const order = {
-  //     // maker: "0x57072759Ba54479669CAdF1A25528a472Af95cEF".toLowerCase(),
-  //     maker: walletAddress,
-  //     dragoAddress: "0x57072759Ba54479669CAdF1A25528a472Af95cEF".toLowerCase(),
-  //     taker: ZeroEx.NULL_ADDRESS,
-  //     feeRecipient: ZeroEx.NULL_ADDRESS,
-  //     makerTokenAddress: makerTokenAddress,
-  //     takerTokenAddress: takerTokenAddress,
-  //     exchangeContractAddress: '0xf307de6528fa16473d8f6509b7b1d8851320dba5',
-  //     // exchangeContractAddress: EXCHANGE_ADDRESS,
-  //     salt: ZeroEx.generatePseudoRandomSalt(),
-  //     makerFee: '0',
-  //     takerFee: '0',
-  //     makerTokenAmount: '0', // Base 18 decimals
-  //     takerTokenAmount: '0', // Base 18 decimals
-  //     expirationUnixTimestampSec: new BigNumber(Date.now() + 2592000), // Valid for up to 1 month
-  //   };
-  //   return order
-  // }
 
   updateOrderToOrderBook = (order, orders, action) => {
     console.log(order, orders, action)
@@ -1146,6 +900,18 @@ class Exchange {
         ).toFixed(5)
         break
       case 'bids':
+        orderPrice = new BigNumber(1)
+          .div(
+            new BigNumber(order.takerTokenAmount).div(
+              new BigNumber(order.makerTokenAmount)
+            )
+          )
+          .toFixed(7)
+        orderAmount = new BigNumber(
+          this.api.utils.fromWei(order.takerTokenAmount, 'ether')
+        ).toFixed(5)
+        break
+      default:
         orderPrice = new BigNumber(1)
           .div(
             new BigNumber(order.takerTokenAmount).div(
@@ -1178,6 +944,7 @@ class Exchange {
           case 'bids':
             newOrders.bidsOrders.push(orderObject)
             break
+          default:
         }
         break
       case 'remove':
@@ -1193,6 +960,7 @@ class Exchange {
               return oldOrder.orderHash !== order.orderHash
             })
             break
+          default:
         }
         break
       default:

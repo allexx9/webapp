@@ -1,4 +1,3 @@
-import * as Colors from 'material-ui/styles/colors'
 import {
   AutoSizer,
   Column,
@@ -443,8 +442,8 @@ class ElementListBalances extends PureComponent {
     const { list } = this.props
     return list
       .sortBy(item => item.timestamp)
-      .update(
-        list => (sortDirection === SortDirection.DESC ? list : list.reverse())
+      .update(list =>
+        sortDirection === SortDirection.DESC ? list : list.reverse()
       )
   }
 

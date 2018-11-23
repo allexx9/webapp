@@ -99,7 +99,9 @@ class OrderBook extends Component {
                             orders={ordersAsksSorted}
                             orderType="asks"
                           />
-                        ) : null}
+                        ) : (
+                          <div className={styles.noOrdersMsg}>No orders</div>
+                        )}
                       </Col>
                     </Row>
                   </Col>
@@ -129,7 +131,9 @@ class OrderBook extends Component {
                             orders={ordersBidsSorted}
                             orderType="bids"
                           />
-                        ) : null}
+                        ) : (
+                          <div className={styles.noOrdersMsg}>No orders</div>
+                        )}
                       </Col>
                     </Row>
                   </Col>

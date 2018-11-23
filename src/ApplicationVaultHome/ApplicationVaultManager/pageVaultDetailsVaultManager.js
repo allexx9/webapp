@@ -2,14 +2,11 @@ import * as Colors from 'material-ui/styles/colors'
 import { Actions } from '../../_redux/actions'
 import { Col, Grid, Row } from 'react-flexbox-grid'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
-import { ENDPOINTS, PROD } from '../../_utils/const'
 import { Link, withRouter } from 'react-router-dom'
 import { Tab, Tabs } from 'material-ui/Tabs'
 import { connect } from 'react-redux'
-import { formatCoins, formatEth } from '../../_utils/format'
 import ActionList from 'material-ui/svg-icons/action/list'
 import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
-import BigNumber from 'bignumber.js'
 import CopyContent from 'material-ui/svg-icons/content/content-copy'
 import ElementFeesBox from '../Elements/elementFeesBox'
 import ElementFundNotFound from '../../Elements/elementFundNotFound'
@@ -21,7 +18,6 @@ import FundHeader from '../../_atomic/molecules/fundHeader'
 import InfoTable from '../../Elements/elementInfoTable'
 import Loading from '../../_atomic/atoms/loading'
 import Paper from 'material-ui/Paper'
-import PoolApi from '../../PoolsApi/src'
 import PoolHoldingSupply from '../../_atomic/molecules/poolHoldingSupply'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
@@ -30,7 +26,6 @@ import SectionHeader from '../../_atomic/atoms/sectionHeader'
 import SectionTitle from '../../_atomic/atoms/sectionTitle'
 import Snackbar from 'material-ui/Snackbar'
 import Sticky from 'react-stickynode'
-import Web3 from 'web3'
 import scrollToElement from 'scroll-to-element'
 import styles from './pageVaultDetailsVaultManager.module.css'
 import utils from '../../_utils/utils'
@@ -151,7 +146,6 @@ class PageVaultDetailsVaultManager extends Component {
   render() {
     const { user, endpoint } = this.props
     const { accounts } = this.props.endpoint
-    const { loading } = this.state
     const vaultDetails = this.props.transactionsVault.selectedVault.details
     const vaultTransactionsList = this.props.transactionsVault.selectedVault
       .transactions

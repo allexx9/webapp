@@ -1,11 +1,11 @@
 import { Col, Row } from 'react-flexbox-grid'
 import Checkbox from 'material-ui/Checkbox'
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import ReactTooltip from 'react-tooltip'
-import styles from './checkBoxQuickOrder.module.css'
+// import styles from './checkBoxQuickOrder.module.css'
 
-class CheckBoxQuickOrder extends Component {
+class CheckBoxQuickOrder extends PureComponent {
   static propTypes = {
     checked: PropTypes.bool.isRequired,
     onCheck: PropTypes.func.isRequired
@@ -19,6 +19,7 @@ class CheckBoxQuickOrder extends Component {
   }
 
   render() {
+    console.log('render siwtch')
     return (
       <Row>
         <Col xs={6}>

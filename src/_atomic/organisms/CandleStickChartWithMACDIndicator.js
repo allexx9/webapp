@@ -1,45 +1,27 @@
-import PropTypes from 'prop-types'
-import React from 'react'
-
-import { format } from 'd3-format'
-import { timeFormat } from 'd3-time-format'
-
 import {
   AreaSeries,
   BarSeries,
   CandlestickSeries,
-  LineSeries,
-  MACDSeries
+  LineSeries
 } from 'react-stockcharts/lib/series'
 import { Chart, ChartCanvas } from 'react-stockcharts'
 import {
   CrossHairCursor,
   CurrentCoordinate,
   EdgeIndicator,
-  MouseCoordinateX,
   MouseCoordinateY
 } from 'react-stockcharts/lib/coordinates'
-import { XAxis, YAxis } from 'react-stockcharts/lib/axes'
-
 import {
-  MACDTooltip,
   MovingAverageTooltip,
   OHLCTooltip
 } from 'react-stockcharts/lib/tooltip'
+import { XAxis, YAxis } from 'react-stockcharts/lib/axes'
 import { discontinuousTimeScaleProvider } from 'react-stockcharts/lib/scale'
 import { ema, macd, sma } from 'react-stockcharts/lib/indicator'
 import { fitWidth } from 'react-stockcharts/lib/helper'
-import ErrorBoundary from './errorBoundary'
-
-const macdAppearance = {
-  stroke: {
-    macd: '#FF0000',
-    signal: '#00F300'
-  },
-  fill: {
-    divergence: '#4682B4'
-  }
-}
+import { format } from 'd3-format'
+import PropTypes from 'prop-types'
+import React from 'react'
 
 const mouseEdgeAppearance = {
   textFill: '#542605',

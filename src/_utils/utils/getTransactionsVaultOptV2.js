@@ -22,7 +22,7 @@ export const getTransactionsVaultOptV2 = async (
     return getTransactionsSingleVault(poolAddress, api, accounts, options)
   let startTime = new Date()
   if (accounts.length === 0) {
-    return Array(0), Array(0), Array(0)
+    return [Array(0), Array(0), Array(0)]
   }
   const poolApi = new PoolApi(api)
   let dragoSymbolRegistry = new Map()
@@ -38,7 +38,7 @@ export const getTransactionsVaultOptV2 = async (
       fromBlock = '3000000'
       break
     default:
-      '3000000'
+      fromBlock = '3000000'
   }
 
   console.log(
@@ -93,9 +93,9 @@ export const getTransactionsVaultOptV2 = async (
           name: null,
           address: v.value
         }
-        !dragoSymbolRegistry.has(v.value)
-          ? dragoSymbolRegistry.set(v.value, dragoData)
-          : null
+        if (!dragoSymbolRegistry.has(v.value)) {
+          dragoSymbolRegistry.set(v.value, dragoData)
+        }
       })
       return poolsList
     })
@@ -263,7 +263,7 @@ export const getTransactionsVaultOptV2 = async (
               balances = []
               return arrayPromises
             }
-            hexAccounts.map(account => {
+            hexAccounts.forEach(account => {
               balances[account] = []
               dragoSymbolRegistry.forEach((v, k) => {
                 poolApi.contract.vault.init(k)
@@ -331,7 +331,7 @@ export const getTransactionsVaultOptV2 = async (
                     let balancesRegistry = new Map()
                     let tokenBalances = []
                     for (let v in balances) {
-                      balances[v].map(balance => {
+                      balances[v].forEach(balance => {
                         if (balancesRegistry.has(balance.vaultId)) {
                           let dragoBalance = balancesRegistry.get(
                             balance.vaultId

@@ -1,6 +1,7 @@
 import * as ACTION_ from '../../actions/exchange'
 import { exchange } from '../initialState/index'
 import { handleActions } from 'redux-actions'
+import initialState from '../initialState'
 
 export const ordersReducer = handleActions(
   {
@@ -8,6 +9,12 @@ export const ordersReducer = handleActions(
       return {
         ...state,
         selectedOrder: { ...state.selectedOrder, ...action.payload }
+      }
+    },
+    [ACTION_.cancelOrder]: (state, action) => {
+      return {
+        ...state,
+        selectedOrder: { ...initialState.exchange.selectedOrder }
       }
     }
   },

@@ -3,7 +3,6 @@
 import { Col, Row } from 'react-flexbox-grid'
 import { toUnitAmount } from '../../_utils/format'
 import BigNumber from 'bignumber.js'
-import ContentLoader from 'react-content-loader'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import styles from './tokenBalances.module.css'

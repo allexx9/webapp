@@ -68,9 +68,9 @@ export const logToEvent = (log, dragoSymbolRegistry, api) => {
       }
     }
 
-    !dragoSymbolRegistry.has(poolAddress)
-      ? dragoSymbolRegistry.set(poolAddress, data)
-      : null
+    if (!dragoSymbolRegistry.has(poolAddress)) {
+      dragoSymbolRegistry.set(poolAddress, data)
+    }
   }
   let symbol
   if (typeof returnValues.symbol === 'string') {

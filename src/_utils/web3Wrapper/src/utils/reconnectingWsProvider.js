@@ -61,12 +61,8 @@ let WebsocketProvider = function WebsocketProvider(url, options) {
 
   let recWs = new ReconnectingWebSocket(
     url
-    // protocol,
-    // { minReconnectionDelay: 1 },
-
-    // headers,
-    // undefined,
-    // clientConfig
+    // [],
+    // { minReconnectionDelay: 1 }
   )
 
   this.connection = recWs

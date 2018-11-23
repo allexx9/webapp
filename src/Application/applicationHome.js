@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import TopBarMenu from '../Elements/topBarMenu'
 
-import { Col, Grid, Row } from 'react-flexbox-grid'
+import { Col, Row } from 'react-flexbox-grid'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 
 import { connect } from 'react-redux'

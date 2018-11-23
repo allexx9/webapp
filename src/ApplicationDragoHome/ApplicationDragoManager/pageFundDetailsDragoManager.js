@@ -151,6 +151,19 @@ class PageFundDetailsDragoManager extends Component {
             <Search className={styles.copyAddress} />
           </a>
         )
+      default:
+        return (
+          <a
+            key={'addressether' + address1}
+            href={
+              this.props.endpoint.networkInfo.etherscan + type + '/' + address1
+            }
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Search className={styles.copyAddress} />
+          </a>
+        )
     }
   }
 
@@ -163,7 +176,7 @@ class PageFundDetailsDragoManager extends Component {
 
   render() {
     const {
-      endpoint: { accounts: accounts },
+      endpoint: { accounts },
       user
     } = this.props
     const { loading } = this.state
@@ -212,7 +225,6 @@ class PageFundDetailsDragoManager extends Component {
     ]
 
     let totalAssetsValue = 0
-    let assetsValues = {}
     let tableLiquidity = [
       ['Liquidity', 'Calculating...', [<small key="dragoLiqEth">ETH</small>]],
       ['Porfolio value', 'N/A', [<small key="dragoPortEth">ETH</small>]],

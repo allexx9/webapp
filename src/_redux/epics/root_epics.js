@@ -1,14 +1,6 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-import { Observable, of, timer } from 'rxjs'
-import {
-  catchError,
-  delay,
-  finalize,
-  mergeMap,
-  retryWhen,
-  tap
-} from 'rxjs/operators'
+import { catchError, delay } from 'rxjs/operators'
 import { combineEpics } from 'redux-observable'
 import {
   // relayWebSocketEpic,
@@ -16,7 +8,7 @@ import {
   getOrderBookFromRelayEpic,
   getTradeHistoryLogsFromRelayERCdEXEpic,
   resetLiquidityAndTokenBalancesEpic,
-  updateFundLiquidityEpic,
+  // updateFundLiquidityEpic,
   updateLiquidityAndTokenBalancesEpic
   // getAssetsPricesDataFromERCdEXEpic
 } from './exchange_epics'
@@ -76,11 +68,10 @@ const combineAndIsolateEpics = (...epics) => (...args) => {
           `${epic.name} terminated with error: ${e.message}, restarting it...`
         )
         return source
-      }),
-      delay(2000)
+      })
+      // delay(2000)
     )
   )
-
   return combineEpics(...isolatedEpics)(...args)
 }
 
@@ -94,7 +85,7 @@ export const rootEpic = combineAndIsolateEpics(
   getOrderBookFromRelayEpic,
   getLiquidityAndTokenBalancesEpic,
   updateLiquidityAndTokenBalancesEpic,
-  updateFundLiquidityEpic,
+  // updateFundLiquidityEpic,
   resetLiquidityAndTokenBalancesEpic,
   getTradeHistoryLogsFromRelayERCdEXEpic
 )
@@ -114,24 +105,4 @@ export const rootEpic = combineAndIsolateEpics(
 //     resetLiquidityAndTokenBalancesEpic,
 //     getTradeHistoryLogsFromRelayERCdEXEpic
 //     // getAssetsPricesDataFromERCdEXEpic
-//   )(...args).pipe(
-//     tap(error => {
-//       console.warn(error)
-//     }),
-//     catchError(error => {
-//       console.warn(error)
-//       return Observable.of({
-//         type: 'QUEUE_ERROR_NOTIFICATION',
-//         payload: 'Error from ws.'
-//       })
-//     })
-//     // retryWhen(error => {
-//     //   return error.pipe(
-//     //     mergeMap(error => {
-//     //       console.warn(error)
-//     //       return timer(5000)
-//     //     }),
-//     //     finalize(() => console.log('We are done!'))
-//     //   )
-//     // })
-//   )
+//   )(...args)

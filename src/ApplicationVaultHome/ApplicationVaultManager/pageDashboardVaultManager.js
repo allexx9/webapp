@@ -23,10 +23,8 @@ import Snackbar from 'material-ui/Snackbar'
 import Sticky from 'react-stickynode'
 import UserDashboardHeader from '../../_atomic/atoms/userDashboardHeader'
 import scrollToElement from 'scroll-to-element'
-import utils from '../../_utils/utils'
-
-import { Actions } from '../../_redux/actions'
 import styles from './pageDashboardVaultManager.module.css'
+import utils from '../../_utils/utils'
 
 function mapStateToProps(state) {
   return state

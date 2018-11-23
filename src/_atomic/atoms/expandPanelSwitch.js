@@ -24,19 +24,11 @@ export default class ExpandPanelSwitch extends Component {
   render() {
     return this.props.expanded ? (
       <div style={{ cursor: 'pointer' }}>
-        <NavigationExpandMore
-          // style={this.props.style}
-          style={this.props.style}
-          // onClick={this.onToggleSwitch}
-        />
+        <NavigationExpandMore style={this.props.style} />
       </div>
     ) : (
       <div style={{ cursor: 'pointer' }}>
-        <NavigationChevronRight
-          // style={this.props.style}
-          style={this.props.style}
-          // onClick={this.onToggleSwitch}
-        />
+        <NavigationChevronRight style={this.props.style} />
       </div>
     )
   }

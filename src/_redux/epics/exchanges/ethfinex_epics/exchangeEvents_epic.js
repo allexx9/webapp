@@ -3,17 +3,16 @@
 // import { Observable } from 'rxjs';
 import * as ERRORS from '../../../../_const/errors'
 import * as TYPE_ from '../../../actions/const'
-import { Actions } from '../../../actions/'
+import { Actions } from '../../../actions'
 import { BigNumber } from '@0xproject/utils'
 import {
   ERC20_TOKENS,
   Ethfinex,
   TRADE_TOKENS_PAIRS
 } from '../../../../_utils/tokens'
-import { Observable, defer, timer } from 'rxjs'
+import { Observable, defer, of, timer } from 'rxjs'
 import {
   buffer,
-  delayWhen,
   filter,
   finalize,
   first,
@@ -104,78 +103,13 @@ const getPastExchangeEvents$ = (fund, tokens, exchange, state$) => {
         console.warn(error)
         throw Error(error)
       })
-
-    // return efxEchangeContract
-    //   .getPastEvents(
-    //     'allEvents',
-    //     {
-    //       fromBlock: 0,
-    //       toBlock: 'latest',
-    //       topics: [null, makerAddress, null, null]
-    //       // topics: [null, makerAddress, null, [tokens1, tokens2]]
-    //     },
-    //     function(error) {
-    //       if (error) {
-    //         return error
-    //       }
-    //     }
-    //   )
-    //   .then(events => {
-    //     // console.log(events)
-    //     return events
-    //   })
-    //   .catch(error => {
-    //     return error
-    //   })
-    // console.log(web3)
-    // return web3.rigoblock.utils
-    //   .contract(efxEchangeContract)
-    //   .getPastEvents(
-    //     'allEvents',
-    //     {
-    //       fromBlock: 0,
-    //       toBlock: 'latest',
-    //       topics: [null, makerAddress, null, null]
-    //       // topics: [null, makerAddress, null, [tokens1, tokens2]]
-    //     },
-    //     function(error) {
-    //       if (error) {
-    //         return error
-    //       }
-    //     }
-    //   )
-    //   .then(events => {
-    //     // console.log(events)
-    //     return events
-    //   })
-    //   .catch(error => {
-    //     return error
-    //   })
   })
 }
 
-// const monitorExchangeEvents$ = (fund, tokens, state$) => {
-//   let subscription
-//   return Observable.create(observer => {
-//     Web3Wrapper.getInstance(state$.value.endpoint.networkInfo.id).then(web3 => {
-//       subscription = web3.rigoblock.ob.exchangeEfxV0$.subscribe(val => {
-//         if (Object.keys(val.error).length === 0) {
-//           console.log(val)
-//           observer.next(val)
-//         } else {
-//           console.log(val)
-//           observer.error(val)
-//         }
-//       })
-//     })
-//     return () => {
-//       console.log('monitorExchangeEvents$ closed')
-//       console.log(subscription)
-//       subscription.unsubscribe()
-//       observer.complete()
-//     }
-//   })
-// }
+const monitorExchangeEvents$ = (fund, tokens, state$) => {
+  const instance = Web3Wrapper.getInstance(state$.value.endpoint.networkInfo.id)
+  return instance.rigoblock.ob.exchangeEfxV0$
+}
 
 const processTradesHistory = (trades, state$) => {
   console.log(trades)
@@ -333,14 +267,11 @@ const processTradesHistory = (trades, state$) => {
 }
 
 export const monitorExchangeEventsEpic = (action$, state$) => {
+  // console.log(action)
   let retryAttempt
   const isNodeConnected = state$ =>
     state$.pipe(
       map(val => {
-        // console.log(
-        //   val.app.isConnected,
-        //   val.exchange.selectedFund.details.address === 'undefined'
-        // )
         return (
           typeof val.exchange.selectedFund.details.address === 'undefined' ||
           !val.app.isConnected
@@ -358,33 +289,33 @@ export const monitorExchangeEventsEpic = (action$, state$) => {
     )
 
   return action$.pipe(
+    // tap(val => {
+    //   console.log(val)
+    //   return val
+    // }),
     ofType(utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_START)),
-    buffer(isNodeConnected(state$)),
-    first(),
-    filter(val => {
-      val.length === 0
-    }),
+    // buffer(isNodeConnected(state$)),
+    // first(),
+    // filter(val => {
+    //   val.length === 0
+    // }),
     tap(val => {
-      console.log(val)
       return val
     }),
     switchMap(action => {
-      // console.log(action)
-      const { fund, tokens, exchange } = action[0].payload
+      const { fund, tokens, exchange } = action.payload
       retryAttempt = 0
-      // console.log(action)
       return Observable.concat(
-        getPastExchangeEvents$(fund, tokens, exchange, state$)
-        // monitorExchangeEvents$(fund, tokens, state$).pipe(
-        //   takeUntil(
-        //     action$.ofType(
-        //       utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_STOP)
-        //     )
-        //   )
-        // )
+        // getPastExchangeEvents$(fund, tokens, exchange, state$),
+        monitorExchangeEvents$(fund, tokens, state$).pipe(
+          takeUntil(
+            action$.ofType(
+              utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_STOP)
+            )
+          )
+        )
       ).pipe(
         tap(val => {
-          console.log(val)
           return val
         }),
         takeUntil(action$.ofType(TYPE_.MONITOR_EXCHANGE_EVENTS_STOP)),

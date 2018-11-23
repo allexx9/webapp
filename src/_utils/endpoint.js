@@ -70,11 +70,7 @@ class Endpoint {
       //   }
       // }
       try {
-        let provider = window.web3.currentProvider
         window.web3 = new Web3(window.web3.currentProvider)
-        // window.web3.providers.WebsocketProvider.prototype.on('error', e =>
-        //   console.log('WS Error', e)
-        // )
       } catch (error) {
         console.log(error)
       }

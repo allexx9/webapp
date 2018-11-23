@@ -42,7 +42,7 @@ export const getTransactionsDragoOptV2 = async (
     return getTransactionsSingleDrago(poolAddress, api, accounts, options)
   let startTime = new Date()
   if (accounts.length === 0) {
-    return Array(0), Array(0), Array(0)
+    return [Array(0), Array(0), Array(0)]
   }
   let web3 = await Web3Wrapper.getInstance(api._rb.network.id)
   web3._rb = window.web3._rb
@@ -61,7 +61,7 @@ export const getTransactionsDragoOptV2 = async (
       fromBlock = '3000000'
       break
     default:
-      '3000000'
+      fromBlock = '3000000'
   }
 
   console.log(
@@ -115,9 +115,9 @@ export const getTransactionsDragoOptV2 = async (
           name: null,
           address: v
         }
-        !dragoSymbolRegistry.has(v)
-          ? dragoSymbolRegistry.set(v, dragoData)
-          : null
+        if (!dragoSymbolRegistry.has(v)) {
+          dragoSymbolRegistry.set(v, dragoData)
+        }
       })
       return poolsList
     })
@@ -217,7 +217,6 @@ export const getTransactionsDragoOptV2 = async (
                 poolApi.contract.dragoregistry
                   .fromAddress(k)
                   .then(dragoDetails => {
-                    console.log(dragoDetails)
                     const dragoData = {
                       symbol: dragoDetails[2].trim(),
                       dragoId: new BigNumber(dragoDetails[3]).toFixed(),
@@ -282,7 +281,7 @@ export const getTransactionsDragoOptV2 = async (
               balances = []
               return arrayPromises
             }
-            accounts.map(account => {
+            accounts.forEach(account => {
               let accountAddress = account.address
               balances[accountAddress] = []
               dragoSymbolRegistry.forEach((v, k) => {
