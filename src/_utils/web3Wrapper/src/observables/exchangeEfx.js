@@ -37,7 +37,6 @@ const exchangeEfxV0$ = (web3, networkId) => {
             return observer.next(msg)
           }
         )
-        console.log(subscription)
         return () => subscription.unsubscribe()
       }).pipe(retryWhen(retryStrategy))
     ),
