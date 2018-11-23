@@ -9,8 +9,9 @@ const defaultStatus = {
   error: {}
 }
 
-export default web3 =>
-  timer(0, 2000).pipe(
+export default web3 => {
+  let connectionRetries = 0
+  return timer(0, 2000).pipe(
     exhaustMap(() =>
       Observable.create(async observer => {
         const syncPromise = web3.eth.isSyncing()
@@ -26,10 +27,12 @@ export default web3 =>
             ? { ...defaultStatus, isConnected: true, isSyncing: true }
             : { ...defaultStatus, isConnected: true }
 
+          connectionRetries = 0
           observer.next(nodeStatus)
           observer.complete()
         } catch (e) {
-          observer.next({ ...defaultStatus, error: e })
+          connectionRetries++
+          observer.next({ ...defaultStatus, error: e, connectionRetries })
           return observer.error(e)
         }
         return () => observer.complete()
@@ -37,3 +40,4 @@ export default web3 =>
     ),
     retryWhen(error$ => error$.pipe(delay(RETRY_DELAY)))
   )
+}
