@@ -944,6 +944,7 @@ class Exchange {
           case 'bids':
             newOrders.bidsOrders.push(orderObject)
             break
+          default:
         }
         break
       case 'remove':
@@ -959,6 +960,7 @@ class Exchange {
               return oldOrder.orderHash !== order.orderHash
             })
             break
+          default:
         }
         break
       default:

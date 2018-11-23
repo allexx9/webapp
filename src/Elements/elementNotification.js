@@ -91,7 +91,11 @@ export default class ElementNotification extends Component {
       this.props.networkName === 'mainnet'
         ? 'https://etherscan.io/tx/' + txHash
         : 'https://' + this.props.networkName + '.etherscan.io/tx/' + txHash
-    return <a href={url} rel="noopener noreferrer" target="_blank" />
+    return (
+      <a href={url} rel="noopener noreferrer" target="_blank">
+        <span />
+      </a>
+    )
   }
 
   transactionMenu = () => {
@@ -112,7 +116,7 @@ export default class ElementNotification extends Component {
         >
           <MenuItem
             leftIcon={<Search />}
-            primaryText="Etherscan"
+            primaryText={'Etherscan'}
             containerElement={this.etherscanLink()}
             disabled={etherScanDisabled}
           />

@@ -30,7 +30,7 @@ export const getTransactionsSingleDrago = async (
       fromBlock = '3000000'
       break
     default:
-      '3000000'
+      fromBlock = '3000000'
   }
 
   const logToEvent = log => {

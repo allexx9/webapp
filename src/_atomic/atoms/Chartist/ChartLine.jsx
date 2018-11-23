@@ -25,7 +25,8 @@ class ChartLine extends Component {
         .startOf('day')
         .add(dayOffset, 'days')
         .add(hourOffset, 'hours')
-        .format('x')
+        .format('x'),
+      10
     )
 
   getTicks = () => {
@@ -69,12 +70,14 @@ class ChartLine extends Component {
           moment()
             .startOf('hour')
             .subtract(24, 'hours')
-            .format('x')
+            .format('x'),
+          10
         ),
         high: parseInt(
           moment()
             .startOf('hour')
-            .format('x')
+            .format('x'),
+          10
         ),
         ticks: this.getTicks(),
         labelInterpolationFnc: value => moment(value).format('HH:mm'),

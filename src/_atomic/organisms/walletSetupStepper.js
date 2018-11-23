@@ -134,6 +134,7 @@ class WalletSetupStepper extends Component {
           return !correctNetwork || locked || !holdsTokens
         case 3:
           return !correctNetwork || locked || !holdsTokens
+        default:
       }
     }
     return (
@@ -254,6 +255,7 @@ class WalletSetupStepper extends Component {
             <Looks4 style={style} color="#054186" />
           </div>
         )
+      default:
     }
   }
 

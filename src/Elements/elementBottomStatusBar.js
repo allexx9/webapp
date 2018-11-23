@@ -60,7 +60,7 @@ export default class ElementBottomStatusBar extends Component {
   renderNetworkStatus = () => {
     const { networkStatus, networkError } = this.props
     let networkIconColor = Colors.green600
-    let toolTipType = 'info'
+
     switch (networkError) {
       case 'networkOk':
         networkIconColor = Colors.green600
@@ -70,16 +70,6 @@ export default class ElementBottomStatusBar extends Component {
         break
       default:
         networkIconColor = Colors.green600
-    }
-    switch (networkError) {
-      case 'networkOk':
-        toolTipType = 'info'
-        break
-      case 'networkWarning':
-        toolTipType = 'error'
-        break
-      default:
-        toolTipType = 'info'
     }
 
     return (
@@ -126,21 +116,11 @@ export default class ElementBottomStatusBar extends Component {
   }
 
   render() {
-    const { blockNumber, networkName, networkStatus, networkError } = this.props
-    let toolTipType = 'info'
+    const { blockNumber, networkName, networkStatus} = this.props
+    // let toolTipType = 'info'
     let networkClass = classnames(styles.networkName, styles[networkName])
     const numberWithCommas = x => {
       return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-    }
-    switch (networkError) {
-      case 'networkOk':
-        toolTipType = 'info'
-        break
-      case 'networkWarning':
-        toolTipType = 'error'
-        break
-      default:
-        toolTipType = 'info'
     }
     return (
       <Row className={styles.networkStatus} between="xs">

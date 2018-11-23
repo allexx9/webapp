@@ -478,7 +478,7 @@ class utilities {
   // This funcions needs to be rewritten to work async.
   updateTransactionsQueue = (api, recentTransactions) => {
     let checkTransaction = true
-    let shouldTransactionListUpdate = false
+    // let shouldTransactionListUpdate = false
     let newRecentTransactions = new Map(recentTransactions)
     newRecentTransactions.forEach(value => {
       if (value.status === 'executed' || value.status === 'error') {
@@ -510,12 +510,12 @@ class utilities {
                   console.log('executed')
                   value.status = 'executed'
                   value.timestamp = new Date()
-                  shouldTransactionListUpdate = true
+                  // shouldTransactionListUpdate = true
                 } else {
                   console.log('pending')
                   value.status = 'pending'
                   value.timestamp = new Date()
-                  shouldTransactionListUpdate = true
+                  // shouldTransactionListUpdate = true
                 }
               })
             }
@@ -525,7 +525,7 @@ class utilities {
             value.status = 'error'
             value.error = error
             value.timestamp = new Date()
-            shouldTransactionListUpdate = true
+            // shouldTransactionListUpdate = true
           })
       }
     })
@@ -568,7 +568,7 @@ class utilities {
         fromBlock = '3000000'
         break
       default:
-        '3000000'
+      fromBlock = '3000000'
     }
     //
     // Getting last transactions

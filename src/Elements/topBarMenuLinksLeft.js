@@ -15,7 +15,6 @@ import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import TopMenuLinkLong from '../_atomic/molecules/topMenuLinkLong'
-import styles from './topBarMenuLinksLeft.module.css'
 import utils from '../_utils/utils'
 
 function mapStateToProps(state) {
@@ -23,10 +22,6 @@ function mapStateToProps(state) {
 }
 
 class NavLinksLeft extends Component {
-  constructor(props) {
-    super(props)
-  }
-
   static propTypes = {
     location: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,

@@ -7,7 +7,6 @@ import {
 } from './const'
 import BigNumber from 'bignumber.js'
 import PoolsApi from '../PoolsApi/src'
-import Web3Wrapper from '../_utils/web3Wrapper/src'
 import utils from '../_utils/utils'
 
 class Interfaces {
