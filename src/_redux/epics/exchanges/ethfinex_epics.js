@@ -14,7 +14,7 @@ import {
   map,
   mergeMap,
   takeUntil,
-  // tap,
+  tap,
   throttleTime
 } from 'rxjs/operators'
 import { ofType } from 'redux-observable'
@@ -350,6 +350,10 @@ export const initRelayWebSocketTickerEpic = (action$, state$) =>
         bufferTime(1000),
         filter(val => val.length),
         bufferCount(1),
+        filter(val => {
+          let ticker = [...val[0][0]]
+          return ticker[1] !== 'hb'
+        }),
         map(ticker => {
           const currentState = state$.value
           const lastItem = ticker[0].pop()

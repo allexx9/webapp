@@ -45,8 +45,6 @@ function mapStateToProps(state) {
 }
 
 class ApplicationExchangeHome extends PureComponent {
-
-
   static contextTypes = {
     api: PropTypes.object.isRequired
   }
@@ -526,7 +524,6 @@ class ApplicationExchangeHome extends PureComponent {
 
   // Getting last transactions
   getSelectedFundDetails = async (dragoAddress, accounts) => {
-    console.log(dragoAddress, accounts)
     const { api } = this.context
     try {
       let poolApi = new PoolApi(api)
