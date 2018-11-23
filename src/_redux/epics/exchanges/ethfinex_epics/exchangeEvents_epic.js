@@ -1,40 +1,30 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
 // import { Observable } from 'rxjs';
-import * as ERRORS from '../../../../_const/errors'
 import * as TYPE_ from '../../../actions/const'
 import { Actions } from '../../../actions'
 import { BigNumber } from '@0xproject/utils'
-import {
-  ERC20_TOKENS,
-  Ethfinex,
-  TRADE_TOKENS_PAIRS
-} from '../../../../_utils/tokens'
+import { ERC20_TOKENS } from '../../../../_utils/tokens'
 import { Observable, defer, of, timer } from 'rxjs'
+import { blockChunks } from '../../../../_utils/utils/blockChunks'
 import {
-  buffer,
+  distinctUntilChanged,
+  exhaustMap,
   filter,
   finalize,
-  first,
   map,
   mergeMap,
   retryWhen,
-  skipWhile,
-  switchMap,
-  takeUntil,
-  tap
+  switchMap
 } from 'rxjs/operators'
 import { ofType } from 'redux-observable'
+import { toUnitAmount } from '../../../../_utils/format'
 import Web3Wrapper from '../../../../_utils/web3Wrapper/src'
 import _ from 'lodash'
-// import moment from 'moment'
-import { blockChunks } from '../../../../_utils/utils/blockChunks'
-import { toUnitAmount } from '../../../../_utils/format'
 import exchangeEfxV0Abi from '../../../../PoolsApi/src/contracts/abi/v2/exchange-efx-v0.json'
 import utils from '../../../../_utils/utils'
 
-const getPastExchangeEvents$ = (fund, tokens, exchange, state$) => {
-  console.log('getPastExchangeEvents$')
+const getPastExchangeEvents$ = (fund, exchange, state$) => {
   return defer(async () => {
     const web3 = await Web3Wrapper.getInstance(
       state$.value.endpoint.networkInfo.id
@@ -43,6 +33,8 @@ const getPastExchangeEvents$ = (fund, tokens, exchange, state$) => {
       exchangeEfxV0Abi,
       exchange.exchangeContractAddress.toLowerCase()
     )
+
+    // This code may be used to filter by tokens. Do not remove.
 
     // console.log(
     //   '0x3f3fb7135a4e1512b508f90733145ab182cc196e127cd9281a8e9f636de79a67'
@@ -79,7 +71,7 @@ const getPastExchangeEvents$ = (fund, tokens, exchange, state$) => {
       let chunck = 100000
       const chunks = blockChunks(0, lastBlock, chunck)
       arrayPromises = chunks.map(async chunk => {
-        let options = {
+        const options = {
           fromBlock: chunk.fromBlock,
           toBlock: chunk.toBlock,
           topics: [null, makerAddress, null, null]
@@ -95,6 +87,7 @@ const getPastExchangeEvents$ = (fund, tokens, exchange, state$) => {
         )
       })
     })
+    // console.log(arrayPromises)
     return Promise.all(arrayPromises)
       .then(results => {
         return [].concat(...results)
@@ -107,15 +100,51 @@ const getPastExchangeEvents$ = (fund, tokens, exchange, state$) => {
 }
 
 const monitorExchangeEvents$ = (fund, tokens, state$) => {
-  console.log('monitorExchangeEvents$')
-  console.log(tokens)
-  console.log(state$.value.endpoint.networkInfo.id)
   const instance = Web3Wrapper.getInstance(state$.value.endpoint.networkInfo.id)
   return instance.rigoblock.ob.exchangeEfxV0$
 }
 
+const onNewBlock$ = (fund, exchange, state$) => {
+  let fromBlock
+  return timer(0, 1000).pipe(
+    switchMap(() => {
+      return of(state$.value.endpoint.prevBlockNumber)
+    }),
+    distinctUntilChanged((a, b) => {
+      return a === b
+    }),
+    exhaustMap(blockNumber => {
+      return defer(async () => {
+        const web3 = await Web3Wrapper.getInstance(
+          state$.value.endpoint.networkInfo.id
+        )
+        const makerAddress = '0x' + fund.address.substr(2).padStart(64, '0')
+        const efxEchangeContract = new web3.eth.Contract(
+          exchangeEfxV0Abi,
+          exchange.exchangeContractAddress.toLowerCase()
+        )
+        const options = {
+          fromBlock,
+          toBlock: 'latest',
+          topics: [null, makerAddress, null, null]
+        }
+        const events = await efxEchangeContract.getPastEvents(
+          'allEvents',
+          options,
+          function(error) {
+            if (error) {
+              return error
+            }
+          }
+        )
+        fromBlock = blockNumber++
+        return events
+      })
+    })
+  )
+}
+
 const processTradesHistory = (trades, state$) => {
-  console.log(trades)
   let networkName = state$.value.endpoint.networkInfo.name
   let quoteTokensWrappers = new Map()
   let baseTokensWrappers = new Map()
@@ -199,11 +228,11 @@ const processTradesHistory = (trades, state$) => {
         )
         takerAmount = toUnitAmount(
           new BigNumber(trade.returnValues.filledMakerTokenAmount),
-          takerDecimals
+          makerDecimals
         )
         transaction.amount = toUnitAmount(
           new BigNumber(trade.returnValues.filledTakerTokenAmount),
-          makerDecimals
+          takerDecimals
         ).toFixed(5)
 
         transaction.price = new BigNumber(1)
@@ -270,58 +299,14 @@ const processTradesHistory = (trades, state$) => {
 }
 
 export const monitorExchangeEventsEpic = (action$, state$) => {
-  // console.log(action)
-  let retryAttempt
-  const isNodeConnected = state$ =>
-    state$.pipe(
-      map(val => {
-        return (
-          typeof val.exchange.selectedFund.details.address === 'undefined' ||
-          !val.app.isConnected
-        )
-      }),
-      tap(val => {
-        // console.log(val)
-        return val
-      }),
-      skipWhile(val => val === true),
-      tap(val => {
-        // console.log('not skipped')
-        return val
-      })
-    )
-
   return action$.pipe(
-    // tap(val => {
-    //   console.log(val)
-    //   return val
-    // }),
     ofType(utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_START)),
-    // buffer(isNodeConnected(state$)),
-    // first(),
-    // filter(val => {
-    //   val.length === 0
-    // }),
-    tap(val => {
-      return val
-    }),
     switchMap(action => {
       const { fund, tokens, exchange } = action.payload
-      retryAttempt = 0
       return Observable.concat(
-        // getPastExchangeEvents$(fund, tokens, exchange, state$),
-        monitorExchangeEvents$(fund, tokens, state$).pipe(
-          takeUntil(
-            action$.ofType(
-              utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_STOP)
-            )
-          )
-        )
+        getPastExchangeEvents$(fund, exchange, state$),
+        onNewBlock$(fund, exchange, state$)
       ).pipe(
-        tap(val => {
-          return val
-        }),
-        takeUntil(action$.ofType(TYPE_.MONITOR_EXCHANGE_EVENTS_STOP)),
         filter(trades => Array.isArray(trades)),
         map(trades => {
           let tradesHistory = processTradesHistory(trades.reverse(), state$)
@@ -330,10 +315,8 @@ export const monitorExchangeEventsEpic = (action$, state$) => {
         retryWhen(error => {
           let scalingDuration = 10000
           return error.pipe(
-            mergeMap((error, i) => {
+            mergeMap(error => {
               console.warn(error)
-              const retryAttempt = i + 1
-              console.log(`monitorExchangeEventsEpic Attempt ${retryAttempt}`)
               return timer(scalingDuration)
             }),
             finalize(() => console.log('We are done!'))

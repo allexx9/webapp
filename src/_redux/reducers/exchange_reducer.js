@@ -9,13 +9,9 @@ import initialState from './initialState'
 function exchangeReducer(state = initialState.exchange, action) {
   switch (action.type) {
     case TYPE_.UPDATE_TRADES_HISTORY: {
-      let tradesHistory
-      action.payload.length === 1
-        ? (tradesHistory = [...state.tradesHistory, ...action.payload])
-        : (tradesHistory = [...action.payload])
       return {
         ...state,
-        tradesHistory: tradesHistory
+        tradesHistory: [...state.tradesHistory, ...action.payload]
       }
     }
 

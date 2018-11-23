@@ -1,11 +1,11 @@
 import * as Colors from 'material-ui/styles/colors'
 import { Col, Row } from 'react-flexbox-grid'
+import { formatPrice } from '../../_utils/format'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import ReactTooltip from 'react-tooltip'
 import TradingPairSymbolsOrders from '../atoms/tradingPairSymbolsOders'
 import classNames from 'classnames'
-import { formatPrice } from '../../_utils/format'
 import styles from './tableOrdersHistory.module.css'
 
 class TableOrdersHistory extends Component {

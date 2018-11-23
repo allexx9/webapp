@@ -28,14 +28,14 @@
 .quantityText {
   padding-right: 14px;
   text-align: right;
-  opacity: 0.5;
+  opacity: 0.8;
 
 }
 
 .priceText {
   padding-right: 14px;
   text-align: right;
-  opacity: 0.5;
+  opacity: 0.8;
 }
 
 .orderBookContainer {

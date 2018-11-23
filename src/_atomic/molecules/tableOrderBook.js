@@ -64,19 +64,19 @@ class TableOrderBook extends Component {
     let price, amount
     const orderStylePrice = {
       asks: {
-        color: Colors.red400
+        color: Colors.red500
       },
       bids: {
-        color: Colors.green400
+        color: Colors.green500
       }
     }
 
     const orderStyleAmount = {
       asks: {
-        color: Colors.red400
+        color: Colors.red600
       },
       bids: {
-        color: Colors.green400
+        color: Colors.green600
       }
     }
 
