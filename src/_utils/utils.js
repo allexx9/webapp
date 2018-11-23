@@ -2,6 +2,24 @@
 import { APP, DS } from './const'
 import { DRG_ISIN } from './const'
 import { ERCdEX, Ethfinex } from './const'
+import { MOCK_ERC20_TOKENS } from './tokens'
+import {
+  MSG_NETWORK_STATUS_ERROR,
+  MSG_NETWORK_STATUS_OK,
+  NETWORK_OK,
+  NETWORK_WARNING
+} from './const'
+import {
+  blockChunks,
+  dateFromTimeStampHuman,
+  getDragoDetails,
+  getDragoLiquidityAndTokenBalances,
+  getTokenWrapperLockTime,
+  getTransactionsDragoOptV2,
+  getTransactionsSingleDrago,
+  getTransactionsSingleVault,
+  getTransactionsVaultOptV2
+} from './utils/index'
 import {
   formatCoins,
   formatEth,
@@ -12,29 +30,10 @@ import BigNumber from 'bignumber.js'
 import ElementNotification from '../Elements/elementNotification'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import PoolApi from '../PoolsApi/src'
-import Web3 from 'web3'
-import palette from './palete'
-import { MOCK_ERC20_TOKENS } from './tokens'
-import {
-  MSG_NETWORK_STATUS_ERROR,
-  MSG_NETWORK_STATUS_OK,
-  NETWORK_OK,
-  NETWORK_WARNING
-} from './const'
-import {
-  blockChunks,
-  getTransactionsDragoOptV2,
-  getTransactionsSingleDrago,
-  getDragoDetails,
-  dateFromTimeStampHuman,
-  getTransactionsVaultOptV2,
-  getTransactionsSingleVault,
-  getDragoLiquidityAndTokenBalances,
-  getTokenWrapperLockTime,
-} from './utils/index'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
-
+import Web3 from 'web3'
+import palette from './palete'
 
 class NotificationAlert extends Component {
   static propTypes = {
@@ -96,7 +95,6 @@ class utilities {
     let newBlockNumber = new BigNumber(0)
     let notifications = Array(0)
     let fetchTransactions = false
-    console.log(currentState)
     // Checking if blockNumber is passed by Parity Api or Web3
     if (typeof blockNumber.number !== 'undefined') {
       newBlockNumber = new BigNumber(blockNumber.number)
@@ -568,7 +566,7 @@ class utilities {
         fromBlock = '3000000'
         break
       default:
-      fromBlock = '3000000'
+        fromBlock = '3000000'
     }
     //
     // Getting last transactions

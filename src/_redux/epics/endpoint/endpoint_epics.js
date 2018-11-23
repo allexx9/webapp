@@ -5,11 +5,10 @@ import * as TYPE_ from '../../actions/const'
 import { Actions } from '../../actions'
 import { DEBUGGING, INFURA, LOCAL, RIGOBLOCK } from '../../../_utils/const'
 import { Interfaces } from '../../../_utils/interfaces'
-import { Observable, defer, timer } from 'rxjs'
+import { Observable, defer, from, timer } from 'rxjs'
 import {
   delay,
   finalize,
-  flatMap,
   map,
   mergeMap,
   retryWhen,
@@ -64,7 +63,7 @@ export const attacheInterfaceEpic = action$ =>
     ofType(TYPE_.ATTACH_INTERFACE),
     switchMap(action => {
       return attachInterface$(action.payload.api, action.payload.endpoint).pipe(
-        flatMap(endpoint => {
+        mergeMap(endpoint => {
           return Observable.concat(
             Observable.of(
               Actions.app.updateAppStatus({
@@ -121,17 +120,26 @@ export const delayShowAppEpic = action$ =>
 // SUBSCRIBE TO NEW BLOCK AND MONITOR ACCOUNTS
 //
 
+// const monitorAccounts$ = (api, state$) => {
+//   return Observable.create(observer => {
+//     const instance = Web3Wrapper.getInstance(
+//       state$.value.endpoint.networkInfo.id
+//     )
+//     instance.rigoblock.ob.newBlock$.subscribe(newBlock => {
+//       return utils
+//         .updateAccounts(api, newBlock, state$)
+//         .then(result => observer.next(result))
+//     })
+//   })
+// }
+
 const monitorAccounts$ = (api, state$) => {
-  return Observable.create(observer => {
-    const instance = Web3Wrapper.getInstance(
-      state$.value.endpoint.networkInfo.id
-    )
-    instance.rigoblock.ob.newBlock$.subscribe(newBlock => {
-      utils
-        .updateAccounts(api, newBlock, state$)
-        .then(result => observer.next(result))
+  const instance = Web3Wrapper.getInstance(state$.value.endpoint.networkInfo.id)
+  return instance.rigoblock.ob.newBlock$.pipe(
+    switchMap(newBlock => {
+      return from(utils.updateAccounts(api, newBlock, state$))
     })
-  })
+  )
 }
 
 export const monitorAccountsEpic = (action$, state$) => {
@@ -140,11 +148,8 @@ export const monitorAccountsEpic = (action$, state$) => {
     mergeMap(action => {
       return monitorAccounts$(action.payload.api, state$).pipe(
         takeUntil(action$.pipe(ofType(TYPE_.MONITOR_ACCOUNTS_STOP))),
-        tap(val => {
-          // console.log(val)
-          return val
-        }),
-        flatMap(accountsUpdate => {
+        mergeMap(accountsUpdate => {
+          console.log(accountsUpdate)
           const observablesArray = Array(0)
 
           observablesArray.push(
