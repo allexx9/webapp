@@ -7,16 +7,12 @@ import { BigNumber } from '@0xproject/utils'
 import { Observable, from, timer, zip } from 'rxjs'
 import {
   auditTime,
-  bufferCount,
-  bufferTime,
   catchError,
   exhaustMap,
   filter,
   map,
   mergeMap,
-  takeUntil,
-  tap,
-  throttleTime
+  takeUntil
 } from 'rxjs/operators'
 import { ofType } from 'redux-observable'
 import CRC from 'crc-32'
@@ -233,11 +229,6 @@ export const initRelayWebSocketBookEpic = action$ =>
         baseToken,
         quoteToken
       ).pipe(
-        tap(val => {
-          // console.log(val)
-          return val
-        }),
-        // throttleTime(1000),
         auditTime(1000),
         map(payload => {
           console.log('*** Orderbook epic update ***')
@@ -252,7 +243,6 @@ export const initRelayWebSocketBookEpic = action$ =>
             }
             return spread
           }
-          console.log(payload)
           const asks = Object.values(payload.asks).map(element => {
             return {
               orderAmount: element.amount,
@@ -331,9 +321,9 @@ const websocketTicker$ = (relay, networkId, baseToken, quoteToken) =>
   })
 
 const updateCurrentTokenPrice = ticker => {
-  if (Array.isArray(ticker[1])) {
+  if (Array.isArray(ticker)) {
     const current = {
-      price: ticker[1][6]
+      price: ticker[6]
     }
     return {
       type: TYPE_.UPDATE_CURRENT_TOKEN_PRICE,
@@ -357,14 +347,12 @@ export const initRelayWebSocketTickerEpic = (action$, state$) =>
       return websocketTicker$(relay, networkId, baseToken, quoteToken).pipe(
         auditTime(1000),
         filter(val => val.length),
-        bufferCount(1),
         filter(val => {
-          let ticker = [...val[0][0]]
-          return ticker[1] !== 'hb'
+          return val[1] !== 'hb'
         }),
         map(ticker => {
           const currentState = state$.value
-          const lastItem = ticker[0].pop()
+          const lastItem = ticker.pop()
           return updateCurrentTokenPrice(
             lastItem,
             currentState.exchange.selectedTokensPair.baseToken
