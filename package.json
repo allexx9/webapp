@@ -79,8 +79,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build-parity": "PUBLIC_URL=./ react-scripts build",
-    "build-parity-win": "react-scripts build",
+    "build-prod": "scripts/deploy-prod.sh",
     "build-beta": "GENERATE_SOURCEMAP=true react-scripts --max-old-space-size=8192 build",
     "build": "GENERATE_SOURCEMAP=false react-scripts --max-old-space-size=8192 build",
     "test": "react-scripts test --env=jsdom --setupTestFrameworkScriptFile=raf/polyfill",
