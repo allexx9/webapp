@@ -1,5 +1,5 @@
 import * as CONSTANTS from '../utils/const'
-import { Observable, defer, from, of } from 'rxjs'
+import { Observable, defer, from } from 'rxjs'
 import { delay, retryWhen, switchMap, tap } from 'rxjs/operators'
 import exchangeEfxV0Abi from '../abis/exchange-efx-v0.json'
 
