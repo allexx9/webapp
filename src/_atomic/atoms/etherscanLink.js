@@ -9,12 +9,16 @@ export default class EtherscanLink extends Component {
     textLink: PropTypes.oneOfType([
       PropTypes.string.isRequired,
       PropTypes.object.isRequired
-    ]),
-    txHash: PropTypes.string.isRequired
+    ]).isRequired,
+    txHash: PropTypes.string,
+    address: PropTypes.string
   }
 
   static defaultProps = {
-    networkName: 'mainnet'
+    networkName: 'mainnet',
+    txHash: '',
+    address: ''
+    // textLink: ''
   }
 
   static contextTypes = {
@@ -22,12 +26,12 @@ export default class EtherscanLink extends Component {
   }
 
   etherscanLinkTx = () => {
-    return this.props.networkName === 'mainnet'
-      ? 'https://etherscan.io/tx/' + this.props.txHash
-      : 'https://' +
-          this.props.networkName +
-          '.etherscan.io/tx/' +
-          this.props.txHash
+    const { txHash, networkName, address } = this.props
+    const type = txHash ? 'tx' : 'address'
+    return networkName === 'mainnet'
+      ? 'https://etherscan.io/' + type + '/' + txHash || address
+      : 'https://' + networkName + '.etherscan.io/' + type + '/' + txHash ||
+          address
   }
 
   render() {

@@ -6,4 +6,17 @@
 
 .address {
   font-weight: 700;
+  color: black;
+}
+
+.address a:visited {
+  text-decoration: none;
+}
+
+.address a:hover {
+  text-decoration: underline;
+}
+
+.address a:active {
+  text-decoration: underline;
 }

@@ -628,13 +628,8 @@ class ApplicationExchangeHome extends PureComponent {
 
     if (show) {
       const { bids, asks, spread } = this.props.exchange.orderBook
-      // console.log(asks)
-      // console.log(bids)
       const asksOrderNormalized = asks.slice(-20)
       const bidsOrderNormalized = bids.slice(0, 20)
-      // console.log(this.props.exchange.selectedExchange)
-      // const bidsOrderNormalizedFilled = [ ...Array(20 - bidsOrderNormalized.length).fill(null), ...bidsOrderNormalized ]
-      // const asksOrderNormalizedFilled = [ ...Array(20 - asksOrderNormalized.length).fill(null), ...asksOrderNormalized]
       const { chartData } = this.props.exchange
       const currentPrice = new BigNumber(
         this.props.exchange.selectedTokensPair.ticker.current.price
@@ -642,8 +637,6 @@ class ApplicationExchangeHome extends PureComponent {
       const priceVariation = new BigNumber(
         this.props.exchange.selectedTokensPair.ticker.variation
       ).toFixed(4)
-      // console.log(this.props.exchange)
-      // console.log(RELAYS)
       return (
         <div ref={node => (this.node = node)}>
           <Row className={styles.maincontainer}>
@@ -652,9 +645,10 @@ class ApplicationExchangeHome extends PureComponent {
                 <Row>
                   <Col xs={12} sm={4}>
                     <FundSelector
-                      funds={this.props.exchange.availableFunds}
+                      funds={exchange.availableFunds}
                       onSelectFund={this.onSelectFund}
-                      selectedFund={this.props.exchange.selectedFund}
+                      selectedFund={exchange.selectedFund}
+                      networkInfo={endpoint.networkInfo}
                     />
                   </Col>
                   {/* <Col xs={2}>

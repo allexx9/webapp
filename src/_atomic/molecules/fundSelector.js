@@ -11,7 +11,8 @@ export default class FundSelector extends PureComponent {
   static propTypes = {
     funds: PropTypes.array.isRequired,
     onSelectFund: PropTypes.func.isRequired,
-    selectedFund: PropTypes.object.isRequired
+    selectedFund: PropTypes.object.isRequired,
+    networkInfo: PropTypes.object.isRequired
   }
 
   state = {
@@ -51,20 +52,33 @@ export default class FundSelector extends PureComponent {
   }
 
   render() {
+    const { address, dragoId } = this.props.selectedFund.details
+    const { networkInfo } = this.props
+    console.log(this.props)
     return (
       <Row>
         <Col xs={12}>
           <div className={styles.sectionTitle}>
             Drago:{' '}
-            <span className={styles.address}>
-              {this.props.selectedFund.details.address}
-            </span>
+            {/* <EtherscanLink
+              networkName={networkName}
+              textLink={address}
+              address={address}
+            /> */}
+            <a
+              className={styles.address}
+              href={`${networkInfo.etherscan}address/${address}`}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              {address}
+            </a>
           </div>
         </Col>
         <Col xs={12}>
           <SelectField
             fullWidth
-            value={this.props.selectedFund.details.dragoId}
+            value={dragoId}
             onChange={this.onSelectFund}
             // style={{height: 90}}
           >

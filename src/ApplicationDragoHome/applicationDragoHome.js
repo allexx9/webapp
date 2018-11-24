@@ -84,10 +84,6 @@ class ApplicationDragoHome extends Component {
       !this.props.endpoint.isMetaMaskNetworkCorrect
         ? true
         : false
-    // console.log(this.props.endpoint.isMetaMaskLocked)
-    // if (endpoint.loading) {
-    //   return <Loading />
-    // }
 
     const showApp = !openWalletSetup && !endpoint.grgBalance.eq(0)
     return (
