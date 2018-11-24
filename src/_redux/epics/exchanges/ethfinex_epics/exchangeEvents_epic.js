@@ -5,23 +5,20 @@ import * as TYPE_ from '../../../actions/const'
 import { Actions } from '../../../actions'
 import { BigNumber } from '@0xproject/utils'
 import { ERC20_TOKENS } from '../../../../_utils/tokens'
-import { Observable, defer, of, timer } from 'rxjs'
 import { blockChunks } from '../../../../_utils/utils/blockChunks'
 import {
   concat,
   distinctUntilChanged,
   exhaustMap,
   filter,
-  finalize,
   map,
-  mergeMap,
-  retryWhen,
-  switchMap
+  switchMap,
+  tap
 } from 'rxjs/operators'
+import { defer, from, of, timer } from 'rxjs'
 import { ofType } from 'redux-observable'
 import { toUnitAmount } from '../../../../_utils/format'
 import Web3Wrapper from '../../../../_utils/web3Wrapper/src'
-import _ from 'lodash'
 import exchangeEfxV0Abi from '../../../../PoolsApi/src/contracts/abi/v2/exchange-efx-v0.json'
 import utils from '../../../../_utils/utils'
 
@@ -80,7 +77,9 @@ const getPastExchangeEvents$ = (fund, exchange, state) => {
           (err, res) => (err ? console.error(err) : res)
         )
       })
-      return from(Promise.all(eventsPromises))
+      return from(Promise.all(eventsPromises)).pipe(
+        map(result => result.reduce((acc, curr) => [...acc, ...curr], []))
+      )
     })
   )
 }
@@ -280,15 +279,23 @@ const processTradesHistory = (trades, state$) => {
 }
 
 export const monitorExchangeEventsEpic = (action$, state) => {
-  const web3 = Web3Wrapper.getInstance(state$.value.endpoint.networkInfo.id)
+  const web3 = Web3Wrapper.getInstance(state.value.endpoint.networkInfo.id)
   const ethfinexEventful$ = web3.rigoblock.ob.exchangeEfxV0$
+    .pipe
+    // map(val => [val])
+    ()
   return action$.pipe(
     ofType(utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_START)),
     switchMap(action => {
       const { fund, tokens, exchange } = action.payload
-      return getPastExchangeEvents$(fund, exchange, state).pipe(
-        concat(ethfinexEventful$)
-      )
+      return getPastExchangeEvents$(fund, exchange, state).pipe()
+      // concat(ethfinexEventful$)
+    }),
+    tap(val => console.log('DEBUG', val)),
+    filter(trades => Array.isArray(trades) && trades.length),
+    map(trades => {
+      let tradesHistory = processTradesHistory(trades.reverse(), state)
+      return Actions.exchange.updateTradesHistory(tradesHistory)
     })
   )
 }
@@ -299,8 +306,8 @@ export const monitorExchangeEventsEpic = (action$, state) => {
 // ).pipe(
 //   filter(trades => Array.isArray(trades)),
 //   map(trades => {
-//     let tradesHistory = processTradesHistory(trades.reverse(), state$)
-//     return Actions.exchange.updateTradesHistory(tradesHistory)
+// let tradesHistory = processTradesHistory(trades.reverse(), state$)
+// return Actions.exchange.updateTradesHistory(tradesHistory)
 //   }),
 //   retryWhen(error => {
 //     let scalingDuration = 10000
