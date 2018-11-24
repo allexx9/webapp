@@ -7,7 +7,13 @@ const exchange = {
   updateOrder,
   updateTradesHistory: payload => {
     return {
-      type: TYPE_.UPDATE_TRADES_HISTORY,
+      type: TYPE_.TRADES_HISTORY_UPDATE,
+      payload: payload
+    }
+  },
+  resetTradesHistory: payload => {
+    return {
+      type: TYPE_.TRADES_HISTORY_RESET,
       payload: payload
     }
   },

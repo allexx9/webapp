@@ -271,14 +271,6 @@ class ApplicationExchangeHome extends PureComponent {
         spread: '0'
       }
     })
-    // Getting exchange contract events
-    this.props.dispatch(
-      Actions.exchange.monitorEventsStart(
-        selectedFund,
-        tokensPair,
-        selectedExchange
-      )
-    )
 
     // Getting price ticker
     this.props.dispatch(
@@ -334,6 +326,21 @@ class ApplicationExchangeHome extends PureComponent {
       selectedExchange,
       selectedRelay
     } = this.props.exchange
+
+    // Reser exchange contract events
+    this.props.dispatch(Actions.exchange.resetTradesHistory())
+
+    // Stopping exchange contract events
+    this.props.dispatch(Actions.exchange.monitorEventsStop(selectedExchange))
+
+    // Starting exchange contract events
+    this.props.dispatch(
+      Actions.exchange.monitorEventsStart(
+        fund,
+        selectedTokensPair,
+        selectedExchange
+      )
+    )
 
     // Resetting current order
     this.props.dispatch(Actions.exchange.cancelSelectedOrder())

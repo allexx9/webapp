@@ -12,7 +12,8 @@ import {
   map,
   mergeMap,
   retryWhen,
-  switchMap
+  switchMap,
+  takeUntil
 } from 'rxjs/operators'
 import { defer, from, timer } from 'rxjs'
 import { ofType } from 'redux-observable'
@@ -239,16 +240,29 @@ const processTradesHistory = (trades, state$) => {
 
 export const monitorExchangeEventsEpic = (action$, state$) => {
   const web3 = Web3Wrapper.getInstance(state$.value.endpoint.networkInfo.id)
-  const ethfinexEventful$ = web3.rigoblock.ob.exchangeEfxV0$.pipe(
-    map(val => [val])
-  )
+  const ethfinexEventful$ = fund =>
+    web3.rigoblock.ob.exchangeEfxV0$.pipe(
+      filter(val => {
+        return (
+          val.returnValues.maker.toLowerCase() === fund.address.toLowerCase()
+        )
+      }),
+      map(val => [val])
+    )
 
   return action$.pipe(
     ofType(utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_START)),
     switchMap(action => {
       const { fund, tokens, exchange } = action.payload
       return getPastExchangeEvents$(fund, exchange, state$).pipe(
-        concat(ethfinexEventful$)
+        concat(
+          ethfinexEventful$(fund),
+          takeUntil(
+            action$.ofType(
+              utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_STOP)
+            )
+          )
+        )
       )
     }),
     filter(trades => Array.isArray(trades) && trades.length),
@@ -270,6 +284,3 @@ export const monitorExchangeEventsEpic = (action$, state$) => {
 }
 
 finalize(() => console.log('We are done!'))
-//     )
-//   })
-// )

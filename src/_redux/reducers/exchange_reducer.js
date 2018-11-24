@@ -8,26 +8,19 @@ import initialState from './initialState'
 
 function exchangeReducer(state = initialState.exchange, action) {
   switch (action.type) {
-    case TYPE_.UPDATE_TRADES_HISTORY: {
+    case TYPE_.TRADES_HISTORY_UPDATE: {
       return {
         ...state,
         tradesHistory: [...action.payload, ...state.tradesHistory]
       }
     }
 
-    // case 'ORDER_UPDATE': {
-    //   console.log(action)
-    //   return {
-    //     ...state,
-    //     selectedOrder: { ...state.selectedOrder, ...action.payload }
-    //   }
-    // }
-
-    // case TYPE_.ORDER_CANCEL:
-    //   return {
-    //     ...state,
-    //     selectedOrder: initialState.exchange.selectedOrder
-    //   }
+    case TYPE_.TRADES_HISTORY_RESET: {
+      return {
+        ...state,
+        tradesHistory: []
+      }
+    }
 
     case TYPE_.UPDATE_AVAILABLE_FUNDS:
       return {
