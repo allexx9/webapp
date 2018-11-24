@@ -51,11 +51,11 @@ export default class ElementBottomStatusBar extends PureComponent {
     // (!utils.shallowEqual(this.props.blockNumber, nextProps.blockNumber)) ? this.blockNumber(): null
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    const propsUpdate = !utils.shallowEqual(this.props, nextProps)
-    const stateUpdate = !utils.shallowEqual(this.state, nextState)
-    return propsUpdate || stateUpdate
-  }
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   const propsUpdate = !utils.shallowEqual(this.props, nextProps)
+  //   const stateUpdate = !utils.shallowEqual(this.state, nextState)
+  //   return propsUpdate || stateUpdate
+  // }
 
   renderNetworkStatus = () => {
     const { networkStatus, networkError } = this.props

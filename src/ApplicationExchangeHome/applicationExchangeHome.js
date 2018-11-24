@@ -64,21 +64,21 @@ class ApplicationExchangeHome extends PureComponent {
   scrollPosition = 0
   activeElement = null
 
-  shouldComponentUpdate(nextProps, nextState) {
-    let stateUpdate = true
-    let propsUpdate = true
-    // shouldComponentUpdate returns false if no need to update children, true if needed.
-    propsUpdate = !utils.shallowEqual(this.props, nextProps)
-    stateUpdate = !utils.shallowEqual(this.state.loading, nextState.loading)
-    stateUpdate = !utils.shallowEqual(this.state, nextState)
-    // Saving the scroll position. Neede in componentDidUpdate in order to avoid the the page scroll to be
-    // set top
-    const element = this.node
-    if (element !== null) {
-      this.scrollPosition = window.scrollY
-    }
-    return stateUpdate || propsUpdate
-  }
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   let stateUpdate = true
+  //   let propsUpdate = true
+  //   // shouldComponentUpdate returns false if no need to update children, true if needed.
+  //   propsUpdate = !utils.shallowEqual(this.props, nextProps)
+  //   stateUpdate = !utils.shallowEqual(this.state.loading, nextState.loading)
+  //   stateUpdate = !utils.shallowEqual(this.state, nextState)
+  //   // Saving the scroll position. Neede in componentDidUpdate in order to avoid the the page scroll to be
+  //   // set top
+  //   const element = this.node
+  //   if (element !== null) {
+  //     this.scrollPosition = window.scrollY
+  //   }
+  //   return stateUpdate || propsUpdate
+  // }
 
   updateUi = (ui, boxName) => {
     let newUi = Object.assign({}, ui)
@@ -180,7 +180,6 @@ class ApplicationExchangeHome extends PureComponent {
 
       // Get funds details (balance, transactions)
       let selectedFund = await this.getSelectedFundDetails(null, accounts)
-      console.log(selectedFund)
       if (selectedFund) {
         this.props.dispatch(
           Actions.exchange.updateUiPanelProperties(

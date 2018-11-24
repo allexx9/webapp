@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 // import { Row, Col } from 'react-flexbox-grid';
 import { Col, Row } from 'react-flexbox-grid'
 import BoxTitle from '../atoms/boxTitle'
@@ -19,7 +19,7 @@ const customContentStyle = {
   wordWrap: 'break-word'
 }
 
-class OrderRawDialog extends Component {
+class OrderRawDialog extends PureComponent {
   static propTypes = {
     order: PropTypes.object.isRequired,
     efxOrder: PropTypes.object,
@@ -34,26 +34,12 @@ class OrderRawDialog extends Component {
     efxOrder: {}
   }
 
-  shouldComponentUpdate(nextProps) {
-    let propsUpdate = utils.shallowEqual(this.props, nextProps)
-    return propsUpdate
-  }
-
   handleClose = () => {
     this.props.onClose(false, true)
   }
 
-  renderStepActions(step) {
+  renderStepActions() {
     const { orderSubmitStep } = this.props
-    // const buttonDisable = () => {
-    //   switch (step) {
-    //     case 0:
-    //       return !orderSubmitStep === 1 ? true : false
-    //     default:
-    //       return false
-    //   }
-    // }
-
     return (
       <Row center="xs">
         <Col xs={6}>
@@ -89,17 +75,17 @@ class OrderRawDialog extends Component {
   }
 
   render() {
-    const { order, orderSubmitStep } = this.props
+    const { order } = this.props
     return (
       <div>
-        {' '}
         <Dialog
           title={<BoxTitle titleText={'CONFIRM ORDER'} />}
           modal={true}
           open={this.props.open}
           onRequestClose={this.handleClose}
           contentStyle={customContentStyle}
-          autoDetectWindowHeight={false}
+          autoDetectWindowHeight={true}
+          autoScrollBodyContent={true}
         >
           <div className={styles.summaryContainer}>
             <OrderSummary order={order} />
@@ -121,7 +107,7 @@ class OrderRawDialog extends Component {
               />
             </Col>
           </Row> */}
-          {this.renderStepActions(orderSubmitStep)}
+          {this.renderStepActions()}
         </Dialog>
       </div>
     )

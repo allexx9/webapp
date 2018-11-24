@@ -1,6 +1,6 @@
 import { Col, Row } from 'react-flexbox-grid'
 import PropTypes from 'prop-types'
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
 // import * as Colors from 'material-ui/styles/colors'
 import BoxTitle from '../atoms/boxTitle'
 import ButtonOrderBuy from '../atoms/buttonOrderBuy'
@@ -48,7 +48,7 @@ function mapStateToProps(state) {
     }
   }
 }
-class OrderBox extends PureComponent {
+class OrderBox extends Component {
   static propTypes = {
     exchange: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
@@ -372,7 +372,6 @@ class OrderBox extends PureComponent {
       padding: '5px',
       display: orderBox.expanded ? 'inline-block' : 'none'
     }
-
     return (
       <BoxDecorator boxName={'relayBox'}>
         <Row>
