@@ -18,7 +18,10 @@ class ShowStatusMsg extends PureComponent {
           <div className={classNames([styles.authMsg, styles.warning])}>
             <div>{this.props.msg}</div>
             <div className={styles.closeButton}>
-              <Close style={{ height: 20 }} onClick={this.props.onClose} />
+              <Close
+                style={{ height: 20, width: 20 }}
+                onClick={this.props.onClose}
+              />
             </div>
           </div>
         )

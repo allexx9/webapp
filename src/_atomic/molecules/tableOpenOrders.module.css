@@ -1,26 +1,24 @@
-
 .containerOrders {
   /* padding: 5px; */
 }
 
-.tableHeader{
-font-size: 14px;
-font-weight: 700;
-padding-bottom: 10px;
+.tableHeader {
+  font-size: 14px;
+  font-weight: 700;
+  padding-bottom: 10px;
 }
 
-.tableHeaderCellAction{
+.tableHeaderCellAction {
   text-align: right;
-  }
+}
 
-.rowText{
+.rowText {
   font-size: 14px;
-  }
-.cancelLink{
-  color: rgb(255, 64, 129);
+}
+
+.cancelLink {
+  color: rgb(5, 65, 134);
   font-weight: 700;
   text-decoration: none;
+  cursor: pointer;
 }
-
-
-
