@@ -6,6 +6,7 @@ import { Actions } from '../../actions/'
 import { BigNumber } from '@0xproject/utils'
 import { Observable, from, timer, zip } from 'rxjs'
 import {
+  auditTime,
   bufferCount,
   bufferTime,
   catchError,
@@ -69,6 +70,7 @@ const reconnectingWebsocketBook$ = (relay, networkId, baseToken, quoteToken) =>
         },
         (err, msgWs) => {
           let msg = msgWs
+          console.log(msg)
           if (err) {
             console.warn('WebSocket order book error.')
             return observer.error(err)
@@ -231,7 +233,12 @@ export const initRelayWebSocketBookEpic = action$ =>
         baseToken,
         quoteToken
       ).pipe(
-        throttleTime(2000),
+        tap(val => {
+          // console.log(val)
+          return val
+        }),
+        // throttleTime(1000),
+        auditTime(1000),
         map(payload => {
           console.log('*** Orderbook epic update ***')
           const calculateSpread = (asksOrders, bidsOrders) => {
@@ -245,6 +252,7 @@ export const initRelayWebSocketBookEpic = action$ =>
             }
             return spread
           }
+          console.log(payload)
           const asks = Object.values(payload.asks).map(element => {
             return {
               orderAmount: element.amount,
@@ -347,7 +355,7 @@ export const initRelayWebSocketTickerEpic = (action$, state$) =>
     mergeMap(action => {
       const { relay, networkId, baseToken, quoteToken } = action.payload
       return websocketTicker$(relay, networkId, baseToken, quoteToken).pipe(
-        bufferTime(1000),
+        auditTime(1000),
         filter(val => val.length),
         bufferCount(1),
         filter(val => {

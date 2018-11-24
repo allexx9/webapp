@@ -85,12 +85,6 @@ class TableOrderBook extends Component {
       bids: '#95cf95'
     }
 
-    // var arr = [1,2,3];
-    // var max1 = arr.reduce(function(a, b) {
-    //   console.log(a, b)
-    //     return Math.max(a, b);
-    // });
-
     let max = ordersSorted.reduce(function(prev, current) {
       return Number(prev.orderAmount) > Number(current.orderAmount)
         ? prev
@@ -168,6 +162,7 @@ class TableOrderBook extends Component {
   render() {
     const { orders } = this.props
     console.log('*** Render Orders ***')
+    // console.log(orders)
     return (
       <Row className={styles.containerOrders}>
         <Col xs={12}>{this.renderRows(orders)}</Col>
