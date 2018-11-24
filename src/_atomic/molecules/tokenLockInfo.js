@@ -103,7 +103,7 @@ class TokenLockInfo extends Component {
     return newLockTime > currentLockTime - 1
   }
 
-  onLockTocken = async action => {
+  onLockToken = async action => {
     const {
       selectedFund,
       selectedTokensPair,
@@ -497,6 +497,7 @@ class TokenLockInfo extends Component {
           errorText,
           quoteTokenRelock: relock
         })
+    this.onCheckToken(baseToken ? 'baseTokenSelected' : 'quoteTokenSelected')
   }
 
   onChangeTime = (amount, baseToken, errorText) => {
@@ -670,7 +671,7 @@ class TokenLockInfo extends Component {
                   <div className={styles.buttonsLock}>
                     <ButtonLock
                       buttonAction={'unlock'}
-                      onLockTocken={this.onLockTocken}
+                      onLockToken={this.onLockToken}
                       disabled={this.state.errorText !== ''}
                       className={styles.buttonsLock}
                     />
@@ -680,7 +681,7 @@ class TokenLockInfo extends Component {
                   <div className={styles.buttonsLock}>
                     <ButtonLock
                       buttonAction={'lock'}
-                      onLockTocken={this.onLockTocken}
+                      onLockToken={this.onLockToken}
                       className={styles.buttonsLock}
                       disabled={
                         this.state.errorText !== ''

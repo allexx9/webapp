@@ -45,7 +45,7 @@ export default class TokenLockBalance extends Component {
     //   : console.log('green')
     const expirationDate = moment.unix(this.props.lockTime)
 
-    const dataTipTxt = new BigNumber(this.props.lockTime).eq(0)
+    const dataTipTxt = moment().isSameOrAfter(expirationDate)
       ? 'Expired'
       : 'Exp: ' +
         expirationDate.format('YYYY-DD-M, hh:mm:ss a') +
