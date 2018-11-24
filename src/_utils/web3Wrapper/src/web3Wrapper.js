@@ -14,7 +14,6 @@ class Web3Wrapper {
   init(networkId, protocol = 'wss') {
     const transport = ENDPOINTS[protocol][networkId].prod
     const provider = new Web3WsProvider(transport)
-
     this.web3 = new Web3(provider)
 
     return Object.assign(this.web3, {

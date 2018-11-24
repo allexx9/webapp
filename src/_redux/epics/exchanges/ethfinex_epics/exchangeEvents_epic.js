@@ -238,25 +238,24 @@ const processTradesHistory = (trades, state$) => {
   return tradeHistory
 }
 
-export const monitorExchangeEventsEpic = (action$, state$) => {
-  const web3 = Web3Wrapper.getInstance(state$.value.endpoint.networkInfo.id)
-  const ethfinexEventful$ = fund =>
-    web3.rigoblock.ob.exchangeEfxV0$.pipe(
-      filter(val => {
-        return (
-          val.returnValues.maker.toLowerCase() === fund.address.toLowerCase()
-        )
-      }),
-      map(val => [val])
-    )
+const ethfinexEventful$ = (fund, networkInfo) => {
+  const web3 = Web3Wrapper.getInstance(networkInfo.id)
+  return web3.rigoblock.ob.exchangeEfxV0$.pipe(
+    filter(val => {
+      return val.returnValues.maker.toLowerCase() === fund.address.toLowerCase()
+    }),
+    map(val => [val])
+  )
+}
 
+export const monitorExchangeEventsEpic = (action$, state$) => {
   return action$.pipe(
     ofType(utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_START)),
     switchMap(action => {
-      const { fund, tokens, exchange } = action.payload
+      const { fund, tokens, exchange, networkInfo } = action.payload
       return getPastExchangeEvents$(fund, exchange, state$).pipe(
         concat(
-          ethfinexEventful$(fund),
+          ethfinexEventful$(fund, networkInfo),
           takeUntil(
             action$.ofType(
               utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_STOP)

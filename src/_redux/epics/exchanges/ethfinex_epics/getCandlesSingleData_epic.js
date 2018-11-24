@@ -45,7 +45,6 @@ const candlesSingleWebsocket$ = (relay, networkId, baseToken, quoteToken) =>
 
 const updateSingleCandles = tickerOutput => {
   let ticker = tickerOutput
-  console.log(ticker)
   if (Array.isArray(ticker[1][0]) && ticker[1] !== 'hb') {
     let candles = ticker[1].map(tick => {
       let entry = {

@@ -327,6 +327,8 @@ class ApplicationExchangeHome extends PureComponent {
       selectedRelay
     } = this.props.exchange
 
+    const { networkInfo } = this.props.endpoint
+
     // Reser exchange contract events
     this.props.dispatch(Actions.exchange.resetTradesHistory())
 
@@ -338,7 +340,8 @@ class ApplicationExchangeHome extends PureComponent {
       Actions.exchange.monitorEventsStart(
         fund,
         selectedTokensPair,
-        selectedExchange
+        selectedExchange,
+        networkInfo
       )
     )
 

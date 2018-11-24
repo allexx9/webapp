@@ -66,7 +66,6 @@ const reconnectingWebsocketBook$ = (relay, networkId, baseToken, quoteToken) =>
         },
         (err, msgWs) => {
           let msg = msgWs
-          console.log(msg)
           if (err) {
             console.warn('WebSocket order book error.')
             return observer.error(err)
