@@ -25,6 +25,7 @@ import {
 import { sha3_512 } from 'js-sha3'
 // import ToggleSwitch from '../atoms/toggleSwitch'
 import { toBaseUnitAmount } from '../../_utils/format'
+import BigNumber from 'bignumber.js'
 import BoxDecorator from '../molecules/boxDecorator'
 import ShowStatusMsg from '../atoms/showStatusMsg'
 import moment from 'moment'
@@ -109,26 +110,50 @@ class OrderBox extends Component {
       selectedOrder,
       selectedExchange,
       walletAddress,
-      selectedTokensPair
+      selectedTokensPair,
+      selectedFund
     } = this.props.exchange
 
+    let balanceWrapper, decimals, orderAmountBaseUnit, tokenSymbol
+
     // Checking if the locked balance is enough.
-    const {
-      balanceWrapper
-    } = this.props.exchange.selectedFund.liquidity.baseToken
-    const orderAmountBaseUnit = toBaseUnitAmount(
-      selectedOrder.orderFillAmount,
-      selectedTokensPair.baseToken.decimals
-    )
-    if (orderAmountBaseUnit.gt(balanceWrapper)) {
-      this.setState({
-        showWarnMsg: 'You do not have enough locked balance.'
-      })
-      return
+    switch (selectedOrder.orderType) {
+      case 'asks':
+        balanceWrapper = selectedFund.liquidity.baseToken.balanceWrapper
+        decimals = selectedTokensPair.baseToken.decimals
+        tokenSymbol = selectedTokensPair.baseToken.symbol
+        orderAmountBaseUnit = toBaseUnitAmount(
+          selectedOrder.orderFillAmount,
+          decimals
+        )
+        if (orderAmountBaseUnit.gt(balanceWrapper)) {
+          this.setState({
+            showWarnMsg: `You do not have enough ${tokenSymbol} locked.`
+          })
+          return
+        }
+        break
+      case 'bids':
+        balanceWrapper = selectedFund.liquidity.quoteToken.balanceWrapper
+        decimals = selectedTokensPair.quoteToken.decimals
+        tokenSymbol = selectedTokensPair.quoteToken.symbol
+        orderAmountBaseUnit = toBaseUnitAmount(
+          new BigNumber(selectedOrder.orderFillAmount).times(
+            new BigNumber(selectedOrder.orderPrice)
+          ),
+          decimals
+        )
+
+        if (orderAmountBaseUnit.gt(balanceWrapper)) {
+          this.setState({
+            showWarnMsg: `You do not have enough ${tokenSymbol} locked.`
+          })
+          return
+        }
+        break
+      default:
     }
 
-    if (!selectedOrder.takerOrder) {
-    }
     if (!this.state.orderOptions.quickOrder) {
       this.setState({
         orderRawDialogOpen: true
