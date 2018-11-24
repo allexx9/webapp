@@ -1,6 +1,5 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-// import { Observable } from 'rxjs';
 import * as TYPE_ from '../../../actions/const'
 import { Actions } from '../../../actions'
 import { BigNumber } from '@0xproject/utils'
@@ -8,14 +7,14 @@ import { ERC20_TOKENS } from '../../../../_utils/tokens'
 import { blockChunks } from '../../../../_utils/utils/blockChunks'
 import {
   concat,
-  distinctUntilChanged,
-  exhaustMap,
   filter,
+  finalize,
   map,
-  switchMap,
-  tap
+  mergeMap,
+  retryWhen,
+  switchMap
 } from 'rxjs/operators'
-import { defer, from, of, timer } from 'rxjs'
+import { defer, from, timer } from 'rxjs'
 import { ofType } from 'redux-observable'
 import { toUnitAmount } from '../../../../_utils/format'
 import Web3Wrapper from '../../../../_utils/web3Wrapper/src'
@@ -74,52 +73,12 @@ const getPastExchangeEvents$ = (fund, exchange, state) => {
         return efxEchangeContract.getPastEvents(
           'allEvents',
           options,
-          (err, res) => (err ? console.error(err) : res)
+          (err, res) => (err ? err : res)
         )
       })
       return from(Promise.all(eventsPromises)).pipe(
         map(result => result.reduce((acc, curr) => [...acc, ...curr], []))
       )
-    })
-  )
-}
-
-const onNewBlock$ = (fund, exchange, state$) => {
-  let fromBlock
-  return timer(0, 1000).pipe(
-    switchMap(() => {
-      return of(state$.value.endpoint.prevBlockNumber)
-    }),
-    distinctUntilChanged((a, b) => {
-      return a === b
-    }),
-    exhaustMap(blockNumber => {
-      return defer(async () => {
-        const web3 = await Web3Wrapper.getInstance(
-          state$.value.endpoint.networkInfo.id
-        )
-        const makerAddress = '0x' + fund.address.substr(2).padStart(64, '0')
-        const efxEchangeContract = new web3.eth.Contract(
-          exchangeEfxV0Abi,
-          exchange.exchangeContractAddress.toLowerCase()
-        )
-        const options = {
-          fromBlock,
-          toBlock: 'latest',
-          topics: [null, makerAddress, null, null]
-        }
-        const events = await efxEchangeContract.getPastEvents(
-          'allEvents',
-          options,
-          function(error) {
-            if (error) {
-              return error
-            }
-          }
-        )
-        fromBlock = blockNumber++
-        return events
-      })
     })
   )
 }
@@ -280,22 +239,32 @@ const processTradesHistory = (trades, state$) => {
 
 export const monitorExchangeEventsEpic = (action$, state) => {
   const web3 = Web3Wrapper.getInstance(state.value.endpoint.networkInfo.id)
-  const ethfinexEventful$ = web3.rigoblock.ob.exchangeEfxV0$
-    .pipe
-    // map(val => [val])
-    ()
+  const ethfinexEventful$ = web3.rigoblock.ob.exchangeEfxV0$.pipe(
+    map(val => [val])
+  )
+
   return action$.pipe(
     ofType(utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_START)),
     switchMap(action => {
       const { fund, tokens, exchange } = action.payload
-      return getPastExchangeEvents$(fund, exchange, state).pipe()
-      // concat(ethfinexEventful$)
+      return getPastExchangeEvents$(fund, exchange, state).pipe(
+        concat(ethfinexEventful$)
+      )
     }),
-    tap(val => console.log('DEBUG', val)),
     filter(trades => Array.isArray(trades) && trades.length),
     map(trades => {
       let tradesHistory = processTradesHistory(trades.reverse(), state)
       return Actions.exchange.updateTradesHistory(tradesHistory)
+    }),
+    retryWhen(error$ => {
+      let scalingDuration = 10000
+      return error$.pipe(
+        mergeMap(err => {
+          console.warn(err)
+          return timer(scalingDuration)
+        }),
+        finalize(() => console.log('We are done!'))
+      )
     })
   )
 }
@@ -316,7 +285,7 @@ export const monitorExchangeEventsEpic = (action$, state) => {
 //         console.warn(error)
 //         return timer(scalingDuration)
 //       }),
-//       finalize(() => console.log('We are done!'))
+finalize(() => console.log('We are done!'))
 //     )
 //   })
 // )
