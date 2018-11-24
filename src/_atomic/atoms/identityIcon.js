@@ -1,10 +1,10 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import styles from './identityIcon.module.css'
 
-export default class IdentityIcon extends Component {
+export default class IdentityIcon extends PureComponent {
   static propTypes = {
     address: PropTypes.string.isRequired,
     size: PropTypes.string,
@@ -29,7 +29,7 @@ export default class IdentityIcon extends Component {
         className={styles.icon}
         style={{ width: size, height: size, ...this.props.customStyle }}
         src={api.util.createIdentityImg(address, 4)}
-        alt='identity-icon'
+        alt="identity-icon"
       />
     )
   }

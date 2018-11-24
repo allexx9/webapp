@@ -105,7 +105,6 @@ class Exchange {
   }
 
   getAccountOrders = (account, baseToken, quoteToken) => {
-    console.log(`${this._exchange}: Fetching account orders.`)
     if (!account) {
       throw new Error('account needs to be set')
     }
@@ -133,7 +132,6 @@ class Exchange {
   }
 
   getAccountHistory = (account, baseToken, quoteToken) => {
-    console.log(`${this._exchange}: Fetching account orders.`)
     if (!account) {
       throw new Error('account needs to be set')
     }

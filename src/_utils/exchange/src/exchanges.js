@@ -177,7 +177,6 @@ export const getAccountHistory = {
   //   return options
   // },
   Ethfinex: (networkId = 1, account, protocol = '0x') => {
-    console.log(networkId)
     const options = {
       method: 'POST',
       url: `${

@@ -4,7 +4,7 @@ import { Col, Row } from 'react-flexbox-grid'
 import AccessTime from 'material-ui/svg-icons/device/access-time'
 import NotificationWifi from 'material-ui/svg-icons/notification/wifi'
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import utils from '../_utils/utils'
 
 import BigNumber from 'bignumber.js'
@@ -13,7 +13,7 @@ import styles from './elementBottomStatusBar.module.css'
 
 let t = null
 
-export default class ElementBottomStatusBar extends Component {
+export default class ElementBottomStatusBar extends PureComponent {
   static propTypes = {
     // accountName: PropTypes.string.isRequired,
     blockNumber: PropTypes.string.isRequired,
@@ -116,7 +116,7 @@ export default class ElementBottomStatusBar extends Component {
   }
 
   render() {
-    const { blockNumber, networkName, networkStatus} = this.props
+    const { blockNumber, networkName, networkStatus } = this.props
     // let toolTipType = 'info'
     let networkClass = classnames(styles.networkName, styles[networkName])
     const numberWithCommas = x => {

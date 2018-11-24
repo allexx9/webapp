@@ -58,20 +58,16 @@ export default class FundSelector extends PureComponent {
       <Row>
         <Col xs={12}>
           <div className={styles.sectionTitle}>
-            Drago:{' '}
-            {/* <EtherscanLink
-              networkName={networkName}
-              textLink={address}
-              address={address}
-            /> */}
-            <a
-              className={styles.address}
-              href={`${networkInfo.etherscan}address/${address}`}
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              {address}
-            </a>
+            <div className={styles.address}>
+              {' '}
+              <a
+                href={`${networkInfo.etherscan}address/${address}`}
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                {address}
+              </a>
+            </div>
           </div>
         </Col>
         <Col xs={12}>
