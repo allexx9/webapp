@@ -1,6 +1,7 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
 import { formatPrice } from '../../_utils/format'
+import BigNumber from 'bignumber.js'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import ReactTooltip from 'react-tooltip'
@@ -42,15 +43,17 @@ export default class TokenLockBalance extends Component {
     // now > Number(this.props.lockTime)
     //   ? console.log('red')
     //   : console.log('green')
+    const expirationDate = moment.unix(this.props.lockTime)
 
+    const dataTipTxt = new BigNumber(this.props.lockTime).eq(0)
+      ? 'Expired'
+      : 'Exp: ' +
+        expirationDate.format('YYYY-DD-M, hh:mm:ss a') +
+        ', ' +
+        expirationDate.fromNow() +
+        '.'
     return now > Number(this.props.lockTime) ? (
-      <div
-        data-tip={
-          'Exp: ' +
-          moment.unix(this.props.lockTime).format('MMMM Do YYYY, h:mm:ss a')
-        }
-        data-for="lockBalance"
-      >
+      <div data-tip={dataTipTxt} data-for="lockBalance">
         <div
           onClick={this.onSetMaxAmount}
           style={{
@@ -71,13 +74,7 @@ export default class TokenLockBalance extends Component {
         <ReactTooltip effect="solid" place="top" id="lockBalance" />
       </div>
     ) : (
-      <div
-        data-tip={
-          'Exp: ' +
-          moment.unix(this.props.lockTime).format('MMMM Do YYYY, h:mm:ss a')
-        }
-        data-for="lockBalance"
-      >
+      <div data-tip={dataTipTxt} data-for="lockBalance">
         <div
           onClick={this.onSetMaxAmount}
           style={{

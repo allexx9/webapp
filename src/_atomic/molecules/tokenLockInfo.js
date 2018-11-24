@@ -611,7 +611,7 @@ class TokenLockInfo extends Component {
                   isBaseToken={true}
                   onChangeTime={this.onChangeTime}
                   disabled={!this.state.baseTokenSelected}
-                  amount={this.state.baseTokenLockTime}
+                  time={this.state.baseTokenLockTime}
                 />
               </Col>
             </Row>
@@ -660,7 +660,7 @@ class TokenLockInfo extends Component {
                   isBaseToken={false}
                   onChangeTime={this.onChangeTime}
                   disabled={this.state.baseTokenSelected}
-                  amount={this.state.quoteTokenLockTime}
+                  time={this.state.quoteTokenLockTime}
                 />
               </Col>
             </Row>
