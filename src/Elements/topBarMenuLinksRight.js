@@ -24,7 +24,12 @@ import styles from './elements.module.css'
 import utils from '../_utils/utils'
 
 function mapStateToProps(state) {
-  return state
+  return {
+    user: state.user,
+    transactions: state.transactions,
+    endpoint: state.endpoint,
+    app: state.app
+  }
 }
 
 let menuStyles = {
@@ -56,10 +61,6 @@ let enabledUserType = {
 }
 
 class NavLinks extends Component {
-  constructor(props) {
-    super(props)
-  }
-
   static propTypes = {
     location: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,

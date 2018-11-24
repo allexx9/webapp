@@ -54,7 +54,6 @@ export default class FundSelector extends PureComponent {
   render() {
     const { address, dragoId } = this.props.selectedFund.details
     const { networkInfo } = this.props
-    console.log(this.props)
     return (
       <Row>
         <Col xs={12}>

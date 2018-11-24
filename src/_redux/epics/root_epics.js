@@ -1,6 +1,6 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-import { catchError, delay } from 'rxjs/operators'
+import { catchError } from 'rxjs/operators'
 import { combineEpics } from 'redux-observable'
 import {
   // relayWebSocketEpic,

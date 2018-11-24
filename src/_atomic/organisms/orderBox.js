@@ -24,6 +24,7 @@ import {
 } from '../../_utils/exchange'
 import { sha3_512 } from 'js-sha3'
 // import ToggleSwitch from '../atoms/toggleSwitch'
+import { toBaseUnitAmount } from '../../_utils/format'
 import BoxDecorator from '../molecules/boxDecorator'
 import ShowStatusMsg from '../atoms/showStatusMsg'
 import moment from 'moment'
@@ -37,7 +38,6 @@ function mapStateToProps(state) {
     exchange: {
       selectedTokensPair: state.exchange.selectedTokensPair,
       selectedOrder: state.exchange.selectedOrder,
-      selectedExchange: state.exchange.selectedExchange,
       walletAddress: state.exchange.walletAddress,
       selectedExchange: state.exchange.selectedExchange,
       selectedFund: state.exchange.selectedFund,
@@ -108,8 +108,25 @@ class OrderBox extends PureComponent {
     const {
       selectedOrder,
       selectedExchange,
-      walletAddress
+      walletAddress,
+      selectedTokensPair
     } = this.props.exchange
+
+    // Checking if the locked balance is enough.
+    const {
+      balanceWrapper
+    } = this.props.exchange.selectedFund.liquidity.baseToken
+    const orderAmountBaseUnit = toBaseUnitAmount(
+      selectedOrder.orderFillAmount,
+      selectedTokensPair.baseToken.decimals
+    )
+    if (orderAmountBaseUnit.gt(balanceWrapper)) {
+      this.setState({
+        showWarnMsg: 'You do not have enough locked balance.'
+      })
+      return
+    }
+
     if (!selectedOrder.takerOrder) {
     }
     if (!this.state.orderOptions.quickOrder) {
@@ -187,7 +204,6 @@ class OrderBox extends PureComponent {
     )
 
     if (selectedOrder.takerOrder) {
-      // fillOrderToExchange(selectedOrder.details.order, selectedOrder.orderFillAmount, selectedExchange)
       try {
         const receipt = await fillOrderToExchangeViaProxy(
           selectedFund,
@@ -206,14 +222,6 @@ class OrderBox extends PureComponent {
             transactionDetails
           )
         )
-
-        // Updating drago liquidity
-        // this.props.dispatch(
-        //   this.updateSelectedFundLiquidity(
-        //     selectedFund.details.address,
-        //     this.context.api
-        //   )
-        // )
         Actions.updateLiquidityAndTokenBalances(
           api,
           '',
@@ -364,6 +372,7 @@ class OrderBox extends PureComponent {
       padding: '5px',
       display: orderBox.expanded ? 'inline-block' : 'none'
     }
+
     return (
       <BoxDecorator boxName={'relayBox'}>
         <Row>
@@ -399,7 +408,13 @@ class OrderBox extends PureComponent {
                     </Col>
                     <Col xs={12}>
                       {showWarnMsg && (
-                        <ShowStatusMsg msg={showWarnMsg} status="warning" />
+                        <ShowStatusMsg
+                          msg={showWarnMsg}
+                          status="warning"
+                          onClose={() => {
+                            this.setState({ showWarnMsg: false })
+                          }}
+                        />
                       )}
                     </Col>
                     <Col xs={12}>

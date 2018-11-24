@@ -65,7 +65,7 @@ export function toUnitAmount(amount, decimals) {
  */
 export function toBaseUnitAmount(amount, decimals) {
   const unit = new BigNumber(10).pow(decimals)
-  const baseUnitAmount = amount.times(unit)
+  const baseUnitAmount = new BigNumber(amount).times(unit)
   const hasDecimals = baseUnitAmount.decimalPlaces() !== 0
   if (hasDecimals) {
     throw new Error(

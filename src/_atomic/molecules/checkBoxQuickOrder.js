@@ -19,7 +19,6 @@ class CheckBoxQuickOrder extends PureComponent {
   }
 
   render() {
-    console.log('render siwtch')
     return (
       <Row>
         <Col xs={6}>

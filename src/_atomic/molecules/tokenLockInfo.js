@@ -708,6 +708,9 @@ class TokenLockInfo extends Component {
               <ShowStatusMsg
                 msg="Please authorize the action."
                 status="warning"
+                onClose={() => {
+                  this.setState({ showActionRequestMsg: false })
+                }}
               />
             )}
           </Col>

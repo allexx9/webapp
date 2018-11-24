@@ -80,7 +80,6 @@ class BoxDecorator extends Component {
   }
 
   render() {
-    // console.log(this.props)
     const { boxName } = this.props
     return (
       <div style={{ width: '100%', position: 'relative' }}>

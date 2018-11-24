@@ -5,7 +5,6 @@ import HelpIcon from '../atoms/helpIcon'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import styles from './exchangeBoxTitleActions.module.css'
-// import utils from '../../_utils/utils'
 
 function mapStateToProps(state) {
   return {
@@ -41,17 +40,6 @@ class ExchangeBoxTitleActions extends Component {
           }
         }
       }
-      // enableBox: () => {
-      //   newUi.panels[boxName].disabled = false
-      //   newUi.panels[boxName].disabledMsg = ''
-      //   return newUi
-      // },
-      // disableBox: (options = { disabledMsg: '' }) => {
-      //   console.log(options)
-      //   newUi.panels[boxName].disabled = true
-      //   newUi.panels[boxName].disabledMsg = options.disabledMsg
-      //   return newUi
-      // }
     }
   }
 

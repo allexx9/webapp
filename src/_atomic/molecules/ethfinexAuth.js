@@ -34,16 +34,10 @@ class EthfinexAuth extends Component {
       // var provider = account.source === 'MetaMask' ? window.web3 : api
       const token = Date.now() / 1000 + 3600 + ''
       let web3 = new Web3(window.web3)
-      console.log(token)
       let result = await web3.eth.personal.sign(
         token,
         this.props.exchange.walletAddress
       )
-      // .then((result) => {
-      //   console.log(result)
-      // })
-      console.log(result)
-
       this.setState({ showSignMsg: false })
       const accountSignature = {
         signature: result,
@@ -101,8 +95,12 @@ class EthfinexAuth extends Component {
               <Col xs={12}>
                 {this.state.showSignMsg && (
                   <ShowStatusMsg
+                    key="authMessageWarning"
                     msg="Please sign the auth token."
                     status="warning"
+                    onClose={() => {
+                      this.setState({ showSignMsg: false })
+                    }}
                   />
                 )}
               </Col>
