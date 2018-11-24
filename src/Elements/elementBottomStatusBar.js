@@ -1,5 +1,5 @@
 import * as Colors from 'material-ui/styles/colors'
-import { APP_VERSION } from '../_utils/const'
+import { APP_VERSION, GIT_HASH } from '../_utils/const'
 import { Col, Row } from 'react-flexbox-grid'
 import AccessTime from 'material-ui/svg-icons/device/access-time'
 import NotificationWifi from 'material-ui/svg-icons/notification/wifi'
@@ -125,7 +125,7 @@ export default class ElementBottomStatusBar extends PureComponent {
     return (
       <Row className={styles.networkStatus} between="xs">
         <Col xs={6} className={styles.copyright}>
-          ©2018 RigoBlock. All rights reserved. {APP_VERSION}
+          ©2018 RigoBlock. All rights reserved. {GIT_HASH}
         </Col>
         <Col xs={6} className={styles.networkStatusCounter}>
           <div className={styles.networkDataContainer}>

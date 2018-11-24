@@ -2,6 +2,7 @@ import * as HELP_ from '../_const/helpMsg'
 import { APP_VERSION } from './version'
 import BigNumber from 'bignumber.js'
 
+export * from './version_git'
 export { APP_VERSION }
 export { HELP_ }
 export const UNLIMITED_ALLOWANCE_IN_BASE_UNITS = new BigNumber(2)

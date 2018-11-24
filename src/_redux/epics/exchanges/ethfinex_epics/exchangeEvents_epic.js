@@ -21,8 +21,8 @@ import Web3Wrapper from '../../../../_utils/web3Wrapper/src'
 import exchangeEfxV0Abi from '../../../../PoolsApi/src/contracts/abi/v2/exchange-efx-v0.json'
 import utils from '../../../../_utils/utils'
 
-const getPastExchangeEvents$ = (fund, exchange, state) => {
-  const web3 = Web3Wrapper.getInstance(state.value.endpoint.networkInfo.id)
+const getPastExchangeEvents$ = (fund, exchange, state$) => {
+  const web3 = Web3Wrapper.getInstance(state$.value.endpoint.networkInfo.id)
   const efxEchangeContract = new web3.eth.Contract(
     exchangeEfxV0Abi,
     exchange.exchangeContractAddress.toLowerCase()
@@ -237,8 +237,8 @@ const processTradesHistory = (trades, state$) => {
   return tradeHistory
 }
 
-export const monitorExchangeEventsEpic = (action$, state) => {
-  const web3 = Web3Wrapper.getInstance(state.value.endpoint.networkInfo.id)
+export const monitorExchangeEventsEpic = (action$, state$) => {
+  const web3 = Web3Wrapper.getInstance(state$.value.endpoint.networkInfo.id)
   const ethfinexEventful$ = web3.rigoblock.ob.exchangeEfxV0$.pipe(
     map(val => [val])
   )
@@ -247,13 +247,13 @@ export const monitorExchangeEventsEpic = (action$, state) => {
     ofType(utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_START)),
     switchMap(action => {
       const { fund, tokens, exchange } = action.payload
-      return getPastExchangeEvents$(fund, exchange, state).pipe(
+      return getPastExchangeEvents$(fund, exchange, state$).pipe(
         concat(ethfinexEventful$)
       )
     }),
     filter(trades => Array.isArray(trades) && trades.length),
     map(trades => {
-      let tradesHistory = processTradesHistory(trades.reverse(), state)
+      let tradesHistory = processTradesHistory(trades.reverse(), state$)
       return Actions.exchange.updateTradesHistory(tradesHistory)
     }),
     retryWhen(error$ => {
@@ -269,22 +269,6 @@ export const monitorExchangeEventsEpic = (action$, state) => {
   )
 }
 
-// return Observable.concat(
-//   getPastExchangeEvents$(fund, exchange, state$),
-//   onNewBlock$(fund, exchange, state$)
-// ).pipe(
-//   filter(trades => Array.isArray(trades)),
-//   map(trades => {
-// let tradesHistory = processTradesHistory(trades.reverse(), state$)
-// return Actions.exchange.updateTradesHistory(tradesHistory)
-//   }),
-//   retryWhen(error => {
-//     let scalingDuration = 10000
-//     return error.pipe(
-//       mergeMap(error => {
-//         console.warn(error)
-//         return timer(scalingDuration)
-//       }),
 finalize(() => console.log('We are done!'))
 //     )
 //   })
