@@ -8,6 +8,7 @@ import { ERC20_TOKENS } from '../../../../_utils/tokens'
 import { Observable, defer, of, timer } from 'rxjs'
 import { blockChunks } from '../../../../_utils/utils/blockChunks'
 import {
+  concat,
   distinctUntilChanged,
   exhaustMap,
   filter,
@@ -24,84 +25,64 @@ import _ from 'lodash'
 import exchangeEfxV0Abi from '../../../../PoolsApi/src/contracts/abi/v2/exchange-efx-v0.json'
 import utils from '../../../../_utils/utils'
 
-const getPastExchangeEvents$ = (fund, exchange, state$) => {
-  return defer(async () => {
-    const web3 = await Web3Wrapper.getInstance(
-      state$.value.endpoint.networkInfo.id
-    )
-    const efxEchangeContract = new web3.eth.Contract(
-      exchangeEfxV0Abi,
-      exchange.exchangeContractAddress.toLowerCase()
-    )
+const getPastExchangeEvents$ = (fund, exchange, state) => {
+  const web3 = Web3Wrapper.getInstance(state.value.endpoint.networkInfo.id)
+  const efxEchangeContract = new web3.eth.Contract(
+    exchangeEfxV0Abi,
+    exchange.exchangeContractAddress.toLowerCase()
+  )
 
-    // This code may be used to filter by tokens. Do not remove.
+  // This code may be used to filter by tokens. Do not remove.
 
-    // console.log(
-    //   '0x3f3fb7135a4e1512b508f90733145ab182cc196e127cd9281a8e9f636de79a67'
-    // )
-    // let tokens1 = web3.utils.soliditySha3(
-    //   {
-    //     t: 'address',
-    //     v: tokens.quoteToken.wrappers.Ethfinex.address.toLowerCase()
-    //   },
-    //   {
-    //     t: 'address',
-    //     v: tokens.baseToken.wrappers.Ethfinex.address.toLowerCase()
-    //   }
-    // )
-    // tokens1 = web3.utils.padLeft(tokens1, 64)
-    // let tokens2 = web3.utils.soliditySha3(
-    //   {
-    //     t: 'address',
-    //     v: tokens.baseToken.wrappers.Ethfinex.address.toLowerCase()
-    //   },
-    //   {
-    //     t: 'address',
-    //     v: tokens.quoteToken.wrappers.Ethfinex.address.toLowerCase()
-    //   }
-    // )
-    // tokens2 = web3.utils.padLeft(tokens2, 64)
-    // 0x3f3fb7135a4e1512b508f90733145ab182cc196e127cd9281a8e9f636de79a67
-    // console.log(fund)
+  // console.log(
+  //   '0x3f3fb7135a4e1512b508f90733145ab182cc196e127cd9281a8e9f636de79a67'
+  // )
+  // let tokens1 = web3.utils.soliditySha3(
+  //   {
+  //     t: 'address',
+  //     v: tokens.quoteToken.wrappers.Ethfinex.address.toLowerCase()
+  //   },
+  //   {
+  //     t: 'address',
+  //     v: tokens.baseToken.wrappers.Ethfinex.address.toLowerCase()
+  //   }
+  // )
+  // tokens1 = web3.utils.padLeft(tokens1, 64)
+  // let tokens2 = web3.utils.soliditySha3(
+  //   {
+  //     t: 'address',
+  //     v: tokens.baseToken.wrappers.Ethfinex.address.toLowerCase()
+  //   },
+  //   {
+  //     t: 'address',
+  //     v: tokens.quoteToken.wrappers.Ethfinex.address.toLowerCase()
+  //   }
+  // )
+  // tokens2 = web3.utils.padLeft(tokens2, 64)
+  // 0x3f3fb7135a4e1512b508f90733145ab182cc196e127cd9281a8e9f636de79a67
+  // console.log(fund)
 
-    const makerAddress = '0x' + fund.address.substr(2).padStart(64, '0')
+  const makerAddress = '0x' + fund.address.substr(2).padStart(64, '0')
 
-    let arrayPromises = []
-    await web3.eth.getBlockNumber().then(lastBlock => {
-      let chunck = 100000
-      const chunks = blockChunks(0, lastBlock, chunck)
-      arrayPromises = chunks.map(async chunk => {
+  return defer(() => from(web3.eth.getBlockNumber())).pipe(
+    switchMap(lastBlock => {
+      const chunkSize = 100000
+      const chunks = blockChunks(0, lastBlock, chunkSize)
+      const eventsPromises = chunks.map(chunk => {
         const options = {
           fromBlock: chunk.fromBlock,
           toBlock: chunk.toBlock,
           topics: [null, makerAddress, null, null]
         }
-        return await efxEchangeContract.getPastEvents(
+        return efxEchangeContract.getPastEvents(
           'allEvents',
           options,
-          function(error) {
-            if (error) {
-              return error
-            }
-          }
+          (err, res) => (err ? console.error(err) : res)
         )
       })
+      return from(Promise.all(eventsPromises))
     })
-    // console.log(arrayPromises)
-    return Promise.all(arrayPromises)
-      .then(results => {
-        return [].concat(...results)
-      })
-      .catch(error => {
-        console.warn(error)
-        throw Error(error)
-      })
-  })
-}
-
-const monitorExchangeEvents$ = (fund, tokens, state$) => {
-  const instance = Web3Wrapper.getInstance(state$.value.endpoint.networkInfo.id)
-  return instance.rigoblock.ob.exchangeEfxV0$
+  )
 }
 
 const onNewBlock$ = (fund, exchange, state$) => {
@@ -298,31 +279,37 @@ const processTradesHistory = (trades, state$) => {
   return tradeHistory
 }
 
-export const monitorExchangeEventsEpic = (action$, state$) => {
+export const monitorExchangeEventsEpic = (action$, state) => {
+  const web3 = Web3Wrapper.getInstance(state$.value.endpoint.networkInfo.id)
+  const ethfinexEventful$ = web3.rigoblock.ob.exchangeEfxV0$
   return action$.pipe(
     ofType(utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_START)),
     switchMap(action => {
       const { fund, tokens, exchange } = action.payload
-      return Observable.concat(
-        getPastExchangeEvents$(fund, exchange, state$),
-        onNewBlock$(fund, exchange, state$)
-      ).pipe(
-        filter(trades => Array.isArray(trades)),
-        map(trades => {
-          let tradesHistory = processTradesHistory(trades.reverse(), state$)
-          return Actions.exchange.updateTradesHistory(tradesHistory)
-        }),
-        retryWhen(error => {
-          let scalingDuration = 10000
-          return error.pipe(
-            mergeMap(error => {
-              console.warn(error)
-              return timer(scalingDuration)
-            }),
-            finalize(() => console.log('We are done!'))
-          )
-        })
+      return getPastExchangeEvents$(fund, exchange, state).pipe(
+        concat(ethfinexEventful$)
       )
     })
   )
 }
+
+// return Observable.concat(
+//   getPastExchangeEvents$(fund, exchange, state$),
+//   onNewBlock$(fund, exchange, state$)
+// ).pipe(
+//   filter(trades => Array.isArray(trades)),
+//   map(trades => {
+//     let tradesHistory = processTradesHistory(trades.reverse(), state$)
+//     return Actions.exchange.updateTradesHistory(tradesHistory)
+//   }),
+//   retryWhen(error => {
+//     let scalingDuration = 10000
+//     return error.pipe(
+//       mergeMap(error => {
+//         console.warn(error)
+//         return timer(scalingDuration)
+//       }),
+//       finalize(() => console.log('We are done!'))
+//     )
+//   })
+// )
