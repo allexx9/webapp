@@ -166,7 +166,7 @@ export const getDragoLiquidityAndTokenBalances = async (
       quoteTokenLockWrapExpire
     ])
   } catch (e) {
-    throw e
+    throw new Error(e)
   }
 
   const liquidity = {

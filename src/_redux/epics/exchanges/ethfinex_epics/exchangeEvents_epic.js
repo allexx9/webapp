@@ -127,7 +127,7 @@ const processTradesHistory = (trades, state$) => {
     }
   })
 
-  let tradeHistory = trades.forEach(trade => {
+  let tradeHistory = trades.map(trade => {
     let transaction = {
       type: '',
       baseTokenSymbol: '',

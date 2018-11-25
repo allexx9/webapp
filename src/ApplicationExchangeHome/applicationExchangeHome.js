@@ -64,22 +64,6 @@ class ApplicationExchangeHome extends PureComponent {
   scrollPosition = 0
   activeElement = null
 
-  // shouldComponentUpdate(nextProps, nextState) {
-  //   let stateUpdate = true
-  //   let propsUpdate = true
-  //   // shouldComponentUpdate returns false if no need to update children, true if needed.
-  //   propsUpdate = !utils.shallowEqual(this.props, nextProps)
-  //   stateUpdate = !utils.shallowEqual(this.state.loading, nextState.loading)
-  //   stateUpdate = !utils.shallowEqual(this.state, nextState)
-  //   // Saving the scroll position. Neede in componentDidUpdate in order to avoid the the page scroll to be
-  //   // set top
-  //   const element = this.node
-  //   if (element !== null) {
-  //     this.scrollPosition = window.scrollY
-  //   }
-  //   return stateUpdate || propsUpdate
-  // }
-
   updateUi = (ui, boxName) => {
     let newUi = Object.assign({}, ui)
     return {
@@ -97,16 +81,10 @@ class ApplicationExchangeHome extends PureComponent {
   }
 
   componentDidMount = async () => {
-    // console.log(this.getConf())
-
     const { api } = this.context
     const { ui } = this.props.exchange
     const { endpoint } = this.props
-
     const defaultRelay = RELAYS[DEFAULT_RELAY[api._rb.network.name]]
-    // console.log(EXCHANGES)
-    // console.log(api._rb.network.name)
-    // console.log(defaultRelay)
     const defaultExchange = EXCHANGES[defaultRelay.name][api._rb.network.name]
     const defaultTokensPair = {
       baseToken:
@@ -120,16 +98,6 @@ class ApplicationExchangeHome extends PureComponent {
     }
     console.log('***** MOUNT *****')
     try {
-      // const address = await getAvailableAccounts(selectedExchange)
-      // this.props.dispatch({
-      //   type: 'SET_MAKER_ADDRESS',
-      //   payload: address[0]
-      // })
-      // const accounts = [
-      //   {
-      //     address: address[0]
-      //   }
-      // ]
       const walletAddress = endpoint.accounts.find(
         account => account.source === 'MetaMask'
       )
@@ -178,6 +146,9 @@ class ApplicationExchangeHome extends PureComponent {
         Actions.exchange.updateLiquidityAndTokenBalances(api, 'START')
       )
 
+      // Starting chart, ticker feed, order book
+      this.connectToExchange(defaultTokensPair, defaultRelay)
+
       // Get funds details (balance, transactions)
       let selectedFund = await this.getSelectedFundDetails(null, accounts)
       if (selectedFund) {
@@ -201,21 +172,7 @@ class ApplicationExchangeHome extends PureComponent {
             })
           )
         )
-        // this.props.dispatch(
-        //   Actions.exchange.updateUiPanelProperties(
-        //     utils
-        //       .updateUi(ui, 'orderBox')
-        //       .disableBox({ disabledMsg: 'Please create a fund.' })
-        //   )
-        // )
       }
-
-      this.connectToExchange(
-        selectedFund,
-        defaultTokensPair,
-        defaultRelay,
-        defaultExchange
-      )
     } catch (error) {
       console.warn(error)
     }
@@ -224,6 +181,9 @@ class ApplicationExchangeHome extends PureComponent {
   componentWillUnmount = () => {
     console.log('***** UNMOUNT *****')
     const { api } = this.context
+    const { selectedExchange } = this.props.exchange
+    // Stopping exchange contract events
+    this.props.dispatch(Actions.exchange.monitorEventsStop(selectedExchange))
     this.props.dispatch(Actions.exchange.fetchCandleDataSingleStop())
     this.props.dispatch(Actions.exchange.relayCloseWs())
     this.props.dispatch(
@@ -251,53 +211,57 @@ class ApplicationExchangeHome extends PureComponent {
     }
   }
 
-  connectToExchange = async (selectedFund, tokensPair, relay) => {
-    const { api } = this.context
-    this.props.dispatch({
-      type: TYPE_.CHART_MARKET_DATA_INIT,
-      payload: []
-    })
+  connectToExchange = async (tokensPair, relay) => {
+    // const { api } = this.context
 
-    this.props.dispatch({
-      type: TYPE_.ORDERBOOK_INIT,
-      payload: {
-        asks: [],
-        bids: [],
-        spread: '0'
-      }
-    })
+    // console.log(relay, tokensPair)
+    this.props.dispatch(Actions.exchange.connectRelay(relay, tokensPair))
 
-    // Getting price ticker
-    this.props.dispatch(
-      Actions.exchange.relayOpenWsTicker(
-        relay,
-        api._rb.network.id,
-        tokensPair.baseToken,
-        tokensPair.quoteToken
-      )
-    )
-    // Getting order book
-    this.props.dispatch(
-      Actions.exchange.relayOpenWsBook(
-        relay,
-        api._rb.network.id,
-        tokensPair.baseToken,
-        tokensPair.quoteToken
-      )
-    )
-    // Getting chart data
-    let tsYesterday = new Date(
-      (Math.floor(Date.now() / 1000) - 86400 * 7) * 1000
-    ).toISOString()
-    this.props.dispatch(
-      Actions.exchange.fetchCandleDataSingleStart(
-        relay,
-        api._rb.network.id,
-        tokensPair.baseToken,
-        tokensPair.quoteToken,
-        tsYesterday
-      )
-    )
+    // this.props.dispatch({
+    //   type: TYPE_.CHART_MARKET_DATA_INIT,
+    //   payload: []
+    // })
+
+    // this.props.dispatch({
+    //   type: TYPE_.ORDERBOOK_INIT,
+    //   payload: {
+    //     asks: [],
+    //     bids: [],
+    //     spread: '0'
+    //   }
+    // })
+
+    // // Getting price ticker
+    // this.props.dispatch(
+    //   Actions.exchange.relayOpenWsTicker(
+    //     relay,
+    //     api._rb.network.id,
+    //     tokensPair.baseToken,
+    //     tokensPair.quoteToken
+    //   )
+    // )
+    // // Getting order book
+    // this.props.dispatch(
+    //   Actions.exchange.relayOpenWsBook(
+    //     relay,
+    //     api._rb.network.id,
+    //     tokensPair.baseToken,
+    //     tokensPair.quoteToken
+    //   )
+    // )
+    // // Getting chart data
+    // let tsYesterday = new Date(
+    //   (Math.floor(Date.now() / 1000) - 86400 * 7) * 1000
+    // ).toISOString()
+    // this.props.dispatch(
+    //   Actions.exchange.fetchCandleDataSingleStart(
+    //     relay,
+    //     api._rb.network.id,
+    //     tokensPair.baseToken,
+    //     tokensPair.quoteToken,
+    //     tsYesterday
+    //   )
+    // )
   }
 
   onToggleAggregateOrders = isInputChecked => {
@@ -526,12 +490,7 @@ class ApplicationExchangeHome extends PureComponent {
 
       // Reconnecting to the exchange
       // this.connectToExchange(selectedExchange, tradeTokensPair)
-      this.connectToExchange(
-        selectedFund.details,
-        tradeTokensPair,
-        selectedRelay,
-        selectedExchange
-      )
+      this.connectToExchange(tradeTokensPair, selectedRelay)
     } catch (error) {
       console.warn(error)
     }
@@ -539,11 +498,17 @@ class ApplicationExchangeHome extends PureComponent {
 
   // Getting last transactions
   getSelectedFundDetails = async (dragoAddress, accounts) => {
+    console.time('getSelectedFundDetails')
     const { api } = this.context
     try {
       let poolApi = new PoolApi(api)
-      await poolApi.contract.dragofactory.init()
-      await poolApi.contract.dragoregistry.init()
+      // await poolApi.contract.dragofactory.init()
+      // await poolApi.contract.dragoregistry.init()
+
+      await Promise.all([
+        poolApi.contract.dragofactory.init(),
+        poolApi.contract.dragoregistry.init()
+      ])
 
       const getDragoList = async () => {
         let arrayPromises = accounts.map(async account => {
@@ -580,8 +545,9 @@ class ApplicationExchangeHome extends PureComponent {
         })
         return Promise.all(arrayPromises)
       }
-
+      console.time('dragoList')
       let dragoList = await getDragoDetails(...(await getDragoList()))
+      console.timeEnd('dragoList')
       if (dragoList.lenght) {
         this.setState({
           managerHasNoFunds: true
@@ -596,6 +562,7 @@ class ApplicationExchangeHome extends PureComponent {
         })
         this.props.dispatch(Actions.exchange.updateAvailableFunds(dragoList))
         this.onSelectFund(dragoList[0])
+        console.timeEnd('getSelectedFundDetails')
         return dragoList[0]
       }
     } catch (error) {

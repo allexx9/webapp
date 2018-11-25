@@ -38,7 +38,8 @@ const Ethfinex_Epics = [
   Ethfinex.initRelayWebSocketBookEpic,
   Ethfinex.getAccountOrdersEpic,
   Ethfinex.monitorExchangeEventsEpic,
-  Ethfinex.createOrderEthfinexV0Epic
+  Ethfinex.createOrderEthfinexV0Epic,
+  Ethfinex.connectToRelayEpic
 ]
 
 const Endpoint_Epics = [

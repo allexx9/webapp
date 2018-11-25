@@ -1,8 +1,14 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 import * as TYPE_ from './const'
-import { createOrder, updateOrder, updateUiPanelProperties } from './exchange'
+import {
+  connectRelay,
+  createOrder,
+  updateOrder,
+  updateUiPanelProperties
+} from './exchange'
 
 const exchange = {
+  connectRelay,
   createOrder,
   updateOrder,
   updateTradesHistory: payload => {
