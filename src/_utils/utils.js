@@ -329,9 +329,12 @@ class utilities {
     }
   }
 
-  notificationError = (notificationEngine, message, level = 'error') => {
-    console.log(message)
-    const messageFirstLine = message.split(/\r?\n/)
+  notificationError = (notificationEngine, notification, level = 'error') => {
+    console.log(notification)
+    const messageFirstLine =
+      typeof notification === 'string'
+        ? notification.split(/\r?\n/)
+        : notification.message.split(/\r?\n/)
     notificationEngine.addNotification({
       level: level,
       title: level.toUpperCase(),

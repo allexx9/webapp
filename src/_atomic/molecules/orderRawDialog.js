@@ -9,7 +9,6 @@ import ButtonOrderSubmit from '../atoms/buttonOrderSubmit'
 import Dialog from 'material-ui/Dialog'
 import OrderStepper from './orderStepper'
 import OrderSummary from '../molecules/orderSummary'
-import utils from '../../_utils/utils'
 
 import styles from './orderRawDialog.module.css'
 

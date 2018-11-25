@@ -21,6 +21,11 @@
   color: black;
 }
 
+.address a {
+  text-decoration: none;
+  color: black;
+}
+
 .address a:visited {
   text-decoration: none;
   color: black;

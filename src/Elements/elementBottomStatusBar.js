@@ -1,11 +1,10 @@
 import * as Colors from 'material-ui/styles/colors'
-import { APP_VERSION, GIT_HASH } from '../_utils/const'
 import { Col, Row } from 'react-flexbox-grid'
+import { GIT_HASH } from '../_utils/const'
 import AccessTime from 'material-ui/svg-icons/device/access-time'
 import NotificationWifi from 'material-ui/svg-icons/notification/wifi'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
-import utils from '../_utils/utils'
 
 import BigNumber from 'bignumber.js'
 import classnames from 'classnames'

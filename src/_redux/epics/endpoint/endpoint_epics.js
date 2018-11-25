@@ -13,8 +13,7 @@ import {
   mergeMap,
   retryWhen,
   switchMap,
-  takeUntil,
-  tap
+  takeUntil
 } from 'rxjs/operators'
 import { ofType } from 'redux-observable'
 import Web3Wrapper from '../../../_utils/web3Wrapper/src'

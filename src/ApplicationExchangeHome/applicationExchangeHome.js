@@ -251,12 +251,7 @@ class ApplicationExchangeHome extends PureComponent {
     }
   }
 
-  connectToExchange = async (
-    selectedFund,
-    tokensPair,
-    relay,
-    selectedExchange
-  ) => {
+  connectToExchange = async (selectedFund, tokensPair, relay) => {
     const { api } = this.context
     this.props.dispatch({
       type: TYPE_.CHART_MARKET_DATA_INIT,
@@ -327,10 +322,6 @@ class ApplicationExchangeHome extends PureComponent {
       selectedRelay
     } = this.props.exchange
     const { networkInfo, accounts } = this.props.endpoint
-
-    console.log(networkInfo)
-
-    console.log(fund)
 
     const walletAddress = accounts.find(
       account => account.source === 'MetaMask'

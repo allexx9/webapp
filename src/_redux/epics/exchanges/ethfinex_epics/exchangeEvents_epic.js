@@ -127,7 +127,7 @@ const processTradesHistory = (trades, state$) => {
     }
   })
 
-  let tradeHistory = trades.map(trade => {
+  let tradeHistory = trades.forEach(trade => {
     let transaction = {
       type: '',
       baseTokenSymbol: '',
@@ -262,7 +262,7 @@ export const monitorExchangeEventsEpic = (action$, state$) => {
   return action$.pipe(
     ofType(utils.customRelayAction(TYPE_.MONITOR_EXCHANGE_EVENTS_START)),
     switchMap(action => {
-      const { fund, tokens, exchange, networkInfo } = action.payload
+      const { fund, exchange, networkInfo } = action.payload
       return getPastExchangeEvents$(fund, exchange, state$).pipe(
         concat(
           ethfinexEventful$(fund, networkInfo),
