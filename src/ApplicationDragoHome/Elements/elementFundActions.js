@@ -13,6 +13,7 @@ import TextField from 'material-ui/TextField'
 
 import { Actions } from '../../_redux/actions'
 import { Table, TableBody, TableRow, TableRowColumn } from 'material-ui/Table'
+import { getDragoDetails } from '../../_utils/utils/getDragoDetails'
 
 import {
   ERRORS,
@@ -502,14 +503,21 @@ class ElementFundActions extends React.Component {
     //   return hexAccount
     // })
 
+    // console.log(dragoD)
     poolApi.contract.drago
       .buyDrago(account.address, amount)
       .then(receipt => {
         console.log('executed')
         console.log(receipt)
-        poolApi.contract.drago.balanceOf(account.address).then(balance => {
-          console.log(balance)
-        })
+        // const accounts = [].push(account)
+        // console.log(getDragoDetails(dragoD, accounts, api))
+        poolApi.contract.drago
+          .balanceOf(account.address)
+          .then(balance => {
+            console.log(balance)
+          })
+          .catch(e => console.warn(e))
+
         // Adding transaction to the queue
         // Parity returns an internal transaction ID straighaway. The transaction then needs to be authorized inside the wallet.
         // MetaMask returns a receipt of the transaction once it has been mined by the network. It can take a long time.

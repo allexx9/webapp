@@ -5,12 +5,17 @@ import BigNumber from 'bignumber.js'
 import PoolApi from '../../PoolsApi/src'
 import Web3Wrapper from '../web3Wrapper/src'
 
-export const getDragoDetails = async (dragoDetails, accounts, api) => {
+export const getDragoDetails = async (
+  dragoDetails,
+  accounts,
+  api,
+  options = { date: true }
+) => {
   //
   // Initializing Drago API
   //
-
-  let newWeb3 = await Web3Wrapper.getInstance(api._rb.network.id)
+  console.time('getDragoDetails')
+  let newWeb3 = Web3Wrapper.getInstance(api._rb.network.id)
   newWeb3._rb = window.web3._rb
   const poolApiWeb3 = new PoolApi(newWeb3)
   const dragoAddress = dragoDetails[0][0]
@@ -31,13 +36,18 @@ export const getDragoDetails = async (dragoDetails, accounts, api) => {
   //
   // Getting last transactions
   //
-  await poolApiWeb3.contract.dragoeventful.init()
+  // await poolApiWeb3.contract.dragoeventful.init()
 
   //
   // Initializing drago contract
   //
   // await poolApiWeb3.contract.drago.init(dragoAddress)
-  await poolApiWeb3.contract.drago.init(dragoAddress)
+  // await poolApiWeb3.contract.drago.init(dragoAddress)
+
+  await Promise.all([
+    poolApiWeb3.contract.dragoeventful.init(),
+    poolApiWeb3.contract.drago.init(dragoAddress)
+  ]).catch(e => new Error(e))
 
   //
   // Gettind drago data, creation date, supply, ETH balances
@@ -54,8 +64,9 @@ export const getDragoDetails = async (dragoDetails, accounts, api) => {
     ]
 
     let arrayPromises = []
-    return api.eth.blockNumber().then(lastBlock => {
+    return api.eth.getBlockNumber().then(lastBlock => {
       let chunck = 100000
+      lastBlock = new BigNumber().toFixed()
       const chunks = blockChunks(fromBlock, lastBlock, chunck)
       arrayPromises = chunks.map(async chunk => {
         // Pushing chunk logs into array
@@ -86,27 +97,57 @@ export const getDragoDetails = async (dragoDetails, accounts, api) => {
         })
     })
   }
+  let dragoCreatedDate = getDragoCreationDate(dragoAddress)
 
-  const dragoData = await poolApiWeb3.contract.drago.getData()
-  const dragoCreatedDate = await getDragoCreationDate(dragoAddress)
-  const dragoTotalSupply = await poolApiWeb3.contract.drago.totalSupply()
-  const dragoETHBalance = await formatEth(
-    await poolApiWeb3.contract.drago.getBalance(),
-    5,
-    api
-  )
-  const dragoWETHBalance = await formatEth(
-    await poolApiWeb3.contract.drago.getBalanceWETH(),
-    5,
-    api
-  )
-  // console.log(dragoETHBalance, dragoTotalSupply)
+  let balanceDRG = new BigNumber(0)
+  let dragoData = poolApiWeb3.contract.drago.getData()
+  // .catch(e => new Error(e))
+  let dragoTotalSupply = poolApiWeb3.contract.drago.totalSupply()
+  let dragoETH = poolApiWeb3.contract.drago.getBalance()
+  let dragoWETH = poolApiWeb3.contract.drago.getBalanceWETH()
+
+  //
+  // Getting balance for each user account
+  //
+  if (accounts.length > 1) {
+    balanceDRG = Promise.all(
+      accounts.map(async account => {
+        const balance = await poolApiWeb3.contract.drago
+          .balanceOf(account.address)
+          .catch(e => new Error(e))
+        balanceDRG = balanceDRG.plus(balance)
+      })
+    )
+  } else {
+    balanceDRG = poolApiWeb3.contract.drago.balanceOf(accounts[0].address)
+  }
+
+  // .catch(e => new Error(e))
+  ;[
+    dragoData,
+    dragoTotalSupply,
+    dragoETH,
+    dragoWETH,
+    balanceDRG,
+    dragoCreatedDate
+  ] = await Promise.all([
+    dragoData,
+    dragoTotalSupply,
+    dragoETH,
+    dragoWETH,
+    balanceDRG,
+    dragoCreatedDate
+  ]).catch(e => new Error(e))
+  console.log(dragoData, dragoTotalSupply, dragoETH, dragoWETH, balanceDRG)
+  const dragoETHBalance = await formatEth(dragoETH, 4)
+  const dragoWETHBalance = await formatEth(dragoWETH, 4)
+
   let details = {
     address: dragoDetails[0][0],
     name:
       dragoDetails[0][1].charAt(0).toUpperCase() + dragoDetails[0][1].slice(1),
     symbol: dragoDetails[0][2],
-    dragoId: dragoDetails[0][3].toFixed(),
+    dragoId: new BigNumber(dragoDetails[0][3]).toFixed(),
     addressOwner: dragoDetails[0][4],
     addressGroup: dragoDetails[0][5],
     sellPrice: api.util
@@ -123,20 +164,9 @@ export const getDragoDetails = async (dragoDetails, accounts, api) => {
 
   // console.log(details)
 
-  //
-  // Getting balance for each user account
-  //
-  let balanceDRG = new BigNumber(0)
-  await Promise.all(
-    accounts.map(async account => {
-      const balance = await poolApiWeb3.contract.drago.balanceOf(
-        account.address
-      )
-      balanceDRG = balanceDRG.plus(balance)
-    })
-  )
   balanceDRG = formatCoins(balanceDRG, 4, api)
   details = { ...details, balanceDRG }
-  // console.log(details)
+  console.log(details)
+  console.timeEnd('getDragoDetails')
   return details
 }

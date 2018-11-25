@@ -171,7 +171,7 @@ const getPoolDetails$ = (poolId, api, options, state$) => {
               name:
                 details[0][1].charAt(0).toUpperCase() + details[0][1].slice(1),
               symbol: details[0][2],
-              dragoId: details[0][3].toFixed(),
+              dragoId: new BigNumber(details[0][3]).toFixed(),
               addressOwner: details[0][4],
               addressGroup: details[0][5],
               buyPrice: null,
@@ -185,7 +185,7 @@ const getPoolDetails$ = (poolId, api, options, state$) => {
               name:
                 details[0][1].charAt(0).toUpperCase() + details[0][1].slice(1),
               symbol: details[0][2],
-              vaultId: details[0][3].toFixed(),
+              vaultId: new BigNumber(details[0][3]).toFixed(),
               addressOwner: details[0][4],
               addressGroup: details[0][5],
               buyPrice: null,
@@ -307,7 +307,7 @@ export const getPoolDetailsEpic = (action$, state$) => {
         retryWhen(error => {
           let scalingDuration = 5000
           return error.pipe(
-            mergeMap((error, i) => {
+            mergeMap(error => {
               console.warn(error)
               return timer(scalingDuration)
             }),

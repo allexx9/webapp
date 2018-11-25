@@ -33,14 +33,14 @@ const attachInterfacePromise = async (api, endpoint) => {
       console.log(`endpoint_epic -> ${INFURA}`)
       newEndpoint = await blockchain.attachInterfaceInfuraV2(api, networkId)
       break
-    case RIGOBLOCK:
-      console.log(`endpoint_epic -> ${RIGOBLOCK}`)
-      newEndpoint = await blockchain.attachInterfaceRigoBlockV2(api, networkId)
-      break
-    case LOCAL:
-      console.log(`endpoint_epic -> ${LOCAL}`)
-      newEndpoint = await blockchain.attachInterfaceRigoBlockV2(api, networkId)
-      break
+    // case RIGOBLOCK:
+    //   console.log(`endpoint_epic -> ${RIGOBLOCK}`)
+    //   newEndpoint = await blockchain.attachInterfaceRigoBlockV2(api, networkId)
+    //   break
+    // case LOCAL:
+    //   console.log(`endpoint_epic -> ${LOCAL}`)
+    //   newEndpoint = await blockchain.attachInterfaceRigoBlockV2(api, networkId)
+    //   break
     default:
       console.log(`endpoint_epic -> ${INFURA}`)
       newEndpoint = await blockchain.attachInterfaceInfuraV2(api, networkId)
@@ -164,41 +164,41 @@ export const monitorAccountsEpic = (action$, state$) => {
           if (DEBUGGING.initAccountsTransactionsInEpic) {
             const currentState = state$.value
             if (accountsUpdate[2]) {
-              // if (
-              //   currentState.transactionsDrago.selectedDrago.details.dragoId
-              // ) {
-              //   console.log('Account monitoring - > DRAGO details fetch.')
-              //   observablesArray.push(
-              //     Observable.of(
-              //       Actions.drago.getPoolDetails(
-              //         currentState.transactionsDrago.selectedDrago.details
-              //           .dragoId,
-              //         action.payload.api,
-              //         {
-              //           poolType: 'drago'
-              //         }
-              //       )
-              //     )
-              //   )
-              // }
+              if (
+                currentState.transactionsDrago.selectedDrago.details.dragoId
+              ) {
+                console.log('Account monitoring - > DRAGO details fetch.')
+                observablesArray.push(
+                  Observable.of(
+                    Actions.drago.getPoolDetails(
+                      currentState.transactionsDrago.selectedDrago.details
+                        .dragoId,
+                      action.payload.api,
+                      {
+                        poolType: 'drago'
+                      }
+                    )
+                  )
+                )
+              }
 
-              // if (
-              //   currentState.transactionsVault.selectedVault.details.vaultId
-              // ) {
-              //   console.log('Account monitoring - > VAULT details fetch.')
-              //   observablesArray.push(
-              //     Observable.of(
-              //       Actions.drago.getPoolDetails(
-              //         currentState.transactionsVault.selectedVault.details
-              //           .vaultId,
-              //         action.payload.api,
-              //         {
-              //           poolType: 'vault'
-              //         }
-              //       )
-              //     )
-              //   )
-              // }
+              if (
+                currentState.transactionsVault.selectedVault.details.vaultId
+              ) {
+                console.log('Account monitoring - > VAULT details fetch.')
+                observablesArray.push(
+                  Observable.of(
+                    Actions.drago.getPoolDetails(
+                      currentState.transactionsVault.selectedVault.details
+                        .vaultId,
+                      action.payload.api,
+                      {
+                        poolType: 'vault'
+                      }
+                    )
+                  )
+                )
+              }
               // observablesArray.push(Observable.of(DEBUGGING.DUMB_ACTION))
               console.log(
                 'Account monitoring - > DRAGO transactions fetch trader'

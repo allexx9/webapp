@@ -15,6 +15,7 @@ import {
 } from 'rxjs/operators'
 import { exhaustMap } from 'rxjs-compat/operator/exhaustMap'
 import { ofType } from 'redux-observable'
+import BigNumber from 'bignumber.js'
 import PoolsApi from '../../PoolsApi/src'
 import utils from '../../_utils/utils'
 // import { race } from 'rxjs/observable/race';
@@ -27,7 +28,7 @@ const getVaultsChunkedEvents$ = (api, options, state$) => {
   return Observable.create(observer => {
     let startBlock =
       state$.value.transactionsVault.vaultsList.lastFetchRange.lastBlock
-    // console.log(fromBlock)
+
     const poolApi = new PoolsApi(api)
     if (startBlock === 0) {
       switch (api._rb.network.id) {
@@ -73,8 +74,8 @@ const getVaultsChunkedEvents$ = (api, options, state$) => {
     }
 
     poolApi.contract.vaulteventful.init().then(() => {
-      api.eth.blockNumber().then(lastBlock => {
-        lastBlock = lastBlock.toFixed()
+      api.eth.getBlockNumber().then(lastBlock => {
+        lastBlock = new BigNumber(lastBlock).toFixed()
         let chunck = 100000
         console.log(startBlock, lastBlock, chunck)
         const chunks = utils.blockChunks(startBlock, lastBlock, chunck)
@@ -171,8 +172,8 @@ const getDragosChunkedEvents$ = (api, options, state$) => {
     }
 
     poolApi.contract.dragoeventful.init().then(() => {
-      api.eth.blockNumber().then(lastBlock => {
-        lastBlock = lastBlock.toFixed()
+      api.eth.getBlockNumber().then(lastBlock => {
+        lastBlock = new BigNumber(lastBlock).toFixed()
         let chunck = 100000
         // console.log(startBlock, lastBlock, chunck)
         const chunks = utils.blockChunks(startBlock, lastBlock, chunck)

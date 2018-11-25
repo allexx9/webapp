@@ -28,7 +28,7 @@ export default class IdentityIcon extends PureComponent {
       <img
         className={styles.icon}
         style={{ width: size, height: size, ...this.props.customStyle }}
-        src={api.util.createIdentityImg(address, 4)}
+        src={api.utils.createIdentityImg(address, 4)}
         alt="identity-icon"
       />
     )

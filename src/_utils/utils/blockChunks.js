@@ -3,6 +3,9 @@ export const blockChunks = (start, end, chunk) => {
   let i = 0
   let fromBlock = end - chunk
   let toBlock = end
+  end = Number(end)
+  chunk = Number(chunk)
+  start = Number(start)
 
   if (end - chunk < start) {
     rangesArray.push({

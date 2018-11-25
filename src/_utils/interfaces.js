@@ -223,14 +223,14 @@ class Interfaces {
       }
       let blockNumber = 0
       try {
-        blockNumber = await api.eth.blockNumber()
+        blockNumber = await api.eth.getBlockNumber()
       } catch (error) {
         console.warn(error)
       }
       console.log(
         'Metamask account loaded: ',
         accountsMetaMask,
-        blockNumber.toFixed()
+        new BigNumber(blockNumber).toFixed()
       )
 
       const stateUpdate = {
@@ -288,7 +288,7 @@ class Interfaces {
         accountsMetaMask = await this.getAccountsMetamask()
         accountsParity = await this.getAccountsParity()
       }
-      const blockNumber = await api.eth.blockNumber()
+      const blockNumber = await api.eth.getBlockNumber()
       console.log('Parity accounts loaded: ', accountsParity)
       console.log('MetaMask account loaded: ', accountsMetaMask)
       const allAccounts = {
@@ -297,7 +297,7 @@ class Interfaces {
       }
       const stateUpdate = {
         loading: false,
-        prevBlockNumber: blockNumber.toFixed(),
+        prevBlockNumber: new BigNumber(blockNumber).toFixed(),
         ethBalance: new BigNumber(0),
         accounts:
           Object.keys(allAccounts).length !== 0

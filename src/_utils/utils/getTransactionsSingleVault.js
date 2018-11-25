@@ -107,8 +107,9 @@ export const getTransactionsSingleVault = async (
 
   const getChunkedEvents = topics => {
     let arrayPromises = []
-    return api.eth.blockNumber().then(lastBlock => {
+    return api.eth.getBlockNumber().then(lastBlock => {
       let chunck = 100000
+      lastBlock = new BigNumber(lastBlock).toFixed()
       const chunks = blockChunks(fromBlock, lastBlock, chunck)
       arrayPromises = chunks.map(async chunk => {
         // Pushing chunk logs into array
