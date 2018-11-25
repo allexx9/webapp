@@ -326,10 +326,22 @@ class ApplicationExchangeHome extends PureComponent {
       selectedExchange,
       selectedRelay
     } = this.props.exchange
-
-    const { networkInfo } = this.props.endpoint
+    const { networkInfo, accounts } = this.props.endpoint
 
     console.log(networkInfo)
+
+    console.log(fund)
+
+    const walletAddress = accounts.find(
+      account => account.source === 'MetaMask'
+    )
+
+    const fundDetails = {
+      details: fund,
+      managerAccount: walletAddress.address.toLowerCase()
+    }
+
+    this.props.dispatch(Actions.exchange.updateSelectedFund(fundDetails))
 
     // Reser exchange contract events
     this.props.dispatch(Actions.exchange.resetTradesHistory())
@@ -357,12 +369,13 @@ class ApplicationExchangeHome extends PureComponent {
       poolApi.contract.drago.init(fund.address)
 
       // Getting drago details
-      const dragoDetails = await poolApi.contract.drago.getAdminData()
-      const fundDetails = {
-        details: fund,
-        managerAccount: dragoDetails[0].toLowerCase()
-      }
-      this.props.dispatch(Actions.exchange.updateSelectedFund(fundDetails))
+      // const dragoDetails = await poolApi.contract.drago.getAdminData()
+      // const fundDetails = {
+      //   details: fund,
+      //   managerAccount: dragoDetails[0].toLowerCase()
+      // }
+
+      // this.props.dispatch(Actions.exchange.updateSelectedFund(fundDetails))
 
       // Updating selected tokens pair balances and fund liquidity (ETH, ZRX)
       this.props.dispatch(
@@ -388,30 +401,30 @@ class ApplicationExchangeHome extends PureComponent {
       let baseTokenLockWrapExpire,
         quoteTokenLockWrapExpire = '0'
 
-      if (selectedRelay.isTokenWrapper) {
-        // Getting token wrapper lock time
-        baseTokenLockWrapExpire = await utils.getTokenWrapperLockTime(
-          api,
-          selectedTokensPair.baseToken.wrappers[selectedRelay.name].address,
-          fund.address
-        )
-        quoteTokenLockWrapExpire = await utils.getTokenWrapperLockTime(
-          api,
-          selectedTokensPair.quoteToken.wrappers[selectedRelay.name].address,
-          fund.address
-        )
-      }
+      // if (selectedRelay.isTokenWrapper) {
+      //   // Getting token wrapper lock time
+      //   baseTokenLockWrapExpire = await utils.getTokenWrapperLockTime(
+      //     api,
+      //     selectedTokensPair.baseToken.wrappers[selectedRelay.name].address,
+      //     fund.address
+      //   )
+      //   quoteTokenLockWrapExpire = await utils.getTokenWrapperLockTime(
+      //     api,
+      //     selectedTokensPair.quoteToken.wrappers[selectedRelay.name].address,
+      //     fund.address
+      //   )
+      // }
 
-      const payload = {
-        baseTokenAllowance: new BigNumber(allowanceBaseToken).gt(0),
-        quoteTokenAllowance: new BigNumber(allowanceQuoteToken).gt(0),
-        baseTokenLockWrapExpire: baseTokenLockWrapExpire,
-        quoteTokenLockWrapExpire: quoteTokenLockWrapExpire
-      }
+      // const payload = {
+      //   baseTokenAllowance: new BigNumber(allowanceBaseToken).gt(0),
+      //   quoteTokenAllowance: new BigNumber(allowanceQuoteToken).gt(0),
+      //   baseTokenLockWrapExpire: baseTokenLockWrapExpire,
+      //   quoteTokenLockWrapExpire: quoteTokenLockWrapExpire
+      // }
 
-      this.props.dispatch(
-        Actions.exchange.updateSelectedTradeTokensPair(payload)
-      )
+      // this.props.dispatch(
+      //   Actions.exchange.updateSelectedTradeTokensPair(payload)
+      // )
     } catch (error) {
       console.warn(error)
     }
