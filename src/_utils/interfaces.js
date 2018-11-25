@@ -160,7 +160,7 @@ class Interfaces {
 
         if (this._api.isConnected) {
           try {
-            ethBalance = await web3.eth.getBalance(accounts[0])
+            ethBalance = web3.eth.getBalance(accounts[0])
           } catch (err) {
             throw new Error(`Cannot get ETH balance of account ${accounts[0]}`)
           }
@@ -169,20 +169,28 @@ class Interfaces {
           // Get GRG balance
 
           try {
-            grgBalance = await poolsApi.contract.rigotoken.balanceOf(
-              accounts[0]
-            )
+            grgBalance = poolsApi.contract.rigotoken.balanceOf(accounts[0])
           } catch (err) {
             throw new Error(`Cannot get GRG balance of account ${accounts[0]}`)
           }
           // Getting transactions count
 
           try {
-            nonce = await web3.eth.getTransactionCount(accounts[0])
+            nonce = web3.eth.getTransactionCount(accounts[0])
           } catch (err) {
             throw new Error(
               `Cannot get transactions count of account ${accounts[0]}`
             )
+          }
+
+          try {
+            ;[ethBalance, grgBalance, nonce] = await Promise.all([
+              ethBalance,
+              grgBalance,
+              nonce
+            ])
+          } catch (e) {
+            throw new Error(`Cannot get GRG balance of account ${accounts[0]}`)
           }
         }
 

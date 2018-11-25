@@ -147,24 +147,27 @@ export const getDragoLiquidityAndTokenBalances = async (
     //     .format('MMMM Do YYYY, h:mm:ss a')}`
     // )
   }
-
-  ;[
-    dragoETHBalance,
-    baseTokenBalance,
-    baseTokenWrapperBalance,
-    quoteTokenBalance,
-    quoteTokenWrapperBalance,
-    baseTokenLockWrapExpire,
-    quoteTokenLockWrapExpire
-  ] = await Promise.all([
-    dragoETHBalance,
-    baseTokenBalance,
-    baseTokenWrapperBalance,
-    quoteTokenBalance,
-    quoteTokenWrapperBalance,
-    baseTokenLockWrapExpire,
-    quoteTokenLockWrapExpire
-  ])
+  try {
+    ;[
+      dragoETHBalance,
+      baseTokenBalance,
+      baseTokenWrapperBalance,
+      quoteTokenBalance,
+      quoteTokenWrapperBalance,
+      baseTokenLockWrapExpire,
+      quoteTokenLockWrapExpire
+    ] = await Promise.all([
+      dragoETHBalance,
+      baseTokenBalance,
+      baseTokenWrapperBalance,
+      quoteTokenBalance,
+      quoteTokenWrapperBalance,
+      baseTokenLockWrapExpire,
+      quoteTokenLockWrapExpire
+    ])
+  } catch (e) {
+    throw e
+  }
 
   const liquidity = {
     dragoETHBalance: new BigNumber(dragoETHBalance),
@@ -176,8 +179,5 @@ export const getDragoLiquidityAndTokenBalances = async (
     baseTokenLockWrapExpire: baseTokenLockWrapExpire,
     quoteTokenLockWrapExpire: quoteTokenLockWrapExpire
   }
-
-  console.log(liquidity)
-
   return liquidity
 }
