@@ -24,10 +24,10 @@ const exchange = {
       payload
     }
   },
-  monitorEventsStart: (fund, tokens, exchange) => {
+  monitorEventsStart: (fund, tokens, exchange, networkInfo) => {
     return {
       type: TYPE_.MONITOR_EXCHANGE_EVENTS_START,
-      payload: { fund, tokens, exchange }
+      payload: { fund, tokens, exchange, networkInfo }
     }
   },
   monitorEventsStop: exchange => {

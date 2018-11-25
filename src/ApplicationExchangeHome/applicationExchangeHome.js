@@ -329,6 +329,8 @@ class ApplicationExchangeHome extends PureComponent {
 
     const { networkInfo } = this.props.endpoint
 
+    console.log(networkInfo)
+
     // Reser exchange contract events
     this.props.dispatch(Actions.exchange.resetTradesHistory())
 

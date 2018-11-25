@@ -78,7 +78,17 @@ const getPastExchangeEvents$ = (fund, exchange, state$) => {
         )
       })
       return from(Promise.all(eventsPromises)).pipe(
-        map(result => result.reduce((acc, curr) => [...acc, ...curr], []))
+        map(result => {
+          // console.time('results1')
+          // const results1 = [].concat(...result)
+          // console.timeEnd('results1')
+
+          // console.time('results2')
+          // const results2 = result.reduce((acc, curr) => [...acc, ...curr], [])
+          // console.timeEnd('results2')
+
+          return [].concat(...result)
+        })
       )
     })
   )
