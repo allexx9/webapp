@@ -17,7 +17,7 @@ export default class ElementDialogAddressTitle extends Component {
       <Row className={styles.modalTitle}>
         <Col xs={12} md={1} className={styles.dragoTitle}>
           <h2>
-            <IdentityIcon address={tokenDetails.address} />
+            <IdentityIcon address={tokenDetails.address} size={15} />
           </h2>
         </Col>
         <Col xs={12} md={11} className={styles.dragoTitle}>

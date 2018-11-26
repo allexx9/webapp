@@ -125,10 +125,6 @@ class Contract {
     return this._tokenwrapper
   }
 
-  get vaulteventful() {
-    return this._vaulteventful
-  }
-
   get vaultfactory() {
     return this._vaultfactory
   }

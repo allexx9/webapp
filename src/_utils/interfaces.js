@@ -242,7 +242,7 @@ class Interfaces {
         return accountsMetaMask
       }
     } catch (error) {
-      console.log(error)
+      console.warn(error)
       return {}
     }
   }

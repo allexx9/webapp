@@ -59,14 +59,17 @@ export default class FundSelector extends PureComponent {
         <Col xs={12}>
           <div className={styles.sectionTitle}>
             <div className={styles.address}>
-              {' '}
-              <a
-                href={`${networkInfo.etherscan}address/${address}`}
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                {address}
-              </a>
+              {address ? (
+                <a
+                  href={`${networkInfo.etherscan}address/${address}`}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  {address}
+                </a>
+              ) : (
+                <br />
+              )}
             </div>
           </div>
         </Col>

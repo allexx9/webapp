@@ -75,11 +75,11 @@ const getVaultsChunkedEvents$ = (api, options, state$) => {
     }
 
     poolApi.contract.vaulteventful.init().then(() => {
-      api.eth.getBlockNumber().then(lastBlock => {
+      api.eth.getBlockNumber().then(async lastBlock => {
         lastBlock = new BigNumber(lastBlock).toNumber()
         let chunck = 100000
         console.log(startBlock, lastBlock, chunck)
-        const chunks = utils.blockChunks(startBlock, lastBlock, chunck)
+        const chunks = await utils.blockChunks(startBlock, lastBlock, chunck)
         chunks.map(async (chunk, key) => {
           // Pushing chunk logs into array
           let options = {
@@ -173,11 +173,11 @@ const getDragosChunkedEvents$ = (api, options, state$) => {
     }
 
     poolApi.contract.dragoeventful.init().then(() => {
-      api.eth.getBlockNumber().then(lastBlock => {
+      api.eth.getBlockNumber().then(async lastBlock => {
         lastBlock = new BigNumber(lastBlock).toNumber()
         let chunck = 100000
         // console.log(startBlock, lastBlock, chunck)
-        const chunks = utils.blockChunks(startBlock, lastBlock, chunck)
+        const chunks = await utils.blockChunks(startBlock, lastBlock, chunck)
         chunks.map(async (chunk, key) => {
           // Pushing chunk logs into array
           let options = {

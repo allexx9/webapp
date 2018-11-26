@@ -1,18 +1,18 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
+import BlokiesIcon from './blokiesIcon'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
-import styles from './identityIcon.module.css'
 
 export default class IdentityIcon extends PureComponent {
   static propTypes = {
     address: PropTypes.string.isRequired,
-    size: PropTypes.string,
+    size: PropTypes.number,
     customStyle: PropTypes.object
   }
 
   static defaultProps = {
-    size: '40px',
+    size: 25,
     customStyle: {}
   }
 
@@ -22,14 +22,12 @@ export default class IdentityIcon extends PureComponent {
 
   render() {
     const { address, size } = this.props
-    const { api } = this.context
-    console.log(api.utils.createIdentityImg(address, 4))
     return (
-      <img
-        className={styles.icon}
-        style={{ width: size, height: size, ...this.props.customStyle }}
-        src={api.utils.createIdentityImg(address, 4)}
-        alt="identity-icon"
+      <BlokiesIcon
+        seed={address}
+        size={size}
+        scale={3}
+        style={{ borderRadius: '50%' }}
       />
     )
   }

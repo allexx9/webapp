@@ -528,13 +528,13 @@ class ApplicationExchangeHome extends PureComponent {
       const getDragoDetails = async dragoList => {
         let arrayPromises = dragoList.map(drago => {
           return poolApi.contract.dragoregistry
-            .fromAddress(drago.value)
+            .fromAddress(drago)
             .then(dragoDetails => {
               const dragoData = {
                 symbol: dragoDetails[2].trim(),
-                dragoId: dragoDetails[3].toFixed(),
+                dragoId: new BigNumber(dragoDetails[3]).toFixed(),
                 name: dragoDetails[1].trim(),
-                address: drago.value
+                address: drago
               }
               return dragoData
             })

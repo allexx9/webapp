@@ -293,7 +293,7 @@ class utilities {
   formatFromWei = number => {
     const web3 = new Web3()
     try {
-      return new BigNumber(web3.utils.fromWei(number.toFixed())).toFixed(3)
+      return new BigNumber(web3.utils.fromWei(number)).toFixed(3)
     } catch (err) {
       return new BigNumber(web3.utils.fromWei(number)).toFixed(3)
     }

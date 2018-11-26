@@ -109,7 +109,7 @@ class ElementAccountBox extends Component {
                 <Row className={styles.accountTitleContainer}>
                   <Col xs={2}>
                     <div>
-                      <IdentityIcon address={account.address} />
+                      <IdentityIcon address={account.address} size={18} />
                     </div>
                   </Col>
                   <Col xs={12} md={10}>

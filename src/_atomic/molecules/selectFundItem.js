@@ -3,7 +3,7 @@
 import IdentityIcon from '../atoms/identityIcon'
 import React, { Component } from 'react'
 
-import styles from './selectTokenItem.module.css'
+import styles from './selectFundItem.module.css'
 
 import PropTypes from 'prop-types'
 
@@ -17,7 +17,9 @@ export default class SelectFundItem extends Component {
     return (
       <div className={styles.logo}>
         <div className={styles.image}>
-          <IdentityIcon address={fund.address} size={'30px'} />
+          <div>
+            <IdentityIcon address={fund.address} size={8} />
+          </div>
         </div>
         <div className={styles.details}>
           <div className={styles.name}>{fund.symbol}</div>

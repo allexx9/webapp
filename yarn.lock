@@ -1951,6 +1951,11 @@ block-stream@*:
   dependencies:
     inherits "~2.0.0"
 
+blockies-npm@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/blockies-npm/-/blockies-npm-0.0.1.tgz#aeb333455f0eb9a9b2a51271a9081d25e3c6ec7c"
+  integrity sha1-rrMzRV8OuamypRJxqQgdJePG7Hw=
+
 blockies@0.0.2:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/blockies/-/blockies-0.0.2.tgz#22ad58da4f6b382bc79bf4386c5820c70047e4ed"

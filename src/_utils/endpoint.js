@@ -3,7 +3,6 @@
 
 import { ENDPOINTS, INFURA, KOVAN, PROD, WS } from './const'
 // import Api from '@parity/api'
-import { createIdentityImg } from './identity'
 import Web3 from 'web3'
 import Web3Wrapper from '../_utils/web3Wrapper/src'
 
@@ -108,7 +107,6 @@ class Endpoint {
       api._rb = {}
       api._rb.network = this._network
       api._rb.network.transportWs = this._wss
-      api.utils.createIdentityImg = createIdentityImg
       console.log(api)
       return api
     } catch (error) {

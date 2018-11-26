@@ -110,7 +110,7 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
           // console.log(results)
           return results
         }),
-        // timeout(5000),
+        timeout(5000),
         distinctUntilChanged((a, b) => {
           return shallowequal(
             JSON.stringify(a.accounts),

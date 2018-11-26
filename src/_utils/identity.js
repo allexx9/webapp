@@ -22,11 +22,12 @@ let TEST_ENV = process.env.NODE_ENV === 'test'
 export const createIdentityImg = address => {
   let scale =
     arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 8
+  console.log(blockies)
   return TEST_ENV
     ? 'test-createIdentityImg'
     : blockies({
         seed: (address || '').toLowerCase(),
         size: 8,
         scale: scale
-      }).toDataURL()
+      }).createImageData()
 }
