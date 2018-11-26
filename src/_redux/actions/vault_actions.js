@@ -4,7 +4,6 @@ import * as TYPE_ from './const'
 
 const vault = {
   updateSelectedVault: (results = {}, options = { reset: false }) => {
-    console.log(options)
     switch (options.reset) {
       case true:
         return {

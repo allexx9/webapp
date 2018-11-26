@@ -32,7 +32,7 @@ export default class AccountItem extends Component {
     return (
       <div className={styles.account}>
         <div className={styles.image}>
-          <IdentityIcon address={account.address} />
+          <IdentityIcon address={account.address} size={12} />
         </div>
         <div className={styles.details}>
           <div className={styles.name}>{account.name || account.address}</div>

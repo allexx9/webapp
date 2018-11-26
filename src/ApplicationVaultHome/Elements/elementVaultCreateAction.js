@@ -127,7 +127,7 @@ class ElementVaultCreateAction extends React.Component {
     let poolApi = null
     // Initializing transaction variables
     const authMsg = 'You deployed the vault ' + vaultSymbol + ' | ' + vaultName
-    const transactionId = api.util.sha3(new Date() + vaultSymbol)
+    const transactionId = api.utils.sha3(new Date() + vaultSymbol)
     let transactionDetails = {
       status:
         this.state.account.source === 'MetaMask' ? 'pending' : 'authorization',

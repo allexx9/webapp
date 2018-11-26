@@ -1,7 +1,8 @@
-import { blockChunks } from './blockChunks'
 import { formatCoins, formatEth } from './../format'
+import { getBlockChunks } from './blockChunks'
 import BigNumber from 'bignumber.js'
 import PoolApi from '../../PoolsApi/src'
+import Web3 from 'web3'
 import Web3Wrapper from '../../_utils/web3Wrapper/src'
 
 export const getTransactionsSingleDrago = async (
@@ -12,11 +13,16 @@ export const getTransactionsSingleDrago = async (
     limit: 20
   }
 ) => {
-  let web3 = await Web3Wrapper.getInstance(api._rb.network.id)
+  let web3 = Web3Wrapper.getInstance(api._rb.network.id)
   web3._rb = window.web3._rb
-  const poolApi = new PoolApi(web3)
-  await poolApi.contract.dragoeventful.init()
 
+  // HTTP
+  let web3Http = new Web3(api._rb.network.transportHttp)
+  web3Http._rb = window.web3._rb
+
+  const poolApi = new PoolApi(web3Http)
+
+  await poolApi.contract.dragoeventful.init()
   const contract = poolApi.contract.dragoeventful
   let fromBlock
   switch (api._rb.network.id) {
@@ -113,9 +119,10 @@ export const getTransactionsSingleDrago = async (
 
   const getChunkedEvents = topics => {
     let arrayPromises = []
-    return web3.eth.getBlockNumber().then(lastBlock => {
+    return web3.eth.getBlockNumber().then(async lastBlock => {
       let chunck = 100000
-      const chunks = blockChunks(fromBlock, lastBlock, chunck)
+      lastBlock = new BigNumber(lastBlock).toNumber()
+      const chunks = await getBlockChunks(fromBlock, lastBlock, chunck)
       arrayPromises = chunks.map(async chunk => {
         // Pushing chunk logs into array
         let options = {
@@ -123,7 +130,11 @@ export const getTransactionsSingleDrago = async (
           fromBlock: chunk.fromBlock,
           toBlock: chunk.toBlock
         }
-        return await poolApi.contract.dragoeventful.getAllLogs(options)
+        return await poolApi.contract.dragoeventful
+          .getAllLogs(options)
+          .then(log => {
+            return log
+          })
       })
 
       return Promise.all(arrayPromises).then(results => {
@@ -136,7 +147,7 @@ export const getTransactionsSingleDrago = async (
   let eventsFilterBuySell
 
   if (options.trader) {
-    console.log('trader transactions')
+    console.log('getTransactionsSingleDrago: Trader transactions')
     eventsFilterBuySell = [
       [contract.hexSignature.BuyDrago, contract.hexSignature.SellDrago],
       [hexPoolAddress],
@@ -144,7 +155,7 @@ export const getTransactionsSingleDrago = async (
       null
     ]
   } else {
-    console.log('manager transactions')
+    console.log('getTransactionsSingleDrago: Manager transactions')
     eventsFilterBuySell = [
       [
         contract.hexSignature.BuyDrago,
@@ -159,18 +170,6 @@ export const getTransactionsSingleDrago = async (
 
   let promisesEvents = [getChunkedEvents(eventsFilterBuySell)]
 
-  // const buyDragoEvents = contract
-  //   .getAllLogs(eventsFilterBuy)
-  //   .then(dragoTransactionsLog => {
-  //     const buyLogs = dragoTransactionsLog.map(logToEvent)
-  //     return buyLogs
-  //   })
-  // const sellDragoEvents = contract
-  //   .getAllLogs(eventsFilterSell)
-  //   .then(dragoTransactionsLog => {
-  //     const sellLogs = dragoTransactionsLog.map(logToEvent)
-  //     return sellLogs
-  //   })
   return Promise.all(promisesEvents)
     .then(logs => {
       let dragoTransactionsLogs = logs[0].slice(
@@ -184,7 +183,7 @@ export const getTransactionsSingleDrago = async (
       // Doing so because for each entry we need to make an async call to the client
       // For additional refernce: https://stackoverflow.com/questions/39452083/using-promise-function-inside-javascript-array-map
       let logPromises = dragoTransactionsLog.map(async log => {
-        return await web3.eth
+        return web3.eth
           .getBlock(new BigNumber(log.blockNumber).toFixed(0))
           .then(block => {
             log.timestamp = new Date(block.timestamp * 1000)
@@ -205,7 +204,7 @@ export const getTransactionsSingleDrago = async (
         console.log(
           `${
             this.constructor.name
-          } -> getTransactionsSingleDrago: Transactions list loaded`
+          } -> Single Drago Transactions list loaded: trader ${options.trader}`
         )
         return results
       })

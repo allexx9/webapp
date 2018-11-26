@@ -42,14 +42,14 @@ export function validateAccount(account, api) {
     return ERRORS.invalidAccount
   }
 
-  if (!api.util.isAddressValid(account.address)) {
+  if (!api.utils.isAddress(account.address)) {
     return ERRORS.invalidAddress
   }
   return null
 }
 
 export function validateAddress(address, api) {
-  if (!api.util.isAddressValid(address)) {
+  if (!api.utils.isAddress(address)) {
     return ERRORS.toAddressError
   }
   return null

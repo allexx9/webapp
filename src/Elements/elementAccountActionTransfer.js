@@ -277,7 +277,7 @@ class ElementAccountActionTransfer extends Component {
       { minimumFractionDigits: 3, maximumFractionDigits: 3 }
     )
     const authMsg = 'You trasferred ' + amountAuthMsg + ' units of ' + token
-    const transactionId = api.util.sha3(new Date() + toAddress)
+    const transactionId = api.utils.sha3(new Date() + toAddress)
     // Setting variables depending on account source
     let provider = this.props.account.source === 'MetaMask' ? window.web3 : api
     let poolApi = null
@@ -361,7 +361,7 @@ class ElementAccountActionTransfer extends Component {
       { minimumFractionDigits: 3, maximumFractionDigits: 3 }
     )
     const authMsg = 'You trasferred ' + amountAuthMsg + ' units of ' + token
-    const transactionId = api.util.sha3(new Date() + toAddress)
+    const transactionId = api.utils.sha3(new Date() + toAddress)
     // Setting variables depending on account source
     let provider = this.props.account.source === 'MetaMask' ? window.web3 : api
     let poolApi = null

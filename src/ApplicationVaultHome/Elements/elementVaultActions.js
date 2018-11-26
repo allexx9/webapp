@@ -269,11 +269,8 @@ class ElementVaultActions extends React.Component {
     // Getting the account balance if account passed validation
     if (!accountError) {
       const poolApi = new PoolApi(provider)
-      console.log(vaultDetails.address)
       poolApi.contract.vault.init(vaultDetails.address)
-      console.log(poolApi.contract.vault.balanceOf(account.address))
       poolApi.contract.vault.balanceOf(account.address).then(amount => {
-        console.log(amount)
         const drgBalance = formatCoins(new BigNumber(amount), 4, api)
         this.setState({
           drgBalance,
@@ -444,13 +441,13 @@ class ElementVaultActions extends React.Component {
     const { api } = this.context
     const { vaultDetails } = this.props
     const accountAddress = this.state.account.address
-    const amount = api.util.toWei(this.state.amountSummary).toString()
+    const amount = api.utils.toWei(this.state.amountSummary).toString()
     const authMsg =
       'You sent ' +
       this.state.amountSummary +
       ' ETH to the vault ' +
       vaultDetails.symbol.toUpperCase()
-    const transactionId = api.util.sha3(new Date() + accountAddress)
+    const transactionId = api.utils.sha3(new Date() + accountAddress)
     // Setting variables depending on account source
     let provider = this.state.account.source === 'MetaMask' ? window.web3 : api
     let poolApi = null
@@ -482,6 +479,11 @@ class ElementVaultActions extends React.Component {
       .buyVault(accountAddress, amount)
       .then(receipt => {
         console.log(receipt)
+        this.props.dispatch(
+          Actions.drago.getPoolDetails(vaultDetails.vaultId, provider, {
+            poolType: 'vault'
+          })
+        )
         // Adding transaciont to the queue
         // Parity returns an internal transaction ID straighaway. The transaction then needs to be authorized inside the wallet.
         // MetaMask returns a receipt of the transaction once it has been mined by the network. It can take a long time.
@@ -518,9 +520,6 @@ class ElementVaultActions extends React.Component {
             transactionDetails
           )
         )
-        this.setState({
-          sending: false
-        })
       })
     this.setState(
       {
@@ -546,7 +545,7 @@ class ElementVaultActions extends React.Component {
       this.state.amountSummary +
       ' ETH from the vault ' +
       vaultDetails.symbol.toUpperCase()
-    const transactionId = api.util.sha3(new Date() + accountAddress)
+    const transactionId = api.utils.sha3(new Date() + accountAddress)
     // Setting variables depending on account source
     let provider = this.state.account.source === 'MetaMask' ? window.web3 : api
     let poolApi = null
@@ -579,6 +578,15 @@ class ElementVaultActions extends React.Component {
       .sellVault(accountAddress, amount)
       .then(receipt => {
         console.log(receipt)
+        this.props.dispatch(
+          Actions.drago.getPoolDetails(
+            vaultDetails.vaultDetails.vaultId,
+            provider,
+            {
+              poolType: 'vault'
+            }
+          )
+        )
         // Adding transaciont to the queue
         // Parity returns an internal transaction ID straighaway. The transaction then needs to be authorized inside the wallet.
         // MetaMask returns a receipt of the transaction once it has been mined by the network. It can take a long time.
@@ -615,9 +623,6 @@ class ElementVaultActions extends React.Component {
             transactionDetails
           )
         )
-        this.setState({
-          sending: false
-        })
       })
     // this.props.snackBar('Sell order waiting for authorization for ' + this.state.amountSummary + ' ' + vaultDetails.symbol.toUpperCase())
     this.setState(

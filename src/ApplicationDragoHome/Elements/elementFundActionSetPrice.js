@@ -319,7 +319,7 @@ class ElementFundActionSetPrice extends Component {
     const { account } = this.state
 
     // Initializing transaction variables
-    const transactionId = api.util.sha3(new Date() + account.address)
+    const transactionId = api.utils.sha3(new Date() + account.address)
     let transactionDetails = {
       status: account.source === 'MetaMask' ? 'pending' : 'authorization',
       hash: '',
@@ -344,6 +344,11 @@ class ElementFundActionSetPrice extends Component {
       .setPrices(account.address, buyPrice, sellPrice)
       .then(receipt => {
         console.log(receipt)
+        this.props.dispatch(
+          Actions.drago.getPoolDetails(dragoDetails.dragoId, provider, {
+            poolType: 'drago'
+          })
+        )
         if (account.source === 'MetaMask') {
           transactionDetails.status = 'executed'
           transactionDetails.receipt = receipt

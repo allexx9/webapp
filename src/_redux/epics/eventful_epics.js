@@ -4,10 +4,11 @@
 import * as TYPE_ from '../actions/const'
 import { Actions } from '../actions'
 // import { DEBUGGING } from '../../_utils/const'
-import { Observable, from } from 'rxjs'
+import { Observable, from, timer } from 'rxjs'
 import {
   catchError,
   delay,
+  finalize,
   map,
   mergeMap,
   retryWhen,
@@ -15,6 +16,7 @@ import {
 } from 'rxjs/operators'
 import { exhaustMap } from 'rxjs-compat/operator/exhaustMap'
 import { ofType } from 'redux-observable'
+import BigNumber from 'bignumber.js'
 import PoolsApi from '../../PoolsApi/src'
 import utils from '../../_utils/utils'
 // import { race } from 'rxjs/observable/race';
@@ -27,7 +29,7 @@ const getVaultsChunkedEvents$ = (api, options, state$) => {
   return Observable.create(observer => {
     let startBlock =
       state$.value.transactionsVault.vaultsList.lastFetchRange.lastBlock
-    // console.log(fromBlock)
+
     const poolApi = new PoolsApi(api)
     if (startBlock === 0) {
       switch (api._rb.network.id) {
@@ -73,11 +75,11 @@ const getVaultsChunkedEvents$ = (api, options, state$) => {
     }
 
     poolApi.contract.vaulteventful.init().then(() => {
-      api.eth.blockNumber().then(lastBlock => {
-        lastBlock = lastBlock.toFixed()
+      api.eth.getBlockNumber().then(async lastBlock => {
+        lastBlock = new BigNumber(lastBlock).toNumber()
         let chunck = 100000
         console.log(startBlock, lastBlock, chunck)
-        const chunks = utils.blockChunks(startBlock, lastBlock, chunck)
+        const chunks = await utils.blockChunks(startBlock, lastBlock, chunck)
         chunks.map(async (chunk, key) => {
           // Pushing chunk logs into array
           let options = {
@@ -171,11 +173,11 @@ const getDragosChunkedEvents$ = (api, options, state$) => {
     }
 
     poolApi.contract.dragoeventful.init().then(() => {
-      api.eth.blockNumber().then(lastBlock => {
-        lastBlock = lastBlock.toFixed()
+      api.eth.getBlockNumber().then(async lastBlock => {
+        lastBlock = new BigNumber(lastBlock).toNumber()
         let chunck = 100000
         // console.log(startBlock, lastBlock, chunck)
-        const chunks = utils.blockChunks(startBlock, lastBlock, chunck)
+        const chunks = await utils.blockChunks(startBlock, lastBlock, chunck)
         chunks.map(async (chunk, key) => {
           // Pushing chunk logs into array
           let options = {
@@ -347,21 +349,20 @@ export const getAccountsTransactionsEpic = (action$, state$) => {
             // return DEBUGGING.DUMB_ACTION
           }
         }),
-        retryWhen(retryStrategy)
-        // retryWhen(error => {
-        //   console.log('getAccountsTransactionsEpic error')
-        //   let scalingDuration = 10000
-        //   return error.pipe(
-        //     // buffer(isNodeConnected$),
-        //     // first(),
-        //     mergeMap((error, i) => {
-        //       console.log(error)
-        //       const retryAttempt = i + 1
-        //       return timer(scalingDuration)
-        //     }),
-        //     finalize(() => console.log('We are done!'))
-        //   )
-        // })
+        // retryWhen(retryStrategy)
+        retryWhen(error => {
+          console.log('getAccountsTransactionsEpic error')
+          let scalingDuration = 10000
+          return error.pipe(
+            // buffer(isNodeConnected$),
+            // first(),
+            mergeMap((error, i) => {
+              console.log(error)
+              return timer(scalingDuration)
+            }),
+            finalize(() => console.log('We are done!'))
+          )
+        })
         // catchError(error => {
         //   console.warn(error)
         //   return Observable.of({

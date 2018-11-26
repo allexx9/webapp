@@ -33,14 +33,14 @@ const attachInterfacePromise = async (api, endpoint) => {
       console.log(`endpoint_epic -> ${INFURA}`)
       newEndpoint = await blockchain.attachInterfaceInfuraV2(api, networkId)
       break
-    case RIGOBLOCK:
-      console.log(`endpoint_epic -> ${RIGOBLOCK}`)
-      newEndpoint = await blockchain.attachInterfaceRigoBlockV2(api, networkId)
-      break
-    case LOCAL:
-      console.log(`endpoint_epic -> ${LOCAL}`)
-      newEndpoint = await blockchain.attachInterfaceRigoBlockV2(api, networkId)
-      break
+    // case RIGOBLOCK:
+    //   console.log(`endpoint_epic -> ${RIGOBLOCK}`)
+    //   newEndpoint = await blockchain.attachInterfaceRigoBlockV2(api, networkId)
+    //   break
+    // case LOCAL:
+    //   console.log(`endpoint_epic -> ${LOCAL}`)
+    //   newEndpoint = await blockchain.attachInterfaceRigoBlockV2(api, networkId)
+    //   break
     default:
       console.log(`endpoint_epic -> ${INFURA}`)
       newEndpoint = await blockchain.attachInterfaceInfuraV2(api, networkId)
@@ -57,7 +57,7 @@ const attachInterface$ = (api, endpoint) => {
   )
 }
 
-export const attacheInterfaceEpic = action$ =>
+export const attachInterfaceEpic = action$ =>
   action$.pipe(
     ofType(TYPE_.ATTACH_INTERFACE),
     switchMap(action => {
@@ -71,12 +71,6 @@ export const attacheInterfaceEpic = action$ =>
               })
             ),
             Observable.of(Actions.endpoint.updateInterface(endpoint))
-            // Observable.of(
-            //   Actions.endpoint.monitorAccountsStart(
-            //     action.payload.web3,
-            //     action.payload.api
-            //   )
-            // )
           )
         })
       )
@@ -87,16 +81,7 @@ export const attacheInterfaceEpic = action$ =>
         mergeMap((error, i) => {
           console.warn(error)
           const retryAttempt = i + 1
-          // if maximum number of retries have been met
-          // or response is a status code we don't wish to retry, throw error
-          // if (
-          //   retryAttempt > maxRetryAttempts ||
-          //   excludedStatusCodes.find(e => e === error.status)
-          // ) {
-          //   throw(error);
-          // }
           console.log(`Attempt ${retryAttempt}`)
-          // retry after 1s, 2s, etc...
           return timer(scalingDuration)
         }),
         finalize(() => console.log('We are done!'))
@@ -107,7 +92,7 @@ export const attacheInterfaceEpic = action$ =>
 export const delayShowAppEpic = action$ =>
   action$.pipe(
     ofType(TYPE_.ATTACH_INTERFACE),
-    delay(7000),
+    delay(1000000),
     map(() => {
       return Actions.app.updateAppStatus({
         appLoading: false
@@ -118,19 +103,6 @@ export const delayShowAppEpic = action$ =>
 //
 // SUBSCRIBE TO NEW BLOCK AND MONITOR ACCOUNTS
 //
-
-// const monitorAccounts$ = (api, state$) => {
-//   return Observable.create(observer => {
-//     const instance = Web3Wrapper.getInstance(
-//       state$.value.endpoint.networkInfo.id
-//     )
-//     instance.rigoblock.ob.newBlock$.subscribe(newBlock => {
-//       return utils
-//         .updateAccounts(api, newBlock, state$)
-//         .then(result => observer.next(result))
-//     })
-//   })
-// }
 
 const monitorAccounts$ = (api, state$) => {
   const instance = Web3Wrapper.getInstance(state$.value.endpoint.networkInfo.id)

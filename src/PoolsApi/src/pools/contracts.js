@@ -24,6 +24,7 @@ import RigoTokenWeb3 from './Web3/rigoToken'
 import TokenWrapperParity from './Parity/tokenWrapper'
 import TokenWrapperWeb3 from './Web3/tokenWrapper'
 import VaultEventfulParity from './Parity/vaultEventful'
+import VaultEventfulWeb3 from './Web3/vaultEventful'
 import VaultFactoryParity from './Parity/vaultFactory'
 import VaultFactoryWeb3 from './Web3/vaultFactory'
 import VaultParity from './Parity/vault'
@@ -41,6 +42,7 @@ class Contract {
       this._dragoregistry = new DragoRegistryWeb3(api)
       this._ether = new EtherWeb3(api)
       this._vault = new VaultWeb3(api)
+      this._vaulteventful = new VaultEventfulWeb3(api)
       this._vaultfactory = new VaultFactoryWeb3(api)
       this._rigotoken = new RigoTokenWeb3(api)
       this._rigotokenfaucet = new RigoTokenFaucetWeb3(api)
@@ -82,9 +84,17 @@ class Contract {
   }
 
   get dragoeventful() {
-    return typeof this._dragoeventful !== 'undefined'
-      ? this._dragoeventful
-      : this._dragoeventful
+    return this._dragoeventful
+    // return typeof this._dragoeventful !== 'undefined'
+    //   ? this._dragoeventful
+    //   : this._dragoeventful
+  }
+
+  get vaulteventful() {
+    return this._vaulteventful
+    // return typeof this._vaulteventful !== 'undefined'
+    //   ? this._vaulteventful
+    //   : this._vaulteventful
   }
 
   get ether() {
@@ -113,10 +123,6 @@ class Contract {
 
   get tokenwrapper() {
     return this._tokenwrapper
-  }
-
-  get vaulteventful() {
-    return this._vaulteventful
   }
 
   get vaultfactory() {

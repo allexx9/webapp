@@ -93,7 +93,8 @@ export const DEFAULT_RELAY = {
 // Blockchain endpoint
 export const EP_INFURA_KV = 'https://kovan.infura.io/metamask'
 export const EP_INFURA_RP = 'https://ropsten.infura.io/metamask'
-export const EP_INFURA_MN = 'https://mainnet.infura.io/metamask'
+export const EP_INFURA_MN =
+  'https://mainnet.infura.io/v3/3fe47e5272bc4d38b6f0b247d94a6cd1'
 export const EP_INFURA_KV_WS = 'wss://kovan.infura.io/ws'
 export const EP_INFURA_RP_WS = 'wss://ropsten.infura.io/ws'
 export const EP_INFURA_MN_WS = 'wss://mainnet.infura.io/ws'
@@ -155,6 +156,8 @@ export const KOVAN_ETHERSCAN = 'https://kovan.etherscan.io/'
 export const ROPSTEN_ETHERSCAN = 'https://ropsten.etherscan.io/'
 export const MAINNET_ETHERSCAN = 'https://etherscan.io/'
 
+//mainnet.infura.io/v3/3fe47e5272bc4d38b6f0b247d94a6cd1
+
 export const ENDPOINTS = {
   infura: {
     name: 'infura',
@@ -167,9 +170,13 @@ export const ENDPOINTS = {
         dev: 'https://ropsten.infura.io/metamask',
         prod: 'https://ropsten.infura.io/metamask'
       },
+      // mainnet: {
+      //   dev: 'https://mainnet.infura.io/metamask',
+      //   prod: 'https://mainnet.infura.io/metamask'
+      // }
       mainnet: {
-        dev: 'https://mainnet.infura.io/metamask',
-        prod: 'https://mainnet.infura.io/metamask'
+        dev: 'https://mainnet.infura.io/v3/3fe47e5272bc4d38b6f0b247d94a6cd1',
+        prod: 'https://mainnet.infura.io/v3/3fe47e5272bc4d38b6f0b247d94a6cd1'
       }
     },
     wss: {

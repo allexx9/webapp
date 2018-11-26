@@ -2,19 +2,19 @@
 // This file is part of RigoBlock.
 
 import * as abis from '../../contracts/abi'
-import { DRAGOEVENTFUL } from '../../utils/const'
+import { VAULTEVENTFUL } from '../../utils/const'
 import Registry from '../registry'
 
-class DragoEventfulWeb3 {
+class VaultEventfulWeb3 {
   constructor(api) {
     if (!api) {
       throw new Error('API instance needs to be provided to Contract')
     }
     this._api = api
-    this._abi = abis.dragoeventful
+    this._abi = abis.vaulteventful
     this._registry = new Registry(api)
     this._constunctorName = this.constructor.name
-    this._contractName = DRAGOEVENTFUL
+    this._contractName = VAULTEVENTFUL
     this._contractAddress = ''
   }
 
@@ -80,4 +80,4 @@ class DragoEventfulWeb3 {
   }
 }
 
-export default DragoEventfulWeb3
+export default VaultEventfulWeb3

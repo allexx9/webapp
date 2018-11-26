@@ -23,7 +23,8 @@ import exchangeEfxV0Abi from '../../../../PoolsApi/src/contracts/abi/v2/exchange
 import utils from '../../../../_utils/utils'
 
 const getPastExchangeEvents$ = (fund, exchange, state$) => {
-  const web3 = Web3Wrapper.getInstance(state$.value.endpoint.networkInfo.id)
+  const { networkInfo } = state$.value.endpoint
+  const web3 = Web3Wrapper.getInstance(networkInfo.id)
   const efxEchangeContract = new web3.eth.Contract(
     exchangeEfxV0Abi,
     exchange.exchangeContractAddress.toLowerCase()
@@ -63,8 +64,22 @@ const getPastExchangeEvents$ = (fund, exchange, state$) => {
 
   return defer(() => from(web3.eth.getBlockNumber())).pipe(
     switchMap(lastBlock => {
+      let fromBlock
+      switch (networkInfo.id) {
+        case 1:
+          fromBlock = '6000000'
+          break
+        case 42:
+          fromBlock = '7000000'
+          break
+        case 3:
+          fromBlock = '3000000'
+          break
+        default:
+          fromBlock = '3000000'
+      }
       const chunkSize = 100000
-      const chunks = blockChunks(0, lastBlock, chunkSize)
+      const chunks = blockChunks(fromBlock, lastBlock, chunkSize)
       const eventsPromises = chunks.map(chunk => {
         const options = {
           fromBlock: chunk.fromBlock,

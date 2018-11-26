@@ -122,7 +122,7 @@ class Interfaces {
       // Check if MetaMask is connected to the same network as the endpoint
       let accounts = await web3.eth.getAccounts()
       let metaMaskNetworkId = await web3.eth.net.getId()
-      console.log(accounts, metaMaskNetworkId)
+      console.log('Account MM: ', accounts, metaMaskNetworkId)
       let isMetaMaskLocked = accounts.length === 0 ? true : false
       let currentState = this._success
       if (metaMaskNetworkId !== parityNetworkId) {
@@ -149,7 +149,7 @@ class Interfaces {
         }
 
         // Return empty object if MetaMask is locked.
-        if (accounts.length === 0) {
+        if (isMetaMaskLocked) {
           return {}
         }
 
@@ -158,40 +158,74 @@ class Interfaces {
         let grgBalance = new BigNumber(0)
         let nonce = 0
 
-        if (this._api.isConnected) {
-          try {
-            ethBalance = web3.eth.getBalance(accounts[0])
-          } catch (err) {
-            throw new Error(`Cannot get ETH balance of account ${accounts[0]}`)
-          }
-          let poolsApi = new PoolsApi(web3)
-          poolsApi.contract.rigotoken.init()
-          // Get GRG balance
+        // if (this._api.isConnected) {
+        //   try {
+        //     ethBalance = web3.eth.getBalance(accounts[0])
+        //   } catch (err) {
+        //     throw new Error(`Cannot get ETH balance of account ${accounts[0]}`)
+        //   }
+        //   let poolsApi = new PoolsApi(web3)
+        //   poolsApi.contract.rigotoken.init()
+        //   // Get GRG balance
 
-          try {
-            grgBalance = poolsApi.contract.rigotoken.balanceOf(accounts[0])
-          } catch (err) {
-            throw new Error(`Cannot get GRG balance of account ${accounts[0]}`)
-          }
-          // Getting transactions count
+        //   try {
+        //     grgBalance = poolsApi.contract.rigotoken.balanceOf(accounts[0])
+        //   } catch (err) {
+        //     throw new Error(`Cannot get GRG balance of account ${accounts[0]}`)
+        //   }
+        //   // Getting transactions count
 
-          try {
-            nonce = web3.eth.getTransactionCount(accounts[0])
-          } catch (err) {
-            throw new Error(
-              `Cannot get transactions count of account ${accounts[0]}`
-            )
-          }
+        //   try {
+        //     nonce = web3.eth.getTransactionCount(accounts[0])
+        //   } catch (err) {
+        //     throw new Error(
+        //       `Cannot get transactions count of account ${accounts[0]}`
+        //     )
+        //   }
 
-          try {
-            ;[ethBalance, grgBalance, nonce] = await Promise.all([
-              ethBalance,
-              grgBalance,
-              nonce
-            ])
-          } catch (e) {
-            throw new Error(`Cannot get GRG balance of account ${accounts[0]}`)
-          }
+        //   try {
+        //     ;[ethBalance, grgBalance, nonce] = await Promise.all([
+        //       ethBalance,
+        //       grgBalance,
+        //       nonce
+        //     ])
+        //   } catch (e) {
+        //     throw new Error(`Cannot get GRG balance of account ${accounts[0]}`)
+        //   }
+        // }
+
+        try {
+          ethBalance = web3.eth.getBalance(accounts[0])
+        } catch (err) {
+          throw new Error(`Cannot get ETH balance of account ${accounts[0]}`)
+        }
+        let poolsApi = new PoolsApi(web3)
+        poolsApi.contract.rigotoken.init()
+        // Get GRG balance
+
+        try {
+          grgBalance = poolsApi.contract.rigotoken.balanceOf(accounts[0])
+        } catch (err) {
+          throw new Error(`Cannot get GRG balance of account ${accounts[0]}`)
+        }
+        // Getting transactions count
+
+        try {
+          nonce = web3.eth.getTransactionCount(accounts[0])
+        } catch (err) {
+          throw new Error(
+            `Cannot get transactions count of account ${accounts[0]}`
+          )
+        }
+
+        try {
+          ;[ethBalance, grgBalance, nonce] = await Promise.all([
+            ethBalance,
+            grgBalance,
+            nonce
+          ])
+        } catch (e) {
+          throw new Error(`Cannot get GRG balance of account ${accounts[0]}`)
         }
 
         let accountsMetaMask = {
@@ -208,7 +242,7 @@ class Interfaces {
         return accountsMetaMask
       }
     } catch (error) {
-      console.log(error)
+      console.warn(error)
       return {}
     }
   }
@@ -221,21 +255,21 @@ class Interfaces {
       const allAccounts = {
         ...accountsMetaMask
       }
-      let blockNumber = 0
-      try {
-        blockNumber = await api.eth.blockNumber()
-      } catch (error) {
-        console.warn(error)
-      }
+      // let blockNumber = 0
+      // try {
+      //   blockNumber = await api.eth.getBlockNumber()
+      // } catch (error) {
+      //   console.warn(error)
+      // }
       console.log(
         'Metamask account loaded: ',
-        accountsMetaMask,
-        blockNumber.toFixed()
+        accountsMetaMask
+        // new BigNumber(blockNumber).toFixed()
       )
 
       const stateUpdate = {
         loading: false,
-        prevBlockNumber: blockNumber.toFixed(),
+        // prevBlockNumber: blockNumber.toFixed(),
         accounts: Object.keys(allAccounts).map(address => {
           const info = allAccounts[address] || {}
           return {
@@ -288,16 +322,14 @@ class Interfaces {
         accountsMetaMask = await this.getAccountsMetamask()
         accountsParity = await this.getAccountsParity()
       }
-      const blockNumber = await api.eth.blockNumber()
-      console.log('Parity accounts loaded: ', accountsParity)
-      console.log('MetaMask account loaded: ', accountsMetaMask)
+      const blockNumber = await api.eth.getBlockNumber()
       const allAccounts = {
         ...accountsParity,
         ...accountsMetaMask
       }
       const stateUpdate = {
         loading: false,
-        prevBlockNumber: blockNumber.toFixed(),
+        prevBlockNumber: new BigNumber(blockNumber).toFixed(),
         ethBalance: new BigNumber(0),
         accounts:
           Object.keys(allAccounts).length !== 0

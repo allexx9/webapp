@@ -35,7 +35,7 @@ class DragoRegistryWeb3 {
 
   fromId = dragoID => {
     if (!dragoID) {
-      throw new Error('DragoID needs to be provided to drago')
+      throw new Error('DragoID needs to be provided to fromId')
     }
     const instance = this._instance
     return Promise.all([instance.methods.fromId(dragoID).call({})])
@@ -43,7 +43,7 @@ class DragoRegistryWeb3 {
 
   fromAddress = dragoAddress => {
     if (!dragoAddress) {
-      throw new Error(`dragoAddress needs to be provided to drago`)
+      throw new Error(`dragoAddress needs to be provided to fromAddress`)
     }
     const instance = this._instance
     return instance.methods.fromAddress(dragoAddress).call({})

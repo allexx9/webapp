@@ -6,24 +6,24 @@ import PoolApi from '../../PoolsApi/src'
 import Web3 from 'web3'
 import Web3Wrapper from '../web3Wrapper/src'
 
-export const getDragoDetails = async (
-  dragoDetails,
+export const getVaultDetails = async (
+  vaultDetails,
   accounts,
   api,
   options = { dateOnly: false }
 ) => {
   //
-  // Initializing Drago API
+  // Initializing vault API
   //
-  console.time('getDragoDetails')
   let web3Http = new Web3(api._rb.network.transportHttp)
   let newWeb3 = Web3Wrapper.getInstance(api._rb.network.id)
+  newWeb3._rb = window.web3._rb
 
   newWeb3._rb = window.web3._rb
   web3Http._rb = window.web3._rb
   const poolApiWeb3 = new PoolApi(api)
 
-  const dragoAddress = dragoDetails[0][0]
+  const vaultAddress = vaultDetails[0][0]
   let fromBlock
   switch (api._rb.network.id) {
     case 1:
@@ -40,19 +40,19 @@ export const getDragoDetails = async (
   }
 
   await Promise.all([
-    poolApiWeb3.contract.dragoeventful.init(),
-    poolApiWeb3.contract.drago.init(dragoAddress)
+    poolApiWeb3.contract.vaulteventful.init(),
+    poolApiWeb3.contract.vault.init(vaultAddress)
   ]).catch(e => new Error(e))
 
   //
-  // Getting drago data, creation date, supply, ETH balances
+  // Getting vault data, creation date, supply, ETH balances
   //
 
-  const getDragoCreationDate = async address => {
+  const getVaultCreationDate = async address => {
     const hexPoolAddress = '0x' + address.substr(2).padStart(64, '0')
 
     let topics = [
-      [poolApiWeb3.contract.dragoeventful.hexSignature.DragoCreated],
+      [poolApiWeb3.contract.vaulteventful.hexSignature.VaultCreated],
       [hexPoolAddress],
       null,
       null
@@ -62,8 +62,7 @@ export const getDragoDetails = async (
     return newWeb3.eth.getBlockNumber().then(async lastBlock => {
       let chunck = 100000
       lastBlock = new BigNumber(lastBlock).toNumber()
-      const chunks = await getBlockChunks(fromBlock, lastBlock, chunck, newWeb3)
-      // const chunks = blockChunks(fromBlock, lastBlock, chunck)
+      const chunks = await getBlockChunks(fromBlock, lastBlock, chunck)
       arrayPromises = chunks.map(async chunk => {
         // Pushing chunk logs into array
         let options = {
@@ -71,23 +70,7 @@ export const getDragoDetails = async (
           fromBlock: chunk.fromBlock,
           toBlock: chunk.toBlock
         }
-        // let contractHttp = new web3Http.eth.Contract(
-        //   poolApiWeb3.contract.dragoeventful._abi,
-        //   poolApiWeb3.contract.dragoeventful._contractAddress
-        // )
-
-        // return contractHttp
-        //   .getPastEvents('allEvents', {
-        //     fromBlock: options.fromBlock,
-        //     toBlock: options.toBlock,
-        //     topics: options.topics
-        //   })
-        //   .then(logs => {
-        //     console.log(logs)
-        //     return logs
-        //   })
-
-        return poolApiWeb3.contract.dragoeventful
+        return await poolApiWeb3.contract.vaulteventful
           .getAllLogs(options)
           .then(logs => {
             return logs
@@ -133,19 +116,20 @@ export const getDragoDetails = async (
   }
 
   if (options.dateOnly) {
-    let dragoCreatedDate = await getDragoCreationDate(dragoAddress)
+    let vaultCreated = await getVaultCreationDate(vaultAddress)
     let details = {
-      address: dragoAddress,
-      created: dragoCreatedDate
+      address: vaultAddress,
+      created: vaultCreated
     }
     return details
   }
 
   let balanceDRG = new BigNumber(0)
-  let dragoData = poolApiWeb3.contract.drago.getData()
-  let dragoTotalSupply = poolApiWeb3.contract.drago.totalSupply()
-  let dragoETH = poolApiWeb3.contract.drago.getBalance()
-  let dragoWETH = poolApiWeb3.contract.drago.getBalanceWETH()
+  let vaultData = poolApiWeb3.contract.vault.getData()
+  let vaultAdminData = poolApiWeb3.contract.vault.getAdminData()
+  let vaultTotalSupply = poolApiWeb3.contract.vault.totalSupply()
+  let vaultETH = poolApiWeb3.contract.vault.getBalance()
+  let fee = ''
 
   //
   // Getting balance for each user account
@@ -153,39 +137,40 @@ export const getDragoDetails = async (
   if (accounts.length > 1) {
     balanceDRG = Promise.all(
       accounts.map(async account => {
-        const balance = await poolApiWeb3.contract.drago
+        const balance = await poolApiWeb3.contract.vault
           .balanceOf(account.address)
           .catch(e => new Error(e))
         balanceDRG = balanceDRG.plus(balance)
       })
     )
   } else {
-    balanceDRG = poolApiWeb3.contract.drago.balanceOf(accounts[0].address)
+    balanceDRG = poolApiWeb3.contract.vault.balanceOf(accounts[0].address)
   }
 
   try {
-    dragoData = await dragoData
+    vaultData = await vaultData
   } catch (err) {
     console.warn(err)
     throw new Error(err)
   }
 
   try {
-    dragoTotalSupply = await dragoTotalSupply
+    vaultAdminData = await vaultAdminData
+    fee = new BigNumber(vaultAdminData[4]).div(100).toFixed(2)
   } catch (err) {
     console.warn(err)
     throw new Error(err)
   }
 
   try {
-    dragoETH = await dragoETH
+    vaultTotalSupply = await vaultTotalSupply
   } catch (err) {
     console.warn(err)
     throw new Error(err)
   }
 
   try {
-    dragoWETH = await dragoWETH
+    vaultETH = await vaultETH
   } catch (err) {
     console.warn(err)
     throw new Error(err)
@@ -198,54 +183,36 @@ export const getDragoDetails = async (
     throw new Error(err)
   }
 
-  // try {
-  //   ;[
-  //     // dragoCreatedDate,
-  //     dragoData,
-  //     dragoTotalSupply,
-  //     dragoETH,
-  //     dragoWETH,
-  //     balanceDRG
-  //   ] = await Promise.all([
-  //     // dragoCreatedDate,
-  //     dragoData,
-  //     dragoTotalSupply,
-  //     dragoETH,
-  //     dragoWETH,
-  //     balanceDRG
-  //   ]).catch(e => {
-  //     console.log(e)
-  //     return new Error(e)
-  //   })
-  //   console.log(
-  //     // dragoCreatedDate,
-  //     dragoData,
-  //     dragoTotalSupply,
-  //     dragoETH,
-  //     dragoWETH,
-  //     balanceDRG
-  //   )
-  // } catch (e) {
-  //   console.log(e)
-  //   return new Error(e)
-  // }
+  // ;[
+  //   vaultData,
+  //   vaultAdminData,
+  //   vaultTotalSupply,
+  //   vaultETH,
+  //   vaultCreatedDate
+  // ] = await Promise.all([
+  //   vaultData,
+  //   vaultAdminData,
+  //   vaultTotalSupply,
+  //   vaultETH,
+  //   vaultCreatedDate
+  // ]).catch(e => new Error(e))
 
   let details = {
-    address: dragoDetails[0][0],
+    address: vaultDetails[0][0],
     name:
-      dragoDetails[0][1].charAt(0).toUpperCase() + dragoDetails[0][1].slice(1),
-    symbol: dragoDetails[0][2],
-    dragoId: new BigNumber(dragoDetails[0][3]).toFixed(),
-    addressOwner: dragoDetails[0][4],
-    addressGroup: dragoDetails[0][5],
-    sellPrice: new BigNumber(api.utils.fromWei(dragoData[2])).toFormat(4),
-    buyPrice: new BigNumber(api.utils.fromWei(dragoData[3])).toFormat(4),
-    // created: dragoCreatedDate,
-    totalSupply: formatCoins(new BigNumber(dragoTotalSupply), 4),
-    dragoETHBalance: formatEth(dragoETH, 4),
-    dragoWETHBalance: formatEth(dragoWETH, 4),
+      vaultDetails[0][1].charAt(0).toUpperCase() + vaultDetails[0][1].slice(1),
+    symbol: vaultDetails[0][2],
+    vaultId: new BigNumber(vaultDetails[0][3]).toNumber(),
+    addressOwner: vaultDetails[0][4],
+    addressGroup: vaultDetails[0][5],
+    sellPrice: new BigNumber(api.utils.fromWei(vaultData[2])).toFormat(4),
+    buyPrice: new BigNumber(api.utils.fromWei(vaultData[3])).toFormat(4),
+    // created: vaultCreatedDate,
+    totalSupply: formatCoins(new BigNumber(vaultTotalSupply), 4),
+    vaultETHBalance: formatEth(vaultETH, 4),
+    fee,
     balanceDRG: formatCoins(balanceDRG, 4)
   }
-  console.timeEnd('getDragoDetails')
+
   return details
 }

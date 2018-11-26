@@ -1,4 +1,4 @@
-import { ENDPOINTS } from './utils/const'
+import { ENDPOINTS, INFURA } from './utils/const'
 import Web3 from 'web3'
 import Web3WsProvider from './utils/reconnectingWsProvider'
 import contract from './utils/contract'
@@ -11,8 +11,8 @@ class Web3Wrapper {
   web3 = null
   instance = null
 
-  init(networkId, protocol = 'wss') {
-    const transport = ENDPOINTS[protocol][networkId].prod
+  init(networkId, endpoint = INFURA, protocol = 'wss') {
+    const transport = ENDPOINTS[endpoint][protocol][networkId].prod
     const provider = new Web3WsProvider(transport)
     this.web3 = new Web3(provider)
 
@@ -30,9 +30,9 @@ class Web3Wrapper {
     })
   }
 
-  getInstance = (networkId, protocol) => {
+  getInstance = (networkId, endpoint, protocol) => {
     if (!this.instance) {
-      this.instance = this.init(networkId, protocol)
+      this.instance = this.init(networkId, endpoint, protocol)
     }
     return this.instance
   }

@@ -186,12 +186,8 @@ export default class ElementVaultActionDeposit extends Component {
   onSend = () => {
     const { api } = this.context
     const { vaultDetails } = this.props
-    // const { instance } = this.context;
     const exchangeAddress = this.state.exchangeAddress //cfd exchange; //this.state.exchange;
-    // const values = [exchangeAddress.toString(), ADDRESS_0, api.util.toWei(this.state.amount).toString()]; //this.state.account.address
-    // const options = {
-    //   from: this.state.account.address
-    // };
+
     let poolApi = null
 
     this.setState({
@@ -206,7 +202,7 @@ export default class ElementVaultActionDeposit extends Component {
           this.state.account.address,
           exchangeAddress.toString(),
           ADDRESS_0,
-          api.util.toWei(this.state.amount).toString()
+          api.utils.toWei(this.state.amount).toString()
         )
         .then(result => {
           console.log(result)
@@ -230,7 +226,7 @@ export default class ElementVaultActionDeposit extends Component {
           this.state.account.address,
           exchangeAddress.toString(),
           ADDRESS_0,
-          api.util.toWei(this.state.amount).toString()
+          api.utils.toWei(this.state.amount).toString()
         )
         .then(() => {
           this.onClose()

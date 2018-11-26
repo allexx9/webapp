@@ -2,8 +2,8 @@
 // This file is part of RigoBlock.
 
 import { ENDPOINTS, INFURA, KOVAN, PROD, WS } from './const'
-import Api from '@parity/api'
 import Web3 from 'web3'
+import Web3Wrapper from '../_utils/web3Wrapper/src'
 
 class Endpoint {
   constructor(
@@ -84,6 +84,10 @@ class Endpoint {
 
   connect = () => {
     this._checkWeb3()
+    const web3Wrapper = Web3Wrapper.getInstance(
+      this._network.id,
+      this._endpoint.name
+    )
     let api
     if (this._checkLocal()) {
       console.log(`Endpoint: local`)
@@ -91,37 +95,53 @@ class Endpoint {
       window.parity.api._rb.network = this._network
       return window.parity.api
     }
-    if (this._onWs) {
-      try {
-        console.log('Network: ', this._network.name)
-        console.log('Connecting to WebSocket: ', this._wss)
-        const transport = new Api.Provider.WsSecure(this._wss)
-        api = new Api(transport)
-        api._rb = {}
-        api._rb.network = this._network
-        api._rb.network.transportWs = this._wss
-        console.log(api)
-        return api
-      } catch (error) {
-        console.log('Connection error: ', error)
-        return error
-      }
-    } else {
-      try {
-        console.log('Network: ', this._network.name)
-        console.log('Connecting to HTTPS: ', this._https)
-        const transport = new Api.Provider.Http(this._https, this._timeout)
-        api = new Api(transport)
-        api._rb = {}
-        api._rb.network = this._network
-        api._rb.network.transportWs = this._wss
-        console.log(api)
-        return api
-      } catch (error) {
-        console.log('Connection error: ', error)
-        return error
-      }
+
+    try {
+      api = web3Wrapper
+      api._rb = {}
+      api._rb.network = this._network
+      api._rb.network.transportWs = this._wss
+      api._rb.network.transportHttp = this._https
+      console.log('Network: ', this._network.name)
+      console.log('Connecting to WebSocket: ', this._wss)
+      console.log('Api: ' + api)
+      return api
+    } catch (error) {
+      console.log('Connection error: ', error)
+      return error
     }
+
+    // if (this._onWs) {
+    //   try {
+    //     console.log('Network: ', this._network.name)
+    //     console.log('Connecting to WebSocket: ', this._wss)
+    //     const transport = new Api.Provider.WsSecure(this._wss)
+    //     api = new Web3(window.web3.currentProvider)
+    //     api._rb = {}
+    //     api._rb.network = this._network
+    //     api._rb.network.transportWs = this._wss
+    //     console.log(api)
+    //     return api
+    //   } catch (error) {
+    //     console.log('Connection error: ', error)
+    //     return error
+    //   }
+    // } else {
+    //   try {
+    //     console.log('Network: ', this._network.name)
+    //     console.log('Connecting to HTTPS: ', this._https)
+    //     const transport = new Api.Provider.Http(this._https, this._timeout)
+    //     api = new Web3(window.web3.currentProvider)
+    //     api._rb = {}
+    //     api._rb.network = this._network
+    //     api._rb.network.transportWs = this._wss
+    //     console.log(api)
+    //     return api
+    //   } catch (error) {
+    //     console.log('Connection error: ', error)
+    //     return error
+    //   }
+    // }
   }
 }
 

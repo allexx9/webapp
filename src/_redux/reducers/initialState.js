@@ -110,7 +110,7 @@ const initialState = {
     prevNonce: '0',
     warnMsg: '',
     isMetaMaskNetworkCorrect: false,
-    isMetaMaskLocked: false,
+    isMetaMaskLocked: true,
     lastMetaMaskUpdateTime: 0,
     openWalletSetup: false
   },

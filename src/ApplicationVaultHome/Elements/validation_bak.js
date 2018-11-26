@@ -40,7 +40,7 @@ export function validateAccount(account, api) {
     return ERRORS.invalidAccount
   }
 
-  if (!api.util.isAddressValid(account.address)) {
+  if (!api.utils.isAddress(account.address)) {
     return ERRORS.invalidAddress
   }
   return null

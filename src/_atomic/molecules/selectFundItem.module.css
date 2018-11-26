@@ -1,7 +1,4 @@
-/* elementAccountSelector */
-
-.account {
-  padding: 4px 0 !important;
+.logo {
   display: inline-block;
 }
 
@@ -24,10 +21,14 @@
 .image {
   display: inline-block;
   float: left;
+  margin-top: 8px;
   margin-right: 14px;
-  margin-top: 12px;
 }
 
 .image img {
   margin: 0 1em -11px 0;
+}
+
+.address {
+  font-size: 12px;
 }
