@@ -344,6 +344,11 @@ class ElementFundActionSetPrice extends Component {
       .setPrices(account.address, buyPrice, sellPrice)
       .then(receipt => {
         console.log(receipt)
+        this.props.dispatch(
+          Actions.drago.getPoolDetails(dragoDetails.dragoId, provider, {
+            poolType: 'drago'
+          })
+        )
         if (account.source === 'MetaMask') {
           transactionDetails.status = 'executed'
           transactionDetails.receipt = receipt

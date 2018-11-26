@@ -1,7 +1,7 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
 import { Actions } from '../actions/'
-import { Observable, from, timer } from 'rxjs'
+import { Observable, from, merge, timer } from 'rxjs'
 import PoolApi from '../../PoolsApi/src'
 
 import * as TYPE_ from '../actions/const'
@@ -12,6 +12,7 @@ import {
   map,
   mergeMap,
   retryWhen,
+  takeUntil,
   tap
 } from 'rxjs/operators'
 import { ofType } from 'redux-observable'
@@ -330,6 +331,14 @@ export const getPoolDetailsEpic = (action$, state$) => {
 
           // return DEBUGGING.DUMB_ACTION
         }),
+        takeUntil(
+          action$.pipe(
+            ofType(
+              TYPE_.UPDATE_SELECTED_DRAGO_DETAILS_RESET,
+              TYPE_.UPDATE_SELECTED_VAULT_DETAILS_RESET
+            )
+          )
+        ),
         retryWhen(error => {
           let scalingDuration = 5000
           return error.pipe(

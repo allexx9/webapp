@@ -3,20 +3,26 @@ import { formatCoins, formatEth } from './../format'
 import { getBlockChunks } from './blockChunks'
 import BigNumber from 'bignumber.js'
 import PoolApi from '../../PoolsApi/src'
+import Web3 from 'web3'
 import Web3Wrapper from '../web3Wrapper/src'
 
 export const getVaultDetails = async (
   vaultDetails,
   accounts,
   api,
-  options = { date: true }
+  options = { dateOnly: false }
 ) => {
   //
   // Initializing vault API
   //
+  let web3Http = new Web3(api._rb.network.transportHttp)
   let newWeb3 = Web3Wrapper.getInstance(api._rb.network.id)
   newWeb3._rb = window.web3._rb
-  const poolApiWeb3 = new PoolApi(newWeb3)
+
+  newWeb3._rb = window.web3._rb
+  web3Http._rb = window.web3._rb
+  const poolApiWeb3 = new PoolApi(api)
+
   const vaultAddress = vaultDetails[0][0]
   let fromBlock
   switch (api._rb.network.id) {
@@ -64,20 +70,42 @@ export const getVaultDetails = async (
           fromBlock: chunk.fromBlock,
           toBlock: chunk.toBlock
         }
-        return await poolApiWeb3.contract.vaulteventful.getAllLogs(options)
+        return await poolApiWeb3.contract.vaulteventful
+          .getAllLogs(options)
+          .then(logs => {
+            return logs
+          })
+          .catch(error => {
+            console.warn(error)
+            throw Error(error)
+          })
       })
 
       return Promise.all(arrayPromises)
         .then(results => {
-          let logs = [].concat(...results)
-          if (logs.length !== 0) {
-            return newWeb3.eth
-              .getBlockByNumber(logs[0].blockNumber.toFixed(0))
-              .then(result => {
-                return dateFromTimeStampHuman(result.timestamp)
-              })
+          if (results.length > 0) {
+            let logs = [].concat(...results)
+            if (logs.length !== 0) {
+              return newWeb3.eth
+                .getBlock(logs[0].blockNumber.toFixed(0))
+                .then(result => {
+                  let date
+                  try {
+                    date = dateFromTimeStampHuman(result.timestamp)
+                  } catch (error) {
+                    date = '01 January 1970'
+                  }
+                  return date
+                })
+                .catch(error => {
+                  console.warn(error)
+                  throw new Error(error)
+                })
+            } else {
+              return '01 January 1970'
+            }
           } else {
-            return dateFromTimeStampHuman(new Date(0))
+            return '01 January 1970'
           }
         })
         .catch(error => {
@@ -87,13 +115,21 @@ export const getVaultDetails = async (
     })
   }
 
-  let vaultCreatedDate = getVaultCreationDate(vaultAddress)
+  if (options.dateOnly) {
+    let vaultCreated = await getVaultCreationDate(vaultAddress)
+    let details = {
+      address: vaultAddress,
+      created: vaultCreated
+    }
+    return details
+  }
 
   let balanceDRG = new BigNumber(0)
   let vaultData = poolApiWeb3.contract.vault.getData()
   let vaultAdminData = poolApiWeb3.contract.vault.getAdminData()
   let vaultTotalSupply = poolApiWeb3.contract.vault.totalSupply()
   let vaultETH = poolApiWeb3.contract.vault.getBalance()
+  let fee = ''
 
   //
   // Getting balance for each user account
@@ -111,21 +147,55 @@ export const getVaultDetails = async (
     balanceDRG = poolApiWeb3.contract.vault.balanceOf(accounts[0].address)
   }
 
-  ;[
-    vaultData,
-    vaultAdminData,
-    vaultTotalSupply,
-    vaultETH,
-    vaultCreatedDate
-  ] = await Promise.all([
-    vaultData,
-    vaultAdminData,
-    vaultTotalSupply,
-    vaultETH,
-    vaultCreatedDate
-  ]).catch(e => new Error(e))
+  try {
+    vaultData = await vaultData
+  } catch (err) {
+    console.warn(err)
+    throw new Error(err)
+  }
 
-  const fee = new BigNumber(vaultAdminData[4]).div(100).toFixed(2)
+  try {
+    vaultAdminData = await vaultAdminData
+    fee = new BigNumber(vaultAdminData[4]).div(100).toFixed(2)
+  } catch (err) {
+    console.warn(err)
+    throw new Error(err)
+  }
+
+  try {
+    vaultTotalSupply = await vaultTotalSupply
+  } catch (err) {
+    console.warn(err)
+    throw new Error(err)
+  }
+
+  try {
+    vaultETH = await vaultETH
+  } catch (err) {
+    console.warn(err)
+    throw new Error(err)
+  }
+
+  try {
+    balanceDRG = await balanceDRG
+  } catch (err) {
+    console.warn(err)
+    throw new Error(err)
+  }
+
+  // ;[
+  //   vaultData,
+  //   vaultAdminData,
+  //   vaultTotalSupply,
+  //   vaultETH,
+  //   vaultCreatedDate
+  // ] = await Promise.all([
+  //   vaultData,
+  //   vaultAdminData,
+  //   vaultTotalSupply,
+  //   vaultETH,
+  //   vaultCreatedDate
+  // ]).catch(e => new Error(e))
 
   let details = {
     address: vaultDetails[0][0],
@@ -137,7 +207,7 @@ export const getVaultDetails = async (
     addressGroup: vaultDetails[0][5],
     sellPrice: new BigNumber(api.utils.fromWei(vaultData[2])).toFormat(4),
     buyPrice: new BigNumber(api.utils.fromWei(vaultData[3])).toFormat(4),
-    created: vaultCreatedDate,
+    // created: vaultCreatedDate,
     totalSupply: formatCoins(new BigNumber(vaultTotalSupply), 4),
     vaultETHBalance: formatEth(vaultETH, 4),
     fee,

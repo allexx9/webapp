@@ -1,6 +1,6 @@
-import { blockChunks, getBlockChunks } from './blockChunks'
 import { dateFromTimeStampHuman } from './dateFromTimeStampHuman'
 import { formatCoins, formatEth } from './../format'
+import { getBlockChunks } from './blockChunks'
 import BigNumber from 'bignumber.js'
 import PoolApi from '../../PoolsApi/src'
 import Web3 from 'web3'
@@ -17,12 +17,12 @@ export const getDragoDetails = async (
   //
   console.time('getDragoDetails')
   let web3Http = new Web3(api._rb.network.transportHttp)
-  // console.log(api._rb)
   let newWeb3 = Web3Wrapper.getInstance(api._rb.network.id)
+
   newWeb3._rb = window.web3._rb
   web3Http._rb = window.web3._rb
   const poolApiWeb3 = new PoolApi(api)
-  // const poolApiWeb3 = new PoolApi(web3Http)
+
   const dragoAddress = dragoDetails[0][0]
   let fromBlock
   switch (api._rb.network.id) {
@@ -50,7 +50,7 @@ export const getDragoDetails = async (
 
   const getDragoCreationDate = async address => {
     const hexPoolAddress = '0x' + address.substr(2).padStart(64, '0')
-    console.time('getDragoCreationDate')
+
     let topics = [
       [poolApiWeb3.contract.dragoeventful.hexSignature.DragoCreated],
       [hexPoolAddress],
@@ -100,14 +100,12 @@ export const getDragoDetails = async (
 
       return Promise.all(arrayPromises)
         .then(results => {
-          console.timeEnd('getDragoCreationDate')
           if (results.length > 0) {
             let logs = [].concat(...results)
             if (logs.length !== 0) {
               return newWeb3.eth
                 .getBlock(logs[0].blockNumber.toFixed(0))
                 .then(result => {
-                  console.log(result)
                   let date
                   try {
                     date = dateFromTimeStampHuman(result.timestamp)
@@ -135,13 +133,11 @@ export const getDragoDetails = async (
   }
 
   if (options.dateOnly) {
-    console.time('getDragoCreationDate')
     let dragoCreatedDate = await getDragoCreationDate(dragoAddress)
     let details = {
       address: dragoAddress,
       created: dragoCreatedDate
     }
-    console.timeEnd('getDragoCreationDate')
     return details
   }
 

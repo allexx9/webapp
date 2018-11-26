@@ -1,7 +1,6 @@
 import moment from 'moment'
 
 export const dateFromTimeStampHuman = timestamp => {
-  console.log(timestamp)
   try {
     let date = moment.unix(timestamp).format('D MMMM YYYY')
     return date

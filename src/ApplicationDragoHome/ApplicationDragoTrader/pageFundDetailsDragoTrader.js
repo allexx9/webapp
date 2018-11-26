@@ -267,6 +267,12 @@ class PageFundDetailsDragoTrader extends Component {
       estimatedPrice = formatPrice(dragoValues.estimatedPrice)
     }
 
+    // return (
+    //   <div style={{ paddingTop: '10px' }}>
+    //     <Loading />
+    //   </div>
+    // )
+
     // Waiting until getDragoDetails returns the drago details
     if (Object.keys(dragoDetails).length === 0) {
       return (

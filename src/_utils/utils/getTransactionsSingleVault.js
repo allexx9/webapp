@@ -2,6 +2,7 @@ import { formatCoins, formatEth } from './../format'
 import { getBlockChunks } from './blockChunks'
 import BigNumber from 'bignumber.js'
 import PoolApi from '../../PoolsApi/src'
+import Web3 from 'web3'
 import Web3Wrapper from '../../_utils/web3Wrapper/src'
 
 export const getTransactionsSingleVault = async (
@@ -14,7 +15,11 @@ export const getTransactionsSingleVault = async (
 ) => {
   let web3 = Web3Wrapper.getInstance(api._rb.network.id)
   web3._rb = window.web3._rb
-  const poolApi = new PoolApi(web3)
+  // HTTP
+  let web3Http = new Web3(api._rb.network.transportHttp)
+  web3Http._rb = window.web3._rb
+
+  const poolApi = new PoolApi(web3Http)
 
   await poolApi.contract.vaulteventful.init()
   const contract = poolApi.contract.vaulteventful
@@ -137,7 +142,7 @@ export const getTransactionsSingleVault = async (
   let eventsFilterBuySell
 
   if (options.trader) {
-    console.log('trader transactions')
+    console.log('getTransactionsSingleVault : Trader transactions')
     eventsFilterBuySell = [
       [contract.hexSignature.BuyVault, contract.hexSignature.SellVault],
       [hexPoolAddress],
@@ -145,7 +150,7 @@ export const getTransactionsSingleVault = async (
       null
     ]
   } else {
-    console.log('manager transactions')
+    console.log('getTransactionsSingleVault: Manager transactions')
     eventsFilterBuySell = [
       [
         contract.hexSignature.BuyVault,

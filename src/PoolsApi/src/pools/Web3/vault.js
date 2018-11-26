@@ -37,7 +37,6 @@ class DragoWeb3 {
       throw new Error('accountAddress needs to be provided')
     }
     const instance = this._instance
-    console.log(instance)
     return instance.methods.balanceOf(accountAddress).call({})
   }
 

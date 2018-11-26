@@ -20,7 +20,7 @@ export const getTransactionsSingleDrago = async (
   let web3Http = new Web3(api._rb.network.transportHttp)
   web3Http._rb = window.web3._rb
 
-  const poolApi = new PoolApi(web3)
+  const poolApi = new PoolApi(web3Http)
 
   await poolApi.contract.dragoeventful.init()
   const contract = poolApi.contract.dragoeventful
@@ -133,7 +133,6 @@ export const getTransactionsSingleDrago = async (
         return await poolApi.contract.dragoeventful
           .getAllLogs(options)
           .then(log => {
-            console.log(log)
             return log
           })
       })
@@ -148,7 +147,7 @@ export const getTransactionsSingleDrago = async (
   let eventsFilterBuySell
 
   if (options.trader) {
-    console.log('trader transactions')
+    console.log('getTransactionsSingleDrago: Trader transactions')
     eventsFilterBuySell = [
       [contract.hexSignature.BuyDrago, contract.hexSignature.SellDrago],
       [hexPoolAddress],
@@ -156,7 +155,7 @@ export const getTransactionsSingleDrago = async (
       null
     ]
   } else {
-    console.log('manager transactions')
+    console.log('getTransactionsSingleDrago: Manager transactions')
     eventsFilterBuySell = [
       [
         contract.hexSignature.BuyDrago,

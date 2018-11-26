@@ -269,11 +269,8 @@ class ElementVaultActions extends React.Component {
     // Getting the account balance if account passed validation
     if (!accountError) {
       const poolApi = new PoolApi(provider)
-      console.log(vaultDetails.address)
       poolApi.contract.vault.init(vaultDetails.address)
-      console.log(poolApi.contract.vault.balanceOf(account.address))
       poolApi.contract.vault.balanceOf(account.address).then(amount => {
-        console.log(amount)
         const drgBalance = formatCoins(new BigNumber(amount), 4, api)
         this.setState({
           drgBalance,
@@ -482,6 +479,11 @@ class ElementVaultActions extends React.Component {
       .buyVault(accountAddress, amount)
       .then(receipt => {
         console.log(receipt)
+        this.props.dispatch(
+          Actions.drago.getPoolDetails(vaultDetails.vaultId, provider, {
+            poolType: 'vault'
+          })
+        )
         // Adding transaciont to the queue
         // Parity returns an internal transaction ID straighaway. The transaction then needs to be authorized inside the wallet.
         // MetaMask returns a receipt of the transaction once it has been mined by the network. It can take a long time.
@@ -518,9 +520,6 @@ class ElementVaultActions extends React.Component {
             transactionDetails
           )
         )
-        this.setState({
-          sending: false
-        })
       })
     this.setState(
       {
@@ -579,6 +578,15 @@ class ElementVaultActions extends React.Component {
       .sellVault(accountAddress, amount)
       .then(receipt => {
         console.log(receipt)
+        this.props.dispatch(
+          Actions.drago.getPoolDetails(
+            vaultDetails.vaultDetails.vaultId,
+            provider,
+            {
+              poolType: 'vault'
+            }
+          )
+        )
         // Adding transaciont to the queue
         // Parity returns an internal transaction ID straighaway. The transaction then needs to be authorized inside the wallet.
         // MetaMask returns a receipt of the transaction once it has been mined by the network. It can take a long time.
@@ -615,9 +623,6 @@ class ElementVaultActions extends React.Component {
             transactionDetails
           )
         )
-        this.setState({
-          sending: false
-        })
       })
     // this.props.snackBar('Sell order waiting for authorization for ' + this.state.amountSummary + ' ' + vaultDetails.symbol.toUpperCase())
     this.setState(

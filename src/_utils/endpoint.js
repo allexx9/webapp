@@ -2,7 +2,6 @@
 // This file is part of RigoBlock.
 
 import { ENDPOINTS, INFURA, KOVAN, PROD, WS } from './const'
-// import Api from '@parity/api'
 import Web3 from 'web3'
 import Web3Wrapper from '../_utils/web3Wrapper/src'
 
@@ -31,7 +30,6 @@ class Endpoint {
         ? false
         : ws
     // Setting production or development endpoints
-    console.log(endpointInfo.https[this._network.name])
     if (prod) {
       this._https = endpointInfo.https[this._network.name].prod
       this._wss = endpointInfo.wss[this._network.name].prod
@@ -99,17 +97,14 @@ class Endpoint {
     }
 
     try {
-      console.log('Network: ', this._network.name)
-      console.log('Connecting to WebSocket: ', this._wss)
-      // const transport = new Api.Provider.WsSecure(this._wss)
-      console.log(web3Wrapper)
-      // api = new Web3(web3Wrapper)
       api = web3Wrapper
       api._rb = {}
       api._rb.network = this._network
       api._rb.network.transportWs = this._wss
       api._rb.network.transportHttp = this._https
-      console.log(api)
+      console.log('Network: ', this._network.name)
+      console.log('Connecting to WebSocket: ', this._wss)
+      console.log('Api: ' + api)
       return api
     } catch (error) {
       console.log('Connection error: ', error)
