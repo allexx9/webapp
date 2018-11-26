@@ -102,7 +102,9 @@ class Endpoint {
       console.log('Network: ', this._network.name)
       console.log('Connecting to WebSocket: ', this._wss)
       // const transport = new Api.Provider.WsSecure(this._wss)
-      api = new Web3(web3Wrapper)
+      console.log(web3Wrapper)
+      // api = new Web3(web3Wrapper)
+      api = web3Wrapper
       api._rb = {}
       api._rb.network = this._network
       api._rb.network.transportWs = this._wss

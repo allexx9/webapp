@@ -47,7 +47,7 @@ const Endpoint_Epics = [
   Endpoint.monitorAccountsEpic,
   Endpoint.monitorEventfulEpic,
   Endpoint.connectedToNodeEpic,
-  Endpoint.attacheInterfaceEpic,
+  Endpoint.attachInterfaceEpic,
   Endpoint.delayShowAppEpic
 ]
 
@@ -63,15 +63,16 @@ const Drago_Epics = [Drago.getPoolDetailsEpic, Drago.getTokensBalancesEpic]
 
 const combineAndIsolateEpics = (...epics) => (...args) => {
   const isolatedEpics = epics.map(epic => (...args) =>
-    epic(...args).pipe(
-      catchError((e, source) => {
-        console.warn(
-          `${epic.name} terminated with error: ${e.message}, restarting it...`
-        )
-        return source
-      })
+    epic(...args)
+      .pipe
+      // catchError((e, source) => {
+      //   console.warn(
+      //     `${epic.name} terminated with error: ${e.message}, restarting it...`
+      //   )
+      //   return source
+      // })
       // delay(2000)
-    )
+      ()
   )
   return combineEpics(...isolatedEpics)(...args)
 }

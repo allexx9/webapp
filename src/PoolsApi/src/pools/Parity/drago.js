@@ -255,10 +255,10 @@ class DragoParity {
     }
     const api = this._api
     const block = 1
-    const hash = api.util.fromAscii('random')
-    const data = api.util.fromAscii('random')
-    const buyPriceWei = api.util.toWei(buyPrice, 'ether')
-    const sellPriceWei = api.util.toWei(sellPrice, 'ether')
+    const hash = api.utils.fromAscii('random')
+    const data = api.utils.fromAscii('random')
+    const buyPriceWei = api.utils.toWei(buyPrice, 'ether')
+    const sellPriceWei = api.utils.toWei(sellPrice, 'ether')
     const instance = this._instance
     const values = [sellPriceWei, buyPriceWei, block, hash, data]
     const options = {

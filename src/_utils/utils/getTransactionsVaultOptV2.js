@@ -1,9 +1,10 @@
-import { blockChunks } from './blockChunks'
 import { formatCoins } from './../format'
+import { getBlockChunks } from './blockChunks'
 import { getTransactionsSingleVault } from './getTransactionsSingleVault'
 import { logToEvent } from './logToEvent'
 import BigNumber from 'bignumber.js'
 import PoolApi from '../../PoolsApi/src'
+import Web3Wrapper from '../../_utils/web3Wrapper/src'
 import moment from 'moment'
 
 export const getTransactionsVaultOptV2 = async (
@@ -24,7 +25,9 @@ export const getTransactionsVaultOptV2 = async (
   if (accounts.length === 0) {
     return [Array(0), Array(0), Array(0)]
   }
-  const poolApi = new PoolApi(api)
+  let web3 = Web3Wrapper.getInstance(api._rb.network.id)
+  web3._rb = window.web3._rb
+  const poolApi = new PoolApi(web3)
   let dragoSymbolRegistry = new Map()
   let fromBlock
   switch (api._rb.network.id) {
@@ -91,10 +94,10 @@ export const getTransactionsVaultOptV2 = async (
           symbol: null,
           vaultId: null,
           name: null,
-          address: v.value
+          address: v
         }
-        if (!dragoSymbolRegistry.has(v.value)) {
-          dragoSymbolRegistry.set(v.value, dragoData)
+        if (!dragoSymbolRegistry.has(v)) {
+          dragoSymbolRegistry.set(v, dragoData)
         }
       })
       return poolsList
@@ -112,10 +115,10 @@ export const getTransactionsVaultOptV2 = async (
     return poolApi.contract.vaulteventful.init().then(() => {
       const getChunkedEvents = topics => {
         let arrayPromises = []
-        return api.eth.getBlockNumber().then(lastBlock => {
+        return web3.eth.getBlockNumber().then(async lastBlock => {
           let chunck = 100000
-          lastBlock = new BigNumber(lastBlock).toFixed()
-          const chunks = blockChunks(fromBlock, lastBlock, chunck)
+          lastBlock = new BigNumber(lastBlock).toNumber()
+          const chunks = await getBlockChunks(fromBlock, lastBlock, chunck)
           arrayPromises = chunks.map(async chunk => {
             // Pushing chunk logs into array
             let options = {
@@ -130,7 +133,7 @@ export const getTransactionsVaultOptV2 = async (
             if (options.trader) {
             } else {
             }
-            let dragoTransactionsLog = Array(0).concat(...results)
+            let dragoTransactionsLog = [].concat(...results)
             const logs = dragoTransactionsLog.map(logToEventInternal)
             return logs
           })
@@ -158,11 +161,10 @@ export const getTransactionsVaultOptV2 = async (
 
       let promisesEvents = null
 
-      if (options.trader) {
-        promisesEvents = [getChunkedEvents(topicsBuySell)]
-      } else {
-        promisesEvents = [getChunkedEvents(topicsCreate)]
-      }
+      options.trader
+        ? (promisesEvents = [getChunkedEvents(topicsBuySell)])
+        : (promisesEvents = [getChunkedEvents(topicsCreate)])
+
       return Promise.all(promisesEvents)
         .then(results => {
           let allLogs = [...results[0]]
@@ -204,7 +206,7 @@ export const getTransactionsVaultOptV2 = async (
                   .then(dragoDetails => {
                     const dragoData = {
                       symbol: dragoDetails[2].trim(),
-                      vaultId: dragoDetails[3].toFixed(),
+                      vaultId: new BigNumber(dragoDetails[3]).toFixed(),
                       name: dragoDetails[1].trim(),
                       address: k.trim()
                     }
@@ -264,13 +266,14 @@ export const getTransactionsVaultOptV2 = async (
               balances = []
               return arrayPromises
             }
-            hexAccounts.forEach(account => {
-              balances[account] = []
+            accounts.forEach(account => {
+              let accountAddress = account.address
+              balances[accountAddress] = []
               dragoSymbolRegistry.forEach((v, k) => {
                 poolApi.contract.vault.init(k)
                 arrayPromises.push(
                   poolApi.contract.vault
-                    .balanceOf(account)
+                    .balanceOf(accountAddress)
                     .then(dragoBalance => {
                       const {
                         symbol,
@@ -278,13 +281,17 @@ export const getTransactionsVaultOptV2 = async (
                         vaultId,
                         address
                       } = dragoSymbolRegistry.get(k)
-                      balances[account][vaultId] = {
-                        balance: dragoBalance,
+                      balances[accountAddress][vaultId] = {
+                        balance: new BigNumber(dragoBalance),
                         name: name.trim(),
                         symbol: symbol,
                         vaultId: vaultId,
                         address: address
                       }
+                    })
+                    .catch(error => {
+                      console.warn(error)
+                      throw error
                     })
                 )
               })
@@ -292,31 +299,17 @@ export const getTransactionsVaultOptV2 = async (
             return arrayPromises
           }
 
-          // Setting symbol
-          // const getSymbols = () => {
-          //   let transLogs = dragoTransactionsLogs.map(log => {
-          //     const symbol = dragoSymbolRegistry.get(log.params.vault.value)
-          //       .symbol
-          //     // const vaultId = dragoSymbolRegistry.get(log.params.vault.value).vaultId
-          //     // const name = dragoSymbolRegistry.get(log.params.vault.value).name
-          //     log.symbol = symbol
-          //     return log
-          //   })
-          //   return transLogs
-          // }
-
           const getTimestamp = logs => {
             return logs.map(log => {
-              return api.eth
-                .getBlockByNumber(new BigNumber(log.blockNumber).toFixed(0))
+              return web3.eth
+                .getBlock(new BigNumber(log.blockNumber).toFixed(0))
                 .then(block => {
-                  log.timestamp = block.timestamp
+                  log.timestamp = new Date(block.timestamp * 1000)
                   return log
                 })
-                .catch(error => {
+                .catch(() => {
                   // Sometimes Infura returns null for api.eth.getBlockByNumber, therefore we are assigning a fake timestamp to avoid
                   // other issues in the app.
-                  console.log(error)
                   log.timestamp = new Date(0)
                   return log
                 })
@@ -341,6 +334,7 @@ export const getTransactionsVaultOptV2 = async (
                             symbol: balance.symbol,
                             vaultId: balance.vaultId,
                             name: balance.name,
+                            address: balance.address,
                             balance: dragoBalance.plus(balance.balance)
                           })
                         } else {
@@ -348,6 +342,7 @@ export const getTransactionsVaultOptV2 = async (
                             symbol: balance.symbol,
                             vaultId: balance.vaultId,
                             name: balance.name,
+                            address: balance.address,
                             balance: balance.balance
                           })
                         }
@@ -374,7 +369,6 @@ export const getTransactionsVaultOptV2 = async (
                   }
                 })
                 .then(() => {
-                  // let logs = getSymbols()
                   let logs = dragoTransactionsLogs
                   // console.log(
                   //   `***** ${moment().format()} Utils: symbols loaded *****`
@@ -397,6 +391,10 @@ export const getTransactionsVaultOptV2 = async (
                     let results = [balancesList, logs, supply]
                     return results
                   })
+                })
+                .catch(error => {
+                  console.warn(error)
+                  throw error
                 })
             })
           })

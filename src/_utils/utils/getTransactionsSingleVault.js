@@ -1,15 +1,21 @@
-import { blockChunks } from './blockChunks'
 import { formatCoins, formatEth } from './../format'
+import { getBlockChunks } from './blockChunks'
 import BigNumber from 'bignumber.js'
 import PoolApi from '../../PoolsApi/src'
+import Web3Wrapper from '../../_utils/web3Wrapper/src'
 
 export const getTransactionsSingleVault = async (
   poolAddress,
   api,
   accounts,
-  options
+  options = {
+    limit: 20
+  }
 ) => {
-  const poolApi = new PoolApi(api)
+  let web3 = Web3Wrapper.getInstance(api._rb.network.id)
+  web3._rb = window.web3._rb
+  const poolApi = new PoolApi(web3)
+
   await poolApi.contract.vaulteventful.init()
   const contract = poolApi.contract.vaulteventful
   let fromBlock
@@ -28,7 +34,7 @@ export const getTransactionsSingleVault = async (
   }
 
   const logToEvent = log => {
-    const key = api.util.sha3(JSON.stringify(log))
+    const key = api.utils.sha3(JSON.stringify(log))
     const {
       address,
       blockNumber,
@@ -56,12 +62,12 @@ export const getTransactionsSingleVault = async (
     ) {
       ethvalue =
         event === 'BuyVault'
-          ? formatEth(returnValues.amount, null, api)
-          : formatEth(returnValues.revenue, null, api)
+          ? formatEth(returnValues.amount, null)
+          : formatEth(returnValues.revenue, null)
       drgvalue =
         event === 'SellVault'
-          ? formatCoins(returnValues.amount, null, api)
-          : formatCoins(returnValues.revenue, null, api)
+          ? formatCoins(returnValues.amount, null)
+          : formatCoins(returnValues.revenue, null)
     }
     let symbol
     if (typeof returnValues.symbol === 'string') {
@@ -107,10 +113,10 @@ export const getTransactionsSingleVault = async (
 
   const getChunkedEvents = topics => {
     let arrayPromises = []
-    return api.eth.getBlockNumber().then(lastBlock => {
+    return web3.eth.getBlockNumber().then(async lastBlock => {
       let chunck = 100000
-      lastBlock = new BigNumber(lastBlock).toFixed()
-      const chunks = blockChunks(fromBlock, lastBlock, chunck)
+      lastBlock = new BigNumber(lastBlock).toNumber()
+      const chunks = await getBlockChunks(fromBlock, lastBlock, chunck)
       arrayPromises = chunks.map(async chunk => {
         // Pushing chunk logs into array
         let options = {
@@ -154,32 +160,23 @@ export const getTransactionsSingleVault = async (
 
   let promisesEvents = [getChunkedEvents(eventsFilterBuySell)]
 
-  // const BuyVaultEvents = contract
-  //   .getAllLogs(eventsFilterBuy)
-  //   .then(logs => {
-  //     const buyLogs = logs.map(logToEvent)
-  //     return buyLogs
-  //   })
-  // const SellVaultEvents = contract
-  //   .getAllLogs(eventsFilterSell)
-  //   .then(logs => {
-  //     const sellLogs = logs.map(logToEvent)
-  //     return sellLogs
-  //   })
   return Promise.all(promisesEvents)
     .then(logs => {
-      console.log('getTransactionsSingleVault', logs)
-      return logs[0]
+      let dragoTransactionsLogs = logs[0].slice(
+        logs[0].length - options.limit,
+        logs[0].length
+      )
+      return dragoTransactionsLogs
     })
     .then(logs => {
       // Creating an array of promises that will be executed to add timestamp to each entry
       // Doing so because for each entry we need to make an async call to the client
       // For additional refernce: https://stackoverflow.com/questions/39452083/using-promise-function-inside-javascript-array-map
       let logPromises = logs.map(async log => {
-        return await api.eth
-          .getBlockByNumber(new BigNumber(log.blockNumber).toFixed(0))
+        return web3.eth
+          .getBlock(new BigNumber(log.blockNumber).toFixed(0))
           .then(block => {
-            log.timestamp = block.timestamp
+            log.timestamp = new Date(block.timestamp * 1000)
             return log
           })
           .catch(error => {
@@ -199,7 +196,6 @@ export const getTransactionsSingleVault = async (
             this.constructor.name
           } -> Single Vault Transactions list loaded: trader ${options.trader}`
         )
-        console.log(results)
         return results
       })
     })

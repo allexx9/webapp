@@ -4,10 +4,11 @@
 import * as TYPE_ from '../actions/const'
 import { Actions } from '../actions'
 // import { DEBUGGING } from '../../_utils/const'
-import { Observable, from } from 'rxjs'
+import { Observable, from, timer } from 'rxjs'
 import {
   catchError,
   delay,
+  finalize,
   map,
   mergeMap,
   retryWhen,
@@ -75,7 +76,7 @@ const getVaultsChunkedEvents$ = (api, options, state$) => {
 
     poolApi.contract.vaulteventful.init().then(() => {
       api.eth.getBlockNumber().then(lastBlock => {
-        lastBlock = new BigNumber(lastBlock).toFixed()
+        lastBlock = new BigNumber(lastBlock).toNumber()
         let chunck = 100000
         console.log(startBlock, lastBlock, chunck)
         const chunks = utils.blockChunks(startBlock, lastBlock, chunck)
@@ -173,7 +174,7 @@ const getDragosChunkedEvents$ = (api, options, state$) => {
 
     poolApi.contract.dragoeventful.init().then(() => {
       api.eth.getBlockNumber().then(lastBlock => {
-        lastBlock = new BigNumber(lastBlock).toFixed()
+        lastBlock = new BigNumber(lastBlock).toNumber()
         let chunck = 100000
         // console.log(startBlock, lastBlock, chunck)
         const chunks = utils.blockChunks(startBlock, lastBlock, chunck)
@@ -348,21 +349,20 @@ export const getAccountsTransactionsEpic = (action$, state$) => {
             // return DEBUGGING.DUMB_ACTION
           }
         }),
-        retryWhen(retryStrategy)
-        // retryWhen(error => {
-        //   console.log('getAccountsTransactionsEpic error')
-        //   let scalingDuration = 10000
-        //   return error.pipe(
-        //     // buffer(isNodeConnected$),
-        //     // first(),
-        //     mergeMap((error, i) => {
-        //       console.log(error)
-        //       const retryAttempt = i + 1
-        //       return timer(scalingDuration)
-        //     }),
-        //     finalize(() => console.log('We are done!'))
-        //   )
-        // })
+        // retryWhen(retryStrategy)
+        retryWhen(error => {
+          console.log('getAccountsTransactionsEpic error')
+          let scalingDuration = 10000
+          return error.pipe(
+            // buffer(isNodeConnected$),
+            // first(),
+            mergeMap((error, i) => {
+              console.log(error)
+              return timer(scalingDuration)
+            }),
+            finalize(() => console.log('We are done!'))
+          )
+        })
         // catchError(error => {
         //   console.warn(error)
         //   return Observable.of({

@@ -444,13 +444,13 @@ class ElementVaultActions extends React.Component {
     const { api } = this.context
     const { vaultDetails } = this.props
     const accountAddress = this.state.account.address
-    const amount = api.util.toWei(this.state.amountSummary).toString()
+    const amount = api.utils.toWei(this.state.amountSummary).toString()
     const authMsg =
       'You sent ' +
       this.state.amountSummary +
       ' ETH to the vault ' +
       vaultDetails.symbol.toUpperCase()
-    const transactionId = api.util.sha3(new Date() + accountAddress)
+    const transactionId = api.utils.sha3(new Date() + accountAddress)
     // Setting variables depending on account source
     let provider = this.state.account.source === 'MetaMask' ? window.web3 : api
     let poolApi = null
@@ -546,7 +546,7 @@ class ElementVaultActions extends React.Component {
       this.state.amountSummary +
       ' ETH from the vault ' +
       vaultDetails.symbol.toUpperCase()
-    const transactionId = api.util.sha3(new Date() + accountAddress)
+    const transactionId = api.utils.sha3(new Date() + accountAddress)
     // Setting variables depending on account source
     let provider = this.state.account.source === 'MetaMask' ? window.web3 : api
     let poolApi = null

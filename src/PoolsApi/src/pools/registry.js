@@ -76,7 +76,7 @@ class Registry {
             parityRegistryContractAddress
           ).instance
           return Promise.all([
-            registry.getAddress.call({}, [api.util.sha3(contractName), 'A'])
+            registry.getAddress.call({}, [api.utils.sha3(contractName), 'A'])
           ])
         }
       }
@@ -94,7 +94,7 @@ class Registry {
             parityRegistryContractAddress
           ).instance
           return Promise.all([
-            registry.getAddress.call({}, [api.util.sha3(contractName), 'A'])
+            registry.getAddress.call({}, [api.utils.sha3(contractName), 'A'])
           ])
         })
     }

@@ -43,7 +43,18 @@ class DragoWeb3 {
 
   getData = () => {
     const instance = this._instance
-    return instance.getData.call({})
+    return instance.methods.getData().call({})
+  }
+
+  getAdminData = () => {
+    const instance = this._instance
+    return instance.methods.getAdminData().call({})
+  }
+
+  getBalance = () => {
+    const api = this._api
+    const instance = this._instance
+    return api.eth.getBalance(instance._address)
   }
 
   buyVault = (accountAddress, amount) => {

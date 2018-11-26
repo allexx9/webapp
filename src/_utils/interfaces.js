@@ -149,7 +149,7 @@ class Interfaces {
         }
 
         // Return empty object if MetaMask is locked.
-        if (accounts.length === 0) {
+        if (isMetaMaskLocked) {
           return {}
         }
 
@@ -158,40 +158,74 @@ class Interfaces {
         let grgBalance = new BigNumber(0)
         let nonce = 0
 
-        if (this._api.isConnected) {
-          try {
-            ethBalance = web3.eth.getBalance(accounts[0])
-          } catch (err) {
-            throw new Error(`Cannot get ETH balance of account ${accounts[0]}`)
-          }
-          let poolsApi = new PoolsApi(web3)
-          poolsApi.contract.rigotoken.init()
-          // Get GRG balance
+        // if (this._api.isConnected) {
+        //   try {
+        //     ethBalance = web3.eth.getBalance(accounts[0])
+        //   } catch (err) {
+        //     throw new Error(`Cannot get ETH balance of account ${accounts[0]}`)
+        //   }
+        //   let poolsApi = new PoolsApi(web3)
+        //   poolsApi.contract.rigotoken.init()
+        //   // Get GRG balance
 
-          try {
-            grgBalance = poolsApi.contract.rigotoken.balanceOf(accounts[0])
-          } catch (err) {
-            throw new Error(`Cannot get GRG balance of account ${accounts[0]}`)
-          }
-          // Getting transactions count
+        //   try {
+        //     grgBalance = poolsApi.contract.rigotoken.balanceOf(accounts[0])
+        //   } catch (err) {
+        //     throw new Error(`Cannot get GRG balance of account ${accounts[0]}`)
+        //   }
+        //   // Getting transactions count
 
-          try {
-            nonce = web3.eth.getTransactionCount(accounts[0])
-          } catch (err) {
-            throw new Error(
-              `Cannot get transactions count of account ${accounts[0]}`
-            )
-          }
+        //   try {
+        //     nonce = web3.eth.getTransactionCount(accounts[0])
+        //   } catch (err) {
+        //     throw new Error(
+        //       `Cannot get transactions count of account ${accounts[0]}`
+        //     )
+        //   }
 
-          try {
-            ;[ethBalance, grgBalance, nonce] = await Promise.all([
-              ethBalance,
-              grgBalance,
-              nonce
-            ])
-          } catch (e) {
-            throw new Error(`Cannot get GRG balance of account ${accounts[0]}`)
-          }
+        //   try {
+        //     ;[ethBalance, grgBalance, nonce] = await Promise.all([
+        //       ethBalance,
+        //       grgBalance,
+        //       nonce
+        //     ])
+        //   } catch (e) {
+        //     throw new Error(`Cannot get GRG balance of account ${accounts[0]}`)
+        //   }
+        // }
+
+        try {
+          ethBalance = web3.eth.getBalance(accounts[0])
+        } catch (err) {
+          throw new Error(`Cannot get ETH balance of account ${accounts[0]}`)
+        }
+        let poolsApi = new PoolsApi(web3)
+        poolsApi.contract.rigotoken.init()
+        // Get GRG balance
+
+        try {
+          grgBalance = poolsApi.contract.rigotoken.balanceOf(accounts[0])
+        } catch (err) {
+          throw new Error(`Cannot get GRG balance of account ${accounts[0]}`)
+        }
+        // Getting transactions count
+
+        try {
+          nonce = web3.eth.getTransactionCount(accounts[0])
+        } catch (err) {
+          throw new Error(
+            `Cannot get transactions count of account ${accounts[0]}`
+          )
+        }
+
+        try {
+          ;[ethBalance, grgBalance, nonce] = await Promise.all([
+            ethBalance,
+            grgBalance,
+            nonce
+          ])
+        } catch (e) {
+          throw new Error(`Cannot get GRG balance of account ${accounts[0]}`)
         }
 
         let accountsMetaMask = {
@@ -215,27 +249,33 @@ class Interfaces {
 
   attachInterfaceInfuraV2 = async () => {
     console.log(`${this.constructor.name} -> Interface Infura`)
+    console.time('attachInterfaceInfuraV2')
     const api = this._api
+    console.log(api)
     try {
+      console.time('getAccountsMetamask')
       const accountsMetaMask = await this.getAccountsMetamask(api)
+      console.timeEnd('getAccountsMetamask')
       const allAccounts = {
         ...accountsMetaMask
       }
-      let blockNumber = 0
-      try {
-        blockNumber = await api.eth.getBlockNumber()
-      } catch (error) {
-        console.warn(error)
-      }
+      console.time('getBlockNumber')
+      // let blockNumber = 0
+      // try {
+      //   blockNumber = await api.eth.getBlockNumber()
+      // } catch (error) {
+      //   console.warn(error)
+      // }
+      console.timeEnd('getBlockNumber')
       console.log(
         'Metamask account loaded: ',
-        accountsMetaMask,
-        new BigNumber(blockNumber).toFixed()
+        accountsMetaMask
+        // new BigNumber(blockNumber).toFixed()
       )
 
       const stateUpdate = {
         loading: false,
-        prevBlockNumber: blockNumber.toFixed(),
+        // prevBlockNumber: blockNumber.toFixed(),
         accounts: Object.keys(allAccounts).map(address => {
           const info = allAccounts[address] || {}
           return {
@@ -256,6 +296,7 @@ class Interfaces {
       }
       this._success = result
       console.log(`${this.constructor.name} -> Done`)
+      console.timeEnd('attachInterfaceInfuraV2')
       return result
     } catch (error) {
       let currentState = this._error

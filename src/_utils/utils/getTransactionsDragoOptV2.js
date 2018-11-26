@@ -1,5 +1,5 @@
-import { blockChunks } from './blockChunks'
 import { formatCoins } from './../format'
+import { getBlockChunks } from './blockChunks'
 import { getTransactionsSingleDrago } from './getTransactionsSingleDrago'
 import { logToEvent } from './logToEvent'
 import BigNumber from 'bignumber.js'
@@ -44,10 +44,9 @@ export const getTransactionsDragoOptV2 = async (
   if (accounts.length === 0) {
     return [Array(0), Array(0), Array(0)]
   }
-  let web3 = await Web3Wrapper.getInstance(api._rb.network.id)
+  let web3 = Web3Wrapper.getInstance(api._rb.network.id)
   web3._rb = window.web3._rb
   const poolApi = new PoolApi(web3)
-  // const poolApi = new PoolApi(api)
   let dragoSymbolRegistry = new Map()
   let fromBlock
   switch (api._rb.network.id) {
@@ -133,9 +132,10 @@ export const getTransactionsDragoOptV2 = async (
     return poolApi.contract.dragoeventful.init().then(() => {
       const getChunkedEvents = topics => {
         let arrayPromises = []
-        return web3.eth.getBlockNumber().then(lastBlock => {
+        return web3.eth.getBlockNumber().then(async lastBlock => {
           let chunck = 100000
-          const chunks = blockChunks(fromBlock, lastBlock, chunck)
+          lastBlock = new BigNumber(lastBlock).toNumber()
+          const chunks = await getBlockChunks(fromBlock, lastBlock, chunck)
           arrayPromises = chunks.map(async chunk => {
             // Pushing chunk logs into array
             let options = {
@@ -147,7 +147,7 @@ export const getTransactionsDragoOptV2 = async (
           })
 
           return Promise.all(arrayPromises).then(results => {
-            let dragoTransactionsLog = Array(0).concat(...results)
+            let dragoTransactionsLog = [].concat(...results)
             const logs = dragoTransactionsLog.map(logToEventInternal)
             return logs
           })
@@ -236,7 +236,7 @@ export const getTransactionsDragoOptV2 = async (
             return arrayPromises
           }
 
-          const getDragoSupplyWeb3 = () => {
+          const getDragoSupply = () => {
             let arrayPromises = []
             if (options.supply === false) {
               supply = []
@@ -332,7 +332,7 @@ export const getTransactionsDragoOptV2 = async (
           }
 
           return Promise.all(getDragoDetails()).then(() => {
-            return Promise.all(getDragoSupplyWeb3()).then(() => {
+            return Promise.all(getDragoSupply()).then(() => {
               return Promise.all(getDragoBalances())
                 .then(() => {
                   if (options.balance) {

@@ -286,7 +286,7 @@ class ElementFundActionWrapETH extends Component {
     const authMsg = 'You un-wrapped ' + this.state.amount + ' ETH'
 
     // Initializing transaction variables
-    const transactionId = api.util.sha3(new Date() + account.address)
+    const transactionId = api.utils.sha3(new Date() + account.address)
     let transactionDetails = {
       status: account.source === 'MetaMask' ? 'pending' : 'authorization',
       hash: '',
@@ -382,7 +382,7 @@ class ElementFundActionWrapETH extends Component {
     const authMsg = 'You wrapped ' + this.state.amount + ' ETH'
 
     // Initializing transaction variables
-    const transactionId = api.util.sha3(new Date() + account.address)
+    const transactionId = api.utils.sha3(new Date() + account.address)
     let transactionDetails = {
       status: account.source === 'MetaMask' ? 'pending' : 'authorization',
       hash: '',

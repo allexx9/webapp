@@ -10,9 +10,10 @@ import {
   NETWORK_WARNING
 } from './const'
 import {
-  blockChunks,
+  getBlockChunks,
   dateFromTimeStampHuman,
   getDragoDetails,
+  getVaultDetails,
   getDragoLiquidityAndTokenBalances,
   getTokenWrapperLockTime,
   getTransactionsDragoOptV2,
@@ -58,7 +59,7 @@ class NotificationAlert extends Component {
 }
 
 class utilities {
-  blockChunks = blockChunks
+  blockChunks = getBlockChunks
 
   sign = (toSign, account) => {
     // metamask will take care of the 3rd parameter, "password"
@@ -550,132 +551,8 @@ class utilities {
 
   getDragoDetails = getDragoDetails
 
-  getVaultDetails = async (vaultDetails, accounts, api) => {
-    //
-    // Initializing vault API
-    // Passing Parity API
-    //
-    const poolApi = new PoolApi(api)
-    const vaultAddress = vaultDetails[0][0]
-    let fromBlock
-    switch (api._rb.network.id) {
-      case 1:
-        fromBlock = '6000000'
-        break
-      case 42:
-        fromBlock = '7000000'
-        break
-      case 3:
-        fromBlock = '3000000'
-        break
-      default:
-        fromBlock = '3000000'
-    }
-    //
-    // Getting last transactions
-    //
-    await poolApi.contract.vaulteventful.init()
-
-    //
-    // Initializing vault contract
-    //
-    await poolApi.contract.vault.init(vaultAddress)
-
-    //
-    // Gettind vault data, creation date, supply, ETH balances
-    //
-
-    const getVaultCreationDate = async address => {
-      const hexPoolAddress = '0x' + address.substr(2).padStart(64, '0')
-
-      let topics = [
-        [poolApi.contract.vaulteventful.hexSignature.VaultCreated],
-        [hexPoolAddress],
-        null,
-        null
-      ]
-
-      let arrayPromises = []
-      return api.eth.getBlockNumber().then(lastBlock => {
-        let chunck = 100000
-        lastBlock = new BigNumber().toFixed()
-        const chunks = this.blockChunks(fromBlock, lastBlock, chunck)
-        arrayPromises = chunks.map(async chunk => {
-          // Pushing chunk logs into array
-          let options = {
-            topics: topics,
-            fromBlock: chunk.fromBlock,
-            toBlock: chunk.toBlock
-          }
-          return await poolApi.contract.vaulteventful.getAllLogs(options)
-        })
-
-        return Promise.all(arrayPromises)
-          .then(results => {
-            let logs = [].concat(...results)
-            if (logs.length !== 0) {
-              return api.eth
-                .getBlockByNumber(logs[0].blockNumber.toFixed(0))
-                .then(result => {
-                  return this.dateFromTimeStampHuman(result.timestamp)
-                })
-            } else {
-              return this.dateFromTimeStampHuman(new Date(0))
-            }
-          })
-          .catch(error => {
-            console.warn(error)
-            throw Error(error)
-          })
-      })
-    }
-
-    const vaultData = await poolApi.contract.vault.getData()
-    const vaultAdminData = await poolApi.contract.vault.getAdminData()
-    const vaultCreatedDate = await getVaultCreationDate(
-      vaultAddress,
-      poolApi.contract.vaulteventful
-    )
-    const vaultTotalSupply = await poolApi.contract.vault.totalSupply()
-    const vaultETHBalance = await formatEth(
-      await poolApi.contract.vault.getBalance(),
-      5,
-      api
-    )
-    const fee = new BigNumber(vaultAdminData[4]).div(100).toFixed(2)
-
-    let details = {
-      address: vaultDetails[0][0],
-      name:
-        vaultDetails[0][1].charAt(0).toUpperCase() +
-        vaultDetails[0][1].slice(1),
-      symbol: vaultDetails[0][2],
-      vaultId: new BigNumber(vaultDetails[0][3]).toNumber(),
-      addressOwner: vaultDetails[0][4],
-      addressGroup: vaultDetails[0][5],
-      sellPrice: api.util.fromWei(vaultData[2].toNumber(4)).toFormat(4),
-      buyPrice: api.util.fromWei(vaultData[3].toNumber(4)).toFormat(4),
-      created: vaultCreatedDate,
-      totalSupply: formatCoins(new BigNumber(vaultTotalSupply), 4, api),
-      vaultETHBalance,
-      fee
-    }
-
-    //
-    // Getting balance for each user account
-    //
-    let balanceDRG = new BigNumber(0)
-    await Promise.all(
-      accounts.map(async account => {
-        const balance = await poolApi.contract.vault.balanceOf(account.address)
-        balanceDRG = balanceDRG.plus(balance)
-      })
-    )
-    balanceDRG = formatCoins(balanceDRG, 4, api)
-    details = { ...details, balanceDRG }
-    return details
-  }
-
+  getVaultDetails = getVaultDetails
+  
   getTokenWrapperLockTime = getTokenWrapperLockTime
 
   getDragoLiquidity = async (dragoAddress, api) => {

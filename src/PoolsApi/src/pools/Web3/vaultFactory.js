@@ -66,6 +66,16 @@ class VaultFactoryWeb3 {
           })
       })
   }
+
+  getVaultsByAddress = accountAddress => {
+    if (!accountAddress) {
+      throw new Error('accountAddress needs to be provided')
+    }
+    const instance = this._instance
+    return instance.methods
+      .getVaultsByAddress(accountAddress.toLowerCase())
+      .call({})
+  }
 }
 
 export default VaultFactoryWeb3

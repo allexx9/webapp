@@ -59,11 +59,7 @@ let WebsocketProvider = function WebsocketProvider(url, options) {
     headers.authorization = 'Basic ' + _btoa(parsedURL.auth)
   }
 
-  let recWs = new ReconnectingWebSocket(
-    url
-    // [],
-    // { minReconnectionDelay: 1 }
-  )
+  let recWs = new ReconnectingWebSocket(url, '', { minReconnectionDelay: 1 })
 
   this.connection = recWs
 

@@ -23,7 +23,7 @@ export default class IdentityIcon extends PureComponent {
   render() {
     const { address, size } = this.props
     const { api } = this.context
-
+    console.log(api.utils.createIdentityImg(address, 4))
     return (
       <img
         className={styles.icon}

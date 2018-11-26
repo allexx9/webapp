@@ -30,7 +30,7 @@ const checkMetaMaskIsUnlocked$ = (api, web3, endpoint) => {
   let oldAccounts = [].concat(endpoint.accounts)
   let newAccounts = []
   let metaMaskAccountAddress = ''
-
+  // console.log('checkMetaMaskIsUnlocked$')
   return from(web3.eth.getAccounts()).pipe(
     exhaustMap(accountsMetaMask => {
       // MM is not locked
@@ -45,7 +45,7 @@ const checkMetaMaskIsUnlocked$ = (api, web3, endpoint) => {
           const networkId = endpoint.networkInfo.id
           const blockchain = new Interfaces(api, networkId)
           return from(blockchain.attachInterfaceInfuraV2()).pipe(
-            timeout(5000),
+            // timeout(5000),
             map(result => {
               if (result.accounts.length !== 0) {
                 newAccounts.push(result.accounts[0])
@@ -110,7 +110,7 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
           // console.log(results)
           return results
         }),
-        timeout(5000),
+        // timeout(5000),
         distinctUntilChanged((a, b) => {
           return shallowequal(
             JSON.stringify(a.accounts),
@@ -118,7 +118,7 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
           )
         }),
         tap(results => {
-          // console.log(results)
+          console.log(results)
           return results
         }),
         exhaustMap(newEndpoint => {
@@ -192,6 +192,7 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
                   )
                 ]
               : []
+          delete newEndpoint.prevBlockNumber
           return Observable.concat(
             Observable.of(Actions.endpoint.updateInterface(newEndpoint)),
             Observable.of(

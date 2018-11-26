@@ -453,7 +453,7 @@ class ElementFundActions extends React.Component {
     const { api } = this.context
     const { dragoDetails } = this.props
     const { account } = this.state
-    const amount = api.util.toWei(this.state.amountSummary).toString()
+    const amount = api.utils.toWei(this.state.amountSummary).toString()
     const authMsg =
       'You bought ' +
       this.state.unitsSummary +
@@ -462,7 +462,7 @@ class ElementFundActions extends React.Component {
       ' for ' +
       this.state.amountSummary +
       ' ETH'
-    const transactionId = api.util.sha3(new Date() + account.address)
+    const transactionId = api.utils.sha3(new Date() + account.address)
 
     // Setting variables depending on account source
     let provider = account.source === 'MetaMask' ? window.web3 : api
@@ -587,7 +587,7 @@ class ElementFundActions extends React.Component {
       ' for ' +
       this.state.amountSummary +
       ' ETH'
-    const transactionId = api.util.sha3(new Date() + account.address)
+    const transactionId = api.utils.sha3(new Date() + account.address)
 
     // Setting variables depending on account source
     let provider = account.source === 'MetaMask' ? window.web3 : api

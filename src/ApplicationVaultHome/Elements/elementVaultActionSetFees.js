@@ -309,7 +309,7 @@ class ElementVaultActionSetFees extends Component {
     this.setState({
       sending: true
     })
-    const transactionId = api.util.sha3(new Date() + accountAddress)
+    const transactionId = api.utils.sha3(new Date() + accountAddress)
     let transactionDetails = {
       status:
         this.state.account.source === 'MetaMask' ? 'pending' : 'authorization',

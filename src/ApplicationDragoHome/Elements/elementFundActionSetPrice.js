@@ -319,7 +319,7 @@ class ElementFundActionSetPrice extends Component {
     const { account } = this.state
 
     // Initializing transaction variables
-    const transactionId = api.util.sha3(new Date() + account.address)
+    const transactionId = api.utils.sha3(new Date() + account.address)
     let transactionDetails = {
       status: account.source === 'MetaMask' ? 'pending' : 'authorization',
       hash: '',

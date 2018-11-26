@@ -1,11 +1,20 @@
-export const blockChunks = (start, end, chunk) => {
+export const blockChunks = async (start, end, chunk, web3) => {
+  if (end === 'latest') {
+    try {
+      end = await web3.eth.getBlockNumber()
+    } catch (e) {
+      return console.error(e)
+    }
+  }
+  end = Number(end)
+  chunk = Number(chunk)
+  start = Number(start)
   let rangesArray = []
   let i = 0
   let fromBlock = end - chunk
   let toBlock = end
-  end = Number(end)
-  chunk = Number(chunk)
-  start = Number(start)
+
+  console.log(start, end, chunk)
 
   if (end - chunk < start) {
     rangesArray.push({
@@ -60,4 +69,23 @@ export const blockChunks = (start, end, chunk) => {
   //   // )
   // })
   return rangesArray
+}
+
+export const getBlockChunks = async (start, end, chunkSize, web3) => {
+  const startBlock = start
+  const chunks = []
+  let endBlock = end
+  if (endBlock === 'latest') {
+    try {
+      endBlock = await web3.eth.getBlockNumber()
+    } catch (e) {
+      return console.error(e)
+    }
+  }
+  for (let i = startBlock - 1; i < endBlock; i += chunkSize) {
+    const fromBlock = i + 1
+    const toBlock = i + chunkSize > endBlock ? end : i + chunkSize
+    chunks.push({ fromBlock, toBlock })
+  }
+  return chunks.reverse()
 }
