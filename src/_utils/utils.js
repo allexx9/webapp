@@ -10,16 +10,16 @@ import {
   NETWORK_WARNING
 } from './const'
 import {
-  getBlockChunks,
   dateFromTimeStampHuman,
+  getBlockChunks,
   getDragoDetails,
-  getVaultDetails,
   getDragoLiquidityAndTokenBalances,
   getTokenWrapperLockTime,
   getTransactionsDragoOptV2,
   getTransactionsSingleDrago,
   getTransactionsSingleVault,
-  getTransactionsVaultOptV2
+  getTransactionsVaultOptV2,
+  getVaultDetails
 } from './utils/index'
 import {
   formatCoins,
@@ -271,7 +271,7 @@ class utilities {
         }
         return [newEndpoint, notifications, fetchTransactions]
       } catch (error) {
-        console.log(`endpoint_epic -> ${error}`)
+        console.warn(`endpoint_epic -> ${error}`)
         // Setting the balances to 0 if receiving an error from the endpoint. It happens with Infura.
         newEndpoint = {
           prevBlockNumber: newBlockNumber.toFixed(),
@@ -293,9 +293,13 @@ class utilities {
   formatFromWei = number => {
     const web3 = new Web3()
     try {
-      return new BigNumber(web3.utils.fromWei(number)).toFixed(3)
+      return new BigNumber(web3.utils.fromWei(web3.utils.toBN(number))).toFixed(
+        3
+      )
     } catch (err) {
-      return new BigNumber(web3.utils.fromWei(number)).toFixed(3)
+      return new BigNumber(web3.utils.fromWei(web3.utils.toBN(number))).toFixed(
+        3
+      )
     }
   }
 
@@ -552,7 +556,7 @@ class utilities {
   getDragoDetails = getDragoDetails
 
   getVaultDetails = getVaultDetails
-  
+
   getTokenWrapperLockTime = getTokenWrapperLockTime
 
   getDragoLiquidity = async (dragoAddress, api) => {

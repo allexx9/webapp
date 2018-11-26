@@ -116,24 +116,26 @@ export const getDragoDetails = async (
     dragoTotalSupply,
     dragoETH,
     dragoWETH,
-    balanceDRG,
-    dragoCreatedDate
+    balanceDRG
+    // dragoCreatedDate
   ] = await Promise.all([
     dragoData,
     dragoTotalSupply,
     dragoETH,
     dragoWETH,
-    balanceDRG,
-    dragoCreatedDate
+    balanceDRG
+    // dragoCreatedDate
   ]).catch(e => new Error(e))
   console.log(
     dragoData,
     dragoTotalSupply,
     dragoETH,
     dragoWETH,
-    balanceDRG,
-    dragoCreatedDate
+    balanceDRG
+    // dragoCreatedDate
   )
+
+  dragoCreatedDate = 0
 
   let details = {
     address: dragoDetails[0][0],
