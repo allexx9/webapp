@@ -62,17 +62,23 @@ const Drago_Epics = [Drago.getPoolDetailsEpic, Drago.getTokensBalancesEpic]
 // https://github.com/redux-observable/redux-observable/issues/263#issuecomment-334625730
 
 const combineAndIsolateEpics = (...epics) => (...args) => {
-  const isolatedEpics = epics.map(epic => (...args) =>
-    epic(...args)
-      .pipe
-      // catchError((e, source) => {
-      //   console.warn(
-      //     `${epic.name} terminated with error: ${e.message}, restarting it...`
-      //   )
-      //   return source
-      // })
-      // delay(2000)
-      ()
+  const isolatedEpics = epics.map(
+    epic => (...args) =>
+      epic(...args).pipe(
+        catchError((e, source) => {
+          console.warn(
+            `${epic.name} terminated with error: ${e}, restarting it...`
+          )
+          return source
+        })
+      )
+    // catchError((e, source) => {
+    //   console.warn(
+    //     `${epic.name} terminated with error: ${e.message}, restarting it...`
+    //   )
+    //   return source
+    // })
+    // delay(2000)
   )
   return combineEpics(...isolatedEpics)(...args)
 }

@@ -10,15 +10,19 @@ export const getDragoDetails = async (
   dragoDetails,
   accounts,
   api,
-  options = { date: true }
+  options = { dateOnly: false }
 ) => {
   //
   // Initializing Drago API
   //
   console.time('getDragoDetails')
+  let web3Http = new Web3(api._rb.network.transportHttp)
+  // console.log(api._rb)
   let newWeb3 = Web3Wrapper.getInstance(api._rb.network.id)
   newWeb3._rb = window.web3._rb
-  const poolApiWeb3 = new PoolApi(newWeb3)
+  web3Http._rb = window.web3._rb
+  const poolApiWeb3 = new PoolApi(api)
+  // const poolApiWeb3 = new PoolApi(web3Http)
   const dragoAddress = dragoDetails[0][0]
   let fromBlock
   switch (api._rb.network.id) {
@@ -46,7 +50,7 @@ export const getDragoDetails = async (
 
   const getDragoCreationDate = async address => {
     const hexPoolAddress = '0x' + address.substr(2).padStart(64, '0')
-
+    console.time('getDragoCreationDate')
     let topics = [
       [poolApiWeb3.contract.dragoeventful.hexSignature.DragoCreated],
       [hexPoolAddress],
@@ -67,51 +71,60 @@ export const getDragoDetails = async (
           fromBlock: chunk.fromBlock,
           toBlock: chunk.toBlock
         }
-        console.log(`${chunk.fromBlock} to ${chunk.toBlock} sent`)
-        console.log(poolApiWeb3.contract.dragoeventful)
-        let web3Http = new Web3('https://mainnet.infura.io/metamask')
-        let contractHttp = new web3Http.eth.Contract(
-          poolApiWeb3.contract.dragoeventful._abi,
-          poolApiWeb3.contract.dragoeventful._contractAddress
-        )
+        // let contractHttp = new web3Http.eth.Contract(
+        //   poolApiWeb3.contract.dragoeventful._abi,
+        //   poolApiWeb3.contract.dragoeventful._contractAddress
+        // )
 
-        return contractHttp
-          .getPastEvents('allEvents', {
-            fromBlock: options.fromBlock,
-            toBlock: options.toBlock,
-            topics: options.topics
-          })
-          .then(logs => {
-            console.log(logs)
-            return logs
-          })
-
-        // .getPastEvents('allEvents', {
-        //   fromBlock: options.fromBlock,
-        //   toBlock: options.toBlock,
-        //   topics: options.topics
-        // })
-
-        // return poolApiWeb3.contract.dragoeventful
-        //   .getAllLogs(options)
+        // return contractHttp
+        //   .getPastEvents('allEvents', {
+        //     fromBlock: options.fromBlock,
+        //     toBlock: options.toBlock,
+        //     topics: options.topics
+        //   })
         //   .then(logs => {
         //     console.log(logs)
         //     return logs
         //   })
+
+        return poolApiWeb3.contract.dragoeventful
+          .getAllLogs(options)
+          .then(logs => {
+            return logs
+          })
+          .catch(error => {
+            console.warn(error)
+            throw Error(error)
+          })
       })
 
       return Promise.all(arrayPromises)
         .then(results => {
-          console.log(results)
-          let logs = [].concat(...results)
-          if (logs.length !== 0) {
-            return newWeb3.eth
-              .getBlock(logs[0].blockNumber.toFixed(0))
-              .then(result => {
-                return dateFromTimeStampHuman(result.timestamp)
-              })
+          console.timeEnd('getDragoCreationDate')
+          if (results.length > 0) {
+            let logs = [].concat(...results)
+            if (logs.length !== 0) {
+              return newWeb3.eth
+                .getBlock(logs[0].blockNumber.toFixed(0))
+                .then(result => {
+                  console.log(result)
+                  let date
+                  try {
+                    date = dateFromTimeStampHuman(result.timestamp)
+                  } catch (error) {
+                    date = '01 January 1970'
+                  }
+                  return date
+                })
+                .catch(error => {
+                  console.warn(error)
+                  throw new Error(error)
+                })
+            } else {
+              return '01 January 1970'
+            }
           } else {
-            return dateFromTimeStampHuman(new Date(0))
+            return '01 January 1970'
           }
         })
         .catch(error => {
@@ -120,7 +133,17 @@ export const getDragoDetails = async (
         })
     })
   }
-  let dragoCreatedDate = getDragoCreationDate(dragoAddress)
+
+  if (options.dateOnly) {
+    console.time('getDragoCreationDate')
+    let dragoCreatedDate = await getDragoCreationDate(dragoAddress)
+    let details = {
+      address: dragoAddress,
+      created: dragoCreatedDate
+    }
+    console.timeEnd('getDragoCreationDate')
+    return details
+  }
 
   let balanceDRG = new BigNumber(0)
   let dragoData = poolApiWeb3.contract.drago.getData()
@@ -144,31 +167,72 @@ export const getDragoDetails = async (
     balanceDRG = poolApiWeb3.contract.drago.balanceOf(accounts[0].address)
   }
 
-  ;[
-    dragoData,
-    dragoTotalSupply,
-    dragoETH,
-    dragoWETH,
-    balanceDRG,
-    dragoCreatedDate
-  ] = await Promise.all([
-    dragoData,
-    dragoTotalSupply,
-    dragoETH,
-    dragoWETH,
-    balanceDRG,
-    dragoCreatedDate
-  ]).catch(e => new Error(e))
-  console.log(
-    dragoData,
-    dragoTotalSupply,
-    dragoETH,
-    dragoWETH,
-    balanceDRG,
-    dragoCreatedDate
-  )
+  try {
+    dragoData = await dragoData
+  } catch (err) {
+    console.warn(err)
+    throw new Error(err)
+  }
 
-  // dragoCreatedDate = 0
+  try {
+    dragoTotalSupply = await dragoTotalSupply
+  } catch (err) {
+    console.warn(err)
+    throw new Error(err)
+  }
+
+  try {
+    dragoETH = await dragoETH
+  } catch (err) {
+    console.warn(err)
+    throw new Error(err)
+  }
+
+  try {
+    dragoWETH = await dragoWETH
+  } catch (err) {
+    console.warn(err)
+    throw new Error(err)
+  }
+
+  try {
+    balanceDRG = await balanceDRG
+  } catch (err) {
+    console.warn(err)
+    throw new Error(err)
+  }
+
+  // try {
+  //   ;[
+  //     // dragoCreatedDate,
+  //     dragoData,
+  //     dragoTotalSupply,
+  //     dragoETH,
+  //     dragoWETH,
+  //     balanceDRG
+  //   ] = await Promise.all([
+  //     // dragoCreatedDate,
+  //     dragoData,
+  //     dragoTotalSupply,
+  //     dragoETH,
+  //     dragoWETH,
+  //     balanceDRG
+  //   ]).catch(e => {
+  //     console.log(e)
+  //     return new Error(e)
+  //   })
+  //   console.log(
+  //     // dragoCreatedDate,
+  //     dragoData,
+  //     dragoTotalSupply,
+  //     dragoETH,
+  //     dragoWETH,
+  //     balanceDRG
+  //   )
+  // } catch (e) {
+  //   console.log(e)
+  //   return new Error(e)
+  // }
 
   let details = {
     address: dragoDetails[0][0],
@@ -180,7 +244,7 @@ export const getDragoDetails = async (
     addressGroup: dragoDetails[0][5],
     sellPrice: new BigNumber(api.utils.fromWei(dragoData[2])).toFormat(4),
     buyPrice: new BigNumber(api.utils.fromWei(dragoData[3])).toFormat(4),
-    created: dragoCreatedDate,
+    // created: dragoCreatedDate,
     totalSupply: formatCoins(new BigNumber(dragoTotalSupply), 4),
     dragoETHBalance: formatEth(dragoETH, 4),
     dragoWETHBalance: formatEth(dragoWETH, 4),

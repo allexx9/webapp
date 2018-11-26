@@ -2,6 +2,7 @@ import { formatCoins, formatEth } from './../format'
 import { getBlockChunks } from './blockChunks'
 import BigNumber from 'bignumber.js'
 import PoolApi from '../../PoolsApi/src'
+import Web3 from 'web3'
 import Web3Wrapper from '../../_utils/web3Wrapper/src'
 
 export const getTransactionsSingleDrago = async (
@@ -14,6 +15,11 @@ export const getTransactionsSingleDrago = async (
 ) => {
   let web3 = Web3Wrapper.getInstance(api._rb.network.id)
   web3._rb = window.web3._rb
+
+  // HTTP
+  let web3Http = new Web3(api._rb.network.transportHttp)
+  web3Http._rb = window.web3._rb
+
   const poolApi = new PoolApi(web3)
 
   await poolApi.contract.dragoeventful.init()
@@ -124,7 +130,12 @@ export const getTransactionsSingleDrago = async (
           fromBlock: chunk.fromBlock,
           toBlock: chunk.toBlock
         }
-        return await poolApi.contract.dragoeventful.getAllLogs(options)
+        return await poolApi.contract.dragoeventful
+          .getAllLogs(options)
+          .then(log => {
+            console.log(log)
+            return log
+          })
       })
 
       return Promise.all(arrayPromises).then(results => {

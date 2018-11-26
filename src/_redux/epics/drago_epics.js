@@ -6,6 +6,7 @@ import PoolApi from '../../PoolsApi/src'
 
 import * as TYPE_ from '../actions/const'
 import {
+  catchError,
   finalize,
   flatMap,
   map,
@@ -34,7 +35,8 @@ const getTokensBalances$ = (dragoAddress, api) => {
   try {
     poolApi.contract.drago.init(dragoAddress)
   } catch (err) {
-    throw this._error
+    console.warn(err)
+    throw new Error(err)
   }
 
   const getTokensBalances = async () => {
@@ -73,7 +75,7 @@ const getTokensBalances$ = (dragoAddress, api) => {
             dragoAssets[token].balances = balances
           }
         } catch (err) {
-          console.log(err)
+          console.warn(err)
           throw err
         }
       } else {
@@ -83,6 +85,7 @@ const getTokensBalances$ = (dragoAddress, api) => {
   }
   return from(
     getTokensBalances().catch(err => {
+      console.warn(err)
       throw err
     })
   )
@@ -141,14 +144,14 @@ export const getTokensBalancesEpic = (action$, state$) => {
             )
           }
           return Observable.concat(observablesArray)
+        }),
+        catchError(error => {
+          console.log(error)
+          return Observable.of({
+            type: TYPE_.QUEUE_ERROR_NOTIFICATION,
+            payload: 'Error fetching fund assets balances.'
+          })
         })
-        // catchError(error => {
-        //   console.log(error)
-        //   return Observable.of({
-        //     type: TYPE_.QUEUE_ERROR_NOTIFICATION,
-        //     payload: 'Error fetching fund assets balances.'
-        //   })
-        // })
       )
     })
   )
@@ -208,14 +211,37 @@ const getPoolDetails$ = (poolId, api, options, state$) => {
           : utils
               .getVaultDetails(poolDetails, accounts, api)
               .then(details => {
-                // console.log(details)
                 return observer.next(details)
               })
               .catch(error => observer.error(error))
       })
+      .then(() => {
+        const accounts = state$.value.endpoint.accounts
+        return options.poolType === 'drago'
+          ? utils
+              .getDragoDetails(poolDetails, accounts, api, { dateOnly: true })
+              .then(details => {
+                return observer.next(details)
+              })
+              .catch(error => {
+                console.warn(error)
+                observer.error(error)
+              })
+          : utils
+              .getVaultDetails(poolDetails, accounts, api, { dateOnly: true })
+              .then(details => {
+                return observer.next(details)
+              })
+              .catch(error => {
+                console.warn(error)
+                observer.error(error)
+              })
+      })
       .catch(error => {
+        console.warn(error)
         return observer.error(error)
       })
+    return () => observer.complete()
   })
 }
 
@@ -230,7 +256,7 @@ export const getPoolDetailsEpic = (action$, state$) => {
         state$
       ).pipe(
         flatMap(details => {
-          // console.log(details)
+          console.log(details)
           let drago = action.payload.options.poolType === 'drago' ? true : false
           let options = {
             balance: true,
@@ -315,12 +341,22 @@ export const getPoolDetailsEpic = (action$, state$) => {
           )
         })
         // catchError(error => {
-        //   console.log(error)
+        //   console.warn(error)
         //   return Observable.of({
         //     type: TYPE_.QUEUE_ERROR_NOTIFICATION,
         //     payload: 'Error fetching Pool details.'
         //   })
         // })
+      )
+    }),
+    retryWhen(error => {
+      let scalingDuration = 5000
+      return error.pipe(
+        mergeMap(error => {
+          console.warn(error)
+          return timer(scalingDuration)
+        }),
+        finalize(() => console.log('We are done!'))
       )
     })
   )

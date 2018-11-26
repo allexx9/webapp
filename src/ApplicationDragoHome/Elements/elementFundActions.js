@@ -509,14 +509,18 @@ class ElementFundActions extends React.Component {
       .then(receipt => {
         console.log('executed')
         console.log(receipt)
-        // const accounts = [].push(account)
-        // console.log(getDragoDetails(dragoD, accounts, api))
         poolApi.contract.drago
           .balanceOf(account.address)
           .then(balance => {
             console.log(balance)
           })
           .catch(e => console.warn(e))
+        console.log('Account monitoring - > DRAGO details fetch.')
+        this.props.dispatch(
+          Actions.drago.getPoolDetails(dragoDetails.dragoId, api, {
+            poolType: 'drago'
+          })
+        )
 
         // Adding transaction to the queue
         // Parity returns an internal transaction ID straighaway. The transaction then needs to be authorized inside the wallet.
@@ -618,6 +622,18 @@ class ElementFundActions extends React.Component {
       .sellDrago(account.address, amount)
       .then(receipt => {
         console.log(receipt)
+        poolApi.contract.drago
+          .balanceOf(account.address)
+          .then(balance => {
+            console.log(balance)
+          })
+          .catch(e => console.warn(e))
+        console.log('Account monitoring - > DRAGO details fetch.')
+        this.props.dispatch(
+          Actions.drago.getPoolDetails(dragoDetails.dragoId, provider, {
+            poolType: 'drago'
+          })
+        )
         // Adding transaciont to the queue
         // Parity returns an internal transaction ID straighaway. The transaction then needs to be authorized inside the wallet.
         // MetaMask returns a receipt of the transaction once it has been mined by the network. It can take a long time.

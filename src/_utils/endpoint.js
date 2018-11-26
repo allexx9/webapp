@@ -31,6 +31,7 @@ class Endpoint {
         ? false
         : ws
     // Setting production or development endpoints
+    console.log(endpointInfo.https[this._network.name])
     if (prod) {
       this._https = endpointInfo.https[this._network.name].prod
       this._wss = endpointInfo.wss[this._network.name].prod
@@ -107,6 +108,7 @@ class Endpoint {
       api._rb = {}
       api._rb.network = this._network
       api._rb.network.transportWs = this._wss
+      api._rb.network.transportHttp = this._https
       console.log(api)
       return api
     } catch (error) {

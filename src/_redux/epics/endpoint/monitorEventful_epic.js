@@ -2,7 +2,7 @@
 
 // import { Observable } from 'rxjs';
 import * as TYPE_ from '../../actions/const'
-// import { Actions } from '../../actions'
+import { Actions } from '../../actions'
 import { DEBUGGING } from '../../../_utils/const'
 import { Observable, merge, timer } from 'rxjs'
 import {
@@ -50,7 +50,7 @@ export const monitorEventfulEpic = (action$, state$) => {
         }),
         flatMap(() => {
           const observablesArray = Array(0)
-          // const currentState = state$.value
+          const currentState = state$.value
           observablesArray.push(Observable.of(DEBUGGING.DUMB_ACTION))
           // if (currentState.transactionsDrago.selectedDrago.details.dragoId) {
           //   console.log('Account monitoring - > DRAGO details fetch.')
@@ -67,20 +67,20 @@ export const monitorEventfulEpic = (action$, state$) => {
           //   )
           // }
 
-          // if (currentState.transactionsVault.selectedVault.details.vaultId) {
-          //   console.log('Account monitoring - > VAULT details fetch.')
-          //   observablesArray.push(
-          //     Observable.of(
-          //       Actions.drago.getPoolDetails(
-          //         currentState.transactionsVault.selectedVault.details.vaultId,
-          //         action.payload.api,
-          //         {
-          //           poolType: 'vault'
-          //         }
-          //       )
-          //     )
-          //   )
-          // }
+          if (currentState.transactionsVault.selectedVault.details.vaultId) {
+            console.log('Account monitoring - > VAULT details fetch.')
+            observablesArray.push(
+              Observable.of(
+                Actions.drago.getPoolDetails(
+                  currentState.transactionsVault.selectedVault.details.vaultId,
+                  action.payload.api,
+                  {
+                    poolType: 'vault'
+                  }
+                )
+              )
+            )
+          }
           return Observable.concat(...observablesArray)
         }),
         retryWhen(error => {

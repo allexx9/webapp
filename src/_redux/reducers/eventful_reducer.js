@@ -42,14 +42,35 @@ export function eventfulDragoReducer(
         }
       }
 
-    case TYPE_.UPDATE_SELECTED_DRAGO_DETAILS:
+    case TYPE_.UPDATE_SELECTED_DRAGO_DETAILS: {
+      console.log(action)
+      console.log({ ...state.selectedDrago, ...action.payload })
       return {
         ...state,
         selectedDrago: {
           ...state.selectedDrago,
-          ...action.payload
+          values: {
+            ...state.selectedDrago.values,
+            ...(action.payload.values || {})
+          },
+          details: {
+            ...state.selectedDrago.details,
+            ...(action.payload.details || {})
+          },
+          transactions: [
+            ...(action.payload.transactions ||
+              [].concat(state.selectedDrago.transactions))
+          ],
+          assets: [
+            ...(action.payload.assets || [].concat(state.selectedDrago.assets))
+          ],
+          assetsCharts: {
+            ...state.selectedDrago.assetsCharts,
+            ...(action.payload.assetsCharts || {})
+          }
         }
       }
+    }
 
     case TYPE_.UPDATE_SELECTED_DRAGO_DETAILS_RESET:
       return {

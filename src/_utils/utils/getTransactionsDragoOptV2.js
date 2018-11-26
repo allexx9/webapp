@@ -4,6 +4,7 @@ import { getTransactionsSingleDrago } from './getTransactionsSingleDrago'
 import { logToEvent } from './logToEvent'
 import BigNumber from 'bignumber.js'
 import PoolApi from '../../PoolsApi/src'
+import Web3 from 'web3'
 import Web3Wrapper from '../../_utils/web3Wrapper/src'
 import moment from 'moment'
 
@@ -46,7 +47,12 @@ export const getTransactionsDragoOptV2 = async (
   }
   let web3 = Web3Wrapper.getInstance(api._rb.network.id)
   web3._rb = window.web3._rb
-  const poolApi = new PoolApi(web3)
+
+  // HTTP
+  let web3Http = new Web3(api._rb.network.transportHttp)
+  web3Http._rb = window.web3._rb
+
+  const poolApi = new PoolApi(web3Http)
   let dragoSymbolRegistry = new Map()
   let fromBlock
   switch (api._rb.network.id) {
