@@ -1,11 +1,11 @@
-export const blockChunks = async (start, end, chunk, web3) => {
-  if (end === 'latest') {
-    try {
-      end = await web3.eth.getBlockNumber()
-    } catch (e) {
-      return console.error(e)
-    }
-  }
+export const blockChunks = (start, end, chunk, web3) => {
+  // if (end === 'latest') {
+  //   try {
+  //     end = await web3.eth.getBlockNumber()
+  //   } catch (e) {
+  //     return console.error(e)
+  //   }
+  // }
   end = Number(end)
   chunk = Number(chunk)
   start = Number(start)

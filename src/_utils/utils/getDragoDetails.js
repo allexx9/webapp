@@ -1,8 +1,9 @@
+import { blockChunks, getBlockChunks } from './blockChunks'
 import { dateFromTimeStampHuman } from './dateFromTimeStampHuman'
 import { formatCoins, formatEth } from './../format'
-import { getBlockChunks } from './blockChunks'
 import BigNumber from 'bignumber.js'
 import PoolApi from '../../PoolsApi/src'
+import Web3 from 'web3'
 import Web3Wrapper from '../web3Wrapper/src'
 
 export const getDragoDetails = async (
@@ -58,6 +59,7 @@ export const getDragoDetails = async (
       let chunck = 100000
       lastBlock = new BigNumber(lastBlock).toNumber()
       const chunks = await getBlockChunks(fromBlock, lastBlock, chunck, newWeb3)
+      // const chunks = blockChunks(fromBlock, lastBlock, chunck)
       arrayPromises = chunks.map(async chunk => {
         // Pushing chunk logs into array
         let options = {
@@ -65,11 +67,42 @@ export const getDragoDetails = async (
           fromBlock: chunk.fromBlock,
           toBlock: chunk.toBlock
         }
-        return poolApiWeb3.contract.dragoeventful.getAllLogs(options)
+        console.log(`${chunk.fromBlock} to ${chunk.toBlock} sent`)
+        console.log(poolApiWeb3.contract.dragoeventful)
+        let web3Http = new Web3('https://mainnet.infura.io/metamask')
+        let contractHttp = new web3Http.eth.Contract(
+          poolApiWeb3.contract.dragoeventful._abi,
+          poolApiWeb3.contract.dragoeventful._contractAddress
+        )
+
+        return contractHttp
+          .getPastEvents('allEvents', {
+            fromBlock: options.fromBlock,
+            toBlock: options.toBlock,
+            topics: options.topics
+          })
+          .then(logs => {
+            console.log(logs)
+            return logs
+          })
+
+        // .getPastEvents('allEvents', {
+        //   fromBlock: options.fromBlock,
+        //   toBlock: options.toBlock,
+        //   topics: options.topics
+        // })
+
+        // return poolApiWeb3.contract.dragoeventful
+        //   .getAllLogs(options)
+        //   .then(logs => {
+        //     console.log(logs)
+        //     return logs
+        //   })
       })
 
       return Promise.all(arrayPromises)
         .then(results => {
+          console.log(results)
           let logs = [].concat(...results)
           if (logs.length !== 0) {
             return newWeb3.eth
@@ -116,26 +149,26 @@ export const getDragoDetails = async (
     dragoTotalSupply,
     dragoETH,
     dragoWETH,
-    balanceDRG
-    // dragoCreatedDate
+    balanceDRG,
+    dragoCreatedDate
   ] = await Promise.all([
     dragoData,
     dragoTotalSupply,
     dragoETH,
     dragoWETH,
-    balanceDRG
-    // dragoCreatedDate
+    balanceDRG,
+    dragoCreatedDate
   ]).catch(e => new Error(e))
   console.log(
     dragoData,
     dragoTotalSupply,
     dragoETH,
     dragoWETH,
-    balanceDRG
-    // dragoCreatedDate
+    balanceDRG,
+    dragoCreatedDate
   )
 
-  dragoCreatedDate = 0
+  // dragoCreatedDate = 0
 
   let details = {
     address: dragoDetails[0][0],
