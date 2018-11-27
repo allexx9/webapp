@@ -49,7 +49,8 @@ export const RELAYS = {
       quoteTokenSymbol: 'WETH'
     },
     supportedNetworks: ['42'],
-    isTokenWrapper: false
+    isTokenWrapper: false,
+    meta: {}
   },
   Radarrelay: {
     name: 'Radarrelay',
@@ -62,7 +63,8 @@ export const RELAYS = {
       quoteTokenSymbol: 'WETH'
     },
     supportedNetworks: ['42'],
-    isTokenWrapper: false
+    isTokenWrapper: false,
+    meta: {}
   },
   Ethfinex: {
     name: 'Ethfinex',
@@ -77,7 +79,8 @@ export const RELAYS = {
       quoteTokenSymbol: 'USDT'
     },
     supportedNetworks: ['1', '3'],
-    isTokenWrapper: true
+    isTokenWrapper: true,
+    meta: {}
   }
 }
 

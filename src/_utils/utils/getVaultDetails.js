@@ -1,4 +1,5 @@
 import { dateFromTimeStampHuman } from './dateFromTimeStampHuman'
+import { ethers } from 'ethers'
 import { formatCoins, formatEth } from './../format'
 import { getBlockChunks } from './blockChunks'
 import BigNumber from 'bignumber.js'
@@ -197,6 +198,15 @@ export const getVaultDetails = async (
   //   vaultCreatedDate
   // ]).catch(e => new Error(e))
 
+  let sellPrice = ethers.utils.bigNumberify(vaultData[2]).toHexString()
+  let buyPrice = ethers.utils.bigNumberify(vaultData[3]).toHexString()
+
+  sellPrice = api.utils.fromWei(sellPrice)
+  buyPrice = api.utils.fromWei(buyPrice)
+
+  sellPrice = new BigNumber(sellPrice).toFormat(4)
+  buyPrice = new BigNumber(buyPrice).toFormat(4)
+
   let details = {
     address: vaultDetails[0][0],
     name:
@@ -205,12 +215,8 @@ export const getVaultDetails = async (
     vaultId: new BigNumber(vaultDetails[0][3]).toNumber(),
     addressOwner: vaultDetails[0][4],
     addressGroup: vaultDetails[0][5],
-    sellPrice: new BigNumber(
-      api.utils.fromWei(Web3.utils.toBN(vaultData[2]))
-    ).toFormat(4),
-    buyPrice: new BigNumber(
-      api.utils.fromWei(Web3.utils.toBN(vaultData[3]))
-    ).toFormat(4),
+    sellPrice,
+    buyPrice,
     // created: vaultCreatedDate,
     totalSupply: formatCoins(new BigNumber(vaultTotalSupply), 4),
     vaultETHBalance: formatEth(vaultETH, 4),

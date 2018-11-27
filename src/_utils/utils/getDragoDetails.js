@@ -1,4 +1,5 @@
 import { dateFromTimeStampHuman } from './dateFromTimeStampHuman'
+import { ethers } from 'ethers'
 import { formatCoins, formatEth } from './../format'
 import { getBlockChunks } from './blockChunks'
 import BigNumber from 'bignumber.js'
@@ -230,6 +231,15 @@ export const getDragoDetails = async (
   //   return new Error(e)
   // }
 
+  let sellPrice = ethers.utils.bigNumberify(dragoData[2]).toHexString()
+  let buyPrice = ethers.utils.bigNumberify(dragoData[3]).toHexString()
+
+  sellPrice = api.utils.fromWei(sellPrice)
+  buyPrice = api.utils.fromWei(buyPrice)
+
+  sellPrice = new BigNumber(sellPrice).toFormat(4)
+  buyPrice = new BigNumber(buyPrice).toFormat(4)
+
   let details = {
     address: dragoDetails[0][0],
     name:
@@ -238,12 +248,8 @@ export const getDragoDetails = async (
     dragoId: new BigNumber(dragoDetails[0][3]).toFixed(),
     addressOwner: dragoDetails[0][4],
     addressGroup: dragoDetails[0][5],
-    sellPrice: new BigNumber(
-      api.utils.fromWei(Web3.utils.toBN(dragoData[2]))
-    ).toFormat(4),
-    buyPrice: new BigNumber(
-      api.utils.fromWei(Web3.utils.toBN(dragoData[3]))
-    ).toFormat(4),
+    sellPrice,
+    buyPrice,
     // created: dragoCreatedDate,
     totalSupply: formatCoins(new BigNumber(dragoTotalSupply), 4),
     dragoETHBalance: formatEth(dragoETH, 4),

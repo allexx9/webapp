@@ -3,12 +3,14 @@ import * as TYPE_ from './const'
 import {
   connectRelay,
   createOrder,
+  getRelayConfig,
   updateOrder,
   updateUiPanelProperties
 } from './exchange'
 
 const exchange = {
   connectRelay,
+  getRelayConfig,
   createOrder,
   updateOrder,
   updateTradesHistory: payload => {

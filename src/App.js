@@ -57,7 +57,6 @@ function mapStateToProps(state) {
 export class App extends Component {
   constructor(props) {
     super(props)
-    console.log(props)
     this._notificationSystem = null
     let endpoint = new Endpoint(
       this.props.endpoint.endpointInfo,

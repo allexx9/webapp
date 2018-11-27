@@ -8,3 +8,11 @@ export const connectRelay = createAction(
     tokensPair
   })
 )
+
+export const getRelayConfig = createAction(
+  TYPE_.RELAY_GET_CONFIG,
+  (relay, tokensPair) => ({
+    relay,
+    tokensPair
+  })
+)

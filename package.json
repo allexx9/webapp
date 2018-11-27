@@ -54,6 +54,8 @@
     "react-stockcharts": "^0.7.6",
     "react-tooltip": "^3.6.0",
     "react-virtualized": "^9.20.1",
+    "reactotron-react-js": "^2.1.1",
+    "reactotron-redux": "^2.1.0",
     "reconnecting-websocket": "^4.1.10",
     "redux": "^4.0.0",
     "redux-actions": "^2.6.4",

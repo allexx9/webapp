@@ -80,6 +80,34 @@ class ApplicationExchangeHome extends PureComponent {
     }
   }
 
+  getEFXConf = () => {
+    fetch('https://test.ethfinex.com/trustless/v1/r/get/conf')
+      .then(function(response) {
+        console.log(response)
+      })
+      .then(function(myJson) {
+        // console.log(JSON.stringify(myJson))
+      })
+
+    let request = new XMLHttpRequest()
+
+    request.open('POST', 'https://test.ethfinex.com/trustless/v1/r/get/conf')
+
+    request.setRequestHeader('Accept-Language', 'en;')
+    request.setRequestHeader('Content-Type', 'application/json')
+
+    request.onreadystatechange = function() {
+      if (this.readyState === 4) {
+        console.log('Status:', this.status)
+        console.log('Headers:', this.getAllResponseHeaders())
+        console.log('Body:', this.responseText)
+      }
+    }
+
+    let body = {}
+    request.send(JSON.stringify(body))
+  }
+
   componentDidMount = async () => {
     const { api } = this.context
     const { ui } = this.props.exchange
@@ -96,6 +124,7 @@ class ApplicationExchangeHome extends PureComponent {
           defaultRelay.defaultTokensPair.quoteTokenSymbol
         ]
     }
+    this.getEFXConf()
     console.log('***** MOUNT *****')
     try {
       const walletAddress = endpoint.accounts.find(

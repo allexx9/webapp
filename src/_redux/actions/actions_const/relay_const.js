@@ -1,1 +1,2 @@
 export const RELAY_CONNECT = 'RELAY_CONNECT'
+export const RELAY_GET_CONFIG = 'RELAY_GET_CONFIG'

@@ -1,5 +1,6 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 // By the Power of Grayskull! I Have the Power!
+// import Reactotron from './ReactotronConfig'
 
 import * as Sentry from '@sentry/browser'
 import { Provider } from 'react-redux'
@@ -7,6 +8,7 @@ import { Reducers } from './_redux/reducers/root_reducer'
 import { applyMiddleware, compose, createStore } from 'redux'
 import { createEpicMiddleware } from 'redux-observable'
 import { persistReducer, persistStore } from 'redux-persist'
+
 // import { reduxBatch } from '@manaflair/redux-batch'
 import { rootEpic } from './_redux/epics/root_epics'
 import App from './App'
@@ -29,15 +31,15 @@ import './index.module.css'
 
 function noop() {}
 
-// if (process.env.NODE_ENV !== 'development') {
-//   console.log = noop
-//   console.warn = noop
-//   Sentry.init({
-//     dsn: 'https://b8304e9d588a477db619fbb026f31549@sentry.io/1329485',
-//     environment: process.env.NODE_ENV
-//   })
-//   console.error = noop
-// }
+if (process.env.NODE_ENV !== 'development') {
+  console.log = noop
+  console.warn = noop
+  console.error = noop
+  Sentry.init({
+    dsn: 'https://b8304e9d588a477db619fbb026f31549@sentry.io/1329485',
+    environment: process.env.NODE_ENV
+  })
+}
 
 const epicMiddleware = createEpicMiddleware()
 
@@ -97,10 +99,13 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 // )
 const enhancer = composeEnhancers(applyMiddleware(...middlewares))
 
+// const store = Reactotron.createStore(persistedReducer, enhancer)
+
 let store = createStore(persistedReducer, enhancer)
 epicMiddleware.run(rootEpic)
 
 let persistor = persistStore(store)
+console.log(store.getState())
 
 ReactDOM.render(
   <Provider store={store}>

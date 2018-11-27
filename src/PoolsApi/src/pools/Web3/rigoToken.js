@@ -6,7 +6,6 @@ import { RIGOTOKEN_ADDRESSES } from '../../utils/const'
 import { ethers } from 'ethers'
 import BigNumber from 'bignumber.js'
 import Registry from '../registry'
-import Web3 from 'web3'
 
 class RigoTokenWeb3 {
   constructor(api) {
