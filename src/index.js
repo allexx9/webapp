@@ -17,6 +17,7 @@ import ReactDOM from 'react-dom'
 // import logger from 'redux-logger'
 // import registerServiceWorker, { unregister } from './registerServiceWorker'
 // import { composeWithDevTools } from 'redux-devtools-extension';
+import { GIT_HASH } from './_utils/const'
 import { PersistGate } from 'redux-persist/integration/react'
 import { createFilter } from 'redux-persist-transform-filter'
 import {
@@ -37,7 +38,8 @@ if (process.env.NODE_ENV !== 'development') {
   console.error = noop
   Sentry.init({
     dsn: 'https://b8304e9d588a477db619fbb026f31549@sentry.io/1329485',
-    environment: process.env.NODE_ENV
+    environment: process.env.NODE_ENV,
+    release: 'webapp-v1@' + GIT_HASH
   })
 }
 
