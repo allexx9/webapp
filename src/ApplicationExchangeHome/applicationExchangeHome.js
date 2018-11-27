@@ -296,6 +296,8 @@ class ApplicationExchangeHome extends PureComponent {
       managerAccount: walletAddress.address.toLowerCase()
     }
 
+    console.log(fundDetails)
+
     this.props.dispatch(Actions.exchange.updateSelectedFund(fundDetails))
 
     // Reser exchange contract events
@@ -548,10 +550,10 @@ class ApplicationExchangeHome extends PureComponent {
       console.time('dragoList')
       let dragoList = await getDragoDetails(...(await getDragoList()))
       console.timeEnd('dragoList')
-      if (dragoList.lenght) {
-        this.setState({
-          managerHasNoFunds: true
-        })
+      if (dragoList.length === 0) {
+        // this.setState({
+        //   managerHasNoFunds: true
+        // })
       } else {
         dragoList.sort(function(a, b) {
           let keyA = a.symbol,

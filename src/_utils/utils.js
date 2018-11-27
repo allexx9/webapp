@@ -167,27 +167,20 @@ class utilities {
             fetchTransactions = true
             let secondaryText = []
             let balDifference = prevEthBalance.minus(newEthBalance)
-            // console.log(prevEthBalance.toFixed(), newEthBalance.toFixed())
-            // console.log(balDifference.toFixed())
+            const balDifString = new BigNumber(
+              Web3.utils.fromWei(balDifference.toString(16))
+            ).toFixed(3)
             if (balDifference.gt(new BigNumber(0))) {
               console.log(
-                `endpoint_epic -> You transferred ${utils.formatFromWei(
-                  balDifference
-                )} ETH!`
+                `endpoint_epic -> You transferred ${balDifString} ETH!`
               )
-              secondaryText[0] = `You transferred ${utils.formatFromWei(
-                balDifference
-              )} ETH!`
+              secondaryText[0] = `You transferred ${balDifString} ETH!`
               secondaryText[1] = utils.dateFromTimeStamp(new Date())
             } else {
               console.log(
-                `endpoint_epic -> You received ${Math.abs(
-                  utils.formatFromWei(balDifference)
-                )} ETH!`
+                `endpoint_epic -> You received ${Math.abs(balDifString)} ETH!`
               )
-              secondaryText[0] = `You received ${Math.abs(
-                utils.formatFromWei(balDifference)
-              )} ETH!`
+              secondaryText[0] = `You received ${Math.abs(balDifString)} ETH!`
               secondaryText[1] = utils.dateFromTimeStamp(new Date())
             }
             if (endpoint.accountsBalanceError === false) {
@@ -212,25 +205,20 @@ class utilities {
             fetchTransactions = true
             let secondaryText = []
             let balDifference = prevGrgBalance.minus(newgrgBalance)
+            const balDifString = new BigNumber(
+              Web3.utils.fromWei(balDifference.toString(16))
+            ).toFixed(3)
             if (balDifference.gt(new BigNumber(0))) {
               console.log(
-                `endpoint_epic -> You transferred ${utils.formatFromWei(
-                  balDifference
-                )} GRG!`
+                `endpoint_epic -> You transferred ${balDifString} GRG!`
               )
-              secondaryText[0] = `You transferred ${utils.formatFromWei(
-                balDifference
-              )} GRG!`
+              secondaryText[0] = `You transferred ${balDifString} GRG!`
               secondaryText[1] = utils.dateFromTimeStamp(new Date())
             } else {
               console.log(
-                `endpoint_epic -> You received ${Math.abs(
-                  utils.formatFromWei(balDifference)
-                )} GRG!`
+                `endpoint_epic -> You received ${Math.abs(balDifString)} GRG!`
               )
-              secondaryText[0] = `You received ${Math.abs(
-                utils.formatFromWei(balDifference)
-              )} GRG!`
+              secondaryText[0] = `You received ${Math.abs(balDifString)} GRG!`
               secondaryText[1] = utils.dateFromTimeStamp(new Date())
             }
             if (endpoint.accountsBalanceError === false) {
@@ -260,10 +248,14 @@ class utilities {
           accounts: [].concat(
             accounts.map((account, index) => {
               const ethBalance = ethBalances[index]
-              account.ethBalance = utils.formatFromWei(ethBalance)
+              account.ethBalance = new BigNumber(
+                Web3.utils.fromWei(ethBalance)
+              ).toFixed(3)
               account.ethBalanceWei = new BigNumber(ethBalance)
               const grgBalance = grgBalances[index]
-              account.grgBalance = utils.formatFromWei(grgBalance)
+              account.grgBalance = new BigNumber(
+                Web3.utils.fromWei(grgBalance)
+              ).toFixed(3)
               account.grgBalanceWei = new BigNumber(grgBalance)
               return account
             })
@@ -290,18 +282,18 @@ class utilities {
     }
   }
 
-  formatFromWei = number => {
-    const web3 = new Web3()
-    try {
-      return new BigNumber(web3.utils.fromWei(web3.utils.toBN(number))).toFixed(
-        3
-      )
-    } catch (err) {
-      return new BigNumber(web3.utils.fromWei(web3.utils.toBN(number))).toFixed(
-        3
-      )
-    }
-  }
+  // formatFromWei = amount => {
+  //   const web3 = new Web3()
+  //   try {
+  //     return new BigNumber(web3.utils.fromWei(web3.utils.toBN(amount))).toFixed(
+  //       3
+  //     )
+  //   } catch (err) {
+  //     return new BigNumber(web3.utils.fromWei(web3.utils.toBN(amount))).toFixed(
+  //       3
+  //     )
+  //   }
+  // }
 
   ethfinexTickersToArray = assets => {
     let assetArray = Array(0)

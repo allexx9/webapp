@@ -9,7 +9,9 @@ const formatOrdersFromAggregateERCdEX = orders => {
   let web3 = new Web3(Web3.currentProvider)
   let formattedOrders = orders.map(order => {
     orderPrice = new BigNumber(order.price).toFixed(7)
-    orderAmount = new BigNumber(web3.utils.fromWei(order.volume)).toFixed(5)
+    orderAmount = new BigNumber(
+      web3.utils.fromWei(Web3.utils.toBN(order.volume))
+    ).toFixed(5)
     let orderObject = {
       orderAmount,
       orderPrice
@@ -29,7 +31,7 @@ export const formatOrdersFromERCdEX = (orders, orderType) => {
           .div(new BigNumber(order.makerTokenAmount))
           .toFixed(7)
         orderAmount = new BigNumber(
-          web3.utils.fromWei(order.makerTokenAmount, 'ether')
+          web3.utils.fromWei(Web3.utils.toBN(order.makerTokenAmount), 'ether')
         ).toFixed(5)
         break
       case 'bids':
@@ -41,7 +43,7 @@ export const formatOrdersFromERCdEX = (orders, orderType) => {
           )
           .toFixed(7)
         orderAmount = new BigNumber(
-          web3.utils.fromWei(order.takerTokenAmount, 'ether')
+          web3.utils.fromWei(Web3.utils.toBN(order.takerTokenAmount), 'ether')
         ).toFixed(5)
         break
       default:

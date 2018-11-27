@@ -205,8 +205,12 @@ export const getVaultDetails = async (
     vaultId: new BigNumber(vaultDetails[0][3]).toNumber(),
     addressOwner: vaultDetails[0][4],
     addressGroup: vaultDetails[0][5],
-    sellPrice: new BigNumber(api.utils.fromWei(vaultData[2])).toFormat(4),
-    buyPrice: new BigNumber(api.utils.fromWei(vaultData[3])).toFormat(4),
+    sellPrice: new BigNumber(
+      api.utils.fromWei(Web3.utils.toBN(vaultData[2]))
+    ).toFormat(4),
+    buyPrice: new BigNumber(
+      api.utils.fromWei(Web3.utils.toBN(vaultData[3]))
+    ).toFormat(4),
     // created: vaultCreatedDate,
     totalSupply: formatCoins(new BigNumber(vaultTotalSupply), 4),
     vaultETHBalance: formatEth(vaultETH, 4),

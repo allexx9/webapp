@@ -230,9 +230,13 @@ class Interfaces {
 
         let accountsMetaMask = {
           [accounts[0]]: {
-            ethBalance: utils.formatFromWei(ethBalance),
+            ethBalance: new BigNumber(web3.utils.fromWei(ethBalance)).toFixed(
+              3
+            ),
             ethBalanceWei: ethBalance,
-            grgBalance: utils.formatFromWei(grgBalance),
+            grgBalance: new BigNumber(web3.utils.fromWei(grgBalance)).toFixed(
+              3
+            ),
             grgBalanceWei: grgBalance,
             name: 'MetaMask',
             source: 'MetaMask',
@@ -370,36 +374,36 @@ class Interfaces {
   }
 
   detachInterface = (api, subscriptionData) => {
-    if (typeof subscriptionData === 'object') {
-      console.log(subscriptionData)
-      try {
-        subscriptionData.unsubscribe(function(error, success) {
-          if (success) {
-            console.log(`Successfully unsubscribed from eth_blockNumber.`)
-          }
-          if (error) {
-            console.log(`Unsubscribe error ${error}.`)
-          }
-        })
-      } catch (error) {
-        console.log(error)
-      }
-    } else {
-      try {
-        api
-          .unsubscribe(subscriptionData)
-          .then(() => {
-            console.log(
-              `Successfully unsubscribed from eth_blockNumber -> Subscription ID: ${subscriptionData}.`
-            )
-          })
-          .catch(error => {
-            console.log(`Unsubscribe error ${error}.`)
-          })
-      } catch (error) {
-        console.log(error)
-      }
-    }
+    // if (typeof subscriptionData === 'object') {
+    //   console.log(subscriptionData)
+    //   try {
+    //     subscriptionData.unsubscribe(function(error, success) {
+    //       if (success) {
+    //         console.log(`Successfully unsubscribed from eth_blockNumber.`)
+    //       }
+    //       if (error) {
+    //         console.log(`Unsubscribe error ${error}.`)
+    //       }
+    //     })
+    //   } catch (error) {
+    //     console.log(error)
+    //   }
+    // } else {
+    //   try {
+    //     api
+    //       .unsubscribe(subscriptionData)
+    //       .then(() => {
+    //         console.log(
+    //           `Successfully unsubscribed from eth_blockNumber -> Subscription ID: ${subscriptionData}.`
+    //         )
+    //       })
+    //       .catch(error => {
+    //         console.log(`Unsubscribe error ${error}.`)
+    //       })
+    //   } catch (error) {
+    //     console.log(error)
+    //   }
+    // }
   }
 }
 

@@ -29,15 +29,15 @@ import './index.module.css'
 
 function noop() {}
 
-if (process.env.NODE_ENV !== 'development') {
-  console.log = noop
-  console.warn = noop
-  Sentry.init({
-    dsn: 'https://b8304e9d588a477db619fbb026f31549@sentry.io/1329485',
-    environment: process.env.NODE_ENV
-  })
-  console.error = noop
-}
+// if (process.env.NODE_ENV !== 'development') {
+//   console.log = noop
+//   console.warn = noop
+//   Sentry.init({
+//     dsn: 'https://b8304e9d588a477db619fbb026f31549@sentry.io/1329485',
+//     environment: process.env.NODE_ENV
+//   })
+//   console.error = noop
+// }
 
 const epicMiddleware = createEpicMiddleware()
 

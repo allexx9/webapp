@@ -238,8 +238,12 @@ export const getDragoDetails = async (
     dragoId: new BigNumber(dragoDetails[0][3]).toFixed(),
     addressOwner: dragoDetails[0][4],
     addressGroup: dragoDetails[0][5],
-    sellPrice: new BigNumber(api.utils.fromWei(dragoData[2])).toFormat(4),
-    buyPrice: new BigNumber(api.utils.fromWei(dragoData[3])).toFormat(4),
+    sellPrice: new BigNumber(
+      api.utils.fromWei(Web3.utils.toBN(dragoData[2]))
+    ).toFormat(4),
+    buyPrice: new BigNumber(
+      api.utils.fromWei(Web3.utils.toBN(dragoData[3]))
+    ).toFormat(4),
     // created: dragoCreatedDate,
     totalSupply: formatCoins(new BigNumber(dragoTotalSupply), 4),
     dragoETHBalance: formatEth(dragoETH, 4),
