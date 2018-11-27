@@ -83,10 +83,16 @@ class Endpoint {
 
   connect = () => {
     this._checkWeb3()
-    const web3Wrapper = Web3Wrapper.getInstance(
-      this._network.id,
-      this._endpoint.name
-    )
+    let web3Wrapper
+    try {
+      web3Wrapper = Web3Wrapper.getInstance(
+        this._network.id,
+        this._endpoint.name
+      )
+    } catch (error) {
+      console.warn(error)
+    }
+
     let api
     if (this._checkLocal()) {
       console.log(`Endpoint: local`)
