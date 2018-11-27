@@ -257,7 +257,6 @@ export const getPoolDetailsEpic = (action$, state$) => {
         state$
       ).pipe(
         flatMap(details => {
-          console.log(details)
           let drago = action.payload.options.poolType === 'drago' ? true : false
           let options = {
             balance: true,

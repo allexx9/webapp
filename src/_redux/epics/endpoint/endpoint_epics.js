@@ -3,7 +3,7 @@
 // import { Observable } from 'rxjs';
 import * as TYPE_ from '../../actions/const'
 import { Actions } from '../../actions'
-import { DEBUGGING, INFURA, LOCAL, RIGOBLOCK } from '../../../_utils/const'
+import { DEBUGGING, INFURA } from '../../../_utils/const'
 import { Interfaces } from '../../../_utils/interfaces'
 import { Observable, defer, from, timer } from 'rxjs'
 import {
@@ -71,7 +71,10 @@ const attachInterfacePromise = async (api, endpoint) => {
 
 const attachInterface$ = (api, endpoint) => {
   return defer(() =>
-    attachInterfacePromise(api, endpoint).catch(error => error)
+    attachInterfacePromise(api, endpoint).catch(error => {
+      console.warn(error)
+      return error
+    })
   )
 }
 

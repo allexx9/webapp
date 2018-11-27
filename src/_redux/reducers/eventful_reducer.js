@@ -43,32 +43,6 @@ export function eventfulDragoReducer(
       }
 
     case TYPE_.UPDATE_SELECTED_DRAGO_DETAILS: {
-      console.log(action)
-      console.log({
-        ...state,
-        selectedDrago: {
-          ...state.selectedDrago,
-          values: {
-            ...state.selectedDrago.values,
-            ...(action.payload.values || {})
-          },
-          details: {
-            ...state.selectedDrago.details,
-            ...(action.payload.details || {})
-          },
-          transactions: [
-            ...(action.payload.transactions ||
-              [].concat(state.selectedDrago.transactions))
-          ],
-          assets: [
-            ...(action.payload.assets || [].concat(state.selectedDrago.assets))
-          ],
-          assetsCharts: {
-            ...state.selectedDrago.assetsCharts,
-            ...(action.payload.assetsCharts || {})
-          }
-        }
-      })
       return {
         ...state,
         selectedDrago: {

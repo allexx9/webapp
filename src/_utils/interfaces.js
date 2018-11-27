@@ -161,17 +161,17 @@ class Interfaces {
 
         let wrapper, poolsApi
         try {
-          // wrapper = Web3Wrapper.getInstance()
-          poolsApi = new PoolsApi(web3)
+          wrapper = Web3Wrapper.getInstance()
+          poolsApi = new PoolsApi(wrapper)
           poolsApi.contract.rigotoken.init()
         } catch (err) {
           console.warn(err)
           throw new Error(`Error on Web3Wrapper.getInstance()`)
         }
 
-        ethBalance = web3.eth.getBalance(accounts[0])
+        ethBalance = wrapper.eth.getBalance(accounts[0])
         grgBalance = poolsApi.contract.rigotoken.balanceOf(accounts[0])
-        nonce = web3.eth.getTransactionCount(accounts[0])
+        nonce = wrapper.eth.getTransactionCount(accounts[0])
 
         try {
           ethBalance = await ethBalance

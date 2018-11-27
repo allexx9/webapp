@@ -11,8 +11,7 @@ import {
   finalize,
   map,
   mergeMap,
-  retryWhen,
-  tap
+  retryWhen
 } from 'rxjs/operators'
 import { exhaustMap } from 'rxjs-compat/operator/exhaustMap'
 import { ofType } from 'redux-observable'
@@ -74,52 +73,66 @@ const getVaultsChunkedEvents$ = (api, options, state$) => {
       }
     }
 
-    poolApi.contract.vaulteventful.init().then(() => {
-      api.eth.getBlockNumber().then(async lastBlock => {
-        lastBlock = new BigNumber(lastBlock).toNumber()
-        let chunck = 100000
-        console.log(startBlock, lastBlock, chunck)
-        const chunks = await utils.blockChunks(startBlock, lastBlock, chunck)
-        chunks.map(async (chunk, key) => {
-          // Pushing chunk logs into array
-          let options = {
-            topics: [
-              poolApi.contract.vaulteventful.hexSignature.VaultCreated,
-              null,
-              null,
-              null
-            ],
-            fromBlock: chunk.fromBlock,
-            toBlock: chunk.toBlock
-          }
-          poolApi.contract.vaulteventful
-            .getAllLogs(options)
-            .then(logs => {
-              const list = [].concat(logs.map(logToEvent))
-              let result = {
-                list,
-                lastFetchRange: {
-                  chunk: {
-                    key: key,
-                    toBlock:
-                      chunk.toBlock === 'latest'
-                        ? Number(lastBlock)
-                        : Number(chunk.toBlock),
-                    fromBlock: chunk.fromBlock
-                  },
-                  startBlock: Number(startBlock),
-                  lastBlock: Number(lastBlock)
-                }
+    poolApi.contract.vaulteventful
+      .init()
+      .then(() => {
+        api.eth
+          .getBlockNumber()
+          .then(async lastBlock => {
+            lastBlock = new BigNumber(lastBlock).toNumber()
+            let chunck = 100000
+            const chunks = await utils.blockChunks(
+              startBlock,
+              lastBlock,
+              chunck
+            )
+            chunks.map(async (chunk, key) => {
+              // Pushing chunk logs into array
+              let options = {
+                topics: [
+                  poolApi.contract.vaulteventful.hexSignature.VaultCreated,
+                  null,
+                  null,
+                  null
+                ],
+                fromBlock: chunk.fromBlock,
+                toBlock: chunk.toBlock
               }
-              // console.log(result)
-              return observer.next(result)
+              poolApi.contract.vaulteventful
+                .getAllLogs(options)
+                .then(logs => {
+                  const list = [].concat(logs.map(logToEvent))
+                  let result = {
+                    list,
+                    lastFetchRange: {
+                      chunk: {
+                        key: key,
+                        toBlock:
+                          chunk.toBlock === 'latest'
+                            ? Number(lastBlock)
+                            : Number(chunk.toBlock),
+                        fromBlock: chunk.fromBlock
+                      },
+                      startBlock: Number(startBlock),
+                      lastBlock: Number(lastBlock)
+                    }
+                  }
+                  return observer.next(result)
+                })
+                .catch(error => {
+                  return observer.error(error)
+                })
             })
-            .catch(error => {
-              return observer.error(error)
-            })
-        })
+          })
+          .catch(error => {
+            console.warn(error)
+            return observer.error(error)
+          })
       })
-    })
+      .catch(error => {
+        console.warn(error)
+        return observer.error(error)
+      })
   })
 }
 
@@ -172,52 +185,69 @@ const getDragosChunkedEvents$ = (api, options, state$) => {
       }
     }
 
-    poolApi.contract.dragoeventful.init().then(() => {
-      api.eth.getBlockNumber().then(async lastBlock => {
-        lastBlock = new BigNumber(lastBlock).toNumber()
-        let chunck = 100000
-        // console.log(startBlock, lastBlock, chunck)
-        const chunks = await utils.blockChunks(startBlock, lastBlock, chunck)
-        chunks.map(async (chunk, key) => {
-          // Pushing chunk logs into array
-          let options = {
-            topics: [
-              poolApi.contract.dragoeventful.hexSignature.DragoCreated,
-              null,
-              null,
-              null
-            ],
-            fromBlock: chunk.fromBlock,
-            toBlock: chunk.toBlock
-          }
-          poolApi.contract.dragoeventful
-            .getAllLogs(options)
-            .then(logs => {
-              const list = [].concat(logs.map(logToEvent))
-              let result = {
-                list,
-                lastFetchRange: {
-                  chunk: {
-                    key: key,
-                    toBlock:
-                      chunk.toBlock === 'latest'
-                        ? Number(lastBlock)
-                        : Number(chunk.toBlock),
-                    fromBlock: chunk.fromBlock
-                  },
-                  startBlock: Number(startBlock),
-                  lastBlock: Number(lastBlock)
-                }
+    poolApi.contract.dragoeventful
+      .init()
+      .then(() => {
+        api.eth
+          .getBlockNumber()
+          .then(async lastBlock => {
+            lastBlock = new BigNumber(lastBlock).toNumber()
+            let chunck = 100000
+            // console.log(startBlock, lastBlock, chunck)
+            const chunks = await utils.blockChunks(
+              startBlock,
+              lastBlock,
+              chunck
+            )
+            chunks.map(async (chunk, key) => {
+              // Pushing chunk logs into array
+              let options = {
+                topics: [
+                  poolApi.contract.dragoeventful.hexSignature.DragoCreated,
+                  null,
+                  null,
+                  null
+                ],
+                fromBlock: chunk.fromBlock,
+                toBlock: chunk.toBlock
               }
-              // console.log(result)
-              return observer.next(result)
+              poolApi.contract.dragoeventful
+                .getAllLogs(options)
+                .then(logs => {
+                  const list = [].concat(logs.map(logToEvent))
+                  let result = {
+                    list,
+                    lastFetchRange: {
+                      chunk: {
+                        key: key,
+                        toBlock:
+                          chunk.toBlock === 'latest'
+                            ? Number(lastBlock)
+                            : Number(chunk.toBlock),
+                        fromBlock: chunk.fromBlock
+                      },
+                      startBlock: Number(startBlock),
+                      lastBlock: Number(lastBlock)
+                    }
+                  }
+                  // console.log(result)
+                  return observer.next(result)
+                })
+                .catch(error => {
+                  console.warn(error)
+                  return observer.error(error)
+                })
             })
-            .catch(error => {
-              return observer.error(error)
-            })
-        })
+          })
+          .catch(error => {
+            console.warn(error)
+            return observer.error(error)
+          })
       })
-    })
+      .catch(error => {
+        console.warn(error)
+        return observer.error(error)
+      })
   })
 }
 
@@ -280,10 +310,6 @@ const getPoolTransactions$ = (api, dragoAddress, accounts, options) => {
 export const getAccountsTransactionsEpic = (action$, state$) => {
   const retryStrategy = error$ =>
     error$.pipe(
-      tap(err => {
-        console.error(err.message)
-        console.info(`Retrying getAccountsTransactionsEpic in: 2000 ms.`)
-      }),
       exhaustMap(err => err),
       delay(2000)
     )
@@ -309,16 +335,6 @@ export const getAccountsTransactionsEpic = (action$, state$) => {
 
   return action$.pipe(
     ofType(TYPE_.GET_ACCOUNTS_TRANSACTIONS),
-    tap(results => {
-      // console.log(results)
-      return results
-    }),
-
-    // first(),
-    tap(results => {
-      // console.log(results)
-      return results
-    }),
     mergeMap(action => {
       return getPoolTransactions$(
         action.payload.api,
@@ -326,10 +342,6 @@ export const getAccountsTransactionsEpic = (action$, state$) => {
         action.payload.accounts,
         action.payload.options
       ).pipe(
-        tap(results => {
-          console.log(results)
-          return results
-        }),
         map(results => {
           if (action.payload.options.drago) {
             if (!action.payload.options.trader) {
@@ -349,27 +361,17 @@ export const getAccountsTransactionsEpic = (action$, state$) => {
             // return DEBUGGING.DUMB_ACTION
           }
         }),
-        // retryWhen(retryStrategy)
         retryWhen(error => {
-          console.log('getAccountsTransactionsEpic error')
+          console.warn('getAccountsTransactionsEpic error')
           let scalingDuration = 10000
           return error.pipe(
-            // buffer(isNodeConnected$),
-            // first(),
             mergeMap((error, i) => {
-              console.log(error)
+              console.warn(error)
               return timer(scalingDuration)
             }),
             finalize(() => console.log('We are done!'))
           )
         })
-        // catchError(error => {
-        //   console.warn(error)
-        //   return Observable.of({
-        //     type: TYPE_.QUEUE_ERROR_NOTIFICATION,
-        //     payload: 'Error fetching account transactions.'
-        //   })
-        // })
       )
     })
   )
@@ -389,9 +391,6 @@ export const getPoolTransactionsEpic = action$ =>
         action.payload.accounts,
         action.payload.options
       ).pipe(
-        tap(results => {
-          return results
-        }),
         map(results => {
           if (action.payload.options.drago) {
             return Actions.drago.updateSelectedDrago({
@@ -402,7 +401,6 @@ export const getPoolTransactionsEpic = action$ =>
               transactions: results
             })
           }
-          // return DEBUGGING.DUMB_ACTION
         }),
         catchError(error => {
           console.warn(error)
