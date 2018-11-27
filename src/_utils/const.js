@@ -148,9 +148,9 @@ export const DEFAULT_ENDPOINT = 'infura'
 // Please refert to the following link for network IDs
 // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md
 // kovan = 42
-export const DEFAULT_NETWORK_NAME = ROPSTEN
+export const DEFAULT_NETWORK_NAME = MAINNET
 export const DEFAULT_NETWORK_ID = ROPSTEN_ID
-export const DEFAULT_ETHERSCAN = 'https://ropsten.etherscan.io/'
+export const DEFAULT_ETHERSCAN = 'https://etherscan.io/'
 
 export const NETWORK_OK = 'networkOk'
 export const NETWORK_WARNING = 'networkWarning'
