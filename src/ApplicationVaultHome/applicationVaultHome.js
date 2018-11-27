@@ -5,7 +5,6 @@ import { connect } from 'react-redux'
 import ApplicationVaultManager from './ApplicationVaultManager'
 import ApplicationVaultTrader from './ApplicationVaultTrader'
 import ElementBottomStatusBar from '../Elements/elementBottomStatusBar'
-import ElementNotificationsDrawer from '../Elements/elementNotificationsDrawer'
 import LeftSideDrawerVaults from '../Elements/leftSideDrawerVaults'
 import Loading from '../_atomic/atoms/loading'
 import PropTypes from 'prop-types'
@@ -32,9 +31,7 @@ class ApplicationVaultHome extends Component {
   static propTypes = {
     location: PropTypes.object.isRequired,
     endpoint: PropTypes.object.isRequired,
-    handleToggleNotifications: PropTypes.func.isRequired,
-    user: PropTypes.object.isRequired,
-    notificationsOpen: PropTypes.bool.isRequired
+    user: PropTypes.object.isRequired
   }
 
   state = {}
@@ -57,12 +54,6 @@ class ApplicationVaultHome extends Component {
     }
     return stateUpdate || propsUpdate
   }
-
-  UNSAFE_componentWillMount() {}
-
-  componentDidMount() {}
-
-  componentWillUnmount() {}
 
   UNSAFE_componentWillUpdate() {
     // Storing the active document, so we can preserve focus in forms.
@@ -88,13 +79,7 @@ class ApplicationVaultHome extends Component {
   }
 
   render() {
-    const {
-      user,
-      location,
-      handleToggleNotifications,
-      notificationsOpen,
-      endpoint
-    } = this.props
+    const { user, location, endpoint } = this.props
     const openWalletSetup =
       this.props.endpoint.isMetaMaskLocked ||
       !this.props.endpoint.isMetaMaskNetworkCorrect
@@ -134,16 +119,6 @@ class ApplicationVaultHome extends Component {
               </Col>
             </Row>
           )}
-        <Row>
-          <Col xs={12}>
-            {notificationsOpen ? (
-              <ElementNotificationsDrawer
-                handleToggleNotifications={handleToggleNotifications}
-                notificationsOpen={notificationsOpen}
-              />
-            ) : null}
-          </Col>
-        </Row>
         <ElementBottomStatusBar
           blockNumber={endpoint.prevBlockNumber}
           networkName={endpoint.networkInfo.name}

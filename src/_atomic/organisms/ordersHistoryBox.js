@@ -1,10 +1,10 @@
 import { Actions } from '../../_redux/actions'
-import { Col, Row } from 'react-flexbox-grid'
+import { Col, Grid, Row } from 'react-flexbox-grid'
 import { cancelOrderFromRelayEFX } from '../../_utils/exchange'
-import {
-  cancelOrderOnExchangeViaProxy
-  // softCancelOrderFromRelayERCdEX
-} from '../../_utils/exchange'
+// import {
+//   cancelOrderOnExchangeViaProxy,
+//   softCancelOrderFromRelayERCdEX
+// } from '../../_utils/exchange'
 import { connect } from 'react-redux'
 import { sha3_512 } from 'js-sha3'
 import BoxTitle from '../atoms/boxTitle'
@@ -15,13 +15,10 @@ import React, { Component } from 'react'
 import SectionTitleExchange from '../atoms/sectionTitleExchange'
 import TableOpenOrders from '../molecules/tableOpenOrders'
 import TableOrdersHistory from '../molecules/tableOrdersHistory'
+import TableTradesHistory from '../molecules/tableTradesHistory'
 import serializeError from 'serialize-error'
 import styles from './ordersHistoryBox.module.css'
 import utils from '../../_utils/utils'
-
-const paperStyle = {
-  padding: '10px'
-}
 
 function mapStateToProps(state) {
   return state
@@ -29,7 +26,6 @@ function mapStateToProps(state) {
 
 class OrdersHistoryBox extends Component {
   static propTypes = {
-    fundOrders: PropTypes.object.isRequired,
     exchange: PropTypes.object.isRequired,
     endpoint: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
@@ -83,7 +79,7 @@ class OrdersHistoryBox extends Component {
     try {
       console.log(order.order.id)
       const sig = await utils.sign(
-        parseInt(order.order.id).toString(16),
+        parseInt(order.order.id, 10).toString(16),
         this.props.exchange.walletAddress
       )
       console.log(sig)
@@ -120,60 +116,86 @@ class OrdersHistoryBox extends Component {
   }
 
   render() {
+    const { ui, fundOrders, tradesHistory } = this.props.exchange
+    const { networkInfo } = this.props.endpoint
+    const paperStyle = {
+      padding: '5px',
+      display: ui.panels.ordersHistoryBox.expanded ? 'inline-block' : 'none'
+    }
     return (
       <Row>
         <Col xs={12}>
           <Row className={styles.sectionTitle}>
             <Col xs={12}>
-              <BoxTitle titleText={'MY ORDERS'} />
+              <BoxTitle titleText={'MY ORDERS'} boxName={'ordersHistoryBox'} />
               <Paper style={paperStyle} zDepth={1}>
-                <Row>
-                  <Col xs={12}>
-                    <div className={styles.section}>
-                      <Row>
-                        {' '}
-                        <Col xs={12}>
-                          <SectionTitleExchange titleText="OPEN ORDERS" />
-                        </Col>
-                        <Col xs={12}>
-                          <ElementListWrapper
-                            list={this.props.fundOrders.open}
-                            autoLoading={false}
-                            onCancelOrder={this.onCancelOrder}
-                            pagination={{
-                              display: 10,
-                              number: 1
-                            }}
-                          >
-                            <TableOpenOrders />
-                          </ElementListWrapper>
-                        </Col>
-                      </Row>
-                    </div>
-                  </Col>
-                  <Col xs={12}>
-                    <div className={styles.section}>
-                      <Row>
-                        <Col xs={12}>
-                          <SectionTitleExchange titleText="ORDER HISTORY" />
-                        </Col>
-                        <Col xs={12}>
-                          <ElementListWrapper
-                            list={this.props.fundOrders.history}
-                            autoLoading={false}
-                            onCancelOrder={this.onCancelOrder}
-                            pagination={{
-                              display: 10,
-                              number: 1
-                            }}
-                          >
-                            <TableOrdersHistory />
-                          </ElementListWrapper>
-                        </Col>
-                      </Row>
-                    </div>
-                  </Col>
-                </Row>
+                <Grid fluid>
+                  <Row>
+                    <Col xs={8}>
+                      <div className={styles.section}>
+                        <Row>
+                          <Col xs={12} className={styles.title}>
+                            <SectionTitleExchange titleText="OPEN ORDERS" />
+                          </Col>
+                          <Col xs={12}>
+                            <ElementListWrapper
+                              list={fundOrders.open}
+                              autoLoading={false}
+                              onCancelOrder={this.onCancelOrder}
+                              pagination={{
+                                display: 10,
+                                number: 1
+                              }}
+                            >
+                              <TableOpenOrders />
+                            </ElementListWrapper>
+                          </Col>
+
+                          <Col xs={12} className={styles.title}>
+                            <SectionTitleExchange titleText="ORDER HISTORY" />
+                          </Col>
+                          <Col xs={12}>
+                            <ElementListWrapper
+                              list={fundOrders.history}
+                              autoLoading={false}
+                              onCancelOrder={this.onCancelOrder}
+                              pagination={{
+                                display: 5,
+                                number: 1
+                              }}
+                            >
+                              <TableOrdersHistory />
+                            </ElementListWrapper>
+                          </Col>
+                        </Row>
+                      </div>
+                    </Col>
+                    <Col xs={4}>
+                      <div className={styles.sectionTrades}>
+                        <Row>
+                          <Col xs={12} className={styles.title}>
+                            <SectionTitleExchange titleText="TRADES HISTORY" />
+                          </Col>
+                          <Col xs={12}>
+                            <ElementListWrapper
+                              list={tradesHistory}
+                              autoLoading={false}
+                              onCancelOrder={this.onCancelOrder}
+                              pagination={{
+                                display: 10,
+                                number: 1
+                              }}
+                            >
+                              <TableTradesHistory
+                                networkName={networkInfo.name}
+                              />
+                            </ElementListWrapper>
+                          </Col>
+                        </Row>
+                      </div>
+                    </Col>
+                  </Row>
+                </Grid>
               </Paper>
             </Col>
           </Row>

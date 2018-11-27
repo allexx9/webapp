@@ -1,8 +1,54 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
-
 import * as TYPE_ from './const'
+import {
+  connectRelay,
+  createOrder,
+  getRelayConfig,
+  updateOrder,
+  updateUiPanelProperties
+} from './exchange'
 
 const exchange = {
+  connectRelay,
+  getRelayConfig,
+  createOrder,
+  updateOrder,
+  updateTradesHistory: payload => {
+    return {
+      type: TYPE_.TRADES_HISTORY_UPDATE,
+      payload: payload
+    }
+  },
+  resetTradesHistory: payload => {
+    return {
+      type: TYPE_.TRADES_HISTORY_RESET,
+      payload: payload
+    }
+  },
+  updateUiPanelProperties,
+  updateSelectedFund: payload => {
+    return {
+      type: TYPE_.UPDATE_SELECTED_FUND,
+      payload
+    }
+  },
+  monitorEventsStart: (fund, tokens, exchange, networkInfo) => {
+    return {
+      type: TYPE_.MONITOR_EXCHANGE_EVENTS_START,
+      payload: { fund, tokens, exchange, networkInfo }
+    }
+  },
+  monitorEventsStop: exchange => {
+    return {
+      type: TYPE_.MONITOR_EXCHANGE_EVENTS_STOP,
+      payload: exchange
+    }
+  },
+  cancelSelectedOrder: () => {
+    return {
+      type: TYPE_.ORDER_CANCEL
+    }
+  },
   getAccountOrdersStart: (relay, networkId, account, baseToken, quoteToken) => {
     const payload = {
       relay,
@@ -23,7 +69,7 @@ const exchange = {
       payload: payload
     }
   },
-  fetchCandleDataSingle: (
+  fetchCandleDataSingleStart: (
     relay,
     networkId,
     baseToken,
@@ -38,8 +84,14 @@ const exchange = {
       startDate
     }
     return {
-      type: TYPE_.FETCH_CANDLES_DATA_SINGLE,
+      type: TYPE_.FETCH_CANDLES_DATA_SINGLE_START,
       payload: payload
+    }
+  },
+  fetchCandleDataSingleStop: () => {
+    return {
+      type: TYPE_.FETCH_CANDLES_DATA_SINGLE_STOP,
+      payload: ''
     }
   },
   // Starts collecting chart data for Drago details pages

@@ -1,11 +1,27 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
+// import * as ACTION_ from '../actions/exchange'
 import * as TYPE_ from '../actions/const'
+import { ordersReducer, uiReducer } from './exchange'
 import BigNumber from 'bignumber.js'
 import initialState from './initialState'
 
 function exchangeReducer(state = initialState.exchange, action) {
   switch (action.type) {
+    case TYPE_.TRADES_HISTORY_UPDATE: {
+      return {
+        ...state,
+        tradesHistory: [...action.payload, ...state.tradesHistory]
+      }
+    }
+
+    case TYPE_.TRADES_HISTORY_RESET: {
+      return {
+        ...state,
+        tradesHistory: []
+      }
+    }
+
     case TYPE_.UPDATE_AVAILABLE_FUNDS:
       return {
         ...state,
@@ -96,14 +112,6 @@ function exchangeReducer(state = initialState.exchange, action) {
         selectedExchange: { ...state.selectedExchange, ...action.payload }
       }
 
-    case TYPE_.UPDATE_SELECTED_ORDER:
-      let orderDetails = action.payload
-      let selectedOrder = { ...state.selectedOrder, ...orderDetails }
-      return {
-        ...state,
-        selectedOrder: selectedOrder
-      }
-
     case TYPE_.UPDATE_TRADE_TOKENS_PAIR:
       return {
         ...state,
@@ -132,12 +140,6 @@ function exchangeReducer(state = initialState.exchange, action) {
       return {
         ...state,
         walletAddress: action.payload
-      }
-
-    case TYPE_.CANCEL_SELECTED_ORDER:
-      return {
-        ...state,
-        selectedOrder: initialState.exchange.selectedOrder
       }
 
     case TYPE_.SET_ORDERBOOK_AGGREGATE_ORDERS:
@@ -196,9 +198,25 @@ function exchangeReducer(state = initialState.exchange, action) {
         }
       }
 
-    default:
-      return state
+    default: {
+      const pipe = (...functions) => (state, action) => {
+        return functions.reduce((currentValue, currentFunction) => {
+          return currentFunction(currentValue, action)
+        }, state)
+      }
+      const pipedActions = pipe(
+        ordersReducer,
+        uiReducer
+      )(state, action)
+      return pipedActions
+
+      // return state
+    }
   }
 }
+
+// export default {
+//   exchange
+// }
 
 export default exchangeReducer

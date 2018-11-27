@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
-import styles from './blokiesIcon.module.css'
 
 export default class BlokiesIcon extends Component {
   constructor(props) {
@@ -154,17 +153,21 @@ export default class BlokiesIcon extends Component {
       bgcolor,
       spotcolor
     )
-
     return canvas
   }
 
   render() {
+    const style = {
+      borderRadius: '8px',
+      boxShadow:
+        'rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px'
+    }
     return (
       <canvas
         ref={identicon => {
           this.identicon = identicon
         }}
-        className={styles.identicon}
+        style={{ ...style, ...this.props.style }}
       />
     )
   }
@@ -176,7 +179,8 @@ BlokiesIcon.propTypes = {
   scale: PropTypes.number,
   color: PropTypes.string,
   bgColor: PropTypes.string,
-  spotColor: PropTypes.string
+  spotColor: PropTypes.string,
+  style: PropTypes.object
 }
 
 BlokiesIcon.defaultProps = {
@@ -185,5 +189,6 @@ BlokiesIcon.defaultProps = {
   scale: 3,
   color: '',
   bgColor: '',
-  spotColor: ''
+  spotColor: '',
+  style: {}
 }

@@ -1,0 +1,14 @@
+.drawer {
+  /* margin-right: 16px !important; */
+  /* margin-left: 16px !important; */
+  width: 100% !important;
+  position: absolute !important;
+  /* left: 16px !important; */
+}
+
+.drawerContainer {
+  right: 16px;
+  left: 16px;
+  position: absolute;
+  top: 55px;
+}

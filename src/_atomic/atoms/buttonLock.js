@@ -5,7 +5,7 @@ import React, { Component } from 'react'
 
 class ButtonLock extends Component {
   static propTypes = {
-    onLockTocken: PropTypes.func.isRequired,
+    onLockToken: PropTypes.func.isRequired,
     buttonAction: PropTypes.string.isRequired,
     disabled: PropTypes.bool.isRequired
   }
@@ -14,8 +14,8 @@ class ButtonLock extends Component {
     disabled: true
   }
 
-  onLockTocken = event => {
-    this.props.onLockTocken(event)
+  onLockToken = event => {
+    this.props.onLockToken(event)
   }
 
   render() {
@@ -40,7 +40,7 @@ class ButtonLock extends Component {
           primary={true}
           label={this.props.buttonAction}
           labelStyle={labelStyle}
-          onClick={() => this.onLockTocken(this.props.buttonAction)}
+          onClick={() => this.onLockToken(this.props.buttonAction)}
           style={buttonBuyStyle}
           hoverColor={Colors.lightBlue50}
           disabled={this.props.disabled}

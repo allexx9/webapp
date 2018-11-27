@@ -3,4 +3,8 @@
   text-align: center;
   height: 25px;
   padding-top: 2px;
+  border-top-left-radius: 2px !important;
+  border-top-right-radius: 2px !important;
+  border-bottom-right-radius: 0px !important;
+  border-bottom-left-radius: 0px !important;
 }

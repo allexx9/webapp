@@ -131,7 +131,7 @@ class ElementFundCreateAction extends React.Component {
     let poolApi = null
     // Initializing transaction variables
     const authMsg = 'You deployed the fund ' + dragoSymbol + ' | ' + dragoName
-    const transactionId = api.util.sha3(new Date() + dragoSymbol)
+    const transactionId = api.utils.sha3(new Date() + dragoSymbol)
     let transactionDetails = {
       status:
         this.state.account.source === 'MetaMask' ? 'pending' : 'authorization',
@@ -183,10 +183,10 @@ class ElementFundCreateAction extends React.Component {
               )
             )
           }
-          this.setState({
-            sending: false,
-            complete: true
-          })
+          // this.setState({
+          //   sending: false,
+          //   complete: true
+          // })
         })
         .catch(error => {
           console.log(error)

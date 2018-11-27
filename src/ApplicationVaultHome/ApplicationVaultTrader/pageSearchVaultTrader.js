@@ -5,7 +5,7 @@ import { withRouter } from 'react-router-dom'
 import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
 import ElementListFunds from '../Elements/elementListVaults'
 import ElementListWrapper from '../../Elements/elementListWrapper'
-import FilterFunds from '../../Elements/elementFilterFunds'
+import FilterPoolsField from '../../_atomic/atoms/filterPoolsField'
 import LinearProgress from 'material-ui/LinearProgress'
 import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types'
@@ -138,7 +138,7 @@ class PageSearchVaultTrader extends Component {
                   <Row className={styles.filterBox}>
                     <Col xs={12}>
                       <Paper style={detailsBox} zDepth={1}>
-                        <FilterFunds filter={this.filter} />
+                        <FilterPoolsField filter={this.filter} />
                       </Paper>
                     </Col>
                     <Col xs={12}>

@@ -1,5 +1,11 @@
 export const ERCdEX = 'ERCdEX'
 export const Ethfinex = 'Ethfinex'
+export const ETH = 'ETH'
+export const GRG = 'GRG'
+export const ZRX = 'ZRX'
+export const GNT = 'GNT'
+export const USDT = 'USDT'
+export const WETH = 'WETH'
 
 export const MOCK_ERC20_TOKENS = {
   kovan: {
@@ -10,7 +16,8 @@ export const MOCK_ERC20_TOKENS = {
       },
       address: '0xd0a1e359811322d97991e03f863a0c30c2cf029c',
       decimals: 18,
-      name: 'Wrapped Ether'
+      name: 'Wrapped Ether',
+      wrappers: {}
     },
     ZRX: {
       symbol: 'ZRX',
@@ -19,7 +26,8 @@ export const MOCK_ERC20_TOKENS = {
       },
       address: '0x6ff6c0ff1d68b964901f986d4c9fa3ac68346570',
       decimals: 18,
-      name: '0x Protocol Token'
+      name: '0x Protocol Token',
+      wrappers: {}
     },
     GNT: {
       symbol: 'GNT',
@@ -28,7 +36,8 @@ export const MOCK_ERC20_TOKENS = {
       },
       address: '0xef7fff64389b814a946f3e92105513705ca6b990',
       decimals: 18,
-      name: 'Golem Network Token'
+      name: 'Golem Network Token',
+      wrappers: {}
     },
     MKR: {
       symbol: 'MKR',
@@ -37,7 +46,8 @@ export const MOCK_ERC20_TOKENS = {
       },
       address: '0x1dad4783cf3fe3085c1426157ab175a6119a04ba',
       decimals: 18,
-      name: 'MakerDAO'
+      name: 'MakerDAO',
+      wrappers: {}
     },
     USDT: {
       symbol: 'USDT',
@@ -46,7 +56,8 @@ export const MOCK_ERC20_TOKENS = {
       },
       address: '0x3487A04103859A6d95ba0bAFdCf1Ca521490176E',
       decimals: 18,
-      name: 'Tether USD'
+      name: 'Tether USD',
+      wrappers: {}
     },
     GRG: {
       symbol: 'GRG',
@@ -56,7 +67,8 @@ export const MOCK_ERC20_TOKENS = {
       faucetAddress: '0x22974713439f6b74a1ea247ce6d42b285d12c8e0',
       address: '0x9F121AFBc98A7a133fbb31fE975205f39e8f08D2',
       decimals: 6,
-      name: 'GRG Token'
+      name: 'GRG Token',
+      wrappers: {}
     }
   },
   mainnet: {
@@ -69,14 +81,16 @@ export const MOCK_ERC20_TOKENS = {
       },
       address: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
       decimals: 18,
-      name: 'Wrapped Ether 0x'
+      name: 'Wrapped Ether 0x',
+      wrappers: {}
     },
     ETHW: {
       symbol: 'ETHW',
       isOldERC20: false,
       address: '0xaa7427d8f17d87a28f5e1ba3adbb270badbe1011',
       decimals: 18,
-      name: 'Wrapped Ether EFX'
+      name: 'Wrapped Ether EFX',
+      wrappers: {}
     },
     FUN: {
       isMock: true,
@@ -182,7 +196,8 @@ export const MOCK_ERC20_TOKENS = {
       },
       address: '0xa74476443119A942dE498590Fe1f2454d7D4aC0d',
       decimals: 18,
-      name: 'Golem Network Token'
+      name: 'Golem Network Token',
+      wrappers: {}
     },
     MKR: {
       isMock: false,
@@ -193,7 +208,8 @@ export const MOCK_ERC20_TOKENS = {
       },
       address: '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2',
       decimals: 18,
-      name: 'MakerDAO'
+      name: 'MakerDAO',
+      wrappers: {}
     },
     USDT: {
       isMock: true,
@@ -221,9 +237,10 @@ export const MOCK_ERC20_TOKENS = {
       symbolTicker: {
         Ethfinex: 'GRG'
       },
-      address: '0xd56b064c185b8e057a9ff3cf022323276441f8df',
+      address: '0x4fbb350052bca5417566f188eb2ebce5b19bc964',
       decimals: 18,
-      name: 'GRG Token'
+      name: 'GRG Token',
+      wrappers: {}
     }
   },
   ropsten: {
@@ -235,14 +252,16 @@ export const MOCK_ERC20_TOKENS = {
       },
       address: '0xc778417e063141139fce010982780140aa0cd5ab',
       decimals: 18,
-      name: 'Wrapped Ether 0x'
+      name: 'Wrapped Ether 0x',
+      wrappers: {}
     },
     ETHW: {
       isMock: true,
       symbol: 'ETHW',
-      address: '0x965808e7F815CfffD4c018ef2Ba4C5A65EBa087e',
+      address: '0x06da2eb72279c1cec53c251bbff4a06fbfb93a5b',
       decimals: 18,
-      name: 'Wrapped Ether EFX'
+      name: 'Wrapped Ether EFX',
+      wrappers: {}
     },
     ETH: {
       isMock: true,
@@ -258,7 +277,7 @@ export const MOCK_ERC20_TOKENS = {
         Ethfinex: {
           symbol: 'ETHW',
           decimals: 18,
-          address: '0x965808e7F815CfffD4c018ef2Ba4C5A65EBa087e',
+          address: '0x06da2eb72279c1cec53c251bbff4a06fbfb93a5b',
           name: 'ETH Wrapper'
         }
       }
@@ -277,7 +296,7 @@ export const MOCK_ERC20_TOKENS = {
         Ethfinex: {
           symbol: 'USDTW',
           decimals: 6,
-          address: '0x83E42e6d1ac009285376340ef64BaC1C7d106C89',
+          address: '0x84442a4518126ed25a548fe3392f6021e3ccd5bb',
           name: 'USDT Wrapper'
         }
       }
@@ -314,7 +333,8 @@ export const ERC20_TOKENS = {
       },
       address: '0xd0a1e359811322d97991e03f863a0c30c2cf029c',
       decimals: 18,
-      name: 'Wrapped Ether'
+      name: 'Wrapped Ether',
+      wrappers: {}
     },
     ZRX: {
       symbol: 'ZRX',
@@ -323,7 +343,8 @@ export const ERC20_TOKENS = {
       },
       address: '0x6ff6c0ff1d68b964901f986d4c9fa3ac68346570',
       decimals: 18,
-      name: '0x Protocol Token'
+      name: '0x Protocol Token',
+      wrappers: {}
     },
     GNT: {
       symbol: 'GNT',
@@ -332,7 +353,8 @@ export const ERC20_TOKENS = {
       },
       address: '0xef7fff64389b814a946f3e92105513705ca6b990',
       decimals: 18,
-      name: 'Golem Network Token'
+      name: 'Golem Network Token',
+      wrappers: {}
     },
     MKR: {
       symbol: 'MKR',
@@ -341,7 +363,8 @@ export const ERC20_TOKENS = {
       },
       address: '0x1dad4783cf3fe3085c1426157ab175a6119a04ba',
       decimals: 18,
-      name: 'MakerDAO'
+      name: 'MakerDAO',
+      wrappers: {}
     },
     USDT: {
       symbol: 'USDT',
@@ -350,7 +373,8 @@ export const ERC20_TOKENS = {
       },
       address: '0x3487A04103859A6d95ba0bAFdCf1Ca521490176E',
       decimals: 18,
-      name: 'Tether USD'
+      name: 'Tether USD',
+      wrappers: {}
     },
     GRG: {
       symbol: 'GRG',
@@ -360,7 +384,8 @@ export const ERC20_TOKENS = {
       faucetAddress: '0x22974713439f6b74a1ea247ce6d42b285d12c8e0',
       address: '0x9F121AFBc98A7a133fbb31fE975205f39e8f08D2',
       decimals: 6,
-      name: 'GRG Token'
+      name: 'GRG Token',
+      wrappers: {}
     }
   },
   mainnet: {
@@ -372,7 +397,8 @@ export const ERC20_TOKENS = {
       },
       address: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
       decimals: 18,
-      name: 'Wrapped Ether 0x'
+      name: 'Wrapped Ether 0x',
+      wrappers: {}
     },
     ZRX: {
       symbol: 'ZRX',
@@ -397,7 +423,8 @@ export const ERC20_TOKENS = {
       isOldERC20: false,
       address: '0xaa7427d8f17d87a28f5e1ba3adbb270badbe1011',
       decimals: 18,
-      name: 'Wrapped Ether EFX'
+      name: 'Wrapped Ether EFX',
+      wrappers: {}
     },
     ETH: {
       symbol: 'ETH',
@@ -425,7 +452,8 @@ export const ERC20_TOKENS = {
       },
       address: '0xa74476443119A942dE498590Fe1f2454d7D4aC0d',
       decimals: 18,
-      name: 'Golem Network Token'
+      name: 'Golem Network Token',
+      wrappers: {}
     },
     MKR: {
       symbol: 'MKR',
@@ -435,7 +463,8 @@ export const ERC20_TOKENS = {
       },
       address: '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2',
       decimals: 18,
-      name: 'MakerDAO'
+      name: 'MakerDAO',
+      wrappers: {}
     },
     USDT: {
       symbol: 'USDT',
@@ -461,9 +490,10 @@ export const ERC20_TOKENS = {
       symbolTicker: {
         Ethfinex: 'GRG'
       },
-      address: '0xd56b064c185b8e057a9ff3cf022323276441f8df',
+      address: '0x4fbb350052bca5417566f188eb2ebce5b19bc964',
       decimals: 18,
-      name: 'GRG Token'
+      name: 'GRG Token',
+      wrappers: {}
     }
   },
   ropsten: {
@@ -474,7 +504,8 @@ export const ERC20_TOKENS = {
       },
       address: '0xc778417e063141139fce010982780140aa0cd5ab',
       decimals: 18,
-      name: 'Wrapped Ether 0x'
+      name: 'Wrapped Ether 0x',
+      wrappers: {}
     },
     ZRX: {
       symbol: 'ZRX',
@@ -496,9 +527,10 @@ export const ERC20_TOKENS = {
     },
     ETHW: {
       symbol: 'ETHW',
-      address: '0x965808e7F815CfffD4c018ef2Ba4C5A65EBa087e',
+      address: '0x06da2eb72279c1cec53c251bbff4a06fbfb93a5b',
       decimals: 18,
-      name: 'Wrapped Ether EFX'
+      name: 'Wrapped Ether EFX',
+      wrappers: {}
     },
     ETH: {
       symbol: 'ETH',
@@ -513,7 +545,7 @@ export const ERC20_TOKENS = {
         Ethfinex: {
           symbol: 'ETHW',
           decimals: 18,
-          address: '0x965808e7F815CfffD4c018ef2Ba4C5A65EBa087e',
+          address: '0x06da2eb72279c1cec53c251bbff4a06fbfb93a5b',
           name: 'ETH Wrapper'
         }
       }
@@ -531,7 +563,7 @@ export const ERC20_TOKENS = {
         Ethfinex: {
           symbol: 'USDTW',
           decimals: 6,
-          address: '0x83E42e6d1ac009285376340ef64BaC1C7d106C89',
+          address: '0x84442a4518126ed25a548fe3392f6021e3ccd5bb',
           name: 'USDT Wrapper'
         }
       }
@@ -562,29 +594,29 @@ export const ERC20_TOKENS = {
 // USDT and WETH are quote tokens, meaning the tokens in which the price are expressed.
 
 export const TRADE_TOKENS_PAIRS = {
-  WETH: {
-    GNT: {
+  [WETH]: {
+    [GNT]: {
       networks: [42],
-      symbol: 'GNT',
+      symbol: GNT,
       exchanges: [ERCdEX]
     },
-    ZRX: {
+    [ZRX]: {
       networks: [42],
-      symbol: 'ZRX',
+      symbol: ZRX,
       exchanges: [ERCdEX]
     }
   },
-  USDT: {
-    ETH: {
+  [USDT]: {
+    [ETH]: {
       networks: [1, 3],
-      symbol: 'ETH',
+      symbol: ETH,
       exchanges: [Ethfinex]
     }
   },
-  ETH: {
-    GRG: {
+  [ETH]: {
+    [GRG]: {
       networks: [3],
-      symbol: 'GRG',
+      symbol: GRG,
       exchanges: [Ethfinex]
     }
   }

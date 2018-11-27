@@ -1,6 +1,4 @@
-.logoImg {
-
-}
+.logoImg {}
 
 .warningText {
   text-align: center;
@@ -28,43 +26,59 @@
   border-radius: 5px 5px 4px 4px;
   padding-right: 8px;
   right: 5px;
-
+  height: 256px;
   animation: fadein 0.5s;
-  -moz-animation: fadein 0.5s; /* Firefox */
-  -webkit-animation: fadein 0.5s; /* Safari and Chrome */
-  -o-animation: fadein 0.5s; /* Opera */
+  -moz-animation: fadein 0.5s;
+  /* Firefox */
+  -webkit-animation: fadein 0.5s;
+  /* Safari and Chrome */
+  -o-animation: fadein 0.5s;
+  /* Opera */
 }
 
 @keyframes fadein {
   from {
-      opacity:0;
+    opacity: 0;
   }
+
   to {
-      opacity:1;
+    opacity: 1;
   }
 }
-@-moz-keyframes fadein { /* Firefox */
+
+@-moz-keyframes fadein {
+
+  /* Firefox */
   from {
-      opacity:0;
+    opacity: 0;
   }
+
   to {
-      opacity:1;
+    opacity: 1;
   }
 }
-@-webkit-keyframes fadein { /* Safari and Chrome */
+
+@-webkit-keyframes fadein {
+
+  /* Safari and Chrome */
   from {
-      opacity:0;
+    opacity: 0;
   }
+
   to {
-      opacity:1;
+    opacity: 1;
   }
 }
-@-o-keyframes fadein { /* Opera */
+
+@-o-keyframes fadein {
+
+  /* Opera */
   from {
-      opacity:0;
+    opacity: 0;
   }
+
   to {
-      opacity: 1;
+    opacity: 1;
   }
 }
 
@@ -72,13 +86,13 @@
   padding-bottom: 5px;
 }
 
-.sectionParagraph{
+.sectionParagraph {
   padding-bottom: 5px;
- }
+}
 
 .titleRBModal {
   /* float: left; */
-  padding: 0 !important; 
+  padding: 0 !important;
 }
 
 .titleRBHeader img {
@@ -112,7 +126,7 @@
   margin: -8px !important;
   border-radius: 2px;
   font-size: 16px !important;
-  line-height: 20px !important; 
+  line-height: 20px !important;
 }
 
 .modalHeader img {

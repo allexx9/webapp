@@ -1,9 +1,8 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-import * as Colors from 'material-ui/styles/colors'
-import ApplicationTopBar from './ApplicationTopBar'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
+import TopBarMenu from '../Elements/topBarMenu'
 
 import { Col, Grid, Row } from 'react-flexbox-grid'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
@@ -73,7 +72,7 @@ class Whoops404 extends Component {
         <Grid fluid className={styles.maincontainer}>
           <Row>
             <Col xs={12}>
-              <ApplicationTopBar
+              <TopBarMenu
                 handleTopBarSelectAccountType={
                   this.handleTopBarSelectAccountType
                 }

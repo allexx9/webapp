@@ -1,161 +1,26 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-// import { Observable } from 'rxjs';
+import * as ERRORS from '../../../_const/errors'
+import * as TYPE_ from '../../actions/const'
+import { Actions } from '../../actions/'
 import { BigNumber } from '@0xproject/utils'
 import { Observable, from, timer, zip } from 'rxjs'
 import {
-  bufferCount,
-  bufferTime,
+  auditTime,
   catchError,
-  concat,
   exhaustMap,
   filter,
   map,
   mergeMap,
-  takeUntil,
-  tap,
-  throttleTime
+  takeUntil
 } from 'rxjs/operators'
 import { ofType } from 'redux-observable'
 import CRC from 'crc-32'
+import Exchange from '../../../_utils/exchange/src'
+import ExchangeConnectorWrapper from '../../../_utils/exchangeConnector'
 import _ from 'lodash'
 import moment from 'moment'
-
-import Exchange from '../../../_utils/exchange/src'
 import utils from '../../../_utils/utils'
-
-import { Actions } from '../../actions/'
-import { Ethfinex } from '../../../_utils/const'
-
-import * as TYPE_ from '../../actions/const'
-
-import exchangeConnector, { exchanges } from '@rigoblock/exchange-connector'
-
-const customRelayAction = action => {
-  // console.log(`${Ethfinex.toUpperCase()}_${action}`)
-  return `${Ethfinex.toUpperCase()}_${action}`
-}
-
-//
-// FETCH HISTORICAL MARKET DATA FOR A SPECIFIC TRADING PAIR
-//
-
-const candlesSingleWebsocket$ = (relay, networkId, baseToken, quoteToken) => {
-  return Observable.create(observer => {
-    const baseTokenSymbol = utils.getTockenSymbolForRelay(relay.name, baseToken)
-    const quoteTokenSymbol = utils.getTockenSymbolForRelay(
-      relay.name,
-      quoteToken
-    )
-    const ethfinex = exchangeConnector(relay.name, {
-      networkId: networkId
-    })
-
-    return ethfinex.raw.ws
-      .getCandles(
-        {
-          timeframe: '1m',
-          symbols: baseTokenSymbol + quoteTokenSymbol
-        },
-        (error, msgWs) => {
-          if (error) {
-            return observer.error(error)
-          }
-          return observer.next(msgWs)
-        }
-      )
-      .then(() => {
-        // console.log(unsubscribe)
-        return () => ethfinex.ws.close()
-      })
-  })
-}
-
-const updateSingleCandles = tickerOutput => {
-  let ticker = tickerOutput
-  if (ticker[1].length !== 6 && ticker[1] !== 'hb') {
-    let candles = ticker[1].map(tick => {
-      let entry = {
-        date: new Date(tick[0]),
-        low: tick[4],
-        high: tick[3],
-        open: tick[1],
-        close: tick[2],
-        volume: tick[5],
-        epoch: tick[0]
-      }
-      return entry
-    })
-    return {
-      type: TYPE_.CHART_MARKET_DATA_INIT,
-      payload: candles.reverse()
-    }
-  }
-  if (ticker[1].length === 6 && ticker[1] !== 'hb') {
-    let candles = {
-      date: new Date(ticker[1][0]),
-      low: ticker[1][4],
-      high: ticker[1][3],
-      open: ticker[1][1],
-      close: ticker[1][2],
-      volume: ticker[1][5],
-      epoch: ticker[1][0]
-    }
-
-    return {
-      type: TYPE_.CHART_MARKET_DATA_ADD_DATAPOINT,
-      payload: candles
-    }
-  }
-  return {
-    type: TYPE_.CHART_MARKET_DATA_ADD_DATAPOINT,
-    payload: ''
-  }
-}
-
-export const getCandlesSingleDataEpic = action$ => {
-  return action$.pipe(
-    ofType(customRelayAction(TYPE_.FETCH_CANDLES_DATA_SINGLE)),
-    mergeMap(action => {
-      return Observable.concat(
-        // Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: true } }),
-        candlesSingleWebsocket$(
-          action.payload.relay,
-          action.payload.networkId,
-          action.payload.baseToken,
-          action.payload.quoteToken,
-          action.payload.startDate
-        ).pipe(
-          takeUntil(
-            action$.ofType(customRelayAction(TYPE_.RELAY_CLOSE_WEBSOCKET))
-          ),
-          filter(tick => {
-            return tick[1] !== 'hb'
-          }),
-          filter(tick => {
-            return (
-              typeof tick[1] !== 'undefined' || typeof tick[0] !== 'undefined'
-            )
-          }),
-          tap(tick => {
-            return tick
-          }),
-          map(historical => {
-            return updateSingleCandles(historical)
-          }),
-          catchError(error => {
-            console.warn(error)
-            return Observable.of({
-              type: TYPE_.QUEUE_ERROR_NOTIFICATION,
-              payload: 'Error fetching candles data.'
-            })
-          })
-        )
-        // Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: false } }),
-      )
-    })
-  )
-}
 
 //
 // CONNECTING TO WS AND GETTING BOOK UPDATES
@@ -163,21 +28,19 @@ export const getCandlesSingleDataEpic = action$ => {
 // THIS EPIC IS CALLED WHEN THE EXCHANGE IS INITALIZED
 //
 
-const reconnectingWebsocketBook$ = (
-  relay,
-  networkId,
-  baseToken,
-  quoteToken
-) => {
-  return Observable.create(observer => {
+const reconnectingWebsocketBook$ = (relay, networkId, baseToken, quoteToken) =>
+  Observable.create(observer => {
     let seq = null
 
     let pair =
-      utils.getTockenSymbolForRelay(relay.name, baseToken) +
-      utils.getTockenSymbolForRelay(relay.name, quoteToken)
-    const ethfinex = exchangeConnector(relay.name, {
-      networkId: networkId
-    })
+      utils.getTokenSymbolForRelay(relay.name, baseToken) +
+      utils.getTokenSymbolForRelay(relay.name, quoteToken)
+    const ethfinex = ExchangeConnectorWrapper.getNewInstance().getExchange(
+      relay.name,
+      {
+        networkId: networkId
+      }
+    )
     const BOOK = {
       bids: [],
       asks: [],
@@ -193,7 +56,7 @@ const reconnectingWebsocketBook$ = (
         console.log(lm.join('/'))
       }
     }
-    return ethfinex.raw.ws
+    const unsubscribePromise = ethfinex.raw.ws
       .getAggregatedOrders(
         {
           symbols: pair,
@@ -201,12 +64,12 @@ const reconnectingWebsocketBook$ = (
           frequency: 'F1',
           len: 25
         },
-        (error, msgWs) => {
-          if (error) {
-            console.warn('WebSocket order book error.')
-            return observer.error(error)
-          }
+        (err, msgWs) => {
           let msg = msgWs
+          if (err) {
+            console.warn('WebSocket order book error.')
+            return observer.error(err)
+          }
           if (!Array.isArray(msg)) {
             return
           }
@@ -237,34 +100,11 @@ const reconnectingWebsocketBook$ = (
             const cs_str = csdata.join(':')
             const cs_calc = CRC.str(cs_str)
 
-            // console.log(
-            //   '[' +
-            //     moment().format('YYYY-MM-DDTHH:mm:ss.SSS') +
-            //     '] ' +
-            //     pair +
-            //     ' | ' +
-            //     JSON.stringify([
-            //       'cs_string=' + cs_str,
-            //       'cs_calc=' + cs_calc,
-            //       'server_checksum=' + checksum
-            //     ]) +
-            //     '\n'
-            // )
             if (cs_calc !== checksum) {
               console.error('CHECKSUM_FAILED')
             }
             return
           }
-
-          // console.log(
-          //   '[' +
-          //     moment().format('YYYY-MM-DDTHH:mm:ss.SSS') +
-          //     '] ' +
-          //     pair +
-          //     ' | ' +
-          //     JSON.stringify(msg) +
-          //     '\n'
-          // )
 
           if (BOOK.mcnt === 0) {
             _.each(msg[1], function(pp) {
@@ -358,9 +198,6 @@ const reconnectingWebsocketBook$ = (
           })
 
           BOOK.mcnt++
-          // const now = moment.utc().format('YYYYMMDDHHmmss')
-          // console.log('bids', now, { bids: BOOK.bids })
-          // console.log('asks', now, { asks: BOOK.asks })
 
           checkCross(msg)
           return observer.next({
@@ -369,60 +206,61 @@ const reconnectingWebsocketBook$ = (
           })
         }
       )
-      .then(unsubscribe => {
-        console.log(unsubscribe)
-        return () => ethfinex.ws.close()
-      })
+      .catch(() => observer.error(ERRORS.ERR_EXCHANGE_WS_ORDERBOOK_FETCH))
+
+    return async () => {
+      const unsub = await unsubscribePromise
+      if (unsub) {
+        await unsub()
+      }
+      return ethfinex.raw.ws.close()
+    }
   })
-}
 
 export const initRelayWebSocketBookEpic = action$ =>
   action$.pipe(
-    ofType(customRelayAction(TYPE_.RELAY_OPEN_WEBSOCKET_BOOK)),
+    ofType(utils.customRelayAction(TYPE_.RELAY_OPEN_WEBSOCKET_BOOK)),
     mergeMap(action => {
+      const { relay, networkId, baseToken, quoteToken } = action.payload
       return reconnectingWebsocketBook$(
-        action.payload.relay,
-        action.payload.networkId,
-        action.payload.baseToken,
-        action.payload.quoteToken
+        relay,
+        networkId,
+        baseToken,
+        quoteToken
       ).pipe(
-        takeUntil(
-          action$.ofType(customRelayAction(TYPE_.RELAY_CLOSE_WEBSOCKET))
-        ),
-        throttleTime(2000),
+        auditTime(1000),
         map(payload => {
-          console.log('*** Orderbook epic update ***')
           const calculateSpread = (asksOrders, bidsOrders) => {
-            let spread = 0
-            if (bidsOrders.length !== 0 && asksOrders.length !== 0) {
+            let spread = new BigNumber(0).toFixed(6)
+            if (bidsOrders.length && asksOrders.length) {
               spread = new BigNumber(
                 asksOrders[asksOrders.length - 1].orderPrice
               )
                 .minus(new BigNumber(bidsOrders[0].orderPrice))
                 .toFixed(6)
-            } else {
-              spread = new BigNumber(0).toFixed(6)
             }
             return spread
           }
-          let asks = Object.values(payload.asks)
-            .map(element => {
-              return {
-                orderAmount: element.amount,
-                orderPrice: element.price,
-                orderCount: element.cnt
-              }
-            })
-            .reverse()
-          let bids = Object.values(payload.bids)
-            .map(element => {
-              return {
-                orderAmount: element.amount,
-                orderPrice: element.price,
-                orderCount: element.cnt
-              }
-            })
-            .reverse()
+          const asks = Object.values(payload.asks).map(element => {
+            return {
+              orderAmount: element.amount,
+              orderPrice: element.price,
+              orderCount: element.cnt
+            }
+          })
+          asks.sort(function(a, b) {
+            return b.orderPrice - a.orderPrice
+          })
+          const bids = Object.values(payload.bids).map(element => {
+            return {
+              orderAmount: element.amount,
+              orderPrice: element.price,
+              orderCount: element.cnt
+            }
+          })
+          bids.sort(function(a, b) {
+            return b.orderPrice - a.orderPrice
+          })
           const spread = calculateSpread(asks, bids)
           return {
             type: TYPE_.ORDERBOOK_INIT,
@@ -433,11 +271,14 @@ export const initRelayWebSocketBookEpic = action$ =>
             }
           }
         }),
+        takeUntil(
+          action$.ofType(utils.customRelayAction(TYPE_.RELAY_CLOSE_WEBSOCKET))
+        ),
         catchError(error => {
           console.warn(error)
           return Observable.of({
             type: TYPE_.QUEUE_ERROR_NOTIFICATION,
-            payload: 'Error connecting to order book.'
+            payload: error
           })
         })
       )
@@ -450,47 +291,37 @@ export const initRelayWebSocketBookEpic = action$ =>
 // THIS EPIC IS CALLED WHEN THE EXCHANGE IS INITALIZED
 //
 
-const reconnectingWebsocketTicker$ = (
-  relay,
-  networkId,
-  baseToken,
-  quoteToken
-) => {
-  return Observable.create(observer => {
-    const ethfinex = exchangeConnector(relay.name, {
-      networkId: networkId
-    })
-    const baseTokenSymbol = utils.getTockenSymbolForRelay(relay.name, baseToken)
-    const quoteTokenSymbol = utils.getTockenSymbolForRelay(
+const websocketTicker$ = (relay, networkId, baseToken, quoteToken) =>
+  Observable.create(observer => {
+    const ethfinex = ExchangeConnectorWrapper.getInstance().getExchange(
+      relay.name,
+      {
+        networkId
+      }
+    )
+    const baseTokenSymbol = utils.getTokenSymbolForRelay(relay.name, baseToken)
+    const quoteTokenSymbol = utils.getTokenSymbolForRelay(
       relay.name,
       quoteToken
     )
-    return ethfinex.raw.ws
-      .getTickers(
-        {
-          symbols: baseTokenSymbol + quoteTokenSymbol
-        },
-        (error, msg) => {
-          if (error) {
-            return observer.error(error)
-          } else {
-            if (Array.isArray(msg)) {
-              return observer.next(msg)
-            }
-            return observer.next('')
-          }
-        }
-      )
-      .then(unsubscribe => {
-        return () => ethfinex.ws.close()
-      })
+    const unsubscribePromise = ethfinex.raw.ws.getTickers(
+      {
+        symbols: [baseTokenSymbol + quoteTokenSymbol]
+      },
+      (err, msg) => (err ? observer.error(err) : observer.next(msg))
+    )
+    return async () => {
+      const unsub = await unsubscribePromise
+      if (unsub) {
+        return unsub()
+      }
+    }
   })
-}
 
 const updateCurrentTokenPrice = ticker => {
-  if (Array.isArray(ticker[1])) {
-    let current = {
-      price: ticker[1][6]
+  if (Array.isArray(ticker)) {
+    const current = {
+      price: ticker[6]
     }
     return {
       type: TYPE_.UPDATE_CURRENT_TOKEN_PRICE,
@@ -498,44 +329,36 @@ const updateCurrentTokenPrice = ticker => {
         current
       }
     }
-  } else {
-    return {
-      type: TYPE_.UPDATE_CURRENT_TOKEN_PRICE,
-      payload: {}
-    }
+  }
+
+  return {
+    type: TYPE_.UPDATE_CURRENT_TOKEN_PRICE,
+    payload: {}
   }
 }
 
 export const initRelayWebSocketTickerEpic = (action$, state$) =>
   action$.pipe(
-    ofType(customRelayAction(TYPE_.RELAY_OPEN_WEBSOCKET_TICKER)),
+    ofType(utils.customRelayAction(TYPE_.RELAY_OPEN_WEBSOCKET_TICKER)),
     mergeMap(action => {
-      return reconnectingWebsocketTicker$(
-        action.payload.relay,
-        action.payload.networkId,
-        action.payload.baseToken,
-        action.payload.quoteToken
-      ).pipe(
-        takeUntil(
-          action$.ofType(customRelayAction(TYPE_.RELAY_CLOSE_WEBSOCKET))
-        ),
-        bufferTime(1000),
-        filter(value => {
-          // console.log(value)
-          return value.length !== 0
+      const { relay, networkId, baseToken, quoteToken } = action.payload
+      return websocketTicker$(relay, networkId, baseToken, quoteToken).pipe(
+        auditTime(1000),
+        filter(val => val.length),
+        filter(val => {
+          return val[1] !== 'hb'
         }),
-        bufferCount(1),
         map(ticker => {
-          // console.log(customRelayAction((RELAY_MSG_FROM_WEBSOCKET)))
           const currentState = state$.value
-          const lastItem = ticker[0].pop()
-          // console.log(currentState)
-          // return [ lastItem, currentState ]
+          const lastItem = ticker.pop()
           return updateCurrentTokenPrice(
             lastItem,
             currentState.exchange.selectedTokensPair.baseToken
           )
         }),
+        takeUntil(
+          action$.ofType(utils.customRelayAction(TYPE_.RELAY_CLOSE_WEBSOCKET))
+        ),
         catchError(error => {
           console.warn(error)
           return Observable.of({
@@ -566,24 +389,33 @@ const getAccountOrdersFromRelay$ = (
   )
 }
 
-export const getAccountOrdersEpic = action$ => {
-  return action$.pipe(
-    ofType(customRelayAction(TYPE_.FETCH_ACCOUNT_ORDERS_START)),
+export const getAccountOrdersEpic = action$ =>
+  action$.pipe(
+    ofType(utils.customRelayAction(TYPE_.FETCH_ACCOUNT_ORDERS_START)),
     mergeMap(action => {
-      // console.log(customRelayAction(TYPE_.FETCH_ACCOUNT_ORDERS_START))
+      const {
+        relay,
+        networkId,
+        account,
+        quoteToken,
+        baseToken
+      } = action.payload
       return timer(0, 5000).pipe(
         takeUntil(
-          action$.ofType(customRelayAction(TYPE_.FETCH_ACCOUNT_ORDERS_STOP))
+          action$.ofType(
+            utils.customRelayAction(TYPE_.FETCH_ACCOUNT_ORDERS_STOP)
+          )
         ),
         exhaustMap(() =>
           getAccountOrdersFromRelay$(
-            action.payload.relay,
-            action.payload.networkId,
-            action.payload.account,
-            action.payload.quoteToken,
-            action.payload.baseToken
+            relay,
+            networkId,
+            account,
+            quoteToken,
+            baseToken
           ).pipe(
             map(orders => {
+              console.log(orders)
               return {
                 type: TYPE_.UPDATE_FUND_ORDERS,
                 payload: {
@@ -610,4 +442,3 @@ export const getAccountOrdersEpic = action$ => {
       )
     })
   )
-}

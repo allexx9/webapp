@@ -77,7 +77,7 @@ class DragoParity {
     return tokenInstance.balanceOf.call({}, [instance.address])
   }
 
-  getBalanceToken = tokenAddress => {
+  getPoolBalanceOnToken = tokenAddress => {
     const api = this._api
     const instance = this._instance
     const tokenInstance = api.newContract(abis.erc20, tokenAddress).instance
@@ -254,11 +254,13 @@ class DragoParity {
       throw new Error('sellPrice needs to be provided')
     }
     const api = this._api
-    console.log(api)
-    const buyPriceWei = api.util.toWei(buyPrice, 'ether')
-    const sellPriceWei = api.util.toWei(sellPrice, 'ether')
+    const block = 1
+    const hash = api.utils.fromAscii('random')
+    const data = api.utils.fromAscii('random')
+    const buyPriceWei = api.utils.toWei(buyPrice, 'ether')
+    const sellPriceWei = api.utils.toWei(sellPrice, 'ether')
     const instance = this._instance
-    const values = [sellPriceWei, buyPriceWei, null, null, null]
+    const values = [sellPriceWei, buyPriceWei, block, hash, data]
     const options = {
       from: accountAddress
     }
@@ -278,12 +280,12 @@ class DragoParity {
     return instance.totalSupply.call({}, [])
   }
 
-  getTokenBalance = tokenAddress => {
-    const api = this._api
-    const instance = this._instance
-    const erc20Instance = api.newContract(abis.erc20, tokenAddress).instance
-    return erc20Instance.balanceOf.call({}, [instance.address])
-  }
+  // getTokenBalance = tokenAddress => {
+  //   const api = this._api
+  //   const instance = this._instance
+  //   const erc20Instance = api.newContract(abis.erc20, tokenAddress).instance
+  //   return erc20Instance.balanceOf.call({}, [instance.address])
+  // }
 
   getAssets = () => {}
 }

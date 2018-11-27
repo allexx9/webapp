@@ -10,7 +10,7 @@ import { formatPrice } from '../../_utils/format'
 import ActionAssessment from 'material-ui/svg-icons/action/assessment'
 import ActionList from 'material-ui/svg-icons/action/list'
 import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
-import AssetsPieChart from '../../_atomic/atoms/assetsPieChart'
+import AssetsPieChartWrapper from '../../_atomic/atoms/assetsPieChartWrapper'
 import BigNumber from 'bignumber.js'
 import CopyContent from 'material-ui/svg-icons/content/content-copy'
 import ElementFundActions from '../Elements/elementFundActions'
@@ -34,6 +34,7 @@ import Sticky from 'react-stickynode'
 import scrollToElement from 'scroll-to-element'
 import styles from './pageFundDetailsDragoTrader.module.css'
 import utils from '../../_utils/utils'
+
 // import { Action } from '../../../node_modules/rxjs/internal/scheduler/Action';
 
 function mapStateToProps(state) {
@@ -169,7 +170,7 @@ class PageFundDetailsDragoTrader extends Component {
 
   render() {
     const {
-      endpoint: { accounts: accounts },
+      endpoint: { accounts },
       user
     } = this.props
     // const { loading } = this.state
@@ -179,6 +180,7 @@ class PageFundDetailsDragoTrader extends Component {
     const dragoValues = this.props.transactionsDrago.selectedDrago.values
     const dragoTransactionsList = this.props.transactionsDrago.selectedDrago
       .transactions
+    const assetsPrices = this.props.exchange.prices
     const tabButtons = {
       inkBarStyle: {
         margin: 'auto',
@@ -217,14 +219,9 @@ class PageFundDetailsDragoTrader extends Component {
     ]
 
     let totalAssetsValue = 0
-    let assetsValues = {}
     let tableLiquidity = [
       ['Liquidity', 'Calculating...', [<small key="dragoLiqEth">ETH</small>]],
-      [
-        'Porfolio value',
-        'Calculating...',
-        [<small key="dragoPortEth">ETH</small>]
-      ],
+      ['Porfolio value', 'N/A', [<small key="dragoPortEth">ETH</small>]],
       ['Total', 'Calculating...', [<small key="dragoPortTotEth">ETH</small>]]
     ]
 
@@ -262,11 +259,6 @@ class PageFundDetailsDragoTrader extends Component {
         formatPrice(totalAssetsValue),
         [<small key="dragoPortTotEth">ETH</small>]
       ]
-      assetsValues = utils.calculatePieChartPortfolioValue(
-        dragoAssetsList,
-        this.props.exchange.prices.current,
-        dragoDetails.dragoETHBalance
-      )
     }
 
     // Show estimated prices
@@ -274,6 +266,12 @@ class PageFundDetailsDragoTrader extends Component {
     if (dragoValues.estimatedPrice !== -1) {
       estimatedPrice = formatPrice(dragoValues.estimatedPrice)
     }
+
+    // return (
+    //   <div style={{ paddingTop: '10px' }}>
+    //     <Loading />
+    //   </div>
+    // )
 
     // Waiting until getDragoDetails returns the drago details
     if (Object.keys(dragoDetails).length === 0) {
@@ -345,6 +343,20 @@ class PageFundDetailsDragoTrader extends Component {
                       <SectionHeader titleText="SUMMARY" />
                     </Col>
                   </Row>
+                  {/* <Row>
+                    <Col xs={12} md={6}>
+                      {' '}
+                      {typeof this.props.transactionsDrago.selectedDrago
+                        .assetsCharts.USDT !== 'undefined' && (
+                        <AssetChartChartist
+                          data={
+                            this.props.transactionsDrago.selectedDrago
+                              .assetsCharts.USDT
+                          }
+                        />
+                      )}
+                    </Col>
+                  </Row> */}
                   <Row>
                     <Col xs={12} md={6}>
                       <SectionTitle titleText="DETAILS" />
@@ -453,7 +465,11 @@ class PageFundDetailsDragoTrader extends Component {
                                 />
                               </Col>
                               <Col xs={6}>
-                                <AssetsPieChart data={assetsValues} />
+                                <AssetsPieChartWrapper
+                                  poolAssetsList={dragoAssetsList}
+                                  assetsPrices={assetsPrices.current}
+                                  poolETHBalance={dragoDetails.dragoETHBalance}
+                                />
                               </Col>
                             </Row>
                           </Col>

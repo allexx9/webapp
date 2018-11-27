@@ -9,36 +9,55 @@ import moment from 'moment'
 export default class TokenLockBalance extends Component {
   static propTypes = {
     balance: PropTypes.string.isRequired,
-    lockTime: PropTypes.string.isRequired
+    lockTime: PropTypes.string.isRequired,
+    onClick: PropTypes.func,
+    isBaseToken: PropTypes.bool
   }
 
   static defaultProps = {
     balance: 0,
-    lockTime: '0'
+    lockTime: '0',
+    onClick: () => {},
+    isBaseToken: true
   }
+
+  onSetMaxAmount = () => {
+    this.props.onClick(
+      formatPrice(this.props.balance),
+      this.props.isBaseToken,
+      '',
+      { relock: true }
+    )
+  }
+
   render() {
     const now = Math.floor(Date.now() / 1000)
-    console.log(`Now: ${moment().format('MMMM Do YYYY, h:mm:ss a')}`)
-    console.log(
-      `Exp: ${moment
-        .unix(this.props.lockTime)
-        .format('MMMM Do YYYY, h:mm:ss a')}`
-    )
-    console.log(now, Number(this.props.lockTime))
-    now > Number(this.props.lockTime)
-      ? console.log('red')
-      : console.log('green')
+    // console.log(`Now: ${moment().format('MMMM Do YYYY, h:mm:ss a')}`)
+    // console.log(
+    //   `Exp: ${moment
+    //     .unix(this.props.lockTime)
+    //     .format('MMMM Do YYYY, h:mm:ss a')}`
+    // )
+    // console.log(now, Number(this.props.lockTime))
+    // now > Number(this.props.lockTime)
+    //   ? console.log('red')
+    //   : console.log('green')
+    const expirationDate = moment.unix(this.props.lockTime)
 
+    const dataTipTxt = moment().isSameOrAfter(expirationDate)
+      ? 'Expired'
+      : 'Exp: ' +
+        expirationDate.format('YYYY-DD-M, hh:mm:ss a') +
+        ', ' +
+        expirationDate.fromNow() +
+        '.'
     return now > Number(this.props.lockTime) ? (
-      <div
-        data-tip={
-          'Exp: ' +
-          moment.unix(this.props.lockTime).format('MMMM Do YYYY, h:mm:ss a')
-        }
-      >
+      <div data-tip={dataTipTxt} data-for="lockBalance">
         <div
+          onClick={this.onSetMaxAmount}
           style={{
-            textAlign: 'right'
+            textAlign: 'right',
+            cursor: 'pointer'
           }}
         >
           <span
@@ -51,18 +70,15 @@ export default class TokenLockBalance extends Component {
             {formatPrice(this.props.balance)}
           </span>
         </div>
-        <ReactTooltip effect="solid" place="top" />
+        <ReactTooltip effect="solid" place="top" id="lockBalance" />
       </div>
     ) : (
-      <div
-        data-tip={
-          'Exp: ' +
-          moment.unix(this.props.lockTime).format('MMMM Do YYYY, h:mm:ss a')
-        }
-      >
+      <div data-tip={dataTipTxt} data-for="lockBalance">
         <div
+          onClick={this.onSetMaxAmount}
           style={{
-            textAlign: 'right'
+            textAlign: 'right',
+            cursor: 'pointer'
           }}
         >
           <span
@@ -75,7 +91,7 @@ export default class TokenLockBalance extends Component {
             {formatPrice(this.props.balance)}
           </span>
         </div>
-        <ReactTooltip effect="solid" place="top" />
+        <ReactTooltip effect="solid" place="top" id="lockBalance" />
       </div>
     )
   }

@@ -39,11 +39,6 @@ export default class HelpIcon extends Component {
   }
 
   render() {
-    const tooltipStyle = {
-      pointerEvents: 'auto', // enable click/selection etc. events inside tooltip
-      overflowY: 'auto' // make content scrollable,
-    }
-
     return (
       <div>
         <div data-tip={this.props.helpText} data-event="click">

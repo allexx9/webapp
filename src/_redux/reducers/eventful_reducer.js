@@ -42,14 +42,33 @@ export function eventfulDragoReducer(
         }
       }
 
-    case TYPE_.UPDATE_SELECTED_DRAGO_DETAILS:
+    case TYPE_.UPDATE_SELECTED_DRAGO_DETAILS: {
       return {
         ...state,
         selectedDrago: {
           ...state.selectedDrago,
-          ...action.payload
+          values: {
+            ...state.selectedDrago.values,
+            ...(action.payload.values || {})
+          },
+          details: {
+            ...state.selectedDrago.details,
+            ...(action.payload.details || {})
+          },
+          transactions: [
+            ...(action.payload.transactions ||
+              [].concat(state.selectedDrago.transactions))
+          ],
+          assets: [
+            ...(action.payload.assets || [].concat(state.selectedDrago.assets))
+          ],
+          assetsCharts: {
+            ...state.selectedDrago.assetsCharts,
+            ...(action.payload.assetsCharts || {})
+          }
         }
       }
+    }
 
     case TYPE_.UPDATE_SELECTED_DRAGO_DETAILS_RESET:
       return {
@@ -164,8 +183,14 @@ export function eventfulVaultReducer(
       return {
         ...state,
         selectedVault: {
-          ...state.selectedVault,
-          ...action.payload
+          details: {
+            ...state.selectedVault.details,
+            ...(action.payload.details || {})
+          },
+          transactions: [
+            ...(action.payload.transactions ||
+              [].concat(state.selectedVault.transactions))
+          ]
         }
       }
     case TYPE_.UPDATE_SELECTED_VAULT_DETAILS_RESET:

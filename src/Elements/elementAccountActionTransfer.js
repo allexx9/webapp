@@ -16,7 +16,7 @@ import PoolsApi from '../PoolsApi/src'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import TokenSelector from '../_atomic/molecules/tokenSelector'
-import utils from '../_utils/utils'
+import Web3 from 'web3'
 
 const NAME_ID = ' '
 
@@ -42,7 +42,7 @@ class ElementAccountActionTransfer extends Component {
     amount: 0,
     amountError: ERRORS.invalidAmount,
     // amountError: '',
-    // toAddress: '0x950a576c546ad023e909c9c37e69fccf9eb91311',
+    // toAddress: '0x06794975B8dED0A87887cc99Ecb347814d5436Ef',
     toAddress: '',
     toAddressError: ERRORS.toAddressError,
     // toAddressError: '',
@@ -244,7 +244,6 @@ class ElementAccountActionTransfer extends Component {
       default:
         amountError = ERRORS.invalidTotal
     }
-    console.log(amountError)
     this.setState({
       amountError
     })
@@ -271,13 +270,15 @@ class ElementAccountActionTransfer extends Component {
     const { api } = this.context
     const { token, toAddress } = this.state
     const { account } = this.props
-    const amount = new BigNumber(utils.formatToWei(this.state.amount))
-    const amountAuthMsg = Number(utils.formatFromWei(amount)).toLocaleString(
-      undefined,
-      { minimumFractionDigits: 3, maximumFractionDigits: 3 }
+    const amount = new BigNumber(
+      Web3.utils.toWei(this.state.amount.toString(16))
     )
+    const amountAuthMsg = Number(this.state.amount).toLocaleString(undefined, {
+      minimumFractionDigits: 3,
+      maximumFractionDigits: 3
+    })
     const authMsg = 'You trasferred ' + amountAuthMsg + ' units of ' + token
-    const transactionId = api.util.sha3(new Date() + toAddress)
+    const transactionId = api.utils.sha3(new Date() + toAddress)
     // Setting variables depending on account source
     let provider = this.props.account.source === 'MetaMask' ? window.web3 : api
     let poolApi = null
@@ -355,13 +356,14 @@ class ElementAccountActionTransfer extends Component {
     const { api } = this.context
     const { token, toAddress } = this.state
     const { account } = this.props
-    const amount = new BigNumber(utils.formatToWei(this.state.amount))
-    const amountAuthMsg = Number(utils.formatFromWei(amount)).toLocaleString(
-      undefined,
-      { minimumFractionDigits: 3, maximumFractionDigits: 3 }
-    )
+    let amount = Web3.utils.toWei(this.state.amount)
+    amount = new BigNumber(amount)
+    const amountAuthMsg = Number(this.state.amount).toLocaleString(undefined, {
+      minimumFractionDigits: 3,
+      maximumFractionDigits: 3
+    })
     const authMsg = 'You trasferred ' + amountAuthMsg + ' units of ' + token
-    const transactionId = api.util.sha3(new Date() + toAddress)
+    const transactionId = api.utils.sha3(new Date() + toAddress)
     // Setting variables depending on account source
     let provider = this.props.account.source === 'MetaMask' ? window.web3 : api
     let poolApi = null

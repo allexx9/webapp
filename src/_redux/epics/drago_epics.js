@@ -1,28 +1,43 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
 import { Actions } from '../actions/'
-import { Observable, from } from 'rxjs'
+import { Observable, from, timer } from 'rxjs'
 import PoolApi from '../../PoolsApi/src'
 
 import * as TYPE_ from '../actions/const'
-import { catchError, flatMap, map, mergeMap, tap } from 'rxjs/operators'
+import {
+  catchError,
+  finalize,
+  flatMap,
+  map,
+  mergeMap,
+  retryWhen,
+  takeUntil,
+  tap
+} from 'rxjs/operators'
 import { ofType } from 'redux-observable'
 
 import { BigNumber } from '../../../node_modules/bignumber.js/bignumber'
 import { ERCdEX, Ethfinex } from '../../_utils/const'
 // import { DEBUGGING } from '../../_utils/const'
 import { ERC20_TOKENS } from '../../_utils/tokens'
+import Web3Wrapper from '../../_utils/web3Wrapper/src'
 import utils from '../../_utils/utils'
 
 const getTokensBalances$ = (dragoAddress, api) => {
   //
   // Initializing Drago API
   //
-  const poolApi = new PoolApi(api)
+
+  let web3 = Web3Wrapper.getInstance(api._rb.network.id)
+  web3._rb = window.web3._rb
+  const poolApi = new PoolApi(web3)
+  // const poolApi = new PoolApi(api)
   try {
     poolApi.contract.drago.init(dragoAddress)
   } catch (err) {
-    throw this._error
+    console.warn(err)
+    throw new Error(err)
   }
 
   const getTokensBalances = async () => {
@@ -34,19 +49,23 @@ const getTokensBalances$ = (dragoAddress, api) => {
         wrappers: {},
         total: new BigNumber(0)
       }
-      if (allowedTokens[token].address !== '0x0') {
+      let tokenAddress = allowedTokens[token].address.toLowerCase()
+      if (tokenAddress !== '0x0') {
         let total = new BigNumber(0)
         try {
-          balances.token = await poolApi.contract.drago.getTokenBalance(
-            allowedTokens[token].address
+          balances.token = await poolApi.contract.drago.getPoolBalanceOnToken(
+            tokenAddress
           )
           // console.log(`${token} - ${allowedTokens[token].address} -> ${balances.token}`)
           total = total.plus(balances.token)
           if (typeof allowedTokens[token].wrappers !== 'undefined') {
             for (let wrapper in allowedTokens[token].wrappers) {
+              let wrapperAddess = allowedTokens[token].wrappers[wrapper].address
               balances.wrappers[
                 wrapper
-              ] = await poolApi.contract.drago.getTokenBalance(wrapper.address)
+              ] = await poolApi.contract.drago.getPoolBalanceOnToken(
+                wrapperAddess
+              )
               total = total.plus(balances.wrappers[wrapper])
             }
           }
@@ -57,7 +76,7 @@ const getTokensBalances$ = (dragoAddress, api) => {
             dragoAssets[token].balances = balances
           }
         } catch (err) {
-          console.log(err)
+          console.warn(err)
           throw err
         }
       } else {
@@ -67,6 +86,7 @@ const getTokensBalances$ = (dragoAddress, api) => {
   }
   return from(
     getTokensBalances().catch(err => {
+      console.warn(err)
       throw err
     })
   )
@@ -155,7 +175,7 @@ const getPoolDetails$ = (poolId, api, options, state$) => {
               name:
                 details[0][1].charAt(0).toUpperCase() + details[0][1].slice(1),
               symbol: details[0][2],
-              dragoId: details[0][3].toFixed(),
+              dragoId: new BigNumber(details[0][3]).toFixed(),
               addressOwner: details[0][4],
               addressGroup: details[0][5],
               buyPrice: null,
@@ -169,7 +189,7 @@ const getPoolDetails$ = (poolId, api, options, state$) => {
               name:
                 details[0][1].charAt(0).toUpperCase() + details[0][1].slice(1),
               symbol: details[0][2],
-              vaultId: details[0][3].toFixed(),
+              vaultId: new BigNumber(details[0][3]).toFixed(),
               addressOwner: details[0][4],
               addressGroup: details[0][5],
               buyPrice: null,
@@ -186,21 +206,43 @@ const getPoolDetails$ = (poolId, api, options, state$) => {
           ? utils
               .getDragoDetails(poolDetails, accounts, api)
               .then(details => {
-                // console.log(details)
                 return observer.next(details)
               })
               .catch(error => observer.error(error))
           : utils
               .getVaultDetails(poolDetails, accounts, api)
               .then(details => {
-                // console.log(details)
                 return observer.next(details)
               })
               .catch(error => observer.error(error))
       })
+      .then(() => {
+        const accounts = state$.value.endpoint.accounts
+        return options.poolType === 'drago'
+          ? utils
+              .getDragoDetails(poolDetails, accounts, api, { dateOnly: true })
+              .then(details => {
+                return observer.next(details)
+              })
+              .catch(error => {
+                console.warn(error)
+                observer.error(error)
+              })
+          : utils
+              .getVaultDetails(poolDetails, accounts, api, { dateOnly: true })
+              .then(details => {
+                return observer.next(details)
+              })
+              .catch(error => {
+                console.warn(error)
+                observer.error(error)
+              })
+      })
       .catch(error => {
+        console.warn(error)
         return observer.error(error)
       })
+    return () => observer.complete()
   })
 }
 
@@ -288,13 +330,41 @@ export const getPoolDetailsEpic = (action$, state$) => {
 
           // return DEBUGGING.DUMB_ACTION
         }),
-        catchError(error => {
-          console.log(error)
-          return Observable.of({
-            type: TYPE_.QUEUE_ERROR_NOTIFICATION,
-            payload: 'Error fetching Drago details.'
-          })
+        takeUntil(
+          action$.pipe(
+            ofType(
+              TYPE_.UPDATE_SELECTED_DRAGO_DETAILS_RESET,
+              TYPE_.UPDATE_SELECTED_VAULT_DETAILS_RESET
+            )
+          )
+        ),
+        retryWhen(error => {
+          let scalingDuration = 5000
+          return error.pipe(
+            mergeMap(error => {
+              console.warn(error)
+              return timer(scalingDuration)
+            }),
+            finalize(() => console.log('We are done!'))
+          )
         })
+        // catchError(error => {
+        //   console.warn(error)
+        //   return Observable.of({
+        //     type: TYPE_.QUEUE_ERROR_NOTIFICATION,
+        //     payload: 'Error fetching Pool details.'
+        //   })
+        // })
+      )
+    }),
+    retryWhen(error => {
+      let scalingDuration = 5000
+      return error.pipe(
+        mergeMap(error => {
+          console.warn(error)
+          return timer(scalingDuration)
+        }),
+        finalize(() => console.log('We are done!'))
       )
     })
   )

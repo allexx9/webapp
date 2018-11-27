@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
-import { UPDATE_SELECTED_ORDER } from '../../_redux/actions/const'
+import { ORDER_UPDATE } from '../../_redux/actions/const'
 import { connect } from 'react-redux'
 import { detect } from 'detect-browser'
 import { formatPrice } from '../../_utils/format'
@@ -34,7 +34,7 @@ class TableOrderBook extends Component {
     return propsUpdate
   }
 
-  updateSelectedOrder = order => {
+  updateOrder = order => {
     const { selectedTokensPair } = this.props.exchange
     const payload = {
       details: { ...order },
@@ -48,14 +48,14 @@ class TableOrderBook extends Component {
       selectedTokensPair: selectedTokensPair
     }
     return {
-      type: UPDATE_SELECTED_ORDER,
+      type: ORDER_UPDATE,
       payload: payload
     }
   }
 
   onClickOrder = id => {
     if (!this.props.aggregated && !this.props.onlyAggregated) {
-      this.props.dispatch(this.updateSelectedOrder(this.props.orders[id]))
+      this.props.dispatch(this.updateOrder(this.props.orders[id]))
     }
   }
 
@@ -64,19 +64,19 @@ class TableOrderBook extends Component {
     let price, amount
     const orderStylePrice = {
       asks: {
-        color: Colors.red400
+        color: Colors.red500
       },
       bids: {
-        color: Colors.green400
+        color: Colors.green500
       }
     }
 
     const orderStyleAmount = {
       asks: {
-        color: Colors.red400
+        color: Colors.red600
       },
       bids: {
-        color: Colors.green400
+        color: Colors.green600
       }
     }
 
@@ -84,12 +84,6 @@ class TableOrderBook extends Component {
       asks: '#ff7f7f',
       bids: '#95cf95'
     }
-
-    // var arr = [1,2,3];
-    // var max1 = arr.reduce(function(a, b) {
-    //   console.log(a, b)
-    //     return Math.max(a, b);
-    // });
 
     let max = ordersSorted.reduce(function(prev, current) {
       return Number(prev.orderAmount) > Number(current.orderAmount)
@@ -167,7 +161,6 @@ class TableOrderBook extends Component {
 
   render() {
     const { orders } = this.props
-    console.log('*** Render Orders ***')
     return (
       <Row className={styles.containerOrders}>
         <Col xs={12}>{this.renderRows(orders)}</Col>

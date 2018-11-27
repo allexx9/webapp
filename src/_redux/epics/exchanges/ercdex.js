@@ -19,21 +19,16 @@ import 'rxjs/add/operator/switchMap'
 import 'rxjs/add/operator/takeUntil'
 import 'rxjs/observable/fromEvent'
 import 'rxjs/observable/timer'
-import { Observable, timer } from 'rxjs'
+import { Observable } from 'rxjs'
 import {
   bufferCount,
   bufferTime,
-  catchError,
-  concat,
-  exhaustMap,
   filter,
   map,
   mergeMap,
-  skip,
   switchMap,
   takeUntil,
-  tap,
-  throttleTime
+  tap
 } from 'rxjs/operators'
 import { ofType } from 'redux-observable'
 // import { timer } from 'rxjs/observable/timer'
@@ -54,7 +49,8 @@ import {
   CHART_MARKET_DATA_UPDATE,
   FETCH_ACCOUNT_ORDERS_START,
   FETCH_ASSETS_PRICE_DATA,
-  FETCH_CANDLES_DATA_SINGLE,
+  FETCH_CANDLES_DATA_SINGLE_START,
+  FETCH_CANDLES_DATA_SINGLE_STOP,
   RELAY_CLOSE_WEBSOCKET,
   RELAY_GET_ORDERS,
   RELAY_MSG_FROM_WEBSOCKET,
@@ -82,8 +78,8 @@ const reconnectingWebsocket$ = (relay, networkId, baseToken, quoteToken) => {
     // }
     const exchange = new Exchange(relay.name, networkId, 'ws')
     const websocket = exchange.getTicker(
-      utils.getTockenSymbolForRelay(relay.name, baseToken),
-      utils.getTockenSymbolForRelay(relay.name, quoteToken)
+      utils.getTokenSymbolForRelay(relay.name, baseToken),
+      utils.getTokenSymbolForRelay(relay.name, quoteToken)
     )
     websocket.onmessage = msg => {
       console.log('WebSocket message.')
@@ -213,8 +209,8 @@ const getCandlesData$ = (
   const exchange = new Exchange(relay.name, networkId)
   return Observable.fromPromise(
     exchange.getHistoricalPricesData(
-      utils.getTockenSymbolForRelay(relay.name, baseToken),
-      utils.getTockenSymbolForRelay(relay.name, quoteToken),
+      utils.getTokenSymbolForRelay(relay.name, baseToken),
+      utils.getTokenSymbolForRelay(relay.name, quoteToken),
       startDate
     )
   )
@@ -225,7 +221,10 @@ const getCandlesData$ = (
 
 export const getCandlesSingleDataEpic = action$ => {
   return action$.pipe(
-    ofType(customRelayAction(FETCH_CANDLES_DATA_SINGLE)),
+    ofType(customRelayAction(FETCH_CANDLES_DATA_SINGLE_START)),
+    takeUntil(
+      action$.ofType(customRelayAction(FETCH_CANDLES_DATA_SINGLE_STOP))
+    ),
     mergeMap(action => {
       console.log(action)
       return Observable.concat(
@@ -288,6 +287,7 @@ export const getAccountOrdersEpic = action$ => {
             action.payload.baseTokenAddress,
             action.payload.quoteTokenAddress
           ).map(orders => {
+            console.log(orders)
             return formatOrders(orders, 'asks')
           }),
           getAccountOrdersFromRelay$(
@@ -357,7 +357,7 @@ const getAssetsPricesDataFromERCdEX$ = (
 export const getAssetsPricesDataFromERCdEXEpic = action$ => {
   return action$.ofType(FETCH_ASSETS_PRICE_DATA).mergeMap(action => {
     const observableArray = () => {
-      const observableArray = Array()
+      const observableArray = Array(0)
       for (let property in action.payload.assets) {
         if (action.payload.assets.hasOwnProperty(property)) {
           // console.log(action.payload.assets[property])

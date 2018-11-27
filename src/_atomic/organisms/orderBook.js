@@ -35,26 +35,6 @@ class OrderBook extends Component {
     const ordersAsksSorted = [].concat(this.props.asksOrders)
     const ordersBidsSorted = [].concat(this.props.bidsOrders)
     const spread = this.props.spread
-    // console.log(ordersAsksSorted, ordersBidsSorted)
-    // const aggregatedTogglestyles = {
-    //   block: {
-    //     maxWidth: 250,
-    //   },
-    //   toggle: {
-    //     // paddingRight: '5px',
-    //   },
-    //   trackSwitched: {
-    //     backgroundColor: '#bdbdbd',
-    //   },
-    //   thumbSwitched: {
-    //     backgroundColor: '#054186',
-    //   },
-    //   labelStyle: {
-    //     fontSize: '12px',
-    //     opacity: '0.5',
-    //     textAlign: 'right'
-    //   },
-    // };
     return (
       <Row>
         <Col xs={12}>
@@ -99,7 +79,9 @@ class OrderBook extends Component {
                             orders={ordersAsksSorted}
                             orderType="asks"
                           />
-                        ) : null}
+                        ) : (
+                          <div className={styles.noOrdersMsg}>No orders</div>
+                        )}
                       </Col>
                     </Row>
                   </Col>
@@ -129,7 +111,9 @@ class OrderBook extends Component {
                             orders={ordersBidsSorted}
                             orderType="bids"
                           />
-                        ) : null}
+                        ) : (
+                          <div className={styles.noOrdersMsg}>No orders</div>
+                        )}
                       </Col>
                     </Row>
                   </Col>

@@ -7,13 +7,15 @@ import { Actions } from '../actions'
 import { Observable, from, timer } from 'rxjs'
 import {
   catchError,
+  delay,
   finalize,
   map,
   mergeMap,
-  retryWhen,
-  tap
+  retryWhen
 } from 'rxjs/operators'
+import { exhaustMap } from 'rxjs-compat/operator/exhaustMap'
 import { ofType } from 'redux-observable'
+import BigNumber from 'bignumber.js'
 import PoolsApi from '../../PoolsApi/src'
 import utils from '../../_utils/utils'
 // import { race } from 'rxjs/observable/race';
@@ -26,7 +28,7 @@ const getVaultsChunkedEvents$ = (api, options, state$) => {
   return Observable.create(observer => {
     let startBlock =
       state$.value.transactionsVault.vaultsList.lastFetchRange.lastBlock
-    // console.log(fromBlock)
+
     const poolApi = new PoolsApi(api)
     if (startBlock === 0) {
       switch (api._rb.network.id) {
@@ -71,52 +73,66 @@ const getVaultsChunkedEvents$ = (api, options, state$) => {
       }
     }
 
-    poolApi.contract.vaulteventful.init().then(() => {
-      api.eth.blockNumber().then(lastBlock => {
-        lastBlock = lastBlock.toFixed()
-        let chunck = 100000
-        console.log(startBlock, lastBlock, chunck)
-        const chunks = utils.blockChunks(startBlock, lastBlock, chunck)
-        chunks.map(async (chunk, key) => {
-          // Pushing chunk logs into array
-          let options = {
-            topics: [
-              poolApi.contract.vaulteventful.hexSignature.VaultCreated,
-              null,
-              null,
-              null
-            ],
-            fromBlock: chunk.fromBlock,
-            toBlock: chunk.toBlock
-          }
-          poolApi.contract.vaulteventful
-            .getAllLogs(options)
-            .then(logs => {
-              const list = [].concat(logs.map(logToEvent))
-              let result = {
-                list,
-                lastFetchRange: {
-                  chunk: {
-                    key: key,
-                    toBlock:
-                      chunk.toBlock === 'latest'
-                        ? Number(lastBlock)
-                        : Number(chunk.toBlock),
-                    fromBlock: chunk.fromBlock
-                  },
-                  startBlock: Number(startBlock),
-                  lastBlock: Number(lastBlock)
-                }
+    poolApi.contract.vaulteventful
+      .init()
+      .then(() => {
+        api.eth
+          .getBlockNumber()
+          .then(async lastBlock => {
+            lastBlock = new BigNumber(lastBlock).toNumber()
+            let chunck = 100000
+            const chunks = await utils.blockChunks(
+              startBlock,
+              lastBlock,
+              chunck
+            )
+            chunks.map(async (chunk, key) => {
+              // Pushing chunk logs into array
+              let options = {
+                topics: [
+                  poolApi.contract.vaulteventful.hexSignature.VaultCreated,
+                  null,
+                  null,
+                  null
+                ],
+                fromBlock: chunk.fromBlock,
+                toBlock: chunk.toBlock
               }
-              // console.log(result)
-              return observer.next(result)
+              poolApi.contract.vaulteventful
+                .getAllLogs(options)
+                .then(logs => {
+                  const list = [].concat(logs.map(logToEvent))
+                  let result = {
+                    list,
+                    lastFetchRange: {
+                      chunk: {
+                        key: key,
+                        toBlock:
+                          chunk.toBlock === 'latest'
+                            ? Number(lastBlock)
+                            : Number(chunk.toBlock),
+                        fromBlock: chunk.fromBlock
+                      },
+                      startBlock: Number(startBlock),
+                      lastBlock: Number(lastBlock)
+                    }
+                  }
+                  return observer.next(result)
+                })
+                .catch(error => {
+                  return observer.error(error)
+                })
             })
-            .catch(error => {
-              return observer.error(error)
-            })
-        })
+          })
+          .catch(error => {
+            console.warn(error)
+            return observer.error(error)
+          })
       })
-    })
+      .catch(error => {
+        console.warn(error)
+        return observer.error(error)
+      })
   })
 }
 
@@ -169,52 +185,69 @@ const getDragosChunkedEvents$ = (api, options, state$) => {
       }
     }
 
-    poolApi.contract.dragoeventful.init().then(() => {
-      api.eth.blockNumber().then(lastBlock => {
-        lastBlock = lastBlock.toFixed()
-        let chunck = 100000
-        // console.log(startBlock, lastBlock, chunck)
-        const chunks = utils.blockChunks(startBlock, lastBlock, chunck)
-        chunks.map(async (chunk, key) => {
-          // Pushing chunk logs into array
-          let options = {
-            topics: [
-              poolApi.contract.dragoeventful.hexSignature.DragoCreated,
-              null,
-              null,
-              null
-            ],
-            fromBlock: chunk.fromBlock,
-            toBlock: chunk.toBlock
-          }
-          poolApi.contract.dragoeventful
-            .getAllLogs(options)
-            .then(logs => {
-              const list = [].concat(logs.map(logToEvent))
-              let result = {
-                list,
-                lastFetchRange: {
-                  chunk: {
-                    key: key,
-                    toBlock:
-                      chunk.toBlock === 'latest'
-                        ? Number(lastBlock)
-                        : Number(chunk.toBlock),
-                    fromBlock: chunk.fromBlock
-                  },
-                  startBlock: Number(startBlock),
-                  lastBlock: Number(lastBlock)
-                }
+    poolApi.contract.dragoeventful
+      .init()
+      .then(() => {
+        api.eth
+          .getBlockNumber()
+          .then(async lastBlock => {
+            lastBlock = new BigNumber(lastBlock).toNumber()
+            let chunck = 100000
+            // console.log(startBlock, lastBlock, chunck)
+            const chunks = await utils.blockChunks(
+              startBlock,
+              lastBlock,
+              chunck
+            )
+            chunks.map(async (chunk, key) => {
+              // Pushing chunk logs into array
+              let options = {
+                topics: [
+                  poolApi.contract.dragoeventful.hexSignature.DragoCreated,
+                  null,
+                  null,
+                  null
+                ],
+                fromBlock: chunk.fromBlock,
+                toBlock: chunk.toBlock
               }
-              // console.log(result)
-              return observer.next(result)
+              poolApi.contract.dragoeventful
+                .getAllLogs(options)
+                .then(logs => {
+                  const list = [].concat(logs.map(logToEvent))
+                  let result = {
+                    list,
+                    lastFetchRange: {
+                      chunk: {
+                        key: key,
+                        toBlock:
+                          chunk.toBlock === 'latest'
+                            ? Number(lastBlock)
+                            : Number(chunk.toBlock),
+                        fromBlock: chunk.fromBlock
+                      },
+                      startBlock: Number(startBlock),
+                      lastBlock: Number(lastBlock)
+                    }
+                  }
+                  // console.log(result)
+                  return observer.next(result)
+                })
+                .catch(error => {
+                  console.warn(error)
+                  return observer.error(error)
+                })
             })
-            .catch(error => {
-              return observer.error(error)
-            })
-        })
+          })
+          .catch(error => {
+            console.warn(error)
+            return observer.error(error)
+          })
       })
-    })
+      .catch(error => {
+        console.warn(error)
+        return observer.error(error)
+      })
   })
 }
 
@@ -274,8 +307,33 @@ const getPoolTransactions$ = (api, dragoAddress, accounts, options) => {
       )
 }
 
-export const getAccountsTransactionsEpic = action$ =>
-  action$.pipe(
+export const getAccountsTransactionsEpic = (action$, state$) => {
+  const retryStrategy = error$ =>
+    error$.pipe(
+      exhaustMap(err => err),
+      delay(2000)
+    )
+
+  // const isNodeConnected$ = state$.pipe(
+  //   map(val => {
+  //     // console.log(val)
+  //     return !val.app.isConnected
+  //   }),
+  //   tap(val => {
+  //     console.log(val)
+  //     return val
+  //   }),
+  //   skipWhile(val => val === true),
+  //   tap(val => {
+  //     console.log('not skipped')
+  //     return val
+  //   }),
+  //   map(val => {
+  //     return val
+  //   })
+  // )
+
+  return action$.pipe(
     ofType(TYPE_.GET_ACCOUNTS_TRANSACTIONS),
     mergeMap(action => {
       return getPoolTransactions$(
@@ -284,9 +342,6 @@ export const getAccountsTransactionsEpic = action$ =>
         action.payload.accounts,
         action.payload.options
       ).pipe(
-        tap(results => {
-          return results
-        }),
         map(results => {
           if (action.payload.options.drago) {
             if (!action.payload.options.trader) {
@@ -307,40 +362,20 @@ export const getAccountsTransactionsEpic = action$ =>
           }
         }),
         retryWhen(error => {
-          console.log('getAccountsTransactionsEpic')
-          let scalingDuration = 3000
+          console.warn('getAccountsTransactionsEpic error')
+          let scalingDuration = 10000
           return error.pipe(
             mergeMap((error, i) => {
               console.warn(error)
-              const retryAttempt = i + 1
-              // if maximum number of retries have been met
-              // or response is a status code we don't wish to retry, throw error
-              // if (
-              //   retryAttempt > maxRetryAttempts ||
-              //   excludedStatusCodes.find(e => e === error.status)
-              // ) {
-              //   throw(error);
-              // }
-              // const _rb = window.web3._rb
-              // window.web3 = new Web3(window.web3.currentProvider)
-              // window.web3._rb = _rb
-              console.log(`getAccountsTransactionsEpic Attempt ${retryAttempt}`)
-              // retry after 1s, 2s, etc...
               return timer(scalingDuration)
             }),
             finalize(() => console.log('We are done!'))
           )
         })
-        // catchError(error => {
-        //   console.warn(error)
-        //   return Observable.of({
-        //     type: TYPE_.QUEUE_ERROR_NOTIFICATION,
-        //     payload: 'Error fetching account transactions.'
-        //   })
-        // })
       )
     })
   )
+}
 
 //
 // FETCH POOL TRANSACTIONS
@@ -356,9 +391,6 @@ export const getPoolTransactionsEpic = action$ =>
         action.payload.accounts,
         action.payload.options
       ).pipe(
-        tap(results => {
-          return results
-        }),
         map(results => {
           if (action.payload.options.drago) {
             return Actions.drago.updateSelectedDrago({
@@ -369,7 +401,6 @@ export const getPoolTransactionsEpic = action$ =>
               transactions: results
             })
           }
-          // return DEBUGGING.DUMB_ACTION
         }),
         catchError(error => {
           console.warn(error)

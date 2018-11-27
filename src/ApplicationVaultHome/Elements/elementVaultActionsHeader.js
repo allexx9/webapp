@@ -96,7 +96,7 @@ export default class ElementVaultActionsHeader extends React.Component {
           <Row className={styles.modalTitle}>
             <Col xs={12} md={1} className={styles.dragoTitle}>
               <h2>
-                <IdentityIcon address={vaultDetails.address} />
+                <IdentityIcon address={vaultDetails.address} size={15} />
               </h2>
             </Col>
             <Col xs={12} md={11} className={styles.dragoTitle}>

@@ -1,9 +1,22 @@
-.paginatorContainer {
+.toolsContainer {
   text-align: right;
   padding-bottom: 5px;
+  width: 100%;
 }
 
 .loadingText {
   text-align: center;
   font-weight: 700
+}
+
+.paginatorTool {
+  float: right;
+}
+
+.filterTool {
+  float: left;
+}
+
+.list {
+  padding-left: 0px !important;
 }

@@ -1,27 +1,29 @@
 import { Actions } from '../../_redux/actions'
 import { Col, Row } from 'react-flexbox-grid'
 import { connect } from 'react-redux'
-import { formatEth, toUnitAmount } from '../../_utils/format'
 import { sha3_512 } from 'js-sha3'
 import { toBaseUnitAmount } from '../../_utils/format'
+import { toUnitAmount } from '../../_utils/format'
 import BigNumber from 'bignumber.js'
 import ButtonLock from '../atoms/buttonLock'
 import Checkbox from 'material-ui/Checkbox'
 import LockErrorMessage from '../atoms/lockErrorMessage'
 import PoolApi from '../../PoolsApi/src'
 import PropTypes from 'prop-types'
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
 import SectionTitleExchange from '../atoms/sectionTitleExchange'
 import TokenAmountInputField from '../atoms/tokenLockAmountField'
 import TokenLockBalance from '../atoms/tokenLockBalance'
 import TokenLockTimeField from '../atoms/tokenLockTimeField'
+import Web3 from 'web3'
+// import Web3Wrapper from '../../_utils/web3Wrapper'
+import ShowStatusMsg from '../atoms/showStatusMsg'
+import moment from 'moment'
 import serializeError from 'serialize-error'
+import styles from './tokenLockInfo.module.css'
 import utils from '../../_utils/utils'
 
-import styles from './tokenLockInfo.module.css'
-// import utils from '../../_utils/utils'
-
-class TokenLockInfo extends PureComponent {
+class TokenLockInfo extends Component {
   static propTypes = {
     selectedFund: PropTypes.object.isRequired,
     selectedExchange: PropTypes.object.isRequired,
@@ -40,19 +42,68 @@ class TokenLockInfo extends PureComponent {
   state = {
     baseTokenLockAmount: '0.01',
     quoteTokenLockAmount: '0.01',
-    baseTokenLockTime: '1',
-    quoteTokenLockTime: '1',
+    prevBaseTokenLockTime: 0,
+    prevQuoteTokenLockTime: 0,
+    baseTokenLockTime: this.props.selectedTokensPair.baseTokenLockWrapExpire,
+    quoteTokenLockTime: this.props.selectedTokensPair.quoteTokenLockWrapExpire,
     baseTokenSelected: true,
-    errorText: ''
+    errorText: '',
+    baseTokenRelock: false,
+    quoteTokenRelock: false,
+    showActionRequestMsg: false
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    if (
+      props.selectedTokensPair.baseTokenLockWrapExpire !==
+      state.prevBaseTokenLockTime
+    ) {
+      let now = moment()
+      let baseTokenMinLockTime = now.diff(
+        moment.unix(props.selectedTokensPair.baseTokenLockWrapExpire),
+        'hours'
+      )
+      baseTokenMinLockTime < 0
+        ? (baseTokenMinLockTime = Math.abs(baseTokenMinLockTime) + 1)
+        : (baseTokenMinLockTime = 1)
+
+      let quoteTokenMinLockTime = now.diff(
+        moment.unix(props.selectedTokensPair.quoteTokenLockWrapExpire),
+        'hours'
+      )
+      quoteTokenMinLockTime < 0
+        ? (quoteTokenMinLockTime = Math.abs(quoteTokenMinLockTime) + 1)
+        : (quoteTokenMinLockTime = 1)
+
+      return {
+        prevBaseTokenLockTime: props.selectedTokensPair.baseTokenLockWrapExpire,
+        prevQuoteTokenLockTime:
+          props.selectedTokensPair.quoteTokenLockWrapExpire,
+        minBaseTokenLockTime: baseTokenMinLockTime.toString(),
+        minQuoteTokenLockTime: quoteTokenMinLockTime.toString(),
+        baseTokenLockTime: baseTokenMinLockTime.toString(),
+        quoteTokenLockTime: quoteTokenMinLockTime.toString()
+      }
+    }
+    return null
   }
 
   isBalanceSufficient = (amount, liquidity) => {
+    console.log(amount, new BigNumber(liquidity).toFixed())
+    console.log(this.state.baseTokenRelock, this.state.quoteTokenRelock)
+    if (this.state.baseTokenRelock || this.state.quoteTokenRelock) {
+      return true
+    }
+    console.log(amount, new BigNumber(liquidity).toFixed())
     return new BigNumber(liquidity).gte(new BigNumber(amount))
   }
 
-  componentDidMount = async () => {}
+  isLockTimeGreaterThanCurrent = (currentLockTime, newLockTime) => {
+    console.log(currentLockTime, newLockTime)
+    return newLockTime > currentLockTime - 1
+  }
 
-  onLockTocken = async action => {
+  onLockToken = async action => {
     const {
       selectedFund,
       selectedTokensPair,
@@ -64,11 +115,11 @@ class TokenLockInfo extends PureComponent {
       baseTokenLockTime,
       quoteTokenLockTime,
       baseTokenLockAmount,
-      quoteTokenLockAmount
+      quoteTokenLockAmount,
+      minBaseTokenLockTime,
+      minQuoteTokenLockTime
     } = this.state
     const { api } = this.context
-    console.log(this.props)
-    console.log(selectedRelay)
     const tokenSymbol = baseTokenSelected
       ? selectedTokensPair.baseToken.symbol
       : selectedTokensPair.quoteToken.symbol
@@ -81,25 +132,57 @@ class TokenLockInfo extends PureComponent {
       transactionDetails,
       receipt,
       transactionId,
-      errorArray
+      errorArray,
+      minTime
     if (baseTokenSelected) {
       tokenAddress = selectedTokensPair.baseToken.address
       tokenWrapperAddress =
         selectedTokensPair.baseToken.wrappers[selectedRelay.name].address
       decimals = selectedTokensPair.baseToken.decimals
-      amount = baseTokenLockAmount
+      amount =
+        this.state.baseTokenRelock && action === 'lock'
+          ? '0'
+          : baseTokenLockAmount
+      minTime = minBaseTokenLockTime
       time = baseTokenLockTime
       isOldERC20 = selectedTokensPair.baseToken.isOldERC20
+
+      if (action === 'lock') {
+        amount = this.state.baseTokenRelock ? '0' : baseTokenLockAmount
+      }
+      if (action === 'unlock') {
+        amount = this.state.baseTokenRelock
+          ? selectedFund.liquidity.baseToken.balanceWrapper
+          : baseTokenLockAmount
+      }
     } else {
       tokenAddress = selectedTokensPair.quoteToken.address
       tokenWrapperAddress =
         selectedTokensPair.quoteToken.wrappers[selectedRelay.name].address
       decimals = selectedTokensPair.quoteToken.decimals
-      amount = quoteTokenLockAmount
+
+      if (action === 'lock') {
+        amount = this.state.quoteTokenRelock ? '0' : quoteTokenLockAmount
+      }
+      if (action === 'unlock') {
+        amount = this.state.quoteTokenRelock
+          ? selectedFund.liquidity.quoteToken.balanceWrapper
+          : quoteTokenLockAmount
+      }
+      minTime = minQuoteTokenLockTime
       time = quoteTokenLockTime
       isOldERC20 = selectedTokensPair.quoteToken.isOldERC20
     }
-    console.log(action)
+    try {
+      if (isNaN(amount - parseFloat(amount))) {
+        this.setState({
+          errorText: 'Please enter a valid positive number'
+        })
+        return
+      }
+    } catch (error) {}
+    const web3 = new Web3()
+    console.log(web3)
     const poolApi = await new PoolApi(window.web3)
     switch (action) {
       case 'lock':
@@ -112,12 +195,21 @@ class TokenLockInfo extends PureComponent {
               : selectedFund.liquidity.quoteToken.balance
           )
         ) {
-          console.log(amount, selectedFund.liquidity.baseToken.balanceWrapper)
           this.setState({
-            errorText: 'You cannot lock more than token balance'
+            errorText: 'The amount is greater then the available balance'
           })
           return
         }
+        if (!this.isLockTimeGreaterThanCurrent(minTime, time)) {
+          this.setState({
+            errorText: 'The time must be greater than current lock time.'
+          })
+          return
+        }
+        this.setState({
+          showActionRequestMsg: true
+        })
+
         console.log(time)
         console.log(
           selectedFund.managerAccount,
@@ -148,6 +240,9 @@ class TokenLockInfo extends PureComponent {
           )
         )
         try {
+          let toBeLocked =
+            '0x' +
+            toBaseUnitAmount(new BigNumber(amount), decimals).toString(16)
           await poolApi.contract.drago.init(selectedFund.details.address)
           receipt = await poolApi.contract.drago.operateOnExchangeEFXLock(
             selectedFund.managerAccount,
@@ -155,7 +250,7 @@ class TokenLockInfo extends PureComponent {
             selectedExchange.exchangeContractAddress,
             tokenAddress,
             tokenWrapperAddress,
-            toBaseUnitAmount(new BigNumber(amount), decimals),
+            toBeLocked,
             time,
             isOldERC20
           )
@@ -166,12 +261,12 @@ class TokenLockInfo extends PureComponent {
           transactionDetails.timestamp = new Date()
 
           // Getting token wrapper lock time
-          let baseTokenLockWrapExpire = await utils.updateTokenWrapperLockTime(
+          let baseTokenLockWrapExpire = await utils.getTokenWrapperLockTime(
             api,
             selectedTokensPair.baseToken.wrappers[selectedRelay.name].address,
             selectedFund.details.address
           )
-          let quoteTokenLockWrapExpire = await utils.updateTokenWrapperLockTime(
+          let quoteTokenLockWrapExpire = await utils.getTokenWrapperLockTime(
             api,
             selectedTokensPair.quoteToken.wrappers[selectedRelay.name].address,
             selectedFund.details.address
@@ -200,9 +295,11 @@ class TokenLockInfo extends PureComponent {
               transactionDetails
             )
           )
+          this.setState({
+            showActionRequestMsg: false
+          })
         } catch (error) {
-          console.log(error)
-          console.log('error')
+          console.warn(error)
           errorArray = serializeError(error).message.split(/\r?\n/)
           transactionDetails.status = 'error'
           transactionDetails.error = errorArray[0]
@@ -215,11 +312,15 @@ class TokenLockInfo extends PureComponent {
           this.props.dispatch(
             Actions.app.queueErrorNotification(serializeError(error).message)
           )
+          this.setState({
+            showActionRequestMsg: false
+          })
         }
 
         break
       case 'unlock':
         // Unloking
+        console.log(baseTokenSelected)
         if (
           !this.isBalanceSufficient(
             toBaseUnitAmount(new BigNumber(amount), decimals),
@@ -235,6 +336,30 @@ class TokenLockInfo extends PureComponent {
           return
         }
         console.log(
+          `Exp base token: ${moment
+            .unix(selectedTokensPair.baseTokenLockWrapExpire)
+            .format('MMMM Do YYYY, h:mm:ss a')}`
+        )
+        console.log(
+          `Exp quote token: ${moment
+            .unix(selectedTokensPair.quoteTokenLockWrapExpire)
+            .format('MMMM Do YYYY, h:mm:ss a')}`
+        )
+        if (
+          baseTokenSelected
+            ? moment
+                .unix(selectedTokensPair.baseTokenLockWrapExpire)
+                .isAfter(moment())
+            : moment
+                .unix(selectedTokensPair.quoteTokenLockWrapExpire)
+                .isAfter(moment())
+        ) {
+          this.setState({
+            errorText: 'You cannot unlock ealier than the expiry time.'
+          })
+          return
+        }
+        console.log(
           selectedFund.managerAccount,
           selectedFund.details.address,
           selectedExchange.exchangeContractAddress,
@@ -242,6 +367,9 @@ class TokenLockInfo extends PureComponent {
           tokenWrapperAddress,
           toBaseUnitAmount(new BigNumber(amount), decimals)
         )
+        this.setState({
+          showActionRequestMsg: true
+        })
         transactionId = sha3_512(new Date() + selectedFund.managerAccount)
         transactionDetails = {
           status: 'pending',
@@ -261,6 +389,23 @@ class TokenLockInfo extends PureComponent {
           )
         )
         try {
+          console.log(amount)
+          console.log(new BigNumber(amount).toFixed())
+          console.log(toBaseUnitAmount(new BigNumber(amount), decimals))
+          console.log(
+            web3.utils.toHex(toBaseUnitAmount(new BigNumber(amount), decimals))
+          )
+          console.log(
+            '0x' +
+              toBaseUnitAmount(new BigNumber(amount), decimals).toString(16)
+          )
+
+          const toBeUnlocked =
+            this.state.baseTokenRelock || this.state.quoteTokenRelock
+              ? '0x' + amount.toString(16)
+              : '0x' +
+                toBaseUnitAmount(new BigNumber(amount), decimals).toString(16)
+          console.log(amount.toString(16))
           await poolApi.contract.drago.init(selectedFund.details.address)
           receipt = await poolApi.contract.drago.operateOnExchangeEFXUnlock(
             selectedFund.managerAccount,
@@ -268,7 +413,7 @@ class TokenLockInfo extends PureComponent {
             selectedExchange.exchangeContractAddress,
             tokenAddress,
             tokenWrapperAddress,
-            toBaseUnitAmount(new BigNumber(amount), decimals)
+            toBeUnlocked
           )
           transactionDetails.status = 'executed'
           transactionDetails.receipt = receipt
@@ -276,12 +421,12 @@ class TokenLockInfo extends PureComponent {
           transactionDetails.timestamp = new Date()
 
           // Getting token wrapper lock time
-          let baseTokenLockWrapExpire = await utils.updateTokenWrapperLockTime(
+          let baseTokenLockWrapExpire = await utils.getTokenWrapperLockTime(
             api,
             selectedTokensPair.baseToken.wrappers[selectedRelay.name].address,
             selectedFund.details.address
           )
-          let quoteTokenLockWrapExpire = await utils.updateTokenWrapperLockTime(
+          let quoteTokenLockWrapExpire = await utils.getTokenWrapperLockTime(
             api,
             selectedTokensPair.quoteToken.wrappers[selectedRelay.name].address,
             selectedFund.details.address
@@ -291,6 +436,10 @@ class TokenLockInfo extends PureComponent {
             baseTokenLockWrapExpire: baseTokenLockWrapExpire,
             quoteTokenLockWrapExpire: quoteTokenLockWrapExpire
           }
+
+          this.props.dispatch(
+            Actions.exchange.updateSelectedTradeTokensPair(payload)
+          )
 
           // Updating selected tokens pair balances and fund liquidity (ETH, ZRX)
           this.props.dispatch(
@@ -306,7 +455,11 @@ class TokenLockInfo extends PureComponent {
               transactionDetails
             )
           )
+          this.setState({
+            showActionRequestMsg: false
+          })
         } catch (error) {
+          console.warn(error)
           errorArray = serializeError(error).message.split(/\r?\n/)
           transactionDetails.status = 'error'
           transactionDetails.error = errorArray[0]
@@ -319,6 +472,9 @@ class TokenLockInfo extends PureComponent {
           this.props.dispatch(
             Actions.app.queueErrorNotification(serializeError(error).message)
           )
+          this.setState({
+            showActionRequestMsg: false
+          })
         }
 
         break
@@ -327,11 +483,21 @@ class TokenLockInfo extends PureComponent {
     }
   }
 
-  onChangeAmount = (amount, baseToken, errorText) => {
-    console.log(amount, baseToken, errorText)
+  onChangeAmount = (amount, baseToken, errorText, options = {}) => {
+    console.log(amount, baseToken, errorText, options)
+    let relock = options.relock || false
     baseToken === true
-      ? this.setState({ baseTokenLockAmount: amount, errorText })
-      : this.setState({ quoteTokenLockAmount: amount, errorText })
+      ? this.setState({
+          baseTokenLockAmount: amount,
+          errorText,
+          baseTokenRelock: relock
+        })
+      : this.setState({
+          quoteTokenLockAmount: amount,
+          errorText,
+          quoteTokenRelock: relock
+        })
+    this.onCheckToken(baseToken ? 'baseTokenSelected' : 'quoteTokenSelected')
   }
 
   onChangeTime = (amount, baseToken, errorText) => {
@@ -356,11 +522,15 @@ class TokenLockInfo extends PureComponent {
           errorText: ''
         })
         break
+      default:
+        this.setState({
+          baseTokenSelected: true,
+          errorText: ''
+        })
     }
   }
 
   render() {
-    const { api } = this.context
     const { selectedFund, selectedTokensPair } = this.props
 
     const baseTokenWrappedBalance = toUnitAmount(
@@ -371,8 +541,18 @@ class TokenLockInfo extends PureComponent {
       selectedFund.liquidity.quoteToken.balanceWrapper,
       selectedTokensPair.quoteToken.decimals
     ).toFixed(4)
+    // console.log(
+    //   `Exp base token: ${moment
+    //     .unix(selectedTokensPair.baseTokenLockWrapExpire)
+    //     .format('MMMM Do YYYY, h:mm:ss a')}`
+    // )
+    // console.log(
+    //   `Exp quote token: ${moment
+    //     .unix(selectedTokensPair.quoteTokenLockWrapExpire)
+    //     .format('MMMM Do YYYY, h:mm:ss a')}`
+    // )
 
-    console.log(baseTokenWrappedBalance)
+    // console.log(baseTokenWrappedBalance)
     return (
       <div key="lockedTokenInfo">
         <Row>
@@ -412,6 +592,8 @@ class TokenLockInfo extends PureComponent {
                   key="baseTokenBalance"
                   balance={baseTokenWrappedBalance}
                   lockTime={selectedTokensPair.baseTokenLockWrapExpire}
+                  onClick={this.onChangeAmount}
+                  isBaseToken={true}
                 />
               </Col>
               <Col xs={4}>
@@ -420,7 +602,7 @@ class TokenLockInfo extends PureComponent {
                   lockMaxAmount={selectedFund.liquidity.baseToken.balance}
                   isBaseToken={true}
                   onChangeAmount={this.onChangeAmount}
-                  disabled={false}
+                  disabled={!this.state.baseTokenSelected}
                   amount={this.state.baseTokenLockAmount}
                 />
               </Col>
@@ -429,8 +611,8 @@ class TokenLockInfo extends PureComponent {
                   key="baseTokenTimeField"
                   isBaseToken={true}
                   onChangeTime={this.onChangeTime}
-                  disabled={false}
-                  amount={this.state.baseTokenLockTime}
+                  disabled={!this.state.baseTokenSelected}
+                  time={this.state.baseTokenLockTime}
                 />
               </Col>
             </Row>
@@ -459,6 +641,8 @@ class TokenLockInfo extends PureComponent {
                   key="quoteTokenBalance"
                   balance={quoteTokenWrappedBalance}
                   lockTime={selectedTokensPair.quoteTokenLockWrapExpire}
+                  onClick={this.onChangeAmount}
+                  isBaseToken={false}
                 />
               </Col>
               <Col xs={4}>
@@ -467,7 +651,7 @@ class TokenLockInfo extends PureComponent {
                   lockMaxAmount={selectedFund.liquidity.baseToken.balance}
                   isBaseToken={false}
                   onChangeAmount={this.onChangeAmount}
-                  disabled={false}
+                  disabled={this.state.baseTokenSelected}
                   amount={this.state.quoteTokenLockAmount}
                 />
               </Col>
@@ -476,8 +660,8 @@ class TokenLockInfo extends PureComponent {
                   key="quoteTokenTimeField"
                   isBaseToken={false}
                   onChangeTime={this.onChangeTime}
-                  disabled={false}
-                  amount={this.state.quoteTokenLockTime}
+                  disabled={this.state.baseTokenSelected}
+                  time={this.state.quoteTokenLockTime}
                 />
               </Col>
             </Row>
@@ -487,7 +671,7 @@ class TokenLockInfo extends PureComponent {
                   <div className={styles.buttonsLock}>
                     <ButtonLock
                       buttonAction={'unlock'}
-                      onLockTocken={this.onLockTocken}
+                      onLockToken={this.onLockToken}
                       disabled={this.state.errorText !== ''}
                       className={styles.buttonsLock}
                     />
@@ -497,18 +681,18 @@ class TokenLockInfo extends PureComponent {
                   <div className={styles.buttonsLock}>
                     <ButtonLock
                       buttonAction={'lock'}
-                      onLockTocken={this.onLockTocken}
+                      onLockToken={this.onLockToken}
                       className={styles.buttonsLock}
                       disabled={
-                        // this.state.errorText !== '' ||
-                        (new BigNumber(
-                          selectedFund.liquidity.baseToken.balance
-                        ).eq(0) &&
-                          this.state.baseTokenSelected) ||
-                        (new BigNumber(
-                          selectedFund.liquidity.quoteToken.balance
-                        ).eq(0) &&
-                          !this.state.baseTokenSelected)
+                        this.state.errorText !== ''
+                        // (new BigNumber(
+                        //   selectedFund.liquidity.baseToken.balance
+                        // ).eq(0) &&
+                        //   this.state.baseTokenSelected) ||
+                        // (new BigNumber(
+                        //   selectedFund.liquidity.quoteToken.balance
+                        // ).eq(0) &&
+                        //   !this.state.baseTokenSelected)
                       }
                     />
                   </div>
@@ -518,6 +702,17 @@ class TokenLockInfo extends PureComponent {
           </Col>
           <Col xs={12}>
             <LockErrorMessage message={this.state.errorText} />
+          </Col>
+          <Col xs={12}>
+            {this.state.showActionRequestMsg && (
+              <ShowStatusMsg
+                msg="Please authorize the action."
+                status="warning"
+                onClose={() => {
+                  this.setState({ showActionRequestMsg: false })
+                }}
+              />
+            )}
           </Col>
         </Row>
       </div>

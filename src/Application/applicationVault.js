@@ -1,10 +1,10 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
 import * as Colors from 'material-ui/styles/colors'
-import ApplicationTopBar from './ApplicationTopBar'
 import ApplicationVaultHome from '../ApplicationVaultHome'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
+import TopBarMenu from '../Elements/topBarMenu'
 
 import { Col, Grid, Row } from 'react-flexbox-grid'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
@@ -69,39 +69,28 @@ class ApplicationDragoPage extends Component {
     app: PropTypes.object.isRequired
   }
 
-  UNSAFE_componentWillMount() {}
-
   componentWillUnmount() {}
 
-  handleToggleNotifications = () => {
-    this.setState({ notificationsOpen: !this.state.notificationsOpen })
-  }
-
   render() {
-    const { notificationsOpen } = this.state
     const { location } = this.props
     const { isSyncing, syncStatus, isConnected } = this.props.app
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
         <Grid fluid className={styles.maincontainer}>
           <Row>
-            <Col xs={12}>
-              <ApplicationTopBar
+            <Col xs={12} className={styles.fix}>
+              <TopBarMenu
                 handleTopBarSelectAccountType={
                   this.handleTopBarSelectAccountType
                 }
-                handleToggleNotifications={this.handleToggleNotifications}
+                transactionsDrawerOpen={this.props.app.transactionsDrawerOpen}
               />
             </Col>
           </Row>
           <MuiThemeProvider muiTheme={muiThemeVault}>
             <Row className={classNames(styles.content)}>
               <Col xs={12}>
-                <ApplicationVaultHome
-                  location={location}
-                  notificationsOpen={notificationsOpen}
-                  handleToggleNotifications={this.handleToggleNotifications}
-                />
+                <ApplicationVaultHome location={location} />
                 {isConnected && !isSyncing ? null : (
                   <ElementNotConnected
                     isSyncing={isSyncing}

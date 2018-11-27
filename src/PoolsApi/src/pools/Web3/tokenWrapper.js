@@ -2,6 +2,7 @@
 // This file is part of RigoBlock.
 
 import * as abis from '../../contracts/abi'
+import BigNumber from 'bignumber.js'
 import Registry from '../registry'
 
 class TokenWrapperWeb3 {
@@ -10,7 +11,7 @@ class TokenWrapperWeb3 {
       throw new Error('API instance needs to be provided to Contract')
     }
     this._api = api
-    this._abi = abis.rigotoken
+    this._abi = abis.tokenWrapper
     this._registry = new Registry(api)
     this._constunctorName = this.constructor.name
   }
@@ -25,7 +26,7 @@ class TokenWrapperWeb3 {
   init = address => {
     const api = this._api
     const abi = this._abi
-    this._instance = new api.eth.Contract(abi)
+    this._instance = new api.eth.Contract(abi, address)
     return this._instance
   }
 
@@ -34,7 +35,10 @@ class TokenWrapperWeb3 {
       throw new Error('accountAddress needs to be provided')
     }
     const instance = this._instance
-    return instance.methods.balanceOf(accountAddress).call({})
+    return instance.methods
+      .balanceOf(accountAddress)
+      .call({})
+      .then(result => new BigNumber(result))
   }
 
   depositLock = accountAddress => {
@@ -42,31 +46,10 @@ class TokenWrapperWeb3 {
       throw new Error('accountAddress needs to be provided')
     }
     const instance = this._instance
-    return instance.methods.depositLock(accountAddress).call({})
-  }
-
-  transfer = (fromAddress, toAddress, amount) => {
-    if (!toAddress) {
-      throw new Error('toAddress needs to be provided')
-    }
-    if (!amount) {
-      throw new Error('amount needs to be provided')
-    }
-    const instance = this._instance
-    const options = {
-      from: fromAddress
-    }
-
     return instance.methods
-      .transfer(toAddress, amount)
-      .estimateGas(options)
-      .then(gasEstimate => {
-        console.log(gasEstimate)
-        options.gas = gasEstimate
-      })
-      .then(() => {
-        return instance.methods.transfer(toAddress, amount).send(options)
-      })
+      .depositLock(accountAddress)
+      .call({})
+      .then(result => new BigNumber(result))
   }
 }
 

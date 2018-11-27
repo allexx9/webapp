@@ -23,7 +23,7 @@ class EtherWeb3 {
     const options = {
       from: fromAddress,
       to: toAddress,
-      value: amount
+      value: amount.toString()
     }
     console.log(this._api)
     return this._api.eth.sendTransaction(options)

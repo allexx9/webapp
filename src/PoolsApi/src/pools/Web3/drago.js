@@ -2,6 +2,7 @@
 // This file is part of RigoBlock.
 
 import * as abis from '../../contracts/abi'
+import { WETH_ADDRESSES } from '../../utils/const'
 import Registry from '../registry'
 
 class DragoWeb3 {
@@ -34,7 +35,58 @@ class DragoWeb3 {
 
   getData = () => {
     const instance = this._instance
-    return instance.getData.call({})
+    return instance.methods.getData().call({})
+  }
+
+  getAdminData = () => {
+    const instance = this._instance
+    return instance.methods.getAdminData().call({})
+  }
+
+  getBalance = () => {
+    const api = this._api
+    const instance = this._instance
+    return api.eth.getBalance(instance._address)
+  }
+
+  getBalanceWETH = () => {
+    const api = this._api
+    const instance = this._instance
+    const wethInstance = new api.eth.Contract(
+      abis.weth,
+      WETH_ADDRESSES[api._rb.network.id]
+    )
+    return wethInstance.methods.balanceOf(instance._address).call({})
+  }
+
+  getPoolBalanceOnToken = tokenAddress => {
+    if (!tokenAddress) {
+      throw new Error('tokenAddress needs to be provided')
+    }
+    const api = this._api
+    const instance = this._instance
+    const tokenInstance = new api.eth.Contract(abis.erc20, tokenAddress)
+    return tokenInstance.methods.balanceOf(instance._address).call({})
+  }
+
+  // getTokenBalance = tokenAddress => {
+  //   const api = this._api
+  //   const instance = this._instance
+  //   const erc20Instance = api.newContract(abis.erc20, tokenAddress).instance
+  //   return erc20Instance.balanceOf.call({}, [instance.address])
+  // }
+
+  balanceOf = accountAddress => {
+    if (!accountAddress) {
+      throw new Error('accountAddress needs to be provided')
+    }
+    const instance = this._instance
+    return instance.methods.balanceOf(accountAddress).call({})
+  }
+
+  totalSupply = () => {
+    const instance = this._instance
+    return instance.methods.totalSupply().call({})
   }
 
   /**
@@ -130,13 +182,13 @@ class DragoWeb3 {
     const encodedABI = await api.eth.abi.encodeFunctionCall(contractMethod, [
       tokenAddress,
       tokenWrapper,
-      toBeWrapped.toString(),
+      toBeWrapped,
       time,
       isOldERC20
     ])
     console.log(encodedABI)
     return instance.methods
-      .operateOnExchange(exchangeContractAddress, encodedABI)
+      .operateOnExchange(exchangeContractAddress, [encodedABI])
       .estimateGas(options)
       .then(gasEstimate => {
         console.log(gasEstimate)
@@ -144,7 +196,7 @@ class DragoWeb3 {
       })
       .then(() => {
         return instance.methods
-          .operateOnExchange(exchangeContractAddress, encodedABI)
+          .operateOnExchange(exchangeContractAddress, [encodedABI])
           .send(options)
       })
   }
@@ -242,7 +294,7 @@ class DragoWeb3 {
     const encodedABI = await api.eth.abi.encodeFunctionCall(contractMethod, [
       tokenAddress,
       tokenWrapper,
-      toBeUnwrapped.toString(),
+      toBeUnwrapped,
       v,
       r,
       s,
@@ -250,7 +302,7 @@ class DragoWeb3 {
     ])
     console.log(encodedABI)
     return instance.methods
-      .operateOnExchange(exchangeContractAddress, encodedABI)
+      .operateOnExchange(exchangeContractAddress, [encodedABI])
       .estimateGas(options)
       .then(gasEstimate => {
         console.log(gasEstimate)
@@ -258,7 +310,7 @@ class DragoWeb3 {
       })
       .then(() => {
         return instance.methods
-          .operateOnExchange(exchangeContractAddress, encodedABI)
+          .operateOnExchange(exchangeContractAddress, [encodedABI])
           .send(options)
       })
   }
@@ -586,28 +638,47 @@ class DragoWeb3 {
     // })
   }
 
-  totalSupply = () => {
-    const instance = this._instance
-    return instance.methods.totalSupply.call({})
-  }
-
-  depositToExchange = (exchangeAddress, fromAddress, amount) => {
-    if (!fromAddress) {
-      throw new Error('toAddress needs to be provided')
+  wrapETHZeroEx = async (wrapperAddress, managerAccountAddress, amount) => {
+    if (!managerAccountAddress) {
+      throw new Error('accountAddress needs to be provided')
+    }
+    if (!wrapperAddress) {
+      throw new Error('wrapperAddress needs to be provided')
     }
     if (!amount) {
       throw new Error('amount needs to be provided')
     }
-    if (!exchangeAddress) {
-      throw new Error('exchangeAddress needs to be provided')
-    }
+    console.log(`wrapperAddress ${wrapperAddress}`)
+    console.log(`managerAccountAddress ${managerAccountAddress}`)
+    console.log(`amount ${amount}`)
+
     const instance = this._instance
-    const options = {
-      from: fromAddress
+    const api = this._api
+    let options = {
+      from: managerAccountAddress
     }
-    console.log(exchangeAddress)
+    const contractMethod = {
+      name: 'wrapEth',
+      type: 'function',
+      inputs: [
+        {
+          type: 'address',
+          name: 'wrapper'
+        },
+        {
+          type: 'uint256',
+          name: 'amount'
+        }
+      ]
+    }
+
+    const encodedABI = await api.eth.abi.encodeFunctionCall(contractMethod, [
+      wrapperAddress,
+      amount
+    ])
+    console.log(encodedABI)
     return instance.methods
-      .depositToExchange(exchangeAddress, amount)
+      .operateOnExchange(wrapperAddress, encodedABI)
       .estimateGas(options)
       .then(gasEstimate => {
         console.log(gasEstimate)
@@ -615,28 +686,52 @@ class DragoWeb3 {
       })
       .then(() => {
         return instance.methods
-          .depositToExchange(exchangeAddress, amount)
+          .operateOnExchange(wrapperAddress, encodedABI)
           .send(options)
       })
   }
 
-  withdrawFromExchange = (exchangeAddress, fromAddress, amount) => {
-    if (!fromAddress) {
-      throw new Error('toAddress needs to be provided')
+  unWrapETHZeroEx = async (wrapperAddress, managerAccountAddress, amount) => {
+    if (!wrapperAddress) {
+      throw new Error('wrapperAddress needs to be provided')
+    }
+    if (!managerAccountAddress) {
+      throw new Error('accountAddress needs to be provided')
     }
     if (!amount) {
       throw new Error('amount needs to be provided')
     }
-    if (!exchangeAddress) {
-      throw new Error('exchangeAddress needs to be provided')
-    }
+    console.log(`wrapperAddress ${wrapperAddress}`)
+    console.log(`managerAccountAddress ${managerAccountAddress}`)
+    console.log(`amount ${amount}`)
+
     const instance = this._instance
-    const options = {
-      from: fromAddress
+    const api = this._api
+    let options = {
+      from: managerAccountAddress
     }
-    console.log(exchangeAddress)
+    const contractMethod = {
+      name: 'unwrapEth',
+      type: 'function',
+      inputs: [
+        {
+          type: 'address',
+          name: 'wrapper'
+        },
+        {
+          type: 'uint256',
+          name: 'amount'
+        }
+      ]
+    }
+
+    const encodedABI = await api.eth.abi.encodeFunctionCall(contractMethod, [
+      wrapperAddress,
+      amount
+    ])
+    console.log(encodedABI)
     return instance.methods
-      .withdrawFromExchange(exchangeAddress, amount)
+      .operateOnExchange(wrapperAddress, encodedABI)
       .estimateGas(options)
       .then(gasEstimate => {
         console.log(gasEstimate)
@@ -644,7 +739,7 @@ class DragoWeb3 {
       })
       .then(() => {
         return instance.methods
-          .withdrawFromExchange(exchangeAddress, amount)
+          .operateOnExchange(wrapperAddress, encodedABI)
           .send(options)
       })
   }

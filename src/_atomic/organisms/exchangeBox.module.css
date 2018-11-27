@@ -1,8 +1,13 @@
-.titleSection{
+.titleSection {
   margin-bottom: 5px;
   margin-top: 5px;
 }
 
 .section {
   padding-bottom: 5px;
+}
+
+.sectionContainer {
+  /* padding-right: 0px;
+  padding-left: 0px; */
 }

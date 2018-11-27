@@ -20,7 +20,7 @@ export default class InfoTable extends Component {
     return row.map((cell, index) => {
       const key = 'infoTableCol' + index
       const rowCell =
-        index == 0 ? (
+        index === 0 ? (
           <TableRowColumn
             className={columnsStyle[index]}
             style={this.compactStyle}

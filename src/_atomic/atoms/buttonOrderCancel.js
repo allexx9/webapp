@@ -5,8 +5,14 @@ import styles from './buttonOrder.module.css'
 
 class ButtonOrderCancel extends Component {
   static propTypes = {
-    onCancelOrder: PropTypes.func.isRequired,
-    disabled: PropTypes.bool.isRequired
+    onClick: PropTypes.func,
+    disabled: PropTypes.bool.isRequired,
+    label: PropTypes.string
+  }
+
+  static defaultProps = {
+    onClick: () => {},
+    label: 'Cancel'
   }
 
   render() {
@@ -17,9 +23,9 @@ class ButtonOrderCancel extends Component {
     return this.props.disabled ? (
       <div className={styles.buttonContainer}>
         <FlatButton
-          label="Cancel"
+          label={this.props.label}
           labelStyle={{ fontWeight: 700, fontSize: '18px' }}
-          onClick={this.props.onCancelOrder}
+          onClick={this.props.onClick}
           style={buttonOrderSubmitStyle}
           disabled={this.props.disabled}
         />
@@ -28,9 +34,9 @@ class ButtonOrderCancel extends Component {
       <div className={styles.buttonContainer}>
         <FlatButton
           primary={true}
-          label="Cancel"
+          label={this.props.label}
           labelStyle={{ fontWeight: 700, fontSize: '18px' }}
-          onClick={this.props.onCancelOrder}
+          onClick={this.props.onClick}
           style={buttonOrderSubmitStyle}
           // hoverColor={Colors.blue400}
           // backgroundColor={'#054186'}

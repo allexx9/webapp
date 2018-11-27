@@ -1,7 +1,5 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-// import { api } from '../parity';
-
 import BigNumber from 'bignumber.js'
 
 const DIVISOR = 10 ** 6
@@ -10,18 +8,38 @@ const ZERO = new BigNumber(0)
 export const formatPrice = price => {
   const number = Number(price)
   if (number < 100) {
-    return number.toFixed(5)
-  }
-  if (number < 1000) {
     return number.toFixed(4)
   }
-  if (number < 10000) {
+  if (number < 1000) {
     return number.toFixed(3)
   }
-  if (number < 100000) {
+  if (number < 10000) {
     return number.toFixed(2)
   }
-  return number.toFixed(5)
+  if (number < 100000) {
+    return number.toFixed(1)
+  }
+  return number.toFixed(4)
+}
+
+export const formatPriceTrades = price => {
+  const number = Number(price)
+  if (number < 1) {
+    return number.toFixed(4)
+  }
+  if (number < 10) {
+    return number.toFixed(2)
+  }
+  if (number < 1000) {
+    return number.toFixed(1)
+  }
+  if (number < 10000) {
+    return number.toFixed(1)
+  }
+  if (number < 100000) {
+    return number.toFixed(1)
+  }
+  return number.toFixed(1)
 }
 
 /**
@@ -34,7 +52,7 @@ export const formatPrice = price => {
  */
 export function toUnitAmount(amount, decimals) {
   const aUnit = new BigNumber(10).pow(decimals)
-  const unit = amount.div(aUnit)
+  const unit = new BigNumber(amount).div(aUnit)
   return unit
 }
 /**
@@ -47,7 +65,7 @@ export function toUnitAmount(amount, decimals) {
  */
 export function toBaseUnitAmount(amount, decimals) {
   const unit = new BigNumber(10).pow(decimals)
-  const baseUnitAmount = amount.times(unit)
+  const baseUnitAmount = new BigNumber(amount).times(unit)
   const hasDecimals = baseUnitAmount.decimalPlaces() !== 0
   if (hasDecimals) {
     throw new Error(
@@ -83,8 +101,18 @@ export function formatCoins(amount, decimals = 4) {
   return adjusted.toFormat(decimals)
 }
 
-export function formatEth(eth, decimals = 4, api) {
-  return api.util.fromWei(eth).toFormat(decimals)
+export function formatEth(eth, decimals = 4) {
+  // console.log(new BigNumber(eth))
+  // let web3 = new Web3()
+  // let BN = web3.utils.BN
+
+  // console.log(BN(eth))
+
+  // console.log(new BN(1234).toString())
+
+  return toUnitAmount(new BigNumber(eth), 18).toFormat(decimals)
+
+  // return web3.utils.fromWei(new BN(eth)).toFormat(decimals)
 }
 
 export function formatHash(hash) {

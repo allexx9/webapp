@@ -1,6 +1,7 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 import 'babel-polyfill'
 import 'react-virtualized/styles.css'
+import * as Sentry from '@sentry/browser'
 import { PROD } from './_utils/const'
 import { Redirect, Route, Router, Switch } from 'react-router-dom'
 import ApplicationConfigPage from './Application/applicationConfig'
@@ -9,7 +10,6 @@ import ApplicationExchangePage from './Application/applicationExchange'
 import ApplicationHomePage from './Application/applicationHome'
 import ApplicationVaultPage from './Application/applicationVault'
 import Endpoint from './_utils/endpoint'
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import NotificationSystem from 'react-notification-system'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
@@ -19,7 +19,6 @@ import createHashHistory from 'history/createHashHistory'
 
 import { connect } from 'react-redux'
 import AppLoading from './Elements/elementAppLoading'
-import ElementNotification from './Elements/elementNotification'
 import utils from './_utils/utils'
 // import ElementNotConnected from './Elements/elementNotConnected'
 import { Actions } from './_redux/actions'
@@ -47,19 +46,27 @@ const history = createHashHistory()
 // Component Whoops404 is loaded if a page does not exist.
 
 function mapStateToProps(state) {
-  return state
+  return {
+    app: {
+      appLoading: state.app.appLoading
+    },
+    endpoint: state.endpoint
+  }
 }
 
 export class App extends Component {
   constructor(props) {
     super(props)
-    console.log(props)
     this._notificationSystem = null
     let endpoint = new Endpoint(
       this.props.endpoint.endpointInfo,
       this.props.endpoint.networkInfo
     )
-    this._api = endpoint.connect()
+    try {
+      this._api = endpoint.connect()
+    } catch (error) {
+      console.warn(error)
+    }
   }
 
   scrollPosition = 0
@@ -95,6 +102,15 @@ export class App extends Component {
     const stateUpdate = !utils.shallowEqual(this.state, nextState)
     // console.log(`${this.constructor.name} -> propsUpdate: %c${propsUpdate}.%c stateUpdate: %c${stateUpdate}`, `color: ${propsUpdate ? 'green' : 'red'}; font-weight: bold;`,'',`color: ${stateUpdate ? 'green' : 'red'}; font-weight: bold;`)
     return stateUpdate || propsUpdate
+  }
+
+  componentDidCatch(error, errorInfo) {
+    Sentry.withScope(scope => {
+      Object.keys(errorInfo).forEach(key => {
+        scope.setExtra(key, errorInfo[key])
+      })
+      Sentry.captureException(error)
+    })
   }
 
   componentDidMount = async () => {
@@ -189,22 +205,18 @@ export class App extends Component {
     }
     return (
       <div>
+        <NotificationSystem
+          ref={n => (this._notificationSystem = n)}
+          style={notificationStyle}
+        />
         {this.props.app.appLoading ? (
           <div>
-            <NotificationSystem
-              ref={n => (this._notificationSystem = n)}
-              style={notificationStyle}
-            />
             <Router history={history}>
               <AppLoading />
             </Router>
           </div>
         ) : (
           <div>
-            <NotificationSystem
-              ref={n => (this._notificationSystem = n)}
-              style={notificationStyle}
-            />
             <Router history={history}>
               <Switch>
                 <Route
@@ -244,20 +256,6 @@ export class App extends Component {
           </div>
         )}
       </div>
-    )
-  }
-
-  notificationAlert = (primaryText, secondaryText, eventType = 'transfer') => {
-    return (
-      <MuiThemeProvider>
-        <ElementNotification
-          primaryText={primaryText}
-          secondaryText={secondaryText}
-          eventType={eventType}
-          eventStatus="executed"
-          txHash=""
-        />
-      </MuiThemeProvider>
     )
   }
 }

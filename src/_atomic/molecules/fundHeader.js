@@ -53,7 +53,7 @@ export default class FundHeader extends Component {
             <div className={styles.identityIconContainer}>
               <IdentityIcon
                 address={fundDetails.address}
-                size={'60px'}
+                size={25}
                 customStyle={{
                   borderStyle: 'solid',
                   borderColor: Colors.grey400

@@ -2,7 +2,7 @@
 
 import * as TYPE_ from './const'
 
-const tokens = {
+const app = {
   updateAppStatus: status => {
     return {
       type: TYPE_.UPDATE_APP_STATUS,
@@ -24,4 +24,4 @@ const tokens = {
   }
 }
 
-export default tokens
+export default app

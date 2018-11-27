@@ -4,9 +4,7 @@ import { Col, Row } from 'react-flexbox-grid'
 import ApplicationDragoManager from './ApplicationDragoManager'
 import ApplicationDragoTrader from './ApplicationDragoTrader'
 import ElementBottomStatusBar from '../Elements/elementBottomStatusBar'
-import ElementNotificationsDrawer from '../Elements/elementNotificationsDrawer'
 import LeftSideDrawerFunds from '../Elements/leftSideDrawerFunds'
-import Loading from '../_atomic/atoms/loading'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import WalletSetup from '../_atomic/organisms/walletSetup'
@@ -32,9 +30,7 @@ class ApplicationDragoHome extends Component {
   static propTypes = {
     location: PropTypes.object.isRequired,
     endpoint: PropTypes.object.isRequired,
-    handleToggleNotifications: PropTypes.func.isRequired,
-    user: PropTypes.object.isRequired,
-    notificationsOpen: PropTypes.bool.isRequired
+    user: PropTypes.object.isRequired
   }
 
   state = {}
@@ -57,10 +53,6 @@ class ApplicationDragoHome extends Component {
     }
     return stateUpdate || propsUpdate
   }
-
-  componentDidMount() {}
-
-  componentWillUnmount() {}
 
   UNSAFE_componentWillUpdate() {
     // Storing the active document, so we can preserve focus in forms.
@@ -86,62 +78,42 @@ class ApplicationDragoHome extends Component {
   }
 
   render() {
-    const {
-      user,
-      location,
-      handleToggleNotifications,
-      notificationsOpen,
-      endpoint
-    } = this.props
+    const { user, location, endpoint } = this.props
     const openWalletSetup =
       this.props.endpoint.isMetaMaskLocked ||
       !this.props.endpoint.isMetaMaskNetworkCorrect
         ? true
         : false
-    if (endpoint.loading) {
-      return <Loading />
-    }
+
     const showApp = !openWalletSetup && !endpoint.grgBalance.eq(0)
     return (
       <div style={{ height: '100%' }} ref={node => (this.node = node)}>
-        {user.isManager &&
-          showApp && (
-            <Row className={styles.maincontainer}>
-              <Col xs={2}>
-                <LeftSideDrawerFunds
-                  location={location}
-                  isManager={user.isManager}
-                />
-              </Col>
-              <Col xs={10}>
-                <ApplicationDragoManager />
-              </Col>
-            </Row>
-          )}
-        {!user.isManager &&
-          showApp && (
-            <Row className={styles.maincontainer}>
-              <Col xs={2}>
-                <LeftSideDrawerFunds
-                  location={location}
-                  isManager={user.isManager}
-                />
-              </Col>
-              <Col xs={10}>
-                <ApplicationDragoTrader />
-              </Col>
-            </Row>
-          )}
-        <Row>
-          <Col xs={12}>
-            {notificationsOpen ? (
-              <ElementNotificationsDrawer
-                handleToggleNotifications={handleToggleNotifications}
-                notificationsOpen={notificationsOpen}
+        {user.isManager && showApp && (
+          <Row className={styles.maincontainer}>
+            <Col xs={2}>
+              <LeftSideDrawerFunds
+                location={location}
+                isManager={user.isManager}
               />
-            ) : null}
-          </Col>
-        </Row>
+            </Col>
+            <Col xs={10}>
+              <ApplicationDragoManager />
+            </Col>
+          </Row>
+        )}
+        {!user.isManager && showApp && (
+          <Row className={styles.maincontainer}>
+            <Col xs={2}>
+              <LeftSideDrawerFunds
+                location={location}
+                isManager={user.isManager}
+              />
+            </Col>
+            <Col xs={10}>
+              <ApplicationDragoTrader />
+            </Col>
+          </Row>
+        )}
         <ElementBottomStatusBar
           blockNumber={endpoint.prevBlockNumber}
           networkName={endpoint.networkInfo.name}

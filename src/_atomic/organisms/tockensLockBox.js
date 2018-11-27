@@ -16,18 +16,14 @@ class TokensLockBox extends Component {
 
   render() {
     return (
-      <Row>
+      <Row className={styles.sectionTitle}>
         <Col xs={12}>
-          <Row className={styles.sectionTitle}>
-            <Col xs={12}>
-              <TokenLockInfo
-                selectedFund={this.props.selectedFund}
-                selectedTokensPair={this.props.selectedTokensPair}
-                selectedExchange={this.props.selectedExchange}
-                selectedRelay={this.props.selectedRelay}
-              />
-            </Col>
-          </Row>
+          <TokenLockInfo
+            selectedFund={this.props.selectedFund}
+            selectedTokensPair={this.props.selectedTokensPair}
+            selectedExchange={this.props.selectedExchange}
+            selectedRelay={this.props.selectedRelay}
+          />
         </Col>
       </Row>
     )

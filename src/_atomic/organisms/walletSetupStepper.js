@@ -1,4 +1,6 @@
+import { APP, DS } from '../../_utils/const.js'
 import { ERC20_TOKENS } from '../../_utils/tokens'
+import { Link } from 'react-router-dom'
 import { Step, StepContent, StepLabel, Stepper } from 'material-ui/Stepper'
 import { connect } from 'react-redux'
 import Dialog from 'material-ui/Dialog'
@@ -132,6 +134,7 @@ class WalletSetupStepper extends Component {
           return !correctNetwork || locked || !holdsTokens
         case 3:
           return !correctNetwork || locked || !holdsTokens
+        default:
       }
     }
     return (
@@ -147,43 +150,39 @@ class WalletSetupStepper extends Component {
           />
         )}
 
-        {step >= 0 &&
-          step < 3 &&
-          step !== 2 && (
-            <RaisedButton
-              label={'Next'}
-              disabled={buttonDisable(step)}
-              disableTouchRipple={true}
-              disableFocusRipple={true}
-              primary={true}
-              onClick={this.handleNext}
-              style={{ marginRight: 12 }}
-            />
-          )}
-        {step === 2 &&
-          !holdsTokens && (
-            <RaisedButton
-              label={'Get GRG'}
-              disableTouchRipple={true}
-              disableFocusRipple={true}
-              primary={true}
-              onClick={this.getGRGFromFaucet}
-              style={{ marginRight: 12 }}
-            />
-          )}
+        {step >= 0 && step < 3 && step !== 2 && (
+          <RaisedButton
+            label={'Next'}
+            disabled={buttonDisable(step)}
+            disableTouchRipple={true}
+            disableFocusRipple={true}
+            primary={true}
+            onClick={this.handleNext}
+            style={{ marginRight: 12 }}
+          />
+        )}
+        {step === 2 && !holdsTokens && (
+          <RaisedButton
+            label={'Get GRG'}
+            disableTouchRipple={true}
+            disableFocusRipple={true}
+            primary={true}
+            onClick={this.getGRGFromFaucet}
+            style={{ marginRight: 12 }}
+          />
+        )}
 
-        {step === 2 &&
-          holdsTokens && (
-            <RaisedButton
-              label={'Next'}
-              disabled={buttonDisable(step)}
-              disableTouchRipple={true}
-              disableFocusRipple={true}
-              primary={true}
-              onClick={this.handleNext}
-              style={{ marginRight: 12 }}
-            />
-          )}
+        {step === 2 && holdsTokens && (
+          <RaisedButton
+            label={'Next'}
+            disabled={buttonDisable(step)}
+            disableTouchRipple={true}
+            disableFocusRipple={true}
+            primary={true}
+            onClick={this.handleNext}
+            style={{ marginRight: 12 }}
+          />
+        )}
 
         {step === 3 && (
           <RaisedButton
@@ -256,6 +255,7 @@ class WalletSetupStepper extends Component {
             <Looks4 style={style} color="#054186" />
           </div>
         )
+      default:
     }
   }
 
@@ -351,16 +351,20 @@ class WalletSetupStepper extends Component {
                       We have detected that you are <b>not</b> connected to{' '}
                       <b>{this.props.endpoint.networkInfo.name}</b> network.
                     </p>
-                    <p>Please configure your wallet accordingly.</p>
+                    You can change the network settings in the{' '}
+                    <Link to={DS + APP + DS + 'web/config/network'}>
+                      configuration
+                    </Link>{' '}
+                    section.
                   </div>
                 )}
-                <a
+                {/* <a
                   href="https://help.rigoblock.com"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   Tell me more about this.
-                </a>
+                </a> */}
                 {this.renderStepActions(1)}
               </StepContent>
             </Step>

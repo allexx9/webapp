@@ -10,6 +10,7 @@ import {
   validatePositiveNumber
 } from '../../_utils/validation'
 import { connect } from 'react-redux'
+import { toBaseUnitAmount } from '../../_utils/format'
 import ActionsDialogHeader from '../../_atomic/molecules/actionsDialogHeader'
 import BigNumber from 'bignumber.js'
 import DropDownMenu from 'material-ui/DropDownMenu'
@@ -285,7 +286,7 @@ class ElementFundActionWrapETH extends Component {
     const authMsg = 'You un-wrapped ' + this.state.amount + ' ETH'
 
     // Initializing transaction variables
-    const transactionId = api.util.sha3(new Date() + account.address)
+    const transactionId = api.utils.sha3(new Date() + account.address)
     let transactionDetails = {
       status: account.source === 'MetaMask' ? 'pending' : 'authorization',
       hash: '',
@@ -307,10 +308,10 @@ class ElementFundActionWrapETH extends Component {
     poolApi = new PoolApi(provider)
     poolApi.contract.drago.init(dragoDetails.address)
     poolApi.contract.drago
-      .withdrawFromExchange(
+      .unWrapETHZeroEx(
         WETHaddress,
         account.address,
-        api.util.toWei(this.state.amount)
+        toBaseUnitAmount(new BigNumber(this.state.amount), 18).toString(16)
       )
       .then(receipt => {
         console.log(receipt)
@@ -381,7 +382,7 @@ class ElementFundActionWrapETH extends Component {
     const authMsg = 'You wrapped ' + this.state.amount + ' ETH'
 
     // Initializing transaction variables
-    const transactionId = api.util.sha3(new Date() + account.address)
+    const transactionId = api.utils.sha3(new Date() + account.address)
     let transactionDetails = {
       status: account.source === 'MetaMask' ? 'pending' : 'authorization',
       hash: '',
@@ -403,14 +404,14 @@ class ElementFundActionWrapETH extends Component {
     poolApi = new PoolApi(provider)
     poolApi.contract.drago.init(dragoDetails.address)
     poolApi.contract.drago
-      .depositToExchange(
+      .wrapETHZeroEx(
         WETHaddress,
         account.address,
-        api.util.toWei(this.state.amount)
+        toBaseUnitAmount(new BigNumber(this.state.amount), 18).toString(16)
       )
       .then(receipt => {
         console.log(receipt)
-        // Adding transaciont to the queue
+        // Adding transaction to the queue
         // Parity returns an internal transaction ID straighaway. The transaction then needs to be authorized inside the wallet.
         // MetaMask returns a receipt of the transaction once it has been mined by the network. It can take a long time.
         if (account.source === 'MetaMask') {

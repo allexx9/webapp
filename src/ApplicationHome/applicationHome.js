@@ -9,13 +9,14 @@ import Chat from 'material-ui/svg-icons/communication/chat'
 import ElementBottomStatusBar from '../Elements/elementBottomStatusBar'
 import ElementListFunds from '../Elements/elementListFunds'
 import ElementListWrapper from '../Elements/elementListWrapper'
-import FilterFunds from '../Elements/elementFilterFunds'
+import FilterPoolsField from '../_atomic/atoms/filterPoolsField'
 import FlatButton from 'material-ui/FlatButton'
 import LinearProgress from 'material-ui/LinearProgress'
 import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types'
 import RaisedButton from 'material-ui/RaisedButton'
 import React, { PureComponent } from 'react'
+import SearchIcon from '../_atomic/atoms/searchIcon'
 import WalletSetup from '../_atomic/organisms/walletSetup'
 import _ from 'lodash'
 import styles from './applicationHome.module.css'
@@ -189,7 +190,7 @@ class ApplicationHome extends PureComponent {
         </div>
         <Row>
           <Col xs={12}>
-            <div className={styles.shadow}>
+            <div>
               <Row>
                 <Col xs={12}>
                   <div className={styles.mainlogo}>
@@ -268,7 +269,11 @@ class ApplicationHome extends PureComponent {
                       <Col xs={12}>
                         <div className={styles.filterBox}>
                           Search for pools
-                          <FilterFunds filter={this.filter} />
+                          <FilterPoolsField
+                            filter={this.filter}
+                            hintText={<SearchIcon text={'Search...'} />}
+                            floatingLabelText=""
+                          />
                         </div>
                       </Col>
                       <Col xs={12}>
@@ -387,15 +392,13 @@ class ApplicationHome extends PureComponent {
               </Row> */}
             </div>
           </Col>
-          <Col xs={12}>
-            <ElementBottomStatusBar
-              blockNumber={endpoint.prevBlockNumber}
-              networkName={endpoint.networkInfo.name}
-              networkError={endpoint.networkError}
-              networkStatus={endpoint.networkStatus}
-            />
-          </Col>
         </Row>
+        <ElementBottomStatusBar
+          blockNumber={endpoint.prevBlockNumber}
+          networkName={endpoint.networkInfo.name}
+          networkError={endpoint.networkError}
+          networkStatus={endpoint.networkStatus}
+        />
         {this.state.showCommunityButtons && (
           <div className={styles.telegramButtonContainer}>
             <div>

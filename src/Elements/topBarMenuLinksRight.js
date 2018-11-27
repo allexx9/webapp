@@ -24,7 +24,12 @@ import styles from './elements.module.css'
 import utils from '../_utils/utils'
 
 function mapStateToProps(state) {
-  return state
+  return {
+    user: state.user,
+    transactions: state.transactions,
+    endpoint: state.endpoint,
+    app: state.app
+  }
 }
 
 let menuStyles = {
@@ -56,17 +61,13 @@ let enabledUserType = {
 }
 
 class NavLinks extends Component {
-  constructor(props) {
-    super(props)
-  }
-
   static propTypes = {
     location: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
     user: PropTypes.object.isRequired,
-    handleToggleNotifications: PropTypes.func.isRequired,
     transactions: PropTypes.object.isRequired,
-    endpoint: PropTypes.object.isRequired
+    endpoint: PropTypes.object.isRequired,
+    app: PropTypes.object.isRequired
   }
 
   static contextTypes = {
@@ -74,14 +75,17 @@ class NavLinks extends Component {
   }
 
   state = {
-    notificationsOpen: false,
     allEvents: null,
     minedEvents: null,
     pendingEvents: null,
     subscriptionIDDrago: null,
-    transactionsDrawerOpen: false,
-    transactionsDrawerNetworkButtonStyle: styles.networkIconClosed,
-    transactionsDrawerNetworkButtonIconStyle: menuStyles.profileIcon.closed
+    transactionsDrawerNetworkButtonStyle: this.props.app.transactionsDrawerOpen
+      ? styles.networkIconOpen
+      : styles.networkIconClosed,
+    transactionsDrawerNetworkButtonIconStyle: this.props.app
+      .transactionsDrawerOpen
+      ? menuStyles.profileIcon.open
+      : menuStyles.profileIcon.closed
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -98,7 +102,6 @@ class NavLinks extends Component {
   // value = 1 = Trader
   // value = 2 = Manager
   handleTopBarSelectAccountType = (event, value) => {
-    console.log(value)
     this.props.dispatch(Actions.users.isManagerAction(value))
   }
 
@@ -135,21 +138,25 @@ class NavLinks extends Component {
   }
 
   handleToggleNotifications = () => {
+    const { transactionsDrawerOpen } = this.props.app
     let transactionsDrawerNetworkButtonStyle,
       transactionsDrawerNetworkButtonIconStyle
-    !this.state.transactionsDrawerOpen
+    !transactionsDrawerOpen
       ? (transactionsDrawerNetworkButtonStyle = styles.networkIconOpen)
       : (transactionsDrawerNetworkButtonStyle = styles.networkIconClosed)
-    !this.state.transactionsDrawerOpen
+    !transactionsDrawerOpen
       ? (transactionsDrawerNetworkButtonIconStyle = menuStyles.profileIcon.open)
       : (transactionsDrawerNetworkButtonIconStyle =
           menuStyles.profileIcon.closed)
     this.setState({
-      transactionsDrawerOpen: !this.state.transactionsDrawerOpen,
       transactionsDrawerNetworkButtonStyle,
       transactionsDrawerNetworkButtonIconStyle
     })
-    this.props.handleToggleNotifications()
+    this.props.dispatch(
+      Actions.app.updateAppStatus({
+        transactionsDrawerOpen: !this.props.app.transactionsDrawerOpen
+      })
+    )
   }
 
   render() {
@@ -172,7 +179,7 @@ class NavLinks extends Component {
       menuStyles = { ...menuStyles, ...enabledUserType }
     }
     return (
-      <Toolbar style={{ background: '' }}>
+      <Toolbar style={{ background: '', padding: '0px' }}>
         <ToolbarGroup>
           <ToolbarSeparator style={menuStyles.separator} />
           <ToolbarGroup>
@@ -284,13 +291,17 @@ class NavLinks extends Component {
                 <Badge
                   badgeContent={transactions.pending}
                   secondary={true}
-                  style={{ padding: '0px !important' }}
+                  style={{
+                    padding: '0px !important'
+                  }}
                   badgeStyle={{
                     top: 0,
                     right: 0,
                     fontSize: '10px',
                     width: '20px',
-                    height: '20px'
+                    height: '20px',
+                    backgroundColor: 'rgb(255, 174, 0)',
+                    fontWeight: '700'
                   }}
                 >
                   <IconButton
@@ -312,11 +323,6 @@ class NavLinks extends Component {
                   iconStyle={
                     this.state.transactionsDrawerNetworkButtonIconStyle
                   }
-                  // style={{
-                  //   marginTop: "-5px",
-                  //   marginBottom: "-5px"
-                  // }
-                  // }
                 >
                   <NotificationWifi />
                 </IconButton>

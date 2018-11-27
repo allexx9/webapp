@@ -1,4 +1,3 @@
-import * as Colors from 'material-ui/styles/colors'
 import { Actions } from '../../_redux/actions'
 import { Col, Row } from 'react-flexbox-grid'
 import {
@@ -128,7 +127,7 @@ class ElementVaultCreateAction extends React.Component {
     let poolApi = null
     // Initializing transaction variables
     const authMsg = 'You deployed the vault ' + vaultSymbol + ' | ' + vaultName
-    const transactionId = api.util.sha3(new Date() + vaultSymbol)
+    const transactionId = api.utils.sha3(new Date() + vaultSymbol)
     let transactionDetails = {
       status:
         this.state.account.source === 'MetaMask' ? 'pending' : 'authorization',
@@ -178,10 +177,10 @@ class ElementVaultCreateAction extends React.Component {
               )
             )
           }
-          this.setState({
-            sending: false,
-            complete: true
-          })
+          // this.setState({
+          //   sending: false,
+          //   complete: true
+          // })
         })
         .catch(error => {
           const errorArray = error.message.split(/\r?\n/)
@@ -254,10 +253,6 @@ class ElementVaultCreateAction extends React.Component {
 
   render() {
     const { openAuth, authMsg, authAccount, vaultDetails } = this.state
-    const labelStyle = {
-      color: '#FFFFFF',
-      fontWeight: 700
-    }
     const titleStyle = {
       padding: 0,
       lineHeight: '20px',

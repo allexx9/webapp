@@ -3,30 +3,25 @@ import { Col, Row } from 'react-flexbox-grid'
 import { connect } from 'react-redux'
 import { getTokenAllowance } from '../../_utils/exchange'
 import BigNumber from 'bignumber.js'
+import BoxDecorator from '../molecules/boxDecorator'
 import BoxTitle from '../atoms/boxTitle'
-import ButtonAuthenticate from '../atoms/buttonAuthenticate'
+import ErcdexAllowance from '../molecules/ercdexAllowance'
+import EthfinexAuth from '../molecules/ethfinexAuth'
 import ExchangeSelector from '../molecules/exchangeSelector'
-// import FlatButton from 'material-ui/FlatButton'
 import Paper from 'material-ui/Paper'
-import PoolApi from '../../PoolsApi/src'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import SectionTitleExchange from '../atoms/sectionTitleExchange'
-import TokensLockBox from '../../_atomic/organisms/tockensLockBox'
-import Web3 from 'web3'
 import styles from './exchangeBox.module.css'
 import utils from '../../_utils/utils'
 
 import { ERC20_TOKENS, RELAYS, TRADE_TOKENS_PAIRS } from '../../_utils/const'
 
-import { CANCEL_SELECTED_ORDER } from '../../_redux/actions/const'
-
-const paperStyle = {
-  padding: '10px'
-}
-
 function mapStateToProps(state) {
-  return state
+  return {
+    exchange: state.exchange,
+    notifications: state.notifications
+  }
 }
 
 class ExchangeBox extends PureComponent {
@@ -41,6 +36,7 @@ class ExchangeBox extends PureComponent {
   }
 
   onSelectExchange = async relay => {
+    if (this.props.exchange.selectedRelay.name === relay) return
     const { api } = this.context
     const { selectedExchange, selectedFund } = this.props.exchange
     const selectedRelay = RELAYS[relay]
@@ -84,9 +80,7 @@ class ExchangeBox extends PureComponent {
     }
 
     // Resetting current order
-    this.props.dispatch({
-      type: CANCEL_SELECTED_ORDER
-    })
+    this.props.dispatch(Actions.exchange.cancelSelectedOrder())
 
     // Updating selected relay
     this.props.dispatch(Actions.exchange.updateSelectedRelay(selectedRelay))
@@ -101,93 +95,45 @@ class ExchangeBox extends PureComponent {
     )
   }
 
-  onAuthEF = async () => {
-    const { api } = this.context
-    console.log('auth')
-    try {
-      // var provider = account.source === 'MetaMask' ? window.web3 : api
-      const token = Date.now() / 1000 + 3600 + ''
-      let web3 = new Web3(window.web3)
-      console.log(token)
-      let result = await web3.eth.personal.sign(
-        token,
-        this.props.exchange.walletAddress
-      )
-      // .then((result) => {
-      //   console.log(result)
-      // })
-      console.log(result)
-      const accountSignature = {
-        signature: result,
-        nonce: token,
-        valid: true
-      }
-      // Fetch active orders
-      this.props.dispatch(
-        Actions.exchange.updateAccountSignature(accountSignature)
-      )
-      // Fetch active orders
-      this.props.dispatch(
-        Actions.exchange.getAccountOrdersStart(
-          this.props.exchange.selectedRelay,
-          api._rb.network.id,
-          accountSignature,
-          this.props.exchange.selectedTokensPair.baseToken,
-          this.props.exchange.selectedTokensPair.quoteToken
-        )
-      )
-    } catch (error) {
-      console.log(error)
+  showRelayActions = relay => {
+    switch (relay.name) {
+      case 'Ethfinex':
+        return <EthfinexAuth />
+      default:
+        return <ErcdexAllowance />
     }
   }
 
   render() {
-    const {
-      availableRelays,
-      selectedRelay,
-      accountSignature,
-      selectedFund,
-      selectedTokensPair,
-      selectedExchange
-    } = this.props.exchange
+    const { availableRelays, selectedRelay, ui } = this.props.exchange
+    const paperStyle = {
+      padding: '5px',
+      display: ui.panels.relayBox.expanded ? 'inline-block' : 'none'
+    }
+
     return (
-      <Row>
-        <Col xs={12}>
-          <Row className={styles.sectionTitle}>
-            <Col xs={12}>
-              <BoxTitle titleText={'RELAY'} />
-              <Paper style={paperStyle} zDepth={1}>
-                <Row>
-                  <Col xs={12}>
-                    <SectionTitleExchange titleText="RELAYS" />
-                    <ExchangeSelector
-                      availableRelays={availableRelays}
-                      selectedRelay={selectedRelay.name}
-                      onSelectExchange={this.onSelectExchange}
-                    />
-                  </Col>
-                  <Col xs={12}>
-                    <div className={styles.section}>
-                      <ButtonAuthenticate
-                        onAuthEF={this.onAuthEF}
-                        disabled={accountSignature.valid}
-                      />
-                    </div>
-                  </Col>
-                  <Col xs={12}>
-                    <TokensLockBox
-                      selectedFund={selectedFund}
-                      selectedTokensPair={selectedTokensPair}
-                      selectedExchange={selectedExchange}
-                      selectedRelay={selectedRelay}
-                    />
-                  </Col>
-                </Row>
-              </Paper>
-            </Col>
-          </Row>
-        </Col>
-      </Row>
+      <BoxDecorator boxName={'relayBox'}>
+        <Row className={styles.sectionTitle}>
+          <Col xs={12}>
+            <BoxTitle titleText={'RELAY'} boxName={'relayBox'} />
+            <Paper style={paperStyle} zDepth={1}>
+              <Row>
+                <Col xs={12}>
+                  <SectionTitleExchange titleText="RELAYS" />
+                </Col>
+                <Col xs={12}>
+                  <ExchangeSelector
+                    availableRelays={availableRelays}
+                    selectedRelay={selectedRelay.name}
+                    onSelectExchange={this.onSelectExchange}
+                  />
+                </Col>
+              </Row>
+              {this.showRelayActions(selectedRelay)}
+            </Paper>
+          </Col>
+        </Row>
+      </BoxDecorator>
     )
   }
 }

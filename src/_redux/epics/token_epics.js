@@ -37,6 +37,8 @@ import {
 } from '../actions/const'
 import Exchange from '../../_utils/exchange/src/index'
 // import exchangeConnector from '@rigoblock/exchange-connector'
+import ExchangeConnectorWrapper from '../../_utils/exchangeConnector'
+import moment from 'moment'
 import utils from '../../_utils/utils'
 
 // Setting allowance for a token
@@ -78,14 +80,15 @@ const candlesGroupWebsocket$ = (relay, networkId, symbols) => {
     let subscribedSymbols = Array(0)
     const exchange = new Exchange(relay.name, networkId, 'ws')
     const websocket = exchange.getHistoricalPricesData(
-      // utils.getTockenSymbolForRelay(relay.name, baseToken),
-      // utils.getTockenSymbolForRelay(relay.name, quoteToken),
+      // utils.getTokenSymbolForRelay(relay.name, baseToken),
+      // utils.getTokenSymbolForRelay(relay.name, quoteToken),
       'test',
       'test',
       '1m'
     )
     symbols.push('tETHUSD')
     websocket.addEventListener('open', function() {
+      console.log(`Candles WS open`)
       symbols.forEach(function(symbol) {
         let msg = JSON.stringify({
           event: `subscribe`,
@@ -96,7 +99,7 @@ const candlesGroupWebsocket$ = (relay, networkId, symbols) => {
       })
     })
     websocket.onmessage = msg => {
-      // console.log('WebSocket message.');
+      // console.log('WebSocket message.', msg.data)
       let data = JSON.parse(msg.data)
       if (typeof data.event !== undefined) {
         if (data.event === 'subscribed') {
@@ -126,9 +129,10 @@ const candlesGroupWebsocket$ = (relay, networkId, symbols) => {
 const updateGroupCandles = ticker => {
   const USDT = 'USDT'
   let symbol = ticker[0]
-  let now = new Date()
-  let yesterday = now.setDate(now.getDate() - 1)
-
+  const oneDayAgo = moment()
+    .startOf('hour')
+    .subtract(24, 'hours')
+    .valueOf()
   const convertToETH = (symbol, value) => {
     return symbol === USDT ? 1 / value : value
   }
@@ -139,10 +143,10 @@ const updateGroupCandles = ticker => {
   // console.log(symbol)
   // INITIAL SHAPSHOT
   if (Array.isArray(ticker[1][0])) {
-    // console.log('snapshot:', ticker)
+    // console.log(`snapshot full ${symbol}:`, ticker[1])
     let candles = ticker[1]
       .filter(tick => {
-        return tick[0] >= yesterday
+        return tick[0] >= oneDayAgo
       })
       .map(tick => {
         let entry = {
@@ -157,6 +161,17 @@ const updateGroupCandles = ticker => {
         // console.log(entry)
         return entry
       })
+    const nowPrice = {
+      ...candles[0],
+      ...{ date: moment().toDate(), epoch: moment().valueOf() }
+    }
+    candles.unshift(nowPrice)
+    const oneDayAgoPrice = {
+      ...candles[candles.length - 1],
+      ...{ date: moment(oneDayAgo).toDate(), epoch: oneDayAgo }
+    }
+    candles.push(oneDayAgoPrice)
+    // console.log(`snapshot 24h ${symbol}:`, candles)
     return {
       type: UPDATE_SELECTED_DRAGO_DETAILS_CHART_ASSETS_MARKET_DATA_INIT,
       payload: {
@@ -171,7 +186,7 @@ const updateGroupCandles = ticker => {
   if (!Array.isArray[ticker[1][0]]) {
     // console.log(`${ticker[1][0]} -> ${date}`)
     // console.log(new Date(ticker[1][0]))
-    console.log('update:', ticker)
+    // console.log('update:', ticker)
     let candles = {
       date: new Date(ticker[1][0]),
       low: convertToETH(symbol, ticker[1][4]),
@@ -236,76 +251,69 @@ export const getCandlesGroupDataEpic = (action$, state$) => {
 
 const getTickersWs$ = (relay, networkId, symbols) => {
   return Observable.create(observer => {
+    const ethfinex = ExchangeConnectorWrapper.getNewInstance().getExchange(
+      relay.name,
+      {
+        networkId: networkId
+      }
+    )
     let subscribedSymbols = Array(0)
-    const exchange = new Exchange(relay.name, networkId, 'ws')
-    const websocket = exchange.getTicker('test', 'test')
-    websocket.addEventListener('open', msg => {
-      // console.log(msg)
-      // console.log(symbols)
-      let symbolsArray = symbols.split(',')
-      if (symbolsArray.length !== 0) {
-        symbolsArray.forEach(function(symbol) {
-          // console.log(`ticker subcribe ${symbol}`)
-          let msg = JSON.stringify({
-            event: `subscribe`,
-            channel: `ticker`,
-            symbol: `${symbol}`
-            // event: `subscribe`,
-            // channel: `candles`,
-            // key: `trade:15m:${symbol}`
-          })
-          websocket.send(msg)
-        })
-      }
-    })
-    websocket.onmessage = msg => {
-      // console.log('WebSocket message.', msg.data)
-      let data = JSON.parse(msg.data)
-      if (typeof data.event !== undefined) {
-        if (data.event === 'subscribed') {
-          subscribedSymbols[data.chanId] = data.symbol
-            .split('t')[1]
-            .slice(0, -3)
-        }
-      }
-      if (Array.isArray(data)) {
-        let tick = []
-        if (data[1] !== 'hb') {
-          if (subscribedSymbols[data[0]] === 'ETH') {
-            tick = [
-              {
-                priceEth: 1 / data[1][6],
-                priceUsd: '',
-                symbol: 'USDT'
+    let unsubscribeArray = Array(0)
+    let symbolsArray = symbols.split(',').map(symbol => symbol.slice(1))
+    if (symbolsArray.length !== 0) {
+      ethfinex.raw.ws
+        .getTickers(
+          {
+            symbols: symbolsArray
+          },
+          (error, msgWs) => {
+            if (error) {
+              return observer.error(error)
+            } else {
+              // console.log(msgWs)
+              if (msgWs.event === 'subscribed') {
+                subscribedSymbols[msgWs.chanId] = msgWs.symbol
+                  .split('t')[1]
+                  .slice(0, -3)
               }
-            ]
-          } else {
-            tick = [
-              {
-                priceEth: data[1][6],
-                priceUsd: '',
-                symbol: subscribedSymbols[data[0]]
+              if (Array.isArray(msgWs)) {
+                let tick = []
+                if (msgWs[1] !== 'hb') {
+                  if (subscribedSymbols[msgWs[0]] === 'ETH') {
+                    tick = [
+                      {
+                        priceEth: 1 / msgWs[1][6],
+                        priceUsd: '',
+                        symbol: 'USDT'
+                      }
+                    ]
+                  } else {
+                    tick = [
+                      {
+                        priceEth: msgWs[1][6],
+                        priceUsd: '',
+                        symbol: subscribedSymbols[msgWs[0]]
+                      }
+                    ]
+                  }
+                  // console.log(tick)
+                  return observer.next(tick)
+                }
               }
-            ]
+              // return observer.next('')
+            }
           }
-          // console.log(tick)
-          return observer.next(tick)
-        }
-      }
+        )
+        .then(unsubscribe => {
+          unsubscribeArray.push(unsubscribe)
+        })
+        .then(() => {
+          return () => {
+            unsubscribeArray.forEach(item => item.unsubscribe())
+            return ethfinex.ws.close()
+          }
+        })
     }
-    websocket.onclose = msg => {
-      console.log(`Candle WS closed`)
-      return msg.wasClean ? observer.complete() : null
-    }
-    websocket.onerror = error => {
-      // console.log(error)
-      console.log('WebSocket error.')
-      return observer.error(error)
-    }
-    return () =>
-      websocket.close(1000, 'Closed by client', {
-        keepClosed: true
-      })
   })
 }
 
@@ -317,80 +325,72 @@ const getTickers$ = (relay, networkId, symbols, protocol = 'ws') => {
     return getTickersWs$(relay, networkId, symbols)
   }
   const exchange = new Exchange(relay.name, networkId, 'http')
-  return from(exchange.getTickers(symbols))
+  return timer(0, 3000).pipe(
+    exhaustMap(() => {
+      return from(exchange.getTickers(symbols))
+    })
+  )
 }
 
 export const getPricesEpic = (action$, state$) =>
   action$.pipe(
     ofType(TOKEN_PRICE_TICKERS_FETCH_START),
     switchMap(action => {
-      return timer(0, 3000).pipe(
+      const currentState = state$.value
+      const symbols =
+        Object.keys(action.payload.assetsList).length === 0
+          ? utils
+              .ethfinexTickersToArray(
+                currentState.transactionsDrago.selectedDrago.assets
+              )
+              .toString()
+          : utils.ethfinexTickersToArray(action.payload.assetsList).toString()
+
+      return getTickers$(
+        action.payload.relay,
+        action.payload.networkId,
+        symbols,
+        'ws'
+      ).pipe(
         takeUntil(action$.ofType(TOKEN_PRICE_TICKERS_FETCH_STOP)),
-        exhaustMap(() => {
-          const currentState = state$.value
-          const symbols =
-            Object.keys(action.payload.assetsList).length === 0
-              ? utils
-                  .ethfinexTickersToArray(
-                    currentState.transactionsDrago.selectedDrago.assets
-                  )
-                  .toString()
-              : utils
-                  .ethfinexTickersToArray(action.payload.assetsList)
-                  .toString()
-          return getTickers$(
-            action.payload.relay,
-            action.payload.networkId,
-            symbols,
-            'ws'
-          ).pipe(
-            tap(val => {
-              // console.log(val)
-              return val
-            }),
-            map(message => {
-              try {
-                const arrayToObject = (arr, keyField) =>
-                  Object.assign(
-                    {},
-                    ...arr.map(item => ({
-                      [item[keyField]]: item
-                    }))
-                  )
-                const tokenList = arrayToObject(message, 'symbol')
-                tokenList.WETH = {
-                  priceEth: 1,
-                  priceUsd: '',
-                  symbol: 'WETH'
-                }
-                tokenList.ETHW = {
-                  priceEth: 1,
-                  priceUsd: '',
-                  symbol: 'ETHW'
-                }
-                return tokenList
-              } catch (error) {
-                console.warn(error)
-                return {}
-              }
-            }),
-            tap(val => {
-              // console.log(val)
-              return val
-            }),
-            map(payload => ({
-              type: TOKENS_TICKERS_UPDATE,
-              payload
-            })),
-            catchError(error => {
-              console.warn(error)
-              return Observable.of({
-                type: 'QUEUE_ERROR_NOTIFICATION_SILENT',
-                payload: 'Error fetching tickers data.'
-              })
-            })
-          )
+        tap(val => {
+          // console.log(val)
+          return val
         }),
+        map(message => {
+          try {
+            const arrayToObject = (arr, keyField) =>
+              Object.assign(
+                {},
+                ...arr.map(item => ({
+                  [item[keyField]]: item
+                }))
+              )
+            const tokenList = arrayToObject(message, 'symbol')
+            tokenList.WETH = {
+              priceEth: 1,
+              priceUsd: '',
+              symbol: 'WETH'
+            }
+            tokenList.ETHW = {
+              priceEth: 1,
+              priceUsd: '',
+              symbol: 'ETHW'
+            }
+            return tokenList
+          } catch (error) {
+            console.warn(error)
+            return {}
+          }
+        }),
+        tap(val => {
+          // console.log(val)
+          return val
+        }),
+        map(payload => ({
+          type: TOKENS_TICKERS_UPDATE,
+          payload
+        })),
         catchError(error => {
           console.warn(error)
           return Observable.of({

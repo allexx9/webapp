@@ -11,7 +11,11 @@ class OrderJsonView extends Component {
     orderJson: PropTypes.object
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
+  static defaultProps = {
+    orderJson: {}
+  }
+
+  shouldComponentUpdate(nextProps) {
     let propsUpdate = utils.shallowEqual(this.props, nextProps)
     return propsUpdate
   }
@@ -20,7 +24,7 @@ class OrderJsonView extends Component {
     return (
       <Card>
         <CardHeader
-          title="ORDER DETAILS"
+          title="Check and confirm your order."
           actAsExpander={true}
           showExpandableButton={true}
         />

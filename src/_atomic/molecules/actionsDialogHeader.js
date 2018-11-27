@@ -1,4 +1,3 @@
-import { defaultDragoDetails } from '../../_utils/const'
 import ElementDialogAddressTitle from '../atoms/elementDialogAddressTitle'
 import ElementDialogHeadTitle from '../atoms/elementDialogHeadTitle'
 import PropTypes from 'prop-types'

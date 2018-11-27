@@ -16,7 +16,6 @@ export default class TokenSelector extends Component {
   }
 
   onSelect = (event, key) => {
-    console.log(key)
     let tokens = {
       0: 'ETH',
       1: 'GRG'

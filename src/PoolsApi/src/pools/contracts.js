@@ -2,16 +2,19 @@
 // This file is part of RigoBlock.
 
 import DragoEventfulParity from './Parity/dragoEventful'
+import DragoEventfulWeb3 from './Web3/dragoEventful'
 import DragoFactoryParity from './Parity/dragoFactory'
 import DragoFactoryWeb3 from './Web3/dragoFactory'
 import DragoParity from './Parity/drago'
 import DragoRegistryParity from './Parity/dragoRegistry'
+import DragoRegistryWeb3 from './Web3/dragoRegistry'
 import DragoWeb3 from './Web3/drago'
 import EtherParity from './Parity/ether'
 import EtherWeb3 from './Web3/ether'
 import EthusdParity from './Parity/ethusd'
 import FundProxyWeb3 from './Web3/fundProxy'
 // import FundProxyParity from './Parity/fundProxy'
+import { isMetamask } from './../utils/utils'
 import ExchangeParity from './Parity/exchange'
 import RegistryParity from './registry'
 import RigoTokenFaucetParity from './Parity/rigoTokenFaucet'
@@ -21,6 +24,7 @@ import RigoTokenWeb3 from './Web3/rigoToken'
 import TokenWrapperParity from './Parity/tokenWrapper'
 import TokenWrapperWeb3 from './Web3/tokenWrapper'
 import VaultEventfulParity from './Parity/vaultEventful'
+import VaultEventfulWeb3 from './Web3/vaultEventful'
 import VaultFactoryParity from './Parity/vaultFactory'
 import VaultFactoryWeb3 from './Web3/vaultFactory'
 import VaultParity from './Parity/vault'
@@ -28,20 +32,17 @@ import VaultWeb3 from './Web3/vault'
 
 class Contract {
   constructor(api) {
-    let isMetaMask = false
     if (!api) {
       throw new Error('API instance needs to be provided to Contract')
     }
-    if (typeof api._provider === 'undefined') {
-      isMetaMask = false
-    } else {
-      isMetaMask = api._provider.isMetaMask
-    }
-    if (isMetaMask) {
+    if (isMetamask(api)) {
       this._drago = new DragoWeb3(api)
+      this._dragoeventful = new DragoEventfulWeb3(api)
       this._dragofactory = new DragoFactoryWeb3(api)
+      this._dragoregistry = new DragoRegistryWeb3(api)
       this._ether = new EtherWeb3(api)
       this._vault = new VaultWeb3(api)
+      this._vaulteventful = new VaultEventfulWeb3(api)
       this._vaultfactory = new VaultFactoryWeb3(api)
       this._rigotoken = new RigoTokenWeb3(api)
       this._rigotokenfaucet = new RigoTokenFaucetWeb3(api)
@@ -83,9 +84,17 @@ class Contract {
   }
 
   get dragoeventful() {
-    return typeof this._dragoeventful !== 'undefined'
-      ? this._dragoeventful
-      : this._dragoeventful
+    return this._dragoeventful
+    // return typeof this._dragoeventful !== 'undefined'
+    //   ? this._dragoeventful
+    //   : this._dragoeventful
+  }
+
+  get vaulteventful() {
+    return this._vaulteventful
+    // return typeof this._vaulteventful !== 'undefined'
+    //   ? this._vaulteventful
+    //   : this._vaulteventful
   }
 
   get ether() {
@@ -114,10 +123,6 @@ class Contract {
 
   get tokenwrapper() {
     return this._tokenwrapper
-  }
-
-  get vaulteventful() {
-    return this._vaulteventful
   }
 
   get vaultfactory() {

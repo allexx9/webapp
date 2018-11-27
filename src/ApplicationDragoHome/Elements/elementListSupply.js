@@ -1,4 +1,3 @@
-import * as Colors from 'material-ui/styles/colors'
 import {
   AutoSizer,
   Column,
@@ -367,25 +366,6 @@ class ElementListSupply extends PureComponent {
     )
   }
 
-  renderAction(action) {
-    switch (action) {
-      case 'BuyDrago':
-        return (
-          <span style={{ color: Colors.green300, fontWeight: 600 }}>BUY</span>
-        )
-      case 'SellDrago':
-        return (
-          <span style={{ color: Colors.red300, fontWeight: 600 }}>SELL</span>
-        )
-      case 'DragoCreated':
-        return (
-          <span style={{ color: Colors.blue300, fontWeight: 600 }}>
-            CREATED
-          </span>
-        )
-    }
-  }
-
   renderTime(timestamp) {
     return <span>{utils.dateFromTimeStamp(timestamp)}</span>
   }
@@ -458,8 +438,8 @@ class ElementListSupply extends PureComponent {
     const { list } = this.props
     return list
       .sortBy(item => item.timestamp)
-      .update(
-        list => (sortDirection === SortDirection.DESC ? list : list.reverse())
+      .update(list =>
+        sortDirection === SortDirection.DESC ? list : list.reverse()
       )
   }
 

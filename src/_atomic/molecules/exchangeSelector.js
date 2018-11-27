@@ -20,10 +20,7 @@ export default class ExchangeSelector extends Component {
 
   renderExchange = () => {
     let menu = []
-    // console.log(RELAYS)
     Object.keys(this.props.availableRelays).forEach(key => {
-      // console.log(key)
-      // console.log(RELAYS[key])
       menu.push(
         <MenuItem
           key={key}
@@ -36,7 +33,6 @@ export default class ExchangeSelector extends Component {
   }
 
   render() {
-    // console.log(this.props.selectedRelay)
     return (
       <Row>
         <Col xs={12}>
@@ -44,7 +40,6 @@ export default class ExchangeSelector extends Component {
             fullWidth
             value={this.props.selectedRelay}
             onChange={this.onSelectExchange}
-            // style={{height: 90}}
           >
             {this.renderExchange()}
           </SelectField>

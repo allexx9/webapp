@@ -1,12 +1,11 @@
 import * as Colors from 'material-ui/styles/colors'
 import { Col, Row } from 'react-flexbox-grid'
+import { formatPrice } from '../../_utils/format'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import ReactTooltip from 'react-tooltip'
+import TradingPairSymbolsOrders from '../atoms/tradingPairSymbolsOders'
 import classNames from 'classnames'
-
-import { formatPrice } from '../../_utils/format'
-
 import styles from './tableOrdersHistory.module.css'
 
 class TableOrdersHistory extends Component {
@@ -45,20 +44,28 @@ class TableOrdersHistory extends Component {
       let orderStatusInfo = orderStatus.join(' ')
       let baseTokenSymbol = order.order.pair.slice(0, -3)
       return (
-        <Row key={'order' + key} className={styles.rowText}>
+        <Row
+          key={'order' + key}
+          className={styles.rowText}
+          style={
+            !(key % 2)
+              ? { backgroundColor: '#cccccc24' }
+              : { backgroundColor: '#fff' }
+          }
+        >
           <Col xs={12}>
             <Row>
-              <Col xs={2} className={styles.tableCell}>
+              <Col xs={3} className={styles.tableCell}>
                 {order.dateCreated}
               </Col>
               <Col xs={2} className={styles.tableCell}>
-                <span className={styles.baseToken}>{baseTokenSymbol}</span> /
-                <span>
-                  <small> {order.order.fiat_currency}</small>
-                </span>
+                <TradingPairSymbolsOrders
+                  baseTokenSymbol={baseTokenSymbol}
+                  quoteTokenSymbol={order.order.fiat_currency}
+                />
               </Col>
               <Col
-                xs={2}
+                xs={1}
                 style={orderTypeStyle[order.orderType]}
                 className={styles.tableCell}
               >
@@ -77,19 +84,19 @@ class TableOrdersHistory extends Component {
                 {formatPrice(Math.abs(order.order.originalamount).toString())}
               </Col>
               {/* <Col xs={2}>
-                  {new Date(order.order.expirationUnixTimestampSec*1000).toLocaleString()}
-                </Col> */}
+                    {new Date(order.order.expirationUnixTimestampSec*1000).toLocaleString()}
+                  </Col> */}
               <Col
                 xs={2}
                 className={classNames(styles.tableCell, styles.right)}
                 style={orderTypeStyle[orderStatus[0].trim()]}
               >
-                <div data-tip={orderStatusInfo}>
+                <div data-tip={orderStatusInfo} data-for="orderTooltip">
                   <span className={styles.tableCellUnderline}>
                     {orderStatus[0].trim()}
                   </span>
 
-                  <ReactTooltip effect="solid" place="top" />
+                  <ReactTooltip effect="solid" place="top" id="orderTooltip" />
                 </div>
               </Col>
             </Row>
@@ -100,14 +107,17 @@ class TableOrdersHistory extends Component {
   }
 
   renderTableHeader = () => {
-    console.log(this.constructor.name)
     return (
       <Row className={styles.tableHeader}>
         <Col xs={12}>
           <Row>
             <Col xs={2}>DATE</Col>
-            <Col xs={2}>PAIR</Col>
-            <Col xs={2}>TYPE</Col>
+            <Col xs={2} className={styles.right}>
+              PAIR
+            </Col>
+            <Col xs={2} className={styles.right}>
+              TYPE
+            </Col>
             <Col xs={2} className={styles.right}>
               PRICE
             </Col>

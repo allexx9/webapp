@@ -33,7 +33,6 @@ export default class SectionTitleExchange extends Component {
         </div>
       )
     }
-
     return (
       <div className={styles.titleContainer}>
         <div className={styles.title} style={this.props.textStyle}>

@@ -17,7 +17,15 @@ export default class TokenTradeSelector extends PureComponent {
   }
 
   onSelectTokenTrade = (event, key, payload) => {
-    this.props.onSelectTokenTrade(payload)
+    console.log(payload)
+    if (
+      payload !==
+      this.props.selectedTradeTokensPair.baseToken.symbol +
+        '-' +
+        this.props.selectedTradeTokensPair.quoteToken.symbol
+    ) {
+      this.props.onSelectTokenTrade(payload)
+    }
   }
 
   renderTokens = () => {

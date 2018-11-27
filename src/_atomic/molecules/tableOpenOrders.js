@@ -1,6 +1,5 @@
 import * as Colors from 'material-ui/styles/colors'
 import { Col, Row } from 'react-flexbox-grid'
-import BigNumber from 'bignumber.js'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
@@ -22,9 +21,6 @@ class TableOpenOrders extends Component {
   onCancelOrder = (event, id) => {
     const { list } = this.props
     event.preventDefault()
-    console.log(id)
-    console.log(list[id].order.id)
-
     this.props.onCancelOrder(list[id])
   }
 
@@ -41,11 +37,16 @@ class TableOpenOrders extends Component {
     }
     // console.log(orders)
     return orders.map((order, key) => {
-      // console.log(order)
       return (
         <Row key={'order' + key} className={styles.rowText}>
           <Col xs={12}>
-            <Row>
+            <Row
+              style={
+                !(key % 2)
+                  ? { backgroundColor: '#cccccc24' }
+                  : { backgroundColor: '#fff' }
+              }
+            >
               <Col xs={2} style={orderTypeStyle[order.orderType]}>
                 {order.orderType === 'asks' ? 'SELL' : 'BUY'}
               </Col>
@@ -57,7 +58,7 @@ class TableOpenOrders extends Component {
               <Col xs={6} className={styles.tableHeaderCellAction}>
                 <a
                   id={key}
-                  href="#"
+                  href={null}
                   onClick={event => this.onCancelOrder(event, key)}
                   className={styles.cancelLink}
                 >
@@ -93,8 +94,6 @@ class TableOpenOrders extends Component {
 
   render() {
     const { list } = this.props
-    console.log(this.props)
-
     return (
       <Row className={styles.containerOrders}>
         <Col xs={12}>

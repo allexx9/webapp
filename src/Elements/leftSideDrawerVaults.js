@@ -20,9 +20,6 @@ let drawerStyle = {
 }
 
 class LeftSideDrawerVaults extends Component {
-  constructor(props) {
-    super(props)
-  }
 
   static propTypes = {
     location: PropTypes.object.isRequired,

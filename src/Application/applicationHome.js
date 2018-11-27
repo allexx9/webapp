@@ -1,16 +1,17 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
 import ApplicationHome from '../ApplicationHome'
-import ApplicationTopBar from './ApplicationTopBar'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
+import TopBarMenu from '../Elements/topBarMenu'
 
-import { Col, Grid, Row } from 'react-flexbox-grid'
+import { Col, Row } from 'react-flexbox-grid'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 
 import { connect } from 'react-redux'
 import ElementNotConnected from '../Elements/elementNotConnected'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+import TopMenuLinkDrawer from '../_atomic/molecules/topMenuLinkDrawer'
 import classNames from 'classnames'
 import styles from './application.module.css'
 
@@ -31,13 +32,6 @@ function mapStateToProps(state) {
 }
 
 class ApplicationHomePage extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      notificationsOpen: false
-    }
-  }
-
   // Context
   static childContextTypes = {
     muiTheme: PropTypes.object
@@ -53,10 +47,6 @@ class ApplicationHomePage extends Component {
     api: PropTypes.object.isRequired
   }
 
-  UNSAFE_componentWillMount() {}
-
-  componentWillUnmount() {}
-
   static propTypes = {
     location: PropTypes.object.isRequired,
     app: PropTypes.object.isRequired
@@ -70,14 +60,15 @@ class ApplicationHomePage extends Component {
     const { isSyncing, syncStatus, isConnected } = this.props.app
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
-        <Grid fluid className={styles.maincontainer}>
+        <div>
+          {/* <Grid fluid className={styles.maincontainer}> */}
           <Row>
-            <Col xs={12}>
-              <ApplicationTopBar
+            <Col xs={12} className={styles.fix}>
+              <TopBarMenu
                 handleTopBarSelectAccountType={
                   this.handleTopBarSelectAccountType
                 }
-                handleToggleNotifications={this.handleToggleNotifications}
+                transactionsDrawerOpen={this.props.app.transactionsDrawerOpen}
               />
             </Col>
           </Row>
@@ -92,7 +83,9 @@ class ApplicationHomePage extends Component {
               )}
             </Col>
           </Row>
-        </Grid>
+          {this.props.label === 'VAULT' && <TopMenuLinkDrawer />}
+          {/* </Grid> */}
+        </div>
       </MuiThemeProvider>
     )
   }

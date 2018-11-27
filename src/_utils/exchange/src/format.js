@@ -2,13 +2,16 @@ import { BigNumber } from '@0xproject/utils'
 import { ERCdEX, Ethfinex } from './const'
 import { ZeroEx } from '0x.js'
 import Web3 from 'web3'
+import moment from 'moment'
 
 const formatOrdersFromAggregateERCdEX = orders => {
   let orderPrice, orderAmount
   let web3 = new Web3(Web3.currentProvider)
   let formattedOrders = orders.map(order => {
     orderPrice = new BigNumber(order.price).toFixed(7)
-    orderAmount = new BigNumber(web3.utils.fromWei(order.volume)).toFixed(5)
+    orderAmount = new BigNumber(
+      web3.utils.fromWei(Web3.utils.toBN(order.volume))
+    ).toFixed(5)
     let orderObject = {
       orderAmount,
       orderPrice
@@ -28,7 +31,7 @@ export const formatOrdersFromERCdEX = (orders, orderType) => {
           .div(new BigNumber(order.makerTokenAmount))
           .toFixed(7)
         orderAmount = new BigNumber(
-          web3.utils.fromWei(order.makerTokenAmount, 'ether')
+          web3.utils.fromWei(Web3.utils.toBN(order.makerTokenAmount), 'ether')
         ).toFixed(5)
         break
       case 'bids':
@@ -40,7 +43,7 @@ export const formatOrdersFromERCdEX = (orders, orderType) => {
           )
           .toFixed(7)
         orderAmount = new BigNumber(
-          web3.utils.fromWei(order.takerTokenAmount, 'ether')
+          web3.utils.fromWei(Web3.utils.toBN(order.takerTokenAmount), 'ether')
         ).toFixed(5)
         break
       default:
@@ -147,9 +150,8 @@ export const aggregatedOrders = {
   [Ethfinex]: orders => {
     let bids = new Array(0)
     let asks = new Array(0)
-    orders.map(order => {
+    orders.forEach(order => {
       order[2] > 0 ? bids.push(order) : asks.push(order)
-      return
     })
     const bidsOrders = formatOrdersFromAggregateEthfinex(bids, 'bids')
     const asksOrders = formatOrdersFromAggregateEthfinex(asks.reverse(), 'asks')
@@ -180,9 +182,8 @@ export const orders = {
   [Ethfinex]: orders => {
     let bids = new Array(0)
     let asks = new Array(0)
-    orders.map(order => {
+    orders.forEach(order => {
       order[2] > 0 ? bids.push(order) : asks.push(order)
-      return
     })
     const bidsOrders = formatOrdersFromAggregateEthfinex(bids, 'bids')
     const asksOrders = formatOrdersFromAggregateEthfinex(asks.reverse(), 'asks')
@@ -217,9 +218,15 @@ export const accountOrders = {
       orderPrice = new BigNumber(order.price).toFixed(7)
       orderAmount = new BigNumber(order.amount).toFixed(5)
       remainingAmount = new BigNumber(order.amount).toFixed(5)
+      let date = moment(order.created_at)
+      let yesterday = moment()
+        .subtract(1, 'days')
+        .endOf('day')
       let orderObject = {
         order,
-        dateCreated: order.created_at,
+        dateCreated: date.isAfter(yesterday)
+          ? date.format('h:mm:ss')
+          : date.format('YYYY-MM-DD'),
         orderAmount,
         remainingAmount,
         orderType,

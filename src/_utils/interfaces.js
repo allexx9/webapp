@@ -7,6 +7,7 @@ import {
 } from './const'
 import BigNumber from 'bignumber.js'
 import PoolsApi from '../PoolsApi/src'
+import Web3Wrapper from './web3Wrapper/src/web3Wrapper'
 import utils from '../_utils/utils'
 
 class Interfaces {
@@ -115,15 +116,16 @@ class Interfaces {
     const parityNetworkId = this._parityNetworkId
     let accountsMetaMask = {}
     if (typeof web3 === 'undefined') {
+      console.warn('MetaMask not detected')
       return
     }
     try {
       // Check if MetaMask is connected to the same network as the endpoint
       let accounts = await web3.eth.getAccounts()
-      let isMetaMaskLocked = accounts.length === 0 ? true : false
-      // console.log(isMetaMaskLocked)
       let metaMaskNetworkId = await web3.eth.net.getId()
-      let currentState = this._success
+      console.log('Account MM: ', accounts, metaMaskNetworkId)
+      let isMetaMaskLocked = accounts.length === 0 ? true : false
+      let currentState = { ...this._success }
       if (metaMaskNetworkId !== parityNetworkId) {
         const stateUpdate = {
           isMetaMaskNetworkCorrect: false,
@@ -146,32 +148,60 @@ class Interfaces {
           ...currentState,
           ...stateUpdate
         }
+
         // Return empty object if MetaMask is locked.
-        if (accounts.length === 0) {
+        if (isMetaMaskLocked) {
           return {}
         }
+
         // Get ETH balance
-        let ethBalance
+        let ethBalance = new BigNumber(0)
+        let grgBalance = new BigNumber(0)
+        let nonce = 0
+
+        let wrapper, poolsApi
         try {
-          ethBalance = await web3.eth.getBalance(accounts[0])
+          wrapper = Web3Wrapper.getInstance()
+          poolsApi = new PoolsApi(wrapper)
+          poolsApi.contract.rigotoken.init()
         } catch (err) {
-          throw new Error(`Cannot get ETH balance of account ${accounts[0]}`)
+          console.warn(err)
+          throw new Error(`Error on Web3Wrapper.getInstance()`)
         }
 
-        let poolsApi = new PoolsApi(web3)
-        poolsApi.contract.rigotoken.init()
-        // Get GRG balance
-        let grgBalance
+        ethBalance = wrapper.eth.getBalance(accounts[0]).catch(err => {
+          console.warn(err)
+          // throw new Error(`Cannot get ETH balance of account ${accounts[0]}`)
+        })
+        grgBalance = poolsApi.contract.rigotoken
+          .balanceOf(accounts[0])
+          .catch(err => {
+            console.warn(err)
+            // throw new Error(`Cannot get GRG balance of account ${accounts[0]}`)
+          })
+        nonce = wrapper.eth.getTransactionCount(accounts[0]).catch(err => {
+          console.warn(err)
+          // throw new Error(
+          //   `Cannot get transactions count of account ${accounts[0]}`
+          // )
+        })
+
         try {
-          grgBalance = await poolsApi.contract.rigotoken.balanceOf(accounts[0])
+          ethBalance = await ethBalance
         } catch (err) {
+          console.warn(err)
+          throw new Error(`Cannot get ETH balance of account ${accounts[0]}`)
+        }
+        try {
+          grgBalance = await grgBalance
+        } catch (err) {
+          console.warn(err)
           throw new Error(`Cannot get GRG balance of account ${accounts[0]}`)
         }
-        // Getting transactions count
-        let nonce
         try {
-          nonce = await web3.eth.getTransactionCount(accounts[0])
+          nonce = await nonce
         } catch (err) {
+          console.warn(err)
           throw new Error(
             `Cannot get transactions count of account ${accounts[0]}`
           )
@@ -179,9 +209,13 @@ class Interfaces {
 
         let accountsMetaMask = {
           [accounts[0]]: {
-            ethBalance: utils.formatFromWei(ethBalance),
+            ethBalance: new BigNumber(web3.utils.fromWei(ethBalance)).toFixed(
+              3
+            ),
             ethBalanceWei: ethBalance,
-            grgBalance: utils.formatFromWei(grgBalance),
+            grgBalance: new BigNumber(web3.utils.fromWei(grgBalance)).toFixed(
+              3
+            ),
             grgBalanceWei: grgBalance,
             name: 'MetaMask',
             source: 'MetaMask',
@@ -191,29 +225,41 @@ class Interfaces {
         return accountsMetaMask
       }
     } catch (error) {
-      console.log(error)
-      return {}
+      console.warn(error)
+      // return {}
+      throw new Error(`getAccountsMetamask`)
     }
   }
 
   attachInterfaceInfuraV2 = async () => {
-    // console.log(`${this.constructor.name} -> Interface Infura`)
+    console.log(`${this.constructor.name} -> Interface Infura`)
     const api = this._api
     try {
-      const accountsMetaMask = await this.getAccountsMetamask(api)
+      let accountsMetaMask
+      try {
+        accountsMetaMask = await this.getAccountsMetamask(api)
+      } catch (e) {
+        console.warn(e)
+        throw new Error(`attachInterfaceInfuraV2`)
+      }
       const allAccounts = {
         ...accountsMetaMask
       }
-      const blockNumber = await api.eth.blockNumber()
+      // let blockNumber = 0
+      // try {
+      //   blockNumber = await api.eth.getBlockNumber()
+      // } catch (error) {
+      //   console.warn(error)
+      // }
       console.log(
         'Metamask account loaded: ',
-        accountsMetaMask,
-        blockNumber.toFixed()
+        accountsMetaMask
+        // new BigNumber(blockNumber).toFixed()
       )
 
       const stateUpdate = {
         loading: false,
-        prevBlockNumber: blockNumber.toFixed(),
+        // prevBlockNumber: blockNumber.toFixed(),
         accounts: Object.keys(allAccounts).map(address => {
           const info = allAccounts[address] || {}
           return {
@@ -232,7 +278,8 @@ class Interfaces {
         ...this._success,
         ...stateUpdate
       }
-      this._success = result
+      // this._success = result
+      console.log(`${this.constructor.name} -> Done`)
       return result
     } catch (error) {
       let currentState = this._error
@@ -244,7 +291,7 @@ class Interfaces {
         ...currentState,
         ...stateUpdate
       }
-      console.log('attachInterface', error)
+      console.warn(`${this.constructor.name} -> Error`, error)
       throw this._error
     }
   }
@@ -259,22 +306,25 @@ class Interfaces {
       let nodeKind = await api.parity.nodeKind()
       if (nodeKind.availability === 'public') {
         // if Parity in --public-node then getting only MetaMask accounts
-        accountsMetaMask = await this.getAccountsMetamask()
+        try {
+          accountsMetaMask = await this.getAccountsMetamask()
+        } catch (err) {
+          console.warn(err)
+          throw new Error(`Error ongetAccountsMetamask()`)
+        }
       } else {
         // if Parity NOT in --public-node then getting both Parity and MetaMask accounts
         accountsMetaMask = await this.getAccountsMetamask()
         accountsParity = await this.getAccountsParity()
       }
-      const blockNumber = await api.eth.blockNumber()
-      console.log('Parity accounts loaded: ', accountsParity)
-      console.log('MetaMask account loaded: ', accountsMetaMask)
+      const blockNumber = await api.eth.getBlockNumber()
       const allAccounts = {
         ...accountsParity,
         ...accountsMetaMask
       }
       const stateUpdate = {
         loading: false,
-        prevBlockNumber: blockNumber.toFixed(),
+        prevBlockNumber: new BigNumber(blockNumber).toFixed(),
         ethBalance: new BigNumber(0),
         accounts:
           Object.keys(allAccounts).length !== 0
@@ -315,36 +365,36 @@ class Interfaces {
   }
 
   detachInterface = (api, subscriptionData) => {
-    if (typeof subscriptionData === 'object') {
-      console.log(subscriptionData)
-      try {
-        subscriptionData.unsubscribe(function(error, success) {
-          if (success) {
-            console.log(`Successfully unsubscribed from eth_blockNumber.`)
-          }
-          if (error) {
-            console.log(`Unsubscribe error ${error}.`)
-          }
-        })
-      } catch (error) {
-        console.log(error)
-      }
-    } else {
-      try {
-        api
-          .unsubscribe(subscriptionData)
-          .then(() => {
-            console.log(
-              `Successfully unsubscribed from eth_blockNumber -> Subscription ID: ${subscriptionData}.`
-            )
-          })
-          .catch(error => {
-            console.log(`Unsubscribe error ${error}.`)
-          })
-      } catch (error) {
-        console.log(error)
-      }
-    }
+    // if (typeof subscriptionData === 'object') {
+    //   console.log(subscriptionData)
+    //   try {
+    //     subscriptionData.unsubscribe(function(error, success) {
+    //       if (success) {
+    //         console.log(`Successfully unsubscribed from eth_blockNumber.`)
+    //       }
+    //       if (error) {
+    //         console.log(`Unsubscribe error ${error}.`)
+    //       }
+    //     })
+    //   } catch (error) {
+    //     console.log(error)
+    //   }
+    // } else {
+    //   try {
+    //     api
+    //       .unsubscribe(subscriptionData)
+    //       .then(() => {
+    //         console.log(
+    //           `Successfully unsubscribed from eth_blockNumber -> Subscription ID: ${subscriptionData}.`
+    //         )
+    //       })
+    //       .catch(error => {
+    //         console.log(`Unsubscribe error ${error}.`)
+    //       })
+    //   } catch (error) {
+    //     console.log(error)
+    //   }
+    // }
   }
 }
 

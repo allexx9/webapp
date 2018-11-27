@@ -53,11 +53,6 @@ class ElementVaultActionSetFees extends Component {
     color: 'white'
   }
 
-  componentDidMount() {
-    const { api } = this.context
-    console.log(api)
-  }
-
   render() {
     const { complete, openAuth, authMsg, authAccount } = this.state
     const { vaultDetails } = this.props
@@ -309,7 +304,7 @@ class ElementVaultActionSetFees extends Component {
     this.setState({
       sending: true
     })
-    const transactionId = api.util.sha3(new Date() + accountAddress)
+    const transactionId = api.utils.sha3(new Date() + accountAddress)
     let transactionDetails = {
       status:
         this.state.account.source === 'MetaMask' ? 'pending' : 'authorization',
@@ -337,6 +332,13 @@ class ElementVaultActionSetFees extends Component {
       .setTransactionFee(this.state.account.address, price)
       .then(receipt => {
         console.log(receipt)
+        Actions.drago.getPoolDetails(
+          vaultDetails.vaultDetails.vaultId,
+          provider,
+          {
+            poolType: 'vault'
+          }
+        )
         if (account.source === 'MetaMask') {
           transactionDetails.status = 'executed'
           transactionDetails.receipt = receipt
@@ -370,9 +372,6 @@ class ElementVaultActionSetFees extends Component {
             transactionDetails
           )
         )
-        this.setState({
-          sending: false
-        })
       })
     this.setState({
       sending: false,
@@ -380,8 +379,6 @@ class ElementVaultActionSetFees extends Component {
       authMsg: 'Fees set to ' + price + ' %',
       authAccount: { ...this.state.account }
     })
-    // this.onClose()
-    // this.props.snackBar('Instruction awaiting for authorization')
   }
 }
 

@@ -1,9 +1,9 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
 import ApplicationConfigHome from '../ApplicationConfig'
-import ApplicationTopBar from './ApplicationTopBar'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
+import TopBarMenu from '../Elements/topBarMenu'
 
 import { Col, Grid, Row } from 'react-flexbox-grid'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
@@ -48,10 +48,6 @@ class ApplicationConfigPage extends Component {
     api: PropTypes.object.isRequired
   }
 
-  UNSAFE_componentWillMount() {}
-
-  componentWillUnmount() {}
-
   // Callback function to handle account type selection in the Top Bar
   // value = 1 = Trader
   // value = 2 = Manager
@@ -75,20 +71,19 @@ class ApplicationConfigPage extends Component {
   }
 
   render() {
-    const { notificationsOpen } = this.state
     const { location, match } = this.props
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
         <Grid fluid className={styles.maincontainer}>
           <Row>
-            <Col xs={12}>
+            <Col xs={12} className={styles.fix}>
               {/* <ApplicationTabsMenu /> */}
-              <ApplicationTopBar
+              <TopBarMenu
                 handleTopBarSelectAccountType={
                   this.handleTopBarSelectAccountType
                 }
                 isManager={this.state.isManager}
-                handleToggleNotifications={this.handleToggleNotifications}
+                transactionsDrawerOpen={this.props.app.transactionsDrawerOpen}
               />
             </Col>
           </Row>
@@ -98,8 +93,6 @@ class ApplicationConfigPage extends Component {
                 match={match}
                 isManager={this.state.isManager}
                 location={location}
-                notificationsOpen={notificationsOpen}
-                handleToggleNotifications={this.handleToggleNotifications}
               />
             </Col>
           </Row>
