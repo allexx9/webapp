@@ -237,7 +237,7 @@ export const MOCK_ERC20_TOKENS = {
       symbolTicker: {
         Ethfinex: 'GRG'
       },
-      address: '0xd56b064c185b8e057a9ff3cf022323276441f8df',
+      address: '0x4fbb350052bca5417566f188eb2ebce5b19bc964',
       decimals: 18,
       name: 'GRG Token',
       wrappers: {}
@@ -490,7 +490,7 @@ export const ERC20_TOKENS = {
       symbolTicker: {
         Ethfinex: 'GRG'
       },
-      address: '0xd56b064c185b8e057a9ff3cf022323276441f8df',
+      address: '0x4fbb350052bca5417566f188eb2ebce5b19bc964',
       decimals: 18,
       name: 'GRG Token',
       wrappers: {}
