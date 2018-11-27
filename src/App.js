@@ -62,7 +62,11 @@ export class App extends Component {
       this.props.endpoint.endpointInfo,
       this.props.endpoint.networkInfo
     )
-    this._api = endpoint.connect()
+    try {
+      this._api = endpoint.connect()
+    } catch (error) {
+      console.warn(error)
+    }
   }
 
   scrollPosition = 0

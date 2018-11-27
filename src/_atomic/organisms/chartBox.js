@@ -32,7 +32,6 @@ class ChartBox extends Component {
   }
 
   render() {
-    console.log('*** Render chart ***')
     if (this.props.data.length === 0 || this.props.loading) {
       return (
         <BoxDecorator boxName={'chartBox'}>

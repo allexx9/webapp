@@ -16,7 +16,6 @@ export const getDragoDetails = async (
   //
   // Initializing Drago API
   //
-  console.time('getDragoDetails')
   let web3Http = new Web3(api._rb.network.transportHttp)
   let newWeb3 = Web3Wrapper.getInstance(api._rb.network.id)
 
@@ -256,6 +255,6 @@ export const getDragoDetails = async (
     dragoWETHBalance: formatEth(dragoWETH, 4),
     balanceDRG: formatCoins(balanceDRG, 4)
   }
-  console.timeEnd('getDragoDetails')
+
   return details
 }

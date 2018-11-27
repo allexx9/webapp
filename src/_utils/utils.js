@@ -21,12 +21,7 @@ import {
   getTransactionsVaultOptV2,
   getVaultDetails
 } from './utils/index'
-import {
-  formatCoins,
-  formatEth,
-  toBaseUnitAmount,
-  toUnitAmount
-} from './format'
+import { toBaseUnitAmount, toUnitAmount } from './format'
 import BigNumber from 'bignumber.js'
 import ElementNotification from '../Elements/elementNotification'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'

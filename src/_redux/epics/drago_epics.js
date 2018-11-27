@@ -1,7 +1,7 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
 import { Actions } from '../actions/'
-import { Observable, from, merge, timer } from 'rxjs'
+import { Observable, from, timer } from 'rxjs'
 import PoolApi from '../../PoolsApi/src'
 
 import * as TYPE_ from '../actions/const'

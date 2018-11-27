@@ -13,7 +13,6 @@ import TextField from 'material-ui/TextField'
 
 import { Actions } from '../../_redux/actions'
 import { Table, TableBody, TableRow, TableRowColumn } from 'material-ui/Table'
-import { getDragoDetails } from '../../_utils/utils/getDragoDetails'
 
 import {
   ERRORS,

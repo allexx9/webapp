@@ -230,7 +230,6 @@ export const initRelayWebSocketBookEpic = action$ =>
       ).pipe(
         auditTime(1000),
         map(payload => {
-          console.log('*** Orderbook epic update ***')
           const calculateSpread = (asksOrders, bidsOrders) => {
             let spread = new BigNumber(0).toFixed(6)
             if (bidsOrders.length && asksOrders.length) {

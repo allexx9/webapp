@@ -169,9 +169,22 @@ class Interfaces {
           throw new Error(`Error on Web3Wrapper.getInstance()`)
         }
 
-        ethBalance = wrapper.eth.getBalance(accounts[0])
-        grgBalance = poolsApi.contract.rigotoken.balanceOf(accounts[0])
-        nonce = wrapper.eth.getTransactionCount(accounts[0])
+        ethBalance = wrapper.eth.getBalance(accounts[0]).catch(err => {
+          console.warn(err)
+          // throw new Error(`Cannot get ETH balance of account ${accounts[0]}`)
+        })
+        grgBalance = poolsApi.contract.rigotoken
+          .balanceOf(accounts[0])
+          .catch(err => {
+            console.warn(err)
+            // throw new Error(`Cannot get GRG balance of account ${accounts[0]}`)
+          })
+        nonce = wrapper.eth.getTransactionCount(accounts[0]).catch(err => {
+          console.warn(err)
+          // throw new Error(
+          //   `Cannot get transactions count of account ${accounts[0]}`
+          // )
+        })
 
         try {
           ethBalance = await ethBalance
@@ -179,14 +192,12 @@ class Interfaces {
           console.warn(err)
           throw new Error(`Cannot get ETH balance of account ${accounts[0]}`)
         }
-        console.log('grgBalance')
         try {
           grgBalance = await grgBalance
         } catch (err) {
           console.warn(err)
           throw new Error(`Cannot get GRG balance of account ${accounts[0]}`)
         }
-        console.log('nonce')
         try {
           nonce = await nonce
         } catch (err) {
@@ -215,7 +226,8 @@ class Interfaces {
       }
     } catch (error) {
       console.warn(error)
-      return {}
+      // return {}
+      throw new Error(`getAccountsMetamask`)
     }
   }
 
@@ -228,6 +240,7 @@ class Interfaces {
         accountsMetaMask = await this.getAccountsMetamask(api)
       } catch (e) {
         console.warn(e)
+        throw new Error(`attachInterfaceInfuraV2`)
       }
       const allAccounts = {
         ...accountsMetaMask
@@ -278,7 +291,7 @@ class Interfaces {
         ...currentState,
         ...stateUpdate
       }
-      console.log(`${this.constructor.name} -> Error`, error)
+      console.warn(`${this.constructor.name} -> Error`, error)
       throw this._error
     }
   }
@@ -293,7 +306,12 @@ class Interfaces {
       let nodeKind = await api.parity.nodeKind()
       if (nodeKind.availability === 'public') {
         // if Parity in --public-node then getting only MetaMask accounts
-        accountsMetaMask = await this.getAccountsMetamask()
+        try {
+          accountsMetaMask = await this.getAccountsMetamask()
+        } catch (err) {
+          console.warn(err)
+          throw new Error(`Error ongetAccountsMetamask()`)
+        }
       } else {
         // if Parity NOT in --public-node then getting both Parity and MetaMask accounts
         accountsMetaMask = await this.getAccountsMetamask()

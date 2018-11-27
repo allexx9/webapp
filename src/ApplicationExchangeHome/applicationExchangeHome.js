@@ -1,18 +1,7 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-import { Col, Row } from 'react-flexbox-grid'
-import { connect } from 'react-redux'
-import BigNumber from 'bignumber.js'
-import ElementBottomStatusBar from '../Elements/elementBottomStatusBar'
-import Paper from 'material-ui/Paper'
-import PropTypes from 'prop-types'
-import React, { PureComponent } from 'react'
-// import FlatButton from 'material-ui/FlatButton'
-import Loading from '../_atomic/atoms/loading'
-import PoolApi from '../PoolsApi/src'
-// import DragoComingSoon from '../Elements/elementDragoComingSoon'
-import * as TYPE_ from '../_redux/actions/const'
 import { Actions } from '../_redux/actions'
+import { Col, Row } from 'react-flexbox-grid'
 import {
   DEFAULT_RELAY,
   ERC20_TOKENS,
@@ -20,13 +9,21 @@ import {
   RELAYS,
   TRADE_TOKENS_PAIRS
 } from '../_utils/const'
+import { connect } from 'react-redux'
 import { getTokenAllowance } from '../_utils/exchange'
+import BigNumber from 'bignumber.js'
 import ChartBox from '../_atomic/organisms/chartBox'
+import ElementBottomStatusBar from '../Elements/elementBottomStatusBar'
 import ExchangeBox from '../_atomic/organisms/exchangeBox'
 import FundSelector from '../_atomic/molecules/fundSelector'
+import Loading from '../_atomic/atoms/loading'
 import OrderBook from '../_atomic/organisms/orderBook'
 import OrderBox from '../_atomic/organisms/orderBox'
 import OrdersHistoryBox from '../_atomic/organisms/ordersHistoryBox'
+import Paper from 'material-ui/Paper'
+import PoolApi from '../PoolsApi/src'
+import PropTypes from 'prop-types'
+import React, { PureComponent } from 'react'
 import TokenBalances from '../_atomic/atoms/tokenBalances'
 import TokenPrice from '../_atomic/atoms/tokenPrice'
 import TokenTradeSelector from '../_atomic/molecules/tokenTradeSelector'
@@ -80,34 +77,6 @@ class ApplicationExchangeHome extends PureComponent {
     }
   }
 
-  getEFXConf = () => {
-    fetch('https://test.ethfinex.com/trustless/v1/r/get/conf')
-      .then(function(response) {
-        console.log(response)
-      })
-      .then(function(myJson) {
-        // console.log(JSON.stringify(myJson))
-      })
-
-    let request = new XMLHttpRequest()
-
-    request.open('POST', 'https://test.ethfinex.com/trustless/v1/r/get/conf')
-
-    request.setRequestHeader('Accept-Language', 'en;')
-    request.setRequestHeader('Content-Type', 'application/json')
-
-    request.onreadystatechange = function() {
-      if (this.readyState === 4) {
-        console.log('Status:', this.status)
-        console.log('Headers:', this.getAllResponseHeaders())
-        console.log('Body:', this.responseText)
-      }
-    }
-
-    let body = {}
-    request.send(JSON.stringify(body))
-  }
-
   componentDidMount = async () => {
     const { api } = this.context
     const { ui } = this.props.exchange
@@ -124,7 +93,6 @@ class ApplicationExchangeHome extends PureComponent {
           defaultRelay.defaultTokensPair.quoteTokenSymbol
         ]
     }
-    this.getEFXConf()
     console.log('***** MOUNT *****')
     try {
       const walletAddress = endpoint.accounts.find(
@@ -367,25 +335,25 @@ class ApplicationExchangeHome extends PureComponent {
       this.props.dispatch(
         Actions.exchange.updateLiquidityAndTokenBalances(api, '', fund.address)
       )
-      let allowanceBaseToken,
-        allowanceQuoteToken = 0
+      // let allowanceBaseToken,
+      //   allowanceQuoteToken = 0
 
-      if (!selectedRelay.isTokenWrapper) {
-        // Getting allowances
-        allowanceBaseToken = await getTokenAllowance(
-          selectedTokensPair.baseToken,
-          fund.address,
-          selectedExchange
-        )
-        allowanceQuoteToken = await getTokenAllowance(
-          selectedTokensPair.quoteToken,
-          fund.address,
-          selectedExchange
-        )
-      }
+      // if (!selectedRelay.isTokenWrapper) {
+      //   // Getting allowances
+      //   allowanceBaseToken = await getTokenAllowance(
+      //     selectedTokensPair.baseToken,
+      //     fund.address,
+      //     selectedExchange
+      //   )
+      //   allowanceQuoteToken = await getTokenAllowance(
+      //     selectedTokensPair.quoteToken,
+      //     fund.address,
+      //     selectedExchange
+      //   )
+      // }
 
-      let baseTokenLockWrapExpire,
-        quoteTokenLockWrapExpire = '0'
+      // let baseTokenLockWrapExpire,
+      //   quoteTokenLockWrapExpire = '0'
 
       // if (selectedRelay.isTokenWrapper) {
       //   // Getting token wrapper lock time
@@ -529,7 +497,6 @@ class ApplicationExchangeHome extends PureComponent {
 
   // Getting last transactions
   getSelectedFundDetails = async (dragoAddress, accounts) => {
-    console.time('getSelectedFundDetails')
     const { api } = this.context
     try {
       let poolApi = new PoolApi(api)
@@ -576,9 +543,7 @@ class ApplicationExchangeHome extends PureComponent {
         })
         return Promise.all(arrayPromises)
       }
-      console.time('dragoList')
       let dragoList = await getDragoDetails(...(await getDragoList()))
-      console.timeEnd('dragoList')
       if (dragoList.length === 0) {
         // this.setState({
         //   managerHasNoFunds: true
@@ -593,7 +558,6 @@ class ApplicationExchangeHome extends PureComponent {
         })
         this.props.dispatch(Actions.exchange.updateAvailableFunds(dragoList))
         this.onSelectFund(dragoList[0])
-        console.timeEnd('getSelectedFundDetails')
         return dragoList[0]
       }
     } catch (error) {

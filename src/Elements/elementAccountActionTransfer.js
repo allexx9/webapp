@@ -17,7 +17,6 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import TokenSelector from '../_atomic/molecules/tokenSelector'
 import Web3 from 'web3'
-import utils from '../_utils/utils'
 
 const NAME_ID = ' '
 

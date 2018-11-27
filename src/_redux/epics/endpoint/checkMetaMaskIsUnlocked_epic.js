@@ -14,8 +14,6 @@ import {
   map,
   mergeMap,
   retryWhen,
-  switchMap,
-  tap,
   timeout
 } from 'rxjs/operators'
 import { ofType } from 'redux-observable'
@@ -46,10 +44,6 @@ const checkMetaMaskIsUnlocked$ = (api, web3, endpoint) => {
           const networkId = endpoint.networkInfo.id
           const blockchain = new Interfaces(api, networkId)
           return from(blockchain.attachInterfaceInfuraV2()).pipe(
-            tap(val => {
-              console.log(val)
-              return val
-            }),
             timeout(5000),
             map(result => {
               if (result.accounts.length !== 0) {
@@ -97,6 +91,10 @@ const checkMetaMaskIsUnlocked$ = (api, web3, endpoint) => {
         }
         return of(newEndpoint)
       }
+    }),
+    catchError(err => {
+      console.warn(err)
+      return of(false)
     })
   )
 }

@@ -22,7 +22,6 @@ class ApplicationConfigHome extends PureComponent {
 
   render() {
     const { match, endpoint } = this.props
-    console.log(this.props.endpoint.networkInfo)
     return (
       <div>
         <Row className={styles.container}>
