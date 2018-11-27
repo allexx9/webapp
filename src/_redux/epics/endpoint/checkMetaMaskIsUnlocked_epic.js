@@ -7,12 +7,14 @@ import { DEBUGGING } from '../../../_utils/const'
 import { Interfaces } from '../../../_utils/interfaces'
 import { Observable, from, of, timer } from 'rxjs'
 import {
+  catchError,
   distinctUntilChanged,
   exhaustMap,
   finalize,
   map,
   mergeMap,
   retryWhen,
+  switchMap,
   tap,
   timeout
 } from 'rxjs/operators'
@@ -35,7 +37,6 @@ const checkMetaMaskIsUnlocked$ = (api, web3, endpoint) => {
     exhaustMap(accountsMetaMask => {
       // MM is not locked
       if (accountsMetaMask.length !== 0) {
-        // console.log('**** MM unlocked ****')
         metaMaskAccountAddress = accountsMetaMask[0]
         // Check if a MetaMask account is already in accounts list.
         let metaMaskAccountIndex = oldAccounts.findIndex(account => {
@@ -45,7 +46,11 @@ const checkMetaMaskIsUnlocked$ = (api, web3, endpoint) => {
           const networkId = endpoint.networkInfo.id
           const blockchain = new Interfaces(api, networkId)
           return from(blockchain.attachInterfaceInfuraV2()).pipe(
-            // timeout(5000),
+            tap(val => {
+              console.log(val)
+              return val
+            }),
+            timeout(5000),
             map(result => {
               if (result.accounts.length !== 0) {
                 newAccounts.push(result.accounts[0])
@@ -65,6 +70,10 @@ const checkMetaMaskIsUnlocked$ = (api, web3, endpoint) => {
               )
               // console.log('attachInterfaceInfuraV2', newEndpoint)
               return newEndpoint
+            }),
+            catchError(err => {
+              console.warn(err)
+              return of(false)
             })
           )
         }
@@ -80,7 +89,6 @@ const checkMetaMaskIsUnlocked$ = (api, web3, endpoint) => {
         // console.log(metaMaskAccountIndex)
         if (metaMaskAccountIndex !== -1) {
           newAccounts = oldAccounts.filter(account => {
-            console.log(account.source)
             return account.source !== 'MetaMask'
           })
           // console.log(newAccounts)
@@ -106,10 +114,6 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
             currentState.endpoint
           )
         }),
-        tap(results => {
-          // console.log(results)
-          return results
-        }),
         timeout(5000),
         distinctUntilChanged((a, b) => {
           return shallowequal(
@@ -117,12 +121,8 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
             JSON.stringify(b.accounts)
           )
         }),
-        tap(results => {
-          console.log(results)
-          return results
-        }),
         exhaustMap(newEndpoint => {
-          console.log('***** FETCH TRANSACTIONS *****')
+          console.log('***** FETCH ACCOUNT TRANSACTIONS *****')
           let optionsManager = {
             balance: false,
             supply: true,
@@ -202,9 +202,6 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
             ),
             ...arrayObservables
           )
-        }),
-        tap(results => {
-          return results
         }),
         retryWhen(error => {
           let scalingDuration = 2000

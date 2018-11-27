@@ -9,27 +9,16 @@ import utils from '../../_utils/utils'
 
 export const relayActionsMiddleWare = store => next => action => {
   const state = store.getState()
-  // console.log('relayActionsMiddleWare triggered:', action)
-  // console.log(state.exchange.selectedRelay.name)
-  // console.log(TYPE_.CUSTOM_EXCHANGE_ACTIONS)
   if (TYPE_.CUSTOM_EXCHANGE_ACTIONS.includes(action.type)) {
-    // console.log(
-    //   `relayActionsMiddleWare  action: ${state.exchange.selectedRelay.name.toUpperCase()}_${
-    //     action.type
-    //   }`
-    // )
     action.type = `${state.exchange.selectedRelay.name.toUpperCase()}_${
       action.type
     }`
-    console.log(action)
   }
   next(action)
 }
 
 export const notificationsMiddleWare = store => next => action => {
   const state = store.getState()
-
-  // console.log(action)
   if (action.type === TYPE_.QUEUE_ACCOUNT_NOTIFICATION) {
     action.payload.forEach(notification => {
       utils.notificationAccount(

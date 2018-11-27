@@ -48,7 +48,6 @@ class Endpoint {
   }
 
   _checkLocal = () => {
-    // Checking if app is running inside Parity UI. If positive, connect to localhost.
     if (typeof window.parity !== 'undefined') {
       console.log('Found Parity!')
       return true
@@ -104,7 +103,6 @@ class Endpoint {
       api._rb.network.transportHttp = this._https
       console.log('Network: ', this._network.name)
       console.log('Connecting to WebSocket: ', this._wss)
-      console.log('Api: ' + api)
       return api
     } catch (error) {
       console.log('Connection error: ', error)

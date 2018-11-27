@@ -26,12 +26,24 @@ import utils from '../../../_utils/utils'
 const attachInterfacePromise = async (api, endpoint) => {
   const selectedEndpointName = endpoint.endpointInfo.name
   const networkId = endpoint.networkInfo.id
-  const blockchain = new Interfaces(api, networkId)
+  let blockchain
+  try {
+    blockchain = new Interfaces(api, networkId)
+  } catch (err) {
+    console.warn(err)
+    throw new Error(`Error endpoint_epic}`)
+  }
   let newEndpoint
   switch (selectedEndpointName) {
     case INFURA:
       console.log(`endpoint_epic -> ${INFURA}`)
-      newEndpoint = await blockchain.attachInterfaceInfuraV2(api, networkId)
+      try {
+        newEndpoint = await blockchain.attachInterfaceInfuraV2(api, networkId)
+      } catch (err) {
+        console.warn(err)
+        throw new Error(`Error endpoint_epic -> ${INFURA}`)
+      }
+
       break
     // case RIGOBLOCK:
     //   console.log(`endpoint_epic -> ${RIGOBLOCK}`)
@@ -43,7 +55,13 @@ const attachInterfacePromise = async (api, endpoint) => {
     //   break
     default:
       console.log(`endpoint_epic -> ${INFURA}`)
-      newEndpoint = await blockchain.attachInterfaceInfuraV2(api, networkId)
+      try {
+        newEndpoint = await blockchain.attachInterfaceInfuraV2(api, networkId)
+      } catch (err) {
+        console.warn(err)
+        throw new Error(`Error endpoint_epic -> ${INFURA}`)
+      }
+
       break
   }
   // console.log(newEndpoint)
@@ -92,7 +110,7 @@ export const attachInterfaceEpic = action$ =>
 export const delayShowAppEpic = action$ =>
   action$.pipe(
     ofType(TYPE_.ATTACH_INTERFACE),
-    delay(1000000),
+    delay(7000),
     map(() => {
       return Actions.app.updateAppStatus({
         appLoading: false

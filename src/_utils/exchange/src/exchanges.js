@@ -75,6 +75,26 @@ export const getOrders = {
 }
 
 // Get historical prices data for a given period of time
+// export const getConf = {
+//   Ethfinex: (networkId = 1) => {
+//     const options = {
+//       method: 'POST',
+//       uri: `${
+//         SupportedExchanges.ERCdEX.http[NETWORKS_ID[networkId]]
+//       }/reports/historical`,
+//       body: {
+//         networkId: networkId,
+//         baseTokenAddress: baseTokenAddress,
+//         quoteTokenAddress: quoteTokenAddress,
+//         startDate: startDate
+//       },
+//       json: true
+//     }
+//     return options
+//   }
+// }
+
+// Get historical prices data for a given period of time
 export const getHistoricalPricesData = {
   ERCdEX: (networkId = 1, baseTokenAddress, quoteTokenAddress, startDate) => {
     const options = {

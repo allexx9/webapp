@@ -2,7 +2,7 @@
 
 import * as TYPE_ from '../../actions/const'
 import { Actions } from '../../actions/'
-import { distinctUntilChanged, map, mergeMap, tap } from 'rxjs/operators'
+import { distinctUntilChanged, map, mergeMap } from 'rxjs/operators'
 import Web3Wrapper from '../../../_utils/web3Wrapper/src'
 
 //
@@ -18,10 +18,6 @@ export const connectedToNodeEpic = (action$, state$) =>
       return instance.rigoblock.ob.nodeStatus$.pipe(
         distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b))
       )
-    }),
-    tap(val => {
-      console.log(val)
-      return val
     }),
     map(res => Actions.app.updateAppStatus(res))
   )

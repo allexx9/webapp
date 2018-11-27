@@ -14,8 +14,6 @@ export const blockChunks = (start, end, chunk, web3) => {
   let fromBlock = end - chunk
   let toBlock = end
 
-  console.log(start, end, chunk)
-
   if (end - chunk < start) {
     rangesArray.push({
       fromBlock: start,

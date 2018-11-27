@@ -7,6 +7,7 @@ import {
 } from './const'
 import BigNumber from 'bignumber.js'
 import PoolsApi from '../PoolsApi/src'
+import Web3Wrapper from './web3Wrapper/src/web3Wrapper'
 import utils from '../_utils/utils'
 
 class Interfaces {
@@ -124,7 +125,7 @@ class Interfaces {
       let metaMaskNetworkId = await web3.eth.net.getId()
       console.log('Account MM: ', accounts, metaMaskNetworkId)
       let isMetaMaskLocked = accounts.length === 0 ? true : false
-      let currentState = this._success
+      let currentState = { ...this._success }
       if (metaMaskNetworkId !== parityNetworkId) {
         const stateUpdate = {
           isMetaMaskNetworkCorrect: false,
@@ -158,74 +159,41 @@ class Interfaces {
         let grgBalance = new BigNumber(0)
         let nonce = 0
 
-        // if (this._api.isConnected) {
-        //   try {
-        //     ethBalance = web3.eth.getBalance(accounts[0])
-        //   } catch (err) {
-        //     throw new Error(`Cannot get ETH balance of account ${accounts[0]}`)
-        //   }
-        //   let poolsApi = new PoolsApi(web3)
-        //   poolsApi.contract.rigotoken.init()
-        //   // Get GRG balance
+        let wrapper, poolsApi
+        try {
+          // wrapper = Web3Wrapper.getInstance()
+          poolsApi = new PoolsApi(web3)
+          poolsApi.contract.rigotoken.init()
+        } catch (err) {
+          console.warn(err)
+          throw new Error(`Error on Web3Wrapper.getInstance()`)
+        }
 
-        //   try {
-        //     grgBalance = poolsApi.contract.rigotoken.balanceOf(accounts[0])
-        //   } catch (err) {
-        //     throw new Error(`Cannot get GRG balance of account ${accounts[0]}`)
-        //   }
-        //   // Getting transactions count
-
-        //   try {
-        //     nonce = web3.eth.getTransactionCount(accounts[0])
-        //   } catch (err) {
-        //     throw new Error(
-        //       `Cannot get transactions count of account ${accounts[0]}`
-        //     )
-        //   }
-
-        //   try {
-        //     ;[ethBalance, grgBalance, nonce] = await Promise.all([
-        //       ethBalance,
-        //       grgBalance,
-        //       nonce
-        //     ])
-        //   } catch (e) {
-        //     throw new Error(`Cannot get GRG balance of account ${accounts[0]}`)
-        //   }
-        // }
+        ethBalance = web3.eth.getBalance(accounts[0])
+        grgBalance = poolsApi.contract.rigotoken.balanceOf(accounts[0])
+        nonce = web3.eth.getTransactionCount(accounts[0])
 
         try {
-          ethBalance = web3.eth.getBalance(accounts[0])
+          ethBalance = await ethBalance
         } catch (err) {
+          console.warn(err)
           throw new Error(`Cannot get ETH balance of account ${accounts[0]}`)
         }
-        let poolsApi = new PoolsApi(web3)
-        poolsApi.contract.rigotoken.init()
-        // Get GRG balance
-
+        console.log('grgBalance')
         try {
-          grgBalance = poolsApi.contract.rigotoken.balanceOf(accounts[0])
+          grgBalance = await grgBalance
         } catch (err) {
+          console.warn(err)
           throw new Error(`Cannot get GRG balance of account ${accounts[0]}`)
         }
-        // Getting transactions count
-
+        console.log('nonce')
         try {
-          nonce = web3.eth.getTransactionCount(accounts[0])
+          nonce = await nonce
         } catch (err) {
+          console.warn(err)
           throw new Error(
             `Cannot get transactions count of account ${accounts[0]}`
           )
-        }
-
-        try {
-          ;[ethBalance, grgBalance, nonce] = await Promise.all([
-            ethBalance,
-            grgBalance,
-            nonce
-          ])
-        } catch (e) {
-          throw new Error(`Cannot get GRG balance of account ${accounts[0]}`)
         }
 
         let accountsMetaMask = {
@@ -255,7 +223,12 @@ class Interfaces {
     console.log(`${this.constructor.name} -> Interface Infura`)
     const api = this._api
     try {
-      const accountsMetaMask = await this.getAccountsMetamask(api)
+      let accountsMetaMask
+      try {
+        accountsMetaMask = await this.getAccountsMetamask(api)
+      } catch (e) {
+        console.warn(e)
+      }
       const allAccounts = {
         ...accountsMetaMask
       }
@@ -292,7 +265,7 @@ class Interfaces {
         ...this._success,
         ...stateUpdate
       }
-      this._success = result
+      // this._success = result
       console.log(`${this.constructor.name} -> Done`)
       return result
     } catch (error) {
