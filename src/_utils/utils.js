@@ -113,9 +113,16 @@ class utilities {
 
     const accounts = [].concat(endpoint.accounts)
     if (accounts.length !== 0) {
-      let newNonce = await api.eth.getTransactionCount(
-        endpoint.accounts[0].address
-      )
+      let newNonce
+      try {
+        newNonce = await api.eth
+          .getTransactionCount(endpoint.accounts[0].address)
+          .catch(err => err)
+      } catch (err) {
+        console.warn(`Error getTransactionCount`)
+        return new Error(err)
+      }
+
       newNonce = new BigNumber(newNonce).toFixed()
       // console.log(`endpoint_epic -> New nonce: ` + newNonce)
       try {
@@ -128,7 +135,12 @@ class utilities {
           //     account.address
           //   }`
           // )
-          return poolApi.contract.rigotoken.balanceOf(account.address)
+          return poolApi.contract.rigotoken
+            .balanceOf(account.address)
+            .catch(err => {
+              console.warn('Error getTransactionCount')
+              return new Error(err)
+            })
         })
 
         // Checking ETH balance
@@ -140,8 +152,16 @@ class utilities {
           // )
           return api.eth.getBalance(account.address, 'latest')
         })
-        const ethBalances = await Promise.all(ethQueries)
-        const grgBalances = await Promise.all(grgQueries)
+        let ethBalances
+        let grgBalances
+        try {
+          ethBalances = await Promise.all(ethQueries).catch(err => err)
+          grgBalances = await Promise.all(grgQueries).catch(err => err)
+        } catch (err) {
+          console.warn(err)
+          return new Error(err)
+        }
+
         const prevAccounts = [].concat(endpoint.accounts)
         prevAccounts.forEach(function(account, index) {
           // Checking ETH balance

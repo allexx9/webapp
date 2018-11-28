@@ -69,12 +69,7 @@ class PageVaultDetailsVaultManager extends Component {
   componentWillUnmount() {
     this.props.dispatch(Actions.tokens.priceTickersStop())
     this.props.dispatch(Actions.exchange.getPortfolioChartDataStop())
-    this.props.dispatch(
-      Actions.vault.updateSelectedVault(
-        { details: {}, transactions: [] },
-        { reset: true }
-      )
-    )
+    this.props.dispatch(Actions.vault.updateSelectedVault({}, { reset: true }))
   }
 
   shouldComponentUpdate(nextProps, nextState) {
