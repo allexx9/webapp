@@ -65,8 +65,6 @@ const attachInterfacePromise = async (api, endpoint) => {
 
       break
   }
-  // console.log(newEndpoint)
-  // throw new Error('error')
   return newEndpoint
 }
 
@@ -85,14 +83,11 @@ export const attachInterfaceEpic = (action$, state$) =>
     switchMap(action => {
       return attachInterface$(action.payload.api, action.payload.endpoint).pipe(
         mergeMap(endpoint => {
-          console.log(endpoint)
           let accounts = endpoint.accounts.map(element => {
             return element.address
           })
           const currentAccountsAddressHash = sha3_512(accounts.toString())
           const savedAccountsAddressHash = state$.value.app.accountsAddressHash
-
-          console.log(currentAccountsAddressHash, savedAccountsAddressHash)
           if (currentAccountsAddressHash !== savedAccountsAddressHash) {
             return Observable.concat(
               Observable.of(
