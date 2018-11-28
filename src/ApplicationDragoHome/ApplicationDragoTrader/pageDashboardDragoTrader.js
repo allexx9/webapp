@@ -165,6 +165,7 @@ class PageDashboardDragoTrader extends Component {
         </Col>
       )
     })
+    console.log(this.props)
     return (
       <Row>
         <Col xs={12}>

@@ -4,6 +4,7 @@ import { UPDATE_INTERFACE } from '../actions/const'
 import initialState from './initialState'
 
 function endpointsReducer(state = initialState.endpoint, action) {
+  console.log(action)
   switch (action.type) {
     case UPDATE_INTERFACE:
       return {

@@ -16,6 +16,7 @@ import {
   takeUntil
 } from 'rxjs/operators'
 import { ofType } from 'redux-observable'
+import { sha3_512 } from 'js-sha3'
 import Web3Wrapper from '../../../_utils/web3Wrapper/src'
 import utils from '../../../_utils/utils'
 
@@ -78,17 +79,64 @@ const attachInterface$ = (api, endpoint) => {
   )
 }
 
-export const attachInterfaceEpic = action$ =>
+export const attachInterfaceEpic = (action$, state$) =>
   action$.pipe(
     ofType(TYPE_.ATTACH_INTERFACE),
     switchMap(action => {
       return attachInterface$(action.payload.api, action.payload.endpoint).pipe(
         mergeMap(endpoint => {
+          console.log(endpoint)
+          let accounts = endpoint.accounts.map(element => {
+            return element.address
+          })
+          const currentAccountsAddressHash = sha3_512(accounts.toString())
+          const savedAccountsAddressHash = state$.value.app.accountsAddressHash
+
+          console.log(currentAccountsAddressHash, savedAccountsAddressHash)
+          if (currentAccountsAddressHash !== savedAccountsAddressHash) {
+            return Observable.concat(
+              Observable.of(
+                Actions.drago.updateTransactionsDragoHolder([
+                  Array(0),
+                  Array(0),
+                  Array(0)
+                ])
+              ),
+              Observable.of(
+                Actions.drago.updateTransactionsDragoManager([
+                  Array(0),
+                  Array(0),
+                  Array(0)
+                ])
+              ),
+              Observable.of(
+                Actions.vault.updateTransactionsVaultHolder([
+                  Array(0),
+                  Array(0),
+                  Array(0)
+                ])
+              ),
+              Observable.of(
+                Actions.vault.updateTransactionsVaultManager([
+                  Array(0),
+                  Array(0),
+                  Array(0)
+                ])
+              ),
+              Observable.of(
+                Actions.app.updateAppStatus({
+                  appLoading: false,
+                  accountsAddressHash: currentAccountsAddressHash
+                })
+              ),
+              Observable.of(Actions.endpoint.updateInterface(endpoint))
+            )
+          }
           return Observable.concat(
             Observable.of(
               Actions.app.updateAppStatus({
-                appLoading: false
-                // isConnected: true
+                appLoading: false,
+                accountsAddressHash: currentAccountsAddressHash
               })
             ),
             Observable.of(Actions.endpoint.updateInterface(endpoint))

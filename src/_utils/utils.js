@@ -446,6 +446,9 @@ class utilities {
   }
 
   dateFromTimeStamp = timestamp => {
+    if (typeof timestamp === 'string') {
+      timestamp = new Date(timestamp)
+    }
     const day = ('0' + timestamp.getDate()).slice(-2)
     const month = ('0' + (timestamp.getMonth() + 1)).slice(-2)
     function addZero(i) {
