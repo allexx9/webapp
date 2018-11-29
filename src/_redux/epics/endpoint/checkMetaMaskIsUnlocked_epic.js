@@ -19,19 +19,22 @@ import {
 import { ofType } from 'redux-observable'
 import { sha3_512 } from 'js-sha3'
 import BigNumber from 'bignumber.js'
+import Web3Wrapper from '../../../_utils/web3Wrapper/src'
 import shallowequal from 'shallowequal'
 
 //
 // CHECK THAT METAMASK IS UNLOCKED AND UPDATE ACTIVE ACCOUNT
 //
 
-const checkMetaMaskIsUnlocked$ = (api, web3, endpoint) => {
+const checkMetaMaskIsUnlocked$ = endpoint => {
   let newEndpoint = { ...endpoint }
   let oldAccounts = [].concat(endpoint.accounts)
   let newAccounts = []
   let metaMaskAccountAddress = ''
+  const web3Metamask = window.web3
+  const api = Web3Wrapper.getInstance(endpoint.networkInfo.id)
   // console.log('checkMetaMaskIsUnlocked$')
-  return from(web3.eth.getAccounts()).pipe(
+  return from(web3Metamask.eth.getAccounts()).pipe(
     exhaustMap(accountsMetaMask => {
       // MM is not locked
       if (accountsMetaMask.length !== 0) {
@@ -106,11 +109,7 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
       return timer(0, 1000).pipe(
         exhaustMap(() => {
           const currentState = state$.value
-          return checkMetaMaskIsUnlocked$(
-            action.payload.api,
-            action.payload.web3,
-            currentState.endpoint
-          )
+          return checkMetaMaskIsUnlocked$(currentState.endpoint)
         }),
         timeout(5000),
         distinctUntilChanged((a, b) => {

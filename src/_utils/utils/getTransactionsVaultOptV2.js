@@ -8,7 +8,7 @@ import Web3Wrapper from '../../_utils/web3Wrapper/src'
 import moment from 'moment'
 
 export const getTransactionsVaultOptV2 = async (
-  api,
+  networkInfo,
   poolAddress,
   accounts = [],
   options = {
@@ -20,17 +20,22 @@ export const getTransactionsVaultOptV2 = async (
   }
 ) => {
   if (poolAddress)
-    return getTransactionsSingleVault(poolAddress, api, accounts, options)
+    return getTransactionsSingleVault(
+      poolAddress,
+      networkInfo,
+      accounts,
+      options
+    )
   let startTime = new Date()
   if (accounts.length === 0) {
     return [Array(0), Array(0), Array(0)]
   }
-  let web3 = Web3Wrapper.getInstance(api._rb.network.id)
+  let web3 = Web3Wrapper.getInstance(networkInfo.id)
   web3._rb = window.web3._rb
   const poolApi = new PoolApi(web3)
   let dragoSymbolRegistry = new Map()
   let fromBlock
-  switch (api._rb.network.id) {
+  switch (networkInfo.id) {
     case 1:
       fromBlock = '6000000'
       break
@@ -51,7 +56,7 @@ export const getTransactionsVaultOptV2 = async (
   )
 
   const logToEventInternal = log => {
-    return logToEvent(log, dragoSymbolRegistry, api)
+    return logToEvent(log, dragoSymbolRegistry)
   }
 
   // Getting all buyDrago and selDrago events since block 0.
@@ -242,7 +247,7 @@ export const getTransactionsVaultOptV2 = async (
                       address
                     } = dragoSymbolRegistry.get(k)
                     supply.push({
-                      supply: formatCoins(new BigNumber(dragoSupply), 4, api),
+                      supply: formatCoins(new BigNumber(dragoSupply), 4),
                       name: name.trim(),
                       symbol: symbol,
                       vaultId: vaultId,
@@ -358,8 +363,7 @@ export const getTransactionsVaultOptV2 = async (
                           address: balancesRegistry.get(k).address,
                           balance: formatCoins(
                             balancesRegistry.get(k).balance,
-                            4,
-                            api
+                            4
                           )
                         })
                       }

@@ -19,11 +19,10 @@ const drago = {
       payload: { dragoId, api, options }
     }
   },
-  getPoolTransactions: (api, dragoAddress, accounts, options) => {
+  getPoolTransactions: (dragoAddress, accounts, options) => {
     return {
       type: TYPE_.GET_POOL_TRANSACTIONS,
       payload: {
-        api,
         dragoAddress,
         accounts,
         options

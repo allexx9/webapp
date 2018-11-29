@@ -120,15 +120,12 @@ export class App extends Component {
       )
     )
     const { endpoint } = this.props
-    this.props.dispatch(Actions.endpoint.checkIsConnectedToNode(this._api))
+    this.props.dispatch(Actions.endpoint.checkIsConnectedToNode())
     this.props.dispatch(Actions.endpoint.attachInterface(endpoint))
     if (typeof window.web3 !== 'undefined') {
-      const web3 = window.web3
-      this.props.dispatch(
-        Actions.endpoint.checkMetaMaskIsUnlocked(this._api, web3)
-      )
+      this.props.dispatch(Actions.endpoint.checkMetaMaskIsUnlocked())
     }
-    this.props.dispatch(Actions.endpoint.monitorAccountsStart(this._api))
+    this.props.dispatch(Actions.endpoint.monitorAccountsStart())
   }
 
   render() {

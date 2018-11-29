@@ -292,7 +292,6 @@ export const getPoolDetailsEpic = (action$, state$) => {
             if (details.totalSupply !== null) {
               observablesArray.push(
                 Actions.drago.getPoolTransactions(
-                  action.payload.api,
                   details.address,
                   state$.value.endpoint.accounts,
                   options
@@ -313,7 +312,6 @@ export const getPoolDetailsEpic = (action$, state$) => {
             if (details.totalSupply !== null) {
               observablesArray.push(
                 Actions.drago.getPoolTransactions(
-                  action.payload.api,
                   details.address,
                   state$.value.endpoint.accounts,
                   options

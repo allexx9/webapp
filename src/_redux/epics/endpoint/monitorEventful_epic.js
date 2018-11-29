@@ -20,13 +20,11 @@ import Web3Wrapper from '../../../_utils/web3Wrapper/src'
 // SUBSCRIBES TO EVENTFULL CONTRACTS AND EMIT NEW EVENTS
 //
 
-const monitorEventful$ = (web3, api, state$) => {
+const monitorEventful$ = state$ => {
   return merge(
     Observable.create(observer => {
-      const instance = Web3Wrapper.getInstance(
-        state$.value.endpoint.networkInfo.id
-      )
-      const subscription = instance.rigoblock.ob.eventful$.subscribe(val => {
+      const api = Web3Wrapper.getInstance(state$.value.endpoint.networkInfo.id)
+      const subscription = api.rigoblock.ob.eventful$.subscribe(val => {
         return observer.next(val)
       })
       return () => subscription.unsubscribe
@@ -38,11 +36,7 @@ export const monitorEventfulEpic = (action$, state$) => {
   return action$.pipe(
     ofType(TYPE_.MONITOR_ACCOUNTS_START),
     mergeMap(action => {
-      return monitorEventful$(
-        action.payload.web3,
-        action.payload.api,
-        state$
-      ).pipe(
+      return monitorEventful$(state$).pipe(
         takeUntil(action$.pipe(ofType(TYPE_.MONITOR_ACCOUNTS_STOP))),
         tap(val => {
           console.log(val)

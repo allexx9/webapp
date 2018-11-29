@@ -297,22 +297,32 @@ export const getPoolsListEpic = (action$, state$) =>
 // FETCH ACCOUNT TRANSACTIONS
 //
 
-const getPoolTransactions$ = (api, dragoAddress, accounts, options) => {
+const getPoolTransactions$ = (networkInfo, dragoAddress, accounts, options) => {
   return options.drago
     ? from(
-        utils.getTransactionsDragoOptV2(api, dragoAddress, accounts, options)
+        utils.getTransactionsDragoOptV2(
+          networkInfo,
+          dragoAddress,
+          accounts,
+          options
+        )
       )
     : from(
-        utils.getTransactionsVaultOptV2(api, dragoAddress, accounts, options)
+        utils.getTransactionsVaultOptV2(
+          networkInfo,
+          dragoAddress,
+          accounts,
+          options
+        )
       )
 }
 
 export const getAccountsTransactionsEpic = (action$, state$) => {
-  const retryStrategy = error$ =>
-    error$.pipe(
-      exhaustMap(err => err),
-      delay(2000)
-    )
+  // const retryStrategy = error$ =>
+  //   error$.pipe(
+  //     exhaustMap(err => err),
+  //     delay(2000)
+  //   )
 
   // const isNodeConnected$ = state$.pipe(
   //   map(val => {
@@ -336,8 +346,9 @@ export const getAccountsTransactionsEpic = (action$, state$) => {
   return action$.pipe(
     ofType(TYPE_.GET_ACCOUNTS_TRANSACTIONS),
     mergeMap(action => {
+      const { networkInfo } = state$.value.endpoint
       return getPoolTransactions$(
-        action.payload.api,
+        networkInfo,
         action.payload.dragoAddress,
         action.payload.accounts,
         action.payload.options
@@ -381,12 +392,13 @@ export const getAccountsTransactionsEpic = (action$, state$) => {
 // FETCH POOL TRANSACTIONS
 //
 
-export const getPoolTransactionsEpic = action$ =>
+export const getPoolTransactionsEpic = (action$, state$) =>
   action$.pipe(
     ofType(TYPE_.GET_POOL_TRANSACTIONS),
     mergeMap(action => {
+      const { networkInfo } = state$.value.endpoint
       return getPoolTransactions$(
-        action.payload.api,
+        networkInfo,
         action.payload.dragoAddress,
         action.payload.accounts,
         action.payload.options

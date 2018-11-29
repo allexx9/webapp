@@ -169,9 +169,9 @@ export const delayShowAppEpic = action$ =>
 // SUBSCRIBE TO NEW BLOCK AND MONITOR ACCOUNTS
 //
 
-const monitorAccounts$ = (api, state$) => {
-  const instance = Web3Wrapper.getInstance(state$.value.endpoint.networkInfo.id)
-  return instance.rigoblock.ob.newBlock$.pipe(
+const monitorAccounts$ = state$ => {
+  const api = Web3Wrapper.getInstance(state$.value.endpoint.networkInfo.id)
+  return api.rigoblock.ob.newBlock$.pipe(
     switchMap(newBlock => {
       return from(utils.updateAccounts(api, newBlock, state$))
     })
@@ -182,7 +182,7 @@ export const monitorAccountsEpic = (action$, state$) => {
   return action$.pipe(
     ofType(TYPE_.MONITOR_ACCOUNTS_START),
     mergeMap(action => {
-      return monitorAccounts$(action.payload.api, state$).pipe(
+      return monitorAccounts$(state$).pipe(
         takeUntil(action$.pipe(ofType(TYPE_.MONITOR_ACCOUNTS_STOP))),
         mergeMap(accountsUpdate => {
           console.log(accountsUpdate)

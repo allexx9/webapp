@@ -25,7 +25,7 @@ import moment from 'moment'
  * This function can be a performance hit, so it will need to be optimized as much as possible.
  **/
 export const getTransactionsDragoOptV2 = async (
-  api,
+  networkInfo,
   poolAddress,
   accounts = [],
   options = {
@@ -36,26 +36,28 @@ export const getTransactionsDragoOptV2 = async (
     drago: true
   }
 ) => {
-  //
-  // return Promise.reject(new Error('fail'))
-
   if (poolAddress)
-    return getTransactionsSingleDrago(poolAddress, api, accounts, options)
+    return getTransactionsSingleDrago(
+      poolAddress,
+      networkInfo,
+      accounts,
+      options
+    )
   let startTime = new Date()
   if (accounts.length === 0) {
     return [Array(0), Array(0), Array(0)]
   }
-  let web3 = Web3Wrapper.getInstance(api._rb.network.id)
+  let web3 = Web3Wrapper.getInstance(networkInfo.id)
   web3._rb = window.web3._rb
 
   // HTTP
-  let web3Http = new Web3(api._rb.network.transportHttp)
+  let web3Http = new Web3(networkInfo.transportHttp)
   web3Http._rb = window.web3._rb
 
   const poolApi = new PoolApi(web3Http)
   let dragoSymbolRegistry = new Map()
   let fromBlock
-  switch (api._rb.network.id) {
+  switch (networkInfo.id) {
     case 1:
       fromBlock = '6000000'
       break
@@ -262,7 +264,7 @@ export const getTransactionsDragoOptV2 = async (
                       address
                     } = dragoSymbolRegistry.get(k)
                     supply.push({
-                      supply: formatCoins(new BigNumber(dragoSupply), 4, api),
+                      supply: formatCoins(new BigNumber(dragoSupply), 4),
                       name: name.trim(),
                       symbol: symbol,
                       dragoId: dragoId,
@@ -379,8 +381,7 @@ export const getTransactionsDragoOptV2 = async (
                           address: balancesRegistry.get(k).address,
                           balance: formatCoins(
                             balancesRegistry.get(k).balance,
-                            4,
-                            api
+                            4
                           )
                         })
                       }

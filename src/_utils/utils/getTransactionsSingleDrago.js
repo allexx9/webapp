@@ -7,17 +7,17 @@ import Web3Wrapper from '../../_utils/web3Wrapper/src'
 
 export const getTransactionsSingleDrago = async (
   dragoAddress,
-  api,
+  networkInfo,
   accounts,
   options = {
     limit: 20
   }
 ) => {
-  let web3 = Web3Wrapper.getInstance(api._rb.network.id)
+  let web3 = Web3Wrapper.getInstance(networkInfo.id)
   web3._rb = window.web3._rb
 
   // HTTP
-  let web3Http = new Web3(api._rb.network.transportHttp)
+  let web3Http = new Web3(networkInfo.transportHttp)
   web3Http._rb = window.web3._rb
 
   const poolApi = new PoolApi(web3Http)
@@ -25,7 +25,7 @@ export const getTransactionsSingleDrago = async (
   await poolApi.contract.dragoeventful.init()
   const contract = poolApi.contract.dragoeventful
   let fromBlock
-  switch (api._rb.network.id) {
+  switch (networkInfo.id) {
     case 1:
       fromBlock = '6000000'
       break

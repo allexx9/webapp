@@ -11,21 +11,16 @@ const endpoint = {
       }
     }
   },
-  checkMetaMaskIsUnlocked: (api, web3) => {
+  checkMetaMaskIsUnlocked: () => {
     return {
       type: TYPE_.CHECK_METAMASK_IS_UNLOCKED,
-      payload: {
-        api,
-        web3
-      }
+      payload: {}
     }
   },
   checkIsConnectedToNode: api => {
     return {
       type: TYPE_.CHECK_APP_IS_CONNECTED,
-      payload: {
-        api
-      }
+      payload: {}
     }
   },
   getAccountsTransactions: (api, dragoAddress, accounts, options) => {
@@ -39,12 +34,10 @@ const endpoint = {
       }
     }
   },
-  monitorAccountsStart: api => {
+  monitorAccountsStart: () => {
     return {
       type: TYPE_.MONITOR_ACCOUNTS_START,
-      payload: {
-        api
-      }
+      payload: {}
     }
   },
   monitorAccountsStop: (web3, api) => {

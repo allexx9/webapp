@@ -7,16 +7,16 @@ import Web3Wrapper from '../../_utils/web3Wrapper/src'
 
 export const getTransactionsSingleVault = async (
   poolAddress,
-  api,
+  networkInfo,
   accounts,
   options = {
     limit: 20
   }
 ) => {
-  let web3 = Web3Wrapper.getInstance(api._rb.network.id)
+  let web3 = Web3Wrapper.getInstance(networkInfo.id)
   web3._rb = window.web3._rb
   // HTTP
-  let web3Http = new Web3(api._rb.network.transportHttp)
+  let web3Http = new Web3(networkInfo.transportHttp)
   web3Http._rb = window.web3._rb
 
   const poolApi = new PoolApi(web3Http)
@@ -24,7 +24,7 @@ export const getTransactionsSingleVault = async (
   await poolApi.contract.vaulteventful.init()
   const contract = poolApi.contract.vaulteventful
   let fromBlock
-  switch (api._rb.network.id) {
+  switch (networkInfo.id) {
     case 1:
       fromBlock = '6000000'
       break
@@ -39,7 +39,7 @@ export const getTransactionsSingleVault = async (
   }
 
   const logToEvent = log => {
-    const key = api.utils.sha3(JSON.stringify(log))
+    const key = web3.utils.sha3(JSON.stringify(log))
     const {
       address,
       blockNumber,
