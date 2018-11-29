@@ -17,17 +17,16 @@ const endpoint = {
       payload: {}
     }
   },
-  checkIsConnectedToNode: api => {
+  checkIsConnectedToNode: () => {
     return {
       type: TYPE_.CHECK_APP_IS_CONNECTED,
       payload: {}
     }
   },
-  getAccountsTransactions: (api, dragoAddress, accounts, options) => {
+  getAccountsTransactions: (dragoAddress, accounts, options) => {
     return {
       type: TYPE_.GET_ACCOUNTS_TRANSACTIONS,
       payload: {
-        api,
         dragoAddress,
         accounts,
         options
@@ -40,13 +39,10 @@ const endpoint = {
       payload: {}
     }
   },
-  monitorAccountsStop: (web3, api) => {
+  monitorAccountsStop: () => {
     return {
       type: TYPE_.MONITOR_ACCOUNTS_STOP,
-      payload: {
-        web3,
-        api
-      }
+      payload: {}
     }
   },
   updateInterface: endpoint => {

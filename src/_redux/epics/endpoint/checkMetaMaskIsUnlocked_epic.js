@@ -105,7 +105,7 @@ const checkMetaMaskIsUnlocked$ = endpoint => {
 export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
   return action$.pipe(
     ofType(TYPE_.CHECK_METAMASK_IS_UNLOCKED),
-    mergeMap(action => {
+    mergeMap(() => {
       return timer(0, 1000).pipe(
         exhaustMap(() => {
           const currentState = state$.value
@@ -147,7 +147,6 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
               ? [
                   Observable.of(
                     Actions.endpoint.getAccountsTransactions(
-                      action.payload.api,
                       null,
                       newEndpoint.accounts,
                       optionsHolder
@@ -155,7 +154,6 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
                   ),
                   Observable.of(
                     Actions.endpoint.getAccountsTransactions(
-                      action.payload.api,
                       null,
                       newEndpoint.accounts,
                       optionsManager
@@ -163,7 +161,6 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
                   ),
                   Observable.of(
                     Actions.endpoint.getAccountsTransactions(
-                      action.payload.api,
                       null,
                       newEndpoint.accounts,
                       {
@@ -176,7 +173,6 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
                   ),
                   Observable.of(
                     Actions.endpoint.getAccountsTransactions(
-                      action.payload.api,
                       null,
                       newEndpoint.accounts,
                       {

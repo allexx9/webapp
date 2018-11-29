@@ -181,7 +181,7 @@ const monitorAccounts$ = state$ => {
 export const monitorAccountsEpic = (action$, state$) => {
   return action$.pipe(
     ofType(TYPE_.MONITOR_ACCOUNTS_START),
-    mergeMap(action => {
+    mergeMap(() => {
       return monitorAccounts$(state$).pipe(
         takeUntil(action$.pipe(ofType(TYPE_.MONITOR_ACCOUNTS_STOP))),
         mergeMap(accountsUpdate => {
@@ -243,7 +243,6 @@ export const monitorAccountsEpic = (action$, state$) => {
               observablesArray.push(
                 Observable.of(
                   Actions.endpoint.getAccountsTransactions(
-                    action.payload.api,
                     null,
                     currentState.endpoint.accounts,
                     {
@@ -262,7 +261,6 @@ export const monitorAccountsEpic = (action$, state$) => {
               observablesArray.push(
                 Observable.of(
                   Actions.endpoint.getAccountsTransactions(
-                    action.payload.api,
                     null,
                     currentState.endpoint.accounts,
                     {
@@ -283,7 +281,6 @@ export const monitorAccountsEpic = (action$, state$) => {
               observablesArray.push(
                 Observable.of(
                   Actions.endpoint.getAccountsTransactions(
-                    action.payload.api,
                     null,
                     currentState.endpoint.accounts,
                     {
@@ -302,7 +299,6 @@ export const monitorAccountsEpic = (action$, state$) => {
               observablesArray.push(
                 Observable.of(
                   Actions.endpoint.getAccountsTransactions(
-                    action.payload.api,
                     null,
                     currentState.endpoint.accounts,
                     {
