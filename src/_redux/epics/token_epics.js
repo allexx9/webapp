@@ -9,13 +9,15 @@
 // import 'rxjs/add/operator/map'
 // import 'rxjs/add/operator/mapTo'
 // import 'rxjs/add/operator/mergeMap'
-import { Observable, from, timer } from 'rxjs'
+import { Observable, from, of, timer } from 'rxjs'
 import {
   catchError,
   exhaustMap,
   filter,
+  finalize,
   map,
   mergeMap,
+  retryWhen,
   switchMap,
   takeUntil,
   tap
@@ -59,14 +61,19 @@ export const setTokenAllowanceEpic = action$ => {
       action.payload.ownerAddress,
       action.payload.spenderAddress,
       action.payload.ZeroExConfig
-    ).map(() => {
-      return {
-        type: UPDATE_TRADE_TOKENS_PAIR,
-        payload: {
-          baseTokenAllowance: true
+    )
+      .map(() => {
+        return {
+          type: UPDATE_TRADE_TOKENS_PAIR,
+          payload: {
+            baseTokenAllowance: true
+          }
         }
-      }
-    })
+      })
+      .catch(err => {
+        console.warn(err)
+        return of(false)
+      })
   })
 }
 
@@ -313,6 +320,10 @@ const getTickersWs$ = (relay, networkId, symbols) => {
             return ethfinex.ws.close()
           }
         })
+        .catch(err => {
+          console.warn(err)
+          return observer.error(err)
+        })
     }
   })
 }
@@ -391,12 +402,15 @@ export const getPricesEpic = (action$, state$) =>
           type: TOKENS_TICKERS_UPDATE,
           payload
         })),
-        catchError(error => {
-          console.warn(error)
-          return Observable.of({
-            type: 'QUEUE_ERROR_NOTIFICATION_SILENT',
-            payload: 'Error fetching tickers data.'
-          })
+        retryWhen(error => {
+          let scalingDuration = 5000
+          return error.pipe(
+            mergeMap(error => {
+              console.warn(error)
+              return timer(scalingDuration)
+            }),
+            finalize(() => console.log('We are done!'))
+          )
         })
       )
     })

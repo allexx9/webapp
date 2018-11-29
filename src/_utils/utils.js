@@ -175,7 +175,7 @@ class utilities {
           // )
           if (
             !new BigNumber(newEthBalance).eq(prevEthBalance) &&
-            // prevBlockNumber !== 0 &&
+            prevBlockNumber !== 0 &&
             prevNonce !== 0
           ) {
             console.log(`ETH ${account.name} balance changed.`)
@@ -213,7 +213,7 @@ class utilities {
           // console.log(newgrgBalance, prevGrgBalance)
           if (
             !new BigNumber(newgrgBalance).eq(prevGrgBalance) &&
-            // prevBlockNumber !== 0 &&
+            prevBlockNumber !== 0 &&
             prevNonce !== 0
           ) {
             console.log(`GRG ${account.name} balance changed.`)
