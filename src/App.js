@@ -120,18 +120,8 @@ export class App extends Component {
       )
     )
     const { endpoint } = this.props
-    let WsSecureUrl = ''
-    const networkName = this.props.endpoint.networkInfo.name
-    if (PROD) {
-      WsSecureUrl = this.props.endpoint.endpointInfo.wss[networkName].prod
-    } else {
-      WsSecureUrl = this.props.endpoint.endpointInfo.wss[networkName].dev
-    }
-    const web3 = new Web3(WsSecureUrl)
     this.props.dispatch(Actions.endpoint.checkIsConnectedToNode(this._api))
-    this.props.dispatch(
-      Actions.endpoint.attachInterface(web3, this._api, endpoint)
-    )
+    this.props.dispatch(Actions.endpoint.attachInterface(endpoint))
     if (typeof window.web3 !== 'undefined') {
       const web3 = window.web3
       this.props.dispatch(

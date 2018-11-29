@@ -60,7 +60,7 @@ export const getDragoDetails = async (
 
     let arrayPromises = []
     return newWeb3.eth.getBlockNumber().then(async lastBlock => {
-      let chunck = 100000
+      let chunck = 250000
       lastBlock = new BigNumber(lastBlock).toNumber()
       const chunks = await getBlockChunks(fromBlock, lastBlock, chunck, newWeb3)
       // const chunks = blockChunks(fromBlock, lastBlock, chunck)

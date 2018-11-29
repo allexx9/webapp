@@ -119,7 +119,7 @@ export const getTransactionsSingleVault = async (
   const getChunkedEvents = topics => {
     let arrayPromises = []
     return web3.eth.getBlockNumber().then(async lastBlock => {
-      let chunck = 100000
+      let chunck = 250000
       lastBlock = new BigNumber(lastBlock).toNumber()
       const chunks = await getBlockChunks(fromBlock, lastBlock, chunck)
       arrayPromises = chunks.map(async chunk => {

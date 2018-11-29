@@ -61,7 +61,7 @@ export const getVaultDetails = async (
 
     let arrayPromises = []
     return newWeb3.eth.getBlockNumber().then(async lastBlock => {
-      let chunck = 100000
+      let chunck = 250000
       lastBlock = new BigNumber(lastBlock).toNumber()
       const chunks = await getBlockChunks(fromBlock, lastBlock, chunck)
       arrayPromises = chunks.map(async chunk => {

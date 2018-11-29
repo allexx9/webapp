@@ -80,7 +80,7 @@ const getVaultsChunkedEvents$ = (api, options, state$) => {
           .getBlockNumber()
           .then(async lastBlock => {
             lastBlock = new BigNumber(lastBlock).toNumber()
-            let chunck = 100000
+            let chunck = 250000
             const chunks = await utils.blockChunks(
               startBlock,
               lastBlock,
@@ -192,7 +192,7 @@ const getDragosChunkedEvents$ = (api, options, state$) => {
           .getBlockNumber()
           .then(async lastBlock => {
             lastBlock = new BigNumber(lastBlock).toNumber()
-            let chunck = 100000
+            let chunck = 250000
             // console.log(startBlock, lastBlock, chunck)
             const chunks = await utils.blockChunks(
               startBlock,

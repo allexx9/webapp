@@ -81,7 +81,8 @@ export const attachInterfaceEpic = (action$, state$) =>
   action$.pipe(
     ofType(TYPE_.ATTACH_INTERFACE),
     switchMap(action => {
-      return attachInterface$(action.payload.api, action.payload.endpoint).pipe(
+      const web3 = Web3Wrapper.getInstance(state$.value.endpoint.networkInfo.id)
+      return attachInterface$(web3, action.payload.endpoint).pipe(
         mergeMap(endpoint => {
           let accounts = endpoint.accounts.map(element => {
             return element.address

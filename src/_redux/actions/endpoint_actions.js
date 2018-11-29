@@ -3,12 +3,10 @@
 import * as TYPE_ from './const'
 
 const endpoint = {
-  attachInterface: (web3, api, endpoint) => {
+  attachInterface: endpoint => {
     return {
       type: TYPE_.ATTACH_INTERFACE,
       payload: {
-        web3,
-        api,
         endpoint
       }
     }
