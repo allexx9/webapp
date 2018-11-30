@@ -1,6 +1,6 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 // By the Power of Grayskull! I Have the Power!
-// import Reactotron from './ReactotronConfig'
+import Reactotron from './ReactotronConfig'
 
 import * as Sentry from '@sentry/browser'
 import { Provider } from 'react-redux'
@@ -102,9 +102,12 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 // )
 const enhancer = composeEnhancers(applyMiddleware(...middlewares))
 
-// const store = Reactotron.createStore(persistedReducer, enhancer)
+// Original store
+// const store = createStore(persistedReducer, enhancer)
 
-let store = createStore(persistedReducer, enhancer)
+// Reactotron store
+const store = Reactotron.createStore(persistedReducer, enhancer)
+
 epicMiddleware.run(rootEpic)
 
 let persistor = persistStore(store)
