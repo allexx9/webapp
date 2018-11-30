@@ -3,6 +3,8 @@ import 'babel-polyfill'
 import 'react-virtualized/styles.css'
 import * as Sentry from '@sentry/browser'
 import { Redirect, Route, Router, Switch } from 'react-router-dom'
+import { connect } from 'react-redux'
+import AppLoading from './Elements/elementAppLoading'
 import ApplicationConfigPage from './Application/applicationConfig'
 import ApplicationDragoPage from './Application/applicationDrago'
 import ApplicationExchangePage from './Application/applicationExchange'
@@ -14,12 +16,10 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import Whoops404 from './Application/whoops404'
 import createHashHistory from 'history/createHashHistory'
-
-import { connect } from 'react-redux'
-import AppLoading from './Elements/elementAppLoading'
 import utils from './_utils/utils'
 // import ElementNotConnected from './Elements/elementNotConnected'
 import { Actions } from './_redux/actions'
+import { notificationWrapper } from './_utils/notificationWrapper'
 import ReactGA from 'react-ga'
 
 let appHashPath = true
@@ -67,6 +67,8 @@ export class App extends Component {
     }
   }
 
+  // notificationSystem = React.createRef()
+
   scrollPosition = 0
   tdIsConnected = null
   tdIsMetaMaskUnlocked = null
@@ -88,6 +90,13 @@ export class App extends Component {
     dispatch: PropTypes.func.isRequired
   }
 
+  initNotificationSystem = instance => {
+    if (!this._notificationSystem) {
+      this._notificationSystem = React.createRef()
+      notificationWrapper.getInstance(instance)
+    }
+  }
+
   // Passing down the context variables to children
   getChildContext() {
     return {
@@ -98,7 +107,6 @@ export class App extends Component {
   shouldComponentUpdate(nextProps, nextState) {
     const propsUpdate = !utils.shallowEqual(this.props, nextProps)
     const stateUpdate = !utils.shallowEqual(this.state, nextState)
-    // console.log(`${this.constructor.name} -> propsUpdate: %c${propsUpdate}.%c stateUpdate: %c${stateUpdate}`, `color: ${propsUpdate ? 'green' : 'red'}; font-weight: bold;`,'',`color: ${stateUpdate ? 'green' : 'red'}; font-weight: bold;`)
     return stateUpdate || propsUpdate
   }
 
@@ -112,11 +120,11 @@ export class App extends Component {
   }
 
   componentDidMount = async () => {
-    this.props.dispatch(
-      Actions.notifications.initNotificationsSystemAction(
-        this._notificationSystem
-      )
-    )
+    // this.props.dispatch(
+    //   Actions.notifications.initNotificationsSystemAction(
+    //     this.notificationSystem
+    //   )
+    // )
     const { endpoint } = this.props
     this.props.dispatch(Actions.endpoint.checkIsConnectedToNode())
     this.props.dispatch(Actions.endpoint.attachInterface(endpoint))
@@ -191,7 +199,7 @@ export class App extends Component {
     return (
       <div>
         <NotificationSystem
-          ref={n => (this._notificationSystem = n)}
+          ref={this.initNotificationSystem}
           style={notificationStyle}
         />
         {this.props.app.appLoading ? (
