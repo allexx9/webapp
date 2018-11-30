@@ -65,7 +65,7 @@ class PageFundDetailsVaultTrader extends Component {
 
     // Getting Drago details and transactions
     this.props.dispatch(
-      Actions.drago.getPoolDetails(dragoId, api, { poolType: 'vault' })
+      Actions.drago.getPoolDetails(dragoId, { poolType: 'vault' })
     )
   }
 

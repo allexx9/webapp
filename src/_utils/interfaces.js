@@ -163,7 +163,7 @@ class Interfaces {
         try {
           wrapper = Web3Wrapper.getInstance()
           poolsApi = new PoolsApi(wrapper)
-          poolsApi.contract.rigotoken.init()
+          await poolsApi.contract.rigotoken.init()
         } catch (err) {
           console.warn(err)
           throw new Error(`Error on Web3Wrapper.getInstance()`)

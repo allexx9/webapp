@@ -201,7 +201,6 @@ const exchange = {
           type: TYPE_.UPDATE_LIQUIDITY_AND_TOKENS_BALANCE_START,
           payload: {
             api
-            // dragoAddress
           }
         }
       case 'STOP':
@@ -209,7 +208,6 @@ const exchange = {
           type: TYPE_.UPDATE_LIQUIDITY_AND_TOKENS_BALANCE_STOP,
           payload: {
             api
-            // dragoAddress
           }
         }
       case 'RESET':
@@ -217,7 +215,6 @@ const exchange = {
           type: TYPE_.UPDATE_LIQUIDITY_AND_TOKENS_BALANCE_RESET,
           payload: {
             api
-            // dragoAddress
           }
         }
       default:

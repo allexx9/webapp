@@ -17,6 +17,8 @@ export const DEBUGGING = {
   }
 }
 
+export const METAMASK = 'MetaMask'
+export const HTTP_EVENT_FETCHING = true
 export const APP = 'app'
 export const DS = '/'
 export const DRG_ISIN = 'DR'

@@ -1,29 +1,28 @@
 import * as Colors from 'material-ui/styles/colors'
-import { Col, Row } from 'react-flexbox-grid'
-import { connect } from 'react-redux'
-import ActionSwapHoriz from 'material-ui/svg-icons/action/swap-horiz'
-import BigNumber from 'bignumber.js'
-import Dialog from 'material-ui/Dialog'
-import FlatButton from 'material-ui/FlatButton'
-import Paper from 'material-ui/Paper'
-import PropTypes from 'prop-types'
-import RaisedButton from 'material-ui/RaisedButton'
-import React from 'react'
-import TextField from 'material-ui/TextField'
-
 import { Actions } from '../../_redux/actions'
-import { Table, TableBody, TableRow, TableRowColumn } from 'material-ui/Table'
-
+import { Col, Row } from 'react-flexbox-grid'
 import {
   ERRORS,
   validateAccount,
   validatePositiveNumber
 } from '../../_utils/validation'
+import { METAMASK } from '../../_utils/const'
+import { Table, TableBody, TableRow, TableRowColumn } from 'material-ui/Table'
+import { connect } from 'react-redux'
 import { formatCoins } from '../../_utils/format'
 import AccountSelector from '../../Elements/elementAccountSelector'
+import ActionSwapHoriz from 'material-ui/svg-icons/action/swap-horiz'
+import BigNumber from 'bignumber.js'
+import Dialog from 'material-ui/Dialog'
 import ElementFundActionAuthorization from '../../Elements/elementActionAuthorization'
 import ElementFundActionsHeader from './elementFundActionsHeader'
+import FlatButton from 'material-ui/FlatButton'
+import Paper from 'material-ui/Paper'
 import PoolApi from '../../PoolsApi/src'
+import PropTypes from 'prop-types'
+import RaisedButton from 'material-ui/RaisedButton'
+import React from 'react'
+import TextField from 'material-ui/TextField'
 import styles from './elementFundActions.module.css'
 
 const customContentStyle = {
@@ -516,8 +515,9 @@ class ElementFundActions extends React.Component {
           .catch(e => console.warn(e))
         console.log('Account monitoring - > DRAGO details fetch.')
         this.props.dispatch(
-          Actions.drago.getPoolDetails(dragoDetails.dragoId, api, {
-            poolType: 'drago'
+          Actions.drago.getPoolDetails(dragoDetails.dragoId, {
+            poolType: 'drago',
+            wallet: METAMASK
           })
         )
 
@@ -629,8 +629,9 @@ class ElementFundActions extends React.Component {
           .catch(e => console.warn(e))
         console.log('Account monitoring - > DRAGO details fetch.')
         this.props.dispatch(
-          Actions.drago.getPoolDetails(dragoDetails.dragoId, provider, {
-            poolType: 'drago'
+          Actions.drago.getPoolDetails(dragoDetails.dragoId, {
+            poolType: 'drago',
+            wallet: METAMASK
           })
         )
         // Adding transaciont to the queue

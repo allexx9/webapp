@@ -110,8 +110,8 @@ class WalletSetupStepper extends Component {
   }
 
   getGRGFromFaucet = async () => {
-    const { api } = this.context
-    const faucetAddress = ERC20_TOKENS[api._rb.network.name].GRG.faucetAddress
+    const { networkInfo } = this.props.endpoint
+    const faucetAddress = ERC20_TOKENS[networkInfo.name].GRG.faucetAddress
     const accounts = await window.web3.eth.getAccounts()
     const poolApi = new PoolApi(window.web3)
     await poolApi.contract.rigotokenfaucet.init(faucetAddress)
@@ -124,10 +124,9 @@ class WalletSetupStepper extends Component {
   }
 
   renderStepActions(step) {
-    const { api } = this.context
-    const { stepIndex } = this.state
-    const { locked, correctNetwork, holdsTokens } = this.state
-    const faucetAddress = ERC20_TOKENS[api._rb.network.name].GRG.faucetAddress
+    const { locked, correctNetwork, holdsTokens, stepIndex } = this.state
+    const { networkInfo } = this.props.endpoint
+    const faucetAddress = ERC20_TOKENS[networkInfo.name].GRG.faucetAddress
     const buttonDisable = () => {
       switch (step) {
         case 0:
