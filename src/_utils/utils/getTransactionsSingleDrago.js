@@ -4,6 +4,7 @@ import BigNumber from 'bignumber.js'
 import PoolApi from '../../PoolsApi/src'
 import Web3 from 'web3'
 import Web3Wrapper from '../../_utils/web3Wrapper/src'
+import { HTTP_EVENT_FETCHING, METAMASK } from '../const'
 
 export const getTransactionsSingleDrago = async (
   dragoAddress,
@@ -13,14 +14,22 @@ export const getTransactionsSingleDrago = async (
     limit: 20
   }
 ) => {
-  let web3 = Web3Wrapper.getInstance(networkInfo.id)
-  web3._rb = window.web3._rb
+  let web3
+  switch (options.wallet) {
+    case METAMASK: {
+      web3 = window.web3
+      break
+    }
+    default: {
+      if (HTTP_EVENT_FETCHING) {
+        web3 = new Web3(networkInfo.transportHttp)
+      } else {
+        web3 = Web3Wrapper.getInstance(networkInfo.id)
+      }
+    }
+  }
 
-  // HTTP
-  let web3Http = new Web3(networkInfo.transportHttp)
-  web3Http._rb = window.web3._rb
-
-  const poolApi = new PoolApi(web3Http)
+  const poolApi = new PoolApi(web3)
 
   await poolApi.contract.dragoeventful.init()
   const contract = poolApi.contract.dragoeventful

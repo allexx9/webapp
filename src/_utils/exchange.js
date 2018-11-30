@@ -783,10 +783,9 @@ class Exchange {
   }
 
   init = () => {
-    // console.log(Aqueduct.Initialize())
+    let api
     if (this._onWs) {
       try {
-        let api
         console.log('Network: ', this._network.name)
         console.log('Connecting to: ', this._wss)
         api = new Web3(this._wss)
@@ -800,7 +799,6 @@ class Exchange {
       }
     } else {
       try {
-        let api
         console.log('Network: ', this._network.name)
         console.log('Connecting to: ', this._https)
         api = new Web3(this._https)

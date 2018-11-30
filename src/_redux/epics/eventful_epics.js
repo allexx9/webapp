@@ -5,18 +5,12 @@ import * as TYPE_ from '../actions/const'
 import { Actions } from '../actions'
 // import { DEBUGGING } from '../../_utils/const'
 import { Observable, from, timer } from 'rxjs'
-import {
-  catchError,
-  delay,
-  finalize,
-  map,
-  mergeMap,
-  retryWhen
-} from 'rxjs/operators'
-import { exhaustMap } from 'rxjs-compat/operator/exhaustMap'
+import { catchError, finalize, map, mergeMap, retryWhen } from 'rxjs/operators'
+import { getBlockChunks } from '../../_utils/utils/'
 import { ofType } from 'redux-observable'
 import BigNumber from 'bignumber.js'
 import PoolsApi from '../../PoolsApi/src'
+import Web3Wrapper from '../../_utils/web3Wrapper/src'
 import utils from '../../_utils/utils'
 // import { race } from 'rxjs/observable/race';
 
@@ -24,14 +18,16 @@ import utils from '../../_utils/utils'
 // FETCH LIST OF DRAGOS
 //
 
-const getVaultsChunkedEvents$ = (api, options, state$) => {
+const getVaultsChunkedEvents$ = (options, state$) => {
   return Observable.create(observer => {
-    let startBlock =
-      state$.value.transactionsVault.vaultsList.lastFetchRange.lastBlock
-
-    const poolApi = new PoolsApi(api)
+    let {
+      startBlock
+    } = state$.value.transactionsDrago.dragosList.lastFetchRange
+    let { networkInfo } = state$.value.endpoint
+    const web3 = Web3Wrapper.getInstance(state$.value.endpoint.networkInfo.id)
+    const poolApi = new PoolsApi(web3)
     if (startBlock === 0) {
-      switch (api._rb.network.id) {
+      switch (networkInfo.id) {
         case 1:
           startBlock = '6000000'
           break
@@ -76,15 +72,16 @@ const getVaultsChunkedEvents$ = (api, options, state$) => {
     poolApi.contract.vaulteventful
       .init()
       .then(() => {
-        api.eth
+        web3.eth
           .getBlockNumber()
           .then(async lastBlock => {
             lastBlock = new BigNumber(lastBlock).toNumber()
             let chunck = 250000
-            const chunks = await utils.blockChunks(
+            const chunks = await getBlockChunks(
               startBlock,
               lastBlock,
-              chunck
+              chunck,
+              web3
             )
             chunks.map(async (chunk, key) => {
               // Pushing chunk logs into array
@@ -136,14 +133,16 @@ const getVaultsChunkedEvents$ = (api, options, state$) => {
   })
 }
 
-const getDragosChunkedEvents$ = (api, options, state$) => {
+const getDragosChunkedEvents$ = (options, state$) => {
   return Observable.create(observer => {
-    let startBlock =
-      state$.value.transactionsDrago.dragosList.lastFetchRange.lastBlock
-    // console.log(fromBlock)
-    const poolApi = new PoolsApi(api)
+    let {
+      startBlock
+    } = state$.value.transactionsDrago.dragosList.lastFetchRange
+    let { networkInfo } = state$.value.endpoint
+    const web3 = Web3Wrapper.getInstance(state$.value.endpoint.networkInfo.id)
+    const poolApi = new PoolsApi(web3)
     if (startBlock === 0) {
-      switch (api._rb.network.id) {
+      switch (networkInfo.id) {
         case 1:
           startBlock = '6000000'
           break
@@ -188,16 +187,16 @@ const getDragosChunkedEvents$ = (api, options, state$) => {
     poolApi.contract.dragoeventful
       .init()
       .then(() => {
-        api.eth
+        web3.eth
           .getBlockNumber()
           .then(async lastBlock => {
             lastBlock = new BigNumber(lastBlock).toNumber()
             let chunck = 250000
-            // console.log(startBlock, lastBlock, chunck)
-            const chunks = await utils.blockChunks(
+            const chunks = await getBlockChunks(
               startBlock,
               lastBlock,
-              chunck
+              chunck,
+              web3
             )
             chunks.map(async (chunk, key) => {
               // Pushing chunk logs into array
@@ -251,14 +250,14 @@ const getDragosChunkedEvents$ = (api, options, state$) => {
   })
 }
 
-const getPoolsList$ = (api, options, state$) => {
+const getPoolsList$ = (options, state$) => {
   switch (options.poolType) {
     case 'drago':
-      return getDragosChunkedEvents$(api, options, state$)
+      return getDragosChunkedEvents$(options, state$)
     case 'vault':
-      return getVaultsChunkedEvents$(api, options, state$)
+      return getVaultsChunkedEvents$(options, state$)
     default:
-      return getDragosChunkedEvents$(api, options, state$)
+      return getDragosChunkedEvents$(options, state$)
   }
 }
 
@@ -266,11 +265,7 @@ export const getPoolsListEpic = (action$, state$) =>
   action$.pipe(
     ofType(TYPE_.GET_POOLS_SEARCH_LIST),
     mergeMap(action => {
-      return getPoolsList$(
-        action.payload.api,
-        action.payload.options,
-        state$
-      ).pipe(
+      return getPoolsList$(action.payload.options, state$).pipe(
         map(results => {
           // console.log(results)
           switch (action.payload.options.poolType) {

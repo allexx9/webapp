@@ -87,9 +87,7 @@ class PageSearchDragoTrader extends Component {
       toBlock: 'latest',
       poolType: 'drago'
     }
-    this.props.dispatch(
-      Actions.drago.getPoolsSearchList(this.context.api, options)
-    )
+    this.props.dispatch(Actions.drago.getPoolsSearchList(options))
   }
 
   // UNSAFE_componentWillReceiveProps(nextProps) {

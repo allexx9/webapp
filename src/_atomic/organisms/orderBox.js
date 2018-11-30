@@ -207,8 +207,6 @@ class OrderBox extends Component {
     } = this.props.exchange
     const selectedOrder = order || this.props.exchange.selectedOrder
     const { endpoint } = this.props
-    const { api } = this.context
-
     const transactionId = sha3_512(new Date() + selectedFund.managerAccount)
     let transactionDetails = {
       status: 'pending',
@@ -248,7 +246,6 @@ class OrderBox extends Component {
           )
         )
         Actions.updateLiquidityAndTokenBalances(
-          api,
           '',
           selectedFund.details.address
         )

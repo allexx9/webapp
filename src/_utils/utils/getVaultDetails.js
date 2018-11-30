@@ -21,6 +21,7 @@ export const getVaultDetails = async (
   switch (options.wallet) {
     case METAMASK: {
       web3 = window.web3
+      break
     }
     default: {
       if (HTTP_EVENT_FETCHING) {
@@ -28,7 +29,6 @@ export const getVaultDetails = async (
       } else {
         web3 = Web3Wrapper.getInstance(networkInfo.id)
       }
-      web3._rb = networkInfo
     }
   }
 

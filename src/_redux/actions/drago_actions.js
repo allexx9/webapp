@@ -39,7 +39,6 @@ const drago = {
     }
   },
   getPoolsSearchList: (
-    api,
     options = {
       topics: [null, null, null, null],
       fromBlock: 0,
@@ -50,7 +49,6 @@ const drago = {
     return {
       type: TYPE_.GET_POOLS_SEARCH_LIST,
       payload: {
-        api,
         options
       }
     }

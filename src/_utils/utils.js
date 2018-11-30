@@ -559,7 +559,6 @@ class utilities {
 
   getPoolDetailsFromId = async (dragoId, networkInfo) => {
     let api = Web3Wrapper.getInstance(networkInfo.id)
-    api._rb = networkInfo
     const poolApi = new PoolApi(api)
     await poolApi.contract.dragoregistry.init()
     const dragoDetails = await poolApi.contract.dragoregistry.fromId(dragoId)

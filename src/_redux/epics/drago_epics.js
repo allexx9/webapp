@@ -12,8 +12,7 @@ import {
   map,
   mergeMap,
   retryWhen,
-  takeUntil,
-  tap
+  takeUntil
 } from 'rxjs/operators'
 import { ofType } from 'redux-observable'
 
@@ -30,7 +29,6 @@ const getTokensBalances$ = (dragoAddress, networkInfo) => {
   //
 
   let web3 = Web3Wrapper.getInstance(networkInfo.id)
-  web3._rb = networkInfo
   const poolApi = new PoolApi(web3)
   // const poolApi = new PoolApi(api)
   try {
@@ -96,7 +94,6 @@ export const getTokensBalancesEpic = (action$, state$) => {
   return action$.pipe(
     ofType(TYPE_.GET_TOKEN_BALANCES_DRAGO),
     mergeMap(action => {
-      console.log(action)
       const { networkInfo } = state$.value.endpoint
       return getTokensBalances$(action.payload.dragoDetails, networkInfo).pipe(
         map(dragoAssets => {
@@ -247,7 +244,6 @@ export const getPoolDetailsEpic = (action$, state$) => {
   return action$.pipe(
     ofType(TYPE_.GET_POOL_DETAILS),
     mergeMap(action => {
-      console.log(action)
       const { networkInfo, accounts } = state$.value.endpoint
       // debugger
       return getPoolDetails$(
@@ -282,8 +278,6 @@ export const getPoolDetailsEpic = (action$, state$) => {
           const relay = {
             name: relayName
           }
-          console.log(networkInfo)
-          console.log(relay)
           let observablesArray = []
           if (drago) {
             observablesArray.push(
