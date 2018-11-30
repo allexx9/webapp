@@ -29,6 +29,9 @@ const initialState = {
     },
     transactionsDrawerOpen: false
   },
+  cache: {
+    pools: []
+  },
   notifications: {
     engine: ''
   },
