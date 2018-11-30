@@ -3,6 +3,7 @@
 
 import * as TYPE_ from '../actions/const'
 import { Actions } from '../actions'
+import { notificationWrapper } from '../../_utils/notificationWrapper'
 import BigNumber from 'bignumber.js'
 import serializeError from 'serialize-error'
 import utils from '../../_utils/utils'
@@ -18,26 +19,23 @@ export const relayActionsMiddleWare = store => next => action => {
 }
 
 export const notificationsMiddleWare = store => next => action => {
-  const state = store.getState()
+  // const state = store.getState()
+  const notificationEngine = notificationWrapper.getInstance()
   if (action.type === TYPE_.QUEUE_ACCOUNT_NOTIFICATION) {
     action.payload.forEach(notification => {
-      utils.notificationAccount(
-        state.notifications.engine,
-        notification,
-        'info'
-      )
+      utils.notificationAccount(notificationEngine, notification, 'info')
     })
   }
   if (action.type === TYPE_.QUEUE_ERROR_NOTIFICATION) {
     utils.notificationError(
-      state.notifications.engine,
+      notificationEngine,
       serializeError(action.payload),
       'error'
     )
   }
   if (action.type === TYPE_.QUEUE_WARNING_NOTIFICATION) {
     utils.notificationError(
-      state.notifications.engine,
+      notificationEngine,
       serializeError(action.payload),
       'warning'
     )

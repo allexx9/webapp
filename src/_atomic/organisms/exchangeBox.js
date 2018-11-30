@@ -20,7 +20,10 @@ import { ERC20_TOKENS, RELAYS, TRADE_TOKENS_PAIRS } from '../../_utils/const'
 function mapStateToProps(state) {
   return {
     exchange: state.exchange,
-    notifications: state.notifications
+    notifications: state.notifications,
+    endpoint: {
+      networkInfo: state.endpoint.networkInfo
+    }
   }
 }
 
@@ -37,20 +40,20 @@ class ExchangeBox extends PureComponent {
 
   onSelectExchange = async relay => {
     if (this.props.exchange.selectedRelay.name === relay) return
-    const { api } = this.context
     const { selectedExchange, selectedFund } = this.props.exchange
+    const { endpoint } = this.props
     const selectedRelay = RELAYS[relay]
     const availableTradeTokensPair = utils.availableTradeTokensPair(
       TRADE_TOKENS_PAIRS,
       RELAYS[relay].name,
-      api._rb.network.id
+      endpoint.networkInfo.id
     )
     const baseToken =
-      ERC20_TOKENS[api._rb.network.name][
+      ERC20_TOKENS[endpoint.networkInfo.name][
         selectedRelay.defaultTokensPair.baseTokenSymbol
       ]
     const quoteToken =
-      ERC20_TOKENS[api._rb.network.name][
+      ERC20_TOKENS[endpoint.networkInfo.name][
         selectedRelay.defaultTokensPair.quoteTokenSymbol
       ]
     const allowanceBaseToken = await getTokenAllowance(

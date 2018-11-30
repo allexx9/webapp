@@ -194,37 +194,27 @@ const exchange = {
     }
   },
 
-  updateLiquidityAndTokenBalances: (api, task, dragoAddress) => {
+  updateLiquidityAndTokenBalances: (task, dragoAddress) => {
     switch (task) {
       case 'START':
         return {
           type: TYPE_.UPDATE_LIQUIDITY_AND_TOKENS_BALANCE_START,
-          payload: {
-            api
-            // dragoAddress
-          }
+          payload: {}
         }
       case 'STOP':
         return {
           type: TYPE_.UPDATE_LIQUIDITY_AND_TOKENS_BALANCE_STOP,
-          payload: {
-            api
-            // dragoAddress
-          }
+          payload: {}
         }
       case 'RESET':
         return {
           type: TYPE_.UPDATE_LIQUIDITY_AND_TOKENS_BALANCE_RESET,
-          payload: {
-            api
-            // dragoAddress
-          }
+          payload: {}
         }
       default:
         return {
           type: TYPE_.UPDATE_LIQUIDITY_AND_TOKENS_BALANCE,
           payload: {
-            api,
             dragoAddress
           }
         }

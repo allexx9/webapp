@@ -352,7 +352,7 @@ class ElementAccountActionTransfer extends Component {
     )
   }
 
-  onTransferGRG = () => {
+  onTransferGRG = async () => {
     const { api } = this.context
     const { token, toAddress } = this.state
     const { account } = this.props
@@ -388,7 +388,7 @@ class ElementAccountActionTransfer extends Component {
     )
     // Sending the transaction
     poolApi = new PoolsApi(provider)
-    poolApi.contract.rigotoken.init()
+    await poolApi.contract.rigotoken.init()
     poolApi.contract.rigotoken
       .transfer(account.address, toAddress, amount)
       .then(receipt => {

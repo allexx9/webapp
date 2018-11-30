@@ -17,6 +17,8 @@ export const DEBUGGING = {
   }
 }
 
+export const METAMASK = 'MetaMask'
+export const HTTP_EVENT_FETCHING = true
 export const APP = 'app'
 export const DS = '/'
 export const DRG_ISIN = 'DR'
@@ -118,7 +120,7 @@ export const EP_RIGOBLOCK_RP_PROD_WS = 'wss://ropsten.dev.endpoint.network/ws'
 export const EP_RIGOBLOCK_MN_DEV = 'https://mainnet.dev.endpoint.network/rpc'
 export const EP_RIGOBLOCK_MN_DEV_WS = 'wss://mainnet.dev.endpoint.network/ws'
 export const EP_RIGOBLOCK_MN_PROD = 'https://mainnet.dev.endpoint.network/rpc'
-export const EP_RIGOBLOCK_MN_PROD_WS = 'wss://ropsten.dev.endpoint.network/ws'
+export const EP_RIGOBLOCK_MN_PROD_WS = 'wss://mainnet.dev.endpoint.network/ws'
 
 // Allowed endpoints in config section
 export const INFURA = 'infura'
@@ -202,7 +204,7 @@ export const ENDPOINTS = {
     https: {
       kovan: {
         dev: EP_RIGOBLOCK_KV_DEV,
-        prod: EP_RIGOBLOCK_RP_PROD
+        prod: EP_RIGOBLOCK_KV_PROD
       },
       ropsten: {
         dev: EP_RIGOBLOCK_RP_DEV,

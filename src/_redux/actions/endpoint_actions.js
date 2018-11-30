@@ -3,59 +3,46 @@
 import * as TYPE_ from './const'
 
 const endpoint = {
-  attachInterface: (web3, api, endpoint) => {
+  attachInterface: endpoint => {
     return {
       type: TYPE_.ATTACH_INTERFACE,
       payload: {
-        web3,
-        api,
         endpoint
       }
     }
   },
-  checkMetaMaskIsUnlocked: (api, web3) => {
+  checkMetaMaskIsUnlocked: () => {
     return {
       type: TYPE_.CHECK_METAMASK_IS_UNLOCKED,
-      payload: {
-        api,
-        web3
-      }
+      payload: {}
     }
   },
-  checkIsConnectedToNode: api => {
+  checkIsConnectedToNode: () => {
     return {
       type: TYPE_.CHECK_APP_IS_CONNECTED,
-      payload: {
-        api
-      }
+      payload: {}
     }
   },
-  getAccountsTransactions: (api, dragoAddress, accounts, options) => {
+  getAccountsTransactions: (dragoAddress, accounts, options) => {
     return {
       type: TYPE_.GET_ACCOUNTS_TRANSACTIONS,
       payload: {
-        api,
         dragoAddress,
         accounts,
         options
       }
     }
   },
-  monitorAccountsStart: api => {
+  monitorAccountsStart: () => {
     return {
       type: TYPE_.MONITOR_ACCOUNTS_START,
-      payload: {
-        api
-      }
+      payload: {}
     }
   },
-  monitorAccountsStop: (web3, api) => {
+  monitorAccountsStop: () => {
     return {
       type: TYPE_.MONITOR_ACCOUNTS_STOP,
-      payload: {
-        web3,
-        api
-      }
+      payload: {}
     }
   },
   updateInterface: endpoint => {

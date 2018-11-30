@@ -24,6 +24,7 @@ import ElementVaultActionsHeader from './elementVaultActionsHeader'
 import PoolApi from '../../PoolsApi/src'
 
 import { Actions } from '../../_redux/actions'
+import { METAMASK } from '../../_utils/const'
 import { connect } from 'react-redux'
 import styles from './elementVaultActions.module.css'
 
@@ -480,8 +481,9 @@ class ElementVaultActions extends React.Component {
       .then(receipt => {
         console.log(receipt)
         this.props.dispatch(
-          Actions.drago.getPoolDetails(vaultDetails.vaultId, provider, {
-            poolType: 'vault'
+          Actions.drago.getPoolDetails(vaultDetails.vaultId, {
+            poolType: 'vault',
+            wallet: METAMASK
           })
         )
         // Adding transaciont to the queue
@@ -583,7 +585,8 @@ class ElementVaultActions extends React.Component {
             vaultDetails.vaultDetails.vaultId,
             provider,
             {
-              poolType: 'vault'
+              poolType: 'vault',
+              wallet: METAMASK
             }
           )
         )

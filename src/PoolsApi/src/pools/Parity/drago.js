@@ -57,23 +57,21 @@ class DragoParity {
     return api.eth.getBalance(instance.address)
   }
 
-  getBalanceWETH = () => {
+  getBalanceWETH = async () => {
     const api = this._api
     const instance = this._instance
-    const wethInstance = api.newContract(
-      abis.weth,
-      WETH_ADDRESSES[api._rb.network.id]
-    ).instance
+    const networkId = await api.eth.net.getId()
+    const wethInstance = api.newContract(abis.weth, WETH_ADDRESSES[networkId])
+      .instance
     return wethInstance.balanceOf.call({}, [instance.address])
   }
 
-  getBalanceZRX = () => {
+  getBalanceZRX = async () => {
     const api = this._api
     const instance = this._instance
-    const tokenInstance = api.newContract(
-      abis.weth,
-      ZRX_ADDRESSES[api._rb.network.id]
-    ).instance
+    const networkId = await api.eth.net.getId()
+    const tokenInstance = api.newContract(abis.weth, ZRX_ADDRESSES[networkId])
+      .instance
     return tokenInstance.balanceOf.call({}, [instance.address])
   }
 

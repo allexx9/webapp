@@ -87,9 +87,7 @@ class PageSearchVaultTrader extends Component {
       toBlock: 'latest',
       poolType: 'vault'
     }
-    this.props.dispatch(
-      Actions.drago.getPoolsSearchList(this.context.api, options)
-    )
+    this.props.dispatch(Actions.drago.getPoolsSearchList(options))
   }
 
   filter = filter => {

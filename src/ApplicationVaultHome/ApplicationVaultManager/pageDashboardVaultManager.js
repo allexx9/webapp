@@ -68,7 +68,6 @@ class PageDashboardVaultManager extends Component {
           this.constructor.name
         } -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`
       )
-      // this.props.dispatch(Actions.endpoint.getAccountsTransactions(api, null, accounts, options))
     }
   }
 
