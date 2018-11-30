@@ -21,7 +21,8 @@ import utils from '../../_utils/utils'
 const getVaultsChunkedEvents$ = (options, state$) => {
   return Observable.create(observer => {
     let {
-      startBlock
+      startBlock,
+      lastBlock
     } = state$.value.transactionsDrago.dragosList.lastFetchRange
     let { networkInfo } = state$.value.endpoint
     const web3 = Web3Wrapper.getInstance(state$.value.endpoint.networkInfo.id)
@@ -40,6 +41,8 @@ const getVaultsChunkedEvents$ = (options, state$) => {
         default:
           startBlock = '3000000'
       }
+    } else {
+      startBlock = lastBlock
     }
 
     const logToEvent = log => {
@@ -136,7 +139,8 @@ const getVaultsChunkedEvents$ = (options, state$) => {
 const getDragosChunkedEvents$ = (options, state$) => {
   return Observable.create(observer => {
     let {
-      startBlock
+      startBlock,
+      lastBlock
     } = state$.value.transactionsDrago.dragosList.lastFetchRange
     let { networkInfo } = state$.value.endpoint
     const web3 = Web3Wrapper.getInstance(state$.value.endpoint.networkInfo.id)
@@ -155,6 +159,8 @@ const getDragosChunkedEvents$ = (options, state$) => {
         default:
           startBlock = '3000000'
       }
+    } else {
+      startBlock = lastBlock
     }
 
     const logToEvent = log => {
