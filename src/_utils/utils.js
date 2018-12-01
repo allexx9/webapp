@@ -343,33 +343,40 @@ class utilities {
   }
 
   notificationError = (notificationEngine, notification, level = 'error') => {
-    console.log(notification)
-    const messageFirstLine =
-      typeof notification === 'string'
-        ? notification.split(/\r?\n/)
-        : notification.message.split(/\r?\n/)
-    notificationEngine.addNotification({
-      level: level,
-      title: level.toUpperCase(),
-      message: messageFirstLine[0],
-      position: 'br',
-      autoDismiss: 10
-    })
+    try {
+      const messageFirstLine =
+        typeof notification === 'string'
+          ? notification.split(/\r?\n/)
+          : notification.message.split(/\r?\n/)
+      notificationEngine.addNotification({
+        level: level,
+        title: level.toUpperCase(),
+        message: messageFirstLine[0],
+        position: 'br',
+        autoDismiss: 10
+      })
+    } catch (err) {
+      console.warn(err)
+    }
   }
 
   notificationAccount = (notificationEngine, message, level = 'info') => {
-    let comp = new NotificationAlert([message])
-    notificationEngine.addNotification({
-      level: level,
-      title: level,
-      position: 'br',
-      autoDismiss: 10,
-      children: comp.render(
-        message.primaryText,
-        message.secondaryText,
-        message.eventType
-      )
-    })
+    try {
+      let comp = new NotificationAlert([message])
+      notificationEngine.addNotification({
+        level: level,
+        title: level,
+        position: 'br',
+        autoDismiss: 10,
+        children: comp.render(
+          message.primaryText,
+          message.secondaryText,
+          message.eventType
+        )
+      })
+    } catch (err) {
+      console.log(err)
+    }
   }
 
   availableTradeTokensPair = (

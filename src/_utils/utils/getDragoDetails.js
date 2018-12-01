@@ -21,6 +21,7 @@ export const getDragoDetails = async (
   let web3
   switch (options.wallet) {
     case METAMASK: {
+      console.log('metamask detected')
       web3 = window.web3
       break
     }

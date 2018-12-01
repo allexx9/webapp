@@ -2,6 +2,7 @@ import { Actions } from '../../_redux/actions'
 import { Col, Row } from 'react-flexbox-grid'
 import { UNLIMITED_ALLOWANCE_IN_BASE_UNITS } from '../../_utils/const'
 import { connect } from 'react-redux'
+import { notificationWrapper } from '../../_utils/notificationWrapper'
 import { setAllowaceOnExchangeThroughDrago } from '../../_utils/exchange'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
@@ -31,6 +32,7 @@ class ErcdexAllowance extends Component {
     isInputChecked
       ? (amount = UNLIMITED_ALLOWANCE_IN_BASE_UNITS)
       : (amount = '0')
+    const notificationEngine = notificationWrapper.getInstance()
     try {
       const result = await setAllowaceOnExchangeThroughDrago(
         selectedFund,
@@ -45,10 +47,7 @@ class ErcdexAllowance extends Component {
       )
     } catch (error) {
       console.log(error)
-      utils.notificationError(
-        this.props.notifications.engine,
-        serializeError(error).message
-      )
+      utils.notificationError(notificationEngine, serializeError(error).message)
     }
   }
 

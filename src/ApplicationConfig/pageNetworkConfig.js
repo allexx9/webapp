@@ -84,7 +84,6 @@ class PageNetworkConfig extends Component {
   }
 
   onChangeEndpoint = (event, key) => {
-    this.unsubscribeFromNewBlock()
     let endpoint = {}
     switch (key) {
       case 0:
@@ -102,13 +101,15 @@ class PageNetworkConfig extends Component {
     endpoint.prevBlockNumber = '0'
     this.setState({
       selectedEndpoint: key,
-      save: false
+      save: false,
+      endpoint: {
+        ...endpoint,
+        prevBlockNumber: '0'
+      }
     })
-    this.props.dispatch(Actions.endpoint.updateInterface(endpoint))
   }
 
   onChangeNetwork = (event, key) => {
-    this.unsubscribeFromNewBlock()
     let endpoint = {}
     switch (key) {
       case 0:
@@ -126,31 +127,20 @@ class PageNetworkConfig extends Component {
     endpoint.prevBlockNumber = '0'
     this.setState({
       selectedNetwork: key,
-      save: false
+      save: false,
+      endpoint: {
+        ...endpoint,
+        prevBlockNumber: '0'
+      }
     })
-    this.props.dispatch(Actions.endpoint.updateInterface(endpoint))
-  }
-
-  unsubscribeFromNewBlock = () => {
-    const { api } = this.context
-    // const { api } = this.context;
-    const inter = new Interfaces()
-    inter.detachInterface(api, this.props.endpoint.subscriptionData)
-    // const selectedEndpoint = this.props.endpoint.endpointInfo.name
-    // switch (selectedEndpoint) {
-    //   case INFURA:
-    //   break;
-    //   case RIGOBLOCK:
-    //   break;
-    //   case LOCAL:
-    //   break;
-    // }
   }
 
   handleRefresh = () => {
-    const endpoint = { prevBlockNumber: '0' }
+    const { endpoint } = this.state
     this.props.dispatch(Actions.endpoint.updateInterface(endpoint))
-    window.location.reload(false)
+    setInterval(function() {
+      window.location.reload(false)
+    }, 1000)
   }
 
   render() {

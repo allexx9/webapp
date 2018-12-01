@@ -102,11 +102,20 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 // )
 const enhancer = composeEnhancers(applyMiddleware(...middlewares))
 
-// Original store
-// const store = createStore(persistedReducer, enhancer)
-
-// Reactotron store
-const store = Reactotron.createStore(persistedReducer, enhancer)
+let store
+if (process.env.NODE_ENV !== 'development') {
+  console.log = noop
+  console.warn = noop
+  console.error = noop
+  Sentry.init({
+    dsn: 'https://b8304e9d588a477db619fbb026f31549@sentry.io/1329485',
+    environment: process.env.NODE_ENV,
+    release: 'webapp-v1@' + GIT_HASH
+  })
+  store = createStore(persistedReducer, enhancer)
+} else {
+  store = Reactotron.createStore(persistedReducer, enhancer)
+}
 
 epicMiddleware.run(rootEpic)
 
