@@ -19,30 +19,20 @@ export const getDragoDetails = async (
   //
 
   let web3
-  let mm
   switch (options.wallet) {
     case METAMASK: {
-      console.log('metamask detected')
       web3 = window.web3
-      mm = true
       break
     }
     default: {
       if (HTTP_EVENT_FETCHING) {
         web3 = new Web3(networkInfo.transportHttp)
-        mm = false
       } else {
         web3 = Web3Wrapper.getInstance(networkInfo.id)
-        mm = false
       }
     }
   }
-
   const poolApi = new PoolApi(web3)
-  console.log(options)
-  console.log(METAMASK)
-  console.log(mm)
-  debugger
 
   const dragoAddress = dragoDetails[0][0]
   let fromBlock

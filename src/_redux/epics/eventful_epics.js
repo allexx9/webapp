@@ -23,7 +23,7 @@ const getVaultsChunkedEvents$ = (options, state$) => {
     let {
       startBlock,
       lastBlock
-    } = state$.value.transactionsDrago.dragosList.lastFetchRange
+    } = state$.value.transactionsVault.vaultsList.lastFetchRange
     let { networkInfo } = state$.value.endpoint
     const web3 = Web3Wrapper.getInstance(state$.value.endpoint.networkInfo.id)
     const poolApi = new PoolsApi(web3)
@@ -257,6 +257,7 @@ const getDragosChunkedEvents$ = (options, state$) => {
 }
 
 const getPoolsList$ = (options, state$) => {
+  debugger
   switch (options.poolType) {
     case 'drago':
       return getDragosChunkedEvents$(options, state$)
