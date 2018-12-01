@@ -35,7 +35,7 @@
 
 .containerleftDrawer {
   position: relative !important;
-  box-shadow: rgba(0, 0, 0, 0.16) 0px 0px 10px !important;
+  box-shadow: rgba(0, 0, 0, 0) 0px 0px 10px !important;
   overflow-x: hidden !important;
   width: 100% !important;
   /* min-width: 200px !important; */
