@@ -195,13 +195,13 @@ const getPoolDetails$ = (poolId, networkInfo, options, state$) => {
       .then(() => {
         return options.poolType === 'drago'
           ? utils
-              .getDragoDetails(poolDetails, accounts, networkInfo)
+              .getDragoDetails(poolDetails, accounts, networkInfo, options)
               .then(details => {
                 return observer.next(details)
               })
               .catch(error => observer.error(error))
           : utils
-              .getVaultDetails(poolDetails, accounts, networkInfo)
+              .getVaultDetails(poolDetails, accounts, networkInfo, options)
               .then(details => {
                 return observer.next(details)
               })
@@ -211,6 +211,7 @@ const getPoolDetails$ = (poolId, networkInfo, options, state$) => {
         return options.poolType === 'drago'
           ? utils
               .getDragoDetails(poolDetails, accounts, networkInfo, {
+                ...options,
                 dateOnly: true
               })
               .then(details => {
@@ -222,6 +223,7 @@ const getPoolDetails$ = (poolId, networkInfo, options, state$) => {
               })
           : utils
               .getVaultDetails(poolDetails, accounts, networkInfo, {
+                ...options,
                 dateOnly: true
               })
               .then(details => {
@@ -245,7 +247,6 @@ export const getPoolDetailsEpic = (action$, state$) => {
     ofType(TYPE_.GET_POOL_DETAILS),
     mergeMap(action => {
       const { networkInfo, accounts } = state$.value.endpoint
-      // debugger
       return getPoolDetails$(
         action.payload.dragoId,
         networkInfo,

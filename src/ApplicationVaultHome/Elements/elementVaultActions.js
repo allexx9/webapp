@@ -581,14 +581,10 @@ class ElementVaultActions extends React.Component {
       .then(receipt => {
         console.log(receipt)
         this.props.dispatch(
-          Actions.drago.getPoolDetails(
-            vaultDetails.vaultDetails.vaultId,
-            provider,
-            {
-              poolType: 'vault',
-              wallet: METAMASK
-            }
-          )
+          Actions.drago.getPoolDetails(vaultDetails.vaultId, {
+            poolType: 'vault',
+            wallet: METAMASK
+          })
         )
         // Adding transaciont to the queue
         // Parity returns an internal transaction ID straighaway. The transaction then needs to be authorized inside the wallet.
