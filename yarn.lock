@@ -326,9 +326,15 @@
   version "1.7.2"
   resolved "https://registry.yarnpkg.com/@most/prelude/-/prelude-1.7.2.tgz#be4ed406518d4c8c220e45c39fa7251365425b73"
 
+"@rigoblock/contracts@^0.3.8":
+  version "0.3.8"
+  resolved "https://registry.yarnpkg.com/@rigoblock/contracts/-/contracts-0.3.8.tgz#cc88b44807bab0c2862da221eb0434e9c08f9d9b"
+  integrity sha512-wMdJvwigKls4ECJyW/kWH4tsB751kW0sfvAJ7apw1Xis/axkpn0AmnIWfPqKNvBxkELO7vwtSWA1R2d7JGRKdA==
+
 "@rigoblock/exchange-connector@^0.0.10":
   version "0.0.10"
   resolved "https://registry.yarnpkg.com/@rigoblock/exchange-connector/-/exchange-connector-0.0.10.tgz#24b14e5b860f28fbf900a8ab50991e35bd3576d3"
+  integrity sha512-oXWk/RmEbs+1jSx84nihjyNgz/OPB8OXBiQlllSlfzXBm56YVsaEKWdEy/Zy3Fl8fa5cbQozVZWADQytmIhkLQ==
   dependencies:
     node-fetch "^2.2.0"
     promise "^8.0.1"

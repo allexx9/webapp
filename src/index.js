@@ -1,5 +1,6 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 // By the Power of Grayskull! I Have the Power!
+
 import Reactotron from './ReactotronConfig'
 
 import * as Sentry from '@sentry/browser'
@@ -31,17 +32,6 @@ import storage from 'redux-persist/lib/storage'
 import './index.module.css'
 
 function noop() {}
-
-if (process.env.NODE_ENV !== 'development') {
-  console.log = noop
-  console.warn = noop
-  console.error = noop
-  Sentry.init({
-    dsn: 'https://b8304e9d588a477db619fbb026f31549@sentry.io/1329485',
-    environment: process.env.NODE_ENV,
-    release: 'webapp-v1@' + GIT_HASH
-  })
-}
 
 const epicMiddleware = createEpicMiddleware()
 
@@ -112,9 +102,12 @@ if (process.env.NODE_ENV !== 'development') {
     environment: process.env.NODE_ENV,
     release: 'webapp-v1@' + GIT_HASH
   })
-  store = createStore(persistedReducer, enhancer)
-} else {
+}
+
+if (process.env.NODE_ENV === `development`) {
   store = Reactotron.createStore(persistedReducer, enhancer)
+} else {
+  store = createStore(persistedReducer, enhancer)
 }
 
 epicMiddleware.run(rootEpic)

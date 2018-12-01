@@ -90,6 +90,7 @@
     "analyze": "source-map-explorer build/static/js/main.*"
   },
   "devDependencies": {
+    "@rigoblock/contracts": "^0.3.8",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
     "babel-es6-polyfill": "^1.1.0",
