@@ -382,7 +382,6 @@ const getAccountOrdersFromRelay$ = (
   quoteToken
 ) => {
   const exchange = new Exchange(relay.name, networkId)
-  console.log('getAccountOrdersFromRelay$')
   return zip(
     from(exchange.getAccountOrders(account, baseToken, quoteToken)),
     from(exchange.getAccountHistory(account, baseToken, quoteToken))

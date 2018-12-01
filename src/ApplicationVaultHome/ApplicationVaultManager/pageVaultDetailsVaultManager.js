@@ -175,7 +175,12 @@ class PageVaultDetailsVaultManager extends Component {
       ['Owner', vaultDetails.addressOwner, tableButtonsVaultOwner]
     ]
 
-    console.log(vaultDetails)
+    return (
+      <div style={{ paddingTop: '10px' }}>
+        <Loading />
+      </div>
+    )
+
     // Waiting until getVaultDetails returns the drago details
     if (Object.keys(vaultDetails).length === 0) {
       return (

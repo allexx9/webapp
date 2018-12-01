@@ -2,8 +2,10 @@
 import 'babel-polyfill'
 import 'react-virtualized/styles.css'
 import * as Sentry from '@sentry/browser'
+import { Actions } from './_redux/actions'
 import { Redirect, Route, Router, Switch } from 'react-router-dom'
 import { connect } from 'react-redux'
+import { notificationWrapper } from './_utils/notificationWrapper'
 import AppLoading from './Elements/elementAppLoading'
 import ApplicationConfigPage from './Application/applicationConfig'
 import ApplicationDragoPage from './Application/applicationDrago'
@@ -14,34 +16,18 @@ import Endpoint from './_utils/endpoint'
 import NotificationSystem from 'react-notification-system'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
+import ReactGA from 'react-ga'
 import Whoops404 from './Application/whoops404'
 import createHashHistory from 'history/createHashHistory'
+import styles from './App.module.css'
 import utils from './_utils/utils'
-// import ElementNotConnected from './Elements/elementNotConnected'
-import { Actions } from './_redux/actions'
-import { notificationWrapper } from './_utils/notificationWrapper'
-import ReactGA from 'react-ga'
 
-let appHashPath = true
+let appHashPath = 'web'
 
 ReactGA.initialize('UA-117171641-1')
 ReactGA.pageview(window.location.pathname + window.location.search)
 
-// Detectiong if the app is running inside Parity client
-// var pathArray = window.location.hash.split('/');
-// console.log(pathArray[2]);
-if (typeof window.parity !== 'undefined') {
-  // Need to check if this works inside the Parity UI
-  // appHashPath = pathArray[2];
-  appHashPath = 'web'
-} else {
-  appHashPath = 'web'
-}
-
 const history = createHashHistory()
-
-// Setting the routes.
-// Component Whoops404 is loaded if a page does not exist.
 
 function mapStateToProps(state) {
   return {
@@ -67,8 +53,6 @@ export class App extends Component {
     }
   }
 
-  // notificationSystem = React.createRef()
-
   scrollPosition = 0
   tdIsConnected = null
   tdIsMetaMaskUnlocked = null
@@ -79,7 +63,6 @@ export class App extends Component {
     syncStatus: this.props.app.syncStatus
   }
 
-  // Defining the properties of the context variables passed down to children
   static childContextTypes = {
     api: PropTypes.object
   }
@@ -97,7 +80,6 @@ export class App extends Component {
     }
   }
 
-  // Passing down the context variables to children
   getChildContext() {
     return {
       api: this._api
@@ -120,11 +102,6 @@ export class App extends Component {
   }
 
   componentDidMount = async () => {
-    // this.props.dispatch(
-    //   Actions.notifications.initNotificationsSystemAction(
-    //     this.notificationSystem
-    //   )
-    // )
     const { endpoint } = this.props
     this.props.dispatch(Actions.endpoint.checkIsConnectedToNode())
     this.props.dispatch(Actions.endpoint.attachInterface(endpoint))
@@ -197,56 +174,49 @@ export class App extends Component {
       }
     }
     return (
-      <div>
+      <div className={styles.appContainer}>
         <NotificationSystem
           ref={this.initNotificationSystem}
           style={notificationStyle}
         />
         {this.props.app.appLoading ? (
-          <div>
-            <Router history={history}>
-              <AppLoading />
-            </Router>
-          </div>
+          <Router history={history}>
+            <AppLoading />
+          </Router>
         ) : (
-          <div>
-            <Router history={history}>
-              <Switch>
-                <Route
-                  exact
-                  path={'/app/' + appHashPath + '/home'}
-                  component={ApplicationHomePage}
-                />
-                <Route
-                  path={'/app/' + appHashPath + '/vault'}
-                  component={ApplicationVaultPage}
-                />
-                <Route
-                  path={'/app/' + appHashPath + '/drago'}
-                  component={ApplicationDragoPage}
-                />
-                <Route
-                  path={'/app/' + appHashPath + '/exchange'}
-                  component={ApplicationExchangePage}
-                />
-                <Route
-                  path={'/app/' + appHashPath + '/config'}
-                  component={ApplicationConfigPage}
-                />
-                <Redirect
-                  from="/exchange/"
-                  to={'/app/' + appHashPath + '/exchange'}
-                />
-                <Redirect
-                  from="/vault/"
-                  to={'/app/' + appHashPath + '/vault'}
-                />
-                <Redirect from="/drago" to={'/app/' + appHashPath + '/drago'} />
-                <Redirect from="/" to={'/app/' + appHashPath + '/home'} />
-                <Route component={Whoops404} />
-              </Switch>
-            </Router>
-          </div>
+          <Router history={history}>
+            <Switch>
+              <Route
+                exact
+                path={'/app/' + appHashPath + '/home'}
+                component={ApplicationHomePage}
+              />
+              <Route
+                path={'/app/' + appHashPath + '/vault'}
+                component={ApplicationVaultPage}
+              />
+              <Route
+                path={'/app/' + appHashPath + '/drago'}
+                component={ApplicationDragoPage}
+              />
+              <Route
+                path={'/app/' + appHashPath + '/exchange'}
+                component={ApplicationExchangePage}
+              />
+              <Route
+                path={'/app/' + appHashPath + '/config'}
+                component={ApplicationConfigPage}
+              />
+              <Redirect
+                from="/exchange/"
+                to={'/app/' + appHashPath + '/exchange'}
+              />
+              <Redirect from="/vault/" to={'/app/' + appHashPath + '/vault'} />
+              <Redirect from="/drago" to={'/app/' + appHashPath + '/drago'} />
+              <Redirect from="/" to={'/app/' + appHashPath + '/home'} />
+              <Route component={Whoops404} />
+            </Switch>
+          </Router>
         )}
       </div>
     )

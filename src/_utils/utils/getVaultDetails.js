@@ -31,7 +31,6 @@ export const getVaultDetails = async (
       }
     }
   }
-
   const poolApi = new PoolApi(web3)
 
   const vaultAddress = vaultDetails[0][0]
