@@ -6,6 +6,7 @@ import { cancelOrderFromRelayEFX } from '../../_utils/exchange'
 //   softCancelOrderFromRelayERCdEX
 // } from '../../_utils/exchange'
 import { connect } from 'react-redux'
+import { notificationWrapper } from '../../_utils/notificationWrapper'
 import { sha3_512 } from 'js-sha3'
 import BoxTitle from '../atoms/boxTitle'
 import ElementListWrapper from '../../Elements/elementListWrapper'
@@ -48,34 +49,6 @@ class OrdersHistoryBox extends Component {
       symbol: selectedTokensPair.baseToken.symbol.toUpperCase(),
       amount: order.orderAmount
     }
-    // this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
-
-    // try {
-    //   const receipt = await cancelOrderOnExchangeViaProxy(
-    //     selectedFund,
-    //     order.order,
-    //     order.order.takerTokenAmount
-    //   )
-    //   console.log(receipt)
-    //   transactionDetails.status = 'executed'
-    //   transactionDetails.receipt = receipt
-    //   transactionDetails.hash = receipt.transactionHash
-    //   transactionDetails.timestamp = new Date()
-    //   // this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
-
-    //   // const result = await softCancelOrderFromRelayERCdEX(order)
-    //   // console.log(result)
-
-    //   // Updating drago liquidity
-    //   // this.props.dispatch(this.updateSelectedFundLiquidity(selectedFund.details.address, this.context.api))
-    // } catch (error) {
-    //   console.log(serializeError(error))
-    //   const errorArray = serializeError(error).message.split(/\r?\n/)
-    //   transactionDetails.status = 'error'
-    //   transactionDetails.error = errorArray[0]
-    //   // this.props.dispatch(Actions.transactions.addTransactionToQueueAction(transactionId, transactionDetails))
-    //   // utils.notificationError(this.props.notifications.engine, serializeError(error).message)
-    // }
     try {
       console.log(order.order.id)
       const sig = await utils.sign(
@@ -108,10 +81,8 @@ class OrdersHistoryBox extends Component {
           transactionDetails
         )
       )
-      utils.notificationError(
-        this.props.notifications.engine,
-        serializeError(error).message
-      )
+      const notificationEngine = notificationWrapper.getInstance()
+      utils.notificationError(notificationEngine, serializeError(error).message)
     }
   }
 

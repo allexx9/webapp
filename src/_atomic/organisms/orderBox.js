@@ -24,6 +24,7 @@ import {
 } from '../../_utils/exchange'
 import { sha3_512 } from 'js-sha3'
 // import ToggleSwitch from '../atoms/toggleSwitch'
+import { notificationWrapper } from '../../_utils/notificationWrapper'
 import { toBaseUnitAmount } from '../../_utils/format'
 import BigNumber from 'bignumber.js'
 import BoxDecorator from '../molecules/boxDecorator'
@@ -183,10 +184,8 @@ class OrderBox extends Component {
         orderSubmitStep: 1
       })
     } catch (error) {
-      utils.notificationError(
-        this.props.notifications.engine,
-        serializeError(error).message
-      )
+      const notificationEngine = notificationWrapper.getInstance()
+      utils.notificationError(notificationEngine, serializeError(error).message)
       this.setState({
         orderRawDialogOpen: false
       })
@@ -260,8 +259,9 @@ class OrderBox extends Component {
             transactionDetails
           )
         )
+        const notificationEngine = notificationWrapper.getInstance()
         utils.notificationError(
-          this.props.notifications.engine,
+          notificationEngine,
           serializeError(error).message
         )
       }
@@ -321,8 +321,9 @@ class OrderBox extends Component {
           )
         )
         console.log(error)
+        const notificationEngine = notificationWrapper.getInstance()
         utils.notificationError(
-          this.props.notifications.engine,
+          notificationEngine,
           serializeError(error).message
         )
       }
