@@ -1,13 +1,5 @@
 /* Copyright 2016 Rigo Investment Sagl. */
-@import url('https://fonts.googleapis.com/css?family=Fira+Sans');
-@import url('https://fonts.googleapis.com/css?family=Work+Sans');
-@import url('https://fonts.googleapis.com/css?family=Lato');
-@import url('https://fonts.googleapis.com/css?family=Open+Sans');
 @import url('https://fonts.googleapis.com/css?family=Muli');
-@import url('https://fonts.googleapis.com/css?family=Cormorant+Garamond');
-@import url('https://fonts.googleapis.com/css?family=Gentium+Book+Basic');
-@import url('https://fonts.googleapis.com/css?family=Work+Sans');
-
 
 html,
 #header {
@@ -22,19 +14,19 @@ body {
   color: #333;
   font-size: 16px;
   font-family: 'Open Sans', serif;
-  /* margin-left: 0;
-  margin-right: 0; */
   margin-top: 0px;
+  margin-bottom: 0;
   vertical-align: top;
-  /* height: 100%; */
-  /* min-width: 960px; */
-  /* margin-right: -8px;
-  margin-left: -8px; */
+
 }
 
-/* html,
+#root {
+  height: 100% !important;
+}
+
+html,
 body,
 #app,
 #app>div {
   height: 100%
-} */
+}
