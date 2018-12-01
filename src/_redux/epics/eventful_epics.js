@@ -257,7 +257,6 @@ const getDragosChunkedEvents$ = (options, state$) => {
 }
 
 const getPoolsList$ = (options, state$) => {
-  debugger
   switch (options.poolType) {
     case 'drago':
       return getDragosChunkedEvents$(options, state$)
