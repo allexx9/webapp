@@ -1,18 +1,16 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-// import { Observable } from 'rxjs';
 import * as TYPE_ from '../actions/const'
 import { Actions } from '../actions'
 // import { DEBUGGING } from '../../_utils/const'
+import * as utils from '../../_utils/pools'
 import { Observable, from, timer } from 'rxjs'
 import { catchError, finalize, map, mergeMap, retryWhen } from 'rxjs/operators'
-import { getBlockChunks } from '../../_utils/utils/'
+import { getBlockChunks } from '../../_utils/blockChain'
 import { ofType } from 'redux-observable'
 import BigNumber from 'bignumber.js'
 import PoolsApi from '../../PoolsApi/src'
 import Web3Wrapper from '../../_utils/web3Wrapper/src'
-import utils from '../../_utils/utils'
-// import { race } from 'rxjs/observable/race';
 
 //
 // FETCH LIST OF DRAGOS

@@ -173,7 +173,8 @@ const monitorAccounts$ = state$ => {
   const api = Web3Wrapper.getInstance(state$.value.endpoint.networkInfo.id)
   return api.rigoblock.ob.newBlock$.pipe(
     switchMap(newBlock => {
-      return from(utils.updateAccounts(api, newBlock, state$))
+      const currentEndpoint = { ...state$.value.endpoint }
+      return from(utils.updateAccounts(api, newBlock, currentEndpoint))
     })
   )
 }

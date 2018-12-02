@@ -1,10 +1,10 @@
+import { HTTP_EVENT_FETCHING, METAMASK } from '../const'
 import { formatCoins, formatEth } from './../format'
-import { getBlockChunks } from './blockChunks'
+import { getBlockChunks } from '../blockChain/getBlockChunks'
 import BigNumber from 'bignumber.js'
 import PoolApi from '../../PoolsApi/src'
 import Web3 from 'web3'
 import Web3Wrapper from '../../_utils/web3Wrapper/src'
-import { HTTP_EVENT_FETCHING, METAMASK } from '../const'
 
 export const getTransactionsSingleVault = async (
   poolAddress,

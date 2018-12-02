@@ -4,7 +4,6 @@ import * as TYPE_ from '../../../actions/const'
 import { Actions } from '../../../actions'
 import { BigNumber } from '@0xproject/utils'
 import { ERC20_TOKENS } from '../../../../_utils/tokens'
-import { blockChunks } from '../../../../_utils/utils/blockChunks'
 import {
   concat,
   filter,
@@ -16,6 +15,7 @@ import {
   takeUntil
 } from 'rxjs/operators'
 import { defer, from, timer } from 'rxjs'
+import { getBlockChunks } from '../../../../_utils/blockChain'
 import { ofType } from 'redux-observable'
 import { toUnitAmount } from '../../../../_utils/format'
 import Web3Wrapper from '../../../../_utils/web3Wrapper/src'
@@ -79,7 +79,7 @@ const getPastExchangeEvents$ = (fund, exchange, state$) => {
           fromBlock = '3000000'
       }
       const chunkSize = 100000
-      const chunks = blockChunks(fromBlock, lastBlock, chunkSize)
+      const chunks = getBlockChunks(fromBlock, lastBlock, chunkSize)
       const eventsPromises = chunks.map(chunk => {
         const options = {
           fromBlock: chunk.fromBlock,

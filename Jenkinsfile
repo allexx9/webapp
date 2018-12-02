@@ -4,34 +4,36 @@ pipeline {
         CI = 'false' 
         RANCHER_TOKEN = credentials('rancher-bearer-token') 
         JENKINS_PASSWORD = credentials('wnz99-jenkins-user-password') 
+        NPM_TOKEN = credentials('npm-token') 
     }
     stages {
         stage('Init') { 
             agent {
                 docker {
-                    image 'node:6' 
+                    image 'node:8-alpine' 
                     args '-p 3000:3000' 
                 }
             }
             steps {
+                sh 'echo //registry.npmjs.org/:_authToken=\\${NPM_TOKEN} > ~/.npmrc'
                 sh 'yarn install --frozen-lockfile' 
             }
         }
-        // stage('Test') { 
-        //     agent {
-        //         docker {
-        //             image 'node:6' 
-        //             args '-p 3000:3000' 
-        //         }
-        //     }
-        //     steps {
-        //         sh 'yarn test' 
-        //     }
-        // }
+        stage('Test') { 
+            agent {
+                docker {
+                    image 'node:8-alpine' 
+                    args '-p 3000:3000' 
+                }
+            }
+            steps {
+                sh 'yarn test' 
+            }
+        }
         stage('Build') { 
             agent {
                 docker {
-                    image 'node:6' 
+                    image 'node:8-alpine' 
                 }
             }
             steps {

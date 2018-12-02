@@ -1,6 +1,8 @@
 import { IS_MANAGER } from '../actions/const'
 import deepFreeze from 'deep-freeze'
-import usersReducer from './users'
+import usersReducer from './users_reducer'
+
+//////
 
 describe('users Reducer', () => {
   it('IS_MANAGER success', () => {

@@ -1,6 +1,4 @@
-// import * as abis from '../PoolsApi/src/contracts/abi'
-
-import { formatCoins, formatEth } from './../format'
+import { formatCoins, formatEth } from '../format'
 import BigNumber from 'bignumber.js'
 import Web3 from 'web3'
 
