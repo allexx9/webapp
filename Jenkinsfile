@@ -10,7 +10,7 @@ pipeline {
         stage('Init') { 
             agent {
                 docker {
-                    image 'node:8-alpine' 
+                    image 'node:8' 
                     args '-p 3000:3000' 
                 }
             }
@@ -22,7 +22,7 @@ pipeline {
         stage('Test') { 
             agent {
                 docker {
-                    image 'node:8-alpine' 
+                    image 'node:8' 
                     args '-p 3000:3000' 
                 }
             }
@@ -33,7 +33,7 @@ pipeline {
         stage('Build') { 
             agent {
                 docker {
-                    image 'node:8-alpine' 
+                    image 'node:8' 
                 }
             }
             steps {
