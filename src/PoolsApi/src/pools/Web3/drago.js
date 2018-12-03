@@ -686,7 +686,7 @@ class DragoWeb3 {
     ])
     console.log(encodedABI)
     return instance.methods
-      .operateOnExchange(wrapperAddress, encodedABI)
+      .operateOnExchange(wrapperAddress, [encodedABI])
       .estimateGas(options)
       .then(gasEstimate => {
         console.log(gasEstimate)
@@ -694,7 +694,7 @@ class DragoWeb3 {
       })
       .then(() => {
         return instance.methods
-          .operateOnExchange(wrapperAddress, encodedABI)
+          .operateOnExchange(wrapperAddress, [encodedABI])
           .send(options)
       })
   }
@@ -739,7 +739,7 @@ class DragoWeb3 {
     ])
     console.log(encodedABI)
     return instance.methods
-      .operateOnExchange(wrapperAddress, encodedABI)
+      .operateOnExchange(wrapperAddress, [encodedABI])
       .estimateGas(options)
       .then(gasEstimate => {
         console.log(gasEstimate)
@@ -747,7 +747,7 @@ class DragoWeb3 {
       })
       .then(() => {
         return instance.methods
-          .operateOnExchange(wrapperAddress, encodedABI)
+          .operateOnExchange(wrapperAddress, [encodedABI])
           .send(options)
       })
   }
