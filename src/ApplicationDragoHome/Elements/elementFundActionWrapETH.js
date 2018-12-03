@@ -278,15 +278,16 @@ class ElementFundActionWrapETH extends Component {
   onSendUnwrap = () => {
     const { api } = this.context
     const { dragoDetails, endpoint } = this.props
+    const { account, amount } = this.state
     // const { instance } = this.context;
     let poolApi = null
     const WETHaddress = ERC20_TOKENS[endpoint.networkInfo.name].WETH.address
     this.setState({
       sending: true
     })
-    let provider = this.state.account.source === 'MetaMask' ? window.web3 : api
-    const { account } = this.state
-    const authMsg = 'You un-wrapped ' + this.state.amount + ' ETH'
+    let provider = account.source === 'MetaMask' ? window.web3 : api
+
+    const authMsg = 'You un-wrapped ' + amount + ' ETH'
 
     // Initializing transaction variables
     const transactionId = api.utils.sha3(new Date() + account.address)
@@ -299,7 +300,7 @@ class ElementFundActionWrapETH extends Component {
       error: false,
       action: 'UnWrapETH',
       symbol: 'ETH',
-      amount: this.state.amount
+      amount: amount
     }
     this.props.dispatch(
       Actions.transactions.addTransactionToQueueAction(
@@ -307,15 +308,12 @@ class ElementFundActionWrapETH extends Component {
         transactionDetails
       )
     )
-
+    let toBeUnWrapped =
+      '0x' + toBaseUnitAmount(new BigNumber(amount), 18).toString(16)
     poolApi = new PoolApi(provider)
     poolApi.contract.drago.init(dragoDetails.address)
     poolApi.contract.drago
-      .unWrapETHZeroEx(
-        WETHaddress,
-        account.address,
-        toBaseUnitAmount(new BigNumber(this.state.amount), 18).toString(16)
-      )
+      .unWrapETHZeroEx(WETHaddress, account.address, toBeUnWrapped)
       .then(receipt => {
         console.log(receipt)
         // Adding transaciont to the queue
@@ -363,7 +361,7 @@ class ElementFundActionWrapETH extends Component {
     this.setState(
       {
         authMsg: authMsg,
-        authAccount: { ...this.state.account }
+        authAccount: { ...account }
         // sending: false,
         // complete: true,
       },
@@ -374,15 +372,16 @@ class ElementFundActionWrapETH extends Component {
   onSendWrap = () => {
     const { api } = this.context
     const { dragoDetails, endpoint } = this.props
+    const { account, amount } = this.state
     // const { instance } = this.context;
     let poolApi = null
     const WETHaddress = ERC20_TOKENS[endpoint.networkInfo.name].WETH.address
     this.setState({
       sending: true
     })
-    let provider = this.state.account.source === 'MetaMask' ? window.web3 : api
-    const { account } = this.state
-    const authMsg = 'You wrapped ' + this.state.amount + ' ETH'
+    let provider = account.source === 'MetaMask' ? window.web3 : api
+
+    const authMsg = 'You wrapped ' + amount + ' ETH'
 
     // Initializing transaction variables
     const transactionId = api.utils.sha3(new Date() + account.address)
@@ -395,7 +394,7 @@ class ElementFundActionWrapETH extends Component {
       error: false,
       action: 'WrapETH',
       symbol: 'ETH',
-      amount: this.state.amount
+      amount: amount
     }
     this.props.dispatch(
       Actions.transactions.addTransactionToQueueAction(
@@ -403,15 +402,12 @@ class ElementFundActionWrapETH extends Component {
         transactionDetails
       )
     )
-
+    let toBeWrapped =
+      '0x' + toBaseUnitAmount(new BigNumber(amount), 18).toString(16)
     poolApi = new PoolApi(provider)
     poolApi.contract.drago.init(dragoDetails.address)
     poolApi.contract.drago
-      .wrapETHZeroEx(
-        WETHaddress,
-        account.address,
-        toBaseUnitAmount(new BigNumber(this.state.amount), 18).toString(16)
-      )
+      .wrapETHZeroEx(WETHaddress, account.address, toBeWrapped)
       .then(receipt => {
         console.log(receipt)
         // Adding transaction to the queue
@@ -459,7 +455,7 @@ class ElementFundActionWrapETH extends Component {
     this.setState(
       {
         authMsg: authMsg,
-        authAccount: { ...this.state.account }
+        authAccount: { ...account }
         // sending: false,
         // complete: true,
       },
