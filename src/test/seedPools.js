@@ -1,5 +1,6 @@
 import { GANACHE_NETWORK_ID, GAS_ESTIMATE } from './constants'
 import { poolsList } from './dragoList'
+import PoolApi from '../PoolsApi/src'
 import Web3 from 'web3'
 import dragoArtifact from '@rigoblock/contracts/artifacts/Drago.json'
 // import fetchContracts from '@rigoblock/contracts'
@@ -34,6 +35,13 @@ export const seedPools = async baseContracts => {
       })
     }
 
+    const WETHaddress = baseContracts['WETH9'].address
+    await poolApi.contract.drago.init(address)
+    await poolApi.contract.drago.wrapETHZeroEx(
+      WETHaddress,
+      accounts[0],
+      toBaseUnitAmount(new BigNumber('1'), 18).toString(16)
+    )
     // Get some WETH9
     // const dragoWETHBalance = await baseContracts['WETH9'].transfer(
     //   drago.address,
