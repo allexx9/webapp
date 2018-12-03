@@ -82,7 +82,7 @@
     "build-prod": "scripts/deploy-prod.sh",
     "build-beta": "GENERATE_SOURCEMAP=true react-scripts --max-old-space-size=8192 build",
     "build": "GENERATE_SOURCEMAP=true react-scripts --max-old-space-size=8192 build",
-    "test": "react-scripts test --env=jsdom --testEnvironment=node --testPathIgnorePatterns=/node_modules/ --testPathIgnorePatterns=/src/_utils/exchange/ --testPathIgnorePatterns=src/_utils/web3Wrapper/",
+    "test": "react-scripts test --env=jsdom --runInBand --testEnvironment=node --testPathIgnorePatterns=${pwd}/node_modules/ --testPathIgnorePatterns=${pwd}/src/_utils/exchange/ --testPathIgnorePatterns=${pwd}/src/_utils/web3Wrapper/",
     "eject": "react-scripts eject",
     "watch": "node scripts/watch.js",
     "analyze": "source-map-explorer build/static/js/main.*"
