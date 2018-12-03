@@ -41,7 +41,7 @@ class DragoEventfulWeb3 {
   }
 
   init = () => {
-    if (global.baseContracts !== 'undefined') {
+    if (typeof global.baseContracts !== 'undefined') {
       const instance = new this._api.eth.Contract(
         global.baseContracts['DragoEventful'].abi,
         global.baseContracts['DragoEventful'].address
