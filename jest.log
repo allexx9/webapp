@@ -1,0 +1,2153 @@
+yarn run v1.12.3
+$ react-scripts test --env=jsdom --bail --testEnvironment=node --testPathIgnorePatterns=/node_modules/ --testPathIgnorePatterns=/src/_utils/exchange/ --testPathIgnorePatterns=src/_utils/web3Wrapper/
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xdd466362ef6d0d8ed1a368931565249236b3d54a5ef5414ac3cba974b4515eaf
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    Authority.sol successfully deployed at 0x7e6957630956f2b5ecc3f16e65a28c26032b1a59
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x11c999fe497a15817babde2556f7c61c174c9aee980b04ffdde5230669e6d8de
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    DragoRegistry.sol successfully deployed at 0xf7cbb0849d4a8ec5ab4650030fa776c00eb52da7
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xb1424d885b96253a05b2bf22522e54515ac5f5ca1f4bc2de1aca7d6dc97f5174
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    VaultEventful.sol successfully deployed at 0x6dddcaede2071883c85c6e5781524985608d2460
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x02e0764801cffcee36edd4f22ad8dc0ffafbd6e989a029a862786b139c50dc0b
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    VaultFactory.sol successfully deployed at 0x7ce6e371085cb611fb46d5065397223ef2f952ff
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x31eaa7960c20dfabc1fb3b8d80b3890a12f79935bd8c690f5344051d820cdac0
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    DragoEventful.sol successfully deployed at 0xbee872b112cad5a1bf8d2d3756360665da818cfb
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x86ef70cb7abb8fc603bc23ed10272567a3fa07c6548e8b574813aef196318139
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    DragoFactory.sol successfully deployed at 0x6f355cfdeda5188fe5fff5e939a40af9fde3c845
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x90734c1505e343ae8979ab05c4ab5e6daec0d612aec7c0cdca01befd37fd44bf
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    RigoToken.sol successfully deployed at 0x1fb4c7f7197ef339ae4125aeec9406a6788bb065
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xbe6364f5fb4d1adc332cf4fdf826f36328b3e43a911e057e56cdf51988252771
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    ProofOfPerformance.sol successfully deployed at 0xc5abe31f6637cc62f37865f23764f32176b7c540
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xfb5ab5b5b88a4eca3370d5c1ddde4f25f1e42ee4a6c969960dda35934b5165d2
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    Inflation.sol successfully deployed at 0xd5d9e7d7bc8c690855d94e11f85e641108f61a50
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x20280d35fe11a1e0d2eff98fc89954a9e7e8355f8325d6ca619332bdc8c311d0
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    ExchangesAuthority.sol successfully deployed at 0x14fe122d979c7b34b6b4f0cec7b24b738c61692f
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x20f88201af547e5d3fd1751e607db7b39f40305b05e0a9abf5771b181147401d
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    ExchangeEfx.sol successfully deployed at 0xb4a3c3fed3da52f06e491703aee9c7b4e89a1f0a
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x205af2170ad56d4636aedb2ec11ca8eae66f5e478f34da20cc9207e87f154a32
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    WrapperLockEth.sol successfully deployed at 0xbc275c483ecf00e6f18ca033f5123217562b1577
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x5e6bc07858d3764182d6ad4bb27c20915bb30bfe7b4daceef061293ed104e9ce
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    WrapperLock.sol successfully deployed at 0x3b32af945599707baf0ecb195c20b60f063f987a
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xbca9b2e1906dba35fc87d79f6ec5e0865a50b6a2cef784a465dc4ff5195686f4
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    TokenTransferProxy.sol successfully deployed at 0x27fb1d72e1278d8c00fd083327cf87e2659c9c83
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xc5550d524b09e7d6d81f04f0f0232f697844a4b0bf20b3e39b771b268ce84352
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    WETH9.sol successfully deployed at 0xff0016a0ddc8d093f0309e927734154cbb55bc22
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x5c204072684015315b36295cc4ccf88e266218685b8d65d8413aa10adb383d5c
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    AWeth.sol successfully deployed at 0xead3b3fe005d54b9e2fd9adcc18b0542be422d49
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x369e9768195625781a239a8f0445b00c22d03e0ba02ea1b94b80d096b9dab3c3
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    ExchangeV1Fork.sol successfully deployed at 0x2945f2211d1ea99d66799af35dd3512165d8da6f
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x10c4b27bf2720f3ce83e1a3a9580f07c06ba1e2663e1a6e180b9d085585ec353
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    NavVerifier.sol successfully deployed at 0xb611eb75e36221b78f5b374ee9b2c9de2b9cc23a
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xf59c44822ce8dc27212b30b64751b0383239d7722c95f27392457b19aece1535
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    SigVerifier.sol successfully deployed at 0x25d79d28890d5ae89664b888f563703057b50dee
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x5734ef62336e88ec5e10ad8add265ae39d7f505f98113e44b1c6b0bb59eae1c0
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    AEthfinex.sol successfully deployed at 0x7dc82a22c01fc5173d5ec4e580050f3e9e5ffad7
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+Watch Usage
+ › Press a to run all tests.
+ › Press p to filter by a filename regex pattern.
+ › Press t to filter by a test name regex pattern.
+ › Press q to quit watch mode.
+ › Press Enter to trigger a test run.
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xaaf1e24381f89dbe97e72b80eda653beb55b8d15faa462953c6e52e7aa75ffa7
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    Faucet.sol successfully deployed at 0x033f3f3dc7fd68581170a635396a5f4f9cc73b22
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xdd466362ef6d0d8ed1a368931565249236b3d54a5ef5414ac3cba974b4515eaf
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    Authority.sol successfully deployed at 0x7e6957630956f2b5ecc3f16e65a28c26032b1a59
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x11c999fe497a15817babde2556f7c61c174c9aee980b04ffdde5230669e6d8de
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    DragoRegistry.sol successfully deployed at 0xf7cbb0849d4a8ec5ab4650030fa776c00eb52da7
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xb1424d885b96253a05b2bf22522e54515ac5f5ca1f4bc2de1aca7d6dc97f5174
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    VaultEventful.sol successfully deployed at 0x6dddcaede2071883c85c6e5781524985608d2460
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x02e0764801cffcee36edd4f22ad8dc0ffafbd6e989a029a862786b139c50dc0b
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    VaultFactory.sol successfully deployed at 0x7ce6e371085cb611fb46d5065397223ef2f952ff
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x31eaa7960c20dfabc1fb3b8d80b3890a12f79935bd8c690f5344051d820cdac0
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    DragoEventful.sol successfully deployed at 0xbee872b112cad5a1bf8d2d3756360665da818cfb
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x86ef70cb7abb8fc603bc23ed10272567a3fa07c6548e8b574813aef196318139
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    DragoFactory.sol successfully deployed at 0x6f355cfdeda5188fe5fff5e939a40af9fde3c845
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x90734c1505e343ae8979ab05c4ab5e6daec0d612aec7c0cdca01befd37fd44bf
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    RigoToken.sol successfully deployed at 0x1fb4c7f7197ef339ae4125aeec9406a6788bb065
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xbe6364f5fb4d1adc332cf4fdf826f36328b3e43a911e057e56cdf51988252771
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    ProofOfPerformance.sol successfully deployed at 0xc5abe31f6637cc62f37865f23764f32176b7c540
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xfb5ab5b5b88a4eca3370d5c1ddde4f25f1e42ee4a6c969960dda35934b5165d2
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    Inflation.sol successfully deployed at 0xd5d9e7d7bc8c690855d94e11f85e641108f61a50
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x20280d35fe11a1e0d2eff98fc89954a9e7e8355f8325d6ca619332bdc8c311d0
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    ExchangesAuthority.sol successfully deployed at 0x14fe122d979c7b34b6b4f0cec7b24b738c61692f
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x20f88201af547e5d3fd1751e607db7b39f40305b05e0a9abf5771b181147401d
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    ExchangeEfx.sol successfully deployed at 0xb4a3c3fed3da52f06e491703aee9c7b4e89a1f0a
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x205af2170ad56d4636aedb2ec11ca8eae66f5e478f34da20cc9207e87f154a32
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    WrapperLockEth.sol successfully deployed at 0xbc275c483ecf00e6f18ca033f5123217562b1577
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x5e6bc07858d3764182d6ad4bb27c20915bb30bfe7b4daceef061293ed104e9ce
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    WrapperLock.sol successfully deployed at 0x3b32af945599707baf0ecb195c20b60f063f987a
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xbca9b2e1906dba35fc87d79f6ec5e0865a50b6a2cef784a465dc4ff5195686f4
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    TokenTransferProxy.sol successfully deployed at 0x27fb1d72e1278d8c00fd083327cf87e2659c9c83
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xc5550d524b09e7d6d81f04f0f0232f697844a4b0bf20b3e39b771b268ce84352
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    WETH9.sol successfully deployed at 0xff0016a0ddc8d093f0309e927734154cbb55bc22
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x5c204072684015315b36295cc4ccf88e266218685b8d65d8413aa10adb383d5c
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    AWeth.sol successfully deployed at 0xead3b3fe005d54b9e2fd9adcc18b0542be422d49
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x369e9768195625781a239a8f0445b00c22d03e0ba02ea1b94b80d096b9dab3c3
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    ExchangeV1Fork.sol successfully deployed at 0x2945f2211d1ea99d66799af35dd3512165d8da6f
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x10c4b27bf2720f3ce83e1a3a9580f07c06ba1e2663e1a6e180b9d085585ec353
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    NavVerifier.sol successfully deployed at 0xb611eb75e36221b78f5b374ee9b2c9de2b9cc23a
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xf59c44822ce8dc27212b30b64751b0383239d7722c95f27392457b19aece1535
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    SigVerifier.sol successfully deployed at 0x25d79d28890d5ae89664b888f563703057b50dee
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x5734ef62336e88ec5e10ad8add265ae39d7f505f98113e44b1c6b0bb59eae1c0
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    AEthfinex.sol successfully deployed at 0x7dc82a22c01fc5173d5ec4e580050f3e9e5ffad7
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+Watch Usage: Press w to show more.  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xaaf1e24381f89dbe97e72b80eda653beb55b8d15faa462953c6e52e7aa75ffa7
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    Faucet.sol successfully deployed at 0x033f3f3dc7fd68581170a635396a5f4f9cc73b22
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xdd466362ef6d0d8ed1a368931565249236b3d54a5ef5414ac3cba974b4515eaf
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    Authority.sol successfully deployed at 0x7e6957630956f2b5ecc3f16e65a28c26032b1a59
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x11c999fe497a15817babde2556f7c61c174c9aee980b04ffdde5230669e6d8de
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    DragoRegistry.sol successfully deployed at 0xf7cbb0849d4a8ec5ab4650030fa776c00eb52da7
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xb1424d885b96253a05b2bf22522e54515ac5f5ca1f4bc2de1aca7d6dc97f5174
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    VaultEventful.sol successfully deployed at 0x6dddcaede2071883c85c6e5781524985608d2460
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x02e0764801cffcee36edd4f22ad8dc0ffafbd6e989a029a862786b139c50dc0b
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    VaultFactory.sol successfully deployed at 0x7ce6e371085cb611fb46d5065397223ef2f952ff
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x31eaa7960c20dfabc1fb3b8d80b3890a12f79935bd8c690f5344051d820cdac0
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    DragoEventful.sol successfully deployed at 0xbee872b112cad5a1bf8d2d3756360665da818cfb
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x86ef70cb7abb8fc603bc23ed10272567a3fa07c6548e8b574813aef196318139
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    DragoFactory.sol successfully deployed at 0x6f355cfdeda5188fe5fff5e939a40af9fde3c845
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x90734c1505e343ae8979ab05c4ab5e6daec0d612aec7c0cdca01befd37fd44bf
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    RigoToken.sol successfully deployed at 0x1fb4c7f7197ef339ae4125aeec9406a6788bb065
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xbe6364f5fb4d1adc332cf4fdf826f36328b3e43a911e057e56cdf51988252771
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    ProofOfPerformance.sol successfully deployed at 0xc5abe31f6637cc62f37865f23764f32176b7c540
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xfb5ab5b5b88a4eca3370d5c1ddde4f25f1e42ee4a6c969960dda35934b5165d2
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    Inflation.sol successfully deployed at 0xd5d9e7d7bc8c690855d94e11f85e641108f61a50
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x20280d35fe11a1e0d2eff98fc89954a9e7e8355f8325d6ca619332bdc8c311d0
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    ExchangesAuthority.sol successfully deployed at 0x14fe122d979c7b34b6b4f0cec7b24b738c61692f
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x20f88201af547e5d3fd1751e607db7b39f40305b05e0a9abf5771b181147401d
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    ExchangeEfx.sol successfully deployed at 0xb4a3c3fed3da52f06e491703aee9c7b4e89a1f0a
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x205af2170ad56d4636aedb2ec11ca8eae66f5e478f34da20cc9207e87f154a32
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    WrapperLockEth.sol successfully deployed at 0xbc275c483ecf00e6f18ca033f5123217562b1577
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x5e6bc07858d3764182d6ad4bb27c20915bb30bfe7b4daceef061293ed104e9ce
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    WrapperLock.sol successfully deployed at 0x3b32af945599707baf0ecb195c20b60f063f987a
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xbca9b2e1906dba35fc87d79f6ec5e0865a50b6a2cef784a465dc4ff5195686f4
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    TokenTransferProxy.sol successfully deployed at 0x27fb1d72e1278d8c00fd083327cf87e2659c9c83
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xc5550d524b09e7d6d81f04f0f0232f697844a4b0bf20b3e39b771b268ce84352
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    WETH9.sol successfully deployed at 0xff0016a0ddc8d093f0309e927734154cbb55bc22
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x5c204072684015315b36295cc4ccf88e266218685b8d65d8413aa10adb383d5c
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    AWeth.sol successfully deployed at 0xead3b3fe005d54b9e2fd9adcc18b0542be422d49
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x369e9768195625781a239a8f0445b00c22d03e0ba02ea1b94b80d096b9dab3c3
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    ExchangeV1Fork.sol successfully deployed at 0x2945f2211d1ea99d66799af35dd3512165d8da6f
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x10c4b27bf2720f3ce83e1a3a9580f07c06ba1e2663e1a6e180b9d085585ec353
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    NavVerifier.sol successfully deployed at 0xb611eb75e36221b78f5b374ee9b2c9de2b9cc23a
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xf59c44822ce8dc27212b30b64751b0383239d7722c95f27392457b19aece1535
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    SigVerifier.sol successfully deployed at 0x25d79d28890d5ae89664b888f563703057b50dee
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+Watch Usage: Press w to show more.  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x5734ef62336e88ec5e10ad8add265ae39d7f505f98113e44b1c6b0bb59eae1c0
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    AEthfinex.sol successfully deployed at 0x7dc82a22c01fc5173d5ec4e580050f3e9e5ffad7
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xaaf1e24381f89dbe97e72b80eda653beb55b8d15faa462953c6e52e7aa75ffa7
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    Faucet.sol successfully deployed at 0x033f3f3dc7fd68581170a635396a5f4f9cc73b22
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xdd466362ef6d0d8ed1a368931565249236b3d54a5ef5414ac3cba974b4515eaf
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    Authority.sol successfully deployed at 0x7e6957630956f2b5ecc3f16e65a28c26032b1a59
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x11c999fe497a15817babde2556f7c61c174c9aee980b04ffdde5230669e6d8de
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    DragoRegistry.sol successfully deployed at 0xf7cbb0849d4a8ec5ab4650030fa776c00eb52da7
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xb1424d885b96253a05b2bf22522e54515ac5f5ca1f4bc2de1aca7d6dc97f5174
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    VaultEventful.sol successfully deployed at 0x6dddcaede2071883c85c6e5781524985608d2460
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x02e0764801cffcee36edd4f22ad8dc0ffafbd6e989a029a862786b139c50dc0b
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    VaultFactory.sol successfully deployed at 0x7ce6e371085cb611fb46d5065397223ef2f952ff
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x31eaa7960c20dfabc1fb3b8d80b3890a12f79935bd8c690f5344051d820cdac0
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    DragoEventful.sol successfully deployed at 0xbee872b112cad5a1bf8d2d3756360665da818cfb
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x86ef70cb7abb8fc603bc23ed10272567a3fa07c6548e8b574813aef196318139
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    DragoFactory.sol successfully deployed at 0x6f355cfdeda5188fe5fff5e939a40af9fde3c845
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x90734c1505e343ae8979ab05c4ab5e6daec0d612aec7c0cdca01befd37fd44bf
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    RigoToken.sol successfully deployed at 0x1fb4c7f7197ef339ae4125aeec9406a6788bb065
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xbe6364f5fb4d1adc332cf4fdf826f36328b3e43a911e057e56cdf51988252771
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    ProofOfPerformance.sol successfully deployed at 0xc5abe31f6637cc62f37865f23764f32176b7c540
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xfb5ab5b5b88a4eca3370d5c1ddde4f25f1e42ee4a6c969960dda35934b5165d2
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    Inflation.sol successfully deployed at 0xd5d9e7d7bc8c690855d94e11f85e641108f61a50
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x20280d35fe11a1e0d2eff98fc89954a9e7e8355f8325d6ca619332bdc8c311d0
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    ExchangesAuthority.sol successfully deployed at 0x14fe122d979c7b34b6b4f0cec7b24b738c61692f
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x20f88201af547e5d3fd1751e607db7b39f40305b05e0a9abf5771b181147401d
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    ExchangeEfx.sol successfully deployed at 0xb4a3c3fed3da52f06e491703aee9c7b4e89a1f0a
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x205af2170ad56d4636aedb2ec11ca8eae66f5e478f34da20cc9207e87f154a32
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    WrapperLockEth.sol successfully deployed at 0xbc275c483ecf00e6f18ca033f5123217562b1577
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x5e6bc07858d3764182d6ad4bb27c20915bb30bfe7b4daceef061293ed104e9ce
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    WrapperLock.sol successfully deployed at 0x3b32af945599707baf0ecb195c20b60f063f987a
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xbca9b2e1906dba35fc87d79f6ec5e0865a50b6a2cef784a465dc4ff5195686f4
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    TokenTransferProxy.sol successfully deployed at 0x27fb1d72e1278d8c00fd083327cf87e2659c9c83
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xc5550d524b09e7d6d81f04f0f0232f697844a4b0bf20b3e39b771b268ce84352
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    WETH9.sol successfully deployed at 0xff0016a0ddc8d093f0309e927734154cbb55bc22
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x5c204072684015315b36295cc4ccf88e266218685b8d65d8413aa10adb383d5c
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    AWeth.sol successfully deployed at 0xead3b3fe005d54b9e2fd9adcc18b0542be422d49
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x369e9768195625781a239a8f0445b00c22d03e0ba02ea1b94b80d096b9dab3c3
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    ExchangeV1Fork.sol successfully deployed at 0x2945f2211d1ea99d66799af35dd3512165d8da6f
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x10c4b27bf2720f3ce83e1a3a9580f07c06ba1e2663e1a6e180b9d085585ec353
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    NavVerifier.sol successfully deployed at 0xb611eb75e36221b78f5b374ee9b2c9de2b9cc23a
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xf59c44822ce8dc27212b30b64751b0383239d7722c95f27392457b19aece1535
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    SigVerifier.sol successfully deployed at 0x25d79d28890d5ae89664b888f563703057b50dee
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x5734ef62336e88ec5e10ad8add265ae39d7f505f98113e44b1c6b0bb59eae1c0
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    AEthfinex.sol successfully deployed at 0x7dc82a22c01fc5173d5ec4e580050f3e9e5ffad7
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+Watch Usage: Press w to show more.  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xaaf1e24381f89dbe97e72b80eda653beb55b8d15faa462953c6e52e7aa75ffa7
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    Faucet.sol successfully deployed at 0x033f3f3dc7fd68581170a635396a5f4f9cc73b22
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xdd466362ef6d0d8ed1a368931565249236b3d54a5ef5414ac3cba974b4515eaf
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    Authority.sol successfully deployed at 0x7e6957630956f2b5ecc3f16e65a28c26032b1a59
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x11c999fe497a15817babde2556f7c61c174c9aee980b04ffdde5230669e6d8de
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    DragoRegistry.sol successfully deployed at 0xf7cbb0849d4a8ec5ab4650030fa776c00eb52da7
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xb1424d885b96253a05b2bf22522e54515ac5f5ca1f4bc2de1aca7d6dc97f5174
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    VaultEventful.sol successfully deployed at 0x6dddcaede2071883c85c6e5781524985608d2460
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x02e0764801cffcee36edd4f22ad8dc0ffafbd6e989a029a862786b139c50dc0b
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    VaultFactory.sol successfully deployed at 0x7ce6e371085cb611fb46d5065397223ef2f952ff
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x31eaa7960c20dfabc1fb3b8d80b3890a12f79935bd8c690f5344051d820cdac0
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    DragoEventful.sol successfully deployed at 0xbee872b112cad5a1bf8d2d3756360665da818cfb
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x86ef70cb7abb8fc603bc23ed10272567a3fa07c6548e8b574813aef196318139
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    DragoFactory.sol successfully deployed at 0x6f355cfdeda5188fe5fff5e939a40af9fde3c845
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x90734c1505e343ae8979ab05c4ab5e6daec0d612aec7c0cdca01befd37fd44bf
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    RigoToken.sol successfully deployed at 0x1fb4c7f7197ef339ae4125aeec9406a6788bb065
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xbe6364f5fb4d1adc332cf4fdf826f36328b3e43a911e057e56cdf51988252771
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    ProofOfPerformance.sol successfully deployed at 0xc5abe31f6637cc62f37865f23764f32176b7c540
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xfb5ab5b5b88a4eca3370d5c1ddde4f25f1e42ee4a6c969960dda35934b5165d2
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    Inflation.sol successfully deployed at 0xd5d9e7d7bc8c690855d94e11f85e641108f61a50
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x20280d35fe11a1e0d2eff98fc89954a9e7e8355f8325d6ca619332bdc8c311d0
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    ExchangesAuthority.sol successfully deployed at 0x14fe122d979c7b34b6b4f0cec7b24b738c61692f
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x20f88201af547e5d3fd1751e607db7b39f40305b05e0a9abf5771b181147401d
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    ExchangeEfx.sol successfully deployed at 0xb4a3c3fed3da52f06e491703aee9c7b4e89a1f0a
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x205af2170ad56d4636aedb2ec11ca8eae66f5e478f34da20cc9207e87f154a32
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    WrapperLockEth.sol successfully deployed at 0xbc275c483ecf00e6f18ca033f5123217562b1577
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x5e6bc07858d3764182d6ad4bb27c20915bb30bfe7b4daceef061293ed104e9ce
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    WrapperLock.sol successfully deployed at 0x3b32af945599707baf0ecb195c20b60f063f987a
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xbca9b2e1906dba35fc87d79f6ec5e0865a50b6a2cef784a465dc4ff5195686f4
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    TokenTransferProxy.sol successfully deployed at 0x27fb1d72e1278d8c00fd083327cf87e2659c9c83
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xc5550d524b09e7d6d81f04f0f0232f697844a4b0bf20b3e39b771b268ce84352
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    WETH9.sol successfully deployed at 0xff0016a0ddc8d093f0309e927734154cbb55bc22
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x5c204072684015315b36295cc4ccf88e266218685b8d65d8413aa10adb383d5c
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    AWeth.sol successfully deployed at 0xead3b3fe005d54b9e2fd9adcc18b0542be422d49
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x369e9768195625781a239a8f0445b00c22d03e0ba02ea1b94b80d096b9dab3c3
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    ExchangeV1Fork.sol successfully deployed at 0x2945f2211d1ea99d66799af35dd3512165d8da6f
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x10c4b27bf2720f3ce83e1a3a9580f07c06ba1e2663e1a6e180b9d085585ec353
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    NavVerifier.sol successfully deployed at 0xb611eb75e36221b78f5b374ee9b2c9de2b9cc23a
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xf59c44822ce8dc27212b30b64751b0383239d7722c95f27392457b19aece1535
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    SigVerifier.sol successfully deployed at 0x25d79d28890d5ae89664b888f563703057b50dee
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x5734ef62336e88ec5e10ad8add265ae39d7f505f98113e44b1c6b0bb59eae1c0
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    AEthfinex.sol successfully deployed at 0x7dc82a22c01fc5173d5ec4e580050f3e9e5ffad7
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+Watch Usage: Press w to show more.  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xaaf1e24381f89dbe97e72b80eda653beb55b8d15faa462953c6e52e7aa75ffa7
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    Faucet.sol successfully deployed at 0x033f3f3dc7fd68581170a635396a5f4f9cc73b22
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xdd466362ef6d0d8ed1a368931565249236b3d54a5ef5414ac3cba974b4515eaf
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    Authority.sol successfully deployed at 0x7e6957630956f2b5ecc3f16e65a28c26032b1a59
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x11c999fe497a15817babde2556f7c61c174c9aee980b04ffdde5230669e6d8de
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    DragoRegistry.sol successfully deployed at 0xf7cbb0849d4a8ec5ab4650030fa776c00eb52da7
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xb1424d885b96253a05b2bf22522e54515ac5f5ca1f4bc2de1aca7d6dc97f5174
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    VaultEventful.sol successfully deployed at 0x6dddcaede2071883c85c6e5781524985608d2460
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x02e0764801cffcee36edd4f22ad8dc0ffafbd6e989a029a862786b139c50dc0b
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    VaultFactory.sol successfully deployed at 0x7ce6e371085cb611fb46d5065397223ef2f952ff
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x31eaa7960c20dfabc1fb3b8d80b3890a12f79935bd8c690f5344051d820cdac0
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    DragoEventful.sol successfully deployed at 0xbee872b112cad5a1bf8d2d3756360665da818cfb
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x86ef70cb7abb8fc603bc23ed10272567a3fa07c6548e8b574813aef196318139
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    DragoFactory.sol successfully deployed at 0x6f355cfdeda5188fe5fff5e939a40af9fde3c845
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x90734c1505e343ae8979ab05c4ab5e6daec0d612aec7c0cdca01befd37fd44bf
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    RigoToken.sol successfully deployed at 0x1fb4c7f7197ef339ae4125aeec9406a6788bb065
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xbe6364f5fb4d1adc332cf4fdf826f36328b3e43a911e057e56cdf51988252771
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    ProofOfPerformance.sol successfully deployed at 0xc5abe31f6637cc62f37865f23764f32176b7c540
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xfb5ab5b5b88a4eca3370d5c1ddde4f25f1e42ee4a6c969960dda35934b5165d2
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    Inflation.sol successfully deployed at 0xd5d9e7d7bc8c690855d94e11f85e641108f61a50
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x20280d35fe11a1e0d2eff98fc89954a9e7e8355f8325d6ca619332bdc8c311d0
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    ExchangesAuthority.sol successfully deployed at 0x14fe122d979c7b34b6b4f0cec7b24b738c61692f
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x20f88201af547e5d3fd1751e607db7b39f40305b05e0a9abf5771b181147401d
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    ExchangeEfx.sol successfully deployed at 0xb4a3c3fed3da52f06e491703aee9c7b4e89a1f0a
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x205af2170ad56d4636aedb2ec11ca8eae66f5e478f34da20cc9207e87f154a32
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    WrapperLockEth.sol successfully deployed at 0xbc275c483ecf00e6f18ca033f5123217562b1577
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x5e6bc07858d3764182d6ad4bb27c20915bb30bfe7b4daceef061293ed104e9ce
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    WrapperLock.sol successfully deployed at 0x3b32af945599707baf0ecb195c20b60f063f987a
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xbca9b2e1906dba35fc87d79f6ec5e0865a50b6a2cef784a465dc4ff5195686f4
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    TokenTransferProxy.sol successfully deployed at 0x27fb1d72e1278d8c00fd083327cf87e2659c9c83
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xc5550d524b09e7d6d81f04f0f0232f697844a4b0bf20b3e39b771b268ce84352
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    WETH9.sol successfully deployed at 0xff0016a0ddc8d093f0309e927734154cbb55bc22
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x5c204072684015315b36295cc4ccf88e266218685b8d65d8413aa10adb383d5c
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    AWeth.sol successfully deployed at 0xead3b3fe005d54b9e2fd9adcc18b0542be422d49
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x369e9768195625781a239a8f0445b00c22d03e0ba02ea1b94b80d096b9dab3c3
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    ExchangeV1Fork.sol successfully deployed at 0x2945f2211d1ea99d66799af35dd3512165d8da6f
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x10c4b27bf2720f3ce83e1a3a9580f07c06ba1e2663e1a6e180b9d085585ec353
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    NavVerifier.sol successfully deployed at 0xb611eb75e36221b78f5b374ee9b2c9de2b9cc23a
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xf59c44822ce8dc27212b30b64751b0383239d7722c95f27392457b19aece1535
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    SigVerifier.sol successfully deployed at 0x25d79d28890d5ae89664b888f563703057b50dee
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+Watch Usage: Press w to show more.  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x5734ef62336e88ec5e10ad8add265ae39d7f505f98113e44b1c6b0bb59eae1c0
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    AEthfinex.sol successfully deployed at 0x7dc82a22c01fc5173d5ec4e580050f3e9e5ffad7
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xaaf1e24381f89dbe97e72b80eda653beb55b8d15faa462953c6e52e7aa75ffa7
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    Faucet.sol successfully deployed at 0x033f3f3dc7fd68581170a635396a5f4f9cc73b22
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xdd466362ef6d0d8ed1a368931565249236b3d54a5ef5414ac3cba974b4515eaf
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    Authority.sol successfully deployed at 0x7e6957630956f2b5ecc3f16e65a28c26032b1a59
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x11c999fe497a15817babde2556f7c61c174c9aee980b04ffdde5230669e6d8de
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    DragoRegistry.sol successfully deployed at 0xf7cbb0849d4a8ec5ab4650030fa776c00eb52da7
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xb1424d885b96253a05b2bf22522e54515ac5f5ca1f4bc2de1aca7d6dc97f5174
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    VaultEventful.sol successfully deployed at 0x6dddcaede2071883c85c6e5781524985608d2460
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x02e0764801cffcee36edd4f22ad8dc0ffafbd6e989a029a862786b139c50dc0b
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    VaultFactory.sol successfully deployed at 0x7ce6e371085cb611fb46d5065397223ef2f952ff
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x31eaa7960c20dfabc1fb3b8d80b3890a12f79935bd8c690f5344051d820cdac0
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    DragoEventful.sol successfully deployed at 0xbee872b112cad5a1bf8d2d3756360665da818cfb
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x86ef70cb7abb8fc603bc23ed10272567a3fa07c6548e8b574813aef196318139
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    DragoFactory.sol successfully deployed at 0x6f355cfdeda5188fe5fff5e939a40af9fde3c845
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x90734c1505e343ae8979ab05c4ab5e6daec0d612aec7c0cdca01befd37fd44bf
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    RigoToken.sol successfully deployed at 0x1fb4c7f7197ef339ae4125aeec9406a6788bb065
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xbe6364f5fb4d1adc332cf4fdf826f36328b3e43a911e057e56cdf51988252771
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    ProofOfPerformance.sol successfully deployed at 0xc5abe31f6637cc62f37865f23764f32176b7c540
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xfb5ab5b5b88a4eca3370d5c1ddde4f25f1e42ee4a6c969960dda35934b5165d2
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    Inflation.sol successfully deployed at 0xd5d9e7d7bc8c690855d94e11f85e641108f61a50
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x20280d35fe11a1e0d2eff98fc89954a9e7e8355f8325d6ca619332bdc8c311d0
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    ExchangesAuthority.sol successfully deployed at 0x14fe122d979c7b34b6b4f0cec7b24b738c61692f
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x20f88201af547e5d3fd1751e607db7b39f40305b05e0a9abf5771b181147401d
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    ExchangeEfx.sol successfully deployed at 0xb4a3c3fed3da52f06e491703aee9c7b4e89a1f0a
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x205af2170ad56d4636aedb2ec11ca8eae66f5e478f34da20cc9207e87f154a32
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    WrapperLockEth.sol successfully deployed at 0xbc275c483ecf00e6f18ca033f5123217562b1577
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x5e6bc07858d3764182d6ad4bb27c20915bb30bfe7b4daceef061293ed104e9ce
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    WrapperLock.sol successfully deployed at 0x3b32af945599707baf0ecb195c20b60f063f987a
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xbca9b2e1906dba35fc87d79f6ec5e0865a50b6a2cef784a465dc4ff5195686f4
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    TokenTransferProxy.sol successfully deployed at 0x27fb1d72e1278d8c00fd083327cf87e2659c9c83
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xc5550d524b09e7d6d81f04f0f0232f697844a4b0bf20b3e39b771b268ce84352
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    WETH9.sol successfully deployed at 0xff0016a0ddc8d093f0309e927734154cbb55bc22
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x5c204072684015315b36295cc4ccf88e266218685b8d65d8413aa10adb383d5c
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    AWeth.sol successfully deployed at 0xead3b3fe005d54b9e2fd9adcc18b0542be422d49
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x369e9768195625781a239a8f0445b00c22d03e0ba02ea1b94b80d096b9dab3c3
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    ExchangeV1Fork.sol successfully deployed at 0x2945f2211d1ea99d66799af35dd3512165d8da6f
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x10c4b27bf2720f3ce83e1a3a9580f07c06ba1e2663e1a6e180b9d085585ec353
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    NavVerifier.sol successfully deployed at 0xb611eb75e36221b78f5b374ee9b2c9de2b9cc23a
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xf59c44822ce8dc27212b30b64751b0383239d7722c95f27392457b19aece1535
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    SigVerifier.sol successfully deployed at 0x25d79d28890d5ae89664b888f563703057b50dee
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x5734ef62336e88ec5e10ad8add265ae39d7f505f98113e44b1c6b0bb59eae1c0
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    AEthfinex.sol successfully deployed at 0x7dc82a22c01fc5173d5ec4e580050f3e9e5ffad7
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+Watch Usage: Press w to show more.  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xaaf1e24381f89dbe97e72b80eda653beb55b8d15faa462953c6e52e7aa75ffa7
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    Faucet.sol successfully deployed at 0x033f3f3dc7fd68581170a635396a5f4f9cc73b22
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xdd466362ef6d0d8ed1a368931565249236b3d54a5ef5414ac3cba974b4515eaf
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    Authority.sol successfully deployed at 0x7e6957630956f2b5ecc3f16e65a28c26032b1a59
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x11c999fe497a15817babde2556f7c61c174c9aee980b04ffdde5230669e6d8de
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    DragoRegistry.sol successfully deployed at 0xf7cbb0849d4a8ec5ab4650030fa776c00eb52da7
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xb1424d885b96253a05b2bf22522e54515ac5f5ca1f4bc2de1aca7d6dc97f5174
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    VaultEventful.sol successfully deployed at 0x6dddcaede2071883c85c6e5781524985608d2460
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x02e0764801cffcee36edd4f22ad8dc0ffafbd6e989a029a862786b139c50dc0b
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    VaultFactory.sol successfully deployed at 0x7ce6e371085cb611fb46d5065397223ef2f952ff
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x31eaa7960c20dfabc1fb3b8d80b3890a12f79935bd8c690f5344051d820cdac0
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    DragoEventful.sol successfully deployed at 0xbee872b112cad5a1bf8d2d3756360665da818cfb
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x86ef70cb7abb8fc603bc23ed10272567a3fa07c6548e8b574813aef196318139
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    DragoFactory.sol successfully deployed at 0x6f355cfdeda5188fe5fff5e939a40af9fde3c845
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x90734c1505e343ae8979ab05c4ab5e6daec0d612aec7c0cdca01befd37fd44bf
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    RigoToken.sol successfully deployed at 0x1fb4c7f7197ef339ae4125aeec9406a6788bb065
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xbe6364f5fb4d1adc332cf4fdf826f36328b3e43a911e057e56cdf51988252771
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    ProofOfPerformance.sol successfully deployed at 0xc5abe31f6637cc62f37865f23764f32176b7c540
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xfb5ab5b5b88a4eca3370d5c1ddde4f25f1e42ee4a6c969960dda35934b5165d2
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    Inflation.sol successfully deployed at 0xd5d9e7d7bc8c690855d94e11f85e641108f61a50
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x20280d35fe11a1e0d2eff98fc89954a9e7e8355f8325d6ca619332bdc8c311d0
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    ExchangesAuthority.sol successfully deployed at 0x14fe122d979c7b34b6b4f0cec7b24b738c61692f
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x20f88201af547e5d3fd1751e607db7b39f40305b05e0a9abf5771b181147401d
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    ExchangeEfx.sol successfully deployed at 0xb4a3c3fed3da52f06e491703aee9c7b4e89a1f0a
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x205af2170ad56d4636aedb2ec11ca8eae66f5e478f34da20cc9207e87f154a32
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    WrapperLockEth.sol successfully deployed at 0xbc275c483ecf00e6f18ca033f5123217562b1577
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x5e6bc07858d3764182d6ad4bb27c20915bb30bfe7b4daceef061293ed104e9ce
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    WrapperLock.sol successfully deployed at 0x3b32af945599707baf0ecb195c20b60f063f987a
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xbca9b2e1906dba35fc87d79f6ec5e0865a50b6a2cef784a465dc4ff5195686f4
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    TokenTransferProxy.sol successfully deployed at 0x27fb1d72e1278d8c00fd083327cf87e2659c9c83
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xc5550d524b09e7d6d81f04f0f0232f697844a4b0bf20b3e39b771b268ce84352
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    WETH9.sol successfully deployed at 0xff0016a0ddc8d093f0309e927734154cbb55bc22
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x5c204072684015315b36295cc4ccf88e266218685b8d65d8413aa10adb383d5c
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    AWeth.sol successfully deployed at 0xead3b3fe005d54b9e2fd9adcc18b0542be422d49
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x369e9768195625781a239a8f0445b00c22d03e0ba02ea1b94b80d096b9dab3c3
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    ExchangeV1Fork.sol successfully deployed at 0x2945f2211d1ea99d66799af35dd3512165d8da6f
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x10c4b27bf2720f3ce83e1a3a9580f07c06ba1e2663e1a6e180b9d085585ec353
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    NavVerifier.sol successfully deployed at 0xb611eb75e36221b78f5b374ee9b2c9de2b9cc23a
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xf59c44822ce8dc27212b30b64751b0383239d7722c95f27392457b19aece1535
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    SigVerifier.sol successfully deployed at 0x25d79d28890d5ae89664b888f563703057b50dee
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+Watch Usage: Press w to show more.  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x5734ef62336e88ec5e10ad8add265ae39d7f505f98113e44b1c6b0bb59eae1c0
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    AEthfinex.sol successfully deployed at 0x7dc82a22c01fc5173d5ec4e580050f3e9e5ffad7
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xaaf1e24381f89dbe97e72b80eda653beb55b8d15faa462953c6e52e7aa75ffa7
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    Faucet.sol successfully deployed at 0x033f3f3dc7fd68581170a635396a5f4f9cc73b22
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xdd466362ef6d0d8ed1a368931565249236b3d54a5ef5414ac3cba974b4515eaf
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    Authority.sol successfully deployed at 0x7e6957630956f2b5ecc3f16e65a28c26032b1a59
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x11c999fe497a15817babde2556f7c61c174c9aee980b04ffdde5230669e6d8de
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    DragoRegistry.sol successfully deployed at 0xf7cbb0849d4a8ec5ab4650030fa776c00eb52da7
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xb1424d885b96253a05b2bf22522e54515ac5f5ca1f4bc2de1aca7d6dc97f5174
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    VaultEventful.sol successfully deployed at 0x6dddcaede2071883c85c6e5781524985608d2460
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x02e0764801cffcee36edd4f22ad8dc0ffafbd6e989a029a862786b139c50dc0b
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    VaultFactory.sol successfully deployed at 0x7ce6e371085cb611fb46d5065397223ef2f952ff
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x31eaa7960c20dfabc1fb3b8d80b3890a12f79935bd8c690f5344051d820cdac0
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    DragoEventful.sol successfully deployed at 0xbee872b112cad5a1bf8d2d3756360665da818cfb
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x86ef70cb7abb8fc603bc23ed10272567a3fa07c6548e8b574813aef196318139
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    DragoFactory.sol successfully deployed at 0x6f355cfdeda5188fe5fff5e939a40af9fde3c845
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x90734c1505e343ae8979ab05c4ab5e6daec0d612aec7c0cdca01befd37fd44bf
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    RigoToken.sol successfully deployed at 0x1fb4c7f7197ef339ae4125aeec9406a6788bb065
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xbe6364f5fb4d1adc332cf4fdf826f36328b3e43a911e057e56cdf51988252771
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    ProofOfPerformance.sol successfully deployed at 0xc5abe31f6637cc62f37865f23764f32176b7c540
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xfb5ab5b5b88a4eca3370d5c1ddde4f25f1e42ee4a6c969960dda35934b5165d2
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    Inflation.sol successfully deployed at 0xd5d9e7d7bc8c690855d94e11f85e641108f61a50
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x20280d35fe11a1e0d2eff98fc89954a9e7e8355f8325d6ca619332bdc8c311d0
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    ExchangesAuthority.sol successfully deployed at 0x14fe122d979c7b34b6b4f0cec7b24b738c61692f
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x20f88201af547e5d3fd1751e607db7b39f40305b05e0a9abf5771b181147401d
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    ExchangeEfx.sol successfully deployed at 0xb4a3c3fed3da52f06e491703aee9c7b4e89a1f0a
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x205af2170ad56d4636aedb2ec11ca8eae66f5e478f34da20cc9207e87f154a32
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    WrapperLockEth.sol successfully deployed at 0xbc275c483ecf00e6f18ca033f5123217562b1577
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x5e6bc07858d3764182d6ad4bb27c20915bb30bfe7b4daceef061293ed104e9ce
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    WrapperLock.sol successfully deployed at 0x3b32af945599707baf0ecb195c20b60f063f987a
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xbca9b2e1906dba35fc87d79f6ec5e0865a50b6a2cef784a465dc4ff5195686f4
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    TokenTransferProxy.sol successfully deployed at 0x27fb1d72e1278d8c00fd083327cf87e2659c9c83
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xc5550d524b09e7d6d81f04f0f0232f697844a4b0bf20b3e39b771b268ce84352
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    WETH9.sol successfully deployed at 0xff0016a0ddc8d093f0309e927734154cbb55bc22
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x5c204072684015315b36295cc4ccf88e266218685b8d65d8413aa10adb383d5c
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    AWeth.sol successfully deployed at 0xead3b3fe005d54b9e2fd9adcc18b0542be422d49
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x369e9768195625781a239a8f0445b00c22d03e0ba02ea1b94b80d096b9dab3c3
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    ExchangeV1Fork.sol successfully deployed at 0x2945f2211d1ea99d66799af35dd3512165d8da6f
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x10c4b27bf2720f3ce83e1a3a9580f07c06ba1e2663e1a6e180b9d085585ec353
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    NavVerifier.sol successfully deployed at 0xb611eb75e36221b78f5b374ee9b2c9de2b9cc23a
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xf59c44822ce8dc27212b30b64751b0383239d7722c95f27392457b19aece1535
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    SigVerifier.sol successfully deployed at 0x25d79d28890d5ae89664b888f563703057b50dee
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0x5734ef62336e88ec5e10ad8add265ae39d7f505f98113e44b1c6b0bb59eae1c0
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    AEthfinex.sol successfully deployed at 0x7dc82a22c01fc5173d5ec4e580050f3e9e5ffad7
+
+  console.log src/test/deploy/deploy.js:22
+    /home/whitenoise/Development/webapp/node_modules/@rigoblock/contracts/artifacts
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+Watch Usage: Press w to show more.  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    transactionHash: 0xaaf1e24381f89dbe97e72b80eda653beb55b8d15faa462953c6e52e7aa75ffa7
+
+  console.log node_modules/@rigoblock/deployer/node_modules/@0xproject/utils/lib/log_utils.js:9
+    Faucet.sol successfully deployed at 0x033f3f3dc7fd68581170a635396a5f4f9cc73b22
+
+
+ RUNS  ...getDragoDetails.test.js
+[K[1A[K[1A
+ RUNS  ...getDragoDetails.test.js
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
