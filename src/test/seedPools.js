@@ -1,9 +1,10 @@
 import { GANACHE_NETWORK_ID, GAS_ESTIMATE } from './constants'
 import { poolsList } from './dragoList'
-import PoolApi from '../PoolsApi/src'
 import Web3 from 'web3'
 import dragoArtifact from '@rigoblock/contracts/artifacts/Drago.json'
 // import fetchContracts from '@rigoblock/contracts'
+import { toBaseUnitAmount } from '../_utils/format'
+import BigNumber from 'bignumber.js'
 
 export const seedPools = async baseContracts => {
   const web3 = new Web3(
@@ -14,15 +15,17 @@ export const seedPools = async baseContracts => {
     gas: GAS_ESTIMATE,
     gasPrice: 1
   }
-  // console.log(fetchContracts)
-  // const contractsMap = await fetchContracts(5777)
-  // console.log(contractsMap)
   let list
   const promiesArray = poolsList.dragos.map(async drago => {
     await baseContracts['DragoFactory'].createDrago(drago.name, drago.symbol)
-    const [id, address, symbol, dragoId, owner, group] = await baseContracts[
-      'DragoRegistry'
-    ].fromName(drago.name)
+    const [
+      id,
+      address,
+      symbol,
+      dragoId,
+      addressOwner,
+      addressGroup
+    ] = await baseContracts['DragoRegistry'].fromName(drago.name)
     const dragoInstance = new web3.eth.Contract(
       dragoArtifact.networks[GANACHE_NETWORK_ID].abi,
       address
@@ -36,34 +39,67 @@ export const seedPools = async baseContracts => {
     }
 
     // Get some WETH9
-    const WETHaddress = baseContracts['WETH9'].address
-    let toBeUnWrapped =
-      '0x' + toBaseUnitAmount(new BigNumber(amount), 18).toString(16)
-    await poolApi.contract.drago.init(address)
-    await poolApi.contract.drago.wrapETHZeroEx(
-      WETHaddress,
-      accounts[0],
-      toBaseUnitAmount(new BigNumber('1'), 18).toString(16)
+    const tokenAddress = null
+    const tokenWrapper = await baseContracts['WETH9'].address
+    const wrapAmount = '1.1000'
+    let toBeWrapped =
+      '0x' + toBaseUnitAmount(new BigNumber(wrapAmount), 18).toString(16)
+
+    await baseContracts['ExchangesAuthority'].whitelistWrapper(
+      tokenWrapper,
+      true
     )
-    // Get some WETH9
-    // const dragoWETHBalance = await baseContracts['WETH9'].transfer(
-    //   drago.address,
-    //   Web3.utils.toWei('1', 'ether')
-    // )
+    await baseContracts['ExchangesAuthority'].whitelistTokenOnWrapper(
+      tokenAddress,
+      tokenWrapper,
+      true
+    )
 
-    console.log(baseContracts['WETH9'])
+    const methodInterface = {
+      name: 'wrapEth',
+      type: 'function',
+      inputs: [
+        {
+          type: 'address',
+          name: 'wrapper'
+        },
+        {
+          type: 'uint256',
+          name: 'amount'
+        }
+      ]
+    }
+    const assembledTransaction = await web3.eth.abi.encodeFunctionCall(
+      methodInterface,
+      [tokenWrapper, toBeWrapped]
+    )
+    const methodSignature = await web3.eth.abi.encodeFunctionSignature(
+      methodInterface
+    )
+    const weth9AdapterAddress = await baseContracts['AWeth'].address
+    await baseContracts['ExchangesAuthority'].whitelistMethod(
+      methodSignature,
+      weth9AdapterAddress,
+      true
+    )
+    await dragoInstance.methods
+      .operateOnExchange(tokenWrapper, [assembledTransaction])
+      .send({ ...optionsDefault, from: accounts[0] })
 
-    let supply = await dragoInstance.methods.totalSupply().call()
+    let totalSupply = await dragoInstance.methods.totalSupply().call()
+    let dragoETHBalance = await web3.eth.getBalance(address)
     return {
-      id: id.toFixed(),
       address: address.toLowerCase(),
       name: drago.name,
       symbol,
       dragoId: dragoId.toFixed(),
-      supply: supply,
-      owner,
-      group
-      // dragoWETHBalance
+      totalSupply,
+      sellPrice: '1.0000',
+      buyPrice: '1.0000',
+      addressOwner,
+      addressGroup,
+      dragoETHBalance,
+      dragoWETHBalance: toBaseUnitAmount(new BigNumber(wrapAmount), 18)
     }
   })
   list = await Promise.all(promiesArray)

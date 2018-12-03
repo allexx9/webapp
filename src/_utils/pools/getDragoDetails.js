@@ -33,7 +33,6 @@ export const getDragoDetails = async (
   const poolApi = new PoolApi(web3)
 
   const dragoAddress = dragoDetails[0][0]
-  console.log(dragoDetails)
 
   await Promise.all([
     poolApi.contract.dragoeventful.init(),
@@ -146,22 +145,19 @@ export const getDragoDetails = async (
   //
   // Getting balance for each user account
   //
-  console.log(balanceDRG)
 
-  // return
-  // if (accounts.length > 1) {
-  //   balanceDRG = Promise.all(
-  //     accounts.map(async account => {
-  //       console.log(account)
-  //       const balance = await poolApi.contract.drago
-  //         .balanceOf(account.address)
-  //         .catch(e => new Error(e))
-  //       balanceDRG = balanceDRG.plus(balance)
-  //     })
-  //   )
-  // } else {
-  //   balanceDRG = poolApi.contract.drago.balanceOf(accounts[0].address)
-  // }
+  if (accounts.length > 1) {
+    await Promise.all(
+      accounts.map(async account => {
+        const balance = await poolApi.contract.drago
+          .balanceOf(account.address)
+          .catch(e => new Error(e))
+        balanceDRG = balanceDRG.plus(balance)
+      })
+    )
+  } else {
+    balanceDRG = poolApi.contract.drago.balanceOf(accounts[0].address)
+  }
 
   try {
     dragoData = await dragoData
@@ -184,19 +180,19 @@ export const getDragoDetails = async (
     throw new Error(err)
   }
 
-  // try {
-  //   dragoWETH = await dragoWETH
-  // } catch (err) {
-  //   console.warn(err)
-  //   throw new Error(err)
-  // }
+  try {
+    dragoWETH = await dragoWETH
+  } catch (err) {
+    console.warn(err)
+    throw new Error(err)
+  }
 
-  // try {
-  //   balanceDRG = await balanceDRG
-  // } catch (err) {
-  //   console.warn(err)
-  //   throw new Error(err)
-  // }
+  try {
+    balanceDRG = await balanceDRG
+  } catch (err) {
+    console.warn(err)
+    throw new Error(err)
+  }
 
   let sellPrice = formatEth(dragoData[2], 4)
   let buyPrice = formatEth(dragoData[3], 4)
@@ -213,9 +209,9 @@ export const getDragoDetails = async (
     buyPrice,
     // created: dragoCreatedDate,
     totalSupply: formatCoins(new BigNumber(dragoTotalSupply), 4),
-    dragoETHBalance: formatEth(dragoETH, 4)
-    // dragoWETHBalance: formatEth(dragoWETH, 4)
-    // balanceDRG: formatCoins(balanceDRG, 4)
+    dragoETHBalance: formatEth(dragoETH, 4),
+    dragoWETHBalance: formatEth(dragoWETH, 4),
+    balanceDRG: formatCoins(balanceDRG, 4)
   }
 
   return details

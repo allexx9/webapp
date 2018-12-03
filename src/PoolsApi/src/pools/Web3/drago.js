@@ -61,8 +61,6 @@ class DragoWeb3 {
       typeof global.baseContracts !== 'undefined'
         ? global.baseContracts['WETH9'].abi
         : abis.weth
-    console.log(global.baseContracts['WETH9'].address)
-    console.log(networkId)
     const wethInstance = new api.eth.Contract(abi, address)
     return wethInstance.methods.balanceOf(instance._address).call({})
   }
@@ -684,7 +682,6 @@ class DragoWeb3 {
       wrapperAddress,
       amount
     ])
-    console.log(encodedABI)
     return instance.methods
       .operateOnExchange(wrapperAddress, [encodedABI])
       .estimateGas(options)

@@ -1,41 +1,51 @@
+import { formatCoins, formatEth } from '../format'
 import { getDragoDetails } from './getDragoDetails'
-import Web3 from 'web3'
+import { poolsList } from '../../test/dragoList'
+import BigNumber from 'bignumber.js'
 
 const contractName = 'Drago'
 const networkInfo = { id: 5777 }
 
-beforeEach = async () => {
-  // const web3 = new Web3(
-  //   new Web3.providers.HttpProvider('http://localhost:8545')
-  // )
-  // accounts = await web3.eth.getAccounts()
-}
+beforeEach = async () => {}
 
 describeContract(contractName, () => {
   describe('getDragoDetails test', () => {
     it('Correctly getDragoDetails test', async () => {
       const options = { dateOnly: false, wallet: '' }
-      console.log(dragoList[0].address)
-      console.log(accounts)
+      const expectedDragoDetails = {
+        ...dragoList[0]
+      }
+      expectedDragoDetails.totalSupply = formatCoins(
+        new BigNumber(expectedDragoDetails.totalSupply),
+        4
+      )
+      expectedDragoDetails.dragoETHBalance = formatEth(
+        expectedDragoDetails.dragoETHBalance,
+        4
+      )
+      expectedDragoDetails.dragoWETHBalance = formatEth(
+        expectedDragoDetails.dragoWETHBalance,
+        4
+      )
+      expectedDragoDetails.balanceDRG = new BigNumber(
+        poolsList.dragos[0].supply * 5
+      ).toFixed(4)
       let drago = []
       drago.push([
         dragoList[0].address,
         dragoList[0].name,
         dragoList[0].symbol,
         dragoList[0].dragoId,
-        dragoList[0].owner,
-        dragoList[0].group
+        dragoList[0].addressOwner,
+        dragoList[0].addressGroup
       ])
-      console.log(drago[0][0])
-      // const dragoDetails = await getDragoDetails(
-      //   drago,
-      //   accounts,
-      //   networkInfo,
-      //   options
-      // )
-      // console.log(dragoDetails)
-      // console.log(dragoDetails)
-      // expect(ownerAddress).toBe(true)
+      const dragoDetails = await getDragoDetails(
+        drago,
+        accounts,
+        networkInfo,
+        options
+      )
+      expect(expectedDragoDetails).toEqual(dragoDetails)
     })
   })
 })
