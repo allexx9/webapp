@@ -1,6 +1,12 @@
 require('jest-extended')
 
-import { GANACHE_NETWORK_ID, GANACHE_PORT, NETWORKS } from './test/constants'
+import {
+  GANACHE_NETWORK_ID,
+  GANACHE_PORT,
+  GAS_ESTIMATE,
+  NETWORKS
+} from './test/constants'
+import { seedPools } from './test/seedPools'
 import bootstrap from './test/deploy/bootstrap'
 import c from 'chalk'
 import ganache from 'ganache-cli'
@@ -29,11 +35,16 @@ const setupGanache = async () => {
     err ? logger.error(err) : logger.info(c.bold.green('Ganache starting!'))
   )
   const rawAccounts = await web3.eth.getAccounts()
-  global.accounts = rawAccounts.map(acc => acc.toLowerCase())
+  global.accounts = rawAccounts.map(acc => {
+    return { address: acc.toLowerCase() }
+  })
+  console.log(global.accounts)
   const prevLog = console.log
   console.log = () => {}
-  global.baseContracts = await bootstrap(accounts[0], NETWORKS.ganache)
+  global.baseContracts = await bootstrap(accounts[0].address, NETWORKS.ganache)
   console.log = prevLog
+  global.dragoList = await seedPools(global.baseContracts, web3)
+  // console.log(dragoList)
 }
 
 global.describeContract = (name, f) => {

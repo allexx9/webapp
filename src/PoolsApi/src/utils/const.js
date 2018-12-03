@@ -30,6 +30,8 @@ export const RIGOTOKEN_ADDRESSES = {
   foundation: '0x4fbb350052bca5417566f188eb2ebce5b19bc964'
 }
 
+// console.log(global.baseContracts['WETH9'].address)
+
 export const WETH_ADDRESSES = {
   42: '0xd0A1E359811322d97991E03f863a0C30C2cF029C',
   3: '0xA8E9Fa8f91e5Ae138C74648c9C304F1C75003A8D',

@@ -53,10 +53,17 @@ class DragoWeb3 {
     const api = this._api
     const instance = this._instance
     const networkId = await api.eth.net.getId()
-    const wethInstance = new api.eth.Contract(
-      abis.weth,
-      WETH_ADDRESSES[networkId]
-    )
+    const address =
+      typeof global.baseContracts !== 'undefined'
+        ? global.baseContracts['WETH9'].address
+        : WETH_ADDRESSES[networkId]
+    const abi =
+      typeof global.baseContracts !== 'undefined'
+        ? global.baseContracts['WETH9'].abi
+        : abis.weth
+    console.log(global.baseContracts['WETH9'].address)
+    console.log(networkId)
+    const wethInstance = new api.eth.Contract(abi, address)
     return wethInstance.methods.balanceOf(instance._address).call({})
   }
 

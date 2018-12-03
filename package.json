@@ -7,6 +7,7 @@
     "0x.js": "^0.38.6",
     "@manaflair/redux-batch": "^0.1.0",
     "@rigoblock/contracts": "^0.3.8",
+    "@rigoblock/exchange-connector": "^0.0.10",
     "@sentry/browser": "^4.3.4",
     "@types/web3": "^1.0.12",
     "babel-plugin-transform-remove-console": "^6.9.4",
@@ -120,6 +121,7 @@
     "mock-socket": "^8.0.4",
     "pino": "^5.9.0",
     "prettier": "^1.14.0",
+    "reactotron-core-client": "^2.1.4",
     "reactotron-react-js": "^2.1.1",
     "reactotron-redux": "^2.1.0",
     "ws": "^6.1.0"
