@@ -1,12 +1,12 @@
 import { dateFromTimeStampHuman } from '../misc/dateFromTimeStampHuman'
 // import { ethers } from 'ethers'
-import { HTTP_EVENT_FETCHING, METAMASK } from '../const'
+
 import { formatCoins, formatEth } from './../format'
 import { getBlockChunks } from '../blockChain/getBlockChunks'
+import { getFromBlock, getWeb3 } from '../misc'
 import BigNumber from 'bignumber.js'
 import PoolApi from '../../PoolsApi/src'
-import Web3 from 'web3'
-import Web3Wrapper from '../web3Wrapper/src'
+
 
 export const getDragoDetails = async (
   dragoDetails,
@@ -18,39 +18,12 @@ export const getDragoDetails = async (
   // Initializing Drago API
   //
 
-  let web3
-  switch (options.wallet) {
-    case METAMASK: {
-      console.log('metamask detected')
-      web3 = window.web3
-      break
-    }
-    default: {
-      if (HTTP_EVENT_FETCHING) {
-        web3 = new Web3(networkInfo.transportHttp)
-      } else {
-        web3 = Web3Wrapper.getInstance(networkInfo.id)
-      }
-    }
-  }
+  let web3 = getWeb3(options, networkInfo)
+  let fromBlock = getFromBlock(networkInfo)
 
   const poolApi = new PoolApi(web3)
 
   const dragoAddress = dragoDetails[0][0]
-  let fromBlock
-  switch (networkInfo.id) {
-    case 1:
-      fromBlock = '6000000'
-      break
-    case 42:
-      fromBlock = '7000000'
-      break
-    case 3:
-      fromBlock = '3000000'
-      break
-    default:
-      fromBlock = '3000000'
-  }
 
   await Promise.all([
     poolApi.contract.dragoeventful.init(),
@@ -63,7 +36,6 @@ export const getDragoDetails = async (
 
   const getDragoCreationDate = async address => {
     const hexPoolAddress = '0x' + address.substr(2).padStart(64, '0')
-
     let topics = [
       [poolApi.contract.dragoeventful.hexSignature.DragoCreated],
       [hexPoolAddress],
@@ -76,30 +48,14 @@ export const getDragoDetails = async (
       let chunck = 250000
       lastBlock = new BigNumber(lastBlock).toNumber()
       const chunks = await getBlockChunks(fromBlock, lastBlock, chunck, web3)
-      // const chunks = blockChunks(fromBlock, lastBlock, chunck)
+
       arrayPromises = chunks.map(async chunk => {
-        // Pushing chunk logs into array
+
         let options = {
           topics: topics,
           fromBlock: chunk.fromBlock,
           toBlock: chunk.toBlock
         }
-        // let contractHttp = new web3Http.eth.Contract(
-        //   poolApi.contract.dragoeventful._abi,
-        //   poolApi.contract.dragoeventful._contractAddress
-        // )
-
-        // return contractHttp
-        //   .getPastEvents('allEvents', {
-        //     fromBlock: options.fromBlock,
-        //     toBlock: options.toBlock,
-        //     topics: options.topics
-        //   })
-        //   .then(logs => {
-        //     console.log(logs)
-        //     return logs
-        //   })
-
         return poolApi.contract.dragoeventful
           .getAllLogs(options)
           .then(logs => {
@@ -163,8 +119,10 @@ export const getDragoDetails = async (
   //
   // Getting balance for each user account
   //
+
   if (accounts.length > 1) {
-    balanceDRG = Promise.all(
+    await Promise.all(
+
       accounts.map(async account => {
         const balance = await poolApi.contract.drago
           .balanceOf(account.address)

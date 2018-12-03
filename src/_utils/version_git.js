@@ -1,1 +1,1 @@
-export const GIT_HASH = 'v0.7.1-beta-master-2018.12.01+commit-9e932b7-640'
+export const GIT_HASH = 'v0.7.1-beta1-feature/ganache-testing-2018.12.03+commit-0452bda-652'

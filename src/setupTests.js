@@ -1,16 +1,23 @@
 require('jest-extended')
-
-import { GANACHE_NETWORK_ID, GANACHE_PORT, NETWORKS } from '../constants'
-import bootstrap from '@rigoblock/contracts/deploy/bootstrap'
+import { GANACHE_NETWORK_ID, GANACHE_PORT, NETWORKS } from './test/constants'
+import { seedPools } from './test/seedPools'
+import bootstrap from './test/deploy/bootstrap'
 import c from 'chalk'
 import ganache from 'ganache-cli'
-import logger from '@rigoblock/contracts//deploy/logger'
-import pkg from '@rigoblock/contracts//package.json'
-import web3 from '@rigoblock/contracts//web3'
+import logger from './test/deploy/logger'
+import pkg from '@rigoblock/contracts/package.json'
+import web3 from './test/web3'
 
 let server
-process.on('warning', e => console.error(e.stack))
-process.on('error', e => console.error(e.stack))
+process.on('warning', e => {
+  console.error(e.stack)
+  // process.exit(1)
+})
+process.on('error', e => {
+  console.error(e.stack)
+  // process.exit(1)
+})
+
 
 const setupGanache = async () => {
   const ganacheOptions = {
@@ -23,11 +30,16 @@ const setupGanache = async () => {
     err ? logger.error(err) : logger.info(c.bold.green('Ganache starting!'))
   )
   const rawAccounts = await web3.eth.getAccounts()
-  global.accounts = rawAccounts.map(acc => acc.toLowerCase())
+
+  global.accounts = rawAccounts.map(acc => {
+    return { address: acc.toLowerCase() }
+  })
   const prevLog = console.log
   console.log = () => {}
-  global.baseContracts = await bootstrap(accounts[0], NETWORKS.ganache)
+  global.baseContracts = await bootstrap(accounts[0].address, NETWORKS.ganache)
   console.log = prevLog
+  global.dragoList = await seedPools(global.baseContracts, web3)
+
 }
 
 global.describeContract = (name, f) => {
