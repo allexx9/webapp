@@ -41,6 +41,25 @@ class DragoEventfulWeb3 {
   }
 
   init = () => {
+    if (global.baseContracts !== 'undefined') {
+      const instance = new this._api.eth.Contract(
+        global.baseContracts['DragoEventful'].abi,
+        global.baseContracts['DragoEventful'].address
+      )
+      this._contract = instance
+      this._contractAddress = global.baseContracts['DragoEventful'].address
+      let hexSignature = []
+      this._abi.map(function(element) {
+        if (element.type === 'event') {
+          return (hexSignature[element.name] = element.signature)
+        }
+        return true
+      })
+
+      this._hexSignature = hexSignature
+      return this._contract
+    }
+
     const contractAbi = this._abi
     const contractName = this._contractName
     return typeof this._contract !== 'undefined'
