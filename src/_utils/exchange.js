@@ -2,7 +2,7 @@
 // This file is part of RigoBlock.
 
 import * as abis from '../PoolsApi/src/contracts/abi'
-import { BigNumber } from '@0xproject/utils'
+import { BigNumber } from 'bignumber.js'
 import { INFURA, KOVAN, PROD, WS } from './const'
 import { ZeroEx } from '0x.js'
 import Web3 from 'web3'
