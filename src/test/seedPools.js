@@ -35,7 +35,10 @@ export const seedPools = async baseContracts => {
       })
     }
 
+    // Get some WETH9
     const WETHaddress = baseContracts['WETH9'].address
+    let toBeUnWrapped =
+      '0x' + toBaseUnitAmount(new BigNumber(amount), 18).toString(16)
     await poolApi.contract.drago.init(address)
     await poolApi.contract.drago.wrapETHZeroEx(
       WETHaddress,

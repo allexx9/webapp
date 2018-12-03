@@ -1,30 +1,32 @@
-process.env.NODE_ENV = 'development';
+process.env.NODE_ENV = 'development'
 
-const fs = require('fs-extra');
-const paths = require('custom-react-scripts/config/paths');
-const webpack = require('webpack');
-const config = require('custom-react-scripts/config/webpack.config.dev.js');
+const fs = require('fs-extra')
+const paths = require('custom-react-scripts/config/paths')
+const webpack = require('webpack')
+const config = require('custom-react-scripts/config/webpack.config.dev.js')
 
 // removes react-dev-utils/webpackHotDevClient.js at first in the array
-config.entry.shift();
+config.entry.shift()
 
-config.output.publicPath = process.env.PUBLIC_URL;
+config.output.publicPath = process.env.PUBLIC_URL
 
 webpack(config).watch({}, (err, stats) => {
   if (err) {
-    console.error(err);
+    console.error(err)
   } else {
-    copyPublicFolder();
+    copyPublicFolder()
   }
-  console.error(stats.toString({
-    chunks: false,
-    colors: true
-  }));
-});
+  console.error(
+    stats.toString({
+      chunks: false,
+      colors: true
+    })
+  )
+})
 
 function copyPublicFolder() {
   fs.copySync(paths.appPublic, paths.appBuild, {
     dereference: true,
     filter: file => file !== paths.appHtml
-  });
+  })
 }
