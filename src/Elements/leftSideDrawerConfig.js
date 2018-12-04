@@ -14,11 +14,14 @@ import NavigationApp from 'material-ui/svg-icons/navigation/apps'
 
 let drawerStyle = {
   activeLink: {
-    backgroundColor: '#E0E0E0',
-    color: '#757575'
+    backgroundColor: 'rgba(0, 0, 0, 0.05)',
+    color: 'black',
+    borderLeftColor: '#054087',
+    borderLeftStyle: 'solid',
+    borderLeftWidth: '4px',
+    borderRadius: '2px'
   }
 }
-
 class LeftSideDrawerConfig extends Component {
   static propTypes = {
     location: PropTypes.object.isRequired

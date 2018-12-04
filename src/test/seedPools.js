@@ -29,31 +29,31 @@ const seedVaults = async baseContracts => {
   const testVault2 = 'Vault 2'
   const testVaultSym2 = 'VA2'
 
-  try {
-    await baseContracts['VaultFactory'].createVault(testVault, testVaultSym)
-    let vaultLog = await baseContracts['DragoRegistry'].fromName(testVault)
-    console.log(vaultLog)
-  } catch (error) {
-    console.log(error)
-  }
-  try {
-    await baseContracts['DragoFactory'].createDrago(testDrago, testDragoSym)
-    let dragoLog = await baseContracts['DragoRegistry'].fromName(testDrago)
-    console.log(dragoLog)
-  } catch (error) {
-    console.log(error)
-  }
-
-  try {
-    await baseContracts['VaultFactory'].createVault(testVault2, testVaultSym2)
-    let vaultLog = await baseContracts['DragoRegistry'].fromName(testVault2)
-    console.log(vaultLog)
-  } catch (error) {
-    console.log(error)
-  }
-
   const promisesArray = poolsList.vaults.map(async vault => {
     let hash
+
+    try {
+      await baseContracts['VaultFactory'].createVault(testVault, testVaultSym)
+      let vaultLog = await baseContracts['DragoRegistry'].fromName(testVault)
+      console.log(vaultLog)
+    } catch (error) {
+      console.log(error)
+    }
+    try {
+      await baseContracts['DragoFactory'].createDrago(testDrago, testDragoSym)
+      let dragoLog = await baseContracts['DragoRegistry'].fromName(testDrago)
+      console.log(dragoLog)
+    } catch (error) {
+      console.log(error)
+    }
+
+    try {
+      await baseContracts['VaultFactory'].createVault(testVault2, testVaultSym2)
+      let vaultLog = await baseContracts['DragoRegistry'].fromName(testVault2)
+      console.log(vaultLog)
+    } catch (error) {
+      console.log(error)
+    }
 
     // try {
     //   await baseContracts['VaultFactory'].createVault(testVault2, testVaultSym2)

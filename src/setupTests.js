@@ -39,7 +39,7 @@ const setupGanache = async () => {
   console.log = () => {}
   global.baseContracts = await bootstrap(accounts[0].address, NETWORKS.ganache)
   console.log = prevLog
-  global.dragoList = await seedPools('Drago', global.baseContracts)
+  // global.dragoList = await seedPools('Drago', global.baseContracts)
   global.vaultList = await seedPools('Vault', global.baseContracts)
 }
 
