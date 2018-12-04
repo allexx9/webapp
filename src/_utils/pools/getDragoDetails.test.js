@@ -1,3 +1,4 @@
+import { dateFromTimeStampHuman } from '../misc/dateFromTimeStampHuman'
 import { formatCoins, formatEth } from '../format'
 import { getDragoDetails } from './getDragoDetails'
 import { poolsList } from '../../test/dragoList'
@@ -51,7 +52,7 @@ describeContract(contractName, () => {
       const options = { dateOnly: true, wallet: '' }
       const expectedDate = {
         address: dragoList[0].address,
-        created: '01 January 1970'
+        created: dateFromTimeStampHuman(Date.now() / 1000)
       }
       let drago = []
       drago.push([

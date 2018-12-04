@@ -49,13 +49,12 @@ class DragoEventfulWeb3 {
       this._contract = instance
       this._contractAddress = global.baseContracts['DragoEventful'].address
       let hexSignature = []
-      this._abi.map(function(element) {
+      global.baseContracts['DragoEventful'].abi.map(function(element) {
         if (element.type === 'event') {
           return (hexSignature[element.name] = element.signature)
         }
         return true
       })
-
       this._hexSignature = hexSignature
       return this._contract
     }

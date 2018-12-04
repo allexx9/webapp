@@ -1,12 +1,9 @@
 import { dateFromTimeStampHuman } from '../misc/dateFromTimeStampHuman'
-// import { ethers } from 'ethers'
-
 import { formatCoins, formatEth } from './../format'
 import { getBlockChunks } from '../blockChain/getBlockChunks'
 import { getFromBlock, getWeb3 } from '../misc'
 import BigNumber from 'bignumber.js'
 import PoolApi from '../../PoolsApi/src'
-
 
 export const getDragoDetails = async (
   dragoDetails,
@@ -50,7 +47,6 @@ export const getDragoDetails = async (
       const chunks = await getBlockChunks(fromBlock, lastBlock, chunck, web3)
 
       arrayPromises = chunks.map(async chunk => {
-
         let options = {
           topics: topics,
           fromBlock: chunk.fromBlock,
@@ -122,7 +118,6 @@ export const getDragoDetails = async (
 
   if (accounts.length > 1) {
     await Promise.all(
-
       accounts.map(async account => {
         const balance = await poolApi.contract.drago
           .balanceOf(account.address)

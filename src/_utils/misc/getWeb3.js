@@ -9,8 +9,11 @@ export const getWeb3 = (options, networkInfo) => {
   let web3
   switch (options.wallet) {
     case METAMASK: {
-      console.log('metamask detected')
-      web3 = window.web3
+      if (typeof window !== 'undefined') {
+        web3 = window.web3
+      } else {
+        web3 = 'Test env'
+      }
       break
     }
     default: {

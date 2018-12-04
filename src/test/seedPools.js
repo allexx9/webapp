@@ -30,6 +30,7 @@ export const seedPools = async baseContracts => {
       dragoArtifact.networks[GANACHE_NETWORK_ID].abi,
       address
     )
+
     for (let i = 0; i < 5; i++) {
       await dragoInstance.methods.buyDrago().send({
         ...optionsDefault,
