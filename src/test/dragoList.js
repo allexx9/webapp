@@ -13,10 +13,10 @@ const vaultList = () => {
   let list = []
   let i = 1
   list.push({ symbol: 'VA1', name: 'Vault 1', supply: i++ })
-  // list.push({ symbol: 'VA2', name: 'Vault 2', supply: i++ })
-  // list.push({ symbol: 'VA3', name: 'Vault 3', supply: i++ })
-  // list.push({ symbol: 'VA4', name: 'Vault 4', supply: i++ })
-  // list.push({ symbol: 'VA5', name: 'Vault 5', supply: i++ })
+  list.push({ symbol: 'VA2', name: 'Vault 2', supply: i++ })
+  list.push({ symbol: 'VA3', name: 'Vault 3', supply: i++ })
+  list.push({ symbol: 'VA4', name: 'Vault 4', supply: i++ })
+  list.push({ symbol: 'VA5', name: 'Vault 5', supply: i++ })
   return list
 }
 

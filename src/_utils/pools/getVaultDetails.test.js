@@ -1,75 +1,71 @@
 import { dateFromTimeStampHuman } from '../misc/dateFromTimeStampHuman'
 import { formatCoins, formatEth } from '../format'
-import { getDragoDetails } from './getDragoDetails'
+import { getVaultDetails } from './getVaultDetails'
 import { poolsList } from '../../test/dragoList'
 import BigNumber from 'bignumber.js'
 
-const contractName = 'Drago'
+const contractName = ''
 const networkInfo = { id: 5777 }
 
 beforeEach = async () => {}
 
 describeContract(contractName, () => {
-  describe('Get Drago details', () => {
+  describe('Get Vault details', () => {
     it('1 -> get full details success', async () => {
       const options = { dateOnly: false, wallet: '' }
-      const expectedDragoDetails = {
-        ...dragoList[0]
+      const expectedVaultDetails = {
+        ...vaultList[0]
       }
-      expectedDragoDetails.totalSupply = formatCoins(
-        new BigNumber(expectedDragoDetails.totalSupply),
+      expectedVaultDetails.totalSupply = formatCoins(
+        new BigNumber(expectedVaultDetails.totalSupply),
         4
       )
-      expectedDragoDetails.dragoETHBalance = formatEth(
-        expectedDragoDetails.dragoETHBalance,
+      expectedVaultDetails.dragoETHBalance = formatEth(
+        expectedVaultDetails.dragoETHBalance,
         4
       )
-      expectedDragoDetails.dragoWETHBalance = formatEth(
-        expectedDragoDetails.dragoWETHBalance,
-        4
-      )
-      expectedDragoDetails.balanceDRG = new BigNumber(
+      expectedVaultDetails.balanceDRG = new BigNumber(
         poolsList.dragos[0].supply * 5
       ).toFixed(4)
-      let drago = []
-      drago.push([
-        dragoList[0].address,
-        dragoList[0].name,
-        dragoList[0].symbol,
-        dragoList[0].dragoId,
-        dragoList[0].addressOwner,
-        dragoList[0].addressGroup
+      let vault = []
+      vault.push([
+        vaultList[0].address,
+        vaultList[0].name,
+        vaultList[0].symbol,
+        vaultList[0].vaultId,
+        vaultList[0].addressOwner,
+        vaultList[0].addressGroup
       ])
-      const dragoDetails = await getDragoDetails(
-        drago,
+      const vaultDetails = await getVaultDetails(
+        vault,
         accounts,
         networkInfo,
         options
       )
-      expect(expectedDragoDetails).toEqual(dragoDetails)
+      expect(expectedVaultDetails).toEqual(vaultDetails)
     })
     it('2 -> get only date success', async () => {
       const options = { dateOnly: true, wallet: '' }
       const expectedDate = {
-        address: dragoList[0].address,
+        address: vaultList[0].address,
         created: dateFromTimeStampHuman(Date.now() / 1000)
       }
-      let drago = []
-      drago.push([
-        dragoList[0].address,
-        dragoList[0].name,
-        dragoList[0].symbol,
-        dragoList[0].dragoId,
-        dragoList[0].addressOwner,
-        dragoList[0].addressGroup
+      let vault = []
+      vault.push([
+        vaultList[0].address,
+        vaultList[0].name,
+        vaultList[0].symbol,
+        vaultList[0].dragoId,
+        vaultList[0].addressOwner,
+        vaultList[0].addressGroup
       ])
-      const dragoDetails = await getDragoDetails(
-        drago,
+      const vaultDetails = await getDragoDetails(
+        vault,
         accounts,
         networkInfo,
         options
       )
-      expect(expectedDate).toEqual(dragoDetails)
+      expect(expectedDate).toEqual(vaultDetails)
     })
   })
 })

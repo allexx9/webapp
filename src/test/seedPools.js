@@ -19,106 +19,67 @@ const seedVaults = async baseContracts => {
     gas: GAS_ESTIMATE,
     gasPrice: 1
   }
-  let list
-
-  const testVault = 'Vault 1'
-  const testVaultSym = 'VA1'
-  const testDrago = 'testDrago'
-  const testDragoSym = 'TSD'
-
-  const testVault2 = 'Vault 2'
-  const testVaultSym2 = 'VA2'
 
   const promisesArray = poolsList.vaults.map(async vault => {
-    let hash
+    await baseContracts['VaultFactory'].createVault(vault.name, vault.symbol)
+    const [
+      id,
+      address,
+      symbol,
+      vaultId,
+      addressOwner,
+      addressGroup
+    ] = await baseContracts['DragoRegistry'].fromName(vault.name)
+    const vaultInstance = new web3.eth.Contract(
+      vaultArtifact.networks[GANACHE_NETWORK_ID].abi,
+      address
+    )
 
-    try {
-      await baseContracts['VaultFactory'].createVault(testVault, testVaultSym)
-      let vaultLog = await baseContracts['DragoRegistry'].fromName(testVault)
-      console.log(vaultLog)
-    } catch (error) {
-      console.log(error)
-    }
-    try {
-      await baseContracts['DragoFactory'].createDrago(testDrago, testDragoSym)
-      let dragoLog = await baseContracts['DragoRegistry'].fromName(testDrago)
-      console.log(dragoLog)
-    } catch (error) {
-      console.log(error)
-    }
-
-    try {
-      await baseContracts['VaultFactory'].createVault(testVault2, testVaultSym2)
-      let vaultLog = await baseContracts['DragoRegistry'].fromName(testVault2)
-      console.log(vaultLog)
-    } catch (error) {
-      console.log(error)
+    for (let i = 0; i < 5; i++) {
+      await vaultInstance.methods.buyVault().send({
+        ...optionsDefault,
+        from: accounts[i],
+        value: Web3.utils.toWei(vault.supply.toString(), 'ether')
+      })
     }
 
-    // try {
-    //   await baseContracts['VaultFactory'].createVault(testVault2, testVaultSym2)
-    //   let vaultLog = await baseContracts['DragoRegistry'].fromName(testVault2)
-    //   console.log(vaultLog)
-    // } catch (error) {
-    //   console.log(error)
-    // }
-    // try {
-    //   hash = await baseContracts['VaultFactory'].createVault(
-    //     testVault,
-    //     testVaultSym
-    //   )
-    // } catch (error) {
-    //   console.log(error)
-    // }
-    // console.log(hash)
-    // console.log(vault)
-    // const [
-    //   id,
-    //   address,
-    //   symbol,
-    //   vaultId,
-    //   addressOwner,
-    //   addressGroup
-    // ] = await baseContracts['DragoRegistry'].fromName(vault.name)
-    // try {
-    //   let vault2 = await baseContracts['DragoRegistry'].fromName(vault.name)
-    // } catch (error) {
-    //   console.log(error)
-    // }
-
-    // console.log(vault2)
-    // console.log(id, address, symbol, vaultId, addressOwner, addressGroup)
-    // const vaultInstance = new web3.eth.Contract(
-    //   vaultArtifact.networks[GANACHE_NETWORK_ID].abi,
-    //   address
-    // )
-
-    // for (let i = 0; i < 5; i++) {
-    //   await vaultInstance.methods.buyVault().send({
-    //     ...optionsDefault,
-    //     from: accounts[i],
-    //     value: Web3.utils.toWei(vault.supply.toString(), 'ether')
-    //   })
-    // }
-
-    // let totalSupply = await vaultInstance.methods.totalSupply().call()
-    // let vaultETHBalance = await web3.eth.getBalance(address)
-    // return {
-    //   address: address.toLowerCase(),
-    //   name: vault.name,
-    //   symbol,
-    //   vaultId: vaultId.toFixed(),
-    //   totalSupply,
-    //   sellPrice: '1.0000',
-    //   buyPrice: '1.0000',
-    //   addressOwner,
-    //   addressGroup,
-    //   vaultETHBalance,
-    // }
+    let totalSupply = await vaultInstance.methods.totalSupply().call()
+    let vaultETHBalance = await web3.eth.getBalance(address)
+    return {
+      address: address.toLowerCase(),
+      name: vault.name,
+      symbol,
+      vaultId: vaultId.toFixed(),
+      totalSupply,
+      sellPrice: '1.0000',
+      buyPrice: '1.0000',
+      addressOwner,
+      addressGroup,
+      vaultETHBalance
+    }
   })
-  // list = await Promise.all(promisesArray)
-  // console.log(list)
+  let list = await Promise.all(promisesArray)
+  console.log(list)
   return list
+
+  // let list = []
+  // const seedPromises = promisesArray.reduce(
+  //   (p, fn) =>
+  //     p.then(result => {
+  //       list.push(result)
+  //       return fn
+  //     }),
+  //   Promise.resolve(promisesArray.shift())
+  // )
+  // return seedPromises
+  //   .then(result => {
+  //     list.push(result)
+  //     console.log(list)
+  //     return list
+  //   })
+  //   .catch(err => {
+  //     console.log(err)
+  //   })
 }
 
 const seedDragos = async baseContracts => {
@@ -130,7 +91,7 @@ const seedDragos = async baseContracts => {
     gas: GAS_ESTIMATE,
     gasPrice: 1
   }
-  let list
+
   const promisesArray = poolsList.dragos.map(async drago => {
     await baseContracts['DragoFactory'].createDrago(drago.name, drago.symbol)
     const [
@@ -218,7 +179,25 @@ const seedDragos = async baseContracts => {
       dragoWETHBalance: toBaseUnitAmount(new BigNumber(wrapAmount), 18)
     }
   })
-  list = await Promise.all(promisesArray)
+  let list = await Promise.all(promisesArray)
   console.log(list)
   return list
+  // let list = []
+  // const seedPromises = promisesArray.reduce(
+  //   (p, fn) =>
+  //     p.then(result => {
+  //       list.push(result)
+  //       return fn
+  //     }),
+  //   Promise.resolve(promisesArray.shift())
+  // )
+  // return seedPromises
+  //   .then(result => {
+  //     list.push(result)
+  //     console.log(list)
+  //     return list
+  //   })
+  //   .catch(err => {
+  //     console.log(err)
+  //   })
 }

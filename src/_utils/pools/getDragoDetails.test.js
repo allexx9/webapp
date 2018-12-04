@@ -7,7 +7,9 @@ import BigNumber from 'bignumber.js'
 const contractName = 'Drago'
 const networkInfo = { id: 5777 }
 
-beforeEach = async () => {}
+beforeEach = async () => {
+  jest.setTimeout(30000)
+}
 
 describeContract(contractName, () => {
   describe('Get Drago details', () => {
