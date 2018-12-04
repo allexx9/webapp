@@ -23,7 +23,8 @@ const setupGanache = async () => {
   const ganacheOptions = {
     mnemonic: pkg.config.mnemonic,
     port: GANACHE_PORT,
-    network_id: GANACHE_NETWORK_ID
+    network_id: GANACHE_NETWORK_ID,
+    default_balance_ether: 1000
   }
   server = ganache.server(ganacheOptions)
   server.listen(GANACHE_PORT, err =>
@@ -39,6 +40,7 @@ const setupGanache = async () => {
   global.baseContracts = await bootstrap(accounts[0].address, NETWORKS.ganache)
   console.log = prevLog
   global.dragoList = await seedPools('Drago', global.baseContracts)
+  global.vaultList = await seedPools('Vault', global.baseContracts)
 }
 
 global.describeContract = (name, f) => {
