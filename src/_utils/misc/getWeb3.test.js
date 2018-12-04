@@ -4,7 +4,7 @@ import { getWeb3 } from './getWeb3'
 beforeEach = async () => {}
 
 describe('getWeb3 util', () => {
-  it('1 -> return ganache instance', async () => {
+  it('1 -> return ganache instance success', async () => {
     const options = { wallet: '' }
     const networkInfo = { id: 5777 }
     const web3 = getWeb3(options, networkInfo)
@@ -19,13 +19,13 @@ describe('getWeb3 util', () => {
     } catch (error) {}
     expect(isGanache).toBe(true)
   })
-  it('2 -> return MM web3', async () => {
+  it('2 -> return MM web3 success', async () => {
     const options = { wallet: METAMASK }
     const networkInfo = { id: '' }
     const web3 = getWeb3(options, networkInfo)
     expect(web3).toBe('Test env')
   })
-  it('3 -> return default web3', async () => {
+  it('3 -> return default web3 success', async () => {
     const options = { wallet: '' }
     const networkInfo = { id: '' }
     const web3 = getWeb3(options, networkInfo)

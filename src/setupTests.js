@@ -1,4 +1,5 @@
 require('jest-extended')
+
 import { GANACHE_NETWORK_ID, GANACHE_PORT, NETWORKS } from './test/constants'
 import { seedPools } from './test/seedPools'
 import bootstrap from './test/deploy/bootstrap'
@@ -17,7 +18,6 @@ process.on('error', e => {
   console.error(e.stack)
   // process.exit(1)
 })
-
 
 const setupGanache = async () => {
   const ganacheOptions = {
@@ -38,8 +38,7 @@ const setupGanache = async () => {
   console.log = () => {}
   global.baseContracts = await bootstrap(accounts[0].address, NETWORKS.ganache)
   console.log = prevLog
-  global.dragoList = await seedPools(global.baseContracts, web3)
-
+  global.dragoList = await seedPools('Drago', global.baseContracts)
 }
 
 global.describeContract = (name, f) => {
