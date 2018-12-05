@@ -5,6 +5,8 @@
 
 # testing
 /coverage
+/src/test/ganache/
+
 
 # production
 /build
