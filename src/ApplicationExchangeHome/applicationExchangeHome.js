@@ -58,9 +58,6 @@ class ApplicationExchangeHome extends PureComponent {
     managerHasNoFunds: false
   }
 
-  scrollPosition = 0
-  activeElement = null
-
   updateUi = (ui, boxName) => {
     let newUi = Object.assign({}, ui)
     return {
@@ -188,76 +185,10 @@ class ApplicationExchangeHome extends PureComponent {
     this.props.dispatch(Actions.exchange.getAccountOrdersStop())
   }
 
-  UNSAFE_componentWillUpdate() {
-    // Storing the active document, so we can preserve focus in forms.
-    this.activeElement = document.activeElement
-  }
-
-  componentDidUpdate() {
-    const element = this.node
-    if (element !== null) {
-      window.scrollTo(0, this.scrollPosition)
-    }
-    // Setting focus on the element active before component re-render
-    if (this.activeElement.id !== '') {
-      const activeElement = document.getElementById(this.activeElement.id)
-      if (activeElement !== null) {
-        activeElement.focus()
-      }
-    }
-  }
+  componentDidUpdate() {}
 
   connectToExchange = async (tokensPair, relay) => {
-    // const { api } = this.context
-
-    // console.log(relay, tokensPair)
     this.props.dispatch(Actions.exchange.connectRelay(relay, tokensPair))
-
-    // this.props.dispatch({
-    //   type: TYPE_.CHART_MARKET_DATA_INIT,
-    //   payload: []
-    // })
-
-    // this.props.dispatch({
-    //   type: TYPE_.ORDERBOOK_INIT,
-    //   payload: {
-    //     asks: [],
-    //     bids: [],
-    //     spread: '0'
-    //   }
-    // })
-
-    // // Getting price ticker
-    // this.props.dispatch(
-    //   Actions.exchange.relayOpenWsTicker(
-    //     relay,
-    //     api._rb.network.id,
-    //     tokensPair.baseToken,
-    //     tokensPair.quoteToken
-    //   )
-    // )
-    // // Getting order book
-    // this.props.dispatch(
-    //   Actions.exchange.relayOpenWsBook(
-    //     relay,
-    //     api._rb.network.id,
-    //     tokensPair.baseToken,
-    //     tokensPair.quoteToken
-    //   )
-    // )
-    // // Getting chart data
-    // let tsYesterday = new Date(
-    //   (Math.floor(Date.now() / 1000) - 86400 * 7) * 1000
-    // ).toISOString()
-    // this.props.dispatch(
-    //   Actions.exchange.fetchCandleDataSingleStart(
-    //     relay,
-    //     api._rb.network.id,
-    //     tokensPair.baseToken,
-    //     tokensPair.quoteToken,
-    //     tsYesterday
-    //   )
-    // )
   }
 
   onToggleAggregateOrders = isInputChecked => {
