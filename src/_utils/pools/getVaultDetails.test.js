@@ -12,29 +12,30 @@ beforeEach = async () => {}
 describeContract(contractName, () => {
   describe('Get Vault details', () => {
     it('1 -> get full details success', async () => {
+      let i = 0
       const options = { dateOnly: false, wallet: '' }
       const expectedVaultDetails = {
-        ...vaultList[0]
+        ...vaultList[i]
       }
       expectedVaultDetails.totalSupply = formatCoins(
         new BigNumber(expectedVaultDetails.totalSupply),
         4
       )
-      expectedVaultDetails.dragoETHBalance = formatEth(
-        expectedVaultDetails.dragoETHBalance,
+      expectedVaultDetails.vaultETHBalance = formatEth(
+        expectedVaultDetails.vaultETHBalance,
         4
       )
       expectedVaultDetails.balanceDRG = new BigNumber(
-        poolsList.dragos[0].supply * 5
+        poolsList.dragos[0].supply * 5 * (i + 1)
       ).toFixed(4)
       let vault = []
       vault.push([
-        vaultList[0].address,
-        vaultList[0].name,
-        vaultList[0].symbol,
-        vaultList[0].vaultId,
-        vaultList[0].addressOwner,
-        vaultList[0].addressGroup
+        vaultList[i].address,
+        vaultList[i].name,
+        vaultList[i].symbol,
+        vaultList[i].vaultId,
+        vaultList[i].addressOwner,
+        vaultList[i].addressGroup
       ])
       const vaultDetails = await getVaultDetails(
         vault,
@@ -42,30 +43,31 @@ describeContract(contractName, () => {
         networkInfo,
         options
       )
-      expect(expectedVaultDetails).toEqual(vaultDetails)
+      expect(vaultDetails).toEqual(expectedVaultDetails)
     })
     it('2 -> get only date success', async () => {
+      let i = 0
       const options = { dateOnly: true, wallet: '' }
       const expectedDate = {
-        address: vaultList[0].address,
+        address: vaultList[i].address,
         created: dateFromTimeStampHuman(Date.now() / 1000)
       }
       let vault = []
       vault.push([
-        vaultList[0].address,
-        vaultList[0].name,
-        vaultList[0].symbol,
-        vaultList[0].dragoId,
-        vaultList[0].addressOwner,
-        vaultList[0].addressGroup
+        vaultList[i].address,
+        vaultList[i].name,
+        vaultList[i].symbol,
+        vaultList[i].dragoId,
+        vaultList[i].addressOwner,
+        vaultList[i].addressGroup
       ])
-      const vaultDetails = await getDragoDetails(
+      const vaultDetails = await getVaultDetails(
         vault,
         accounts,
         networkInfo,
         options
       )
-      expect(expectedDate).toEqual(vaultDetails)
+      expect(vaultDetails).toEqual(expectedDate)
     })
   })
 })

@@ -118,7 +118,7 @@ export const getVaultDetails = async (
   // Getting balance for each user account
   //
   if (accounts.length > 1) {
-    balanceDRG = Promise.all(
+    await Promise.all(
       accounts.map(async account => {
         const balance = await poolApi.contract.vault
           .balanceOf(account.address)
@@ -168,13 +168,12 @@ export const getVaultDetails = async (
 
   let sellPrice = formatEth(vaultData[2], 4)
   let buyPrice = formatEth(vaultData[3], 4)
-
   let details = {
     address: vaultDetails[0][0],
     name:
       vaultDetails[0][1].charAt(0).toUpperCase() + vaultDetails[0][1].slice(1),
     symbol: vaultDetails[0][2],
-    vaultId: new BigNumber(vaultDetails[0][3]).toNumber(),
+    vaultId: new BigNumber(vaultDetails[0][3]).toFixed(),
     addressOwner: vaultDetails[0][4],
     addressGroup: vaultDetails[0][5],
     sellPrice,

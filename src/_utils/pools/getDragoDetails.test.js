@@ -14,9 +14,10 @@ beforeEach = async () => {
 describeContract(contractName, () => {
   describe('Get Drago details', () => {
     it('1 -> get full details success', async () => {
+      let i = 0
       const options = { dateOnly: false, wallet: '' }
       const expectedDragoDetails = {
-        ...dragoList[0]
+        ...dragoList[i]
       }
       expectedDragoDetails.totalSupply = formatCoins(
         new BigNumber(expectedDragoDetails.totalSupply),
@@ -30,17 +31,24 @@ describeContract(contractName, () => {
         expectedDragoDetails.dragoWETHBalance,
         4
       )
+      // Balance owned by the account
       expectedDragoDetails.balanceDRG = new BigNumber(
-        poolsList.dragos[0].supply * 5
+        poolsList.dragos[0].supply * 5 * (i + 1)
+      ).toFixed(4)
+      expectedDragoDetails.sellPrice = new BigNumber(
+        expectedDragoDetails.sellPrice
+      ).toFixed(4)
+      expectedDragoDetails.buyPrice = new BigNumber(
+        expectedDragoDetails.buyPrice
       ).toFixed(4)
       let drago = []
       drago.push([
-        dragoList[0].address,
-        dragoList[0].name,
-        dragoList[0].symbol,
-        dragoList[0].dragoId,
-        dragoList[0].addressOwner,
-        dragoList[0].addressGroup
+        dragoList[i].address,
+        dragoList[i].name,
+        dragoList[i].symbol,
+        dragoList[i].dragoId,
+        dragoList[i].addressOwner,
+        dragoList[i].addressGroup
       ])
       const dragoDetails = await getDragoDetails(
         drago,
@@ -48,22 +56,23 @@ describeContract(contractName, () => {
         networkInfo,
         options
       )
-      expect(expectedDragoDetails).toEqual(dragoDetails)
+      expect(dragoDetails).toEqual(expectedDragoDetails)
     })
     it('2 -> get only date success', async () => {
+      let i = 0
       const options = { dateOnly: true, wallet: '' }
       const expectedDate = {
-        address: dragoList[0].address,
+        address: dragoList[i].address,
         created: dateFromTimeStampHuman(Date.now() / 1000)
       }
       let drago = []
       drago.push([
-        dragoList[0].address,
-        dragoList[0].name,
-        dragoList[0].symbol,
-        dragoList[0].dragoId,
-        dragoList[0].addressOwner,
-        dragoList[0].addressGroup
+        dragoList[i].address,
+        dragoList[i].name,
+        dragoList[i].symbol,
+        dragoList[i].dragoId,
+        dragoList[i].addressOwner,
+        dragoList[i].addressGroup
       ])
       const dragoDetails = await getDragoDetails(
         drago,
@@ -71,7 +80,7 @@ describeContract(contractName, () => {
         networkInfo,
         options
       )
-      expect(expectedDate).toEqual(dragoDetails)
+      expect(dragoDetails).toEqual(expectedDate)
     })
   })
 })

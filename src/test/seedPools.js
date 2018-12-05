@@ -45,6 +45,11 @@ const seedVaults = async baseContracts => {
 
     let totalSupply = await vaultInstance.methods.totalSupply().call()
     let vaultETHBalance = await web3.eth.getBalance(address)
+    const basisPoints = (vault.fee * 100).toFixed(0)
+    await vaultInstance.methods.setTransactionFee(basisPoints).send({
+      ...optionsDefault,
+      from: accounts[0]
+    })
     return {
       address: address.toLowerCase(),
       name: vault.name,
@@ -55,11 +60,11 @@ const seedVaults = async baseContracts => {
       buyPrice: '1.0000',
       addressOwner,
       addressGroup,
-      vaultETHBalance
+      vaultETHBalance,
+      fee: vault.fee
     }
   })
   let list = await Promise.all(promisesArray)
-  console.log(list)
   return list
 
   // let list = []
@@ -115,6 +120,21 @@ const seedDragos = async baseContracts => {
       })
     }
 
+    const buyPriceWei = Web3.utils.toWei(drago.buyPrice.toString(), 'ether')
+    const sellPriceWei = Web3.utils.toWei(drago.sellPrice.toString(), 'ether')
+    await dragoInstance.methods
+      .setPrices(
+        sellPriceWei,
+        buyPriceWei,
+        1,
+        Web3.utils.fromAscii('random'),
+        Web3.utils.fromAscii('random')
+      )
+      .send({
+        ...optionsDefault,
+        from: accounts[0]
+      })
+
     // Get some WETH9
     const tokenAddress = null
     const tokenWrapper = await baseContracts['WETH9'].address
@@ -165,14 +185,15 @@ const seedDragos = async baseContracts => {
 
     let totalSupply = await dragoInstance.methods.totalSupply().call()
     let dragoETHBalance = await web3.eth.getBalance(address)
+
     return {
       address: address.toLowerCase(),
       name: drago.name,
       symbol,
       dragoId: dragoId.toFixed(),
       totalSupply,
-      sellPrice: '1.0000',
-      buyPrice: '1.0000',
+      sellPrice: drago.sellPrice,
+      buyPrice: drago.buyPrice,
       addressOwner,
       addressGroup,
       dragoETHBalance,
@@ -180,7 +201,6 @@ const seedDragos = async baseContracts => {
     }
   })
   let list = await Promise.all(promisesArray)
-  console.log(list)
   return list
   // let list = []
   // const seedPromises = promisesArray.reduce(

@@ -177,7 +177,6 @@ export const getDragoDetails = async (
     addressGroup: dragoDetails[0][5],
     sellPrice,
     buyPrice,
-    // created: dragoCreatedDate,
     totalSupply: formatCoins(new BigNumber(dragoTotalSupply), 4),
     dragoETHBalance: formatEth(dragoETH, 4),
     dragoWETHBalance: formatEth(dragoWETH, 4),
