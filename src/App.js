@@ -10,6 +10,7 @@ import AppLoading from './Elements/elementAppLoading'
 import ApplicationConfigPage from './Application/applicationConfig'
 import ApplicationDragoPage from './Application/applicationDrago'
 import ApplicationExchangePage from './Application/applicationExchange'
+import ApplicationHomeEfxPage from './Application/applicationHomeEfx'
 import ApplicationHomePage from './Application/applicationHome'
 import ApplicationVaultPage from './Application/applicationVault'
 import Endpoint from './_utils/endpoint'
@@ -186,6 +187,11 @@ export class App extends Component {
         ) : (
           <Router history={history}>
             <Switch>
+              <Route
+                exact
+                path={'/ethfinex'}
+                component={ApplicationHomeEfxPage}
+              />
               <Route
                 exact
                 path={'/app/' + appHashPath + '/home'}

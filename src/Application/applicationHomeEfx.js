@@ -1,6 +1,6 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-import ApplicationHome from '../ApplicationHome'
+import ApplicationHomeEfx from '../ApplicationHome/applicationHomeEfx'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import TopBarMenu from '../Elements/topBarMenu'
@@ -31,8 +31,7 @@ function mapStateToProps(state) {
   return state
 }
 
-class ApplicationHomePage extends Component {
-  // Context
+class ApplicationHomeEfxPage extends Component {
   static childContextTypes = {
     muiTheme: PropTypes.object
   }
@@ -74,7 +73,7 @@ class ApplicationHomePage extends Component {
           </Row>
           <Row className={classNames(styles.contentHomePages)}>
             <Col xs={12}>
-              <ApplicationHome />
+              <ApplicationHomeEfx />
               {isConnected && !isSyncing ? null : (
                 <ElementNotConnected
                   isSyncing={isSyncing}
@@ -91,4 +90,4 @@ class ApplicationHomePage extends Component {
   }
 }
 
-export default connect(mapStateToProps)(ApplicationHomePage)
+export default connect(mapStateToProps)(ApplicationHomeEfxPage)

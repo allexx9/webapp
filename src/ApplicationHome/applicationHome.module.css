@@ -155,6 +155,71 @@
   margin-bottom: -8px;
 }
 
+.mainLogoContainer {
+  height: 125px;
+}
+
+
+.logoTextRB {
+  padding-top: 8px;
+  font-size: 18px;
+}
+
+.logoTextEfx {
+  padding-top: 6px;
+  font-size: 18px;
+}
+
+.mainlogoLandingEfxSlogan {
+  font-size: 22px;
+  padding-bottom: 24px;
+  padding-top: 12px;
+  /* font-weight: 700; */
+  color: #054186;
+}
+
+.mainlogoLandingPlus {
+  position: relative;
+  float: left;
+  width: 10%;
+}
+
+.mainlogoLandingPlus>div {
+  margin-top: 30px;
+}
+
+.mainlogoLandingRB {
+  position: relative;
+  float: left;
+  width: 45%;
+}
+
+.mainlogoLandingRB>div {
+  width: 100px;
+  float: right;
+  font-weight: 700;
+  color: #054186;
+}
+
+.mainlogoLandingEfx {
+  float: left;
+  font-family: "Montserrat", Lato, Arial, "Sans Serif";
+  width: 45%;
+}
+
+.mainlogoLandingEfx>div {
+  width: 100px;
+  /* background-color: red; */
+  color: #9b9ebd;
+  font-weight: 700;
+  /* margin-top: 2px; */
+}
+
+.buttonLogoContainer {
+
+  padding-bottom: 24px;
+}
+
 .space {
   padding-top: 5px;
 }

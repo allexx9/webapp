@@ -5,6 +5,7 @@ import { Card, CardActions, CardText, CardTitle } from 'material-ui/Card'
 import { Col, Row } from 'react-flexbox-grid'
 import { Link, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
+import Add from 'material-ui/svg-icons/content/add'
 import Chat from 'material-ui/svg-icons/communication/chat'
 import ElementBottomStatusBar from '../Elements/elementBottomStatusBar'
 import ElementListFunds from '../Elements/elementListFunds'
@@ -22,10 +23,13 @@ import _ from 'lodash'
 import styles from './applicationHome.module.css'
 
 function mapStateToProps(state) {
-  return state
+  return {
+    transactionsDrago: state.transactionsDrago,
+    endpoint: state.endpoint
+  }
 }
 
-class ApplicationHome extends PureComponent {
+class ApplicationHomeEfx extends PureComponent {
   // We check the type of the context variable that we receive by the parent
   static contextTypes = {
     api: PropTypes.object.isRequired
@@ -147,6 +151,25 @@ class ApplicationHome extends PureComponent {
       backgroundColor: 'white'
       // width: "140px"
     }
+    const buttonCreateDrago = {
+      border: '2px solid',
+      borderColor: '#054186',
+      fontWeight: '600',
+      height: '45px',
+      backgroundColor: 'white',
+      borderRadius: '4px',
+      width: '210px',
+      backgroundColor: '#054186'
+    }
+    const buttonExplore = {
+      border: '2px solid',
+      borderColor: '#054186',
+      fontWeight: '600',
+      height: '45px',
+      backgroundColor: 'white',
+      borderRadius: '4px',
+      width: '210px'
+    }
     const detailsBox = {
       padding: 20,
       width: '100%',
@@ -156,7 +179,7 @@ class ApplicationHome extends PureComponent {
     let { location } = this.props
     return (
       <div className={styles.body}>
-        <div className={styles.socialsContainer}>
+        {/* <div className={styles.socialsContainer}>
           <a
             href="https://t.me/rigoblockprotocol"
             target="_blank"
@@ -185,30 +208,89 @@ class ApplicationHome extends PureComponent {
           >
             <img src="/img/social/twitter.svg" height="32px" alt="" />
           </a>
-        </div>
+        </div> */}
         <Row>
           <Col xs={12}>
             <div>
               <Row>
                 <Col xs={12}>
-                  <div className={styles.mainlogo}>
-                    <img
-                      style={{ height: '80px' }}
-                      src="/img/Logo-RigoblockRGB-OUT-01.png"
-                      alt=""
-                    />
+                  <div className={styles.mainLogoContainer}>
+                    <div className={styles.mainlogoLandingRB}>
+                      <div>
+                        <img
+                          style={{ height: '80px' }}
+                          src="/img/Logo-RigoblockRGB-OUT-02.png"
+                          alt="rigoblock-logo"
+                        />
+                        <div className={styles.logoTextRB}>RigoBlock</div>
+                      </div>
+                    </div>
+                    <div className={styles.mainlogoLandingPlus}>
+                      <div>
+                        <Add
+                          color={'#054186'}
+                          style={{ width: '26px', height: '26px' }}
+                        />
+                      </div>
+                    </div>
+                    <div className={styles.mainlogoLandingEfx}>
+                      <div>
+                        <img
+                          style={{ height: '80px' }}
+                          src="/img/ethfinex.png"
+                          alt="ethfinex-logo"
+                        />
+                        <div className={styles.logoTextEfx}>ETHFINEX</div>{' '}
+                      </div>
+                    </div>
                   </div>
-                  <h2 style={{ color: '#054186' }}>
-                    The leading crypto platform for asset management.
-                  </h2>
-                  <p className={styles.subHeadline}>
-                    <b className={styles.txtDotted}>Simple</b>,{' '}
-                    <b className={styles.txtDottedYellow}>transparent</b>,{' '}
-                    <b className={styles.txtDotted}>meritocratic</b> and{' '}
-                    <b className={styles.txtDottedYellow}>democratic</b>.
-                  </p>
                 </Col>
               </Row>
+              <Row>
+                <Col xs={12}>
+                  <div>
+                    <div className={styles.mainlogoLandingEfxSlogan}>
+                      SLOGAN
+                    </div>
+                  </div>
+                </Col>
+              </Row>
+              <div className={styles.buttonLogoContainer}>
+                <Row>
+                  <Col xs={6}>
+                    <div style={{ textAlign: 'right', marginRight: '22px' }}>
+                      <FlatButton
+                        labelPosition="before"
+                        label="Explore"
+                        labelStyle={{
+                          color: '#054186',
+                          fontWeight: '600',
+                          fontSize: '20px'
+                        }}
+                        style={buttonExplore}
+                        // icon={<Chat color="#ffca57" />}
+                        // hoverColor={Colors.blue300}
+                      />
+                    </div>
+                  </Col>
+                  <Col xs={6}>
+                    <div style={{ textAlign: 'left', marginLeft: '22px' }}>
+                      <FlatButton
+                        labelPosition="before"
+                        label="Create a pool"
+                        labelStyle={{
+                          color: '#ffffff',
+                          fontWeight: '600',
+                          fontSize: '20px'
+                        }}
+                        style={buttonCreateDrago}
+                        // icon={<Chat color="#ffca57" />}
+                        // hoverColor={Colors.blue300}
+                      />
+                    </div>
+                  </Col>
+                </Row>
+              </div>
               <Row>
                 <Col xs={12}>
                   <Row>
@@ -252,7 +334,7 @@ class ApplicationHome extends PureComponent {
               <div className={styles.actionsContainer}>
                 <Row className={styles.cards}>
                   <Col xs={6}>
-                    <Card className={styles.column}>
+                    {/* <Card className={styles.column}>
                       <CardTitle
                         title="VAULT"
                         className={styles.cardtitle}
@@ -272,10 +354,10 @@ class ApplicationHome extends PureComponent {
                           />
                         </Link>
                       </CardActions>
-                    </Card>
+                    </Card> */}
                   </Col>
                   <Col xs={6}>
-                    <Card className={styles.column}>
+                    {/* <Card className={styles.column}>
                       <CardTitle
                         title="DRAGO"
                         className={styles.cardtitle}
@@ -295,7 +377,7 @@ class ApplicationHome extends PureComponent {
                           />
                         </Link>
                       </CardActions>
-                    </Card>
+                    </Card> */}
                   </Col>
                 </Row>
                 <Row>
@@ -372,4 +454,4 @@ class ApplicationHome extends PureComponent {
   }
 }
 
-export default withRouter(connect(mapStateToProps)(ApplicationHome))
+export default withRouter(connect(mapStateToProps)(ApplicationHomeEfx))
