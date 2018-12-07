@@ -89,6 +89,7 @@ class TopBarMenu extends Component {
         <ElementNotificationsDrawer
           notificationsOpen={this.props.transactionsDrawerOpen}
         />
+        <div className={'joyride-notifications'} />
       </div>
     )
   }

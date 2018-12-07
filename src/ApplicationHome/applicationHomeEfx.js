@@ -1,7 +1,7 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
 import { Actions } from '../_redux/actions'
-import { Card, CardActions, CardText, CardTitle } from 'material-ui/Card'
+// import { Card, CardActions, CardText, CardTitle } from 'material-ui/Card'
 import { Col, Row } from 'react-flexbox-grid'
 import { Link, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
@@ -15,7 +15,7 @@ import FlatButton from 'material-ui/FlatButton'
 import LinearProgress from 'material-ui/LinearProgress'
 import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types'
-import RaisedButton from 'material-ui/RaisedButton'
+// import RaisedButton from 'material-ui/RaisedButton'
 import React, { PureComponent } from 'react'
 import SearchIcon from '../_atomic/atoms/searchIcon'
 import WalletSetup from '../_atomic/organisms/walletSetup'
@@ -39,7 +39,12 @@ class ApplicationHomeEfx extends PureComponent {
     endpoint: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     transactionsDrago: PropTypes.object.isRequired,
-    dispatch: PropTypes.func.isRequired
+    dispatch: PropTypes.func.isRequired,
+    onClickTour: PropTypes.func
+  }
+
+  static defaultProps = {
+    onClickTour: () => {}
   }
 
   state = {
@@ -177,6 +182,7 @@ class ApplicationHomeEfx extends PureComponent {
       marginLeft: `20px`
     }
     let { location } = this.props
+
     return (
       <div className={styles.body}>
         {/* <div className={styles.socialsContainer}>
@@ -209,6 +215,7 @@ class ApplicationHomeEfx extends PureComponent {
             <img src="/img/social/twitter.svg" height="32px" alt="" />
           </a>
         </div> */}
+
         <Row>
           <Col xs={12}>
             <div>
@@ -248,11 +255,12 @@ class ApplicationHomeEfx extends PureComponent {
               </Row>
               <Row>
                 <Col xs={12}>
-                  <div>
-                    <div className={styles.mainlogoLandingEfxSlogan}>
-                      SLOGAN
-                    </div>
-                  </div>
+                  <h2 style={{ color: '#054186' }}>
+                    The leading crypto platform for asset management.
+                  </h2>
+                  <p style={{ color: '#054186' }}>
+                    In collaboration with <b>Ethfinex Trustless</b>.
+                  </p>
                 </Col>
               </Row>
               <div className={styles.buttonLogoContainer}>
@@ -267,6 +275,7 @@ class ApplicationHomeEfx extends PureComponent {
                           fontWeight: '600',
                           fontSize: '20px'
                         }}
+                        onClick={this.props.onClickTour}
                         style={buttonExplore}
                         // icon={<Chat color="#ffca57" />}
                         // hoverColor={Colors.blue300}
@@ -274,7 +283,10 @@ class ApplicationHomeEfx extends PureComponent {
                     </div>
                   </Col>
                   <Col xs={6}>
-                    <div style={{ textAlign: 'left', marginLeft: '22px' }}>
+                    <div
+                      style={{ textAlign: 'left', marginLeft: '22px' }}
+                      className={'joyride-efx-create'}
+                    >
                       <FlatButton
                         labelPosition="before"
                         label="Create a pool"
@@ -283,6 +295,7 @@ class ApplicationHomeEfx extends PureComponent {
                           fontWeight: '600',
                           fontSize: '20px'
                         }}
+                        id="joyride-efx-create-pool"
                         style={buttonCreateDrago}
                         // icon={<Chat color="#ffca57" />}
                         // hoverColor={Colors.blue300}
@@ -295,7 +308,7 @@ class ApplicationHomeEfx extends PureComponent {
                 <Col xs={12}>
                   <Row>
                     <Paper style={detailsBox} zDepth={1}>
-                      <Col xs={12}>
+                      <Col xs={12} className={'joyride-efx-search'}>
                         <div className={styles.filterBox}>
                           Search for pools
                           <FilterPoolsField

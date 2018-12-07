@@ -183,15 +183,17 @@ class NavLinks extends Component {
         <ToolbarGroup>
           <ToolbarSeparator style={menuStyles.separator} />
           <ToolbarGroup>
-            <FlatButton
-              onClick={this.handleClick}
-              labelPosition="before"
-              label={userTypeLabel}
-              labelStyle={{ color: '#FFFFFF' }}
-              style={buttonAccountType}
-              icon={<ArrowDropDown color="#FFFFFF" />}
-              hoverColor={Colors.blue300}
-            />
+            <div className={'joyride-user-roles'}>
+              <FlatButton
+                onClick={this.handleClick}
+                labelPosition="before"
+                label={userTypeLabel}
+                labelStyle={{ color: '#FFFFFF' }}
+                style={buttonAccountType}
+                icon={<ArrowDropDown color="#FFFFFF" />}
+                hoverColor={Colors.blue300}
+              />
+            </div>
             <Popover
               open={this.state.open}
               anchorEl={this.state.anchorEl}
@@ -230,6 +232,7 @@ class NavLinks extends Component {
                 />
               </Menu>
             </Popover>
+
             <IconMenu
               iconButtonElement={
                 <IconButton>

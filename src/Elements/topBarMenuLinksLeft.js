@@ -13,31 +13,31 @@ import IconMenu from 'material-ui/IconMenu'
 import MenuItem from 'material-ui/MenuItem'
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert'
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import TopMenuLinkLong from '../_atomic/molecules/topMenuLinkLong'
 import utils from '../_utils/utils'
 
-function mapStateToProps(state) {
-  return state
-}
+// function mapStateToProps(state) {
+//   return state
+// }
 
-class NavLinksLeft extends Component {
+class NavLinksLeft extends PureComponent {
   static propTypes = {
     location: PropTypes.object.isRequired,
-    dispatch: PropTypes.func.isRequired,
+    // dispatch: PropTypes.func.isRequired,
     match: PropTypes.object.isRequired
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    let stateUpdate = true
-    let propsUpdate = true
-    propsUpdate = !utils.shallowEqual(this.props, nextProps)
-    stateUpdate = !utils.shallowEqual(this.state, nextState)
-    if (stateUpdate || propsUpdate) {
-      // console.log(`${this.constructor.name} -> shouldComponentUpdate: TRUE -> Proceedding with rendering.`);
-    }
-    return stateUpdate || propsUpdate
-  }
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   let stateUpdate = true
+  //   let propsUpdate = true
+  //   propsUpdate = !utils.shallowEqual(this.props, nextProps)
+  //   stateUpdate = !utils.shallowEqual(this.state, nextState)
+  //   if (stateUpdate || propsUpdate) {
+  //     // console.log(`${this.constructor.name} -> shouldComponentUpdate: TRUE -> Proceedding with rendering.`);
+  //   }
+  //   return stateUpdate || propsUpdate
+  // }
 
   activeSectionPath = () => {
     const { match } = this.props
@@ -110,6 +110,9 @@ class NavLinksLeft extends Component {
     let path = location.pathname.split('/')
     // path.splice(-1,1);
     // var url = path.join('/');
+    if (path.length < 3) {
+      return 'web'
+    }
     return path[2]
   }
 
@@ -161,4 +164,5 @@ class NavLinksLeft extends Component {
   }
 }
 
-export default withRouter(connect(mapStateToProps)(NavLinksLeft))
+export default withRouter(NavLinksLeft)
+// export default withRouter(connect(mapStateToProps)(NavLinksLeft))

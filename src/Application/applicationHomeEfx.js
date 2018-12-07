@@ -10,6 +10,8 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme'
 
 import { connect } from 'react-redux'
 import ElementNotConnected from '../Elements/elementNotConnected'
+import Joyride from 'react-joyride'
+import JoyrideContent from '../_atomic/atoms/joyrideContent'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import TopMenuLinkDrawer from '../_atomic/molecules/topMenuLinkDrawer'
 import classNames from 'classnames'
@@ -36,10 +38,36 @@ class ApplicationHomeEfxPage extends Component {
     muiTheme: PropTypes.object
   }
 
-  getChildContext() {
-    return {
-      muiTheme
-    }
+  state = {
+    run: false,
+    steps: [
+      {
+        target: '.joyride-efx-search',
+        content: (
+          <JoyrideContent
+            content={'Search for pools of tokens and buy a unit.'}
+          />
+        ),
+        placement: 'bottom',
+        disableBeacon: true
+      },
+      {
+        target: '#joyride-efx-create-pool',
+        content: (
+          <JoyrideContent
+            content={'Create your own pool and trade on Ethfinex Trustless.'}
+          />
+        ),
+        placement: 'bottom',
+        disableBeacon: true
+      },
+      {
+        target: '.joyride-user-roles',
+        content: 'This if my awesome feature!',
+        placement: 'bottom',
+        disableBeacon: true
+      }
+    ]
   }
 
   static contextTypes = {
@@ -51,16 +79,57 @@ class ApplicationHomeEfxPage extends Component {
     app: PropTypes.object.isRequired
   }
 
+  componentDidMount = async () => {}
+
+  runTour = () => {
+    console.log('click')
+    this.setState({ run: true })
+  }
+
+  callback = data => {
+    const { action, index, type } = data
+    console.log(action, index, type)
+  }
+
+  getChildContext() {
+    return {
+      muiTheme
+    }
+  }
+
   handleToggleNotifications = () => {
     this.setState({ notificationsOpen: !this.state.notificationsOpen })
   }
 
   render() {
     const { isSyncing, syncStatus, isConnected } = this.props.app
+    const { steps, run } = this.state
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
         <div>
-          {/* <Grid fluid className={styles.maincontainer}> */}
+          <Joyride
+            steps={steps}
+            run={run}
+            callback={this.callback}
+            floaterProps={{
+              styles: {
+                wrapper: {
+                  zIndex: 1500
+                }
+              }
+            }}
+            styles={{
+              options: {
+                // arrowColor: '#e3ffeb',
+                // backgroundColor: '#e3ffeb',
+                // overlayColor: 'rgba(79, 26, 0, 0.4)',
+                primaryColor: '#ffae00',
+                // textColor: '#004a14',
+                width: 900,
+                zIndex: '1900'
+              }
+            }}
+          />
           <Row>
             <Col xs={12} className={styles.fix}>
               <TopBarMenu
@@ -73,7 +142,7 @@ class ApplicationHomeEfxPage extends Component {
           </Row>
           <Row className={classNames(styles.contentHomePages)}>
             <Col xs={12}>
-              <ApplicationHomeEfx />
+              <ApplicationHomeEfx onClickTour={this.runTour} />
               {isConnected && !isSyncing ? null : (
                 <ElementNotConnected
                   isSyncing={isSyncing}
@@ -83,7 +152,6 @@ class ApplicationHomeEfxPage extends Component {
             </Col>
           </Row>
           {this.props.label === 'VAULT' && <TopMenuLinkDrawer />}
-          {/* </Grid> */}
         </div>
       </MuiThemeProvider>
     )

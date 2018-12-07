@@ -46,6 +46,7 @@
     "react-flexbox-grid": "^2.1.2",
     "react-ga": "^2.4.1",
     "react-grid-system": "^4.3.0",
+    "react-joyride": "^2.0.0-15",
     "react-json-view": "^1.19.1",
     "react-notification-system": "^0.2.16",
     "react-redux": "^5.0.6",

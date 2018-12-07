@@ -81,6 +81,11 @@ export class App extends Component {
     }
   }
 
+  callback = data => {
+    const { action, index, type } = data
+    console.log(action, index, type)
+  }
+
   getChildContext() {
     return {
       api: this._api
@@ -110,6 +115,7 @@ export class App extends Component {
       this.props.dispatch(Actions.endpoint.checkMetaMaskIsUnlocked())
     }
     this.props.dispatch(Actions.endpoint.monitorAccountsStart())
+    this.setState({ run: true })
   }
 
   render() {
@@ -174,6 +180,7 @@ export class App extends Component {
         }
       }
     }
+
     return (
       <div className={styles.appContainer}>
         <NotificationSystem
