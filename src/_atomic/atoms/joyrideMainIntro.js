@@ -67,7 +67,7 @@ class JoyrideMainIntro extends React.Component {
               </div>
               <div className={styles.efxDescriptionMore}>
                 <a
-                  href="https://www.rigoblock.com"
+                  href="https://community.rigoblock.com/t/rigoblock-dapp/52"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -120,7 +120,7 @@ class JoyrideMainIntro extends React.Component {
                 </div> */}
                   <div>
                     <a
-                      href="https://www.rigoblock.com"
+                      href="https://community.rigoblock.com"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -139,7 +139,7 @@ class JoyrideMainIntro extends React.Component {
                 </div> */}
                   <div style={{ fontWeight: 700 }}>
                     <a
-                      href="https://www.rigoblock.com"
+                      href="https://tokenmarket.net/blockchain/ethereum/assets/rigoblock/"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
