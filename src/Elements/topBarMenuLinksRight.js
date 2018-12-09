@@ -274,7 +274,7 @@ class NavLinks extends Component {
                   </a>
                 }
               />
-              <MenuItem
+              {/* <MenuItem
                 leftIcon={<Help />}
                 value="help"
                 primaryText="Help"
@@ -287,7 +287,7 @@ class NavLinks extends Component {
                     Help
                   </a>
                 }
-              />
+              /> */}
             </IconMenu>
             {transactions.pending > 0 ? (
               <div className={this.state.transactionsDrawerNetworkButtonStyle}>
