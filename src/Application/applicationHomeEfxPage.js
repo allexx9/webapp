@@ -1,15 +1,15 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
+import { Actions } from '../_redux/actions'
 import { Col, Row } from 'react-flexbox-grid'
 import { connect } from 'react-redux'
-import { toUnitAmount } from '../_utils/format'
 import ApplicationHomeEfx from '../ApplicationHome/applicationHomeEfx'
 import BigNumber from 'bignumber.js'
 import Cookies from 'universal-cookie'
 import ElementNotConnected from '../Elements/elementNotConnected'
 import Joyride from 'react-joyride'
 import JoyrideContent from '../_atomic/atoms/joyrideContent'
-import JoyrideEfxIntro from '../_atomic/atoms/joyrideEfxIntro'
+import JoyrideMainIntro from '../_atomic/atoms/joyrideMainIntro'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
@@ -66,7 +66,7 @@ class ApplicationHomeEfxPage extends Component {
       {
         target: '.joyride-efx-collaboration',
         content: (
-          <JoyrideEfxIntro
+          <JoyrideMainIntro
             content={
               'RigoBlock + Ethfinex: the decentralized platform for asset management.'
             }
@@ -77,7 +77,8 @@ class ApplicationHomeEfxPage extends Component {
         placement: 'bottom',
         disableBeacon: true,
         disableCloseOnEsc: true,
-        disableOverlayClose: true
+        disableOverlayClose: true,
+        spotlightPadding: 0
       },
       {
         target: '.joyride-efx-search',
@@ -130,20 +131,14 @@ class ApplicationHomeEfxPage extends Component {
   }
 
   componentDidMount = async () => {
-    // this.props.dispatch(Actions.users.isManagerAction(true))
     const cookies = new Cookies()
     const runTour = Boolean(cookies.get('rb-efx-tour') === 'true')
     this.setState({ run: !runTour })
   }
 
-  // runTour = () => {
-  //   console.log('click')
-  //   this.setState({ run: true })
-  // }
-
-  callback = data => {
-    const { action, index, type } = data
-    console.log(action, index, type)
+  onClickCreatePool = () => {
+    console.log('click')
+    this.props.dispatch(Actions.users.isManagerAction(true))
   }
 
   getChildContext() {
@@ -167,21 +162,9 @@ class ApplicationHomeEfxPage extends Component {
             showProgress={true}
             run={run}
             continuous={true}
-            callback={this.callback}
-            // floaterProps={{
-            //   styles: {
-            //     wrapper: {
-            //       zIndex: 1500
-            //     }
-            //   }
-            // }}
             styles={{
               options: {
-                // arrowColor: '#e3ffeb',
-                // backgroundColor: '#e3ffeb',
-                // overlayColor: 'rgba(79, 26, 0, 0.4)',
                 primaryColor: '#064286',
-                // textColor: '#004a14',
                 width: 900,
                 zIndex: '1900'
               }
@@ -199,7 +182,7 @@ class ApplicationHomeEfxPage extends Component {
           </Row>
           <Row className={classNames(styles.contentHomePages)}>
             <Col xs={12}>
-              <ApplicationHomeEfx onClickTour={this.runTour} />
+              <ApplicationHomeEfx onClickCreatePool={this.onClickCreatePool} />
               {isConnected && !isSyncing ? null : (
                 <ElementNotConnected
                   isSyncing={isSyncing}

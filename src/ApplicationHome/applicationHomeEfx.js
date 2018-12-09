@@ -1,7 +1,6 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
 import { Actions } from '../_redux/actions'
-// import { Card, CardActions, CardText, CardTitle } from 'material-ui/Card'
 import { Col, Row } from 'react-flexbox-grid'
 import { Link, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
@@ -15,10 +14,8 @@ import FlatButton from 'material-ui/FlatButton'
 import LinearProgress from 'material-ui/LinearProgress'
 import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types'
-// import RaisedButton from 'material-ui/RaisedButton'
 import React, { PureComponent } from 'react'
 import SearchIcon from '../_atomic/atoms/searchIcon'
-// import WalletSetup from '../_atomic/organisms/walletSetup'
 import _ from 'lodash'
 import styles from './applicationHome.module.css'
 
@@ -39,11 +36,11 @@ class ApplicationHomeEfx extends PureComponent {
     location: PropTypes.object.isRequired,
     transactionsDrago: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
-    onClickTour: PropTypes.func
+    onClickCreatePool: PropTypes.func
   }
 
   static defaultProps = {
-    onClickTour: () => {}
+    onClickCreatePool: () => {}
   }
 
   state = {
@@ -235,19 +232,18 @@ class ApplicationHomeEfx extends PureComponent {
               <Row>
                 <Col xs={6}>
                   <div style={{ textAlign: 'right', marginRight: '22px' }}>
-                    <FlatButton
-                      labelPosition="before"
-                      label="Explore"
-                      labelStyle={{
-                        color: '#054186',
-                        fontWeight: '600',
-                        fontSize: '20px'
-                      }}
-                      onClick={this.props.onClickTour}
-                      style={buttonExplore}
-                      // icon={<Chat color="#ffca57" />}
-                      // hoverColor={Colors.blue300}
-                    />
+                    <Link to="/">
+                      <FlatButton
+                        labelPosition="before"
+                        label="Explore"
+                        labelStyle={{
+                          color: '#054186',
+                          fontWeight: '600',
+                          fontSize: '20px'
+                        }}
+                        style={buttonExplore}
+                      />
+                    </Link>
                   </div>
                 </Col>
                 <Col xs={6}>
@@ -255,19 +251,20 @@ class ApplicationHomeEfx extends PureComponent {
                     style={{ textAlign: 'left', marginLeft: '22px' }}
                     className={'joyride-efx-create'}
                   >
-                    <FlatButton
-                      labelPosition="before"
-                      label="Create a pool"
-                      labelStyle={{
-                        color: '#ffffff',
-                        fontWeight: '600',
-                        fontSize: '20px'
-                      }}
-                      id="joyride-efx-create-pool"
-                      style={buttonCreateDrago}
-                      // icon={<Chat color="#ffca57" />}
-                      // hoverColor={Colors.blue300}
-                    />
+                    <Link to="/drago">
+                      <FlatButton
+                        labelPosition="before"
+                        label="Create a pool"
+                        labelStyle={{
+                          color: '#ffffff',
+                          fontWeight: '600',
+                          fontSize: '20px'
+                        }}
+                        onClick={this.props.onClickCreatePool}
+                        id="joyride-efx-create-pool"
+                        style={buttonCreateDrago}
+                      />
+                    </Link>
                   </div>
                 </Col>
               </Row>

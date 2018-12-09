@@ -4,9 +4,9 @@ import Divider from 'material-ui/Divider'
 import FlatButton from 'material-ui/FlatButton'
 import PropTypes from 'prop-types'
 import React from 'react'
-import styles from './joyrideEfxIntro.module.css'
+import styles from './joyrideMainIntro.module.css'
 
-class JoyrideEfxIntro extends React.Component {
+class JoyrideMainIntro extends React.Component {
   static propTypes = {
     content: PropTypes.string.isRequired,
     onCheck: PropTypes.func.isRequired,
@@ -187,4 +187,4 @@ class JoyrideEfxIntro extends React.Component {
   }
 }
 
-export default JoyrideEfxIntro
+export default JoyrideMainIntro
