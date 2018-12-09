@@ -95,6 +95,7 @@
   text-align: center;
   flex: 1 0 auto;
   height: 100%;
+  background-color: #fff;
 }
 
 .shadow {
@@ -128,6 +129,11 @@
   height: 100%;
 }
 
+.sloganTextContainer {
+  /* z-index: 1500; */
+  background-color: #fff;
+}
+
 .slogan {
   margin: auto;
 }
@@ -157,6 +163,7 @@
 
 .mainLogoContainer {
   height: 125px;
+  background-color: #fff;
 }
 
 

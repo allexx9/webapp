@@ -18,7 +18,7 @@ import PropTypes from 'prop-types'
 // import RaisedButton from 'material-ui/RaisedButton'
 import React, { PureComponent } from 'react'
 import SearchIcon from '../_atomic/atoms/searchIcon'
-import WalletSetup from '../_atomic/organisms/walletSetup'
+// import WalletSetup from '../_atomic/organisms/walletSetup'
 import _ from 'lodash'
 import styles from './applicationHome.module.css'
 
@@ -30,7 +30,6 @@ function mapStateToProps(state) {
 }
 
 class ApplicationHomeEfx extends PureComponent {
-  // We check the type of the context variable that we receive by the parent
   static contextTypes = {
     api: PropTypes.object.isRequired
   }
@@ -70,9 +69,6 @@ class ApplicationHomeEfx extends PureComponent {
   }
 
   static getDerivedStateFromProps(props, state) {
-    // Any time the current user changes,
-    // Reset any parts of state that are tied to that user.
-    // In this simple example, that's just the email.
     const { lastFetchRange } = props.transactionsDrago.dragosList
     if (!_.isEqual(lastFetchRange, state.prevLastFetchRange)) {
       const { chunk, lastBlock, startBlock } = lastFetchRange
@@ -161,7 +157,6 @@ class ApplicationHomeEfx extends PureComponent {
       borderColor: '#054186',
       fontWeight: '600',
       height: '45px',
-      backgroundColor: 'white',
       borderRadius: '4px',
       width: '210px',
       backgroundColor: '#054186'
@@ -185,40 +180,9 @@ class ApplicationHomeEfx extends PureComponent {
 
     return (
       <div className={styles.body}>
-        {/* <div className={styles.socialsContainer}>
-          <a
-            href="https://t.me/rigoblockprotocol"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <img src="/img/social/telegram.svg" height="32px" alt="" />
-          </a>
-          <a
-            href="https://discordapp.com/channels/rigoblock"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <img src="/img/social/discord.svg" height="32px" alt="" />
-          </a>
-          <a
-            href="https://www.facebook.com/RigoBlocks"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <img src="/img/social/facebook.svg" height="32px" alt="" />
-          </a>
-          <a
-            href="https://twitter.com/rigoblock"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <img src="/img/social/twitter.svg" height="32px" alt="" />
-          </a>
-        </div> */}
-
         <Row>
           <Col xs={12}>
-            <div>
+            <div className={'joyride-efx-collaboration'}>
               <Row>
                 <Col xs={12}>
                   <div className={styles.mainLogoContainer}>
@@ -253,153 +217,101 @@ class ApplicationHomeEfx extends PureComponent {
                   </div>
                 </Col>
               </Row>
-              <Row>
-                <Col xs={12}>
-                  <h2 style={{ color: '#054186' }}>
-                    The leading crypto platform for asset management.
-                  </h2>
-                  <p style={{ color: '#054186' }}>
-                    In collaboration with <b>Ethfinex Trustless</b>.
-                  </p>
-                </Col>
-              </Row>
-              <div className={styles.buttonLogoContainer}>
-                <Row>
-                  <Col xs={6}>
-                    <div style={{ textAlign: 'right', marginRight: '22px' }}>
-                      <FlatButton
-                        labelPosition="before"
-                        label="Explore"
-                        labelStyle={{
-                          color: '#054186',
-                          fontWeight: '600',
-                          fontSize: '20px'
-                        }}
-                        onClick={this.props.onClickTour}
-                        style={buttonExplore}
-                        // icon={<Chat color="#ffca57" />}
-                        // hoverColor={Colors.blue300}
-                      />
-                    </div>
-                  </Col>
-                  <Col xs={6}>
-                    <div
-                      style={{ textAlign: 'left', marginLeft: '22px' }}
-                      className={'joyride-efx-create'}
-                    >
-                      <FlatButton
-                        labelPosition="before"
-                        label="Create a pool"
-                        labelStyle={{
-                          color: '#ffffff',
-                          fontWeight: '600',
-                          fontSize: '20px'
-                        }}
-                        id="joyride-efx-create-pool"
-                        style={buttonCreateDrago}
-                        // icon={<Chat color="#ffca57" />}
-                        // hoverColor={Colors.blue300}
-                      />
-                    </div>
-                  </Col>
-                </Row>
-              </div>
-              <Row>
-                <Col xs={12}>
-                  <Row>
-                    <Paper style={detailsBox} zDepth={1}>
-                      <Col xs={12} className={'joyride-efx-search'}>
-                        <div className={styles.filterBox}>
-                          Search for pools
-                          <FilterPoolsField
-                            filter={this.filter}
-                            hintText={<SearchIcon text={'Search...'} />}
-                            floatingLabelText=""
-                          />
-                        </div>
-                      </Col>
-                      <Col xs={12}>
-                        <div className={styles.progressBarContainer}>
-                          <LinearProgress
-                            mode="determinate"
-                            value={this.state.listLoadingProgress}
-                          />
-                        </div>
-                      </Col>
-                      <Col xs={12}>
-                        <ElementListWrapper
-                          list={this.filterFunds()}
-                          location={location}
-                          pagination={{
-                            display: 5,
-                            number: 1
-                          }}
-                          autoLoading={false}
-                          tableHeight={330}
-                        >
-                          <ElementListFunds />
-                        </ElementListWrapper>
-                      </Col>
-                    </Paper>
-                  </Row>
-                </Col>
-              </Row>
-              <div className={styles.actionsContainer}>
-                <Row className={styles.cards}>
-                  <Col xs={6}>
-                    {/* <Card className={styles.column}>
-                      <CardTitle
-                        title="VAULT"
-                        className={styles.cardtitle}
-                        titleColor="white"
-                      />
-                      <CardText>
-                        <p className={styles.subHeadline}>
-                          Pools of ether and proof-of-stake mining
-                        </p>
-                      </CardText>
-                      <CardActions>
-                        <Link to="/vault">
-                          <RaisedButton
-                            label="New Vault"
-                            className={styles.exchangebutton}
-                            labelColor="white"
-                          />
-                        </Link>
-                      </CardActions>
-                    </Card> */}
-                  </Col>
-                  <Col xs={6}>
-                    {/* <Card className={styles.column}>
-                      <CardTitle
-                        title="DRAGO"
-                        className={styles.cardtitle}
-                        titleColor="white"
-                      />
-                      <CardText>
-                        <p className={styles.subHeadline}>
-                          Pools of ether and trading on decentralized exchanges
-                        </p>
-                      </CardText>
-                      <CardActions>
-                        <Link to="/drago">
-                          <RaisedButton
-                            label="New Drago"
-                            className={styles.exchangebutton}
-                            labelColor="white"
-                          />
-                        </Link>
-                      </CardActions>
-                    </Card> */}
-                  </Col>
-                </Row>
+
+              <div className={styles.sloganTextContainer}>
                 <Row>
                   <Col xs={12}>
-                    <p />
+                    <h2 style={{ color: '#054186' }}>
+                      The leading crypto platform for asset management.
+                    </h2>
+                    <p style={{ color: '#054186' }}>
+                      In collaboration with <b>Ethfinex Trustless</b>.
+                    </p>
                   </Col>
                 </Row>
               </div>
             </div>
+            <div className={styles.buttonLogoContainer}>
+              <Row>
+                <Col xs={6}>
+                  <div style={{ textAlign: 'right', marginRight: '22px' }}>
+                    <FlatButton
+                      labelPosition="before"
+                      label="Explore"
+                      labelStyle={{
+                        color: '#054186',
+                        fontWeight: '600',
+                        fontSize: '20px'
+                      }}
+                      onClick={this.props.onClickTour}
+                      style={buttonExplore}
+                      // icon={<Chat color="#ffca57" />}
+                      // hoverColor={Colors.blue300}
+                    />
+                  </div>
+                </Col>
+                <Col xs={6}>
+                  <div
+                    style={{ textAlign: 'left', marginLeft: '22px' }}
+                    className={'joyride-efx-create'}
+                  >
+                    <FlatButton
+                      labelPosition="before"
+                      label="Create a pool"
+                      labelStyle={{
+                        color: '#ffffff',
+                        fontWeight: '600',
+                        fontSize: '20px'
+                      }}
+                      id="joyride-efx-create-pool"
+                      style={buttonCreateDrago}
+                      // icon={<Chat color="#ffca57" />}
+                      // hoverColor={Colors.blue300}
+                    />
+                  </div>
+                </Col>
+              </Row>
+            </div>
+            <Row>
+              <Col xs={12}>
+                <Row>
+                  <Paper style={detailsBox} zDepth={1}>
+                    <Col xs={12} className={'joyride-efx-search'}>
+                      <div className={styles.filterBox}>
+                        Search for pools
+                        <FilterPoolsField
+                          filter={this.filter}
+                          hintText={<SearchIcon text={'Search...'} />}
+                          floatingLabelText=""
+                        />
+                      </div>
+                    </Col>
+                    <Col xs={12}>
+                      <div className={styles.progressBarContainer}>
+                        <LinearProgress
+                          mode="determinate"
+                          value={this.state.listLoadingProgress}
+                        />
+                      </div>
+                    </Col>
+                    <Col xs={12}>
+                      <ElementListWrapper
+                        list={this.filterFunds()}
+                        location={location}
+                        pagination={{
+                          display: 5,
+                          number: 1
+                        }}
+                        autoLoading={false}
+                        tableHeight={330}
+                      >
+                        <ElementListFunds />
+                      </ElementListWrapper>
+                    </Col>
+                  </Paper>
+                </Row>
+              </Col>
+            </Row>
           </Col>
         </Row>
         <ElementBottomStatusBar
@@ -429,13 +341,11 @@ class ApplicationHomeEfx extends PureComponent {
                   icon={
                     <img
                       src="/img/iconmonstr-telegram-1.svg"
-                      // style={{ fill: '#ffca57' }}
                       height="24px"
                       className={styles.telegramIcon}
                       alt=""
                     />
                   }
-                  // hoverColor={Colors.blue300}
                 />
               </a>
 
@@ -455,13 +365,12 @@ class ApplicationHomeEfx extends PureComponent {
                   }}
                   style={buttonTelegram}
                   icon={<Chat color="#ffca57" />}
-                  // hoverColor={Colors.blue300}
                 />
               </a>
             </div>
           </div>
         )}
-        <WalletSetup />
+        {/* <WalletSetup /> */}
       </div>
     )
   }

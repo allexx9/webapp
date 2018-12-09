@@ -1,20 +1,22 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-import ApplicationHomeEfx from '../ApplicationHome/applicationHomeEfx'
-import PropTypes from 'prop-types'
-import React, { Component } from 'react'
-import TopBarMenu from '../Elements/topBarMenu'
-
 import { Col, Row } from 'react-flexbox-grid'
-import getMuiTheme from 'material-ui/styles/getMuiTheme'
-
 import { connect } from 'react-redux'
+import { toUnitAmount } from '../_utils/format'
+import ApplicationHomeEfx from '../ApplicationHome/applicationHomeEfx'
+import BigNumber from 'bignumber.js'
+import Cookies from 'universal-cookie'
 import ElementNotConnected from '../Elements/elementNotConnected'
 import Joyride from 'react-joyride'
 import JoyrideContent from '../_atomic/atoms/joyrideContent'
+import JoyrideEfxIntro from '../_atomic/atoms/joyrideEfxIntro'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
+import TopBarMenu from '../Elements/topBarMenu'
 import TopMenuLinkDrawer from '../_atomic/molecules/topMenuLinkDrawer'
 import classNames from 'classnames'
+import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import styles from './application.module.css'
 
 const muiTheme = getMuiTheme({
@@ -30,7 +32,14 @@ const muiTheme = getMuiTheme({
 })
 
 function mapStateToProps(state) {
-  return state
+  return {
+    app: {
+      transactionsDrawerOpen: state.app.transactionsDrawerOpen
+    },
+    endpoint: {
+      grgBalance: state.endpoint.grgBalance
+    }
+  }
 }
 
 class ApplicationHomeEfxPage extends Component {
@@ -38,9 +47,38 @@ class ApplicationHomeEfxPage extends Component {
     muiTheme: PropTypes.object
   }
 
-  state = {
-    run: false,
-    steps: [
+  static getDerivedStateFromProps(props) {
+    const { endpoint } = props
+    const hasGRGBalance = new BigNumber(endpoint.grgBalance, 18).gte(1)
+    return {
+      hasGRGBalance
+    }
+  }
+
+  onCheckIntro = (event, isInputChecked) => {
+    const cookies = new Cookies()
+    cookies.set('rb-efx-tour', isInputChecked, { path: '/' })
+  }
+
+  introTourSteps = () => {
+    const { hasGRGBalance } = this.state
+    return [
+      {
+        target: '.joyride-efx-collaboration',
+        content: (
+          <JoyrideEfxIntro
+            content={
+              'RigoBlock + Ethfinex: the decentralized platform for asset management.'
+            }
+            onCheck={this.onCheckIntro}
+            hasGRGBalance={hasGRGBalance}
+          />
+        ),
+        placement: 'bottom',
+        disableBeacon: true,
+        disableCloseOnEsc: true,
+        disableOverlayClose: true
+      },
       {
         target: '.joyride-efx-search',
         content: (
@@ -63,11 +101,22 @@ class ApplicationHomeEfxPage extends Component {
       },
       {
         target: '.joyride-user-roles',
-        content: 'This if my awesome feature!',
+        content: (
+          <JoyrideContent
+            content={
+              'Switch between user roles. Select WIZARD to create and manage your own pools, or HOLDER to search for and buy units in pools.'
+            }
+          />
+        ),
         placement: 'bottom',
         disableBeacon: true
       }
     ]
+  }
+
+  state = {
+    hasGRGBalance: false,
+    run: false
   }
 
   static contextTypes = {
@@ -76,15 +125,21 @@ class ApplicationHomeEfxPage extends Component {
 
   static propTypes = {
     location: PropTypes.object.isRequired,
-    app: PropTypes.object.isRequired
+    app: PropTypes.object.isRequired,
+    dispatch: PropTypes.func.isRequired
   }
 
-  componentDidMount = async () => {}
-
-  runTour = () => {
-    console.log('click')
-    this.setState({ run: true })
+  componentDidMount = async () => {
+    // this.props.dispatch(Actions.users.isManagerAction(true))
+    const cookies = new Cookies()
+    const runTour = Boolean(cookies.get('rb-efx-tour') === 'true')
+    this.setState({ run: !runTour })
   }
+
+  // runTour = () => {
+  //   console.log('click')
+  //   this.setState({ run: true })
+  // }
 
   callback = data => {
     const { action, index, type } = data
@@ -103,27 +158,29 @@ class ApplicationHomeEfxPage extends Component {
 
   render() {
     const { isSyncing, syncStatus, isConnected } = this.props.app
-    const { steps, run } = this.state
+    const { run } = this.state
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
         <div>
           <Joyride
-            steps={steps}
+            steps={this.introTourSteps()}
+            showProgress={true}
             run={run}
+            continuous={true}
             callback={this.callback}
-            floaterProps={{
-              styles: {
-                wrapper: {
-                  zIndex: 1500
-                }
-              }
-            }}
+            // floaterProps={{
+            //   styles: {
+            //     wrapper: {
+            //       zIndex: 1500
+            //     }
+            //   }
+            // }}
             styles={{
               options: {
                 // arrowColor: '#e3ffeb',
                 // backgroundColor: '#e3ffeb',
                 // overlayColor: 'rgba(79, 26, 0, 0.4)',
-                primaryColor: '#ffae00',
+                primaryColor: '#064286',
                 // textColor: '#004a14',
                 width: 900,
                 zIndex: '1900'

@@ -10,7 +10,6 @@ import {
   RIGOBLOCK,
   ROPSTEN
 } from '../_utils/const'
-import { Interfaces } from '../_utils/interfaces'
 import { connect } from 'react-redux'
 import DropDownMenu from 'material-ui/DropDownMenu'
 import ElementBoxHeadTitle from '../Elements/elementBoxHeadTitle'
