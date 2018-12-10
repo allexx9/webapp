@@ -28,3 +28,27 @@
 .errorMsg {
   color: #FF9800;
 }
+
+.homeLink {
+  text-align: right;
+}
+
+.homeLink a {
+  text-decoration: none;
+  color: #064286;
+}
+
+.homeLink a:visited {
+  text-decoration: none;
+  color: #064286;
+}
+
+.homeLink a:hover {
+  text-decoration: underline;
+  color: #064286;
+}
+
+.homeLink a:active {
+  text-decoration: underline;
+  color: #064286;
+}

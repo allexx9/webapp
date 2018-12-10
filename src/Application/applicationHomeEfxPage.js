@@ -9,7 +9,7 @@ import Cookies from 'universal-cookie'
 import ElementNotConnected from '../Elements/elementNotConnected'
 import Joyride from 'react-joyride'
 import JoyrideContent from '../_atomic/atoms/joyrideContent'
-import JoyrideMainIntro from '../_atomic/atoms/joyrideMainIntro'
+import JoyrideMainIntro from '../_atomic/molecules/joyrideMainIntro'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
@@ -162,6 +162,9 @@ class ApplicationHomeEfxPage extends Component {
             showProgress={true}
             run={run}
             continuous={true}
+            floaterProps={{
+              disableAnimation: true
+            }}
             styles={{
               options: {
                 primaryColor: '#064286',
