@@ -49,7 +49,7 @@ class ApplicationHomeEfxPage extends Component {
 
   static getDerivedStateFromProps(props) {
     const { endpoint } = props
-    const hasGRGBalance = new BigNumber(endpoint.grgBalance, 18).gte(1)
+    const hasGRGBalance = new BigNumber(endpoint.grgBalance).gte(1)
     return {
       hasGRGBalance
     }
