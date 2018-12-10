@@ -1,3 +1,7 @@
 .wrapper {
   text-align: center;
 }
+
+.wrapper .ct-label {
+  font-size: 12px !important;
+}

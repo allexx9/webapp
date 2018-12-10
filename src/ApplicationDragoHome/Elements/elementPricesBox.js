@@ -44,12 +44,18 @@ export default class ElementPriceBox extends Component {
         <div>
           <Row middle="xs" className={styles.row}>
             <Col xs={6}>
+              <div>
+                <small>Price</small>
+              </div>
               <div className={styles.price}>
                 {dragoDetails.sellPrice}{' '}
                 <small className={styles.tokenSymbol}>ETH</small>
               </div>
             </Col>
             <Col xs={6}>
+              <div>
+                <small>Price</small>
+              </div>
               <div className={styles.price}>
                 {dragoDetails.buyPrice}{' '}
                 <small className={styles.tokenSymbol}>ETH</small>
