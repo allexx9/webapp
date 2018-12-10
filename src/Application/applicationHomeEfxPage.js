@@ -162,6 +162,9 @@ class ApplicationHomeEfxPage extends Component {
             showProgress={true}
             run={run}
             continuous={true}
+            floaterProps={{
+              disableAnimation: true
+            }}
             styles={{
               options: {
                 primaryColor: '#064286',
