@@ -6,6 +6,8 @@ export const ZRX = 'ZRX'
 export const GNT = 'GNT'
 export const USDT = 'USDT'
 export const WETH = 'WETH'
+export const OMG = 'OMG'
+export const SAN = 'SAN'
 
 export const MOCK_ERC20_TOKENS = {
   kovan: {
@@ -389,41 +391,15 @@ export const ERC20_TOKENS = {
     }
   },
   mainnet: {
-    WETH: {
-      symbol: 'WETH',
+    GRG: {
+      symbol: 'GRG',
       isOldERC20: false,
       symbolTicker: {
-        [Ethfinex]: 'ETH'
+        Ethfinex: 'GRG'
       },
-      address: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+      address: '0x4fbb350052bca5417566f188eb2ebce5b19bc964',
       decimals: 18,
-      name: 'Wrapped Ether 0x',
-      wrappers: {}
-    },
-    ZRX: {
-      symbol: 'ZRX',
-      isOldERC20: false,
-      symbolTicker: {
-        Ethfinex: 'ZRX'
-      },
-      address: '0xe41d2489571d322189246dafa5ebde1f4699f498',
-      decimals: 18,
-      name: '0x Protocol Token',
-      wrappers: {
-        Ethfinex: {
-          symbol: 'ZRXW',
-          decimals: 18,
-          address: '0xCf67d7A481CEEca0a77f658991A00366FED558F7',
-          name: 'ZRX Wrapper'
-        }
-      }
-    },
-    ETHW: {
-      symbol: 'ETHW',
-      isOldERC20: false,
-      address: '0xaa7427d8f17d87a28f5e1ba3adbb270badbe1011',
-      decimals: 18,
-      name: 'Wrapped Ether EFX',
+      name: 'GRG Token',
       wrappers: {}
     },
     ETH: {
@@ -444,26 +420,23 @@ export const ERC20_TOKENS = {
         }
       }
     },
-    GNT: {
-      symbol: 'GNT',
+    ETHW: {
+      symbol: 'ETHW',
       isOldERC20: false,
-      symbolTicker: {
-        Ethfinex: 'GNT'
-      },
-      address: '0xa74476443119A942dE498590Fe1f2454d7D4aC0d',
+      address: '0xaa7427d8f17d87a28f5e1ba3adbb270badbe1011',
       decimals: 18,
-      name: 'Golem Network Token',
+      name: 'Wrapped Ether EFX',
       wrappers: {}
     },
-    MKR: {
-      symbol: 'MKR',
+    WETH: {
+      symbol: 'WETH',
       isOldERC20: false,
       symbolTicker: {
-        Ethfinex: 'MKR'
+        [Ethfinex]: 'ETH'
       },
-      address: '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2',
+      address: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
       decimals: 18,
-      name: 'MakerDAO',
+      name: 'Wrapped Ether 0x',
       wrappers: {}
     },
     USDT: {
@@ -484,16 +457,77 @@ export const ERC20_TOKENS = {
         }
       }
     },
-    GRG: {
-      symbol: 'GRG',
+    OMG: {
+      symbol: 'OMG',
       isOldERC20: false,
       symbolTicker: {
-        Ethfinex: 'GRG'
+        Ethfinex: 'OMG'
       },
-      address: '0x4fbb350052bca5417566f188eb2ebce5b19bc964',
+      address: '0xd26114cd6EE289AccF82350c8d8487fedB8A0C07',
       decimals: 18,
-      name: 'GRG Token',
-      wrappers: {}
+      name: 'OmiseGO Token',
+      wrappers: {
+        Ethfinex: {
+          symbol: 'OMGW',
+          decimals: 18,
+          address: '0x60f8526f09caaf0008187945ccd88bc43790042c',
+          name: 'OMG Wrapper'
+        }
+      }
+    },
+    ZRX: {
+      symbol: 'ZRX',
+      isOldERC20: false,
+      symbolTicker: {
+        Ethfinex: 'ZRX'
+      },
+      address: '0xe41d2489571d322189246dafa5ebde1f4699f498',
+      decimals: 18,
+      name: '0x Protocol Token',
+      wrappers: {
+        Ethfinex: {
+          symbol: 'ZRXW',
+          decimals: 18,
+          address: '0xCf67d7A481CEEca0a77f658991A00366FED558F7',
+          name: 'ZRX Wrapper'
+        }
+      }
+    },
+    SAN: {
+      symbol: 'SAN',
+      isOldERC20: false,
+      symbolTicker: {
+        Ethfinex: 'SAN'
+      },
+      address: '0x7c5a0ce9267ed19b22f8cae653f198e3e8daf098',
+      decimals: 18,
+      name: 'Santiment Token',
+      wrappers: {
+        Ethfinex: {
+          symbol: 'SANW',
+          decimals: 18,
+          address: '0xb0abd4cc5195560209492b6854c666d7cff8c03c',
+          name: 'SAN Wrapper'
+        }
+      }
+    },
+    SNT: {
+      symbol: 'SNT',
+      isOldERC20: false,
+      symbolTicker: {
+        Ethfinex: 'SNT'
+      },
+      address: '0x744d70fdbe2ba4cf95131626614a1763df805b9e',
+      decimals: 18,
+      name: 'StatusNetwork Token',
+      wrappers: {
+        Ethfinex: {
+          symbol: 'SNTW',
+          decimals: 18,
+          address: '0x8aa72dd6045505836f643b39b82e70fd705f9686',
+          name: 'SNT Wrapper'
+        }
+      }
     }
   },
   ropsten: {
@@ -611,12 +645,42 @@ export const TRADE_TOKENS_PAIRS = {
       networks: [1, 3],
       symbol: ETH,
       exchanges: [Ethfinex]
+    },
+    [OMG]: {
+      networks: [1],
+      symbol: OMG,
+      exchanges: [Ethfinex]
+    },
+    [ZRX]: {
+      networks: [1],
+      symbol: ZRX,
+      exchanges: [Ethfinex]
+    },
+    [SAN]: {
+      networks: [1],
+      symbol: SAN,
+      exchanges: [Ethfinex]
     }
   },
   [ETH]: {
     [GRG]: {
       networks: [3],
       symbol: GRG,
+      exchanges: [Ethfinex]
+    },
+    [OMG]: {
+      networks: [1],
+      symbol: OMG,
+      exchanges: [Ethfinex]
+    },
+    [ZRX]: {
+      networks: [1],
+      symbol: ZRX,
+      exchanges: [Ethfinex]
+    },
+    [SAN]: {
+      networks: [1],
+      symbol: SAN,
       exchanges: [Ethfinex]
     }
   }

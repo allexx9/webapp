@@ -9,6 +9,14 @@
   text-transform: uppercase;
 }
 
+.baseToken {
+  font-weight: 700;
+}
+
+.quoteToken {
+  opacity: 0.8;
+}
+
 .details {
   display: inline-block;
 }
