@@ -268,8 +268,12 @@ class WalletSetupStepper extends Component {
     const { stepIndex } = this.state
     const { locked, correctNetwork, holdsTokens } = this.state
     const { networkInfo } = this.props.endpoint
-    // console.log(this.props.app)
-    // console.log(this.setActive(0).iconStyle)
+    const buttonExit = {
+      border: '1px solid',
+      borderColor: '#054186',
+      backgroundColor: 'white',
+      borderRadius: '4px'
+    }
     return (
       <Dialog
         title={
@@ -406,8 +410,11 @@ class WalletSetupStepper extends Component {
               disableTouchRipple={true}
               disableFocusRipple={true}
               href="/#/"
-              onClick={this.handlePrev}
-              labelStyle={{ color: '#064286', fontWeight: 700 }}
+              style={buttonExit}
+              labelStyle={{
+                color: '#064286'
+                // fontWeight: 700
+              }}
             />
           </div>
         </div>
