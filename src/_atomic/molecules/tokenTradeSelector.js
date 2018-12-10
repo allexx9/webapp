@@ -5,6 +5,7 @@ import { MenuItem, SelectField } from 'material-ui'
 import ExchangeTokenSelectItem from '../atoms/exchangeTokenSelectItem'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
+import TokenTradeSelectorTitle from '../atoms/tokenTradeSelectorTitle'
 import styles from './tokenTradeSelector.module.css'
 
 // const tradableTokens = ["WETH / ZRX", "WETH / GRG"]
@@ -14,6 +15,10 @@ export default class TokenTradeSelector extends PureComponent {
     tradableTokens: PropTypes.object.isRequired,
     selectedTradeTokensPair: PropTypes.object.isRequired,
     onSelectTokenTrade: PropTypes.func.isRequired
+  }
+
+  state = {
+    selectedToken: 'USDT'
   }
 
   onSelectTokenTrade = (event, key, payload) => {
@@ -26,6 +31,23 @@ export default class TokenTradeSelector extends PureComponent {
     ) {
       this.props.onSelectTokenTrade(payload)
     }
+  }
+
+  onSelectQuoteToken = token => {
+    console.log(token.target.id)
+    let quoteToken
+    switch (token.target.id) {
+      case 'select-quote-token-ETH':
+        quoteToken = 'ETH'
+        break
+      case 'select-quote-token-USDT':
+        quoteToken = 'USDT'
+        break
+      default:
+        quoteToken = 'ETH'
+        break
+    }
+    this.setState({ selectedToken: quoteToken })
   }
 
   renderTokens = () => {
@@ -54,11 +76,14 @@ export default class TokenTradeSelector extends PureComponent {
 
   render() {
     // console.log(this.props.selectedTradeTokensPair)
-
+    const { selectedToken } = this.state
     return (
       <Row>
         <Col xs={12}>
-          <div className={styles.sectionTitle}>Trading pairs</div>
+          <TokenTradeSelectorTitle
+            onClick={this.onSelectQuoteToken}
+            selectedToken={selectedToken}
+          />
         </Col>
         <Col xs={12}>
           <SelectField
