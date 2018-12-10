@@ -29,3 +29,6 @@ self.addEventListener('activate', function(e) {
     })
 })
 EOF
+cat <<EOF > src/_utils/version_git.js
+export const GIT_HASH = ''
+EOF
