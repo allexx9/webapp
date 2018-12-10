@@ -2,6 +2,7 @@
 // This file is part of RigoBlock.
 
 import * as abis from '../../contracts/abi'
+import { UTILITY_CONTRACT_ADDRESS } from '../../utils/const'
 import { WETH_ADDRESSES } from '../../utils/const'
 import Registry from '../registry'
 
@@ -747,6 +748,26 @@ class DragoWeb3 {
           .operateOnExchange(wrapperAddress, [encodedABI])
           .send(options)
       })
+  }
+
+  getMultiBalancesAndAddressesFromAddresses = async tokenAddresses => {
+    const api = this._api
+    const networkId = await api.eth.net.getId()
+    const instance = this._instance
+    const utilityContractInstance = new api.eth.Contract(
+      abis.utilityContract,
+      UTILITY_CONTRACT_ADDRESS[networkId]
+    )
+    console.log(tokenAddresses, instance._address.toLowerCase())
+    return utilityContractInstance.methods
+      .getMultiBalancesAndAddressesFromAddresses(
+        [
+          '0x6fa8590920c5966713b1a86916f7b0419411e474',
+          '0x0736d0c130b2ead47476cc262dbed90d7c4eeabd'
+        ],
+        '0x300f68d9aed119b26f3f410cac78aa7249f41987'
+      )
+      .call({})
   }
 }
 

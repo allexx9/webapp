@@ -22,20 +22,20 @@ const dragoList = () => {
     sellPrice: '1.1',
     buyPrice: '1.4'
   })
-  list.push({
-    symbol: 'DR4',
-    name: 'Drago 4',
-    supply: i++,
-    sellPrice: '1.2',
-    buyPrice: '1.5'
-  })
-  list.push({
-    symbol: 'DR5',
-    name: 'Drago 5',
-    supply: i++,
-    sellPrice: '1.5',
-    buyPrice: '2'
-  })
+  // list.push({
+  //   symbol: 'DR4',
+  //   name: 'Drago 4',
+  //   supply: i++,
+  //   sellPrice: '1.2',
+  //   buyPrice: '1.5'
+  // })
+  // list.push({
+  //   symbol: 'DR5',
+  //   name: 'Drago 5',
+  //   supply: i++,
+  //   sellPrice: '1.5',
+  //   buyPrice: '2'
+  // })
   return list
 }
 
@@ -60,18 +60,18 @@ const vaultList = () => {
     supply: i++,
     fee: '0.10'
   })
-  list.push({
-    symbol: 'VA4',
-    name: 'Vault 4',
-    supply: i++,
-    fee: '0.10'
-  })
-  list.push({
-    symbol: 'VA5',
-    name: 'Vault 5',
-    supply: i++,
-    fee: '0.10'
-  })
+  // list.push({
+  //   symbol: 'VA4',
+  //   name: 'Vault 4',
+  //   supply: i++,
+  //   fee: '0.10'
+  // })
+  // list.push({
+  //   symbol: 'VA5',
+  //   name: 'Vault 5',
+  //   supply: i++,
+  //   fee: '0.10'
+  // })
   return list
 }
 

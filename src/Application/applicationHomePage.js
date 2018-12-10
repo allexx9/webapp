@@ -72,7 +72,7 @@ class ApplicationHomePage extends Component {
               />
             </Col>
           </Row>
-          <Row className={classNames(styles.content)}>
+          <Row className={classNames(styles.contentHomePages)}>
             <Col xs={12}>
               <ApplicationHome />
               {isConnected && !isSyncing ? null : (

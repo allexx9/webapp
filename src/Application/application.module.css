@@ -47,6 +47,12 @@
   margin-top: 55px;
 }
 
+.contentHomePages {
+  flex: 1 0 auto !important;
+  height: 100%;
+  margin-top: 18px;
+}
+
 .comingSoonBlur {
   max-width: 100%;
   height: auto;

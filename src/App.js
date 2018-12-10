@@ -10,7 +10,8 @@ import AppLoading from './Elements/elementAppLoading'
 import ApplicationConfigPage from './Application/applicationConfig'
 import ApplicationDragoPage from './Application/applicationDrago'
 import ApplicationExchangePage from './Application/applicationExchange'
-import ApplicationHomePage from './Application/applicationHome'
+import ApplicationHomeEfxPage from './Application/applicationHomeEfxPage'
+import ApplicationHomePage from './Application/applicationHomePage'
 import ApplicationVaultPage from './Application/applicationVault'
 import Endpoint from './_utils/endpoint'
 import NotificationSystem from 'react-notification-system'
@@ -80,6 +81,11 @@ export class App extends Component {
     }
   }
 
+  callback = data => {
+    const { action, index, type } = data
+    console.log(action, index, type)
+  }
+
   getChildContext() {
     return {
       api: this._api
@@ -109,6 +115,7 @@ export class App extends Component {
       this.props.dispatch(Actions.endpoint.checkMetaMaskIsUnlocked())
     }
     this.props.dispatch(Actions.endpoint.monitorAccountsStart())
+    this.setState({ run: true })
   }
 
   render() {
@@ -173,6 +180,7 @@ export class App extends Component {
         }
       }
     }
+
     return (
       <div className={styles.appContainer}>
         <NotificationSystem
@@ -186,6 +194,11 @@ export class App extends Component {
         ) : (
           <Router history={history}>
             <Switch>
+              <Route
+                exact
+                path={'/ethfinex'}
+                component={ApplicationHomeEfxPage}
+              />
               <Route
                 exact
                 path={'/app/' + appHashPath + '/home'}
