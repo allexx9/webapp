@@ -36,11 +36,13 @@ class ApplicationHomeEfx extends PureComponent {
     location: PropTypes.object.isRequired,
     transactionsDrago: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
-    onClickCreatePool: PropTypes.func
+    onClickCreatePool: PropTypes.func,
+    onClickExplore: PropTypes.func
   }
 
   static defaultProps = {
-    onClickCreatePool: () => {}
+    onClickCreatePool: () => {},
+    onClickExplore: () => {}
   }
 
   state = {
@@ -146,7 +148,8 @@ class ApplicationHomeEfx extends PureComponent {
       borderColor: '#054186',
       fontWeight: '600',
       height: '45px',
-      backgroundColor: 'white'
+      backgroundColor: 'white',
+      borderRadius: '4px'
       // width: "140px"
     }
     const buttonCreateDrago = {
@@ -232,7 +235,7 @@ class ApplicationHomeEfx extends PureComponent {
               <Row>
                 <Col xs={6}>
                   <div style={{ textAlign: 'right', marginRight: '22px' }}>
-                    <Link to="/">
+                    <Link to="/drago">
                       <FlatButton
                         labelPosition="before"
                         label="Explore"
@@ -241,16 +244,14 @@ class ApplicationHomeEfx extends PureComponent {
                           fontWeight: '600',
                           fontSize: '20px'
                         }}
+                        onClick={this.props.onClickExplore}
                         style={buttonExplore}
                       />
                     </Link>
                   </div>
                 </Col>
                 <Col xs={6}>
-                  <div
-                    style={{ textAlign: 'left', marginLeft: '22px' }}
-                    className={'joyride-efx-create'}
-                  >
+                  <div style={{ textAlign: 'left', marginLeft: '22px' }}>
                     <Link to="/drago">
                       <FlatButton
                         labelPosition="before"

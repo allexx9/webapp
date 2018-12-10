@@ -33,9 +33,7 @@ const muiTheme = getMuiTheme({
 
 function mapStateToProps(state) {
   return {
-    app: {
-      transactionsDrawerOpen: state.app.transactionsDrawerOpen
-    },
+    app: state.app,
     endpoint: {
       grgBalance: state.endpoint.grgBalance
     }
@@ -137,8 +135,11 @@ class ApplicationHomeEfxPage extends Component {
   }
 
   onClickCreatePool = () => {
-    console.log('click')
     this.props.dispatch(Actions.users.isManagerAction(true))
+  }
+
+  onClickExplore = () => {
+    this.props.dispatch(Actions.users.isManagerAction(false))
   }
 
   getChildContext() {
@@ -185,7 +186,10 @@ class ApplicationHomeEfxPage extends Component {
           </Row>
           <Row className={classNames(styles.contentHomePages)}>
             <Col xs={12}>
-              <ApplicationHomeEfx onClickCreatePool={this.onClickCreatePool} />
+              <ApplicationHomeEfx
+                onClickCreatePool={this.onClickCreatePool}
+                onClickExplore={this.onClickExplore}
+              />
               {isConnected && !isSyncing ? null : (
                 <ElementNotConnected
                   isSyncing={isSyncing}

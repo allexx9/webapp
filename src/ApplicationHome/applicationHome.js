@@ -1,7 +1,6 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
 import { Actions } from '../_redux/actions'
-import { Card, CardActions, CardText, CardTitle } from 'material-ui/Card'
 import { Col, Row } from 'react-flexbox-grid'
 import { Link, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
@@ -14,7 +13,6 @@ import FlatButton from 'material-ui/FlatButton'
 import LinearProgress from 'material-ui/LinearProgress'
 import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types'
-import RaisedButton from 'material-ui/RaisedButton'
 import React, { PureComponent } from 'react'
 import SearchIcon from '../_atomic/atoms/searchIcon'
 import WalletSetup from '../_atomic/organisms/walletSetup'
@@ -26,7 +24,6 @@ function mapStateToProps(state) {
 }
 
 class ApplicationHome extends PureComponent {
-  // We check the type of the context variable that we receive by the parent
   static contextTypes = {
     api: PropTypes.object.isRequired
   }
@@ -35,7 +32,9 @@ class ApplicationHome extends PureComponent {
     endpoint: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     transactionsDrago: PropTypes.object.isRequired,
-    dispatch: PropTypes.func.isRequired
+    dispatch: PropTypes.func.isRequired,
+    onClickCreatePool: PropTypes.func.isRequired,
+    onClickExplore: PropTypes.func.isRequired
   }
 
   state = {
@@ -144,7 +143,8 @@ class ApplicationHome extends PureComponent {
       borderColor: '#054186',
       fontWeight: '600',
       height: '45px',
-      backgroundColor: 'white'
+      backgroundColor: 'white',
+      borderRadius: '4px'
       // width: "140px"
     }
     const detailsBox = {
@@ -152,6 +152,24 @@ class ApplicationHome extends PureComponent {
       width: '100%',
       marginRight: `20px`,
       marginLeft: `20px`
+    }
+    const buttonCreateDrago = {
+      border: '2px solid',
+      borderColor: '#054186',
+      fontWeight: '600',
+      height: '45px',
+      borderRadius: '4px',
+      width: '210px',
+      backgroundColor: '#054186'
+    }
+    const buttonExplore = {
+      border: '2px solid',
+      borderColor: '#054186',
+      fontWeight: '600',
+      height: '45px',
+      backgroundColor: 'white',
+      borderRadius: '4px',
+      width: '210px'
     }
     let { location } = this.props
     return (
@@ -189,31 +207,71 @@ class ApplicationHome extends PureComponent {
         <Row>
           <Col xs={12}>
             <div>
-              <Row>
-                <Col xs={12}>
-                  <div className={styles.mainlogo}>
-                    <img
-                      style={{ height: '80px' }}
-                      src="/img/Logo-RigoblockRGB-OUT-01.png"
-                      alt=""
-                    />
-                  </div>
-                  <h2 style={{ color: '#054186' }}>
-                    The leading crypto platform for asset management.
-                  </h2>
-                  <p className={styles.subHeadline}>
-                    <b className={styles.txtDotted}>Simple</b>,{' '}
-                    <b className={styles.txtDottedYellow}>transparent</b>,{' '}
-                    <b className={styles.txtDotted}>meritocratic</b> and{' '}
-                    <b className={styles.txtDottedYellow}>democratic</b>.
-                  </p>
-                </Col>
-              </Row>
+              <div className={'joyride-home-logo'}>
+                <Row>
+                  <Col xs={12}>
+                    <div className={styles.mainlogo}>
+                      <img
+                        style={{ height: '80px' }}
+                        src="/img/Logo-RigoblockRGB-OUT-01.png"
+                        alt=""
+                      />
+                    </div>
+                    <h2 style={{ color: '#054186' }}>
+                      The leading crypto platform for asset management.
+                    </h2>
+                    <p className={styles.subHeadline}>
+                      <b className={styles.txtDotted}>Simple</b>,{' '}
+                      <b className={styles.txtDottedYellow}>transparent</b>,{' '}
+                      <b className={styles.txtDotted}>meritocratic</b> and{' '}
+                      <b className={styles.txtDottedYellow}>democratic</b>.
+                    </p>
+                  </Col>
+                </Row>
+              </div>
+
+              <div className={styles.buttonLogoContainer}>
+                <Row>
+                  <Col xs={6}>
+                    <div style={{ textAlign: 'right', marginRight: '22px' }}>
+                      <FlatButton
+                        labelPosition="before"
+                        label="Explore"
+                        labelStyle={{
+                          color: '#054186',
+                          fontWeight: '600',
+                          fontSize: '20px'
+                        }}
+                        onClick={this.props.onClickExplore}
+                        style={buttonExplore}
+                      />
+                    </div>
+                  </Col>
+                  <Col xs={6}>
+                    <div style={{ textAlign: 'left', marginLeft: '22px' }}>
+                      <Link to="/drago">
+                        <FlatButton
+                          labelPosition="before"
+                          label="Create a pool"
+                          labelStyle={{
+                            color: '#ffffff',
+                            fontWeight: '600',
+                            fontSize: '20px'
+                          }}
+                          onClick={this.props.onClickCreatePool}
+                          id="joyride-home-create-pool"
+                          style={buttonCreateDrago}
+                        />
+                      </Link>
+                    </div>
+                  </Col>
+                </Row>
+              </div>
               <Row>
                 <Col xs={12}>
                   <Row>
                     <Paper style={detailsBox} zDepth={1}>
-                      <Col xs={12}>
+                      <Col xs={12} className={'joyride-home-search'}>
                         <div className={styles.filterBox}>
                           Search for pools
                           <FilterPoolsField
@@ -249,7 +307,7 @@ class ApplicationHome extends PureComponent {
                   </Row>
                 </Col>
               </Row>
-              <div className={styles.actionsContainer}>
+              {/* <div className={styles.actionsContainer}>
                 <Row className={styles.cards}>
                   <Col xs={6}>
                     <Card className={styles.column}>
@@ -303,7 +361,7 @@ class ApplicationHome extends PureComponent {
                     <p />
                   </Col>
                 </Row>
-              </div>
+              </div> */}
             </div>
           </Col>
         </Row>

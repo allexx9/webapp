@@ -10,11 +10,13 @@ class JoyrideMainIntro extends React.Component {
   static propTypes = {
     content: PropTypes.string.isRequired,
     onCheck: PropTypes.func.isRequired,
-    hasGRGBalance: PropTypes.bool.isRequired
+    hasGRGBalance: PropTypes.bool.isRequired,
+    showHideOption: PropTypes.bool
   }
 
   static defaultProps = {
-    content: ''
+    content: '',
+    showHideOption: true
   }
 
   checkWalletBalance = async () => {
@@ -43,7 +45,7 @@ class JoyrideMainIntro extends React.Component {
       width: '210px',
       backgroundColor: '#054186'
     }
-    const { hasGRGBalance } = this.props
+    const { hasGRGBalance, showHideOption } = this.props
     return (
       <div className={styles.container}>
         <div className={styles.rbLogo}>
@@ -171,12 +173,14 @@ class JoyrideMainIntro extends React.Component {
             <div className={styles.showTick}>
               <Row>
                 <Col xs={12}>
-                  <Checkbox
-                    label="Don't show next time."
-                    labelPosition="left"
-                    iconStyle={{ width: '14px' }}
-                    onCheck={this.props.onCheck}
-                  />
+                  {showHideOption && (
+                    <Checkbox
+                      label="Don't show next time."
+                      labelPosition="left"
+                      iconStyle={{ width: '14px' }}
+                      onCheck={this.props.onCheck}
+                    />
+                  )}
                 </Col>
               </Row>
             </div>

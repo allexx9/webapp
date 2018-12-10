@@ -153,7 +153,9 @@ class NavLinksLeft extends PureComponent {
       <Toolbar style={{ background: '', paddingLeft: '38px' }}>
         <ToolbarGroup>
           <Hidden xs sm md>
-            <ToolbarGroup>{this.renderTopLinksLong(linksLong)}</ToolbarGroup>
+            <ToolbarGroup className={'joyride-app-sections'}>
+              {this.renderTopLinksLong(linksLong)}
+            </ToolbarGroup>
           </Hidden>
           <Visible xs sm md>
             {this.renderTopLinksShort(linksShort)}
