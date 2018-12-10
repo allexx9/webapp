@@ -290,7 +290,14 @@ class WalletSetupStepper extends Component {
         repositionOnUpdate={false}
         // contentStyle={{ minHeight: 900 }}
       >
-        <div style={{ maxWidth: 380, minHeight: 400, margin: 'auto' }}>
+        <div
+          style={{
+            maxWidth: 380,
+            minHeight: 400,
+            margin: 'auto',
+            position: 'relative'
+          }}
+        >
           <Stepper activeStep={stepIndex} orientation="vertical">
             <Step className={this.setActive(0).labelClass}>
               <StepLabel icon={this.renderIcon(this.setActive(0).iconStyle, 0)}>
@@ -393,6 +400,16 @@ class WalletSetupStepper extends Component {
               </StepContent>
             </Step>
           </Stepper>
+          <div className={styles.homeLink}>
+            <FlatButton
+              label="EXIT"
+              disableTouchRipple={true}
+              disableFocusRipple={true}
+              href="/#/"
+              onClick={this.handlePrev}
+              labelStyle={{ color: '#064286', fontWeight: 700 }}
+            />
+          </div>
         </div>
       </Dialog>
     )
