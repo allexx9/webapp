@@ -71,7 +71,7 @@ class JoyrideMainIntro extends React.Component {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  &#62;&#62; Read more
+                  &#62;&#62; Read more &#60;&#60;
                 </a>
               </div>
             </Col>
