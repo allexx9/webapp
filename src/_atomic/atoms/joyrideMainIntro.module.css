@@ -1,0 +1,108 @@
+.container {}
+
+.container a {
+  text-decoration: none;
+  color: #064286;
+}
+
+.container a:visited {
+  text-decoration: none;
+  color: #064286;
+}
+
+.container a:hover {
+  text-decoration: underline;
+  color: #064286;
+}
+
+.container a:active {
+  text-decoration: underline;
+  color: #064286;
+}
+
+.socialsContainer {
+  text-align: right;
+  padding-right: 16px;
+  padding-top: 8px;
+  position: absolute;
+  right: 5px;
+  overflow: hidden;
+
+}
+
+.socialsContainer img {
+  padding-left: 5px;
+}
+
+.communityContainer {
+  text-align: left;
+  padding-left: 12px;
+  padding-right: 12px;
+  /* padding-top: 12px; */
+}
+
+.communityContainerTitle {
+  color: #064286;
+  font-weight: 700;
+}
+
+.imgLink {
+  float: left;
+  margin-right: 24px;
+}
+
+.projectDescription {
+  padding-left: 12px;
+  padding-right: 12px;
+  /* padding-top: 12px; */
+  /* padding-bottom: 12px; */
+}
+
+.efxDescriptionTxt {
+  text-align: left;
+  line-height: 1.4;
+}
+
+.efxDescriptionMore {
+  margin-top: 8px;
+  text-align: right;
+  color: #064286;
+  font-weight: 700;
+}
+
+
+.projectDescription h2 {
+  color: #064286;
+  text-align: center;
+}
+
+.communityContainerBody {
+  margin-top: 8px;
+}
+
+.icoButton {
+  text-align: center;
+  margin-top: 24px;
+
+}
+
+.showTick {
+  text-align: right;
+  font-size: 12px;
+}
+
+.rbLogo {
+  position: absolute;
+  margin-top: -12px;
+}
+
+.minimumBalance {
+  color: #064286;
+  font-weight: 700;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  font-size: 18px;
+  text-decoration: underline;
+  text-underline-position: under;
+  text-decoration-style: dotted;
+}

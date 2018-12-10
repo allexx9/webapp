@@ -24,3 +24,4 @@ sentry-cli releases deploys $GIT_VERSION new -e $ENVIRONMENT
 # sentry-cli releases -o $SENTRY_ORG -p $SENTRY_PROJ files \
 #   $GIT_VERSION upload-sourcemaps --log-level=debug --no-rewrite --validate --url-prefix \
 #   https://beta.rigoblock.com/static build/static/js
+

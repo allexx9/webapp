@@ -32,7 +32,7 @@ class ButtonDeployPool extends Component {
     return (
       <div>
         <FlatButton
-          label="Deploy"
+          label="Create"
           primary={true}
           onClick={this.props.handleOpen}
           labelStyle={{

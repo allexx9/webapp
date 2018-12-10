@@ -41,6 +41,15 @@ const getTokensBalances$ = (dragoAddress, networkInfo) => {
   const getTokensBalances = async () => {
     let allowedTokens = ERC20_TOKENS[networkInfo.name]
     let dragoAssets = {}
+
+    // const results = await poolApi.contract.drago.getMultiBalancesAndAddressesFromAddresses(
+    //   [
+    //     '0x6FA8590920c5966713b1a86916f7b0419411e474'.toLowerCase(),
+    //     '0x0736d0c130b2eAD47476cC262dbed90D7C4eeABD'.toLowerCase()
+    //   ]
+    // )
+    // console.log(results)
+
     for (let token in allowedTokens) {
       let balances = {
         token: new BigNumber(0),

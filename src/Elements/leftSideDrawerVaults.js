@@ -14,13 +14,16 @@ import MenuItem from 'material-ui/MenuItem'
 
 let drawerStyle = {
   activeLink: {
-    backgroundColor: 'rgba(0, 0, 0, 0.1)',
-    color: 'black'
+    backgroundColor: 'rgba(0, 0, 0, 0.05)',
+    color: 'black',
+    borderLeftColor: 'rgb(96, 124, 138)',
+    borderLeftStyle: 'solid',
+    borderLeftWidth: '4px',
+    borderRadius: '2px'
   }
 }
 
 class LeftSideDrawerVaults extends Component {
-
   static propTypes = {
     location: PropTypes.object.isRequired,
     isManager: PropTypes.bool.isRequired

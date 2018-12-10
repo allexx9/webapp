@@ -109,6 +109,7 @@ class Endpoint {
       api._rb.network.transportHttp = this._https
       console.log('Network: ', this._network.name)
       console.log('Connecting to WebSocket: ', this._wss)
+      console.log(api)
       return api
     } catch (error) {
       console.log('Connection error: ', error)

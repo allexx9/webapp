@@ -51,7 +51,7 @@ class TopBarMenu extends Component {
                   Community
                 </a>
               </li>
-              <li>
+              {/* <li>
                 <a
                   href="https://help.rigoblock.com/"
                   rel="noopener noreferrer"
@@ -59,7 +59,7 @@ class TopBarMenu extends Component {
                 >
                   Help
                 </a>
-              </li>
+              </li> */}
             </ul>
           </div>
         </div>
@@ -89,6 +89,7 @@ class TopBarMenu extends Component {
         <ElementNotificationsDrawer
           notificationsOpen={this.props.transactionsDrawerOpen}
         />
+        <div className={'joyride-notifications'} />
       </div>
     )
   }

@@ -1,5 +1,5 @@
 import { errors } from 'web3-core-helpers'
-import ReconnectingWebSocket from 'reconnecting-websocket/dist/reconnecting-websocket-amd.js'
+import ReconnectingWebSocket from 'reconnecting-websocket/dist/reconnecting-websocket-cjs'
 
 let Ws
 let _btoa = null

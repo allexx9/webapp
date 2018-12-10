@@ -12,8 +12,12 @@ import styles from './elements.module.css'
 
 let drawerStyle = {
   activeLink: {
-    backgroundColor: 'rgba(0, 0, 0, 0.1)',
-    color: 'black'
+    backgroundColor: 'rgba(0, 0, 0, 0.05)',
+    color: 'black',
+    borderLeftColor: '#054087',
+    borderLeftStyle: 'solid',
+    borderLeftWidth: '4px',
+    borderRadius: '2px'
   }
 }
 

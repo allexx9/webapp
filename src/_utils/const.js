@@ -32,8 +32,6 @@ export const REGISTRY_KOVAN = '0xfAb104398BBefbd47752E7702D9fE23047E1Bca3'
 // Address of RigoToken GRG
 // export const GRG_ADDRESS_KV = "0x56B28058d303bc0475a34D439aa586307adAc1f5";
 
-export const GRG = 'GRG'
-export const ETH = 'ETH'
 export const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
 
 export * from './tokens'

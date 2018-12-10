@@ -198,57 +198,6 @@ class ApplicationHome extends PureComponent {
                       alt=""
                     />
                   </div>
-                  {/* <h2 className={styles.headline}>
-                    Decentralized Pools of Digital Tokens
-                  </h2> */}
-                  {/* <div className={styles.telegramButtonContainer}>
-                    <a
-                      href="https://t.me/rigoblockprotocol"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={styles.communityButton}
-                    >
-                      <FlatButton
-                        labelPosition="before"
-                        label="Join us on telegram!"
-                        labelStyle={{
-                          color: '#054186',
-                          fontWeight: '600',
-                          fontSize: '20px'
-                        }}
-                        style={buttonTelegram}
-                        icon={
-                          <img
-                            src="/img/iconmonstr-telegram-1.svg"
-                            // style={{ fill: '#ffca57' }}
-                            height="24px"
-                            className={styles.telegramIcon}
-                          />
-                        }
-                        // hoverColor={Colors.blue300}
-                      />
-                    </a>
-
-                    <a
-                      href="https://community.rigoblock.com"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={styles.communityButton}
-                    >
-                      <FlatButton
-                        labelPosition="before"
-                        label="Join our Community"
-                        labelStyle={{
-                          color: '#054186',
-                          fontWeight: '600',
-                          fontSize: '20px'
-                        }}
-                        style={buttonTelegram}
-                        icon={<Chat color="#ffca57" />}
-                        // hoverColor={Colors.blue300}
-                      />
-                    </a>
-                  </div> */}
                   <h2 style={{ color: '#054186' }}>
                     The leading crypto platform for asset management.
                   </h2>
@@ -355,39 +304,6 @@ class ApplicationHome extends PureComponent {
                   </Col>
                 </Row>
               </div>
-
-              {/* <Row>
-                <Col xs={12} className={styles.socialsContainer}>
-                  <a
-                    href="https://t.me/rigoblockprotocol"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <img src="/img/social/telegram.svg" height="32px" />
-                  </a>
-                  <a
-                    href="https://discordapp.com/channels/rigoblock"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <img src="/img/social/discord.svg" height="32px" />
-                  </a>
-                  <a
-                    href="https://www.facebook.com/RigoBlocks"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <img src="/img/social/facebook.svg" height="32px" />
-                  </a>
-                  <a
-                    href="https://twitter.com/rigoblock"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <img src="/img/social/twitter.svg" height="32px" />
-                  </a>
-                </Col>
-              </Row> */}
             </div>
           </Col>
         </Row>

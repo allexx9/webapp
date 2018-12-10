@@ -4,7 +4,6 @@ import * as TYPE_ from '../../../actions/const'
 import { Actions } from '../../../actions'
 import { BigNumber } from '@0xproject/utils'
 import { ERC20_TOKENS } from '../../../../_utils/tokens'
-import { blockChunks } from '../../../../_utils/utils/blockChunks'
 import {
   concat,
   filter,
@@ -16,6 +15,7 @@ import {
   takeUntil
 } from 'rxjs/operators'
 import { defer, from, timer } from 'rxjs'
+import { getBlockChunks } from '../../../../_utils/blockChain'
 import { ofType } from 'redux-observable'
 import { toUnitAmount } from '../../../../_utils/format'
 import Web3Wrapper from '../../../../_utils/web3Wrapper/src'
@@ -29,6 +29,22 @@ const getPastExchangeEvents$ = (fund, exchange, state$) => {
     exchangeEfxV0Abi,
     exchange.exchangeContractAddress.toLowerCase()
   )
+  const makerAddress = '0x' + fund.address.substr(2).padStart(64, '0')
+  const chunkSize = 100000
+  let fromBlock
+  switch (networkInfo.id) {
+    case 1:
+      fromBlock = '6000000'
+      break
+    case 42:
+      fromBlock = '7000000'
+      break
+    case 3:
+      fromBlock = '3000000'
+      break
+    default:
+      fromBlock = '3000000'
+  }
 
   // This code may be used to filter by tokens. Do not remove.
 
@@ -60,26 +76,10 @@ const getPastExchangeEvents$ = (fund, exchange, state$) => {
   // 0x3f3fb7135a4e1512b508f90733145ab182cc196e127cd9281a8e9f636de79a67
   // console.log(fund)
 
-  const makerAddress = '0x' + fund.address.substr(2).padStart(64, '0')
-
-  return defer(() => from(web3.eth.getBlockNumber())).pipe(
-    switchMap(lastBlock => {
-      let fromBlock
-      switch (networkInfo.id) {
-        case 1:
-          fromBlock = '6000000'
-          break
-        case 42:
-          fromBlock = '7000000'
-          break
-        case 3:
-          fromBlock = '3000000'
-          break
-        default:
-          fromBlock = '3000000'
-      }
-      const chunkSize = 100000
-      const chunks = blockChunks(fromBlock, lastBlock, chunkSize)
+  return defer(() =>
+    from(getBlockChunks(fromBlock, 'latest', chunkSize, web3))
+  ).pipe(
+    switchMap(chunks => {
       const eventsPromises = chunks.map(chunk => {
         const options = {
           fromBlock: chunk.fromBlock,
@@ -92,20 +92,9 @@ const getPastExchangeEvents$ = (fund, exchange, state$) => {
           (err, res) => (err ? err : res)
         )
       })
-      return from(Promise.all(eventsPromises)).pipe(
-        map(result => {
-          // console.time('results1')
-          // const results1 = [].concat(...result)
-          // console.timeEnd('results1')
-
-          // console.time('results2')
-          // const results2 = result.reduce((acc, curr) => [...acc, ...curr], [])
-          // console.timeEnd('results2')
-
-          return [].concat(...result)
-        })
-      )
-    })
+      return from(Promise.all(eventsPromises))
+    }),
+    map(events => [].concat(...events))
   )
 }
 

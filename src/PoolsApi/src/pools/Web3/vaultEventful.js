@@ -41,6 +41,24 @@ class VaultEventfulWeb3 {
   }
 
   init = () => {
+    if (typeof global.baseContracts !== 'undefined') {
+      const instance = new this._api.eth.Contract(
+        global.baseContracts['VaultEventful'].abi,
+        global.baseContracts['VaultEventful'].address
+      )
+      this._contract = instance
+      this._contractAddress = global.baseContracts['VaultEventful'].address
+      let hexSignature = []
+      global.baseContracts['VaultEventful'].abi.map(function(element) {
+        if (element.type === 'event') {
+          return (hexSignature[element.name] = element.signature)
+        }
+        return true
+      })
+      this._hexSignature = hexSignature
+      return this._contract
+    }
+
     const contractAbi = this._abi
     const contractName = this._contractName
     return typeof this._contract !== 'undefined'

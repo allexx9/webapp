@@ -82,7 +82,12 @@ const persistConfig = {
 }
 const persistedReducer = persistReducer(persistConfig, Reducers.rootReducer)
 
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
+let composeEnhancers
+if (process.env.NODE_ENV === `development`) {
+  composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
+} else {
+  composeEnhancers = compose
+}
 
 // TO DO: test batch action dispatch
 // const enhancer = compose(

@@ -3,6 +3,7 @@ import { ERC20_TOKENS } from '../../_utils/tokens'
 import { Link } from 'react-router-dom'
 import { Step, StepContent, StepLabel, Stepper } from 'material-ui/Stepper'
 import { connect } from 'react-redux'
+import BigNumber from 'bignumber.js'
 import Dialog from 'material-ui/Dialog'
 import FlatButton from 'material-ui/FlatButton'
 import Looks3 from 'material-ui/svg-icons/image/looks-3'
@@ -73,7 +74,7 @@ class WalletSetupStepper extends Component {
   static getDerivedStateFromProps(props, state) {
     const locked = props.endpoint.isMetaMaskLocked
     const correctNetwork = props.endpoint.isMetaMaskNetworkCorrect
-    const holdsTokens = !props.endpoint.grgBalance.eq(0)
+    const holdsTokens = new BigNumber(props.endpoint.grgBalance).gte(1)
     // console.log(props.endpoint.grgBalance)
     // console.log(holdsTokens)
     if (locked !== state.locked) {
@@ -373,8 +374,8 @@ class WalletSetupStepper extends Component {
                 {!holdsTokens && (
                   <div>
                     <p>
-                      You need at least 0.5 GRG tokens to access our platform.
-                      Get some by clicking the button below!
+                      You need at least 1 GRG token to access our platform. Get
+                      some by clicking the button below!
                     </p>
                   </div>
                 )}
