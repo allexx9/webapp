@@ -33,7 +33,7 @@
   text-align: right;
 }
 
-.homeLink a {
+/* .homeLink a {
   text-decoration: none;
   color: #064286;
 }
@@ -51,4 +51,4 @@
 .homeLink a:active {
   text-decoration: underline;
   color: #064286;
-}
+} */
