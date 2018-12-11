@@ -223,7 +223,7 @@ class PageDashboardDragoManager extends Component {
                         this.Dragos = section
                       }}
                     />
-                    <SectionHeader titleText="FUNDS" />
+                    <SectionHeader titleText="POOLS" />
                   </Col>
                 </Row>
                 <Row>
