@@ -84,15 +84,16 @@ export default class TokenTradeSelector extends PureComponent {
         )
       }
     )
-    selectedQuoteToken !== selectedTradeTokensPair.quoteToken.symbol
-      ? menu.unshift(
-          <MenuItem
-            key={this.selectMessage}
-            value={this.selectMessage}
-            primaryText={this.selectMessage}
-          />
-        )
-      : null
+    if (selectedQuoteToken !== selectedTradeTokensPair.quoteToken.symbol) {
+      menu.unshift(
+        <MenuItem
+          key={this.selectMessage}
+          value={this.selectMessage}
+          primaryText={this.selectMessage}
+        />
+      )
+    }
+
     return menu
   }
 

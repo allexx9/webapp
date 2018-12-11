@@ -1,5 +1,5 @@
 {
-  "name": "rigoblock-david",
+  "name": "rigoblock-dapp-v1",
   "version": "0.1.0",
   "private": true,
   "homepage": "./",
@@ -18,7 +18,7 @@
     "classnames": "^2.2.6",
     "crc-32": "^1.2.0",
     "css-loader": "^1.0.0",
-    "custom-react-scripts": "^0.2.2",
+    "react-scripts": "2.0.3",
     "d3-dsv": "^1.0.8",
     "detect-browser": "^3.0.0",
     "ethers": "^4.0.13",
@@ -96,7 +96,6 @@
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
     "babel-es6-polyfill": "^1.1.0",
-    "babel-eslint": "^8.2.6",
     "babel-jest": "^23.4.2",
     "babel-plugin-transform-amd-to-commonjs": "^1.4.0",
     "babel-plugin-transform-runtime": "^6.23.0",
@@ -109,7 +108,6 @@
     "cross-env": "^5.2.0",
     "deep-freeze": "^0.0.1",
     "del": "^3.0.0",
-    "eslint": "^5.4.0",
     "eslint-config-prettier": "^3.0.1",
     "eslint-config-standard": "^11.0.0",
     "eslint-plugin-import": "^2.8.0",
@@ -137,5 +135,11 @@
       "!**/node_modules/**",
       "!**/vendor/**"
     ]
-  }
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }
