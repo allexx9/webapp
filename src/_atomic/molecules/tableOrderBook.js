@@ -7,7 +7,7 @@ import React, { Component } from 'react'
 import { ORDER_UPDATE } from '../../_redux/actions/const'
 import { connect } from 'react-redux'
 import { detect } from 'detect-browser'
-import { formatPrice } from '../../_utils/format'
+import { formatPriceOrderBook } from '../../_utils/format'
 import styles from './tableOrderBook.module.css'
 import utils from '../../_utils/utils'
 
@@ -150,7 +150,7 @@ class TableOrderBook extends Component {
                 {Number(amount).toFixed(2)}
               </Col>
               <Col xs={5} style={orderStylePrice[orderType]}>
-                {formatPrice(price)}
+                {formatPriceOrderBook(price)}
               </Col>
             </Row>
           </Col>

@@ -13,12 +13,12 @@ import TokenIcon from './tokenIcon'
 export default class TokenPrice extends PureComponent {
   static propTypes = {
     selectedTradeTokensPair: PropTypes.object.isRequired,
-    tokenPrice: PropTypes.string,
+    tokenPrice: PropTypes.object,
     priceVariation: PropTypes.string
   }
 
   static defaultProps = {
-    tokenPrice: '0.000000',
+    tokenPrice: '0.0000',
     priceVariation: '0'
   }
 
@@ -37,6 +37,9 @@ export default class TokenPrice extends PureComponent {
 
   render() {
     const { tokenPrice, priceVariation, selectedTradeTokensPair } = this.props
+    const formatTokenPrice = () => {
+      return tokenPrice.gt(0.01) ? tokenPrice.toFixed(4) : tokenPrice.toFixed(7)
+    }
     return (
       <div>
         <Visible xs>
@@ -54,7 +57,7 @@ export default class TokenPrice extends PureComponent {
               </Col>
               <Col xs={4}>
                 <div className={classNames(styles.tokenPrice)}>
-                  {tokenPrice}
+                  {formatTokenPrice()}
                 </div>
               </Col>
               <Col xs={4}>
@@ -95,7 +98,7 @@ export default class TokenPrice extends PureComponent {
                   </Col>
                   <Col xs={12}>
                     <div className={classNames(styles.tokenPrice)}>
-                      {tokenPrice}
+                      {formatTokenPrice()}
                     </div>
                   </Col>
                   <Col xs={12}>

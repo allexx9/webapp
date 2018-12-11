@@ -161,7 +161,7 @@ class ElementListAssets extends PureComponent {
                   <Column
                     width={150}
                     disableSort
-                    label="HOLDING"
+                    label={<div>HOLDING</div>}
                     cellDataGetter={({ rowData }) => rowData}
                     dataKey="holding"
                     className={styles.column}
@@ -189,7 +189,7 @@ class ElementListAssets extends PureComponent {
                                 flexGrow={1}
                               /> */}
                   <Column
-                    width={150}
+                    width={125}
                     disableSort
                     label="VALUE"
                     cellDataGetter={({ rowData }) => rowData}
@@ -201,7 +201,11 @@ class ElementListAssets extends PureComponent {
                   <Column
                     width={350}
                     disableSort
-                    label="MARKET 24H"
+                    label={
+                      <div style={{ width: '100%' }}>
+                        <div className={styles.headerMarket}>MARKET 24H</div>
+                      </div>
+                    }
                     cellDataGetter={({ rowData }) => rowData}
                     dataKey="stats"
                     className={styles.column}
