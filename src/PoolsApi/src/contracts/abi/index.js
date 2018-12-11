@@ -9,11 +9,11 @@ import erc20 from './v2/erc20.json'
 import ethusd from './v2/ethusd.json'
 import exchange from './v2/exchange.json'
 import fundproxy from './v2/fundProxy.json'
+import getMultipleBalances from './v2/getMultipleBalances.json'
 import parityregister from './v2/parityRegister.json'
 import rigotoken from './v2/rigoToken-v2.json'
 import rigotokenfaucet from './v2/rigoTokenFaucet-v2.json'
 import tokenWrapper from './v2/tokenWrapper-v2.json'
-import utilityContract from './v2/utilityContract.json'
 import vault from './v2/vault-v2.json'
 import vaulteventful from './v2/vaultEventful-v2.json'
 import vaultfactory from './v2/vaultFactory-v2.json'
@@ -56,5 +56,5 @@ export {
   rigotokenfaucet,
   weth,
   zeroExExchange,
-  utilityContract
+  getMultipleBalances
 }

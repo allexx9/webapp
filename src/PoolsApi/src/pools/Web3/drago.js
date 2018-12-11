@@ -751,21 +751,21 @@ class DragoWeb3 {
   }
 
   getMultiBalancesAndAddressesFromAddresses = async tokenAddresses => {
+    if (!Array.isArray(tokenAddresses)) {
+      throw new Error('tokenAddresses needs to be an array of token addresses')
+    }
     const api = this._api
     const networkId = await api.eth.net.getId()
     const instance = this._instance
-    const utilityContractInstance = new api.eth.Contract(
-      abis.utilityContract,
+    const getMultipleBalancesInstance = new api.eth.Contract(
+      abis.getMultipleBalances,
       UTILITY_CONTRACT_ADDRESS[networkId]
     )
-    console.log(tokenAddresses, instance._address.toLowerCase())
-    return utilityContractInstance.methods
+    tokenAddresses = tokenAddresses.map(address => address.toLowerCase())
+    return getMultipleBalancesInstance.methods
       .getMultiBalancesAndAddressesFromAddresses(
-        [
-          '0x6fa8590920c5966713b1a86916f7b0419411e474',
-          '0x0736d0c130b2ead47476cc262dbed90d7c4eeabd'
-        ],
-        '0x300f68d9aed119b26f3f410cac78aa7249f41987'
+        tokenAddresses,
+        instance._address.toLowerCase()
       )
       .call({})
   }

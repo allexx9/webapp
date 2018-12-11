@@ -184,6 +184,7 @@ class OrderBox extends Component {
         orderSubmitStep: 1
       })
     } catch (error) {
+      console.warn(error)
       const notificationEngine = notificationWrapper.getInstance()
       utils.notificationError(notificationEngine, serializeError(error).message)
       this.setState({

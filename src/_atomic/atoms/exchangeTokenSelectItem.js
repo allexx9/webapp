@@ -21,7 +21,10 @@ export default class ExchangeTokenSelectItem extends Component {
         </div>
         <div className={styles.details}>
           <div className={styles.name}>
-            {this.props.baseTokenSymbol + '/' + this.props.quoteTokenSymbol}
+            <span className={styles.baseToken}>
+              {this.props.baseTokenSymbol}
+            </span>
+            /<span>{this.props.quoteTokenSymbol}</span>
           </div>
         </div>
       </div>

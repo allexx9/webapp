@@ -2,16 +2,17 @@
   display: inline-block;
 }
 
-.name {
+.symbol {
   display: inline-block;
   margin-right: 1em;
   text-transform: uppercase;
+  font-weight: 700;
 }
 
-.balance {
+.name {
   display: inline-block;
   text-align: right;
-  color: #aaa;
+  color: #737376;
 }
 
 .details {

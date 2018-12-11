@@ -13,6 +13,21 @@ const exchange = {
   getRelayConfig,
   createOrder,
   updateOrder,
+  resetTokenPrice: () => {
+    return { type: TYPE_.RESET_TOKEN_PRICE }
+  },
+  updateTokenPrice: price => {
+    return {
+      type: TYPE_.UPDATE_CURRENT_TOKEN_PRICE,
+      payload: { current: price }
+    }
+  },
+  updateTradesHistory: payload => {
+    return {
+      type: TYPE_.TRADES_HISTORY_UPDATE,
+      payload: payload
+    }
+  },
   updateTradesHistory: payload => {
     return {
       type: TYPE_.TRADES_HISTORY_UPDATE,

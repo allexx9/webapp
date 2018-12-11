@@ -5,9 +5,9 @@ import { MenuItem, SelectField } from 'material-ui'
 import ExchangeTokenSelectItem from '../atoms/exchangeTokenSelectItem'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
-import styles from './tokenTradeSelector.module.css'
-
-// const tradableTokens = ["WETH / ZRX", "WETH / GRG"]
+import TokenTradeSelectorTitle from '../atoms/tokenTradeSelectorTitle'
+import _ from 'lodash'
+import memoizeOne from 'memoize-one'
 
 export default class TokenTradeSelector extends PureComponent {
   static propTypes = {
@@ -16,8 +16,14 @@ export default class TokenTradeSelector extends PureComponent {
     onSelectTokenTrade: PropTypes.func.isRequired
   }
 
+  state = {
+    selectedQuoteToken: 'USDT'
+  }
+
+  selectMessage = 'Please select a token pair.'
+
   onSelectTokenTrade = (event, key, payload) => {
-    console.log(payload)
+    if (payload === this.selectMessage) return null
     if (
       payload !==
       this.props.selectedTradeTokensPair.baseToken.symbol +
@@ -28,16 +34,45 @@ export default class TokenTradeSelector extends PureComponent {
     }
   }
 
+  onSelectQuoteToken = token => {
+    let selectedQuoteToken
+    let tokenSymbol = token.target.id
+    switch (tokenSymbol) {
+      case 'select-quote-token-ETH':
+        selectedQuoteToken = 'ETH'
+        break
+      case 'select-quote-token-USDT':
+        selectedQuoteToken = 'USDT'
+        break
+      default:
+        selectedQuoteToken = 'ETH'
+        break
+    }
+    this.setState({ selectedQuoteToken })
+  }
+
+  filterTradableTokens = (tradableTokens, selectedQuoteToken) => {
+    return tradableTokens[selectedQuoteToken]
+  }
+
   renderTokens = () => {
+    // FIX: improve this function
     let menu = []
-    for (let quoteToken in this.props.tradableTokens) {
-      Object.keys(this.props.tradableTokens[quoteToken]).forEach(baseToken => {
-        let baseTokenSymbol = this.props.tradableTokens[quoteToken][baseToken]
-          .symbol
-        let quoteTokenSymbol = quoteToken
+    const { tradableTokens, selectedTradeTokensPair } = this.props
+    const { selectedQuoteToken } = this.state
+    const tokenArray = (tradableTokens, selectedQuoteToken) =>
+      Object.keys(
+        this.filterTradableTokens(tradableTokens, selectedQuoteToken)
+      ).sort()
+    const areTokensEqual = (newArg, lastArg) => _.isEqual(newArg, lastArg)
+    const memoizedtokenArray = memoizeOne(tokenArray, areTokensEqual)
+    memoizedtokenArray(tradableTokens, selectedQuoteToken).forEach(
+      baseToken => {
+        let baseTokenSymbol = baseToken
+        let quoteTokenSymbol = selectedQuoteToken
         menu.push(
           <MenuItem
-            key={baseTokenSymbol}
+            key={baseTokenSymbol + '-' + quoteTokenSymbol}
             value={baseTokenSymbol + '-' + quoteTokenSymbol}
             primaryText={
               <ExchangeTokenSelectItem
@@ -47,31 +82,47 @@ export default class TokenTradeSelector extends PureComponent {
             }
           />
         )
-      })
-    }
+      }
+    )
+    selectedQuoteToken !== selectedTradeTokensPair.quoteToken.symbol
+      ? menu.unshift(
+          <MenuItem
+            key={this.selectMessage}
+            value={this.selectMessage}
+            primaryText={this.selectMessage}
+          />
+        )
+      : null
     return menu
   }
 
   render() {
-    // console.log(this.props.selectedTradeTokensPair)
-
+    const { selectedTradeTokensPair } = this.props
+    const { selectedQuoteToken } = this.state
+    const value =
+      selectedQuoteToken === selectedTradeTokensPair.quoteToken.symbol
+        ? selectedTradeTokensPair.baseToken.symbol +
+          '-' +
+          selectedTradeTokensPair.quoteToken.symbol
+        : this.selectMessage
     return (
       <Row>
         <Col xs={12}>
-          <div className={styles.sectionTitle}>Trading pairs</div>
+          <TokenTradeSelectorTitle
+            onClick={this.onSelectQuoteToken}
+            selectedToken={selectedQuoteToken}
+          />
         </Col>
         <Col xs={12}>
-          <SelectField
-            fullWidth
-            value={
-              this.props.selectedTradeTokensPair.baseToken.symbol +
-              '-' +
-              this.props.selectedTradeTokensPair.quoteToken.symbol
-            }
-            onChange={this.onSelectTokenTrade}
-          >
-            {this.renderTokens()}
-          </SelectField>
+          <div>
+            <SelectField
+              fullWidth
+              value={value}
+              onChange={this.onSelectTokenTrade}
+            >
+              {this.renderTokens()}
+            </SelectField>
+          </div>
         </Col>
       </Row>
     )

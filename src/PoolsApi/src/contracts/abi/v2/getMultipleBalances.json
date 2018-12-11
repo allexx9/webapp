@@ -139,6 +139,31 @@
   },
   {
     "constant": true,
+    "inputs": [{
+        "name": "_tokenAddresses",
+        "type": "address[]"
+      },
+      {
+        "name": "_who",
+        "type": "address"
+      }
+    ],
+    "name": "getPositiveBalancesAndAddressesFromAddresses",
+    "outputs": [{
+        "name": "balances",
+        "type": "uint256[]"
+      },
+      {
+        "name": "tokenAddresses",
+        "type": "address[]"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
     "inputs": [],
     "name": "numTokens",
     "outputs": [{
