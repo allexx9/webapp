@@ -1,14 +1,17 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-// import 'rxjs/add/observable/timer'
-// import 'rxjs/add/operator/bufferTime'
-// import 'rxjs/add/operator/concat'
-// import 'rxjs/add/operator/delay'
-// import 'rxjs/add/operator/do'
-// import 'rxjs/add/operator/exhaustMap'
-// import 'rxjs/add/operator/map'
-// import 'rxjs/add/operator/mapTo'
-// import 'rxjs/add/operator/mergeMap'
+import {
+  FETCH_CANDLES_DATA_PORTFOLIO_START,
+  FETCH_CANDLES_DATA_PORTFOLIO_STOP,
+  QUEUE_ERROR_NOTIFICATION,
+  SET_TOKEN_ALLOWANCE,
+  TOKENS_TICKERS_UPDATE,
+  TOKEN_PRICE_TICKERS_FETCH_START,
+  TOKEN_PRICE_TICKERS_FETCH_STOP,
+  UPDATE_SELECTED_DRAGO_DETAILS_CHART_ASSETS_MARKET_ADD_DATAPOINT,
+  UPDATE_SELECTED_DRAGO_DETAILS_CHART_ASSETS_MARKET_DATA_INIT,
+  UPDATE_TRADE_TOKENS_PAIR
+} from '../actions/const'
 import { Observable, from, merge, of, timer } from 'rxjs'
 import {
   catchError,
@@ -24,21 +27,7 @@ import {
 } from 'rxjs/operators'
 import { ofType } from 'redux-observable'
 import { setTokenAllowance } from '../../_utils/exchange'
-// import { fromPromise } from 'rxjs/add/observable/fromPromise';
-import {
-  FETCH_CANDLES_DATA_PORTFOLIO_START,
-  FETCH_CANDLES_DATA_PORTFOLIO_STOP,
-  QUEUE_ERROR_NOTIFICATION,
-  SET_TOKEN_ALLOWANCE,
-  TOKENS_TICKERS_UPDATE,
-  TOKEN_PRICE_TICKERS_FETCH_START,
-  TOKEN_PRICE_TICKERS_FETCH_STOP,
-  UPDATE_SELECTED_DRAGO_DETAILS_CHART_ASSETS_MARKET_ADD_DATAPOINT,
-  UPDATE_SELECTED_DRAGO_DETAILS_CHART_ASSETS_MARKET_DATA_INIT,
-  UPDATE_TRADE_TOKENS_PAIR
-} from '../actions/const'
 import Exchange from '../../_utils/exchange/src/index'
-// import exchangeConnector from '@rigoblock/exchange-connector'
 import ExchangeConnectorWrapper from '../../_utils/exchangeConnector'
 import moment from 'moment'
 import utils from '../../_utils/utils'
