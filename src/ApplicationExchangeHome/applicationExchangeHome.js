@@ -183,6 +183,7 @@ class ApplicationExchangeHome extends PureComponent {
       Actions.exchange.updateLiquidityAndTokenBalances('STOP')
     )
     this.props.dispatch(Actions.exchange.getAccountOrdersStop())
+    this.props.dispatch(Actions.exchange.resetTokenPrice())
   }
 
   componentDidUpdate() {}
