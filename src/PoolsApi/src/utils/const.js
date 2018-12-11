@@ -13,12 +13,12 @@ export const MAINNET = 'mainnet'
 export const MAINNET_ID = 1
 
 export const UTILITY_CONTRACT_ADDRESS = {
-  42: '0x5c25ac8f1C5168cc0Bd194414d13E761A72cDB9e',
-  3: '0xd53bEbAa2e65753453CB53EfCC65Ad23268D4Dec',
-  1: '0x768E09703318e8514aaAABcf16D62B6ff6E9D706 ',
-  kovan: '0x5c25ac8f1C5168cc0Bd194414d13E761A72cDB9e',
-  ropsten: '0xd53bEbAa2e65753453CB53EfCC65Ad23268D4Dec',
-  foundation: '0x768E09703318e8514aaAABcf16D62B6ff6E9D706 '
+  42: '0x5c25ac8f1c5168cc0bd194414d13e761a72cdb9e',
+  3: '0xd53bebaa2e65753453cb53efcc65ad23268d4dec',
+  1: '0x768e09703318e8514aaaabcf16d62b6ff6e9d706',
+  kovan: '0x5c25ac8f1c5168cc0bd194414d13e761a72cdb9e',
+  ropsten: '0xd53bebaa2e65753453cb53efcc65ad23268d4dec',
+  foundation: '0x768e09703318e8514aaaabcf16d62b6ff6e9d706'
 }
 
 export const PARITY_REGISTRY_ADDRESSES = {

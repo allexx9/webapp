@@ -761,7 +761,7 @@ class DragoWeb3 {
       abis.getMultipleBalances,
       UTILITY_CONTRACT_ADDRESS[networkId]
     )
-    console.log(tokenAddresses)
+    tokenAddresses = tokenAddresses.map(address => address.toLowerCase())
     return getMultipleBalancesInstance.methods
       .getMultiBalancesAndAddressesFromAddresses(
         tokenAddresses,
