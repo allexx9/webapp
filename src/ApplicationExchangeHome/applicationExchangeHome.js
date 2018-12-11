@@ -183,6 +183,7 @@ class ApplicationExchangeHome extends PureComponent {
       Actions.exchange.updateLiquidityAndTokenBalances('STOP')
     )
     this.props.dispatch(Actions.exchange.getAccountOrdersStop())
+    this.props.dispatch(Actions.exchange.resetTokenPrice())
   }
 
   componentDidUpdate() {}
@@ -421,7 +422,6 @@ class ApplicationExchangeHome extends PureComponent {
       this.props.dispatch(Actions.exchange.fetchCandleDataSingleStop())
 
       // Reconnecting to the exchange
-      // this.connectToExchange(selectedExchange, tradeTokensPair)
       this.connectToExchange(tradeTokensPair, selectedRelay)
     } catch (error) {
       console.warn(error)
@@ -577,7 +577,7 @@ class ApplicationExchangeHome extends PureComponent {
                   <Col xs={12} sm={4} className={styles.tokenPriceContainer}>
                     <TokenPrice
                       selectedTradeTokensPair={exchange.selectedTokensPair}
-                      tokenPrice={currentPrice.toFixed(4)}
+                      tokenPrice={currentPrice}
                       priceVariation={priceVariation}
                     />
                   </Col>

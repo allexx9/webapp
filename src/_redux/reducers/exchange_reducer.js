@@ -165,7 +165,7 @@ function exchangeReducer(state = initialState.exchange, action) {
       }
       return { ...state, prices }
 
-    case TYPE_.UPDATE_CURRENT_TOKEN_PRICE:
+    case TYPE_.UPDATE_CURRENT_TOKEN_PRICE: {
       let ticker
       if (typeof action.payload.current !== 'undefined') {
         ticker = {
@@ -197,6 +197,25 @@ function exchangeReducer(state = initialState.exchange, action) {
           ticker: { ...ticker }
         }
       }
+    }
+
+    case TYPE_.RESET_TOKEN_PRICE: {
+      return {
+        ...state,
+        selectedTokensPair: {
+          ...state.selectedTokensPair,
+          ticker: {
+            current: {
+              price: '0'
+            },
+            previous: {
+              price: '0'
+            },
+            variation: 0
+          }
+        }
+      }
+    }
 
     default: {
       const pipe = (...functions) => (state, action) => {

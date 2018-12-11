@@ -323,18 +323,9 @@ const updateCurrentTokenPrice = ticker => {
     const current = {
       price: ticker[6]
     }
-    return {
-      type: TYPE_.UPDATE_CURRENT_TOKEN_PRICE,
-      payload: {
-        current
-      }
-    }
+    return Actions.exchange.updateTokenPrice(current)
   }
-
-  return {
-    type: TYPE_.UPDATE_CURRENT_TOKEN_PRICE,
-    payload: {}
-  }
+  return Actions.exchange.updateTokenPrice({})
 }
 
 export const initRelayWebSocketTickerEpic = (action$, state$) =>
