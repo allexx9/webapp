@@ -1,10 +1,10 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-import { Actions } from '../actions/'
-import { Observable, from, timer } from 'rxjs'
-import PoolApi from '../../PoolsApi/src'
-
 import * as TYPE_ from '../actions/const'
+import { Actions } from '../actions/'
+import { BigNumber } from 'bignumber.js'
+import { ERCdEX, Ethfinex } from '../../_utils/const'
+import { Observable, from, timer } from 'rxjs'
 import {
   catchError,
   finalize,
@@ -15,84 +15,18 @@ import {
   takeUntil
 } from 'rxjs/operators'
 import { ofType } from 'redux-observable'
-
-import { BigNumber } from '../../../node_modules/bignumber.js/bignumber'
-import { ERCdEX, Ethfinex } from '../../_utils/const'
 // import { DEBUGGING } from '../../_utils/const'
 import { ERC20_TOKENS } from '../../_utils/tokens'
+import { getTokensBalances } from '../../_utils/pools/getTokensBalances'
 import Web3Wrapper from '../../_utils/web3Wrapper/src'
 import utils from '../../_utils/utils'
 
 const getTokensBalances$ = (dragoAddress, networkInfo) => {
-  //
-  // Initializing Drago API
-  //
+  const allowedTokens = ERC20_TOKENS[networkInfo.name]
+  const web3 = Web3Wrapper.getInstance(networkInfo.id)
 
-  let web3 = Web3Wrapper.getInstance(networkInfo.id)
-  const poolApi = new PoolApi(web3)
-  // const poolApi = new PoolApi(api)
-  try {
-    poolApi.contract.drago.init(dragoAddress)
-  } catch (err) {
-    console.warn(err)
-    throw new Error(err)
-  }
-
-  const getTokensBalances = async () => {
-    let allowedTokens = ERC20_TOKENS[networkInfo.name]
-    let dragoAssets = {}
-
-    // const results = await poolApi.contract.drago.getMultiBalancesAndAddressesFromAddresses(
-    //   [
-    //     '0x6FA8590920c5966713b1a86916f7b0419411e474'.toLowerCase(),
-    //     '0x0736d0c130b2eAD47476cC262dbed90D7C4eeABD'.toLowerCase()
-    //   ]
-    // )
-    // console.log(results)
-
-    for (let token in allowedTokens) {
-      let balances = {
-        token: new BigNumber(0),
-        wrappers: {},
-        total: new BigNumber(0)
-      }
-      let tokenAddress = allowedTokens[token].address.toLowerCase()
-      if (tokenAddress !== '0x0') {
-        let total = new BigNumber(0)
-        try {
-          balances.token = await poolApi.contract.drago.getPoolBalanceOnToken(
-            tokenAddress
-          )
-          // console.log(`${token} - ${allowedTokens[token].address} -> ${balances.token}`)
-          total = total.plus(balances.token)
-          if (typeof allowedTokens[token].wrappers !== 'undefined') {
-            for (let wrapper in allowedTokens[token].wrappers) {
-              let wrapperAddess = allowedTokens[token].wrappers[wrapper].address
-              balances.wrappers[
-                wrapper
-              ] = await poolApi.contract.drago.getPoolBalanceOnToken(
-                wrapperAddess
-              )
-              total = total.plus(balances.wrappers[wrapper])
-            }
-          }
-          // Only add tokens with balance > 0
-          if (!total.eq(0)) {
-            balances.total = total
-            dragoAssets[token] = allowedTokens[token]
-            dragoAssets[token].balances = balances
-          }
-        } catch (err) {
-          console.warn(err)
-          throw err
-        }
-      } else {
-      }
-    }
-    return dragoAssets
-  }
   return from(
-    getTokensBalances().catch(err => {
+    getTokensBalances(dragoAddress, allowedTokens, web3).catch(err => {
       console.warn(err)
       throw err
     })

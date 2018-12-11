@@ -320,6 +320,9 @@ class ApplicationExchangeHome extends PureComponent {
     const quoteToken =
       ERC20_TOKENS[endpoint.networkInfo.name][selectedTokens[1]]
 
+    let baseTokenAllowance = false
+    let quoteTokenAllowance = false
+
     const liquidity = {
       loading: false,
       liquidity: {
@@ -368,21 +371,26 @@ class ApplicationExchangeHome extends PureComponent {
     )
 
     try {
-      const allowanceBaseToken = await getTokenAllowance(
-        baseToken,
-        selectedFund.details.address,
-        selectedExchange
-      )
-      const allowanceQuoteToken = await getTokenAllowance(
-        quoteToken,
-        selectedFund.details.address,
-        selectedExchange
-      )
+      if (!selectedRelay.isTokenWrapper) {
+        const allowanceBaseToken = await getTokenAllowance(
+          baseToken,
+          selectedFund.details.address,
+          selectedExchange
+        )
+        const allowanceQuoteToken = await getTokenAllowance(
+          quoteToken,
+          selectedFund.details.address,
+          selectedExchange
+        )
+        baseTokenAllowance = new BigNumber(allowanceBaseToken).gt(0)
+        quoteTokenAllowance = new BigNumber(allowanceQuoteToken).gt(0)
+      }
+
       const tradeTokensPair = {
         baseToken: baseToken,
         quoteToken: quoteToken,
-        baseTokenAllowance: new BigNumber(allowanceBaseToken).gt(0),
-        quoteTokenAllowance: new BigNumber(allowanceQuoteToken).gt(0),
+        baseTokenAllowance,
+        quoteTokenAllowance,
         ticker: {
           current: {
             price: '0'

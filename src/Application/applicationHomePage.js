@@ -145,7 +145,7 @@ class ApplicationHomePage extends Component {
         target: '.joyride-app-sections',
         content: (
           <JoyrideContent
-            content={'Manager your DRAGOS and trade in our MARKET.'}
+            content={'Manage your DRAGOS and trade in our MARKET.'}
           />
         ),
         placement: 'bottom',

@@ -46,7 +46,7 @@ class AssetsPieChartWrapper extends PureComponent {
     }
 
     return (
-      <div className={styles.wrapper}>
+      <div className={styles.wrapper} id="chartPie">
         <ChartPie data={data} />
       </div>
     )

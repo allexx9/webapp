@@ -16,3 +16,8 @@
 .ct-label {
   font-size: 8px;
 }
+
+#chartPie .ct-label {
+  font-size: 12px;
+  font-weight: 700;
+}
