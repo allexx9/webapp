@@ -757,12 +757,12 @@ class DragoWeb3 {
     const api = this._api
     const networkId = await api.eth.net.getId()
     const instance = this._instance
-    const utilityContractInstance = new api.eth.Contract(
-      abis.utilityContract,
+    const getMultipleBalancesInstance = new api.eth.Contract(
+      abis.getMultipleBalances,
       UTILITY_CONTRACT_ADDRESS[networkId]
     )
-    console.log(tokenAddresses, instance._address.toLowerCase())
-    return utilityContractInstance.methods
+    console.log(tokenAddresses)
+    return getMultipleBalancesInstance.methods
       .getMultiBalancesAndAddressesFromAddresses(
         tokenAddresses,
         instance._address.toLowerCase()
