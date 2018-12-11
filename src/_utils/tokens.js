@@ -16,6 +16,7 @@ export const DAI = 'DAI'
 export const BAT = 'BAT'
 export const NIO = 'NIO'
 export const SPK = 'SPK'
+export const SNT = 'SNT'
 
 export const MOCK_ERC20_TOKENS = {
   kovan: {
@@ -793,6 +794,11 @@ export const TRADE_TOKENS_PAIRS = {
     }
   },
   [USDT]: {
+    [GRG]: {
+      networks: [3],
+      symbol: GRG,
+      exchanges: [Ethfinex]
+    },
     [ETH]: {
       networks: [1, 3],
       symbol: ETH,
@@ -811,6 +817,41 @@ export const TRADE_TOKENS_PAIRS = {
     [SAN]: {
       networks: [1],
       symbol: SAN,
+      exchanges: [Ethfinex]
+    },
+    [SNT]: {
+      networks: [1],
+      symbol: SNT,
+      exchanges: [Ethfinex]
+    },
+    [EDO]: {
+      networks: [1],
+      symbol: EDO,
+      exchanges: [Ethfinex]
+    },
+    [FUN]: {
+      networks: [1],
+      symbol: FUN,
+      exchanges: [Ethfinex]
+    },
+    [REP]: {
+      networks: [1],
+      symbol: REP,
+      exchanges: [Ethfinex]
+    },
+    [MKR]: {
+      networks: [1],
+      symbol: MKR,
+      exchanges: [Ethfinex]
+    },
+    [BAT]: {
+      networks: [1],
+      symbol: BAT,
+      exchanges: [Ethfinex]
+    },
+    [NIO]: {
+      networks: [1],
+      symbol: NIO,
       exchanges: [Ethfinex]
     }
   },
@@ -833,6 +874,41 @@ export const TRADE_TOKENS_PAIRS = {
     [SAN]: {
       networks: [1],
       symbol: SAN,
+      exchanges: [Ethfinex]
+    },
+    [SNT]: {
+      networks: [1],
+      symbol: SNT,
+      exchanges: [Ethfinex]
+    },
+    [EDO]: {
+      networks: [1],
+      symbol: EDO,
+      exchanges: [Ethfinex]
+    },
+    [FUN]: {
+      networks: [1],
+      symbol: FUN,
+      exchanges: [Ethfinex]
+    },
+    [REP]: {
+      networks: [1],
+      symbol: REP,
+      exchanges: [Ethfinex]
+    },
+    [MKR]: {
+      networks: [1],
+      symbol: MKR,
+      exchanges: [Ethfinex]
+    },
+    [BAT]: {
+      networks: [1],
+      symbol: BAT,
+      exchanges: [Ethfinex]
+    },
+    [NIO]: {
+      networks: [1],
+      symbol: NIO,
       exchanges: [Ethfinex]
     }
   }

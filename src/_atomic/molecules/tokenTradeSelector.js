@@ -6,8 +6,8 @@ import ExchangeTokenSelectItem from '../atoms/exchangeTokenSelectItem'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import TokenTradeSelectorTitle from '../atoms/tokenTradeSelectorTitle'
-
-// const tradableTokens = ["WETH / ZRX", "WETH / GRG"]
+import _ from 'lodash'
+import memoizeOne from 'memoize-one'
 
 export default class TokenTradeSelector extends PureComponent {
   static propTypes = {
@@ -56,28 +56,34 @@ export default class TokenTradeSelector extends PureComponent {
   }
 
   renderTokens = () => {
+    // FIX: improve this function
     let menu = []
     const { tradableTokens, selectedTradeTokensPair } = this.props
     const { selectedQuoteToken } = this.state
-    Object.keys(
-      this.filterTradableTokens(tradableTokens, selectedQuoteToken)
-    ).forEach(baseToken => {
-      console.log(baseToken)
-      let baseTokenSymbol = baseToken
-      let quoteTokenSymbol = selectedQuoteToken
-      menu.push(
-        <MenuItem
-          key={baseTokenSymbol + '-' + quoteTokenSymbol}
-          value={baseTokenSymbol + '-' + quoteTokenSymbol}
-          primaryText={
-            <ExchangeTokenSelectItem
-              baseTokenSymbol={baseTokenSymbol}
-              quoteTokenSymbol={quoteTokenSymbol}
-            />
-          }
-        />
-      )
-    })
+    const tokenArray = (tradableTokens, selectedQuoteToken) =>
+      Object.keys(
+        this.filterTradableTokens(tradableTokens, selectedQuoteToken)
+      ).sort()
+    const areTokensEqual = (newArg, lastArg) => _.isEqual(newArg, lastArg)
+    const memoizedtokenArray = memoizeOne(tokenArray, areTokensEqual)
+    memoizedtokenArray(tradableTokens, selectedQuoteToken).forEach(
+      baseToken => {
+        let baseTokenSymbol = baseToken
+        let quoteTokenSymbol = selectedQuoteToken
+        menu.push(
+          <MenuItem
+            key={baseTokenSymbol + '-' + quoteTokenSymbol}
+            value={baseTokenSymbol + '-' + quoteTokenSymbol}
+            primaryText={
+              <ExchangeTokenSelectItem
+                baseTokenSymbol={baseTokenSymbol}
+                quoteTokenSymbol={quoteTokenSymbol}
+              />
+            }
+          />
+        )
+      }
+    )
     selectedQuoteToken !== selectedTradeTokensPair.quoteToken.symbol
       ? menu.unshift(
           <MenuItem
