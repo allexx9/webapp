@@ -8,6 +8,14 @@ export const USDT = 'USDT'
 export const WETH = 'WETH'
 export const OMG = 'OMG'
 export const SAN = 'SAN'
+export const EDO = 'EDO'
+export const FUN = 'FUN'
+export const REP = 'REP'
+export const MKR = 'MKR'
+export const DAI = 'DAI'
+export const BAT = 'BAT'
+export const NIO = 'NIO'
+export const SPK = 'SPK'
 
 export const MOCK_ERC20_TOKENS = {
   kovan: {
@@ -526,6 +534,150 @@ export const ERC20_TOKENS = {
           decimals: 18,
           address: '0x8aa72dd6045505836f643b39b82e70fd705f9686',
           name: 'SNT Wrapper'
+        }
+      }
+    },
+    EDO: {
+      symbol: 'EDO',
+      isOldERC20: false,
+      symbolTicker: {
+        Ethfinex: 'EDO'
+      },
+      address: '0xced4e93198734ddaff8492d525bd258d49eb388e',
+      decimals: 18,
+      name: 'Eidoo Token',
+      wrappers: {
+        Ethfinex: {
+          symbol: 'EDO',
+          decimals: 18,
+          address: '0xab056a8119bb91ca50631bd319ee3df654bebfa2',
+          name: 'EDO Wrapper'
+        }
+      }
+    },
+    FUN: {
+      symbol: 'FUN',
+      isOldERC20: false,
+      symbolTicker: {
+        Ethfinex: 'FUN'
+      },
+      address: '0x419d0d8bdd9af5e606ae2232ed285aff190e711b',
+      decimals: 8,
+      name: 'FunFair Token',
+      wrappers: {
+        Ethfinex: {
+          symbol: 'FUN',
+          decimals: 8,
+          address: '0xb33ce6b1e48f450b4c6d4c0a3f281237eeea2dec',
+          name: 'FUN Wrapper'
+        }
+      }
+    },
+    REP: {
+      symbol: 'REP',
+      isOldERC20: false,
+      symbolTicker: {
+        Ethfinex: 'REP'
+      },
+      address: '0x1985365e9f78359a9b6ad760e32412f4a445e862',
+      decimals: 18,
+      name: 'Reputation Token',
+      wrappers: {
+        Ethfinex: {
+          symbol: 'REP',
+          decimals: 18,
+          address: '0x1488f99d305990694e19b3e72f6f0307cfa1df4e',
+          name: 'REP Wrapper'
+        }
+      }
+    },
+    MKR: {
+      symbol: 'MKR',
+      isOldERC20: false,
+      symbolTicker: {
+        Ethfinex: 'MKR'
+      },
+      address: '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2',
+      decimals: 18,
+      name: 'Maker Token',
+      wrappers: {
+        Ethfinex: {
+          symbol: 'MKR',
+          decimals: 18,
+          address: '0x38ae374ecf4db50b0ff37125b591a04997106a32',
+          name: 'MKR Wrapper'
+        }
+      }
+    },
+    DAI: {
+      symbol: 'DAI',
+      isOldERC20: false,
+      symbolTicker: {
+        Ethfinex: 'DAI'
+      },
+      address: '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359',
+      decimals: 18,
+      name: 'Dai Stablecoin',
+      wrappers: {
+        Ethfinex: {
+          symbol: 'DAI',
+          decimals: 18,
+          address: '0xd9ebebfdab08c643c5f2837632de920c70a56247',
+          name: 'DAI Wrapper'
+        }
+      }
+    },
+    BAT: {
+      symbol: 'BAT',
+      isOldERC20: false,
+      symbolTicker: {
+        Ethfinex: 'BAT'
+      },
+      address: '0x0d8775f648430679a709e98d2b0cb6250d2887ef',
+      decimals: 18,
+      name: 'Basic Attention Token',
+      wrappers: {
+        Ethfinex: {
+          symbol: 'BAT',
+          decimals: 18,
+          address: '0xe82cfc4713598dc7244368cf5aca1b102a04ce33',
+          name: 'BAT Wrapper'
+        }
+      }
+    },
+    NIO: {
+      symbol: 'NIO',
+      isOldERC20: false,
+      symbolTicker: {
+        Ethfinex: 'NIO'
+      },
+      address: '0x5554e04e76533e1d14c52f05beef6c9d329e1e30',
+      decimals: 0,
+      name: 'Autonio Token',
+      wrappers: {
+        Ethfinex: {
+          symbol: 'NIO',
+          decimals: 0,
+          address: '0x680bf2eebf0ad9b183ac2ff88d16f5a4e41480e9',
+          name: 'NIO Wrapper'
+        }
+      }
+    },
+    SPK: {
+      symbol: 'SPK',
+      isOldERC20: false,
+      symbolTicker: {
+        Ethfinex: 'SPK'
+      },
+      address: '0x42d6622dece394b54999fbd73d108123806f6a18',
+      decimals: 18,
+      name: 'SPANK Token',
+      wrappers: {
+        Ethfinex: {
+          symbol: 'SPK',
+          decimals: 18,
+          address: '0x70b04d0684ea9dc0c8e244e0a1453744350f3864',
+          name: 'SPK Wrapper'
         }
       }
     }
