@@ -71,7 +71,7 @@ export const setTokenAllowanceEpic = action$ => {
 //
 // PRICES ON THE FUNDS PAGE ARE FETCHED FROM ETHFINEX ONLY
 
-const candlesGroupWebsocket$2 = (relay, networkId, symbols) => {
+const candlesGroupWebsocket$ = (relay, networkId, symbols) => {
   const timeframe = '24h'
   let subscribedSymbols = []
   const exchange = ExchangeConnectorWrapper.getInstance().getExchange(
@@ -191,7 +191,7 @@ export const getCandlesGroupDataEpic = (action$, state$) => {
   return action$.pipe(
     ofType(FETCH_CANDLES_DATA_PORTFOLIO_START),
     mergeMap(action => {
-      return candlesGroupWebsocket$2(
+      return candlesGroupWebsocket$(
         action.payload.relay,
         action.payload.networkId,
         utils.ethfinexTickersToArray(
