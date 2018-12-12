@@ -90,41 +90,6 @@ class PageSearchDragoTrader extends Component {
     this.props.dispatch(Actions.drago.getPoolsSearchList(options))
   }
 
-  // UNSAFE_componentWillReceiveProps(nextProps) {
-  //   // Updating the lists on each new block if the accounts balances have changed
-  //   // Doing this this to improve performances by avoiding useless re-rendering
-
-  //   const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
-  //   const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
-  //   if (!currentBalance.eq(nextBalance)) {
-  //     this.getDragos()
-  //     console.log(
-  //       `${
-  //         this.constructor.name
-  //       } -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`
-  //     )
-  //   } else {
-  //     null
-  //   }
-  // }
-
-  // shouldComponentUpdate(nextProps, nextState) {
-  //   let stateUpdate = true
-  //   let propsUpdate = true
-  //   const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
-  //   const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
-  //   stateUpdate = !utils.shallowEqual(this.state, nextState)
-  //   propsUpdate = !currentBalance.eq(nextBalance)
-  //   if (stateUpdate || propsUpdate) {
-  //     console.log(
-  //       `${
-  //         this.constructor.name
-  //       } -> shouldComponentUpdate -> Proceedding with rendering.`
-  //     )
-  //   }
-  //   return stateUpdate || propsUpdate
-  // }
-
   filter = filter => {
     this.setState(
       {

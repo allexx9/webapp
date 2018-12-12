@@ -211,9 +211,7 @@ export const getTransactionsSingleDrago = async (
           return y.timestamp - x.timestamp
         })
         console.log(
-          `${
-            this.constructor.name
-          } -> Single Drago Transactions list loaded: trader ${options.trader}`
+          `getTransactionsSingleDrago -> Single Drago Transactions list loaded: trader ${options.trader}`
         )
         return results
       })

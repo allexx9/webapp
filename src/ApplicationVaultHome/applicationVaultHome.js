@@ -56,20 +56,15 @@ class ApplicationVaultHome extends Component {
   }
 
   UNSAFE_componentWillUpdate() {
-    // Storing the active document, so we can preserve focus in forms.
     this.activeElement = document.activeElement
   }
 
   componentDidUpdate() {
-    // The following code is needed to fix a bug in tables. The scrolling posision is reset at every component re-render.
-    // Setting the page scroll position
-    // console.log(`${this.constructor.name} -> componentDidUpdate`)
-    // const element = ReactDOM.findDOMNode(this);
+
     const element = this.node
     if (element !== null) {
       window.scrollTo(0, this.scrollPosition)
     }
-    // Setting focus on the element active before component re-render
     if (this.activeElement.id !== '') {
       const activeElement = document.getElementById(this.activeElement.id)
       if (activeElement !== null) {

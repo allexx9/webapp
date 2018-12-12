@@ -1,8 +1,8 @@
 import * as TYPE_ from '../../../actions/const'
 import { Actions } from '../../../actions/'
-import { Observable, of } from 'rxjs'
 import { ZeroEx } from '0x.js'
 import { map, mergeMap, tap } from 'rxjs/operators'
+import { of,   concat, } from 'rxjs'
 import { ofType } from 'redux-observable'
 import Web3 from 'web3'
 import moment from 'moment'
@@ -91,9 +91,7 @@ const createOrderEthfinexV0Epic = (action$, state$) => {
     ofType(utils.customRelayAction(TYPE_.ORDER_CREATE)),
     mergeMap(action => {
       const { orderSide, options } = action.payload
-      return Observable.concat(
-        of(newMakerOrderV0(orderSide, options, state$))
-      ).pipe(
+      return concat(of(newMakerOrderV0(orderSide, options, state$))).pipe(
         map(order => {
           return Actions.exchange.updateOrder(order)
         }),

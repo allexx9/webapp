@@ -79,11 +79,6 @@ class PageVaultDetailsVaultManager extends Component {
     stateUpdate = !utils.shallowEqual(this.state, nextState)
     propsUpdate = !utils.shallowEqual(this.props, nextProps)
     if (stateUpdate || propsUpdate) {
-      // console.log(
-      //   `${
-      //     this.constructor.name
-      //   } -> shouldComponentUpdate -> Proceedding with rendering.`
-      // )
     }
     return stateUpdate || propsUpdate
   }

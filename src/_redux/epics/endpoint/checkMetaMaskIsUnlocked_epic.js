@@ -5,7 +5,6 @@ import * as TYPE_ from '../../actions/const'
 import { Actions } from '../../actions'
 import { DEBUGGING } from '../../../_utils/const'
 import { Interfaces } from '../../../_utils/interfaces'
-import { Observable, from, of, timer } from 'rxjs'
 import {
   catchError,
   distinctUntilChanged,
@@ -16,6 +15,7 @@ import {
   retryWhen,
   timeout
 } from 'rxjs/operators'
+import { concat, from, of, timer } from 'rxjs'
 import { ofType } from 'redux-observable'
 import { sha3_512 } from 'js-sha3'
 import BigNumber from 'bignumber.js'
@@ -145,21 +145,21 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
             DEBUGGING.initAccountsTransactionsInEpic &&
             !newEndpoint.isMetaMaskLocked
               ? [
-                  Observable.of(
+                  of(
                     Actions.endpoint.getAccountsTransactions(
                       null,
                       newEndpoint.accounts,
                       optionsHolder
                     )
                   ),
-                  Observable.of(
+                  of(
                     Actions.endpoint.getAccountsTransactions(
                       null,
                       newEndpoint.accounts,
                       optionsManager
                     )
                   ),
-                  Observable.of(
+                  of(
                     Actions.endpoint.getAccountsTransactions(
                       null,
                       newEndpoint.accounts,
@@ -171,7 +171,7 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
                       }
                     )
                   ),
-                  Observable.of(
+                  of(
                     Actions.endpoint.getAccountsTransactions(
                       null,
                       newEndpoint.accounts,
@@ -186,9 +186,9 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
                 ]
               : []
           delete newEndpoint.prevBlockNumber
-          return Observable.concat(
-            Observable.of(Actions.endpoint.updateInterface(newEndpoint)),
-            Observable.of(
+          return concat(
+            of(Actions.endpoint.updateInterface(newEndpoint)),
+            of(
               Actions.app.updateAppStatus({
                 accountsAddressHash: accountsAddressHash
               })

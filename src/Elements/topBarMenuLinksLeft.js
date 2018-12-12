@@ -26,17 +26,6 @@ class NavLinksLeft extends PureComponent {
     match: PropTypes.object.isRequired
   }
 
-  // shouldComponentUpdate(nextProps, nextState) {
-  //   let stateUpdate = true
-  //   let propsUpdate = true
-  //   propsUpdate = !utils.shallowEqual(this.props, nextProps)
-  //   stateUpdate = !utils.shallowEqual(this.state, nextState)
-  //   if (stateUpdate || propsUpdate) {
-  //     // console.log(`${this.constructor.name} -> shouldComponentUpdate: TRUE -> Proceedding with rendering.`);
-  //   }
-  //   return stateUpdate || propsUpdate
-  // }
-
   activeSectionPath = () => {
     const { match } = this.props
     let path = match.path.split('/')

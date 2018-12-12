@@ -374,9 +374,8 @@ class utilities {
   getDragoLiquidityAndTokenBalances = getDragoLiquidityAndTokenBalances
 
   shallowEqual(objA, objB, component = '') {
-    //
     if (objA === objB) {
-      // console.log(`${this.constructor.name} -> objA === objB -> ${component}`)
+      // console.log(`shallowEqual -> objA === objB -> ${component}`)
       return true
     }
 
@@ -386,7 +385,7 @@ class utilities {
       typeof objB !== 'object' ||
       objB === null
     ) {
-      // console.log(`${this.constructor.name} -> objA !== 'object' -> ${component}`)
+      // console.log(`shallowEqual-> objA !== 'object' -> ${component}`)
       return false
     }
 
@@ -394,7 +393,7 @@ class utilities {
     let keysB = Object.keys(objB)
 
     if (keysA.length !== keysB.length) {
-      // console.log(`${this.constructor.name} -> keysA.length  -> ${component}`)
+      // console.log(`shallowEqual -> keysA.length  -> ${component}`)
       return false
     }
 
@@ -404,7 +403,7 @@ class utilities {
       if (!bHasOwnProperty(keysA[i]) || objA[keysA[i]] !== objB[keysA[i]]) {
         // console.log(objA[keysA[i]], objB[keysA[i]])
         // console.log(
-        //   `${this.constructor.name} -> Test for A's keys different from B  -> ${component}`
+        //   `shallowEqual -> Test for A's keys different from B  -> ${component}`
         // )
         return false
       }
