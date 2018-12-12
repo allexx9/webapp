@@ -135,16 +135,15 @@ class JoyrideMainIntro extends React.Component {
                 </div> */}
                   <div style={{ fontWeight: 700 }}>
                     {hasGRGBalance && (
-                      <div>
+                      <div className={styles.icoDate}>
                         <a
                           href="https://tokenmarket.net/blockchain/ethereum/assets/rigoblock/"
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          RigoBlock ICO
-                        </a>
-                        <br />
-                        Token sale: 18. Dec 2018 - 18. Jan 2019
+                          RigoBlock ICO:
+                        </a>{' '}
+                        18. Dec 2018 - 18. Jan 2019
                       </div>
                     )}
                     <div className={styles.icoButton}>
