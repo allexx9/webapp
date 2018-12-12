@@ -170,7 +170,8 @@ class ApplicationHomeEfxPage extends Component {
               options: {
                 primaryColor: '#064286',
                 width: 900,
-                zIndex: '1900'
+                zIndex: '1900',
+                padding: '8'
               }
             }}
           />
