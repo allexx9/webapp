@@ -165,6 +165,7 @@ class ApplicationHomePage extends Component {
   }
 
   render() {
+    console.log(this.props)
     const { isSyncing, syncStatus, isConnected } = this.props.app
     const { run, newJoyrideKey } = this.state
     return (
