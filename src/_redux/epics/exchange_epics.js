@@ -3,10 +3,9 @@
 import * as ERRORS from '../../_const/errors'
 import * as TYPE_ from '../actions/const'
 import { Actions } from '../actions/'
-import { Observable, from, of, timer } from 'rxjs'
+import { Observable, concat, from, of, timer } from 'rxjs'
 import {
   catchError,
-  concat,
   exhaustMap,
   map,
   mergeMap,
@@ -214,15 +213,13 @@ const updateLiquidityAndTokenBalances$ = (fundAddress, state$) => {
         }
       }
 
-      return Observable.pipe(
-        concat(
-          of(Actions.exchange.updateSelectedFund(payload)),
-          of(
-            Actions.exchange.updateSelectedTradeTokensPair({
-              baseTokenLockWrapExpire: liquidity.baseTokenLockWrapExpire,
-              quoteTokenLockWrapExpire: liquidity.quoteTokenLockWrapExpire
-            })
-          )
+      return concat(
+        of(Actions.exchange.updateSelectedFund(payload)),
+        of(
+          Actions.exchange.updateSelectedTradeTokensPair({
+            baseTokenLockWrapExpire: liquidity.baseTokenLockWrapExpire,
+            quoteTokenLockWrapExpire: liquidity.quoteTokenLockWrapExpire
+          })
         )
       )
     })
