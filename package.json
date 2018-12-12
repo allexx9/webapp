@@ -88,7 +88,7 @@
     "test": "react-scripts test --env=jsdom --runInBand --testEnvironment=node --testPathIgnorePatterns=${pwd}/node_modules/ --testPathIgnorePatterns=${pwd}/src/_utils/exchange/ --testPathIgnorePatterns=${pwd}/src/_utils/web3Wrapper/",
     "eject": "react-scripts eject",
     "watch": "node scripts/watch.js",
-    "analyze": "find build\/static\/js\/ -maxdepth 1 -type f -name '*.js' -exec bash -c 'npx source-map-explorer {} &' \\;"
+    "analyze": "find build/static/js/ -maxdepth 1 -type f -name '*.js' -exec bash -c 'npx source-map-explorer {} &' \\;"
   },
   "devDependencies": {
     "@rigoblock/deployer": "^0.1.11",
