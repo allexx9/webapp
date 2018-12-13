@@ -1,13 +1,12 @@
 import { errors } from 'web3-core-helpers'
 import ReconnectingWebSocket from 'reconnecting-websocket/dist/reconnecting-websocket-cjs'
+import WS from 'ws'
 
 let Ws
 let _btoa = null
 let parseURL = null
 if (typeof window !== 'undefined' && typeof window.WebSocket !== 'undefined') {
-  Ws = function(url, protocols) {
-    return new window.WebSocket(url, protocols)
-  }
+  Ws = window['WebSocket']
   _btoa = btoa
   parseURL = function(url) {
     return new URL(url)
@@ -30,7 +29,7 @@ if (typeof window !== 'undefined' && typeof window.WebSocket !== 'undefined') {
   }
 }
 // Default connection ws://localhost:8546
-
+console.log(Ws)
 let WebsocketProvider = function WebsocketProvider(url, options) {
   let _this = this
   this.responseCallbacks = {}
@@ -59,7 +58,10 @@ let WebsocketProvider = function WebsocketProvider(url, options) {
     headers.authorization = 'Basic ' + _btoa(parsedURL.auth)
   }
 
-  let recWs = new ReconnectingWebSocket(url, '', { minReconnectionDelay: 1000 })
+  let recWs = new ReconnectingWebSocket(url, '', {
+    minReconnectionDelay: 1000,
+    WebSocket: window['WebSocket'] ? window['WebSocket'] : WS
+  })
 
   this.connection = recWs
 
