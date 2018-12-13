@@ -97,10 +97,10 @@ class utilities {
     let assetArray = Array(0)
     for (let token in assets) {
       if (!['ETH', 'WETH', 'USDT', 'ETHW'].includes(assets[token].symbol)) {
-        assetArray.push(`t${assets[token].symbolTicker.Ethfinex}ETH`)
+        assetArray.push(`${assets[token].symbolTicker.Ethfinex}ETH`)
       }
     }
-    assetArray.push(`tETHUSD`)
+    assetArray.push(`ETHUSD`)
     return assetArray
   }
 
