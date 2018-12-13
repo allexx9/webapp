@@ -3,7 +3,6 @@ import { Hidden, Visible } from 'react-grid-system'
 import { Link, withRouter } from 'react-router-dom'
 import { THEME_COLOR } from './../_utils/const'
 import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar'
-import { connect } from 'react-redux'
 import ActionAccountBalance from 'material-ui/svg-icons/action/account-balance'
 import ActionHome from 'material-ui/svg-icons/action/home'
 import ActionPolymer from 'material-ui/svg-icons/action/polymer'
@@ -15,7 +14,6 @@ import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import TopMenuLinkLong from '../_atomic/molecules/topMenuLinkLong'
-import utils from '../_utils/utils'
 
 // function mapStateToProps(state) {
 //   return state
@@ -27,17 +25,6 @@ class NavLinksLeft extends PureComponent {
     // dispatch: PropTypes.func.isRequired,
     match: PropTypes.object.isRequired
   }
-
-  // shouldComponentUpdate(nextProps, nextState) {
-  //   let stateUpdate = true
-  //   let propsUpdate = true
-  //   propsUpdate = !utils.shallowEqual(this.props, nextProps)
-  //   stateUpdate = !utils.shallowEqual(this.state, nextState)
-  //   if (stateUpdate || propsUpdate) {
-  //     // console.log(`${this.constructor.name} -> shouldComponentUpdate: TRUE -> Proceedding with rendering.`);
-  //   }
-  //   return stateUpdate || propsUpdate
-  // }
 
   activeSectionPath = () => {
     const { match } = this.props

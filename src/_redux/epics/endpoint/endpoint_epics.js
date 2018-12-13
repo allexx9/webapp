@@ -1,11 +1,9 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-// import { Observable } from 'rxjs';
 import * as TYPE_ from '../../actions/const'
 import { Actions } from '../../actions'
 import { DEBUGGING, INFURA } from '../../../_utils/const'
 import { Interfaces } from '../../../_utils/interfaces'
-import { Observable, defer, from, timer } from 'rxjs'
 import {
   delay,
   finalize,
@@ -15,6 +13,7 @@ import {
   switchMap,
   takeUntil
 } from 'rxjs/operators'
+import { defer, from, of, timer,   concat, } from 'rxjs'
 import { ofType } from 'redux-observable'
 import { sha3_512 } from 'js-sha3'
 import Web3Wrapper from '../../../_utils/web3Wrapper/src'
@@ -90,52 +89,52 @@ export const attachInterfaceEpic = (action$, state$) =>
           const currentAccountsAddressHash = sha3_512(accounts.toString())
           const savedAccountsAddressHash = state$.value.app.accountsAddressHash
           if (currentAccountsAddressHash !== savedAccountsAddressHash) {
-            return Observable.concat(
-              Observable.of(
+            return concat(
+              of(
                 Actions.drago.updateTransactionsDragoHolder([
                   Array(0),
                   Array(0),
                   Array(0)
                 ])
               ),
-              Observable.of(
+              of(
                 Actions.drago.updateTransactionsDragoManager([
                   Array(0),
                   Array(0),
                   Array(0)
                 ])
               ),
-              Observable.of(
+              of(
                 Actions.vault.updateTransactionsVaultHolder([
                   Array(0),
                   Array(0),
                   Array(0)
                 ])
               ),
-              Observable.of(
+              of(
                 Actions.vault.updateTransactionsVaultManager([
                   Array(0),
                   Array(0),
                   Array(0)
                 ])
               ),
-              Observable.of(
+              of(
                 Actions.app.updateAppStatus({
                   appLoading: false,
                   accountsAddressHash: currentAccountsAddressHash
                 })
               ),
-              Observable.of(Actions.endpoint.updateInterface(endpoint))
+              of(Actions.endpoint.updateInterface(endpoint))
             )
           }
-          return Observable.concat(
-            Observable.of(
+          return concat(
+            of(
               Actions.app.updateAppStatus({
                 appLoading: false,
                 accountsAddressHash: currentAccountsAddressHash
               })
             ),
-            Observable.of(Actions.endpoint.updateInterface(endpoint))
+            of(Actions.endpoint.updateInterface(endpoint))
           )
         })
       )
@@ -190,11 +189,11 @@ export const monitorAccountsEpic = (action$, state$) => {
           const observablesArray = Array(0)
 
           observablesArray.push(
-            Observable.of(Actions.endpoint.updateInterface(accountsUpdate[0]))
+            of(Actions.endpoint.updateInterface(accountsUpdate[0]))
           )
           if (accountsUpdate[1].length !== 0)
             observablesArray.push(
-              Observable.of({
+              of({
                 type: TYPE_.QUEUE_ACCOUNT_NOTIFICATION,
                 payload: accountsUpdate[1]
               })
@@ -207,7 +206,7 @@ export const monitorAccountsEpic = (action$, state$) => {
               // ) {
               //   console.log('Account monitoring - > DRAGO details fetch.')
               //   observablesArray.push(
-              //     Observable.of(
+              //     of(
               //       Actions.drago.getPoolDetails(
               //         currentState.transactionsDrago.selectedDrago.details
               //           .dragoId,
@@ -225,7 +224,7 @@ export const monitorAccountsEpic = (action$, state$) => {
               // ) {
               //   console.log('Account monitoring - > VAULT details fetch.')
               //   observablesArray.push(
-              //     Observable.of(
+              //     of(
               //       Actions.drago.getPoolDetails(
               //         currentState.transactionsVault.selectedVault.details
               //           .vaultId,
@@ -237,12 +236,12 @@ export const monitorAccountsEpic = (action$, state$) => {
               //     )
               //   )
               // }
-              // observablesArray.push(Observable.of(DEBUGGING.DUMB_ACTION))
+              // observablesArray.push(of(DEBUGGING.DUMB_ACTION))
               console.log(
                 'Account monitoring - > DRAGO transactions fetch trader'
               )
               observablesArray.push(
-                Observable.of(
+                of(
                   Actions.endpoint.getAccountsTransactions(
                     null,
                     currentState.endpoint.accounts,
@@ -260,7 +259,7 @@ export const monitorAccountsEpic = (action$, state$) => {
                 'Account monitoring - > DRAGO transactions fetch manager'
               )
               observablesArray.push(
-                Observable.of(
+                of(
                   Actions.endpoint.getAccountsTransactions(
                     null,
                     currentState.endpoint.accounts,
@@ -278,9 +277,9 @@ export const monitorAccountsEpic = (action$, state$) => {
               console.log(
                 'Account monitoring - > VAULT transactions fetch manager'
               )
-              observablesArray.push(Observable.of(DEBUGGING.DUMB_ACTION))
+              observablesArray.push(of(DEBUGGING.DUMB_ACTION))
               observablesArray.push(
-                Observable.of(
+                of(
                   Actions.endpoint.getAccountsTransactions(
                     null,
                     currentState.endpoint.accounts,
@@ -298,7 +297,7 @@ export const monitorAccountsEpic = (action$, state$) => {
                 'Account monitoring - > VAULT transactions fetch trader'
               )
               observablesArray.push(
-                Observable.of(
+                of(
                   Actions.endpoint.getAccountsTransactions(
                     null,
                     currentState.endpoint.accounts,
@@ -315,7 +314,7 @@ export const monitorAccountsEpic = (action$, state$) => {
             }
           }
 
-          return Observable.concat(...observablesArray)
+          return concat(...observablesArray)
         }),
         retryWhen(error => {
           console.log('monitorAccountsEpic')

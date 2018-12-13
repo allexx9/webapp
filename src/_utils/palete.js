@@ -78,15 +78,11 @@
  *     WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-
-
 let palette = (function() {
   let proto = Array.prototype
   let slice = function(arr, opt_begin, opt_end) {
     return proto.slice.apply(arr, proto.slice.call(arguments, 1))
   }
-
-
 
   let function_type = typeof function() {}
 
@@ -810,13 +806,13 @@ let palette = (function() {
 })()
 
 /** @typedef {function(number): string} */
-palette.ColorFunction
+palette.ColorFunction = () => {}
 
 /** @typedef {!Array<string>} */
-palette.Palette
+palette.Palette = () => {}
 
 /** @typedef {!Object<number, palette.Palette>|!Array<palette.Palette>} */
-palette.PalettesList
+palette.PalettesList = () => {}
 
 /**
  * @typedef {
@@ -832,7 +828,7 @@ palette.PalettesList
  *     setColorFunction: function(palette.ColorFunction, boolean=, boolean=),
  *     color: function(number, ...?): ?string}}
  */
-palette.SchemeType
+palette.SchemeType = () => {}
 
 /* mpn65 palette start here. ************************************************/
 

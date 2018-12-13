@@ -4,7 +4,7 @@
 import * as TYPE_ from '../../actions/const'
 // import { Actions } from '../../actions'
 import { DEBUGGING } from '../../../_utils/const'
-import { Observable, merge, timer } from 'rxjs'
+import { Observable, merge, of, timer,   concat, } from 'rxjs'
 import {
   finalize,
   flatMap,
@@ -45,11 +45,11 @@ export const monitorEventfulEpic = (action$, state$) => {
         flatMap(() => {
           const observablesArray = Array(0)
           // const currentState = state$.value
-          observablesArray.push(Observable.of(DEBUGGING.DUMB_ACTION))
+          observablesArray.push(of(DEBUGGING.DUMB_ACTION))
           // if (currentState.transactionsDrago.selectedDrago.details.dragoId) {
           //   console.log('Account monitoring - > DRAGO details fetch.')
           //   observablesArray.push(
-          //     Observable.of(
+          //     of(
           //       Actions.drago.getPoolDetails(
           //         currentState.transactionsDrago.selectedDrago.details.dragoId,
           //
@@ -64,7 +64,7 @@ export const monitorEventfulEpic = (action$, state$) => {
           // if (currentState.transactionsVault.selectedVault.details.vaultId) {
           //   console.log('Account monitoring - > VAULT details fetch.')
           //   observablesArray.push(
-          //     Observable.of(
+          //     of(
           //       Actions.drago.getPoolDetails(
           //         currentState.transactionsVault.selectedVault.details.vaultId,
 
@@ -75,7 +75,7 @@ export const monitorEventfulEpic = (action$, state$) => {
           //     )
           //   )
           // }
-          return Observable.concat(...observablesArray)
+          return concat(...observablesArray)
         }),
         retryWhen(error => {
           console.log('monitorEventfulEpic')
@@ -92,7 +92,7 @@ export const monitorEventfulEpic = (action$, state$) => {
         })
         // catchError(error => {
         //   console.log(error)
-        //   return Observable.of({
+        //   return of({
         //     type: TYPE_.QUEUE_ERROR_NOTIFICATION,
         //     payload: 'Error: cannot subscribe to eventful.'
         //   })

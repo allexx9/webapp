@@ -1,7 +1,7 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
 import * as TYPE_ from '../../../actions/const'
-import { Observable, race } from 'rxjs'
+import { Observable, of, race } from 'rxjs'
 import { catchError, filter, map, mergeMap, takeUntil } from 'rxjs/operators'
 import { ofType } from 'redux-observable'
 import ExchangeConnectorWrapper from '../../../../_utils/exchangeConnector'
@@ -114,7 +114,7 @@ export const getCandlesSingleDataEpic = action$ =>
           ),
           catchError(err => {
             console.warn(err)
-            return Observable.of({
+            return of({
               type: TYPE_.QUEUE_ERROR_NOTIFICATION,
               payload: err
             })

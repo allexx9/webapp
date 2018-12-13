@@ -207,9 +207,7 @@ export const getTransactionsSingleVault = async (
           return y.timestamp - x.timestamp
         })
         console.log(
-          `${
-            this.constructor.name
-          } -> Single Vault Transactions list loaded: trader ${options.trader}`
+          `getTransactionsSingleVault -> Single Vault Transactions list loaded: trader ${options.trader}`
         )
         return results
       })

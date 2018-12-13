@@ -78,7 +78,6 @@ class ElementListFunds extends PureComponent {
       sortedList: sortedList,
       rowCount: rowCount
     })
-    // console.log(`${this.constructor.name} -> UNSAFE_componentWillReceiveProps`);
   }
 
   render() {

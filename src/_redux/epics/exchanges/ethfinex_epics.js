@@ -4,7 +4,7 @@ import * as ERRORS from '../../../_const/errors'
 import * as TYPE_ from '../../actions/const'
 import { Actions } from '../../actions/'
 import { BigNumber } from '@0xproject/utils'
-import { Observable, from, timer, zip } from 'rxjs'
+import { Observable, from, of, timer, zip,   concat, } from 'rxjs'
 import {
   auditTime,
   catchError,
@@ -276,7 +276,7 @@ export const initRelayWebSocketBookEpic = action$ =>
         ),
         catchError(error => {
           console.warn(error)
-          return Observable.of({
+          return of({
             type: TYPE_.QUEUE_ERROR_NOTIFICATION,
             payload: error
           })
@@ -352,7 +352,7 @@ export const initRelayWebSocketTickerEpic = (action$, state$) =>
         ),
         catchError(error => {
           console.warn(error)
-          return Observable.of({
+          return of({
             type: TYPE_.QUEUE_ERROR_NOTIFICATION,
             payload: 'Error connecting to price ticker.'
           })
@@ -415,12 +415,12 @@ export const getAccountOrdersEpic = action$ =>
               }
             }),
             catchError(() => {
-              return Observable.concat(
-                Observable.of({
+              return concat(
+                of({
                   type: TYPE_.QUEUE_ERROR_NOTIFICATION,
                   payload: 'Error fetching account orders.'
                 }),
-                Observable.of(
+                of(
                   Actions.exchange.updateAccountSignature({
                     valid: false
                   })

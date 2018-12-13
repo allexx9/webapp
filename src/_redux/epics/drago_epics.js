@@ -4,7 +4,7 @@ import * as TYPE_ from '../actions/const'
 import { Actions } from '../actions/'
 import { BigNumber } from 'bignumber.js'
 import { ERCdEX, Ethfinex } from '../../_utils/const'
-import { Observable, from, timer } from 'rxjs'
+import { Observable, concat, from, of, timer } from 'rxjs'
 import {
   catchError,
   finalize,
@@ -82,7 +82,7 @@ export const getTokensBalancesEpic = (action$, state$) => {
         }),
         catchError(error => {
           console.warn(error)
-          return Observable.of({
+          return of({
             type: TYPE_.QUEUE_ERROR_NOTIFICATION,
             payload: 'Error fetching fund assets balances.'
           })
@@ -277,7 +277,7 @@ export const getPoolDetailsEpic = (action$, state$) => {
         })
         // catchError(error => {
         //   console.warn(error)
-        //   return Observable.of({
+        //   return of({
         //     type: TYPE_.QUEUE_ERROR_NOTIFICATION,
         //     payload: 'Error fetching Pool details.'
         //   })

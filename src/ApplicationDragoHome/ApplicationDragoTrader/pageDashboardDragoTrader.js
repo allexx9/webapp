@@ -53,22 +53,9 @@ class PageDashboardDragoTrader extends Component {
   componentDidMount() {}
 
   UNSAFE_componentWillReceiveProps(nextProps) {
-    // Updating the lists on each new block if the accounts balances have changed
-    // Doing this this to improve performances by avoiding useless re-rendering
-    // const { accounts } = this.props.endpoint
-    // const { api } = this.context
-    // const options = { balance: true, supply: false, limit: 20, trader: true, drago: true }
-    // console.log(`${this.constructor.name} -> UNSAFE_componentWillReceiveProps-> nextProps received.`);
-    // Updating the transaction list if there have been a change in total accounts balance and the previous balance is
-    // different from 0 (balances are set to 0 on app loading)
     const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
     const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
     if (!currentBalance.eq(nextBalance) && !currentBalance.eq(0)) {
-      console.log(
-        `${
-          this.constructor.name
-        } -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`
-      )
     }
   }
 
@@ -78,13 +65,6 @@ class PageDashboardDragoTrader extends Component {
     propsUpdate = !utils.shallowEqual(this.props, nextProps)
     stateUpdate = !utils.shallowEqual(this.state, nextState)
     if (stateUpdate || propsUpdate) {
-      // console.log('State updated ', stateUpdate)
-      // console.log('Props updated ', propsUpdate)
-      // console.log(
-      //   `${
-      //     this.constructor.name
-      //   } -> shouldComponentUpdate -> Proceeding with rendering.`
-      // )
     }
     return stateUpdate || propsUpdate
   }

@@ -110,6 +110,10 @@ if (process.env.NODE_ENV !== 'development') {
 }
 
 if (process.env.NODE_ENV === `development`) {
+  Sentry.init({
+    dsn: 'https://b8304e9d588a477db619fbb026f31549@sentry.io/1329485',
+    environment: process.env.NODE_ENV
+  })
   store = Reactotron.createStore(persistedReducer, enhancer)
 } else {
   store = createStore(persistedReducer, enhancer)

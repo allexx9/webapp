@@ -74,20 +74,6 @@ class PageFundDetailsVaultTrader extends Component {
     this.props.dispatch(Actions.vault.updateSelectedVault({}, { reset: true }))
   }
 
-  // shouldComponentUpdate(nextProps, nextState) {
-  //   //
-  //   let stateUpdate = true
-  //   let propsUpdate = true
-  //   // const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
-  //   // const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
-  //   stateUpdate = !utils.shallowEqual(this.state, nextState)
-  //   propsUpdate = !utils.shallowEqual(this.props, nextProps)
-  //   if (stateUpdate || propsUpdate) {
-  //     // console.log(`${this.constructor.name} -> shouldComponentUpdate -> Proceedding with rendering.`);
-  //   }
-  //   return stateUpdate || propsUpdate
-  // }
-
   snackBar = msg => {
     this.setState({
       snackBar: true,
@@ -404,37 +390,6 @@ class PageFundDetailsVaultTrader extends Component {
     )
   }
 
-  subscribeToEvents = contract => {
-    const networkName = this.props.endpoint.networkInfo.name
-    let WsSecureUrl = ''
-    const eventfullContracAddress = contract.contract.address[0]
-    if (PROD) {
-      WsSecureUrl = ENDPOINTS.rigoblock.wss[networkName].prod
-    } else {
-      WsSecureUrl = ENDPOINTS.rigoblock.wss[networkName].dev
-    }
-    const web3 = new Web3(WsSecureUrl)
-    const eventfullContract = new web3.eth.Contract(
-      contract.abi,
-      eventfullContracAddress
-    )
-    const subscription = eventfullContract.events.allEvents(
-      {
-        fromBlock: 'latest',
-        topics: [null, null, null, null]
-      },
-      (error, events) => {
-        if (!error) {
-          console.log(`${this.constructor.name} -> New contract event.`)
-          console.log(events)
-          this.initVault()
-        }
-      }
-    )
-    this.setState({
-      contractSubscription: subscription
-    })
-  }
 }
 
 export default withRouter(connect(mapStateToProps)(PageFundDetailsVaultTrader))

@@ -38,31 +38,35 @@ const setTokenAllowance$ = (
   spenderAddress,
   ZeroExConfig
 ) =>
-  Observable.fromPromise(
+  from(
     setTokenAllowance(tokenAddress, ownerAddress, spenderAddress, ZeroExConfig)
   )
 
 export const setTokenAllowanceEpic = action$ => {
-  return action$.ofType(SET_TOKEN_ALLOWANCE).mergeMap(action => {
-    return setTokenAllowance$(
-      action.payload.tokenAddress,
-      action.payload.ownerAddress,
-      action.payload.spenderAddress,
-      action.payload.ZeroExConfig
-    )
-      .map(() => {
-        return {
-          type: UPDATE_TRADE_TOKENS_PAIR,
-          payload: {
-            baseTokenAllowance: true
+  return action$.pipe(
+    ofType(SET_TOKEN_ALLOWANCE),
+    mergeMap(action => {
+      return setTokenAllowance$(
+        action.payload.tokenAddress,
+        action.payload.ownerAddress,
+        action.payload.spenderAddress,
+        action.payload.ZeroExConfig
+      ).pipe(
+        map(() => {
+          return {
+            type: UPDATE_TRADE_TOKENS_PAIR,
+            payload: {
+              baseTokenAllowance: true
+            }
           }
-        }
-      })
-      .catch(err => {
-        console.warn(err)
-        return of(false)
-      })
-  })
+        }),
+        catchError(err => {
+          console.warn(err)
+          return of(false)
+        })
+      )
+    })
+  )
 }
 
 //
@@ -210,7 +214,7 @@ export const getCandlesGroupDataEpic = (action$, state$) => {
         takeUntil(action$.ofType(FETCH_CANDLES_DATA_PORTFOLIO_STOP)),
         catchError(error => {
           console.warn(error)
-          return Observable.of({
+          return of({
             type: QUEUE_ERROR_NOTIFICATION,
             payload: 'Error fetching candles data.'
           })

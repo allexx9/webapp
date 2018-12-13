@@ -3,7 +3,8 @@
 
 import * as abis from '../../contracts/abi'
 import { RIGOTOKEN_ADDRESSES } from '../../utils/const'
-import { utils } from 'ethers'
+import { bigNumberify } from 'ethers/utils/bignumber'
+import { hexlify } from 'ethers/utils/bytes'
 import BigNumber from 'bignumber.js'
 import Registry from '../registry'
 
@@ -58,7 +59,7 @@ class RigoTokenWeb3 {
     if (BigNumber.isBigNumber(amount)) {
       amount = '0x' + new BigNumber(amount).toString(16)
     }
-    amount = utils.hexlify(utils.bigNumberify(amount))
+    amount = hexlify(bigNumberify(amount))
     return instance.methods
       .transfer(toAddress, amount)
       .estimateGas(options)

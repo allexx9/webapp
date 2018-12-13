@@ -4,7 +4,7 @@ import * as TYPE_ from '../actions/const'
 import { Actions } from '../actions'
 // import { DEBUGGING } from '../../_utils/const'
 import * as utils from '../../_utils/pools'
-import { Observable, from, timer } from 'rxjs'
+import { Observable, from, of, timer } from 'rxjs'
 import { catchError, finalize, map, mergeMap, retryWhen } from 'rxjs/operators'
 import { getBlockChunks } from '../../_utils/blockChain'
 import { ofType } from 'redux-observable'
@@ -283,7 +283,7 @@ export const getPoolsListEpic = (action$, state$) =>
         }),
         catchError(error => {
           console.warn(error)
-          return Observable.of({
+          return of({
             type: TYPE_.QUEUE_ERROR_NOTIFICATION,
             payload: 'Error fetching list of dragos.'
           })
@@ -415,7 +415,7 @@ export const getPoolTransactionsEpic = (action$, state$) =>
         }),
         catchError(error => {
           console.warn(error)
-          return Observable.of({
+          return of({
             type: TYPE_.QUEUE_ERROR_NOTIFICATION,
             payload: 'Error fetching account transactions.'
           })

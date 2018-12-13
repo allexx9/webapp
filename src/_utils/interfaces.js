@@ -42,7 +42,7 @@ class Interfaces {
   }
 
   getAccountsParity() {
-    console.log(`${this.constructor.name} -> getAccountsParity`)
+    console.log(`getAccountsParity`)
     const api = this._api
     let accounts = {}
     let arrayPromises = []
@@ -111,7 +111,7 @@ class Interfaces {
   }
 
   getAccountsMetamask = async () => {
-    // console.log(`${this.constructor.name} -> getAccountsMetamask`)
+    // console.log(`getAccountsMetamask`)
     const web3 = window.web3
     const parityNetworkId = this._parityNetworkId
     let accountsMetaMask = {}
@@ -233,7 +233,7 @@ class Interfaces {
   }
 
   attachInterfaceInfuraV2 = async () => {
-    console.log(`${this.constructor.name} -> Interface Infura`)
+    console.log(`Interface Infura`)
     const api = this._api
     try {
       let accountsMetaMask
@@ -280,7 +280,7 @@ class Interfaces {
         ...stateUpdate
       }
       // this._success = result
-      console.log(`${this.constructor.name} -> Done`)
+      console.log(`attachInterfaceInfuraV2 -> Done`)
       return result
     } catch (error) {
       let currentState = this._error
@@ -292,13 +292,13 @@ class Interfaces {
         ...currentState,
         ...stateUpdate
       }
-      console.warn(`${this.constructor.name} -> Error`, error)
+      console.warn(`attachInterfaceInfuraV2 -> Error`, error)
       throw this._error
     }
   }
 
   attachInterfaceRigoBlockV2 = async () => {
-    console.log(`${this.constructor.name} -> Interface RigoBlock`)
+    console.log(`attachInterfaceRigoBlockV2 -> Interface RigoBlock`)
     const api = this._api
     let accountsParity = {}
     let accountsMetaMask = {}
