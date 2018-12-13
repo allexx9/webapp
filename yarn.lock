@@ -367,14 +367,14 @@
   integrity sha512-GM5ec7+xpkuXiCMyzhyENgH/xZ8t0nAMDBY0QOsVVD6TrZYjJKUnW1eaI18HHX8W+COWMwWR9c0zoPiBp9+tUg==
 
 "@rigoblock/contracts@^0.3.8":
-  version "0.3.8"
-  resolved "https://registry.yarnpkg.com/@rigoblock/contracts/-/contracts-0.3.8.tgz#cc88b44807bab0c2862da221eb0434e9c08f9d9b"
-  integrity sha512-wMdJvwigKls4ECJyW/kWH4tsB751kW0sfvAJ7apw1Xis/axkpn0AmnIWfPqKNvBxkELO7vwtSWA1R2d7JGRKdA==
+  version "0.3.9"
+  resolved "https://registry.yarnpkg.com/@rigoblock/contracts/-/contracts-0.3.9.tgz#a289f97190dfa9268a3426c1b92a02c472cb7156"
+  integrity sha512-3m9rL7O7Aj3Sc6CJgiSayTDvqw6/ZcYK9MqM+Wf43RUXi1R8aBY6xPoOQPRtGmnx3WYUA1wql7ZVIWWGXMDF8g==
 
 "@rigoblock/deployer@^0.1.11":
-  version "0.1.11"
-  resolved "https://registry.yarnpkg.com/@rigoblock/deployer/-/deployer-0.1.11.tgz#c06e2899744e9b5752d362a6168e15b3c6d984dc"
-  integrity sha512-DZxe07AX9UieWJ3rf7MdS7SXi9p6nLigT9N9cUlLitXEtUHLN21yCipFvMw6YusFlKoVKf+uqjLCTIEya5pxWg==
+  version "0.1.12"
+  resolved "https://registry.yarnpkg.com/@rigoblock/deployer/-/deployer-0.1.12.tgz#884c445687952637e4929e7070c3a64fa92fdf5c"
+  integrity sha512-RALcBSJra9OjQ++ddUOYaoBNbenlQtO3SVt60lHW8p/fT3ksGXhAwUyiKGbtJdFRsFqU64h0pAzrzdaEnxGMeg==
   dependencies:
     "@0xproject/json-schemas" "^0.7.21"
     "@0xproject/sol-resolver" "^0.0.2"
