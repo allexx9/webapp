@@ -1,15 +1,18 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-// import 'rxjs/add/observable/timer'
-// import 'rxjs/add/operator/bufferTime'
-// import 'rxjs/add/operator/concat'
-// import 'rxjs/add/operator/delay'
-// import 'rxjs/add/operator/do'
-// import 'rxjs/add/operator/exhaustMap'
-// import 'rxjs/add/operator/map'
-// import 'rxjs/add/operator/mapTo'
-// import 'rxjs/add/operator/mergeMap'
-import { Observable, from, of, timer } from 'rxjs'
+import {
+  FETCH_CANDLES_DATA_PORTFOLIO_START,
+  FETCH_CANDLES_DATA_PORTFOLIO_STOP,
+  QUEUE_ERROR_NOTIFICATION,
+  SET_TOKEN_ALLOWANCE,
+  TOKENS_TICKERS_UPDATE,
+  TOKEN_PRICE_TICKERS_FETCH_START,
+  TOKEN_PRICE_TICKERS_FETCH_STOP,
+  UPDATE_SELECTED_DRAGO_DETAILS_CHART_ASSETS_MARKET_ADD_DATAPOINT,
+  UPDATE_SELECTED_DRAGO_DETAILS_CHART_ASSETS_MARKET_DATA_INIT,
+  UPDATE_TRADE_TOKENS_PAIR
+} from '../actions/const'
+import { Observable, from, merge, of, timer } from 'rxjs'
 import {
   catchError,
   exhaustMap,
@@ -24,21 +27,7 @@ import {
 } from 'rxjs/operators'
 import { ofType } from 'redux-observable'
 import { setTokenAllowance } from '../../_utils/exchange'
-// import { fromPromise } from 'rxjs/add/observable/fromPromise';
-import {
-  FETCH_CANDLES_DATA_PORTFOLIO_START,
-  FETCH_CANDLES_DATA_PORTFOLIO_STOP,
-  QUEUE_ERROR_NOTIFICATION,
-  SET_TOKEN_ALLOWANCE,
-  TOKENS_TICKERS_UPDATE,
-  TOKEN_PRICE_TICKERS_FETCH_START,
-  TOKEN_PRICE_TICKERS_FETCH_STOP,
-  UPDATE_SELECTED_DRAGO_DETAILS_CHART_ASSETS_MARKET_ADD_DATAPOINT,
-  UPDATE_SELECTED_DRAGO_DETAILS_CHART_ASSETS_MARKET_DATA_INIT,
-  UPDATE_TRADE_TOKENS_PAIR
-} from '../actions/const'
 import Exchange from '../../_utils/exchange/src/index'
-// import exchangeConnector from '@rigoblock/exchange-connector'
 import ExchangeConnectorWrapper from '../../_utils/exchangeConnector'
 import moment from 'moment'
 import utils from '../../_utils/utils'
@@ -83,54 +72,38 @@ export const setTokenAllowanceEpic = action$ => {
 // PRICES ON THE FUNDS PAGE ARE FETCHED FROM ETHFINEX ONLY
 
 const candlesGroupWebsocket$ = (relay, networkId, symbols) => {
-  return Observable.create(observer => {
-    let subscribedSymbols = Array(0)
-    const exchange = new Exchange(relay.name, networkId, 'ws')
-    const websocket = exchange.getHistoricalPricesData(
-      // utils.getTokenSymbolForRelay(relay.name, baseToken),
-      // utils.getTokenSymbolForRelay(relay.name, quoteToken),
-      'test',
-      'test',
-      '1m'
-    )
-    symbols.push('tETHUSD')
-    websocket.addEventListener('open', function() {
-      console.log(`Candles WS open`)
-      symbols.forEach(function(symbol) {
-        let msg = JSON.stringify({
-          event: `subscribe`,
-          channel: `candles`,
-          key: `trade:15m:${symbol}`
+  const timeframe = '24h'
+  let subscribedSymbols = []
+  const exchange = ExchangeConnectorWrapper.getInstance().getExchange(
+    relay.name,
+    {
+      networkId: networkId
+    }
+  )
+  const observables = symbols.map(symbols =>
+    Observable.create(observer => {
+      const unsubPromise = exchange.ws
+        .getCandles({ timeframe, symbols }, (err, msg) => {
+          if (err) {
+            return observer.error(err)
+          }
+          if (msg.event === 'subscribed') {
+            subscribedSymbols[msg.chanId] = msg.key.split(':t')[1].slice(0, -3)
+          }
+          if (Array.isArray(msg)) {
+            return observer.next([subscribedSymbols[msg[0]], msg[1]])
+          }
         })
-        websocket.send(msg)
-      })
-    })
-    websocket.onmessage = msg => {
-      // console.log('WebSocket message.', msg.data)
-      let data = JSON.parse(msg.data)
-      if (typeof data.event !== undefined) {
-        if (data.event === 'subscribed') {
-          subscribedSymbols[data.chanId] = data.key.split(':t')[1].slice(0, -3)
+        .catch(err => console.error(err))
+      return async () => {
+        const unsub = await unsubPromise
+        if (unsub) {
+          return unsub()
         }
       }
-      if (Array.isArray(data)) {
-        return observer.next([subscribedSymbols[data[0]], data[1]])
-      }
-    }
-    websocket.onclose = msg => {
-      console.log(`Candle WS closed`)
-      return msg.wasClean ? observer.complete() : null
-    }
-    websocket.onerror = error => {
-      // console.log(error)
-      console.log('WebSocket error.')
-      return observer.error(error)
-    }
-    return () =>
-      websocket.close(1000, 'Closed by client', {
-        keepClosed: true
-      })
-  })
+    })
+  )
+  return merge(...observables)
 }
 
 const updateGroupCandles = ticker => {
@@ -233,9 +206,6 @@ export const getCandlesGroupDataEpic = (action$, state$) => {
         filter(val => {
           return val[1].length !== 0
         }),
-        tap(val => {
-          return val
-        }),
         map(historical => {
           return updateGroupCandles(historical)
         }),
@@ -258,7 +228,7 @@ export const getCandlesGroupDataEpic = (action$, state$) => {
 
 const getTickersWs$ = (relay, networkId, symbols) => {
   return Observable.create(observer => {
-    const ethfinex = ExchangeConnectorWrapper.getNewInstance().getExchange(
+    const ethfinex = ExchangeConnectorWrapper.getInstance().getExchange(
       relay.name,
       {
         networkId: networkId
@@ -266,7 +236,7 @@ const getTickersWs$ = (relay, networkId, symbols) => {
     )
     let subscribedSymbols = Array(0)
     let unsubscribeArray = Array(0)
-    let symbolsArray = symbols.split(',').map(symbol => symbol.slice(1))
+    let symbolsArray = symbols.split(',')
     if (symbolsArray.length !== 0) {
       ethfinex.raw.ws
         .getTickers(

@@ -28,12 +28,6 @@ const exchange = {
       payload: payload
     }
   },
-  updateTradesHistory: payload => {
-    return {
-      type: TYPE_.TRADES_HISTORY_UPDATE,
-      payload: payload
-    }
-  },
   resetTradesHistory: payload => {
     return {
       type: TYPE_.TRADES_HISTORY_RESET,

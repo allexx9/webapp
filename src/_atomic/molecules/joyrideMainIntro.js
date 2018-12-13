@@ -77,16 +77,6 @@ class JoyrideMainIntro extends React.Component {
                 </a>
               </div>
             </Col>
-            <Col xs={12}>
-              {!hasGRGBalance && (
-                <div className={styles.minimumBalance}>
-                  You need a minimum balance of 1 GRG to access RigoBlock
-                  platform. <br />
-                  Please follow the REGISTER link below to receive 1 airdropped
-                  GRG.
-                </div>
-              )}
-            </Col>
           </div>
         </Row>
         <div className={styles.communityContainer}>
@@ -109,10 +99,9 @@ class JoyrideMainIntro extends React.Component {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      RigoBlock.com
-                    </a>
-                    <br />
-                    Explore and learn more about our project.
+                      RigoBlock.com:
+                    </a>{' '}
+                    explore and learn more about our project.
                   </div>
                 </div>
                 <br />
@@ -126,29 +115,37 @@ class JoyrideMainIntro extends React.Component {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      Community
-                    </a>
-                    <br />
-                    Join our community and contribute to the decentralized
+                      Community:
+                    </a>{' '}
+                    join our community and contribute to the decentralized
                     ecosystem.
                   </div>
                 </div>
               </Col>
               <Col xs={6}>
+                {!hasGRGBalance && (
+                  <div className={styles.minimumBalance}>
+                    Please REGISTER to receive 1 free GRG to access the platform
+                  </div>
+                )}
+
                 <div className={styles.communityLink}>
                   {/* <div className={styles.imgLink}>
                   <ContentLink />
                 </div> */}
                   <div style={{ fontWeight: 700 }}>
-                    <a
-                      href="https://tokenmarket.net/blockchain/ethereum/assets/rigoblock/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      RigoBlock ICO
-                    </a>
-                    <br />
-                    Token sale: 18. Dec 2018 - 18. Jan 2019
+                    {hasGRGBalance && (
+                      <div className={styles.icoDate}>
+                        <a
+                          href="https://tokenmarket.net/blockchain/ethereum/assets/rigoblock/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          RigoBlock ICO:
+                        </a>{' '}
+                        18. Dec 2018 - 18. Jan 2019
+                      </div>
+                    )}
                     <div className={styles.icoButton}>
                       <FlatButton
                         href="https://tokenmarket.net/preregistration/rigoblock/enter"

@@ -9,7 +9,7 @@ import Cookies from 'universal-cookie'
 import ElementNotConnected from '../Elements/elementNotConnected'
 import Joyride from 'react-joyride'
 import JoyrideContent from '../_atomic/atoms/joyrideContent'
-import JoyrideMainIntro from '../_atomic/molecules/joyrideMainIntro'
+import JoyrideEfxIntro from '../_atomic/molecules/joyrideEfxIntro'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
@@ -64,7 +64,7 @@ class ApplicationHomeEfxPage extends Component {
       {
         target: '.joyride-efx-collaboration',
         content: (
-          <JoyrideMainIntro
+          <JoyrideEfxIntro
             content={
               'RigoBlock + Ethfinex: the decentralized platform for asset management.'
             }
@@ -167,10 +167,14 @@ class ApplicationHomeEfxPage extends Component {
               disableAnimation: true
             }}
             styles={{
+              buttonClose: {
+                display: 'none'
+              },
               options: {
                 primaryColor: '#064286',
                 width: 900,
-                zIndex: '1900'
+                zIndex: '1900',
+                padding: '8'
               }
             }}
           />
