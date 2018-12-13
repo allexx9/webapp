@@ -75,7 +75,7 @@ export const getDragoDetails = async (
                   try {
                     date = dateFromTimeStampHuman(result.timestamp)
                   } catch (error) {
-                    date = '01 January 1970'
+                    date = '-'
                   }
                   return date
                 })
@@ -84,10 +84,10 @@ export const getDragoDetails = async (
                   throw new Error(error)
                 })
             } else {
-              return '01 January 1970'
+              return '-'
             }
           } else {
-            return '01 January 1970'
+            return '-'
           }
         })
         .catch(error => {

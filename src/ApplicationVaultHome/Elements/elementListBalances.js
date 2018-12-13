@@ -294,7 +294,7 @@ class ElementListBalances extends PureComponent {
                   this.props.assetsPrices[token.symbol].priceEth
                 ).toFixed(5)
               ) : (
-                <small>N/A</small>
+                <small>-</small>
               )}{' '}
               <small className={styles.symbolLegendText}>ETH</small>
             </Col> */}
@@ -337,7 +337,7 @@ class ElementListBalances extends PureComponent {
     }
     return (
       <div>
-        <small>N/A</small>
+        <small>-</small>
       </div>
     )
   }
@@ -360,7 +360,7 @@ class ElementListBalances extends PureComponent {
     // }
     return (
       <div className={styles.valueText}>
-        <small>N/A</small>
+        <small>-</small>
       </div>
     )
   }

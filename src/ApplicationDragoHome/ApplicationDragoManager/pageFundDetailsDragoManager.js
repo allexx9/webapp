@@ -18,6 +18,7 @@ import ElementListTransactions from '../Elements/elementListTransactions'
 import ElementListWrapper from '../../Elements/elementListWrapper'
 import ElementNoAdminAccess from '../../Elements/elementNoAdminAccess'
 import ElementPriceBox from '../Elements/elementPricesBox'
+import EstimatedPriceText from '../../_atomic/atoms/estimatedPriceText'
 import FundHeader from '../../_atomic/molecules/fundHeader'
 import InfoTable from '../../Elements/elementInfoTable'
 import Loading from '../../_atomic/atoms/loading'
@@ -225,7 +226,7 @@ class PageFundDetailsDragoManager extends Component {
     let totalAssetsValue = 0
     let tableLiquidity = [
       ['Liquidity', 'Calculating...', [<small key="dragoLiqEth">ETH</small>]],
-      ['Porfolio value', 'N/A', [<small key="dragoPortEth">ETH</small>]],
+      ['Porfolio value', '-'],
       ['Total', 'Calculating...', [<small key="dragoPortTotEth">ETH</small>]]
     ]
 
@@ -266,7 +267,7 @@ class PageFundDetailsDragoManager extends Component {
     }
 
     // Show estimated prices
-    let estimatedPrice = 'N/A'
+    let estimatedPrice = '-'
     if (dragoValues.estimatedPrice !== -1) {
       estimatedPrice = formatPrice(dragoValues.estimatedPrice)
     }
@@ -404,7 +405,7 @@ class PageFundDetailsDragoManager extends Component {
                                   </div>
                                 </Col>
                                 <Col xs={6} style={{ textAlign: 'center' }}>
-                                  {estimatedPrice} <small>ETH</small>
+                                  <EstimatedPriceText price={estimatedPrice} />
                                 </Col>
                               </Row>
                               <Row>

@@ -293,10 +293,10 @@ class ElementListAssets extends PureComponent {
           this.props.assetsPrices[token.symbol].priceEth
         ).toFixed(5)
       } else {
-        price = 'N/A'
+        price = '-'
       }
     } else {
-      price = 'N/A'
+      price = '-'
     }
 
     return (
