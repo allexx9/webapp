@@ -12,8 +12,7 @@ import {
   map,
   mergeMap,
   retryWhen,
-  takeUntil,
-  tap
+  takeUntil
 } from 'rxjs/operators'
 import { ofType } from 'redux-observable'
 // import { DEBUGGING } from '../../_utils/const'

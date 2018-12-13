@@ -22,8 +22,7 @@ import {
   mergeMap,
   retryWhen,
   switchMap,
-  takeUntil,
-  tap
+  takeUntil
 } from 'rxjs/operators'
 import { ofType } from 'redux-observable'
 import { setTokenAllowance } from '../../_utils/exchange'
@@ -302,7 +301,6 @@ export const getPricesEpic = (action$, state$) =>
   action$.pipe(
     ofType(TOKEN_PRICE_TICKERS_FETCH_START),
     switchMap(action => {
-      console.log('DEBUG GET PRICES EPIC')
       const currentState = state$.value
       const symbols =
         Object.keys(action.payload.assetsList).length === 0
@@ -319,7 +317,6 @@ export const getPricesEpic = (action$, state$) =>
         symbols,
         'ws'
       ).pipe(
-        tap(val => console.log('DEBUG GET TICKERS VALUE', val)),
         map(message => {
           try {
             const arrayToObject = (arr, keyField) =>
