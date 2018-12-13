@@ -229,7 +229,7 @@ export const getPoolDetailsEpic = (action$, state$) => {
                 details
               })
             )
-            if (details.totalSupply !== null) {
+            if (details.totalSupply) {
               actionsArray.push(
                 Actions.drago.getPoolTransactions(
                   details.address,
@@ -245,7 +245,7 @@ export const getPoolDetailsEpic = (action$, state$) => {
                 details
               })
             )
-            if (details.totalSupply !== null) {
+            if (details.totalSupply) {
               actionsArray.push(
                 Actions.drago.getPoolTransactions(
                   details.address,

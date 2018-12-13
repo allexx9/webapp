@@ -22,8 +22,7 @@ import {
   mergeMap,
   retryWhen,
   switchMap,
-  takeUntil,
-  tap
+  takeUntil
 } from 'rxjs/operators'
 import { ofType } from 'redux-observable'
 import { setTokenAllowance } from '../../_utils/exchange'
@@ -72,7 +71,7 @@ export const setTokenAllowanceEpic = action$ => {
 // PRICES ON THE FUNDS PAGE ARE FETCHED FROM ETHFINEX ONLY
 
 const candlesGroupWebsocket$ = (relay, networkId, symbols) => {
-  const timeframe = '24h'
+  const timeframe = '15m'
   let subscribedSymbols = []
   const exchange = ExchangeConnectorWrapper.getInstance().getExchange(
     relay.name,
@@ -199,7 +198,6 @@ export const getCandlesGroupDataEpic = (action$, state$) => {
         ),
         action.payload.startDate
       ).pipe(
-        takeUntil(action$.ofType(FETCH_CANDLES_DATA_PORTFOLIO_STOP)),
         filter(val => {
           return val[1] !== 'hb'
         }),
@@ -209,6 +207,7 @@ export const getCandlesGroupDataEpic = (action$, state$) => {
         map(historical => {
           return updateGroupCandles(historical)
         }),
+        takeUntil(action$.ofType(FETCH_CANDLES_DATA_PORTFOLIO_STOP)),
         catchError(error => {
           console.warn(error)
           return Observable.of({
@@ -226,8 +225,8 @@ export const getCandlesGroupDataEpic = (action$, state$) => {
 //
 // PRICES ON THE FUNDS PAGE ARE FETCHED FROM ETHFINEX ONLY
 
-const getTickersWs$ = (relay, networkId, symbols) => {
-  return Observable.create(observer => {
+const getTickersWs$ = (relay, networkId, symbols) =>
+  Observable.create(observer => {
     const ethfinex = ExchangeConnectorWrapper.getInstance().getExchange(
       relay.name,
       {
@@ -235,68 +234,53 @@ const getTickersWs$ = (relay, networkId, symbols) => {
       }
     )
     let subscribedSymbols = Array(0)
-    let unsubscribeArray = Array(0)
     let symbolsArray = symbols.split(',')
-    if (symbolsArray.length !== 0) {
-      ethfinex.raw.ws
-        .getTickers(
-          {
-            symbols: symbolsArray
-          },
-          (error, msgWs) => {
-            if (error) {
-              return observer.error(error)
-            } else {
-              // console.log(msgWs)
-              if (msgWs.event === 'subscribed') {
-                subscribedSymbols[msgWs.chanId] = msgWs.symbol
-                  .split('t')[1]
-                  .slice(0, -3)
-              }
-              if (Array.isArray(msgWs)) {
-                let tick = []
-                if (msgWs[1] !== 'hb') {
-                  if (subscribedSymbols[msgWs[0]] === 'ETH') {
-                    tick = [
-                      {
-                        priceEth: 1 / msgWs[1][6],
-                        priceUsd: '',
-                        symbol: 'USDT'
-                      }
-                    ]
-                  } else {
-                    tick = [
-                      {
-                        priceEth: msgWs[1][6],
-                        priceUsd: '',
-                        symbol: subscribedSymbols[msgWs[0]]
-                      }
-                    ]
+    if (symbolsArray.length) {
+      const unsubPromise = ethfinex.raw.ws.getTickers(
+        {
+          symbols: symbolsArray
+        },
+        (err, msgWs) => {
+          if (err) {
+            return observer.error(err)
+          }
+          if (msgWs.event === 'subscribed') {
+            subscribedSymbols[msgWs.chanId] = msgWs.symbol
+              .split('t')[1]
+              .slice(0, -3)
+          }
+          if (Array.isArray(msgWs)) {
+            let tick = []
+            if (msgWs[1] !== 'hb') {
+              if (subscribedSymbols[msgWs[0]] === 'ETH') {
+                tick = [
+                  {
+                    priceEth: 1 / msgWs[1][6],
+                    priceUsd: '',
+                    symbol: 'USDT'
                   }
-                  // console.log(tick)
-                  return observer.next(tick)
-                }
+                ]
+              } else {
+                tick = [
+                  {
+                    priceEth: msgWs[1][6],
+                    priceUsd: '',
+                    symbol: subscribedSymbols[msgWs[0]]
+                  }
+                ]
               }
-              // return observer.next('')
+              return observer.next(tick)
             }
           }
-        )
-        .then(unsubscribe => {
-          unsubscribeArray.push(unsubscribe)
-        })
-        .then(() => {
-          return () => {
-            unsubscribeArray.forEach(item => item.unsubscribe())
-            return ethfinex.ws.close()
-          }
-        })
-        .catch(err => {
-          console.warn(err)
-          return observer.error(err)
-        })
+        }
+      )
+      return async () => {
+        const unsub = await unsubPromise
+        return unsub()
+      }
     }
+    return observer.complete()
   })
-}
 
 const getTickers$ = (relay, networkId, symbols, protocol = 'ws') => {
   if (relay.name === 'ERCdEX') {
@@ -333,11 +317,6 @@ export const getPricesEpic = (action$, state$) =>
         symbols,
         'ws'
       ).pipe(
-        takeUntil(action$.ofType(TOKEN_PRICE_TICKERS_FETCH_STOP)),
-        tap(val => {
-          // console.log(val)
-          return val
-        }),
         map(message => {
           try {
             const arrayToObject = (arr, keyField) =>
@@ -364,14 +343,11 @@ export const getPricesEpic = (action$, state$) =>
             return {}
           }
         }),
-        tap(val => {
-          // console.log(val)
-          return val
-        }),
         map(payload => ({
           type: TOKENS_TICKERS_UPDATE,
           payload
         })),
+        takeUntil(action$.ofType(TOKEN_PRICE_TICKERS_FETCH_STOP)),
         retryWhen(error => {
           let scalingDuration = 5000
           return error.pipe(
