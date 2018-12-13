@@ -18,7 +18,7 @@ import {
 import { toBaseUnitAmount, toUnitAmount } from './format'
 import { updateAccounts } from './accounts'
 import BigNumber from 'bignumber.js'
-import ElementNotification from '../Elements/elementNotification'
+import ElementNotification from '../_atomic/molecules/elementNotification'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import PoolApi from '../PoolsApi/src'
 import PropTypes from 'prop-types'
@@ -97,10 +97,10 @@ class utilities {
     let assetArray = Array(0)
     for (let token in assets) {
       if (!['ETH', 'WETH', 'USDT', 'ETHW'].includes(assets[token].symbol)) {
-        assetArray.push(`t${assets[token].symbolTicker.Ethfinex}ETH`)
+        assetArray.push(`${assets[token].symbolTicker.Ethfinex}ETH`)
       }
     }
-    assetArray.push(`tETHUSD`)
+    assetArray.push(`ETHUSD`)
     return assetArray
   }
 

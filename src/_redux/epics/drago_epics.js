@@ -60,7 +60,7 @@ export const getTokensBalancesEpic = (action$, state$) => {
           return dragoAssets
         }),
         flatMap(dragoAssets => {
-          let observablesArray = [
+          const actionsArray = [
             Actions.drago.updateSelectedDrago({
               assets: Object.values(dragoAssets)
             }),
@@ -71,14 +71,14 @@ export const getTokensBalancesEpic = (action$, state$) => {
             )
           ]
           if (action.payload.relay.name === 'Ethfinex') {
-            observablesArray.push(
+            actionsArray.push(
               Actions.exchange.getPortfolioChartDataStart(
                 action.payload.relay,
                 networkInfo.id
               )
             )
           }
-          return concat(observablesArray)
+          return from(actionsArray)
         }),
         catchError(error => {
           console.warn(error)
@@ -222,15 +222,15 @@ export const getPoolDetailsEpic = (action$, state$) => {
           const relay = {
             name: relayName
           }
-          let observablesArray = []
+          let actionsArray = []
           if (drago) {
-            observablesArray.push(
+            actionsArray.push(
               Actions.drago.updateSelectedDrago({
                 details
               })
             )
             if (details.totalSupply !== null) {
-              observablesArray.push(
+              actionsArray.push(
                 Actions.drago.getPoolTransactions(
                   details.address,
                   accounts,
@@ -240,13 +240,13 @@ export const getPoolDetailsEpic = (action$, state$) => {
               )
             }
           } else {
-            observablesArray.push(
+            actionsArray.push(
               Actions.vault.updateSelectedVault({
                 details
               })
             )
             if (details.totalSupply !== null) {
-              observablesArray.push(
+              actionsArray.push(
                 Actions.drago.getPoolTransactions(
                   details.address,
                   accounts,
@@ -255,9 +255,7 @@ export const getPoolDetailsEpic = (action$, state$) => {
               )
             }
           }
-          return concat(observablesArray)
-
-          // return DEBUGGING.DUMB_ACTION
+          return from(actionsArray)
         }),
         takeUntil(
           action$.pipe(
