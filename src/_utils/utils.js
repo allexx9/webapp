@@ -18,7 +18,7 @@ import {
 import { toBaseUnitAmount, toUnitAmount } from './format'
 import { updateAccounts } from './accounts'
 import BigNumber from 'bignumber.js'
-import ElementNotification from '../Elements/elementNotification'
+import ElementNotification from '../_atomic/molecules/elementNotification'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import PoolApi from '../PoolsApi/src'
 import PropTypes from 'prop-types'

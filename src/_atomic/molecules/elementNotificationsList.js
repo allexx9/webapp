@@ -6,8 +6,8 @@ import ElementNotification from './elementNotification'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import classNames from 'classnames'
-import styles from './elementNotificationsDrawer.module.css'
-import utils from '../_utils/utils'
+import styles from './elementNotificationsList.module.css'
+import utils from '../../_utils/utils'
 
 function mapStateToProps(state) {
   return {
@@ -16,9 +16,8 @@ function mapStateToProps(state) {
   }
 }
 
-class ElementNotificationsDrawer extends Component {
+class ElementNotificationsList extends Component {
   static propTypes = {
-    notificationsOpen: PropTypes.bool.isRequired,
     dispatch: PropTypes.func.isRequired,
     recentTransactions: PropTypes.object.isRequired,
     endpoint: PropTypes.object.isRequired
@@ -29,7 +28,6 @@ class ElementNotificationsDrawer extends Component {
   }
 
   state = {
-    notificationsOpen: false,
     subscriptionIDContractDrago: [],
     contract: null
   }
@@ -58,7 +56,6 @@ class ElementNotificationsDrawer extends Component {
       api,
       recentTransactions
     )
-    console.log(newRecentTransactions)
     this.props.dispatch(
       this.updateTransactionsQueueAction(newRecentTransactions)
     )
@@ -313,25 +310,14 @@ class ElementNotificationsDrawer extends Component {
   }
 
   render() {
-    const { notificationsOpen } = this.props
     return (
-      <span>
-        <div
-          className={classNames([
-            styles.notificationsPanel,
-            // notificationsOpen ? styles.show : styles.noShow
-            notificationsOpen ? styles.show : styles.show
-          ])}
-        >
-          <Row>
-            <Col xs={12}>
-              <List>{this.renderNotifications()}</List>
-            </Col>
-          </Row>
-        </div>
-      </span>
+      <Row>
+        <Col xs={12}>
+          <List>{this.renderNotifications()}</List>
+        </Col>
+      </Row>
     )
   }
 }
 
-export default connect(mapStateToProps)(ElementNotificationsDrawer)
+export default connect(mapStateToProps)(ElementNotificationsList)
