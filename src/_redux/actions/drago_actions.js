@@ -1,6 +1,7 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
 import * as TYPE_ from './const'
+import { getPoolsList, updatePoolsList } from './dapp'
 
 const drago = {
   getTokenBalancesDrago: (dragoDetails, relay) => {
@@ -38,21 +39,8 @@ const drago = {
       }
     }
   },
-  getPoolsSearchList: (
-    options = {
-      topics: [null, null, null, null],
-      fromBlock: 0,
-      toBlock: 'latest',
-      poolType: 'drago'
-    }
-  ) => {
-    return {
-      type: TYPE_.GET_POOLS_SEARCH_LIST,
-      payload: {
-        options
-      }
-    }
-  },
+  getPoolsList,
+  updatePoolsList,
   updateSelectedDrago: (results = {}, options = { reset: false }) => {
     switch (options.reset) {
       case true:
@@ -70,18 +58,6 @@ const drago = {
           type: TYPE_.UPDATE_SELECTED_DRAGO_DETAILS,
           payload: results
         }
-    }
-  },
-  updateDragosSearchList: results => {
-    return {
-      type: TYPE_.UPDATE_DRAGOS_LIST,
-      payload: results
-    }
-  },
-  updateVaultsSearchList: results => {
-    return {
-      type: TYPE_.UPDATE_VAULTS_LIST,
-      payload: results
     }
   },
   updateTransactionsDragoHolder: results => {

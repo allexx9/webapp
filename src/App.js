@@ -134,6 +134,12 @@ export class App extends Component {
       this.props.dispatch(Actions.endpoint.checkMetaMaskIsUnlocked())
     }
     this.props.dispatch(Actions.endpoint.monitorAccountsStart())
+    let options = {
+      topics: [null, null, null, null],
+      fromBlock: 0,
+      toBlock: 'latest'
+    }
+    this.props.dispatch(Actions.drago.getPoolsList(options))
     this.setState({ run: true })
   }
 

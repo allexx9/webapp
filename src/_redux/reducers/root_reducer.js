@@ -5,6 +5,7 @@ import { eventfulDragoReducer, eventfulVaultReducer } from './eventful_reducer'
 import appReducer from './app_reducer'
 import endpointsReducer from './endpoint_reducer'
 // import exchangeReducer, { ordersReducer } from './exchange_reducer'
+import { poolsListReducer } from './dapp'
 import exchangeReducer from './exchange_reducer'
 import notificationsReducer from './notifications_reducer'
 import transactionsReducer from './transactions_reducer'
@@ -17,6 +18,7 @@ class reducers {
     transactions: transactionsReducer,
     user: usersReducer,
     endpoint: endpointsReducer,
+    poolsList: poolsListReducer,
     transactionsDrago: eventfulDragoReducer,
     transactionsVault: eventfulVaultReducer,
     notifications: notificationsReducer

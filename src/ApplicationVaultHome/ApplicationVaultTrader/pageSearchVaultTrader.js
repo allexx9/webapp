@@ -27,7 +27,7 @@ class PageSearchVaultTrader extends Component {
   static propTypes = {
     location: PropTypes.object.isRequired,
     endpoint: PropTypes.object.isRequired,
-    transactionsVault: PropTypes.object.isRequired,
+    poolsList: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired
   }
 
@@ -55,10 +55,7 @@ class PageSearchVaultTrader extends Component {
   scrollPosition = 0
 
   static getDerivedStateFromProps(props, state) {
-    // Any time the current user changes,
-    // Reset any parts of state that are tied to that user.
-    // In this simple example, that's just the email.
-    const { lastFetchRange } = props.transactionsVault.vaultsList
+    const { lastFetchRange } = props.poolsList
     if (!_.isEqual(lastFetchRange, state.prevLastFetchRange)) {
       const { chunk, lastBlock, startBlock } = lastFetchRange
       if (lastBlock === 0) return null
@@ -80,15 +77,7 @@ class PageSearchVaultTrader extends Component {
     return null
   }
 
-  componentDidMount() {
-    let options = {
-      topics: [null, null, null, null],
-      fromBlock: 0,
-      toBlock: 'latest',
-      poolType: 'vault'
-    }
-    this.props.dispatch(Actions.drago.getPoolsSearchList(options))
-  }
+  componentDidMount() {}
 
   filter = filter => {
     this.setState(
@@ -100,17 +89,24 @@ class PageSearchVaultTrader extends Component {
   }
 
   filterFunds = () => {
-    const { transactionsVault } = this.props
+    const { poolsList } = this.props
     const { filter } = this.state
-    const list = transactionsVault.vaultsList.list
+    const list = Object.values(poolsList.list)
+    list.sort(function(a, b) {
+      if (a.symbol < b.symbol) return -1
+      if (a.symbol > b.symbol) return 1
+      return 0
+    })
     const filterValue = filter.trim().toLowerCase()
     const filterLength = filterValue.length
     return filterLength === 0
-      ? list
+      ? list.filter(item => item.poolType === 'vault')
       : list.filter(
           item =>
-            item.name.toLowerCase().slice(0, filterLength) === filterValue ||
-            item.symbol.toLowerCase().slice(0, filterLength) === filterValue
+            (item.name.toLowerCase().slice(0, filterLength) === filterValue ||
+              item.symbol.toLowerCase().slice(0, filterLength) ===
+                filterValue) &&
+            item.poolType === 'vault'
         )
   }
 

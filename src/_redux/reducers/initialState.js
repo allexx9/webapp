@@ -9,7 +9,7 @@ import {
   NETWORK_OK
 } from '../../_utils/const'
 
-import { exchange } from './initialState/index'
+import { exchange, poolsList } from './initialState/index'
 
 import BigNumber from 'bignumber.js'
 
@@ -29,9 +29,8 @@ const initialState = {
     },
     transactionsDrawerOpen: false
   },
-  notifications: {
-    engine: ''
-  },
+  notifications: {},
+  poolsList: poolsList,
   exchange: exchange,
   transactions: {
     queue: new Map(),

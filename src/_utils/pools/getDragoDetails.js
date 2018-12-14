@@ -15,7 +15,7 @@ export const getDragoDetails = async (
   // Initializing Drago API
   //
 
-  let web3 = getWeb3(options, networkInfo)
+  let web3 = getWeb3(networkInfo, options)
   let fromBlock = getFromBlock(networkInfo)
 
   const poolApi = new PoolApi(web3)

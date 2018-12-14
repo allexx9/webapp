@@ -31,7 +31,7 @@ class ApplicationHome extends PureComponent {
   static propTypes = {
     endpoint: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
-    transactionsDrago: PropTypes.object.isRequired,
+    poolsList: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
     onClickCreatePool: PropTypes.func.isRequired,
     onClickExplore: PropTypes.func.isRequired
@@ -60,10 +60,7 @@ class ApplicationHome extends PureComponent {
   }
 
   static getDerivedStateFromProps(props, state) {
-    // Any time the current user changes,
-    // Reset any parts of state that are tied to that user.
-    // In this simple example, that's just the email.
-    const { lastFetchRange } = props.transactionsDrago.dragosList
+    const { lastFetchRange } = props.poolsList
     if (!_.isEqual(lastFetchRange, state.prevLastFetchRange)) {
       const { chunk, lastBlock, startBlock } = lastFetchRange
       if (lastBlock === 0) return null
@@ -85,16 +82,7 @@ class ApplicationHome extends PureComponent {
     return null
   }
 
-  componentDidMount() {
-    window.addEventListener('scroll', this.handleScroll)
-    let options = {
-      topics: [null, null, null, null],
-      fromBlock: 0,
-      toBlock: 'latest',
-      poolType: 'drago'
-    }
-    this.props.dispatch(Actions.drago.getPoolsSearchList(options))
-  }
+  componentDidMount() {}
 
   componentWillUnmount = () => {
     window.removeEventListener('scroll', this.handleScroll)
@@ -122,21 +110,29 @@ class ApplicationHome extends PureComponent {
   }
 
   filterFunds = () => {
-    const { transactionsDrago } = this.props
+    const { poolsList } = this.props
     const { filter } = this.state
-    const list = transactionsDrago.dragosList.list
+    const list = Object.values(poolsList.list)
+    list.sort(function(a, b) {
+      if (a.symbol < b.symbol) return -1
+      if (a.symbol > b.symbol) return 1
+      return 0
+    })
     const filterValue = filter.trim().toLowerCase()
     const filterLength = filterValue.length
     return filterLength === 0
-      ? list
+      ? list.filter(item => item.poolType === 'drago')
       : list.filter(
           item =>
-            item.name.toLowerCase().slice(0, filterLength) === filterValue ||
-            item.symbol.toLowerCase().slice(0, filterLength) === filterValue
+            (item.name.toLowerCase().slice(0, filterLength) === filterValue ||
+              item.symbol.toLowerCase().slice(0, filterLength) ===
+                filterValue) &&
+            item.poolType === 'drago'
         )
   }
 
   render() {
+    this.filterFunds()
     const { endpoint } = this.props
     const buttonTelegram = {
       border: '2px solid',

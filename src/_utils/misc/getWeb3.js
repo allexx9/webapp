@@ -2,7 +2,7 @@ import { HTTP_EVENT_FETCHING, METAMASK } from '../const'
 import Web3 from 'web3'
 import Web3Wrapper from '../web3Wrapper/src'
 
-export const getWeb3 = (options, networkInfo) => {
+export const getWeb3 = (networkInfo, options = { wallet: '' }) => {
   if (networkInfo.id === 5777) {
     return new Web3(new Web3.providers.HttpProvider('http://localhost:8545'))
   }

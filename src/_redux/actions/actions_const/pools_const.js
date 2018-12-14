@@ -1,0 +1,2 @@
+export const POOLS_GET_LIST = 'POOLS_GET_LIST'
+export const POOLS_LIST_UPDATE = 'POOLS_LIST_UPDATE'

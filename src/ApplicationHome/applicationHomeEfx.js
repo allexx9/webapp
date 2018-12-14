@@ -98,7 +98,7 @@ class ApplicationHomeEfx extends PureComponent {
       toBlock: 'latest',
       poolType: 'drago'
     }
-    this.props.dispatch(Actions.drago.getPoolsSearchList(options))
+    this.props.dispatch(Actions.drago.getPoolsList(options))
   }
 
   componentWillUnmount = () => {

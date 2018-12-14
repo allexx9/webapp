@@ -29,7 +29,6 @@ if (typeof window !== 'undefined' && typeof window.WebSocket !== 'undefined') {
   }
 }
 // Default connection ws://localhost:8546
-console.log(Ws)
 let WebsocketProvider = function WebsocketProvider(url, options) {
   let _this = this
   this.responseCallbacks = {}

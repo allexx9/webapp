@@ -206,13 +206,14 @@ class ElementListFunds extends PureComponent {
   }
 
   renderISIN = rowData => {
-    return utils.dragoISIN(rowData.symbol, rowData.dragoId)
+    const id = rowData.dragoId || rowData.id
+    return utils.dragoISIN(rowData.symbol, id)
   }
 
   actionButton(cellData, rowData) {
     const { match } = this.props
-    const url =
-      rowData.dragoId + '/' + utils.dragoISIN(cellData, rowData.dragoId)
+    const id = rowData.dragoId || rowData.id
+    const url = id + '/' + utils.dragoISIN(cellData, id)
     let poolType = match.path.includes('vault') ? 'vault' : 'drago'
     return (
       <div className={styles.actionButtonContainer}>
@@ -393,7 +394,7 @@ class ElementListFunds extends PureComponent {
             CREATED
           </span>
         )
-        default:
+      default:
         return (
           <span style={{ color: Colors.blue300, fontWeight: 600 }}>
             UnKNOWN
@@ -479,8 +480,8 @@ class ElementListFunds extends PureComponent {
     const { list } = this.props
     return list
       .sortBy(item => item.timestamp)
-      .update(
-        list => (sortDirection === SortDirection.DESC ? list : list.reverse())
+      .update(list =>
+        sortDirection === SortDirection.DESC ? list : list.reverse()
       )
   }
 

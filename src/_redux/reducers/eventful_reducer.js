@@ -8,21 +8,6 @@ export function eventfulDragoReducer(
   action
 ) {
   switch (action.type) {
-    case TYPE_.UPDATE_DRAGOS_LIST: {
-      let newList = [].concat(state.dragosList.list.concat(action.payload.list))
-      newList.sort(function(a, b) {
-        if (a.symbol < b.symbol) return -1
-        if (a.symbol > b.symbol) return 1
-        return 0
-      })
-      return {
-        ...state,
-        dragosList: {
-          list: newList,
-          lastFetchRange: action.payload.lastFetchRange
-        }
-      }
-    }
     case TYPE_.UPDATE_TRANSACTIONS_DRAGO_HOLDER:
       return {
         ...state,
@@ -31,7 +16,6 @@ export function eventfulDragoReducer(
           logs: action.payload[1]
         }
       }
-
     case TYPE_.UPDATE_TRANSACTIONS_DRAGO_MANAGER:
       return {
         ...state,
@@ -148,21 +132,6 @@ export function eventfulVaultReducer(
   action
 ) {
   switch (action.type) {
-    case TYPE_.UPDATE_VAULTS_LIST: {
-      let newList = [].concat(state.vaultsList.list.concat(action.payload.list))
-      newList.sort(function(a, b) {
-        if (a.symbol < b.symbol) return -1
-        if (a.symbol > b.symbol) return 1
-        return 0
-      })
-      return {
-        ...state,
-        vaultsList: {
-          list: newList,
-          lastFetchRange: action.payload.lastFetchRange
-        }
-      }
-    }
     case TYPE_.UPDATE_TRANSACTIONS_VAULT_HOLDER:
       return {
         ...state,

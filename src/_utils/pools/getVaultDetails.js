@@ -15,8 +15,8 @@ export const getVaultDetails = async (
   // Initializing Vault API
   //
 
-  let web3 = getWeb3(options, networkInfo)
-  let fromBlock = getFromBlock(networkInfo)
+  const web3 = getWeb3(networkInfo, options)
+  const fromBlock = getFromBlock(networkInfo)
 
   const poolApi = new PoolApi(web3)
 
