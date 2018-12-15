@@ -1,6 +1,5 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-import { Actions } from '../_redux/actions'
 import { Col, Row } from 'react-flexbox-grid'
 import { Link, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
@@ -11,8 +10,8 @@ import ElementListFunds from '../Elements/elementListFunds'
 import ElementListWrapper from '../Elements/elementListWrapper'
 import FilterPoolsField from '../_atomic/atoms/filterPoolsField'
 import FlatButton from 'material-ui/FlatButton'
-import LinearProgress from 'material-ui/LinearProgress'
 import Paper from 'material-ui/Paper'
+import ProgressBar from '../_atomic/atoms/progressBar'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import SearchIcon from '../_atomic/atoms/searchIcon'
@@ -21,7 +20,7 @@ import styles from './applicationHome.module.css'
 
 function mapStateToProps(state) {
   return {
-    transactionsDrago: state.transactionsDrago,
+    poolsList: state.poolsList,
     endpoint: state.endpoint
   }
 }
@@ -34,7 +33,7 @@ class ApplicationHomeEfx extends PureComponent {
   static propTypes = {
     endpoint: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
-    transactionsDrago: PropTypes.object.isRequired,
+    poolsList: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
     onClickCreatePool: PropTypes.func,
     onClickExplore: PropTypes.func
@@ -47,58 +46,11 @@ class ApplicationHomeEfx extends PureComponent {
 
   state = {
     filter: '',
-    prevLastFetchRange: {
-      chunk: {
-        key: 0,
-        range: 0
-      },
-      startBlock: 0,
-      lastBlock: 0
-    },
-    lastFetchRange: {
-      chunk: {
-        key: 0,
-        range: 0
-      },
-      startBlock: 0,
-      lastBlock: 0
-    },
-    listLoadingProgress: 0,
     showCommunityButtons: true
-  }
-
-  static getDerivedStateFromProps(props, state) {
-    const { lastFetchRange } = props.transactionsDrago.dragosList
-    if (!_.isEqual(lastFetchRange, state.prevLastFetchRange)) {
-      const { chunk, lastBlock, startBlock } = lastFetchRange
-      if (lastBlock === 0) return null
-      if (lastBlock === startBlock)
-        return {
-          prevLastFetchRange: lastFetchRange,
-          listLoadingProgress: 100
-        }
-      let newProgress =
-        lastBlock !== state.prevLastFetchRange.lastBlock
-          ? ((chunk.toBlock - chunk.fromBlock) / (lastBlock - startBlock)) * 100
-          : state.listLoadingProgress +
-            ((chunk.toBlock - chunk.fromBlock) / (lastBlock - startBlock)) * 100
-      return {
-        prevLastFetchRange: lastFetchRange,
-        listLoadingProgress: newProgress
-      }
-    }
-    return null
   }
 
   componentDidMount() {
     window.addEventListener('scroll', this.handleScroll)
-    let options = {
-      topics: [null, null, null, null],
-      fromBlock: 0,
-      toBlock: 'latest',
-      poolType: 'drago'
-    }
-    this.props.dispatch(Actions.drago.getPoolsList(options))
   }
 
   componentWillUnmount = () => {
@@ -127,22 +79,30 @@ class ApplicationHomeEfx extends PureComponent {
   }
 
   filterFunds = () => {
-    const { transactionsDrago } = this.props
+    const { poolsList } = this.props
     const { filter } = this.state
-    const list = transactionsDrago.dragosList.list
+    const list = Object.values(poolsList.list)
+    list.sort(function(a, b) {
+      if (a.symbol < b.symbol) return -1
+      if (a.symbol > b.symbol) return 1
+      return 0
+    })
     const filterValue = filter.trim().toLowerCase()
     const filterLength = filterValue.length
     return filterLength === 0
-      ? list
+      ? list.filter(item => item.poolType === 'drago')
       : list.filter(
           item =>
-            item.name.toLowerCase().slice(0, filterLength) === filterValue ||
-            item.symbol.toLowerCase().slice(0, filterLength) === filterValue
+            (item.name.toLowerCase().slice(0, filterLength) === filterValue ||
+              item.symbol.toLowerCase().slice(0, filterLength) ===
+                filterValue) &&
+            item.poolType === 'drago'
         )
   }
 
   render() {
-    const { endpoint } = this.props
+    const { endpoint, poolsList } = this.props
+    const listLoadingProgress = poolsList.lastFetchRange.chunk.progress * 100
     const buttonTelegram = {
       border: '2px solid',
       borderColor: '#054186',
@@ -285,12 +245,7 @@ class ApplicationHomeEfx extends PureComponent {
                       </div>
                     </Col>
                     <Col xs={12}>
-                      <div className={styles.progressBarContainer}>
-                        <LinearProgress
-                          mode="determinate"
-                          value={this.state.listLoadingProgress}
-                        />
-                      </div>
+                      <ProgressBar progress={listLoadingProgress} />
                     </Col>
                     <Col xs={12}>
                       <ElementListWrapper

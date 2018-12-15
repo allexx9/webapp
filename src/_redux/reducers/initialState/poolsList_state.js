@@ -5,6 +5,8 @@ export const poolsList = {
   lastFetchRange: {
     chunk: {
       key: 0,
+      total: 0,
+      progress: 0,
       toBlock: 0,
       fromBlock: 0
     },

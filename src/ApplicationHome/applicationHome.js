@@ -1,6 +1,4 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
-
-import { Actions } from '../_redux/actions'
 import { Col, Row } from 'react-flexbox-grid'
 import { Link, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
@@ -10,8 +8,8 @@ import ElementListFunds from '../Elements/elementListFunds'
 import ElementListWrapper from '../Elements/elementListWrapper'
 import FilterPoolsField from '../_atomic/atoms/filterPoolsField'
 import FlatButton from 'material-ui/FlatButton'
-import LinearProgress from 'material-ui/LinearProgress'
 import Paper from 'material-ui/Paper'
+import ProgressBar from '../_atomic/atoms/progressBar'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import SearchIcon from '../_atomic/atoms/searchIcon'
@@ -39,47 +37,7 @@ class ApplicationHome extends PureComponent {
 
   state = {
     filter: '',
-    prevLastFetchRange: {
-      chunk: {
-        key: 0,
-        range: 0
-      },
-      startBlock: 0,
-      lastBlock: 0
-    },
-    lastFetchRange: {
-      chunk: {
-        key: 0,
-        range: 0
-      },
-      startBlock: 0,
-      lastBlock: 0
-    },
-    listLoadingProgress: 0,
     showCommunityButtons: true
-  }
-
-  static getDerivedStateFromProps(props, state) {
-    const { lastFetchRange } = props.poolsList
-    if (!_.isEqual(lastFetchRange, state.prevLastFetchRange)) {
-      const { chunk, lastBlock, startBlock } = lastFetchRange
-      if (lastBlock === 0) return null
-      if (lastBlock === startBlock)
-        return {
-          prevLastFetchRange: lastFetchRange,
-          listLoadingProgress: 100
-        }
-      let newProgress =
-        lastBlock !== state.prevLastFetchRange.lastBlock
-          ? ((chunk.toBlock - chunk.fromBlock) / (lastBlock - startBlock)) * 100
-          : state.listLoadingProgress +
-            ((chunk.toBlock - chunk.fromBlock) / (lastBlock - startBlock)) * 100
-      return {
-        prevLastFetchRange: lastFetchRange,
-        listLoadingProgress: newProgress
-      }
-    }
-    return null
   }
 
   componentDidMount() {}
@@ -133,7 +91,14 @@ class ApplicationHome extends PureComponent {
 
   render() {
     this.filterFunds()
-    const { endpoint } = this.props
+    const {
+      endpoint,
+      location,
+      onClickExplore,
+      onClickCreatePool,
+      poolsList
+    } = this.props
+    const listLoadingProgress = poolsList.lastFetchRange.chunk.progress * 100
     const buttonTelegram = {
       border: '2px solid',
       borderColor: '#054186',
@@ -167,7 +132,6 @@ class ApplicationHome extends PureComponent {
       borderRadius: '4px',
       width: '210px'
     }
-    let { location } = this.props
     return (
       <div className={styles.body}>
         <div className={styles.socialsContainer}>
@@ -238,7 +202,7 @@ class ApplicationHome extends PureComponent {
                           fontWeight: '600',
                           fontSize: '20px'
                         }}
-                        onClick={this.props.onClickExplore}
+                        onClick={onClickExplore}
                         style={buttonExplore}
                       />
                     </div>
@@ -254,7 +218,7 @@ class ApplicationHome extends PureComponent {
                             fontWeight: '600',
                             fontSize: '20px'
                           }}
-                          onClick={this.props.onClickCreatePool}
+                          onClick={onClickCreatePool}
                           id="joyride-home-create-pool"
                           style={buttonCreateDrago}
                         />
@@ -278,12 +242,7 @@ class ApplicationHome extends PureComponent {
                         </div>
                       </Col>
                       <Col xs={12}>
-                        <div className={styles.progressBarContainer}>
-                          <LinearProgress
-                            mode="determinate"
-                            value={this.state.listLoadingProgress}
-                          />
-                        </div>
+                        <ProgressBar progress={listLoadingProgress} />
                       </Col>
                       <Col xs={12}>
                         <ElementListWrapper
@@ -303,61 +262,6 @@ class ApplicationHome extends PureComponent {
                   </Row>
                 </Col>
               </Row>
-              {/* <div className={styles.actionsContainer}>
-                <Row className={styles.cards}>
-                  <Col xs={6}>
-                    <Card className={styles.column}>
-                      <CardTitle
-                        title="VAULT"
-                        className={styles.cardtitle}
-                        titleColor="white"
-                      />
-                      <CardText>
-                        <p className={styles.subHeadline}>
-                          Pools of ether and proof-of-stake mining
-                        </p>
-                      </CardText>
-                      <CardActions>
-                        <Link to="/vault">
-                          <RaisedButton
-                            label="New Vault"
-                            className={styles.exchangebutton}
-                            labelColor="white"
-                          />
-                        </Link>
-                      </CardActions>
-                    </Card>
-                  </Col>
-                  <Col xs={6}>
-                    <Card className={styles.column}>
-                      <CardTitle
-                        title="DRAGO"
-                        className={styles.cardtitle}
-                        titleColor="white"
-                      />
-                      <CardText>
-                        <p className={styles.subHeadline}>
-                          Pools of ether and trading on decentralized exchanges
-                        </p>
-                      </CardText>
-                      <CardActions>
-                        <Link to="/drago">
-                          <RaisedButton
-                            label="New Drago"
-                            className={styles.exchangebutton}
-                            labelColor="white"
-                          />
-                        </Link>
-                      </CardActions>
-                    </Card>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col xs={12}>
-                    <p />
-                  </Col>
-                </Row>
-              </div> */}
             </div>
           </Col>
         </Row>

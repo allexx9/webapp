@@ -71,7 +71,7 @@ const getPoolsChunkedEvents$ = (options, state$) => {
         } catch (err) {
           return observer.error(err)
         }
-
+        let i = 0
         chunks.map(async (chunk, key) => {
           let optionsVault = {
             topics: [
@@ -104,6 +104,7 @@ const getPoolsChunkedEvents$ = (options, state$) => {
               vaultPromise,
               dragoPromise
             ])
+            i++
             const list = [...logsVault, ...logsDrago].map(logToEvent)
             let listId = {}
             list.forEach(pool => {
@@ -114,16 +115,20 @@ const getPoolsChunkedEvents$ = (options, state$) => {
               lastFetchRange: {
                 chunk: {
                   key: key,
+                  total: chunks.length,
+                  progress: i / chunks.length,
                   toBlock:
                     chunk.toBlock === 'latest'
                       ? Number(lastBlock)
                       : Number(chunk.toBlock),
                   fromBlock: chunk.fromBlock
                 },
+
                 startBlock: Number(startBlock),
                 lastBlock: Number(lastBlock)
               }
             }
+
             observer.next(result)
           } catch (err) {
             return observer.error(err)

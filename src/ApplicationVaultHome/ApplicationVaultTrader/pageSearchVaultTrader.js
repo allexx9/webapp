@@ -1,4 +1,3 @@
-import { Actions } from '../../_redux/actions'
 import { Col, Grid, Row } from 'react-flexbox-grid'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
@@ -6,8 +5,8 @@ import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
 import ElementListFunds from '../Elements/elementListVaults'
 import ElementListWrapper from '../../Elements/elementListWrapper'
 import FilterPoolsField from '../../_atomic/atoms/filterPoolsField'
-import LinearProgress from 'material-ui/LinearProgress'
 import Paper from 'material-ui/Paper'
+import ProgressBar from '../../_atomic/atoms/progressBar'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import UserDashboardHeader from '../../_atomic/atoms/userDashboardHeader'
@@ -32,50 +31,10 @@ class PageSearchVaultTrader extends Component {
   }
 
   state = {
-    filter: '',
-    prevLastFetchRange: {
-      chunk: {
-        key: 0,
-        range: 0
-      },
-      startBlock: 0,
-      lastBlock: 0
-    },
-    lastFetchRange: {
-      chunk: {
-        key: 0,
-        range: 0
-      },
-      startBlock: 0,
-      lastBlock: 0
-    },
-    listLoadingProgress: 0
+    filter: ''
   }
 
   scrollPosition = 0
-
-  static getDerivedStateFromProps(props, state) {
-    const { lastFetchRange } = props.poolsList
-    if (!_.isEqual(lastFetchRange, state.prevLastFetchRange)) {
-      const { chunk, lastBlock, startBlock } = lastFetchRange
-      if (lastBlock === 0) return null
-      if (lastBlock === startBlock)
-        return {
-          prevLastFetchRange: lastFetchRange,
-          listLoadingProgress: 100
-        }
-      let newProgress =
-        lastBlock !== state.prevLastFetchRange.lastBlock
-          ? ((chunk.toBlock - chunk.fromBlock) / (lastBlock - startBlock)) * 100
-          : state.listLoadingProgress +
-            ((chunk.toBlock - chunk.fromBlock) / (lastBlock - startBlock)) * 100
-      return {
-        prevLastFetchRange: lastFetchRange,
-        listLoadingProgress: newProgress
-      }
-    }
-    return null
-  }
 
   componentDidMount() {}
 
@@ -111,10 +70,11 @@ class PageSearchVaultTrader extends Component {
   }
 
   render() {
-    let { location } = this.props
+    let { location, poolsList } = this.props
     const detailsBox = {
       padding: 20
     }
+    const listLoadingProgress = poolsList.lastFetchRange.chunk.progress * 100
     return (
       <Row>
         <Col xs={12}>
@@ -136,12 +96,7 @@ class PageSearchVaultTrader extends Component {
                       </Paper>
                     </Col>
                     <Col xs={12}>
-                      <div className={styles.progressBarContainer}>
-                        <LinearProgress
-                          mode="determinate"
-                          value={this.state.listLoadingProgress}
-                        />
-                      </div>
+                      <ProgressBar progress={listLoadingProgress} />
                     </Col>
                   </Row>
                   <Row className={styles.transactionsStyle}>
