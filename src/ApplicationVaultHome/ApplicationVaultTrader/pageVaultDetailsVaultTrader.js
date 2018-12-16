@@ -2,7 +2,6 @@ import * as Colors from 'material-ui/styles/colors'
 import { Actions } from '../../_redux/actions'
 import { Col, Grid, Row } from 'react-flexbox-grid'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
-import { ENDPOINTS, PROD } from '../../_utils/const'
 import { Link, withRouter } from 'react-router-dom'
 import { Tab, Tabs } from 'material-ui/Tabs'
 import { connect } from 'react-redux'
@@ -26,7 +25,6 @@ import SectionHeader from '../../_atomic/atoms/sectionHeader'
 import SectionTitle from '../../_atomic/atoms/sectionTitle'
 import Snackbar from 'material-ui/Snackbar'
 import Sticky from 'react-stickynode'
-import Web3 from 'web3'
 import scrollToElement from 'scroll-to-element'
 import styles from './pageVaultDetailsVaultTrader.module.css'
 
@@ -64,7 +62,7 @@ class PageFundDetailsVaultTrader extends Component {
 
     // Getting Drago details and transactions
     this.props.dispatch(
-      Actions.drago.getPoolDetails(dragoId, { poolType: 'vault' })
+      Actions.pools.getPoolsSingleDetails(dragoId, { poolType: 'vault' })
     )
   }
 
@@ -389,7 +387,6 @@ class PageFundDetailsVaultTrader extends Component {
       </Row>
     )
   }
-
 }
 
 export default withRouter(connect(mapStateToProps)(PageFundDetailsVaultTrader))

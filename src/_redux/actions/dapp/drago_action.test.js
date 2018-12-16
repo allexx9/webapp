@@ -1,5 +1,5 @@
-import * as TYPE_ from './const'
-import { Actions } from './index'
+import * as TYPE_ from '../const'
+import { Actions } from '../index'
 
 describe('drago actions creator', () => {
   it(`${TYPE_.FETCH_ASSETS_PRICE_DATA} success`, () => {
@@ -20,16 +20,16 @@ describe('drago actions creator', () => {
       }
     })
   })
-  it(`${TYPE_.POOLS_GET_LIST} success`, () => {
+  it(`${TYPE_.POOLS_LIST_GET} success`, () => {
     let options = {
       topics: ['test', null, null, null],
       fromBlock: 0,
       toBlock: 'latest',
       poolType: 'drago'
     }
-    const results = Actions.drago.getPoolsList(options)
+    const results = Actions.pools.getPoolsList(options)
     expect(results).toEqual({
-      type: TYPE_.POOLS_GET_LIST,
+      type: TYPE_.POOLS_LIST_GET,
       payload: options
     })
   })

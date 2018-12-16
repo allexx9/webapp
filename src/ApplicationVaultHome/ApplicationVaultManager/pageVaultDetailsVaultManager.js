@@ -61,7 +61,7 @@ class PageVaultDetailsVaultManager extends Component {
 
     // Getting Drago details and transactions
     this.props.dispatch(
-      Actions.drago.getPoolDetails(dragoId, { poolType: 'vault' })
+      Actions.pools.getPoolsSingleDetails(dragoId, { poolType: 'vault' })
     )
   }
 

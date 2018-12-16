@@ -4,7 +4,7 @@ import { Link, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 import Chat from 'material-ui/svg-icons/communication/chat'
 import ElementBottomStatusBar from '../Elements/elementBottomStatusBar'
-import ElementListFunds from '../Elements/elementListFunds'
+// import ElementListFunds from '../Elements/elementListFunds'
 import ElementListWrapper from '../Elements/elementListWrapper'
 import FilterPoolsField from '../_atomic/atoms/filterPoolsField'
 import FlatButton from 'material-ui/FlatButton'
@@ -13,9 +13,10 @@ import ProgressBar from '../_atomic/atoms/progressBar'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import SearchIcon from '../_atomic/atoms/searchIcon'
+import TablePoolsList from '../_atomic/molecules/tablePoolsList'
 import WalletSetup from '../_atomic/organisms/walletSetup'
-import _ from 'lodash'
 import styles from './applicationHome.module.css'
+import utils from '../_utils/utils'
 
 function mapStateToProps(state) {
   return state
@@ -63,34 +64,17 @@ class ApplicationHome extends PureComponent {
       {
         filter
       },
-      this.filterFunds
+      this.filterPools
     )
   }
 
-  filterFunds = () => {
+  filterPools = () => {
     const { poolsList } = this.props
     const { filter } = this.state
-    const list = Object.values(poolsList.list)
-    list.sort(function(a, b) {
-      if (a.symbol < b.symbol) return -1
-      if (a.symbol > b.symbol) return 1
-      return 0
-    })
-    const filterValue = filter.trim().toLowerCase()
-    const filterLength = filterValue.length
-    return filterLength === 0
-      ? list.filter(item => item.poolType === 'drago')
-      : list.filter(
-          item =>
-            (item.name.toLowerCase().slice(0, filterLength) === filterValue ||
-              item.symbol.toLowerCase().slice(0, filterLength) ===
-                filterValue) &&
-            item.poolType === 'drago'
-        )
+    return utils.filterPools(poolsList, filter)
   }
 
   render() {
-    this.filterFunds()
     const {
       endpoint,
       location,
@@ -246,7 +230,7 @@ class ApplicationHome extends PureComponent {
                       </Col>
                       <Col xs={12}>
                         <ElementListWrapper
-                          list={this.filterFunds()}
+                          list={this.filterPools()}
                           location={location}
                           pagination={{
                             display: 5,
@@ -255,7 +239,7 @@ class ApplicationHome extends PureComponent {
                           autoLoading={false}
                           tableHeight={330}
                         >
-                          <ElementListFunds />
+                          <TablePoolsList />
                         </ElementListWrapper>
                       </Col>
                     </Paper>

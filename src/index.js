@@ -24,6 +24,7 @@ import { createFilter } from 'redux-persist-transform-filter'
 import {
   notificationsMiddleWare,
   poolCalculateValueMiddleWare,
+  poolsCachingMiddleWare,
   relayActionsMiddleWare
 } from './_redux/middlewares'
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2'
@@ -39,7 +40,8 @@ const middlewares = [
   epicMiddleware,
   relayActionsMiddleWare,
   notificationsMiddleWare,
-  poolCalculateValueMiddleWare
+  poolCalculateValueMiddleWare,
+  poolsCachingMiddleWare
 ]
 
 if (process.env.NODE_ENV === `development`) {

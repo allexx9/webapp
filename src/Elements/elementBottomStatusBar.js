@@ -72,13 +72,13 @@ export default class ElementBottomStatusBar extends PureComponent {
     }
 
     return (
-      <a className={classnames(styles.tooltip)}>
+      <span className={classnames(styles.tooltip)}>
         <NotificationWifi
           className={classnames(styles.networkIcon)}
           color={networkIconColor}
         />
         <div className={styles.tooltiptext}>{networkStatus}</div>
-      </a>
+      </span>
     )
   }
 

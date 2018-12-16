@@ -4,7 +4,7 @@ import * as TYPE_ from '../actions/const'
 import { Actions } from '../actions/'
 import { BigNumber } from 'bignumber.js'
 import { ERCdEX, Ethfinex } from '../../_utils/const'
-import { Observable, concat, from, of, timer } from 'rxjs'
+import { Observable, from, of, timer } from 'rxjs'
 import {
   catchError,
   finalize,
@@ -61,7 +61,7 @@ export const getTokensBalancesEpic = (action$, state$) => {
         }),
         flatMap(dragoAssets => {
           const actionsArray = [
-            Actions.drago.updateSelectedDrago({
+            Actions.drago.updateDragoSelectedDetails({
               assets: Object.values(dragoAssets)
             }),
             Actions.tokens.priceTickersStart(
@@ -96,7 +96,7 @@ export const getTokensBalancesEpic = (action$, state$) => {
 // GET DETAILS FOR A DRAGO
 //
 
-const getPoolDetails$ = (poolId, networkInfo, options, state$) => {
+const getPoolsSingleDetails$ = (poolId, networkInfo, options, state$) => {
   return Observable.create(observer => {
     let poolDetails
     const { accounts } = state$.value.endpoint
@@ -187,10 +187,10 @@ const getPoolDetails$ = (poolId, networkInfo, options, state$) => {
 
 export const getPoolDetailsEpic = (action$, state$) => {
   return action$.pipe(
-    ofType(TYPE_.GET_POOL_DETAILS),
+    ofType(TYPE_.POOLS_SINGLE_DETAILS_GET),
     mergeMap(action => {
       const { networkInfo, accounts } = state$.value.endpoint
-      return getPoolDetails$(
+      return getPoolsSingleDetails$(
         action.payload.dragoId,
         networkInfo,
         action.payload.options,
@@ -225,13 +225,13 @@ export const getPoolDetailsEpic = (action$, state$) => {
           let actionsArray = []
           if (drago) {
             actionsArray.push(
-              Actions.drago.updateSelectedDrago({
+              Actions.drago.updateDragoSelectedDetails({
                 details
               })
             )
             if (details.totalSupply) {
               actionsArray.push(
-                Actions.drago.getPoolTransactions(
+                Actions.pools.getPoolsSingleTransactions(
                   details.address,
                   accounts,
                   options
@@ -247,7 +247,7 @@ export const getPoolDetailsEpic = (action$, state$) => {
             )
             if (details.totalSupply) {
               actionsArray.push(
-                Actions.drago.getPoolTransactions(
+                Actions.pools.getPoolsSingleTransactions(
                   details.address,
                   accounts,
                   options
@@ -257,10 +257,13 @@ export const getPoolDetailsEpic = (action$, state$) => {
           }
           return from(actionsArray)
         }),
+        finalize(result => {
+          // console.log(result)
+        }),
         takeUntil(
           action$.pipe(
             ofType(
-              TYPE_.UPDATE_SELECTED_DRAGO_DETAILS_RESET,
+              TYPE_.DRAGO_SELECTED_DETAILS_RESET,
               TYPE_.UPDATE_SELECTED_VAULT_DETAILS_RESET
             )
           )

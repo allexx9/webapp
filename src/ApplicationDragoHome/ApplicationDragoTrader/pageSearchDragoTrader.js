@@ -2,16 +2,16 @@ import { Col, Grid, Row } from 'react-flexbox-grid'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
-import ElementListFunds from '../../Elements/elementListFunds'
 import ElementListWrapper from '../../Elements/elementListWrapper'
 import FilterPoolsField from '../../_atomic/atoms/filterPoolsField'
 import Paper from 'material-ui/Paper'
 import ProgressBar from '../../_atomic/atoms/progressBar'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
+import TablePoolsList from '../../_atomic/molecules/tablePoolsList'
 import UserDashboardHeader from '../../_atomic/atoms/userDashboardHeader'
-import _ from 'lodash'
 import styles from './pageSearchDragoTrader.module.css'
+import utils from '../../_utils/utils'
 
 function mapStateToProps(state) {
   return state
@@ -42,30 +42,14 @@ class PageSearchDragoTrader extends Component {
       {
         filter
       },
-      this.filterFunds
+      this.filterPools
     )
   }
 
-  filterFunds = () => {
+  filterPools = () => {
     const { poolsList } = this.props
     const { filter } = this.state
-    const list = Object.values(poolsList.list)
-    list.sort(function(a, b) {
-      if (a.symbol < b.symbol) return -1
-      if (a.symbol > b.symbol) return 1
-      return 0
-    })
-    const filterValue = filter.trim().toLowerCase()
-    const filterLength = filterValue.length
-    return filterLength === 0
-      ? list.filter(item => item.poolType === 'drago')
-      : list.filter(
-          item =>
-            (item.name.toLowerCase().slice(0, filterLength) === filterValue ||
-              item.symbol.toLowerCase().slice(0, filterLength) ===
-                filterValue) &&
-            item.poolType === 'drago'
-        )
+    return utils.filterPools(poolsList, filter)
   }
 
   render() {
@@ -101,7 +85,7 @@ class PageSearchDragoTrader extends Component {
                   <Row className={styles.transactionsStyle}>
                     <Col xs={12}>
                       <ElementListWrapper
-                        list={this.filterFunds()}
+                        list={this.filterPools()}
                         autoLoading={false}
                         location={location}
                         pagination={{
@@ -109,7 +93,7 @@ class PageSearchDragoTrader extends Component {
                           number: 1
                         }}
                       >
-                        <ElementListFunds />
+                        <TablePoolsList />
                       </ElementListWrapper>
                     </Col>
                   </Row>

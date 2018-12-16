@@ -8,27 +8,21 @@ import {
 } from 'react-virtualized'
 import { Col, Row } from 'react-flexbox-grid'
 import { Link, withRouter } from 'react-router-dom'
-import { toUnitAmount } from '../_utils/format'
-import BigNumber from 'bignumber.js'
-import BlokiesIcon from '../_atomic/atoms/blokiesIcon'
+import BlokiesIcon from '../atoms/blokiesIcon'
 import FlatButton from 'material-ui/FlatButton'
+import PoolCode from '../atoms/poolCode'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
-import styles from './elementListFunds.module.css'
-import utils from '../_utils/utils'
+import styles from './tablePoolsList.module.css'
+import utils from '../../_utils/utils'
 
-class ElementListFunds extends PureComponent {
+class TablePoolsList extends PureComponent {
   static propTypes = {
     list: PropTypes.array.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
     tableHeight: PropTypes.number,
     tableWidth: PropTypes.number
-    // renderCopyButton: PropTypes.func.isRequired,
-    // renderEtherscanButton: PropTypes.func.isRequired,
-    // dragoDetails: PropTypes.object.isRequired,
-    // assetsPrices: PropTypes.object.isRequired,
-    // assetsChart: PropTypes.object.isRequired
   }
 
   static defaultProps = {
@@ -149,36 +143,6 @@ class ElementListFunds extends PureComponent {
                     cellRenderer={({ rowData }) => this.renderISIN(rowData)}
                     flexShrink={1}
                   />
-                  {/* <Column
-                    width={30}
-                    disableSort
-                    label="TX"
-                    cellDataGetter={({ rowData }) => rowData}
-                    dataKey="tx"
-                    className={styles.exampleColumn}
-                    cellRenderer={({ rowData }) => this.renderTx(rowData)}
-                    flexShrink={1}
-                  /> */}
-                  {/* <Column
-                    width={100}
-                    disableSort
-                    label="PRICE ETH"
-                    cellDataGetter={({ rowData }) => rowData}
-                    dataKey="prices"
-                    className={styles.exampleColumn}
-                    cellRenderer={({ rowData }) => this.renderPrice(rowData)}
-                    flexGrow={1}
-                  /> */}
-                  {/* <Column
-                    width={150}
-                    disableSort
-                    label="UNITS"
-                    cellDataGetter={({ rowData }) => rowData.balance}
-                    dataKey="drg"
-                    className={styles.exampleColumn}
-                    cellRenderer={({ rowData }) => this.renderValue(rowData)}
-                    flexGrow={1}
-                  /> */}
                   <Column
                     width={210}
                     disableSort
@@ -187,9 +151,7 @@ class ElementListFunds extends PureComponent {
                     dataKey="actions"
                     headerStyle={{ textAlign: 'right', paddingRight: '25px' }}
                     className={styles.exampleColumn}
-                    cellRenderer={({ cellData, rowData }) =>
-                      this.actionButton(cellData, rowData)
-                    }
+                    cellRenderer={({ rowData }) => this.actionButton(rowData)}
                     flexGrow={1}
                   />
                 </Table>
@@ -202,14 +164,14 @@ class ElementListFunds extends PureComponent {
   }
 
   renderISIN = rowData => {
-    const id = rowData.dragoId || rowData.id
-    return utils.dragoISIN(rowData.symbol, id)
+    const id = rowData.details.dragoId || rowData.details.id
+    return <PoolCode symbol={rowData.details.symbol} id={id} />
   }
 
-  actionButton(cellData, rowData) {
+  actionButton(rowData) {
     const { match } = this.props
-    const id = rowData.dragoId || rowData.id
-    const url = id + '/' + utils.dragoISIN(cellData, id)
+    const id = rowData.details.dragoId || rowData.details.id
+    const url = id + '/' + utils.dragoISIN(rowData.details.symbol, id)
     let poolType = match.path.includes('vault') ? 'vault' : 'drago'
     return (
       <div className={styles.actionButtonContainer}>
@@ -226,189 +188,24 @@ class ElementListFunds extends PureComponent {
     )
   }
 
-  // renderChart(token) {
-  //   // const data = this.props.assetsChart[token.symbol].data
-  //   return <div className={styles.noDataChart}>No data</div>
-  // }
-
-  // actionButton(cellData, rowData) {
-  //   const { match } = this.props
-  //   const url =
-  //     rowData.params.dragoId.value.c +
-  //     '/' +
-  //     utils.dragoISIN(cellData, rowData.params.dragoId.value.c)
-  //   return (
-  //     <FlatButton
-  //       label="View"
-  //       primary={true}
-  //       containerElement={<Link to={match.path + '/' + url} />}
-  //     />
-  //   )
-  // }
-
-  renderIcon(input) {
+  renderIcon(rowData) {
     return (
       <div className={styles.fundIcon}>
-        <BlokiesIcon seed={input.name} size={12} scale={3} />
+        <BlokiesIcon seed={rowData.details.name} size={12} scale={3} />
       </div>
     )
   }
 
-  renderName(fund) {
+  renderName(rowData) {
     return (
       <Row>
         <Col xs={12} className={styles.symbolText}>
-          {fund.symbol.toUpperCase()}
+          {rowData.details.symbol.toUpperCase()}
         </Col>
         <Col xs={12} className={styles.nameText}>
-          {fund.name}
+          {rowData.details.name}
         </Col>
       </Row>
-    )
-  }
-
-  renderEthValue(ethValue) {
-    return (
-      <div>
-        {new BigNumber(ethValue).toFixed(4)} <small>ETH</small>
-      </div>
-    )
-  }
-
-  renderHolding(fund) {
-    return (
-      <Row>
-        <Col xs={12}>
-          <Row>
-            <Col xs={12}>
-              <div className={styles.holdingTitleText}>Amount</div>
-            </Col>
-            <Col xs={12}>
-              {fund.balance}
-              {/* <small className={styles.symbolLegendText}>
-                {fund.symbol.toUpperCase()}
-              </small> */}
-            </Col>
-          </Row>
-        </Col>
-
-        <Col xs={12}>
-          <Row>
-            {/* <Col xs={12}>
-              <div className={styles.holdingTitleText}>Price</div>
-            </Col>
-            <Col xs={12}>
-              {typeof this.props.assetsPrices[token.symbol] !== 'undefined' ? (
-                new BigNumber(
-                  this.props.assetsPrices[token.symbol].priceEth
-                ).toFixed(5)
-              ) : (
-                <small>-</small>
-              )}{' '}
-              <small className={styles.symbolLegendText}>ETH</small>
-            </Col> */}
-          </Row>
-        </Col>
-      </Row>
-    )
-  }
-
-  renderBalance(token) {
-    return (
-      <div>
-        {toUnitAmount(new BigNumber(token.balance), token.decimals).toFixed(4)}{' '}
-        <small>{token.symbol.toUpperCase()}</small>
-      </div>
-    )
-  }
-
-  renderTx(token) {
-    return (
-      <span>
-        {this.props.renderEtherscanButton(
-          'token',
-          token.address,
-          this.props.dragoDetails.address
-        )}
-      </span>
-    )
-  }
-
-  renderPrice(token) {
-    if (typeof this.props.assetsPrices[token.symbol] !== 'undefined') {
-      return (
-        <div>
-          {new BigNumber(
-            this.props.assetsPrices[token.symbol].priceEth
-          ).toFixed(7)}
-        </div>
-      )
-    }
-    return (
-      <div>
-        <small>-</small>
-      </div>
-    )
-  }
-
-  renderValue(fund) {
-    // if (typeof this.props.assetsPrices[token.symbol] !== 'undefined') {
-    //   return (
-    //     <div className={styles.valueText}>
-    //       {new BigNumber(this.props.assetsPrices[token.symbol].priceEth)
-    //         .times(
-    //           toUnitAmount(
-    //             new BigNumber(token.balances.total),
-    //             token.decimals
-    //           ).toFixed(5)
-    //         )
-    //         .toFixed(5)}{' '}
-    //       <small className={styles.symbolLegendText}>ETH</small>
-    //     </div>
-    //   )
-    // }
-    return (
-      <div className={styles.valueText}>
-        <small>-</small>
-      </div>
-    )
-  }
-
-  renderAction(action) {
-    switch (action) {
-      case 'BuyDrago':
-        return (
-          <span style={{ color: Colors.green300, fontWeight: 600 }}>BUY</span>
-        )
-      case 'SellDrago':
-        return (
-          <span style={{ color: Colors.red300, fontWeight: 600 }}>SELL</span>
-        )
-      case 'DragoCreated':
-        return (
-          <span style={{ color: Colors.blue300, fontWeight: 600 }}>
-            CREATED
-          </span>
-        )
-      default:
-        return (
-          <span style={{ color: Colors.blue300, fontWeight: 600 }}>
-            UnKNOWN
-          </span>
-        )
-    }
-  }
-
-  renderTime(timestamp) {
-    return <span>{utils.dateFromTimeStamp(timestamp)}</span>
-  }
-
-  renderDrgValue(rowData) {
-    return (
-      <div>
-        {new BigNumber(rowData.drgvalue).toFixed(4)}{' '}
-        <small>{rowData.symbol}</small>
-      </div>
     )
   }
 
@@ -488,4 +285,4 @@ class ElementListFunds extends PureComponent {
   }
 }
 
-export default withRouter(ElementListFunds)
+export default withRouter(TablePoolsList)

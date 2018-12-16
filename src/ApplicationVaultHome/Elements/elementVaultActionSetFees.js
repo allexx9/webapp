@@ -333,7 +333,7 @@ class ElementVaultActionSetFees extends Component {
       .setTransactionFee(this.state.account.address, price)
       .then(receipt => {
         console.log(receipt)
-        Actions.drago.getPoolDetails(
+        Actions.pools.getPoolsSingleDetails(
           vaultDetails.vaultDetails.vaultId,
           provider,
           {

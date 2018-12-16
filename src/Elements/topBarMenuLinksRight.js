@@ -1,23 +1,19 @@
 import * as Colors from 'material-ui/styles/colors'
-import { APP, DS } from '../_utils/const.js'
-import { Link, withRouter } from 'react-router-dom'
 import { Toolbar, ToolbarGroup, ToolbarSeparator } from 'material-ui/Toolbar'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router-dom'
 import AccountIcon from 'material-ui/svg-icons/action/account-circle'
 import ArrowDropDown from 'material-ui/svg-icons/navigation/arrow-drop-down'
-import Chat from 'material-ui/svg-icons/communication/chat'
 import FlatButton from 'material-ui/FlatButton'
 // import Help from 'material-ui/svg-icons/action/help'
 import { Actions } from '../_redux/actions'
 import Badge from 'material-ui/Badge'
 import IconButton from 'material-ui/IconButton'
-import IconMenu from 'material-ui/IconMenu'
 import Menu from 'material-ui/Menu'
 import MenuItem from 'material-ui/MenuItem'
 import Popover from 'material-ui/Popover'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
-import Settings from 'material-ui/svg-icons/action/settings'
 import styles from './elements.module.css'
 import utils from '../_utils/utils'
 
@@ -157,7 +153,7 @@ class NavLinks extends Component {
   }
 
   render() {
-    const { location, user } = this.props
+    const { user } = this.props
     const { transactions } = this.props
     // let userTypeDisabled = false;
     let userTypeLabel = 'HOLDER'

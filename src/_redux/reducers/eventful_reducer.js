@@ -8,7 +8,7 @@ export function eventfulDragoReducer(
   action
 ) {
   switch (action.type) {
-    case TYPE_.UPDATE_TRANSACTIONS_DRAGO_HOLDER:
+    case TYPE_.DRAGO_HOLDER_TRANSACTIONS_UPDATE:
       return {
         ...state,
         holder: {
@@ -16,7 +16,7 @@ export function eventfulDragoReducer(
           logs: action.payload[1]
         }
       }
-    case TYPE_.UPDATE_TRANSACTIONS_DRAGO_MANAGER:
+    case TYPE_.DRAGO_MANAGER_TRANSACTIONS_UPDATE:
       return {
         ...state,
         manager: {
@@ -26,7 +26,7 @@ export function eventfulDragoReducer(
         }
       }
 
-    case TYPE_.UPDATE_SELECTED_DRAGO_DETAILS: {
+    case TYPE_.DRAGO_SELECTED_DETAILS_UPDATE: {
       return {
         ...state,
         selectedDrago: {
@@ -54,7 +54,7 @@ export function eventfulDragoReducer(
       }
     }
 
-    case TYPE_.UPDATE_SELECTED_DRAGO_DETAILS_RESET:
+    case TYPE_.DRAGO_SELECTED_DETAILS_RESET:
       return {
         ...state,
         selectedDrago: {
@@ -70,7 +70,7 @@ export function eventfulDragoReducer(
         }
       }
 
-    case TYPE_.UPDATE_SELECTED_DRAGO_DETAILS_CHART_ASSETS_MARKET_DATA_INIT: {
+    case TYPE_.SELECTED_DRAGO_DETAILS_UPDATE_CHART_ASSETS_MARKET_DATA_INIT: {
       // console.log(action)
       let selectedDrago = { ...state.selectedDrago }
       // console.log(selectedDrago)
@@ -84,7 +84,7 @@ export function eventfulDragoReducer(
       }
     }
 
-    case TYPE_.UPDATE_SELECTED_DRAGO_DETAILS_CHART_ASSETS_MARKET_ADD_DATAPOINT: {
+    case TYPE_.SELECTED_DRAGO_DETAILS_UPDATE_CHART_ASSETS_MARKET_ADD_DATAPOINT: {
       let selectedDrago = { ...state.selectedDrago }
       // console.log(action)
       // console.log(Object.keys(action.payload)[0])

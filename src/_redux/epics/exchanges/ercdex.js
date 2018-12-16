@@ -37,7 +37,7 @@ import {
   UPDATE_CURRENT_TOKEN_PRICE,
   UPDATE_ELEMENT_LOADING,
   UPDATE_FUND_ORDERS,
-  UPDATE_SELECTED_DRAGO_DETAILS
+  DRAGO_SELECTED_DETAILS_UPDATE
 } from '../../../_redux/actions/const'
 
 //
@@ -370,7 +370,7 @@ export const getAssetsPricesDataFromERCdEXEpic = action$ => {
           Object.assign({}, ...arr.map(item => ({ [item[keyField]]: item })))
         const assetsCharts = arrayToObject(result, 'symbol')
         return {
-          type: UPDATE_SELECTED_DRAGO_DETAILS,
+          type: DRAGO_SELECTED_DETAILS_UPDATE,
           payload: {
             assetsCharts
           }

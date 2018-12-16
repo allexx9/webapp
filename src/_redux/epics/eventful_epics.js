@@ -20,7 +20,6 @@ const getPoolsChunkedEvents$ = (options, state$) => {
   return Observable.create(observer => {
     let { startBlock, lastBlock } = state$.value.poolsList.lastFetchRange
     let { networkInfo } = state$.value.endpoint
-    const { poolType } = options
     const web3 = getWeb3(networkInfo)
     const poolApi = new PoolsApi(web3)
     startBlock === 0
@@ -108,7 +107,7 @@ const getPoolsChunkedEvents$ = (options, state$) => {
             const list = [...logsVault, ...logsDrago].map(logToEvent)
             let listId = {}
             list.forEach(pool => {
-              listId[pool.id] = pool
+              listId[pool.id] = { details: pool }
             })
             let result = {
               list: listId,
@@ -143,11 +142,11 @@ const getPoolsChunkedEvents$ = (options, state$) => {
 
 export const getPoolsListEpic = (action$, state$) =>
   action$.pipe(
-    ofType(TYPE_.POOLS_GET_LIST),
+    ofType(TYPE_.POOLS_LIST_GET),
     mergeMap(action => {
       return getPoolsChunkedEvents$(action.payload.options, state$).pipe(
         map(results => {
-          return Actions.drago.updatePoolsList(results)
+          return Actions.pools.updatePoolsList(results)
         }),
         catchError(error => {
           console.warn(error)
@@ -164,7 +163,12 @@ export const getPoolsListEpic = (action$, state$) =>
 // FETCH ACCOUNT TRANSACTIONS
 //
 
-const getPoolTransactions$ = (networkInfo, dragoAddress, accounts, options) => {
+const getPoolsSingleTransactions$ = (
+  networkInfo,
+  dragoAddress,
+  accounts,
+  options
+) => {
   return options.drago
     ? from(
         utils.getTransactionsDragoOptV2(
@@ -189,7 +193,7 @@ export const getAccountsTransactionsEpic = (action$, state$) => {
     ofType(TYPE_.GET_ACCOUNTS_TRANSACTIONS),
     mergeMap(action => {
       const { networkInfo } = state$.value.endpoint
-      return getPoolTransactions$(
+      return getPoolsSingleTransactions$(
         networkInfo,
         action.payload.dragoAddress,
         action.payload.accounts,
@@ -198,11 +202,11 @@ export const getAccountsTransactionsEpic = (action$, state$) => {
         map(results => {
           if (action.payload.options.drago) {
             if (!action.payload.options.trader) {
-              return Actions.drago.updateTransactionsDragoManager(
+              return Actions.drago.updateDragoTransactionsManager(
                 results.length === 0 ? [Array(0), Array(0), Array(0)] : results
               )
             }
-            return Actions.drago.updateTransactionsDragoHolder(results)
+            return Actions.drago.updateDragoTransactionsHolder(results)
             // return DEBUGGING.DUMB_ACTION
           } else {
             if (!action.payload.options.trader) {
@@ -236,10 +240,10 @@ export const getAccountsTransactionsEpic = (action$, state$) => {
 
 export const getPoolTransactionsEpic = (action$, state$) =>
   action$.pipe(
-    ofType(TYPE_.GET_POOL_TRANSACTIONS),
+    ofType(TYPE_.POOLS_SINGLE_TRANSACTIONS_GET),
     mergeMap(action => {
       const { networkInfo } = state$.value.endpoint
-      return getPoolTransactions$(
+      return getPoolsSingleTransactions$(
         networkInfo,
         action.payload.dragoAddress,
         action.payload.accounts,
@@ -247,7 +251,7 @@ export const getPoolTransactionsEpic = (action$, state$) =>
       ).pipe(
         map(results => {
           if (action.payload.options.drago) {
-            return Actions.drago.updateSelectedDrago({
+            return Actions.drago.updateDragoSelectedDetails({
               transactions: results
             })
           } else {

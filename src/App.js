@@ -139,7 +139,7 @@ export class App extends Component {
       fromBlock: 0,
       toBlock: 'latest'
     }
-    this.props.dispatch(Actions.drago.getPoolsList(options))
+    this.props.dispatch(Actions.pools.getPoolsList(options))
     this.setState({ run: true })
   }
 

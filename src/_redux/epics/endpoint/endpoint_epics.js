@@ -4,6 +4,7 @@ import * as TYPE_ from '../../actions/const'
 import { Actions } from '../../actions'
 import { DEBUGGING, INFURA } from '../../../_utils/const'
 import { Interfaces } from '../../../_utils/interfaces'
+import { concat, defer, from, of, timer } from 'rxjs'
 import {
   delay,
   finalize,
@@ -13,7 +14,6 @@ import {
   switchMap,
   takeUntil
 } from 'rxjs/operators'
-import { defer, from, of, timer,   concat, } from 'rxjs'
 import { ofType } from 'redux-observable'
 import { sha3_512 } from 'js-sha3'
 import Web3Wrapper from '../../../_utils/web3Wrapper/src'
@@ -91,14 +91,14 @@ export const attachInterfaceEpic = (action$, state$) =>
           if (currentAccountsAddressHash !== savedAccountsAddressHash) {
             return concat(
               of(
-                Actions.drago.updateTransactionsDragoHolder([
+                Actions.drago.updateDragoTransactionsHolder([
                   Array(0),
                   Array(0),
                   Array(0)
                 ])
               ),
               of(
-                Actions.drago.updateTransactionsDragoManager([
+                Actions.drago.updateDragoTransactionsManager([
                   Array(0),
                   Array(0),
                   Array(0)
@@ -207,7 +207,7 @@ export const monitorAccountsEpic = (action$, state$) => {
               //   console.log('Account monitoring - > DRAGO details fetch.')
               //   observablesArray.push(
               //     of(
-              //       Actions.drago.getPoolDetails(
+              //       Actions.pools.getPoolsSingleDetails(
               //         currentState.transactionsDrago.selectedDrago.details
               //           .dragoId,
               //         action.payload.api,
@@ -225,7 +225,7 @@ export const monitorAccountsEpic = (action$, state$) => {
               //   console.log('Account monitoring - > VAULT details fetch.')
               //   observablesArray.push(
               //     of(
-              //       Actions.drago.getPoolDetails(
+              //       Actions.pools.getPoolsSingleDetails(
               //         currentState.transactionsVault.selectedVault.details
               //           .vaultId,
               //         action.payload.api,

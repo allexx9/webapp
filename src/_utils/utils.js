@@ -4,8 +4,8 @@ import { DRG_ISIN } from './const'
 import { ERCdEX, Ethfinex } from './const'
 import { MOCK_ERC20_TOKENS } from './tokens'
 import { dateFromTimeStampHuman } from './misc'
-import { getBlockChunks } from './blockChain'
 import {
+  filterPools,
   getDragoDetails,
   getDragoLiquidityAndTokenBalances,
   getTokenWrapperLockTime,
@@ -15,6 +15,7 @@ import {
   getTransactionsVaultOptV2,
   getVaultDetails
 } from './pools'
+import { getBlockChunks } from './blockChain'
 import { toBaseUnitAmount, toUnitAmount } from './format'
 import { updateAccounts } from './accounts'
 import BigNumber from 'bignumber.js'
@@ -51,6 +52,7 @@ class NotificationAlert extends Component {
 
 class utilities {
   blockChunks = getBlockChunks
+  filterPools = filterPools
 
   sign = (toSign, account) => {
     // metamask will take care of the 3rd parameter, "password"

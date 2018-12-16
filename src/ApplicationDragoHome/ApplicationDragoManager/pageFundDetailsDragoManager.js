@@ -66,14 +66,14 @@ class PageFundDetailsDragoManager extends Component {
 
     // Getting Drago details and transactions
     this.props.dispatch(
-      Actions.drago.getPoolDetails(dragoId, { poolType: 'drago' })
+      Actions.pools.getPoolsSingleDetails(dragoId, { poolType: 'drago' })
     )
   }
 
   componentWillUnmount() {
     this.props.dispatch(Actions.tokens.priceTickersStop())
     this.props.dispatch(Actions.exchange.getPortfolioChartDataStop())
-    this.props.dispatch(Actions.drago.updateSelectedDrago({}, { reset: true }))
+    this.props.dispatch(Actions.drago.updateDragoSelectedDetails({}, { reset: true }))
   }
 
   shouldComponentUpdate(nextProps, nextState) {
