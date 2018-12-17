@@ -4,7 +4,7 @@
 import * as TYPE_ from '../../actions/const'
 // import { Actions } from '../../actions'
 import { DEBUGGING } from '../../../_utils/const'
-import { Observable, merge, of, timer,   concat, } from 'rxjs'
+import { Observable, concat, merge, of, timer } from 'rxjs'
 import {
   finalize,
   flatMap,

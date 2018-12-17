@@ -2,6 +2,7 @@
 
 import * as TYPE_ from '../actions/const'
 import initialState from './initialState'
+import u from 'updeep'
 
 export function eventfulDragoReducer(
   state = initialState.transactionsDrago,
@@ -27,31 +28,36 @@ export function eventfulDragoReducer(
       }
 
     case TYPE_.DRAGO_SELECTED_DETAILS_UPDATE: {
-      return {
-        ...state,
-        selectedDrago: {
-          ...state.selectedDrago,
-          values: {
-            ...state.selectedDrago.values,
-            ...(action.payload.values || {})
-          },
-          details: {
-            ...state.selectedDrago.details,
-            ...(action.payload.details || {})
-          },
-          transactions: [
-            ...(action.payload.transactions ||
-              [].concat(state.selectedDrago.transactions))
-          ],
-          assets: [
-            ...(action.payload.assets || [].concat(state.selectedDrago.assets))
-          ],
-          assetsCharts: {
-            ...state.selectedDrago.assetsCharts,
-            ...(action.payload.assetsCharts || {})
-          }
-        }
-      }
+      // console.log(action)
+      // const newState = u.freeze(state)
+      const newDetails = u(action.payload, state.selectedDrago)
+      // console.log(newDetails)
+      return { ...state, selectedDrago: { ...newDetails } }
+      // return {
+      //   ...state,
+      //   selectedDrago: {
+      //     ...state.selectedDrago,
+      //     values: {
+      //       ...state.selectedDrago.values,
+      //       ...(action.payload.values || {})
+      //     },
+      //     details: {
+      //       ...state.selectedDrago.details,
+      //       ...(action.payload.details || {})
+      //     },
+      //     transactions: [
+      //       ...(action.payload.transactions ||
+      //         [].concat(state.selectedDrago.transactions))
+      //     ],
+      //     assets: [
+      //       ...(action.payload.assets || [].concat(state.selectedDrago.assets))
+      //     ],
+      //     assetsCharts: {
+      //       ...state.selectedDrago.assetsCharts,
+      //       ...(action.payload.assetsCharts || {})
+      //     }
+      //   }
+      // }
     }
 
     case TYPE_.DRAGO_SELECTED_DETAILS_RESET:
@@ -86,39 +92,38 @@ export function eventfulDragoReducer(
 
     case TYPE_.SELECTED_DRAGO_DETAILS_UPDATE_CHART_ASSETS_MARKET_ADD_DATAPOINT: {
       let selectedDrago = { ...state.selectedDrago }
-      // console.log(action)
-      // console.log(Object.keys(action.payload)[0])
-      // console.log(action.payload[Object.keys(action.payload)[0]])
       let symbol = Object.keys(action.payload)[0]
       let newTicker = action.payload[symbol].data
-      let oldData = selectedDrago.assetsCharts[symbol].data
-      // let newChartData = [...state.chartData]
-      // console.log(newTicker.epoch, oldData[oldData.length - 1].epoch)
+      let oldData = [].concat(selectedDrago.assetsCharts[symbol].data)
       if (newTicker.epoch === oldData[oldData.length - 1].epoch) {
         oldData[oldData.length - 1] = newTicker
         // console.log('first')
         return {
-          ...state,
-          selectedDrago: { ...state.selectedDrago, ...selectedDrago }
+          ...state
         }
       }
       if (newTicker.epoch === oldData[oldData.length - 2].epoch) {
         oldData[oldData.length - 2] = newTicker
         // console.log('second')
         return {
-          ...state,
-          selectedDrago: { ...state.selectedDrago, ...selectedDrago }
+          ...state
         }
       }
 
-      // oldData.pop()
       // console.log('***** NEW *****')
-      // console.log(action.payload)
       oldData.push(newTicker)
-      selectedDrago.assetsCharts[symbol].data = oldData
       return {
         ...state,
-        selectedDrago: { ...state.selectedDrago, ...selectedDrago }
+        selectedDrago: {
+          ...state.selectedDrago,
+          assetsCharts: {
+            ...state.selectedDrago.assetsCharts,
+            [symbol]: {
+              ...state.selectedDrago.assetsCharts[symbol],
+              data: [].concat(oldData)
+            }
+          }
+        }
       }
     }
 
@@ -132,7 +137,7 @@ export function eventfulVaultReducer(
   action
 ) {
   switch (action.type) {
-    case TYPE_.UPDATE_TRANSACTIONS_VAULT_HOLDER:
+    case TYPE_.VAULT_HOLDER_TRANSACTIONS_UPDATE:
       return {
         ...state,
         holder: {
@@ -140,7 +145,7 @@ export function eventfulVaultReducer(
           logs: action.payload[1]
         }
       }
-    case TYPE_.UPDATE_TRANSACTIONS_VAULT_MANAGER:
+    case TYPE_.VAULT_MANAGER_TRANSACTIONS_UPDATE:
       return {
         ...state,
         manager: {
@@ -148,7 +153,7 @@ export function eventfulVaultReducer(
           logs: action.payload[1]
         }
       }
-    case TYPE_.UPDATE_SELECTED_VAULT_DETAILS:
+    case TYPE_.VAULT_SELECTED_DETAILS_UPDATE:
       return {
         ...state,
         selectedVault: {
@@ -162,7 +167,7 @@ export function eventfulVaultReducer(
           ]
         }
       }
-    case TYPE_.UPDATE_SELECTED_VAULT_DETAILS_RESET:
+    case TYPE_.VAULT_SELECTED_DETAILS_RESET:
       return {
         ...state,
         selectedVault: {

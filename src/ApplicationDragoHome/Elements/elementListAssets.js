@@ -1,3 +1,4 @@
+import * as Colors from 'material-ui/styles/colors'
 import {
   AutoSizer,
   Column,
@@ -7,28 +8,16 @@ import {
 } from 'react-virtualized'
 import { Col, Row } from 'react-flexbox-grid'
 import { Link, withRouter } from 'react-router-dom'
+import { formatPrice } from '../../_utils/format'
+import { toUnitAmount } from '../../_utils/format'
+import AssetsLineChartWrapper from '../../_atomic/atoms/assetsLineChartWrapper'
+import BigNumber from 'bignumber.js'
 import FlatButton from 'material-ui/FlatButton'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
-
-import { formatPrice } from '../../_utils/format'
-import { toUnitAmount } from '../../_utils/format'
-import utils from '../../_utils/utils'
-
-import styles from './elementListAssets.module.css'
-
-import * as Colors from 'material-ui/styles/colors'
-// import AssetChart from '../../_atomic/atoms/assetChart'
-// import AssetChartChartist from '../../_atomic/atoms/Chartist/ChartLine'
-import AssetsLineChartWrapper from '../../_atomic/atoms/assetsLineChartWrapper'
-// import AssetChartPlotly from '../../_atomic/atoms/assetChartPlotly'
-import BigNumber from 'bignumber.js'
 import TokenIcon from '../../_atomic/atoms/tokenIcon'
-// import moment from 'moment'
-
-// import ChartBox from '../../_atomic/organisms/chartBox'
-
-// const list = Immutable.List(generateRandomList());
+import styles from './elementListAssets.module.css'
+import utils from '../../_utils/utils'
 
 class ElementListAssets extends PureComponent {
   static propTypes = {
@@ -72,15 +61,6 @@ class ElementListAssets extends PureComponent {
     this._sort = this._sort.bind(this)
   }
 
-  // shouldComponentUpdate(nextProps, nextState) {
-  //   let stateUpdate = true
-  //   let propsUpdate = true
-  //   propsUpdate = !utils.shallowEqual(this.props.list, nextProps.list)
-  //   stateUpdate = !utils.shallowEqual(this.state, nextState)
-  //   console.log(nextProps.assetsChart)
-  //   return true
-  // }
-
   UNSAFE_componentWillReceiveProps(nextProps) {
     const { list } = nextProps
     const sortedList = list
@@ -89,6 +69,13 @@ class ElementListAssets extends PureComponent {
       sortedList: sortedList,
       rowCount: rowCount
     })
+  }
+
+  componentWillUnmount = () => {
+    // this.setState({
+    //   sortedList: [],
+    //   rowCount: 0
+    // })
   }
 
   render() {
@@ -167,26 +154,6 @@ class ElementListAssets extends PureComponent {
                     cellRenderer={({ rowData }) => this.renderHolding(rowData)}
                     flexShrink={1}
                   />
-                  {/* <Column
-                                width={30}
-                                disableSort
-                                label="TX"
-                                cellDataGetter={({ rowData }) => rowData}
-                                dataKey="tx"
-                                className={styles.column}
-                                cellRenderer={({ rowData }) => this.renderTx(rowData)}
-                                flexShrink={1}
-                              /> */}
-                  {/* <Column
-                                width={100}
-                                disableSort
-                                label="PRICE ETH"
-                                cellDataGetter={({ rowData }) => rowData}
-                                dataKey="assetsPrices"
-                                className={styles.column}
-                                cellRenderer={({ rowData }) => this.renderPrice(rowData)}
-                                flexGrow={1}
-                              /> */}
                   <Column
                     width={125}
                     disableSort
@@ -298,41 +265,39 @@ class ElementListAssets extends PureComponent {
     } else {
       price = '-'
     }
-
     return (
-      <Row>
-        <Col xs={12}>
-          <Row>
-            <Col xs={12}>
-              <div className={styles.holdingTitleText}> Amount </div>{' '}
-            </Col>{' '}
-            <Col xs={12}>
-              {' '}
-              {formatPrice(
-                toUnitAmount(
-                  new BigNumber(token.balances.total),
-                  token.decimals
-                ).toFixed(5)
-              )}{' '}
-              <small className={styles.symbolLegendText}>
-                {' '}
-                {token.symbol.toUpperCase()}{' '}
-              </small>{' '}
-            </Col>{' '}
-          </Row>{' '}
-        </Col>
-        <Col xs={12}>
-          <Row>
-            <Col xs={12}>
-              <div className={styles.holdingTitleText}> Price </div>{' '}
-            </Col>{' '}
-            <Col xs={12}>
-              {' '}
-              {price} <small className={styles.symbolLegendText}> ETH </small>{' '}
-            </Col>{' '}
-          </Row>{' '}
-        </Col>{' '}
-      </Row>
+      <div key={token.symbol}>
+        <Row>
+          <Col xs={12}>
+            <Row>
+              <Col xs={12}>
+                <div className={styles.holdingTitleText}> Amount </div>
+              </Col>
+              <Col xs={12}>
+                {formatPrice(
+                  toUnitAmount(
+                    new BigNumber(token.balances.total),
+                    token.decimals
+                  ).toFixed(5)
+                )}{' '}
+                <small className={styles.symbolLegendText}>
+                  {token.symbol.toUpperCase()}
+                </small>
+              </Col>
+            </Row>
+          </Col>
+          <Col xs={12}>
+            <Row>
+              <Col xs={12}>
+                <div className={styles.holdingTitleText}> Price </div>
+              </Col>
+              <Col xs={12}>
+                {price} <small className={styles.symbolLegendText}> ETH </small>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+      </div>
     )
   }
 
@@ -374,7 +339,7 @@ class ElementListAssets extends PureComponent {
     }
     return (
       <div>
-        <small> N / A </small>{' '}
+        <small> - </small>{' '}
       </div>
     )
   }
@@ -384,7 +349,7 @@ class ElementListAssets extends PureComponent {
       if (!Number(this.props.assetsPrices[token.symbol].priceEth)) {
         return (
           <div className={styles.valueText}>
-            <small> N / A </small>{' '}
+            <small> - </small>{' '}
           </div>
         )
       }
@@ -407,7 +372,7 @@ class ElementListAssets extends PureComponent {
     }
     return (
       <div className={styles.valueText}>
-        <small> N / A </small>{' '}
+        <small> - </small>{' '}
       </div>
     )
   }

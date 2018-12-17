@@ -15,7 +15,6 @@ import { rootEpic } from './_redux/epics/root_epics'
 import App from './App'
 import React from 'react'
 import ReactDOM from 'react-dom'
-// import logger from 'redux-logger'
 // import registerServiceWorker, { unregister } from './registerServiceWorker'
 // import { composeWithDevTools } from 'redux-devtools-extension';
 import { GIT_HASH } from './_utils/const'
@@ -28,6 +27,7 @@ import {
   relayActionsMiddleWare
 } from './_redux/middlewares'
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2'
+// import reduxImmutableStateInvariant from 'redux-immutable-state-invariant'
 import storage from 'redux-persist/lib/storage'
 
 import './index.module.css'
@@ -45,7 +45,7 @@ const middlewares = [
 ]
 
 if (process.env.NODE_ENV === `development`) {
-  // middlewares.push(logger)
+  middlewares.push(require('redux-immutable-state-invariant').default())
 }
 
 // Redux Persist

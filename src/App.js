@@ -1,5 +1,5 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
-import 'babel-polyfill'
+// import 'babel-polyfill'
 import 'react-virtualized/styles.css'
 import * as Sentry from '@sentry/browser'
 import { Actions } from './_redux/actions'

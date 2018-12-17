@@ -105,14 +105,14 @@ export const attachInterfaceEpic = (action$, state$) =>
                 ])
               ),
               of(
-                Actions.vault.updateTransactionsVaultHolder([
+                Actions.vault.updateVaultTransactionsHolder([
                   Array(0),
                   Array(0),
                   Array(0)
                 ])
               ),
               of(
-                Actions.vault.updateTransactionsVaultManager([
+                Actions.vault.updateVaultTransactionsManager([
                   Array(0),
                   Array(0),
                   Array(0)

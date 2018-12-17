@@ -85,7 +85,9 @@ class PageFundDetailsDragoTrader extends Component {
   componentWillUnmount() {
     this.props.dispatch(Actions.tokens.priceTickersStop())
     this.props.dispatch(Actions.exchange.getPortfolioChartDataStop())
-    this.props.dispatch(Actions.drago.updateDragoSelectedDetails({}, { reset: true }))
+    this.props.dispatch(
+      Actions.drago.updateDragoSelectedDetails({}, {}, { reset: true })
+    )
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -219,9 +221,9 @@ class PageFundDetailsDragoTrader extends Component {
 
     let totalAssetsValue = 0
     let tableLiquidity = [
-      ['Liquidity', 'Calculating...', [<small key="dragoLiqEth">ETH</small>]],
+      ['Liquidity', '-', [<small key="dragoLiqEth">ETH</small>]],
       ['Porfolio value', '-'],
-      ['Total', 'Calculating...', [<small key="dragoPortTotEth">ETH</small>]]
+      ['Total', '-', [<small key="dragoPortTotEth">ETH</small>]]
     ]
 
     // Show pool balance
@@ -465,6 +467,7 @@ class PageFundDetailsDragoTrader extends Component {
                               </Col>
                               <Col xs={6}>
                                 <AssetsPieChartWrapper
+                                  key={'pieChart-' + dragoDetails.dragoId}
                                   poolAssetsList={dragoAssetsList}
                                   assetsPrices={assetsPrices.current}
                                   poolETHBalance={dragoDetails.dragoETHBalance}
@@ -479,6 +482,7 @@ class PageFundDetailsDragoTrader extends Component {
                         Assets in porfolio:
                       </div>
                       <ElementListWrapper
+                        key={'assetsList-wrapper-' + dragoDetails.dragoId}
                         list={dragoAssetsList}
                         renderCopyButton={this.renderCopyButton}
                         renderEtherscanButton={this.renderEtherscanButton}
@@ -492,7 +496,9 @@ class PageFundDetailsDragoTrader extends Component {
                           number: 1
                         }}
                       >
-                        <ElementListAssets />
+                        <ElementListAssets
+                          key={'assetsList-' + dragoDetails.dragoId}
+                        />
                       </ElementListWrapper>
                     </div>
                   </Col>

@@ -62,7 +62,7 @@ class Interfaces {
                 .getBalance(k)
                 .then(balance => {
                   accounts[k].ethBalance = utils.formatFromWei(balance)
-                  accounts[k].ethBalanceWei = balance
+                  accounts[k].ethBalanceWei = new BigNumber(balance)
                   accounts[k].name = accountsParity[k].name
                   accounts[k].source = 'parity'
                   return accounts
@@ -77,7 +77,7 @@ class Interfaces {
                 .balanceOf(k)
                 .then(grgBalance => {
                   accounts[k].grgBalance = utils.formatFromWei(grgBalance)
-                  accounts[k].grgBalanceWei = grgBalance
+                  accounts[k].grgBalanceWei = new BigNumber(grgBalance)
                   return accounts
                 })
                 .catch(() => {
@@ -213,11 +213,11 @@ class Interfaces {
             ethBalance: new BigNumber(web3.utils.fromWei(ethBalance)).toFixed(
               3
             ),
-            ethBalanceWei: ethBalance,
+            ethBalanceWei: new BigNumber(ethBalance),
             grgBalance: new BigNumber(web3.utils.fromWei(grgBalance)).toFixed(
               3
             ),
-            grgBalanceWei: grgBalance,
+            grgBalanceWei: new BigNumber(grgBalance),
             name: 'MetaMask',
             source: 'MetaMask',
             nonce: nonce

@@ -224,36 +224,40 @@ class utilities {
     assetsPrices,
     dragoETHBalance
   ) => {
-    let labels = Array(0)
-    let data = Array(0)
-    dragoAssetsList.forEach(asset => {
-      if (typeof assetsPrices[asset.symbol] !== 'undefined') {
-        if (typeof assetsPrices[asset.symbol].priceEth !== 'undefined') {
-          const value = new BigNumber(
-            assetsPrices[asset.symbol].priceEth
-          ).times(
-            toUnitAmount(
-              new BigNumber(asset.balances.total),
-              asset.decimals
-            ).toFixed(5)
-          )
-          labels.push(asset.symbol)
-          data.push(value.toFixed(5))
+    try {
+      let labels = Array(0)
+      let data = Array(0)
+      dragoAssetsList.forEach(asset => {
+        if (typeof assetsPrices[asset.symbol] !== 'undefined') {
+          if (typeof assetsPrices[asset.symbol].priceEth !== 'undefined') {
+            const value = new BigNumber(
+              assetsPrices[asset.symbol].priceEth
+            ).times(
+              toUnitAmount(
+                new BigNumber(asset.balances.total),
+                asset.decimals
+              ).toFixed(5)
+            )
+            labels.push(asset.symbol)
+            data.push(value.toFixed(5))
+          }
         }
+      })
+      data.push(new BigNumber(dragoETHBalance).toFixed(5))
+      labels.push('ETH')
+      return {
+        datasets: [
+          {
+            data,
+            backgroundColor: palette('tol', data.length).map(function(hex) {
+              return '#' + hex
+            })
+          }
+        ],
+        labels
       }
-    })
-    data.push(new BigNumber(dragoETHBalance).toFixed(5))
-    labels.push('ETH')
-    return {
-      datasets: [
-        {
-          data,
-          backgroundColor: palette('tol', data.length).map(function(hex) {
-            return '#' + hex
-          })
-        }
-      ],
-      labels
+    } catch (err) {
+      console.warn(err)
     }
   }
 

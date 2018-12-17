@@ -1,6 +1,5 @@
 // https://github.com/redux-observable/redux-observable/issues/477#issuecomment-393516995
 
-import { Observable } from 'rxjs/Observable'
 import { isConnectedToNode$, updateAccounts } from './endpoint_epics'
 
 // import {
@@ -127,94 +126,4 @@ describe('update account balance', () => {
     //   Array(0)
     // ])
   })
-  // it('1 -> Detect prevBlockNumber > currentBlockNumber success', async () => {
-  //   const newBlockNumber = 5
-  //   const results = await updateAccounts(
-  //     api,
-  //     newBlockNumber,
-  //     createMockStore(initialState_1)
-  //   )
-  //   expect(results).toEqual([
-  //     {
-  //       prevBlockNumber: initialState_1.endpoint.prevBlockNumber
-  //     },
-  //     Array(0)
-  //   ])
-  // })
-  // it('2 -> Detect accounts !==0 success', async () => {
-  //   const newBlockNumber = 15
-  //   const results = await updateAccounts(
-  //     api,
-  //     newBlockNumber,
-  //     createMockStore(initialState_2)
-  //   )
-  //   expect(results).toEqual([
-  //     {
-  //       ...initialState_2.endpoint,
-  //       loading: false,
-  //       prevBlockNumber: newBlockNumber.toString()
-  //     },
-  //     Array(0)
-  //   ])
-  // })
-  // it('3 -> Detect increased balance difference', async () => {
-  //   const newBlockNumber = 15
-  //   const results = await updateAccounts(
-  //     api,
-  //     newBlockNumber,
-  //     createMockStore(initialState_1)
-  //   )
-  //   expect(results).toEqual([
-  //     {
-  //       ...initialState_1.endpoint,
-  //       loading: false,
-  //       networkError: NETWORK_OK,
-  //       networkStatus: MSG_NETWORK_STATUS_OK,
-  //       accountsBalanceError: false,
-  //       loading: false,
-  //       prevBlockNumber: newBlockNumber.toString()
-  //     },
-  //     Array(0)
-  //   ])
-  // })
-  // it('4 -> Detect no balance difference', async () => {
-  //   const newBlockNumber = 15
-  //   api.plus = 20000000000000000000
-  //   const results = await updateAccounts(
-  //     api,
-  //     newBlockNumber,
-  //     createMockStore(initialState_1)
-  //   )
-  //   expect(results).toEqual([
-  //     {
-  //       loading: false,
-  //       networkError: NETWORK_OK,
-  //       networkStatus: MSG_NETWORK_STATUS_OK,
-  //       accountsBalanceError: false,
-  //       loading: false,
-  //       prevBlockNumber: newBlockNumber.toString(),
-  //       ethBalance: '20000000000000000000',
-  //       grgBalance: '40000000000000000000',
-  //       accounts: [
-  //         {
-  //           name: 'MetaMask',
-  //           address: '0x01',
-  //           ethBalance: '10.000',
-  //           grgBalance: '20.000',
-  //           ethBalanceWei: '10000000000000000000',
-  //           grgBalanceWei: '20000000000000000000'
-  //         },
-  //         {
-  //           name: 'Parity',
-  //           address: '0x02',
-  //           ethBalance: '10.000',
-  //           grgBalance: '20.000',
-  //           ethBalanceWei: '10000000000000000000',
-  //           grgBalanceWei: '20000000000000000000'
-  //         }
-  //       ]
-  //     },
-  //     Array(0)
-  //   ])
-  // })
 })

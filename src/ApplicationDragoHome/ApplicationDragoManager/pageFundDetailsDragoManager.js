@@ -73,7 +73,9 @@ class PageFundDetailsDragoManager extends Component {
   componentWillUnmount() {
     this.props.dispatch(Actions.tokens.priceTickersStop())
     this.props.dispatch(Actions.exchange.getPortfolioChartDataStop())
-    this.props.dispatch(Actions.drago.updateDragoSelectedDetails({}, { reset: true }))
+    this.props.dispatch(
+      Actions.drago.updateDragoSelectedDetails({}, {}, { reset: true })
+    )
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -225,9 +227,9 @@ class PageFundDetailsDragoManager extends Component {
 
     let totalAssetsValue = 0
     let tableLiquidity = [
-      ['Liquidity', 'Calculating...', [<small key="dragoLiqEth">ETH</small>]],
-      ['Porfolio value', '-'],
-      ['Total', 'Calculating...', [<small key="dragoPortTotEth">ETH</small>]]
+      ['Liquidity', '-', [<small key="dragoLiqEth">ETH</small>]],
+      ['Porfolio value', '-', [<small key="dragoLiqEth" />]],
+      ['Total', '-', [<small key="dragoPortTotEth">ETH</small>]]
     ]
 
     // Show pool balance

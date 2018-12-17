@@ -5,7 +5,14 @@ import { Actions } from '../actions'
 // import { DEBUGGING } from '../../_utils/const'
 import * as utils from '../../_utils/pools'
 import { Observable, from, of, timer } from 'rxjs'
-import { catchError, finalize, map, mergeMap, retryWhen } from 'rxjs/operators'
+import {
+  catchError,
+  finalize,
+  map,
+  mergeMap,
+  retryWhen,
+  takeUntil
+} from 'rxjs/operators'
 import { getBlockChunks } from '../../_utils/blockChain'
 import { getFromBlock, getWeb3 } from '../../_utils/misc'
 import { ofType } from 'redux-observable'
@@ -210,11 +217,11 @@ export const getAccountsTransactionsEpic = (action$, state$) => {
             // return DEBUGGING.DUMB_ACTION
           } else {
             if (!action.payload.options.trader) {
-              return Actions.vault.updateTransactionsVaultManager(
+              return Actions.vault.updateVaultTransactionsManager(
                 results.length === 0 ? [Array(0), Array(0), Array(0)] : results
               )
             }
-            return Actions.vault.updateTransactionsVaultHolder(results)
+            return Actions.vault.updateVaultTransactionsHolder(results)
             // return DEBUGGING.DUMB_ACTION
           }
         }),
@@ -255,11 +262,19 @@ export const getPoolTransactionsEpic = (action$, state$) =>
               transactions: results
             })
           } else {
-            return Actions.vault.updateSelectedVault({
+            return Actions.vault.updateVaultSelectedDetails({
               transactions: results
             })
           }
         }),
+        takeUntil(
+          action$.pipe(
+            ofType(
+              TYPE_.DRAGO_SELECTED_DETAILS_RESET,
+              TYPE_.VAULT_SELECTED_DETAILS_RESET
+            )
+          )
+        ),
         catchError(error => {
           console.warn(error)
           return of({
