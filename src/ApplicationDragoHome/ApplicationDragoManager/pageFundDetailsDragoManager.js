@@ -73,9 +73,7 @@ class PageFundDetailsDragoManager extends Component {
   componentWillUnmount() {
     this.props.dispatch(Actions.tokens.priceTickersStop())
     this.props.dispatch(Actions.exchange.getPortfolioChartDataStop())
-    this.props.dispatch(
-      Actions.drago.updateDragoSelectedDetails({}, {}, { reset: true })
-    )
+    this.props.dispatch(Actions.drago.resetDragoSelectedDetails())
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -365,15 +363,6 @@ class PageFundDetailsDragoManager extends Component {
                       />
                     </Col>
                   </Row>
-                  {/* <Row>
-                    <Col xs={12}>
-                      <AssetsPieChartWrapper
-                        poolAssetsList={dragoAssetsList}
-                        assetsPrices={assetsPrices.current}
-                        poolETHBalance={dragoDetails.dragoETHBalance}
-                      />
-                    </Col>
-                  </Row> */}
                   <Row>
                     <Col xs={12} md={6}>
                       <SectionTitle titleText="DETAILS" />

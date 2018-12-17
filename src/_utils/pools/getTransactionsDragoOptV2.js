@@ -358,7 +358,7 @@ export const getTransactionsDragoOptV2 = async (
                     let balancesRegistry = new Map()
                     let tokenBalances = []
                     for (let v in balances) {
-                      balances[v].map(balance => {
+                      balances[v].forEach(balance => {
                         if (balancesRegistry.has(balance.dragoId)) {
                           let dragoBalance = balancesRegistry.get(
                             balance.dragoId

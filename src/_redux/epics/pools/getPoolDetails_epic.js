@@ -37,10 +37,8 @@ const getPoolsSingleDetails$ = (poolId, networkInfo, options, state$) => {
       }
       const { accounts } = state$.value.endpoint
       const list = Object.assign({}, state$.value.poolsList.list)
-      console.log(list)
       try {
         let details
-        console.log(list[poolId])
         if (typeof list[poolId] !== 'undefined') {
           poolDetails = { ...poolDetails, ...list[poolId].details }
           observer.next([list[poolId], { updateCache: false }])
@@ -157,7 +155,7 @@ export const getPoolDetailsEpic = (action$, state$) => {
             supply: false,
             limit: 20,
             trader: !state$.value.user.isManager,
-            drago: drago
+            drago
           }
           const { details, meta } = result
 
@@ -196,9 +194,7 @@ export const getPoolDetailsEpic = (action$, state$) => {
             }
           } else {
             actionsArray.push(
-              Actions.vault.updateVaultSelectedDetails({
-                details
-              })
+              Actions.vault.updateVaultSelectedDetails(details, meta)
             )
             if (i === 0) {
               actionsArray.push(

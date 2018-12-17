@@ -21,24 +21,21 @@ export const getAssetsPriceData = (assets, networkId, quoteToken) => {
 }
 export const updateDragoSelectedDetails = (
   data = {},
-  meta = { updateCache: true },
-  options = { reset: false }
+  meta = { updateCache: true }
 ) => {
-  switch (options.reset) {
-    case true:
-      return {
-        type: TYPE_.DRAGO_SELECTED_DETAILS_RESET,
-        payload: data
-      }
-    case false:
-      return {
-        type: TYPE_.DRAGO_SELECTED_DETAILS_UPDATE,
-        payload: data,
-        meta
-      }
-    default:
+  return {
+    type: TYPE_.DRAGO_SELECTED_DETAILS_UPDATE,
+    payload: data,
+    meta
   }
 }
+
+export const resetDragoSelectedDetails = () => {
+  return {
+    type: TYPE_.DRAGO_SELECTED_DETAILS_RESET
+  }
+}
+
 export const updateDragoTransactionsHolder = results => {
   return {
     type: TYPE_.DRAGO_HOLDER_TRANSACTIONS_UPDATE,

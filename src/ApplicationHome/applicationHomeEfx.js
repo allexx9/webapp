@@ -81,7 +81,7 @@ class ApplicationHomeEfx extends PureComponent {
   filterPools = () => {
     const { poolsList } = this.props
     const { filter } = this.state
-    return utils.filterPools(poolsList, filter)
+    return utils.filterPools(poolsList, filter, 'drago')
   }
 
   render() {

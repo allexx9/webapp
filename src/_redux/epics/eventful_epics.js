@@ -252,11 +252,12 @@ export const getPoolTransactionsEpic = (action$, state$) =>
       const { networkInfo } = state$.value.endpoint
       return getPoolsSingleTransactions$(
         networkInfo,
-        action.payload.dragoAddress,
+        action.payload.poolAddress,
         action.payload.accounts,
         action.payload.options
       ).pipe(
         map(results => {
+          console.log(results)
           if (action.payload.options.drago) {
             return Actions.drago.updateDragoSelectedDetails({
               transactions: results

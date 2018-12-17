@@ -69,7 +69,7 @@ class PageFundDetailsVaultTrader extends Component {
   componentWillUnmount() {
     this.props.dispatch(Actions.tokens.priceTickersStop())
     this.props.dispatch(Actions.exchange.getPortfolioChartDataStop())
-    this.props.dispatch(Actions.vault.updateVaultSelectedDetails({}, { reset: true }))
+    this.props.dispatch(Actions.vault.resetVaultSelectedDetails())
   }
 
   snackBar = msg => {

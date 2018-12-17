@@ -113,15 +113,6 @@ class ElementListTransactions extends PureComponent {
                   sortDirection={sortDirection}
                   width={width}
                 >
-                  {/* <Column
-                    width={100}
-                    disableSort
-                    label="Blocknumber"
-                    cellDataGetter={({rowData}) => rowData.blockNumber.c[0]}
-                    dataKey="blocknumber"
-                    className={styles.exampleColumn}
-                    cellRenderer={({cellData}) => cellData}
-                  />  */}
                   <Column
                     width={200}
                     disableSort
@@ -129,7 +120,7 @@ class ElementListTransactions extends PureComponent {
                     cellDataGetter={({ rowData }) => rowData.timestamp}
                     dataKey="date"
                     className={styles.exampleColumn}
-                    cellRenderer={({ cellData }) => this.renderTime(cellData)}
+                    cellRenderer={({ rowData }) => this.renderTime(rowData)}
                     flexShrink={1}
                   />
                   <Column
@@ -142,17 +133,6 @@ class ElementListTransactions extends PureComponent {
                     cellRenderer={({ cellData }) => this.renderAction(cellData)}
                     flexShrink={1}
                   />
-                  {/* <Column
-                    width={100}
-                    disableSort
-                    label="SYMBOL"
-                    cellDataGetter={({rowData}) => rowData}
-                    dataKey="symbol"
-                    cellRenderer={({cellData}) => this.renderSymbol(cellData)}
-                    className={styles.exampleColumn}
-                    flexShrink={1}
-                  /> */}
-                  {/* formatEth(price) }<small> ETH</small> */}
                   <Column
                     width={100}
                     disableSort
@@ -187,17 +167,6 @@ class ElementListTransactions extends PureComponent {
                     }
                     flexGrow={1}
                   />
-                  {/* <Column
-                    width={210}
-                    disableSort
-                    label="Actions"
-                    cellDataGetter={({rowData}) => rowData.transactionHash}
-                    dataKey="actions"
-                    className={styles.exampleColumn}
-                    cellRenderer={({cellData}) => cellData}
-                    cellRenderer={({cellData, rowData}) => this.actionButton(cellData, rowData)}
-                    flexShrink={1}
-                  /> */}
                 </Table>
               )}
             </AutoSizer>
@@ -294,6 +263,7 @@ class ElementListTransactions extends PureComponent {
   }
 
   renderTime(timestamp) {
+    console.log(timestamp)
     return <span>{utils.dateFromTimeStamp(timestamp)}</span>
   }
 
@@ -370,8 +340,8 @@ class ElementListTransactions extends PureComponent {
     const { list } = this.props
     return list
       .sortBy(item => item.timestamp)
-      .update(
-        list => (sortDirection === SortDirection.DESC ? list : list.reverse())
+      .update(list =>
+        sortDirection === SortDirection.DESC ? list : list.reverse()
       )
   }
 

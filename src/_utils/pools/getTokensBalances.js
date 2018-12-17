@@ -11,8 +11,6 @@ export const getTokensBalances = async (dragoAddress, allowedTokens, web3) => {
     throw new Error(err)
   }
 
-  // console.log(allowedTokens)
-
   let tokenAddresses = []
   let tokenWrappersAddresses = []
 
@@ -87,7 +85,6 @@ export const getTokensBalances = async (dragoAddress, allowedTokens, web3) => {
         }
       }
       if (!total.eq(0)) {
-        console.log(balances)
         balances.total = new BigNumber(total)
         dragoAssets[token] = Object.assign({}, allowedTokens[token])
         dragoAssets[token].balances = Object.assign({}, balances)
@@ -95,6 +92,5 @@ export const getTokensBalances = async (dragoAddress, allowedTokens, web3) => {
     }
   }
 
-  // console.log(dragoAssets)
   return dragoAssets
 }

@@ -26,8 +26,8 @@ export const writeItemPoolsList = createAction(
 
 export const getPoolsSingleTransactions = createAction(
   TYPE_.POOLS_SINGLE_TRANSACTIONS_GET,
-  (dragoAddress, accounts, options) => ({
-    dragoAddress,
+  (PoolAddress, accounts, options) => ({
+    PoolAddress,
     accounts,
     options
   })
