@@ -23,6 +23,7 @@ import createHashHistory from 'history/createHashHistory'
 import styles from './App.module.css'
 import utils from './_utils/utils'
 
+
 const ApplicationHomePage = lazy(() =>
   import('./Application/applicationHomePage')
 )

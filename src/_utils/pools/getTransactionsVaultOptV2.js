@@ -21,6 +21,7 @@ export const getTransactionsVaultOptV2 = async (
     drago: false
   }
 ) => {
+  // debugger
   if (poolAddress)
     return getTransactionsSingleVault(
       poolAddress,
@@ -441,6 +442,7 @@ export const getTransactionsVaultOptV2 = async (
               }Manager transactions loaded in ${Seconds_Between_Dates}s *****`
             )
           }
+          console.log(results)
           return results
         })
     })

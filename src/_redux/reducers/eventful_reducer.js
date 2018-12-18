@@ -77,9 +77,7 @@ export function eventfulDragoReducer(
       }
 
     case TYPE_.SELECTED_DRAGO_DETAILS_UPDATE_CHART_ASSETS_MARKET_DATA_INIT: {
-      // console.log(action)
       let selectedDrago = { ...state.selectedDrago }
-      // console.log(selectedDrago)
       selectedDrago.assetsCharts = {
         ...selectedDrago.assetsCharts,
         ...action.payload
@@ -153,20 +151,13 @@ export function eventfulVaultReducer(
           logs: action.payload[1]
         }
       }
-    case TYPE_.VAULT_SELECTED_DETAILS_UPDATE:
-      return {
-        ...state,
-        selectedVault: {
-          details: {
-            ...state.selectedVault.details,
-            ...(action.payload.details || {})
-          },
-          transactions: [
-            ...(action.payload.transactions ||
-              [].concat(state.selectedVault.transactions))
-          ]
-        }
-      }
+
+    case TYPE_.VAULT_SELECTED_DETAILS_UPDATE: {
+      const newDetails = u(action.payload, state.selectedVault)
+      console.log(newDetails)
+      return { ...state, selectedVault: { ...newDetails } }
+    }
+
     case TYPE_.VAULT_SELECTED_DETAILS_RESET:
       return {
         ...state,

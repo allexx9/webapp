@@ -21,8 +21,8 @@ class Endpoint {
       throw new Error('network name needs to be provided to Endpoint')
     }
     this._timeout = 10000
-    this._endpoint = endpointInfo
-    this._network = networkInfo
+    this._endpoint = Object.assign({}, endpointInfo)
+    this._network = Object.assign({}, networkInfo)
     this._prod = prod
     // Infura does not support WebSocket on Kovan network yet. Disabling.
     this._onWs =
@@ -32,9 +32,11 @@ class Endpoint {
     // Setting production or development endpoints
     if (prod) {
       this._https = endpointInfo.https[this._network.name].prod
+
       this._wss = endpointInfo.wss[this._network.name].prod
     } else {
       this._https = endpointInfo.https[this._network.name].dev
+
       this._wss = endpointInfo.wss[this._network.name].dev
     }
   }

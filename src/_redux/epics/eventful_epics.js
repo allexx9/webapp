@@ -54,11 +54,12 @@ const getPoolsChunkedEvents$ = (options, state$) => {
       }
       let id = returnValues.dragoId || returnValues.vaultId
       let poolType = returnValues.dragoId ? 'drago' : 'vault'
+      let address = returnValues.drago || returnValues.vault
       return {
         symbol,
         id,
         name: returnValues.name,
-        address: returnValues.drago,
+        address,
         poolType
       }
     }
@@ -172,7 +173,7 @@ export const getPoolsListEpic = (action$, state$) =>
 
 const getPoolsSingleTransactions$ = (
   networkInfo,
-  dragoAddress,
+  poolAddress,
   accounts,
   options
 ) => {
@@ -180,7 +181,7 @@ const getPoolsSingleTransactions$ = (
     ? from(
         utils.getTransactionsDragoOptV2(
           networkInfo,
-          dragoAddress,
+          poolAddress,
           accounts,
           options
         )
@@ -188,7 +189,7 @@ const getPoolsSingleTransactions$ = (
     : from(
         utils.getTransactionsVaultOptV2(
           networkInfo,
-          dragoAddress,
+          poolAddress,
           accounts,
           options
         )
@@ -202,7 +203,7 @@ export const getAccountsTransactionsEpic = (action$, state$) => {
       const { networkInfo } = state$.value.endpoint
       return getPoolsSingleTransactions$(
         networkInfo,
-        action.payload.dragoAddress,
+        action.payload.poolAddress,
         action.payload.accounts,
         action.payload.options
       ).pipe(
@@ -229,7 +230,7 @@ export const getAccountsTransactionsEpic = (action$, state$) => {
           console.warn('getAccountsTransactionsEpic error')
           let scalingDuration = 10000
           return error.pipe(
-            mergeMap((error, i) => {
+            mergeMap(error => {
               console.warn(error)
               return timer(scalingDuration)
             }),
@@ -256,15 +257,14 @@ export const getPoolTransactionsEpic = (action$, state$) =>
         action.payload.accounts,
         action.payload.options
       ).pipe(
-        map(results => {
-          console.log(results)
+        map(transactions => {
           if (action.payload.options.drago) {
             return Actions.drago.updateDragoSelectedDetails({
-              transactions: results
+              transactions
             })
           } else {
             return Actions.vault.updateVaultSelectedDetails({
-              transactions: results
+              transactions
             })
           }
         }),

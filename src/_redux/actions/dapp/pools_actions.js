@@ -26,8 +26,8 @@ export const writeItemPoolsList = createAction(
 
 export const getPoolsSingleTransactions = createAction(
   TYPE_.POOLS_SINGLE_TRANSACTIONS_GET,
-  (PoolAddress, accounts, options) => ({
-    PoolAddress,
+  (poolAddress, accounts, options) => ({
+    poolAddress,
     accounts,
     options
   })
@@ -35,8 +35,8 @@ export const getPoolsSingleTransactions = createAction(
 
 export const getPoolsSingleDetails = createAction(
   TYPE_.POOLS_SINGLE_DETAILS_GET,
-  (dragoId, options = { poolType: 'drago', wallet: '' }) => ({
-    dragoId,
+  (poolId, options = { poolType: 'drago', wallet: '' }) => ({
+    poolId,
     options
   })
 )

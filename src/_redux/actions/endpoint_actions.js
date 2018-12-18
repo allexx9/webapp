@@ -23,11 +23,11 @@ const endpoint = {
       payload: {}
     }
   },
-  getAccountsTransactions: (dragoAddress, accounts, options) => {
+  getAccountsTransactions: (poolAddress, accounts, options) => {
     return {
       type: TYPE_.GET_ACCOUNTS_TRANSACTIONS,
       payload: {
-        dragoAddress,
+        poolAddress,
         accounts,
         options
       }

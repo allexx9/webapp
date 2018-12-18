@@ -14,7 +14,7 @@ import CopyContent from 'material-ui/svg-icons/content/content-copy'
 import ElementFundActionsList from '../Elements/elementFundActionsList'
 import ElementFundNotFound from '../../Elements/elementFundNotFound'
 import ElementListAssets from '../Elements/elementListAssets'
-import ElementListTransactions from '../Elements/elementListTransactions'
+import TablePoolTransactions from '../../_atomic/molecules/tablePoolTransactions'
 import ElementListWrapper from '../../Elements/elementListWrapper'
 import ElementNoAdminAccess from '../../Elements/elementNoAdminAccess'
 import ElementPriceBox from '../Elements/elementPricesBox'
@@ -530,7 +530,7 @@ class PageFundDetailsDragoManager extends Component {
                         number: 1
                       }}
                     >
-                      <ElementListTransactions />
+                      <TablePoolTransactions />
                     </ElementListWrapper>
                   </Col>
                 </Row>

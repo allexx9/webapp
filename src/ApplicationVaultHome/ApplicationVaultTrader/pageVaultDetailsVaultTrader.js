@@ -10,7 +10,6 @@ import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
 import CopyContent from 'material-ui/svg-icons/content/content-copy'
 import ElementFeesBox from '../Elements/elementFeesBox'
 import ElementFundNotFound from '../../Elements/elementFundNotFound'
-import ElementListTransactions from '../Elements/elementListTransactions'
 import ElementListWrapper from '../../Elements/elementListWrapper'
 import ElementVaultActions from '../Elements/elementVaultActions'
 import FundHeader from '../../_atomic/molecules/fundHeader'
@@ -25,6 +24,7 @@ import SectionHeader from '../../_atomic/atoms/sectionHeader'
 import SectionTitle from '../../_atomic/atoms/sectionTitle'
 import Snackbar from 'material-ui/Snackbar'
 import Sticky from 'react-stickynode'
+import TablePoolTransactions from '../../_atomic/molecules/tablePoolTransactions'
 import scrollToElement from 'scroll-to-element'
 import styles from './pageVaultDetailsVaultTrader.module.css'
 
@@ -356,7 +356,7 @@ class PageFundDetailsVaultTrader extends Component {
                         number: 1
                       }}
                     >
-                      <ElementListTransactions />
+                      <TablePoolTransactions />
                     </ElementListWrapper>
                   </Col>
                 </Row>

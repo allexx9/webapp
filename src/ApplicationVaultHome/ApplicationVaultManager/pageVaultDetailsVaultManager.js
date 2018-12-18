@@ -10,7 +10,7 @@ import ActionShowChart from 'material-ui/svg-icons/editor/show-chart'
 import CopyContent from 'material-ui/svg-icons/content/content-copy'
 import ElementFeesBox from '../Elements/elementFeesBox'
 import ElementFundNotFound from '../../Elements/elementFundNotFound'
-import ElementListTransactions from '../Elements/elementListTransactions'
+import TablePoolTransactions from '../../_atomic/molecules/tablePoolTransactions'
 import ElementListWrapper from '../../Elements/elementListWrapper'
 import ElementNoAdminAccess from '../../Elements/elementNoAdminAccess'
 import ElementVaultActionsList from '../Elements/elementVaultActionsList'
@@ -343,7 +343,7 @@ class PageVaultDetailsVaultManager extends Component {
                         number: 1
                       }}
                     >
-                      <ElementListTransactions />
+                      <TablePoolTransactions />
                     </ElementListWrapper>
                   </Col>
                 </Row>

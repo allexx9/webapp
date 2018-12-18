@@ -5,6 +5,7 @@ import { Actions } from '../../actions/'
 import { BigNumber } from 'bignumber.js'
 import { ERCdEX, Ethfinex } from '../../../_utils/const'
 import { Observable, from, timer } from 'rxjs'
+import { defaultDragoDetails } from '../../../_utils/const'
 import {
   finalize,
   flatMap,
@@ -23,18 +24,7 @@ import utils from '../../../_utils/utils'
 const getPoolsSingleDetails$ = (poolId, networkInfo, options, state$) => {
   return Observable.create(observer => {
     const getDetails = async () => {
-      let poolDetails = {
-        address: null,
-        name: null,
-        symbol: null,
-        addressOwner: null,
-        addressGroup: null,
-        buyPrice: null,
-        sellPrice: null,
-        totalSupply: null,
-        created: '-',
-        balanceDRG: null
-      }
+      let poolDetails = { ...defaultDragoDetails }
       const { accounts } = state$.value.endpoint
       const list = Object.assign({}, state$.value.poolsList.list)
       try {
@@ -138,15 +128,15 @@ export const getPoolDetailsEpic = (action$, state$) => {
       const { networkInfo, accounts } = state$.value.endpoint
       let i = 0
       return getPoolsSingleDetails$(
-        action.payload.dragoId,
+        action.payload.poolId,
         networkInfo,
         action.payload.options,
         state$
       ).pipe(
         map(result => {
           return result.length === 1
-            ? { details: result[0], meta: { updateCache: true } }
-            : { details: result[0], meta: result[1] }
+            ? { payload: result[0], meta: { updateCache: true } }
+            : { payload: result[0], meta: result[1] }
         }),
         flatMap(result => {
           let drago = action.payload.options.poolType === 'drago' ? true : false
@@ -157,7 +147,7 @@ export const getPoolDetailsEpic = (action$, state$) => {
             trader: !state$.value.user.isManager,
             drago
           }
-          const { details, meta } = result
+          const { payload, meta } = result
 
           let relayName
           switch (networkInfo.id) {
@@ -179,10 +169,10 @@ export const getPoolDetailsEpic = (action$, state$) => {
           let actionsArray = []
           if (drago) {
             actionsArray.push(
-              Actions.drago.updateDragoSelectedDetails(details, meta)
+              Actions.drago.updateDragoSelectedDetails(payload, meta)
             )
             if (i === 0) {
-              const { address } = details.details
+              const { address } = payload.details
               actionsArray.push(
                 Actions.pools.getPoolsSingleTransactions(
                   address,
@@ -194,12 +184,13 @@ export const getPoolDetailsEpic = (action$, state$) => {
             }
           } else {
             actionsArray.push(
-              Actions.vault.updateVaultSelectedDetails(details, meta)
+              Actions.vault.updateVaultSelectedDetails(payload, meta)
             )
             if (i === 0) {
+              const { address } = payload.details
               actionsArray.push(
                 Actions.pools.getPoolsSingleTransactions(
-                  details.address,
+                  address,
                   accounts,
                   options
                 )

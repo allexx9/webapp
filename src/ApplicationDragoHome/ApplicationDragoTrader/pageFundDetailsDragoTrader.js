@@ -16,7 +16,6 @@ import CopyContent from 'material-ui/svg-icons/content/content-copy'
 import ElementFundActions from '../Elements/elementFundActions'
 import ElementFundNotFound from '../../Elements/elementFundNotFound'
 import ElementListAssets from '../Elements/elementListAssets'
-import ElementListTransactions from '../Elements/elementListTransactions'
 import ElementListWrapper from '../../Elements/elementListWrapper'
 import ElementPriceBox from '../Elements/elementPricesBox'
 import EstimatedPriceText from '../../_atomic/atoms/estimatedPriceText'
@@ -32,6 +31,7 @@ import SectionHeader from '../../_atomic/atoms/sectionHeader'
 import SectionTitle from '../../_atomic/atoms/sectionTitle'
 import Snackbar from 'material-ui/Snackbar'
 import Sticky from 'react-stickynode'
+import TablePoolTransactions from '../../_atomic/molecules/tablePoolTransactions'
 import scrollToElement from 'scroll-to-element'
 import styles from './pageFundDetailsDragoTrader.module.css'
 import utils from '../../_utils/utils'
@@ -75,11 +75,6 @@ class PageFundDetailsDragoTrader extends Component {
     this.props.dispatch(
       Actions.pools.getPoolsSingleDetails(dragoId, { poolType: 'drago' })
     )
-
-    // Getting Drago assets
-    // this.props.dispatch(
-    //   Actions.drago.getTokenBalancesDrago(dragoDetails, api, relay)
-    // )
   }
 
   componentWillUnmount() {
@@ -532,7 +527,7 @@ class PageFundDetailsDragoTrader extends Component {
                         number: 1
                       }}
                     >
-                      <ElementListTransactions />
+                      <TablePoolTransactions />
                     </ElementListWrapper>
                   </Col>
                 </Row>
