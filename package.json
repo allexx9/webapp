@@ -111,13 +111,6 @@
     "redux-immutable-state-invariant": "^2.1.0",
     "ws": "^6.1.0"
   },
-  "jest": {
-    "collectCoverageFrom": [
-      "**/*.{js,jsx}",
-      "!**/node_modules/**",
-      "!**/vendor/**"
-    ]
-  },
   "browserslist": [
     ">0.2%",
     "not dead",

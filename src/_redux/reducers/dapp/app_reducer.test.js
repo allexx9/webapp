@@ -25,7 +25,7 @@ describe('app reducer', () => {
     const newAppState = {
       isConnected: true,
       isSyncing: false,
-      syncStatus: {},
+      syncStatus: { test: 'test' },
       error: { test: 'test' },
       appLoading: true,
       retryTimeInterval: 0,
