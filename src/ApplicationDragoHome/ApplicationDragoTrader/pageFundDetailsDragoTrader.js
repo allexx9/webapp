@@ -337,20 +337,6 @@ class PageFundDetailsDragoTrader extends Component {
                       <SectionHeader titleText="SUMMARY" />
                     </Col>
                   </Row>
-                  {/* <Row>
-                    <Col xs={12} md={6}>
-                      {' '}
-                      {typeof this.props.transactionsDrago.selectedDrago
-                        .assetsCharts.USDT !== 'undefined' && (
-                        <AssetChartChartist
-                          data={
-                            this.props.transactionsDrago.selectedDrago
-                              .assetsCharts.USDT
-                          }
-                        />
-                      )}
-                    </Col>
-                  </Row> */}
                   <Row>
                     <Col xs={12} md={6}>
                       <SectionTitle titleText="DETAILS" />
@@ -459,12 +445,15 @@ class PageFundDetailsDragoTrader extends Component {
                                 />
                               </Col>
                               <Col xs={6}>
-                                <AssetsPieChartWrapper
-                                  key={'pieChart-' + dragoDetails.dragoId}
-                                  poolAssetsList={dragoAssetsList}
-                                  assetsPrices={assetsPrices.current}
-                                  poolETHBalance={dragoDetails.dragoETHBalance}
-                                />
+                                <div key={'pieChart-' + dragoDetails.dragoId}>
+                                  <AssetsPieChartWrapper
+                                    poolAssetsList={dragoAssetsList}
+                                    assetsPrices={assetsPrices.current}
+                                    poolETHBalance={
+                                      dragoDetails.dragoETHBalance
+                                    }
+                                  />
+                                </div>
                               </Col>
                             </Row>
                           </Col>

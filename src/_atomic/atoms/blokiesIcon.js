@@ -157,6 +157,7 @@ export default class BlokiesIcon extends Component {
   }
 
   render() {
+    console.log('blokie')
     const style = {
       borderRadius: '8px',
       boxShadow:
