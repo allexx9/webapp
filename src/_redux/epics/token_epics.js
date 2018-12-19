@@ -72,7 +72,7 @@ export const setTokenAllowanceEpic = action$ => {
 // PRICES ON THE FUNDS PAGE ARE FETCHED FROM ETHFINEX ONLY
 
 const candlesGroupWebsocket$ = (relay, networkId, symbols) => {
-  const timeframe = '24h'
+  const timeframe = '15m'
   let subscribedSymbols = []
   const exchange = ExchangeConnectorWrapper.getInstance().getExchange(
     relay.name,
