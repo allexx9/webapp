@@ -4,10 +4,6 @@ export * from './actions_const'
 
 // Redux actions
 
-// App
-export const UPDATE_APP_STATUS = 'UPDATE_APP_STATUS'
-export const UPDATE_APP_CONFIG = 'UPDATE_APP_CONFIG'
-
 // User
 export const IS_MANAGER = 'IS_MANAGER'
 

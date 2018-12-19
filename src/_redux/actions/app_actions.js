@@ -5,21 +5,14 @@ import * as TYPE_ from './const'
 const app = {
   updateAppStatus: status => {
     return {
-      type: TYPE_.UPDATE_APP_STATUS,
+      type: TYPE_.APP_STATUS_UPDATE,
       payload: status
     }
   },
   updateAppConfig: config => {
     return {
-      type: TYPE_.UPDATE_APP_CONFIG,
+      type: TYPE_.APP_CONFIG_UPDATE,
       payload: config
-    }
-  },
-
-  queueErrorNotification: error => {
-    return {
-      type: TYPE_.QUEUE_ERROR_NOTIFICATION,
-      payload: error
     }
   }
 }

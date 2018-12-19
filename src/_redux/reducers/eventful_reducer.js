@@ -28,36 +28,8 @@ export function eventfulDragoReducer(
       }
 
     case TYPE_.DRAGO_SELECTED_DETAILS_UPDATE: {
-      // console.log(action)
-      // const newState = u.freeze(state)
       const newDetails = u(action.payload, state.selectedDrago)
-      // console.log(newDetails)
       return { ...state, selectedDrago: { ...newDetails } }
-      // return {
-      //   ...state,
-      //   selectedDrago: {
-      //     ...state.selectedDrago,
-      //     values: {
-      //       ...state.selectedDrago.values,
-      //       ...(action.payload.values || {})
-      //     },
-      //     details: {
-      //       ...state.selectedDrago.details,
-      //       ...(action.payload.details || {})
-      //     },
-      //     transactions: [
-      //       ...(action.payload.transactions ||
-      //         [].concat(state.selectedDrago.transactions))
-      //     ],
-      //     assets: [
-      //       ...(action.payload.assets || [].concat(state.selectedDrago.assets))
-      //     ],
-      //     assetsCharts: {
-      //       ...state.selectedDrago.assetsCharts,
-      //       ...(action.payload.assetsCharts || {})
-      //     }
-      //   }
-      // }
     }
 
     case TYPE_.DRAGO_SELECTED_DETAILS_RESET:
