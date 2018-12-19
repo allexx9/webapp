@@ -1,19 +1,17 @@
-require('jest-extended')
-
 import { GANACHE_NETWORK_ID, GANACHE_PORT, NETWORKS } from './test/constants'
 import { seedPools } from './test/seedPools'
 import bootstrap from './test/deploy/bootstrap'
 import c from 'chalk'
-// import del from 'del'
-// import fs from 'fs-extra'
 import ganache from 'ganache-cli'
 import logger from './test/deploy/logger'
 import pkg from '@rigoblock/contracts/package.json'
 import web3 from './test/web3'
 
+require('jest-extended')
+
 let server
-const snapDir = __dirname + '/test/ganache/bootstrap/'
-const dbDir = __dirname + '/test/ganache/db/'
+// const snapDir = __dirname + '/test/ganache/bootstrap/'
+// const dbDir = __dirname + '/test/ganache/db/'
 process.on('warning', e => {
   console.warn(e.stack)
   // process.exit(1)
