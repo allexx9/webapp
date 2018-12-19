@@ -326,7 +326,7 @@ class WalletSetupStepper extends Component {
                 )}
 
                 <a
-                  href="https://help.rigoblock.com"
+                  href="https://community.rigoblock.com/t/how-to-unlock-your-metamask-wallet/53"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
