@@ -29,6 +29,7 @@ import TokenPrice from '../_atomic/atoms/tokenPrice'
 import TokenTradeSelector from '../_atomic/molecules/tokenTradeSelector'
 import Web3Wrapper from '../_utils/web3Wrapper/src'
 import styles from './applicationExchangeHome.module.css'
+import u from 'updeep'
 import utils from '../_utils/utils'
 
 // import { getData } from "../_utils/data"
@@ -59,16 +60,34 @@ class ApplicationExchangeHome extends PureComponent {
   }
 
   updateUi = (ui, boxName) => {
-    let newUi = Object.assign({}, ui)
+    // let newUi = Object.assign({}, ui)
     return {
       enableBox: () => {
-        newUi.panels[boxName].disabled = false
-        newUi.panels[boxName].disabledMsg = ''
+        const uiUpdate = {
+          panels: {
+            [boxName]: {
+              disabled: false,
+              disabledMsg: ''
+            }
+          }
+        }
+        const newUi = u(uiUpdate, ui)
+        // newUi.panels[boxName].disabled = false
+        // newUi.panels[boxName].disabledMsg = ''
         return newUi
       },
       disableBox: (options = { disabledMsg: '' }) => {
-        newUi.panels[boxName].disabled = true
-        newUi.panels[boxName].disabledMsg = options.disabledMsg
+        const uiUpdate = {
+          panels: {
+            [boxName]: {
+              disabled: true,
+              disabledMsg: options.disabledMsg
+            }
+          }
+        }
+        const newUi = u(uiUpdate, ui)
+        // newUi.panels[boxName].disabled = true
+        // newUi.panels[boxName].disabledMsg = options.disabledMsg
         return newUi
       }
     }

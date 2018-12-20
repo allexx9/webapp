@@ -11,7 +11,7 @@ export const ordersReducer = handleActions(
         selectedOrder: { ...state.selectedOrder, ...action.payload }
       }
     },
-    [ACTION_.cancelOrder]: (state, action) => {
+    [ACTION_.cancelOrder]: state => {
       return {
         ...state,
         selectedOrder: { ...initialState.exchange.selectedOrder }

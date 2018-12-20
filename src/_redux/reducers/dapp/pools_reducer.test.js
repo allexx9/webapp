@@ -1,6 +1,6 @@
 import * as ACTION_ from '../../actions/dapp'
 import { poolsList } from '../initialState/poolsList_state'
-import { poolsListReducer } from './pools_reducers'
+import { poolsListReducer } from './pools_reducer'
 import deepFreeze from 'deep-freeze'
 
 let prevLog

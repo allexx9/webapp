@@ -1,2 +1,2 @@
-export * from './order_reducers'
-export * from './ui_reducers'
+export * from './order_reducer'
+export * from './ui_reducer'

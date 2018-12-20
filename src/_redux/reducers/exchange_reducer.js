@@ -234,8 +234,4 @@ function exchangeReducer(state = initialState.exchange, action) {
   }
 }
 
-// export default {
-//   exchange
-// }
-
 export default exchangeReducer
