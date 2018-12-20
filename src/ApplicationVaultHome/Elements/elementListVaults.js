@@ -12,6 +12,7 @@ import { toUnitAmount } from '../../_utils/format'
 import BigNumber from 'bignumber.js'
 import BlokiesIcon from '../../_atomic/atoms/blokiesIcon'
 import FlatButton from 'material-ui/FlatButton'
+import PoolCode from '../../_atomic/atoms/poolCode'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import styles from './elementListBalances.module.css'
@@ -199,13 +200,14 @@ class ElementListFunds extends PureComponent {
   }
 
   renderISIN = rowData => {
-    return utils.dragoISIN(rowData.symbol, rowData.vaultId)
+    const id = rowData.vaultId || rowData.id
+    return <PoolCode symbol={rowData.symbol} id={id} />
   }
 
   actionButton(cellData, rowData) {
     const { match } = this.props
-    const url =
-      rowData.vaultId + '/' + utils.dragoISIN(cellData, rowData.vaultId)
+    const id = rowData.vaultId || rowData.id
+    const url = id + '/' + utils.dragoISIN(cellData, id)
     let poolType = match.path.includes('drago') ? 'drago' : 'vault'
     return (
       <div className={styles.actionButtonContainer}>
@@ -472,8 +474,8 @@ class ElementListFunds extends PureComponent {
     const { list } = this.props
     return list
       .sortBy(item => item.timestamp)
-      .update(
-        list => (sortDirection === SortDirection.DESC ? list : list.reverse())
+      .update(list =>
+        sortDirection === SortDirection.DESC ? list : list.reverse()
       )
   }
 

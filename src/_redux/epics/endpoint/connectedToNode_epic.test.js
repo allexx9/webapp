@@ -1,6 +1,6 @@
 // https://github.com/redux-observable/redux-observable/issues/477#issuecomment-393516995
 
-import { Observable } from 'rxjs/Observable'
+import { Observable } from 'rxjs'
 import { isConnectedToNode$, updateAccounts } from './endpoint_epics'
 
 import {

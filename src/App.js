@@ -1,5 +1,5 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
-import 'babel-polyfill'
+// import 'babel-polyfill'
 import 'react-virtualized/styles.css'
 import * as Sentry from '@sentry/browser'
 import { Actions } from './_redux/actions'
@@ -22,6 +22,7 @@ import Whoops404 from './Application/whoops404'
 import createHashHistory from 'history/createHashHistory'
 import styles from './App.module.css'
 import utils from './_utils/utils'
+
 
 const ApplicationHomePage = lazy(() =>
   import('./Application/applicationHomePage')
@@ -134,6 +135,12 @@ export class App extends Component {
       this.props.dispatch(Actions.endpoint.checkMetaMaskIsUnlocked())
     }
     this.props.dispatch(Actions.endpoint.monitorAccountsStart())
+    let options = {
+      topics: [null, null, null, null],
+      fromBlock: 0,
+      toBlock: 'latest'
+    }
+    this.props.dispatch(Actions.pools.getPoolsList(options))
     this.setState({ run: true })
   }
 

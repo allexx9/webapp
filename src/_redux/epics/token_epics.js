@@ -8,8 +8,8 @@ import {
   TOKENS_TICKERS_UPDATE,
   TOKEN_PRICE_TICKERS_FETCH_START,
   TOKEN_PRICE_TICKERS_FETCH_STOP,
-  UPDATE_SELECTED_DRAGO_DETAILS_CHART_ASSETS_MARKET_ADD_DATAPOINT,
-  UPDATE_SELECTED_DRAGO_DETAILS_CHART_ASSETS_MARKET_DATA_INIT,
+  SELECTED_DRAGO_DETAILS_UPDATE_CHART_ASSETS_MARKET_ADD_DATAPOINT,
+  SELECTED_DRAGO_DETAILS_UPDATE_CHART_ASSETS_MARKET_DATA_INIT,
   UPDATE_TRADE_TOKENS_PAIR
 } from '../actions/const'
 import { Observable, from, merge, of, timer } from 'rxjs'
@@ -156,7 +156,7 @@ const updateGroupCandles = ticker => {
     candles.push(oneDayAgoPrice)
     // console.log(`snapshot 24h ${symbol}:`, candles)
     return {
-      type: UPDATE_SELECTED_DRAGO_DETAILS_CHART_ASSETS_MARKET_DATA_INIT,
+      type: SELECTED_DRAGO_DETAILS_UPDATE_CHART_ASSETS_MARKET_DATA_INIT,
       payload: {
         [symbol]: {
           data: candles.reverse()
@@ -180,7 +180,7 @@ const updateGroupCandles = ticker => {
       epoch: ticker[1][0]
     }
     return {
-      type: UPDATE_SELECTED_DRAGO_DETAILS_CHART_ASSETS_MARKET_ADD_DATAPOINT,
+      type: SELECTED_DRAGO_DETAILS_UPDATE_CHART_ASSETS_MARKET_ADD_DATAPOINT,
       payload: {
         [symbol]: {
           data: candles

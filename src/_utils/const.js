@@ -339,19 +339,20 @@ export const EXCHANGES = {
 }
 
 export const defaultDragoDetails = {
-  address: '0x0',
-  name: 'Null',
-  symbol: 'Null',
-  dragoId: 'Null',
-  addressOwner: '0x0',
-  addressGroup: '0x0',
-  sellPrice: '0.0000',
-  buyPrice: '0.0000',
-  fee: '0.0000',
-  created: '0000-00-00',
-  totalSupply: '0.0000',
-  dragoETHBalance: '0.0000',
-  dragoWETHBalance: '0.0000'
+  address: null,
+  name: null,
+  symbol: null,
+  addressOwner: null,
+  addressGroup: null,
+  buyPrice: null,
+  sellPrice: null,
+  created: '-',
+  totalSupply: null,
+  totalSupplyBaseUnits: null,
+  dragoETHBalance: null,
+  dragoETHBalanceWei: null,
+  dragoWETHBalance: null,
+  balanceDRG: null
 }
 
 export const poolStyle = {

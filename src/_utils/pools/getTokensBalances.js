@@ -11,8 +11,6 @@ export const getTokensBalances = async (dragoAddress, allowedTokens, web3) => {
     throw new Error(err)
   }
 
-  // console.log(allowedTokens)
-
   let tokenAddresses = []
   let tokenWrappersAddresses = []
 
@@ -28,8 +26,6 @@ export const getTokensBalances = async (dragoAddress, allowedTokens, web3) => {
       }
     }
   })
-  // console.log(tokenAddresses)
-  // console.log(tokenWrappersAddresses)
 
   // Getting token balances
   let tokenBalances = poolApi.contract.drago.getMultiBalancesAndAddressesFromAddresses(
@@ -49,13 +45,9 @@ export const getTokensBalances = async (dragoAddress, allowedTokens, web3) => {
   tokenBalances.tokenAddresses = tokenBalances.tokenAddresses.map(address =>
     address.toLowerCase()
   )
-  // console.log(tokenBalances)
-
   tokenWrappersBalances.tokenAddresses = tokenWrappersBalances.tokenAddresses.map(
     address => address.toLowerCase()
   )
-  // console.log(tokenWrappersBalances)
-
   for (let token in allowedTokens) {
     let tokenAddress = allowedTokens[token].address.toLowerCase()
     if (tokenAddress !== '0x0') {
@@ -72,7 +64,7 @@ export const getTokensBalances = async (dragoAddress, allowedTokens, web3) => {
       balanceIndex = tokenBalances.tokenAddresses.indexOf(tokenAddress)
       if (balanceIndex !== -1) {
         balances.token = new BigNumber(tokenBalances.balances[balanceIndex])
-        // console.log(token, tokenBalances.balances[balanceIndex])
+        // console.log(token, balances.token)
         total = total.plus(balances.token)
       }
 
@@ -93,13 +85,12 @@ export const getTokensBalances = async (dragoAddress, allowedTokens, web3) => {
         }
       }
       if (!total.eq(0)) {
-        balances.total = total
-        dragoAssets[token] = allowedTokens[token]
-        dragoAssets[token].balances = balances
+        balances.total = new BigNumber(total)
+        dragoAssets[token] = Object.assign({}, allowedTokens[token])
+        dragoAssets[token].balances = Object.assign({}, balances)
       }
     }
   }
 
-  // console.log(dragoAssets)
   return dragoAssets
 }

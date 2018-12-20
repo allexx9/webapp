@@ -4,7 +4,7 @@
 import * as TYPE_ from '../../actions/const'
 // import { Actions } from '../../actions'
 import { DEBUGGING } from '../../../_utils/const'
-import { Observable, merge, of, timer,   concat, } from 'rxjs'
+import { Observable, concat, merge, of, timer } from 'rxjs'
 import {
   finalize,
   flatMap,
@@ -50,7 +50,7 @@ export const monitorEventfulEpic = (action$, state$) => {
           //   console.log('Account monitoring - > DRAGO details fetch.')
           //   observablesArray.push(
           //     of(
-          //       Actions.drago.getPoolDetails(
+          //       Actions.pools.getPoolsSingleDetails(
           //         currentState.transactionsDrago.selectedDrago.details.dragoId,
           //
           //         {
@@ -65,7 +65,7 @@ export const monitorEventfulEpic = (action$, state$) => {
           //   console.log('Account monitoring - > VAULT details fetch.')
           //   observablesArray.push(
           //     of(
-          //       Actions.drago.getPoolDetails(
+          //       Actions.pools.getPoolsSingleDetails(
           //         currentState.transactionsVault.selectedVault.details.vaultId,
 
           //         {

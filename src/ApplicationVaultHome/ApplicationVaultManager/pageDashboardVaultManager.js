@@ -11,7 +11,6 @@ import BigNumber from 'bignumber.js'
 import CopyContent from 'material-ui/svg-icons/content/content-copy'
 import ElementAccountBox from '../../Elements/elementAccountBox'
 import ElementListSupply from '../Elements/elementListSupply'
-import ElementListTransactions from '../Elements/elementListTransactions'
 import ElementListWrapper from '../../Elements/elementListWrapper'
 import ElementVaultCreateAction from '../Elements/elementVaultCreateAction'
 import Paper from 'material-ui/Paper'
@@ -24,6 +23,7 @@ import Sticky from 'react-stickynode'
 import UserDashboardHeader from '../../_atomic/atoms/userDashboardHeader'
 import scrollToElement from 'scroll-to-element'
 import styles from './pageDashboardVaultManager.module.css'
+import TablePoolTransactions from '../../_atomic/molecules/tablePoolTransactions'
 import utils from '../../_utils/utils'
 
 function mapStateToProps(state) {
@@ -291,7 +291,7 @@ class PageDashboardVaultManager extends Component {
                         number: 1
                       }}
                     >
-                      <ElementListTransactions />
+                      <TablePoolTransactions />
                     </ElementListWrapper>
                   </Col>
                 </Row>

@@ -8,7 +8,7 @@ class AssetsPieChartWrapper extends PureComponent {
   static propTypes = {
     poolAssetsList: PropTypes.array.isRequired,
     assetsPrices: PropTypes.object.isRequired,
-    poolETHBalance: PropTypes.string.isRequired
+    poolETHBalance: PropTypes.string
   }
 
   static defaultProps = {
@@ -23,7 +23,7 @@ class AssetsPieChartWrapper extends PureComponent {
 
   render() {
     const { poolAssetsList, assetsPrices, poolETHBalance } = this.props
-    if (typeof poolETHBalance === 'undefined') {
+    if (!poolETHBalance) {
       return (
         <div
           style={{

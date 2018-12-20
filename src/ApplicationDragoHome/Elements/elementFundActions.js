@@ -515,7 +515,7 @@ class ElementFundActions extends React.Component {
           .catch(e => console.warn(e))
         console.log('Account monitoring - > DRAGO details fetch.')
         this.props.dispatch(
-          Actions.drago.getPoolDetails(dragoDetails.dragoId, {
+          Actions.pools.getPoolsSingleDetails(dragoDetails.dragoId, {
             poolType: 'drago',
             wallet: METAMASK
           })
@@ -629,7 +629,7 @@ class ElementFundActions extends React.Component {
           .catch(e => console.warn(e))
         console.log('Account monitoring - > DRAGO details fetch.')
         this.props.dispatch(
-          Actions.drago.getPoolDetails(dragoDetails.dragoId, {
+          Actions.pools.getPoolsSingleDetails(dragoDetails.dragoId, {
             poolType: 'drago',
             wallet: METAMASK
           })

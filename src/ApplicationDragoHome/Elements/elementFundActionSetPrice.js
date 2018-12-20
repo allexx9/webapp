@@ -346,7 +346,7 @@ class ElementFundActionSetPrice extends Component {
       .then(receipt => {
         console.log(receipt)
         this.props.dispatch(
-          Actions.drago.getPoolDetails(dragoDetails.dragoId, {
+          Actions.pools.getPoolsSingleDetails(dragoDetails.dragoId, {
             poolType: 'drago',
             wallet: METAMASK
           })

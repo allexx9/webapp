@@ -1,6 +1,5 @@
 import { errors } from 'web3-core-helpers'
 import ReconnectingWebSocket from 'reconnecting-websocket/dist/reconnecting-websocket-cjs'
-import WS from 'ws'
 
 let Ws
 let _btoa = null
@@ -29,7 +28,6 @@ if (typeof window !== 'undefined' && typeof window.WebSocket !== 'undefined') {
   }
 }
 // Default connection ws://localhost:8546
-console.log(Ws)
 let WebsocketProvider = function WebsocketProvider(url, options) {
   let _this = this
   this.responseCallbacks = {}

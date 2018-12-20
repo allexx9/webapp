@@ -15,7 +15,6 @@ import { rootEpic } from './_redux/epics/root_epics'
 import App from './App'
 import React from 'react'
 import ReactDOM from 'react-dom'
-// import logger from 'redux-logger'
 // import registerServiceWorker, { unregister } from './registerServiceWorker'
 // import { composeWithDevTools } from 'redux-devtools-extension';
 import { GIT_HASH } from './_utils/const'
@@ -24,9 +23,11 @@ import { createFilter } from 'redux-persist-transform-filter'
 import {
   notificationsMiddleWare,
   poolCalculateValueMiddleWare,
+  poolsCachingMiddleWare,
   relayActionsMiddleWare
 } from './_redux/middlewares'
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2'
+// import reduxImmutableStateInvariant from 'redux-immutable-state-invariant'
 import storage from 'redux-persist/lib/storage'
 
 import './index.module.css'
@@ -39,11 +40,12 @@ const middlewares = [
   epicMiddleware,
   relayActionsMiddleWare,
   notificationsMiddleWare,
-  poolCalculateValueMiddleWare
+  poolCalculateValueMiddleWare,
+  poolsCachingMiddleWare
 ]
 
 if (process.env.NODE_ENV === `development`) {
-  // middlewares.push(logger)
+  middlewares.push(require('redux-immutable-state-invariant').default())
 }
 
 // Redux Persist
@@ -62,6 +64,7 @@ const saveSubsetFilterTransactionsDrago = createFilter('transactionsDrago', [
   'holder',
   'manager'
 ])
+
 //   const saveSubsetBlacklistFilter = createBlacklistFilter(
 //     'endpoint',
 //     ['accounts']
@@ -71,7 +74,7 @@ const persistConfig = {
   key: 'rigoblock',
   storage,
   stateReconciler: autoMergeLevel2,
-  whitelist: ['endpoint', 'app', 'user', 'transactionsDrago'],
+  whitelist: ['endpoint', 'app', 'user', 'transactionsDrago', 'poolsList'],
   transforms: [
     saveSubsetFilterEndpoint,
     saveSubsetFilterApp,
@@ -110,10 +113,10 @@ if (process.env.NODE_ENV !== 'development') {
 }
 
 if (process.env.NODE_ENV === `development`) {
-  Sentry.init({
-    dsn: 'https://b8304e9d588a477db619fbb026f31549@sentry.io/1329485',
-    environment: process.env.NODE_ENV
-  })
+  // Sentry.init({
+  //   dsn: 'https://b8304e9d588a477db619fbb026f31549@sentry.io/1329485',
+  //   environment: process.env.NODE_ENV
+  // })
   store = Reactotron.createStore(persistedReducer, enhancer)
 } else {
   store = createStore(persistedReducer, enhancer)

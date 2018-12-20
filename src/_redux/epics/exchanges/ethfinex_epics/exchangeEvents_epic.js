@@ -206,12 +206,12 @@ const processTradesHistory = (trades, state$) => {
         new BigNumber(trade.returnValues.filledMakerTokenAmount),
         makerDecimals
       )
-      console.log(makerAmount.toFixed(5))
+      // console.log(makerAmount.toFixed(5))
       takerAmount = toUnitAmount(
         new BigNumber(trade.returnValues.filledTakerTokenAmount),
         takerDecimals
       )
-      console.log(takerAmount.toFixed(5))
+      // console.log(takerAmount.toFixed(5))
       transaction.price = takerAmount.div(makerAmount).toFixed(5)
       transaction.amount = makerAmount.toFixed(5)
 
@@ -228,12 +228,12 @@ const processTradesHistory = (trades, state$) => {
         new BigNumber(trade.returnValues.filledTakerTokenAmount),
         takerDecimals
       )
-      console.log(makerAmount.toFixed(5))
+      // console.log(makerAmount.toFixed(5))
       takerAmount = toUnitAmount(
         new BigNumber(trade.returnValues.filledMakerTokenAmount),
         takerDecimals
       )
-      console.log(takerAmount.toFixed(5), takerDecimals)
+      // console.log(takerAmount.toFixed(5), takerDecimals)
       transaction.amount = toUnitAmount(
         new BigNumber(trade.returnValues.filledTakerTokenAmount),
         makerDecimals
@@ -248,6 +248,7 @@ const processTradesHistory = (trades, state$) => {
       transaction.quoteTokenSymbol = tokensSymbols.get(makerTokenAddress)
       return transaction
     }
+    return null
   })
   return tradeHistory
 }

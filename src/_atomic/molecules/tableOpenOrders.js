@@ -56,14 +56,13 @@ class TableOpenOrders extends Component {
                   {new Date(order.order.expirationUnixTimestampSec*1000).toLocaleString()}
                 </Col> */}
               <Col xs={6} className={styles.tableHeaderCellAction}>
-                <a
+                <button
                   id={key}
-                  href={null}
                   onClick={event => this.onCancelOrder(event, key)}
                   className={styles.cancelLink}
                 >
                   Cancel
-                </a>
+                </button>
               </Col>
             </Row>
           </Col>

@@ -11,7 +11,6 @@ import BigNumber from 'bignumber.js'
 import CopyContent from 'material-ui/svg-icons/content/content-copy'
 import ElementAccountBox from '../../Elements/elementAccountBox'
 import ElementListBalances from '../Elements/elementListBalances'
-import ElementListTransactions from '../Elements/elementListTransactions'
 import ElementListWrapper from '../../Elements/elementListWrapper'
 import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types'
@@ -20,6 +19,7 @@ import Search from 'material-ui/svg-icons/action/search'
 import SectionHeader from '../../_atomic/atoms/sectionHeader'
 import Snackbar from 'material-ui/Snackbar'
 import Sticky from 'react-stickynode'
+import TablePoolTransactions from '../../_atomic/molecules/tablePoolTransactions'
 import UserDashboardHeader from '../../_atomic/atoms/userDashboardHeader'
 import scrollToElement from 'scroll-to-element'
 import utils from '../../_utils/utils'
@@ -52,7 +52,6 @@ class PageDashboardVaultTrader extends Component {
   componentDidMount = () => {}
 
   UNSAFE_componentWillReceiveProps(nextProps) {
-
     const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
     const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
     if (!currentBalance.eq(nextBalance) && !currentBalance.eq(0)) {
@@ -285,7 +284,7 @@ class PageDashboardVaultTrader extends Component {
                         number: 1
                       }}
                     >
-                      <ElementListTransactions />
+                      <TablePoolTransactions />
                     </ElementListWrapper>
                   </Col>
                 </Row>

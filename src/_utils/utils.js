@@ -4,8 +4,8 @@ import { DRG_ISIN } from './const'
 import { ERCdEX, Ethfinex } from './const'
 import { MOCK_ERC20_TOKENS } from './tokens'
 import { dateFromTimeStampHuman } from './misc'
-import { getBlockChunks } from './blockChain'
 import {
+  filterPools,
   getDragoDetails,
   getDragoLiquidityAndTokenBalances,
   getTokenWrapperLockTime,
@@ -15,6 +15,7 @@ import {
   getTransactionsVaultOptV2,
   getVaultDetails
 } from './pools'
+import { getBlockChunks } from './blockChain'
 import { toBaseUnitAmount, toUnitAmount } from './format'
 import { updateAccounts } from './accounts'
 import BigNumber from 'bignumber.js'
@@ -51,6 +52,7 @@ class NotificationAlert extends Component {
 
 class utilities {
   blockChunks = getBlockChunks
+  filterPools = filterPools
 
   sign = (toSign, account) => {
     // metamask will take care of the 3rd parameter, "password"
@@ -222,36 +224,40 @@ class utilities {
     assetsPrices,
     dragoETHBalance
   ) => {
-    let labels = Array(0)
-    let data = Array(0)
-    dragoAssetsList.forEach(asset => {
-      if (typeof assetsPrices[asset.symbol] !== 'undefined') {
-        if (typeof assetsPrices[asset.symbol].priceEth !== 'undefined') {
-          const value = new BigNumber(
-            assetsPrices[asset.symbol].priceEth
-          ).times(
-            toUnitAmount(
-              new BigNumber(asset.balances.total),
-              asset.decimals
-            ).toFixed(5)
-          )
-          labels.push(asset.symbol)
-          data.push(value.toFixed(5))
+    try {
+      let labels = Array(0)
+      let data = Array(0)
+      dragoAssetsList.forEach(asset => {
+        if (typeof assetsPrices[asset.symbol] !== 'undefined') {
+          if (typeof assetsPrices[asset.symbol].priceEth !== 'undefined') {
+            const value = new BigNumber(
+              assetsPrices[asset.symbol].priceEth
+            ).times(
+              toUnitAmount(
+                new BigNumber(asset.balances.total),
+                asset.decimals
+              ).toFixed(5)
+            )
+            labels.push(asset.symbol)
+            data.push(value.toFixed(5))
+          }
         }
+      })
+      data.push(new BigNumber(dragoETHBalance).toFixed(5))
+      labels.push('ETH')
+      return {
+        datasets: [
+          {
+            data,
+            backgroundColor: palette('tol', data.length).map(function(hex) {
+              return '#' + hex
+            })
+          }
+        ],
+        labels
       }
-    })
-    data.push(new BigNumber(dragoETHBalance).toFixed(5))
-    labels.push('ETH')
-    return {
-      datasets: [
-        {
-          data,
-          backgroundColor: palette('tol', data.length).map(function(hex) {
-            return '#' + hex
-          })
-        }
-      ],
-      labels
+    } catch (err) {
+      console.warn(err)
     }
   }
 

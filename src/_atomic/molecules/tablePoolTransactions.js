@@ -1,3 +1,4 @@
+import * as Colors from 'material-ui/styles/colors'
 import {
   AutoSizer,
   Column,
@@ -6,21 +7,16 @@ import {
   Table
 } from 'react-virtualized'
 import { Col, Row } from 'react-flexbox-grid'
-import { Link, withRouter } from 'react-router-dom'
-import FlatButton from 'material-ui/FlatButton'
+import { withRouter } from 'react-router-dom'
+import BigNumber from 'bignumber.js'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
-
+import styles from './tablePoolTransactions.module.css'
 import utils from '../../_utils/utils'
-
-import styles from './elementListTransactions.module.css'
-
-import * as Colors from 'material-ui/styles/colors'
-import BigNumber from 'bignumber.js'
 
 // const list = Immutable.List(generateRandomList());
 
-class ElementListTransactions extends PureComponent {
+class TablePoolTransactions extends PureComponent {
   static propTypes = {
     list: PropTypes.array.isRequired,
     location: PropTypes.object.isRequired,
@@ -113,15 +109,6 @@ class ElementListTransactions extends PureComponent {
                   sortDirection={sortDirection}
                   width={width}
                 >
-                  {/* <Column
-                    width={100}
-                    disableSort
-                    label="Blocknumber"
-                    cellDataGetter={({rowData}) => rowData.blockNumber.c[0]}
-                    dataKey="blocknumber"
-                    className={styles.exampleColumn}
-                    cellRenderer={({cellData}) => cellData}
-                  />  */}
                   <Column
                     width={200}
                     disableSort
@@ -142,17 +129,6 @@ class ElementListTransactions extends PureComponent {
                     cellRenderer={({ cellData }) => this.renderAction(cellData)}
                     flexShrink={1}
                   />
-                  {/* <Column
-                    width={100}
-                    disableSort
-                    label="SYMBOL"
-                    cellDataGetter={({rowData}) => rowData}
-                    dataKey="symbol"
-                    cellRenderer={({cellData}) => this.renderSymbol(cellData)}
-                    className={styles.exampleColumn}
-                    flexShrink={1}
-                  /> */}
-                  {/* formatEth(price) }<small> ETH</small> */}
                   <Column
                     width={100}
                     disableSort
@@ -187,17 +163,6 @@ class ElementListTransactions extends PureComponent {
                     }
                     flexGrow={1}
                   />
-                  {/* <Column
-                    width={210}
-                    disableSort
-                    label="Actions"
-                    cellDataGetter={({rowData}) => rowData.transactionHash}
-                    dataKey="actions"
-                    className={styles.exampleColumn}
-                    cellRenderer={({cellData}) => cellData}
-                    cellRenderer={({cellData, rowData}) => this.actionButton(cellData, rowData)}
-                    flexShrink={1}
-                  /> */}
                 </Table>
               )}
             </AutoSizer>
@@ -205,25 +170,6 @@ class ElementListTransactions extends PureComponent {
         </Col>
       </Row>
     )
-  }
-
-  actionButton(cellData, rowData) {
-    const { match } = this.props
-    const url =
-      rowData.params.dragoId.value.c +
-      '/' +
-      utils.dragoISIN(cellData, rowData.params.dragoId.value.c)
-    return (
-      <FlatButton
-        label="View"
-        primary={true}
-        containerElement={<Link to={match.path + '/' + url} />}
-      />
-    )
-  }
-
-  renderSymbol(input) {
-    return <div>{input.symbol.toUpperCase()}</div>
   }
 
   renderEthValue(ethValue) {
@@ -251,11 +197,34 @@ class ElementListTransactions extends PureComponent {
         return (
           <span style={{ color: Colors.green300, fontWeight: 600 }}>BUY</span>
         )
+
       case 'SellDrago':
         return (
           <span style={{ color: Colors.red300, fontWeight: 600 }}>SELL</span>
         )
+
+      case 'BuyVault':
+        return (
+          <span style={{ color: Colors.green300, fontWeight: 600 }}>
+            DEPOSIT
+          </span>
+        )
+
+      case 'SellVault':
+        return (
+          <span style={{ color: Colors.red300, fontWeight: 600 }}>
+            WITHDRAW
+          </span>
+        )
+
       case 'DragoCreated':
+        return (
+          <span style={{ color: Colors.blue300, fontWeight: 600 }}>
+            CREATED
+          </span>
+        )
+
+      case 'VaultCreated':
         return (
           <span style={{ color: Colors.blue300, fontWeight: 600 }}>
             CREATED
@@ -359,4 +328,4 @@ class ElementListTransactions extends PureComponent {
   }
 }
 
-export default withRouter(ElementListTransactions)
+export default withRouter(TablePoolTransactions)

@@ -107,7 +107,7 @@ class AccountTopBarSummary extends Component {
                 <Row className={styles.accountTitleContainer}>
                   <Col xs={2}>
                     <div className={styles.actionsContainer}>
-                      <Link to={'/#/app/web/config'}>
+                      <Link to={'/app/web/config'}>
                         <Settings
                           color={'#757575'}
                           className={styles.actionIcons}

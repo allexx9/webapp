@@ -16,7 +16,6 @@ import CopyContent from 'material-ui/svg-icons/content/content-copy'
 import ElementFundActions from '../Elements/elementFundActions'
 import ElementFundNotFound from '../../Elements/elementFundNotFound'
 import ElementListAssets from '../Elements/elementListAssets'
-import ElementListTransactions from '../Elements/elementListTransactions'
 import ElementListWrapper from '../../Elements/elementListWrapper'
 import ElementPriceBox from '../Elements/elementPricesBox'
 import EstimatedPriceText from '../../_atomic/atoms/estimatedPriceText'
@@ -32,6 +31,7 @@ import SectionHeader from '../../_atomic/atoms/sectionHeader'
 import SectionTitle from '../../_atomic/atoms/sectionTitle'
 import Snackbar from 'material-ui/Snackbar'
 import Sticky from 'react-stickynode'
+import TablePoolTransactions from '../../_atomic/molecules/tablePoolTransactions'
 import scrollToElement from 'scroll-to-element'
 import styles from './pageFundDetailsDragoTrader.module.css'
 import utils from '../../_utils/utils'
@@ -73,19 +73,14 @@ class PageFundDetailsDragoTrader extends Component {
 
     // Getting Drago details and transactions
     this.props.dispatch(
-      Actions.drago.getPoolDetails(dragoId, { poolType: 'drago' })
+      Actions.pools.getPoolsSingleDetails(dragoId, { poolType: 'drago' })
     )
-
-    // Getting Drago assets
-    // this.props.dispatch(
-    //   Actions.drago.getTokenBalancesDrago(dragoDetails, api, relay)
-    // )
   }
 
   componentWillUnmount() {
     this.props.dispatch(Actions.tokens.priceTickersStop())
     this.props.dispatch(Actions.exchange.getPortfolioChartDataStop())
-    this.props.dispatch(Actions.drago.updateSelectedDrago({}, { reset: true }))
+    this.props.dispatch(Actions.drago.resetDragoSelectedDetails())
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -219,9 +214,9 @@ class PageFundDetailsDragoTrader extends Component {
 
     let totalAssetsValue = 0
     let tableLiquidity = [
-      ['Liquidity', 'Calculating...', [<small key="dragoLiqEth">ETH</small>]],
+      ['Liquidity', '-', [<small key="dragoLiqEth">ETH</small>]],
       ['Porfolio value', '-'],
-      ['Total', 'Calculating...', [<small key="dragoPortTotEth">ETH</small>]]
+      ['Total', '-', [<small key="dragoPortTotEth">ETH</small>]]
     ]
 
     // Show pool balance
@@ -342,20 +337,6 @@ class PageFundDetailsDragoTrader extends Component {
                       <SectionHeader titleText="SUMMARY" />
                     </Col>
                   </Row>
-                  {/* <Row>
-                    <Col xs={12} md={6}>
-                      {' '}
-                      {typeof this.props.transactionsDrago.selectedDrago
-                        .assetsCharts.USDT !== 'undefined' && (
-                        <AssetChartChartist
-                          data={
-                            this.props.transactionsDrago.selectedDrago
-                              .assetsCharts.USDT
-                          }
-                        />
-                      )}
-                    </Col>
-                  </Row> */}
                   <Row>
                     <Col xs={12} md={6}>
                       <SectionTitle titleText="DETAILS" />
@@ -464,11 +445,15 @@ class PageFundDetailsDragoTrader extends Component {
                                 />
                               </Col>
                               <Col xs={6}>
-                                <AssetsPieChartWrapper
-                                  poolAssetsList={dragoAssetsList}
-                                  assetsPrices={assetsPrices.current}
-                                  poolETHBalance={dragoDetails.dragoETHBalance}
-                                />
+                                <div key={'pieChart-' + dragoDetails.dragoId}>
+                                  <AssetsPieChartWrapper
+                                    poolAssetsList={dragoAssetsList}
+                                    assetsPrices={assetsPrices.current}
+                                    poolETHBalance={
+                                      dragoDetails.dragoETHBalance
+                                    }
+                                  />
+                                </div>
                               </Col>
                             </Row>
                           </Col>
@@ -479,6 +464,7 @@ class PageFundDetailsDragoTrader extends Component {
                         Assets in porfolio:
                       </div>
                       <ElementListWrapper
+                        key={'assetsList-wrapper-' + dragoDetails.dragoId}
                         list={dragoAssetsList}
                         renderCopyButton={this.renderCopyButton}
                         renderEtherscanButton={this.renderEtherscanButton}
@@ -492,7 +478,9 @@ class PageFundDetailsDragoTrader extends Component {
                           number: 1
                         }}
                       >
-                        <ElementListAssets />
+                        <ElementListAssets
+                          key={'assetsList-' + dragoDetails.dragoId}
+                        />
                       </ElementListWrapper>
                     </div>
                   </Col>
@@ -528,7 +516,7 @@ class PageFundDetailsDragoTrader extends Component {
                         number: 1
                       }}
                     >
-                      <ElementListTransactions />
+                      <TablePoolTransactions />
                     </ElementListWrapper>
                   </Col>
                 </Row>

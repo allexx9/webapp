@@ -22,6 +22,7 @@ import { fitWidth } from 'react-stockcharts/lib/helper'
 import { format } from 'd3-format'
 import PropTypes from 'prop-types'
 import React from 'react'
+import u from 'updeep'
 
 const mouseEdgeAppearance = {
   textFill: '#542605',
@@ -34,7 +35,7 @@ const mouseEdgeAppearance = {
 
 class CandleStickChartWithMACDIndicator extends React.Component {
   static propTypes = {
-    data: PropTypes.array.isRequired,
+    initialData: PropTypes.array.isRequired,
     width: PropTypes.number.isRequired,
     ratio: PropTypes.number.isRequired,
     type: PropTypes.oneOf(['svg', 'hybrid']).isRequired
@@ -45,7 +46,7 @@ class CandleStickChartWithMACDIndicator extends React.Component {
   }
 
   render() {
-    const { type, data: initialData, width, ratio } = this.props
+    const { type, initialData, width, ratio } = this.props
     const ema26 = ema()
       .id(0)
       .options({ windowSize: 26 })
@@ -84,8 +85,15 @@ class CandleStickChartWithMACDIndicator extends React.Component {
       })
       .accessor(d => d.smaVolume50)
 
+    let dataToProcess = u({}, initialData)
+
+    dataToProcess = dataToProcess.map(item => ({
+      ...item,
+      ...{ ema12, ema26, macd, smaVolume50 }
+    }))
+
     const calculatedData = smaVolume50(
-      macdCalculator(ema12(ema26(initialData)))
+      macdCalculator(ema12(ema26(dataToProcess)))
     )
     const xScaleProvider = discontinuousTimeScaleProvider.inputDateAccessor(
       d => d.date
@@ -173,12 +181,6 @@ class CandleStickChartWithMACDIndicator extends React.Component {
               }
             ]}
           />
-          {/* <MACDTooltip
-            origin={[-38, 15]}
-            yAccessor={d => d.macd}
-            options={macdCalculator.options()}
-            appearance={macdAppearance}
-          /> */}
         </Chart>
         <Chart
           id={2}
@@ -210,40 +212,6 @@ class CandleStickChartWithMACDIndicator extends React.Component {
             fill={smaVolume50.fill()}
           />
         </Chart>
-        {/* <Chart
-          id={3}
-          height={100}
-          yExtents={macdCalculator.accessor()}
-          origin={(w, h) => [0, h - 150]}
-          padding={{ top: 10, bottom: 10 }}
-        >
-          <XAxis axisAt="bottom" orient="bottom" ticks={5} />
-          <YAxis axisAt="right" orient="right" ticks={2} />
-
-          <MouseCoordinateX
-            at="bottom"
-            orient="bottom"
-            displayFormat={timeFormat('%Y-%m-%d')}
-            rectRadius={5}
-            {...mouseEdgeAppearance}
-          />
-          <MouseCoordinateY
-            at="right"
-            orient="right"
-            displayFormat={format('.2f')}
-            {...mouseEdgeAppearance}
-          />
-          <ErrorBoundary>
-            <MACDSeries yAccessor={d => d.macd} {...macdAppearance} />
-          </ErrorBoundary>
-
-          <MACDTooltip
-            origin={[-38, 15]}
-            yAccessor={d => d.macd}
-            options={macdCalculator.options()}
-            appearance={macdAppearance}
-          />
-        </Chart> */}
         <CrossHairCursor />
       </ChartCanvas>
     )

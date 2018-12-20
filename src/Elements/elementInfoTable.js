@@ -11,8 +11,8 @@ export default class InfoTable extends Component {
   }
 
   compactStyle = {
-    height: '20px',
-    padding: '8px'
+    height: '16px',
+    padding: '6px'
   }
 
   renderColumn = row => {

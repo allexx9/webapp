@@ -481,7 +481,7 @@ class ElementVaultActions extends React.Component {
       .then(receipt => {
         console.log(receipt)
         this.props.dispatch(
-          Actions.drago.getPoolDetails(vaultDetails.vaultId, {
+          Actions.pools.getPoolsSingleDetails(vaultDetails.vaultId, {
             poolType: 'vault',
             wallet: METAMASK
           })
@@ -581,7 +581,7 @@ class ElementVaultActions extends React.Component {
       .then(receipt => {
         console.log(receipt)
         this.props.dispatch(
-          Actions.drago.getPoolDetails(vaultDetails.vaultId, {
+          Actions.pools.getPoolsSingleDetails(vaultDetails.vaultId, {
             poolType: 'vault',
             wallet: METAMASK
           })

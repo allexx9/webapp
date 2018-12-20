@@ -15,7 +15,7 @@ export const getDragoDetails = async (
   // Initializing Drago API
   //
 
-  let web3 = getWeb3(options, networkInfo)
+  let web3 = getWeb3(networkInfo, options)
   let fromBlock = getFromBlock(networkInfo)
 
   const poolApi = new PoolApi(web3)
@@ -178,7 +178,9 @@ export const getDragoDetails = async (
     sellPrice,
     buyPrice,
     totalSupply: formatCoins(new BigNumber(dragoTotalSupply), 4),
+    totalSupplyBaseUnits: BigNumber(dragoTotalSupply),
     dragoETHBalance: formatEth(dragoETH, 4),
+    dragoETHBalanceWei: new BigNumber(dragoETH),
     dragoWETHBalance: formatEth(dragoWETH, 4),
     balanceDRG: formatCoins(balanceDRG, 4)
   }

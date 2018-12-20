@@ -14,6 +14,12 @@ const notifications = {
       type: TYPE_.QUEUE_WARNING_NOTIFICATION,
       payload: message
     }
+  },
+  queueErrorNotification: error => {
+    return {
+      type: TYPE_.QUEUE_ERROR_NOTIFICATION,
+      payload: error
+    }
   }
 }
 
