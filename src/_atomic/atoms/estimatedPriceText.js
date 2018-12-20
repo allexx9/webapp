@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
+import isFinite from 'lodash/isFinite'
 
 class EstimatedPriceText extends PureComponent {
   static propTypes = {
@@ -8,11 +9,10 @@ class EstimatedPriceText extends PureComponent {
 
   render() {
     const { price } = this.props
-    return price === '-' ? (
-      <div>-</div>
-    ) : (
+    let priceText = isFinite(Number(price)) ? price : '-'
+    return (
       <div>
-        {price} <small>ETH</small>
+        {priceText} <small>ETH</small>
       </div>
     )
   }

@@ -4,6 +4,7 @@
 import * as TYPE_ from '../actions/const'
 import { Actions } from '../actions'
 import BigNumber from 'bignumber.js'
+import isFinite from 'lodash/isFinite'
 import utils from '../../_utils/utils'
 
 export const poolCalculateValueMiddleWare = store => next => action => {
@@ -13,7 +14,7 @@ export const poolCalculateValueMiddleWare = store => next => action => {
     let { current } = state.exchange.prices
     const { details } = state.transactionsDrago.selectedDrago
     current = { ...current, ...action.payload }
-    const portfolioValue = utils.calculatePortfolioValue(assets, current)
+    let portfolioValue = utils.calculatePortfolioValue(assets, current)
     let estimatedPrice
     if (new BigNumber(details.totalSupply).eq(0)) {
       estimatedPrice = '0.0000'
@@ -23,6 +24,9 @@ export const poolCalculateValueMiddleWare = store => next => action => {
         .div(new BigNumber(details.totalSupply))
         .toFixed(4)
     }
+    portfolioValue = isFinite(Number(portfolioValue)) ? portfolioValue : '-'
+    estimatedPrice = isFinite(Number(estimatedPrice)) ? estimatedPrice : '-'
+    console.log(estimatedPrice)
     store.dispatch(
       Actions.drago.updateDragoSelectedDetails({
         values: {

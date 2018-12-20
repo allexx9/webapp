@@ -45,7 +45,7 @@ const middlewares = [
 ]
 
 if (process.env.NODE_ENV === `development`) {
-  middlewares.push(require('redux-immutable-state-invariant').default())
+  // middlewares.push(require('redux-immutable-state-invariant').default())
 }
 
 // Redux Persist
@@ -64,6 +64,7 @@ const saveSubsetFilterTransactionsDrago = createFilter('transactionsDrago', [
   'holder',
   'manager'
 ])
+
 //   const saveSubsetBlacklistFilter = createBlacklistFilter(
 //     'endpoint',
 //     ['accounts']
@@ -73,7 +74,7 @@ const persistConfig = {
   key: 'rigoblock',
   storage,
   stateReconciler: autoMergeLevel2,
-  whitelist: ['endpoint', 'app', 'user', 'transactionsDrago'],
+  whitelist: ['endpoint', 'app', 'user', 'transactionsDrago', 'poolsList'],
   transforms: [
     saveSubsetFilterEndpoint,
     saveSubsetFilterApp,
