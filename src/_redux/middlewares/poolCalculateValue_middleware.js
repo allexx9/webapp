@@ -26,7 +26,6 @@ export const poolCalculateValueMiddleWare = store => next => action => {
     }
     portfolioValue = isFinite(Number(portfolioValue)) ? portfolioValue : '-'
     estimatedPrice = isFinite(Number(estimatedPrice)) ? estimatedPrice : '-'
-    console.log(estimatedPrice)
     store.dispatch(
       Actions.drago.updateDragoSelectedDetails({
         values: {
