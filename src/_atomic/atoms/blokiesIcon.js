@@ -8,8 +8,32 @@ export default class BlokiesIcon extends Component {
     this.generateIdenticon = this.generateIdenticon.bind(this)
   }
 
+  static propTypes = {
+    seed: PropTypes.string.isRequired,
+    size: PropTypes.number,
+    scale: PropTypes.number,
+    color: PropTypes.string,
+    bgColor: PropTypes.string,
+    spotColor: PropTypes.string,
+    style: PropTypes.object
+  }
+
+  static defaultProps = {
+    seed: PropTypes.string.isRequired,
+    size: 15,
+    scale: 3,
+    color: '',
+    bgColor: '',
+    spotColor: '',
+    style: {}
+  }
+
   componentDidMount() {
     this.generateIdenticon({ ...this.props })
+  }
+
+  shouldComponentUpdate(nextProps) {
+    return !this.props.seed === nextProps.seed
   }
 
   UNSAFE_componentWillUpdate(nextProps) {
@@ -157,7 +181,6 @@ export default class BlokiesIcon extends Component {
   }
 
   render() {
-    console.log('blokie')
     const style = {
       borderRadius: '8px',
       boxShadow:
@@ -172,24 +195,4 @@ export default class BlokiesIcon extends Component {
       />
     )
   }
-}
-
-BlokiesIcon.propTypes = {
-  seed: PropTypes.string.isRequired,
-  size: PropTypes.number,
-  scale: PropTypes.number,
-  color: PropTypes.string,
-  bgColor: PropTypes.string,
-  spotColor: PropTypes.string,
-  style: PropTypes.object
-}
-
-BlokiesIcon.defaultProps = {
-  seed: PropTypes.string.isRequired,
-  size: 15,
-  scale: 3,
-  color: '',
-  bgColor: '',
-  spotColor: '',
-  style: {}
 }
