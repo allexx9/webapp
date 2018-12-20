@@ -59,29 +59,28 @@ function exchangeReducer(state = initialState.exchange, action) {
       }
 
     case TYPE_.CHART_MARKET_DATA_ADD_DATAPOINT:
-      let newChartData = [...state.chartData]
-      if (
-        action.payload.epoch === newChartData[newChartData.length - 1].epoch
-      ) {
-        newChartData[newChartData.length - 1] = action.payload
+      const { chartData } = state
+      let newChartData = []
+      if (action.payload.epoch === chartData[chartData.length - 1].epoch) {
         // console.log('first')
+        newChartData = [].concat(chartData)
+        newChartData[chartData.length - 1] = Object.assign({}, action.payload)
         return {
           ...state,
           chartData: newChartData
         }
       }
-      if (
-        action.payload.epoch === newChartData[newChartData.length - 2].epoch
-      ) {
+      if (action.payload.epoch === chartData[chartData.length - 2].epoch) {
         // console.log('second')
-        newChartData[newChartData.length - 2] = action.payload
+        newChartData = [].concat(chartData)
+        newChartData[chartData.length - 2] = Object.assign({}, action.payload)
         return {
           ...state,
           chartData: newChartData
         }
       }
       // console.log('***** NEW *****')
-      newChartData.push(action.payload)
+      newChartData = [].concat(chartData, action.payload)
       return {
         ...state,
         chartData: newChartData

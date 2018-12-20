@@ -60,7 +60,6 @@ class ApplicationExchangeHome extends PureComponent {
   }
 
   updateUi = (ui, boxName) => {
-    // let newUi = Object.assign({}, ui)
     return {
       enableBox: () => {
         const uiUpdate = {
@@ -72,8 +71,6 @@ class ApplicationExchangeHome extends PureComponent {
           }
         }
         const newUi = u(uiUpdate, ui)
-        // newUi.panels[boxName].disabled = false
-        // newUi.panels[boxName].disabledMsg = ''
         return newUi
       },
       disableBox: (options = { disabledMsg: '' }) => {
@@ -86,8 +83,6 @@ class ApplicationExchangeHome extends PureComponent {
           }
         }
         const newUi = u(uiUpdate, ui)
-        // newUi.panels[boxName].disabled = true
-        // newUi.panels[boxName].disabledMsg = options.disabledMsg
         return newUi
       }
     }
