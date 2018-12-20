@@ -45,7 +45,7 @@ const middlewares = [
 ]
 
 if (process.env.NODE_ENV === `development`) {
-  // middlewares.push(require('redux-immutable-state-invariant').default())
+  middlewares.push(require('redux-immutable-state-invariant').default())
 }
 
 // Redux Persist
