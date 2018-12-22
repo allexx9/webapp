@@ -8,6 +8,7 @@ import {
   filterPools,
   getDragoDetails,
   getDragoLiquidityAndTokenBalances,
+  getPoolsGroupDetails,
   getTokenWrapperLockTime,
   getTransactionsDragoOptV2,
   getTransactionsSingleDrago,
@@ -364,6 +365,8 @@ class utilities {
 
   getVaultDetails = getVaultDetails
 
+  getPoolsGroupDetails = getPoolsGroupDetails
+
   getTokenWrapperLockTime = getTokenWrapperLockTime
 
   getDragoLiquidity = async (dragoAddress, api) => {
@@ -438,8 +441,16 @@ class utilities {
     return `${Ethfinex.toUpperCase()}_${action}`
   }
 
-  dragoISIN(symbol, dragoId) {
-    return DRG_ISIN + dragoId.toString().padStart(7, '0') + symbol.toUpperCase()
+  poolISIN(symbol, dragoId, options = { array: false }) {
+    dragoId = dragoId.toString()
+    let padding = dragoId.padStart(7, '0')
+    const isinArray = [
+      DRG_ISIN,
+      padding.slice(0, padding.length - dragoId.length),
+      dragoId,
+      symbol.toUpperCase()
+    ]
+    return options.array ? isinArray : isinArray.join()
   }
 
   logger = (function() {

@@ -74,7 +74,7 @@ const persistConfig = {
   key: 'rigoblock',
   storage,
   stateReconciler: autoMergeLevel2,
-  whitelist: ['endpoint', 'app', 'user', 'transactionsDrago', 'poolsList'],
+  whitelist: ['endpoint', 'app', 'user', 'transactionsDrago'],
   transforms: [
     saveSubsetFilterEndpoint,
     saveSubsetFilterApp,

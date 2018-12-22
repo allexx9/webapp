@@ -210,7 +210,7 @@ class ElementListAssets extends PureComponent {
     const url =
       rowData.params.dragoId.value.c +
       '/' +
-      utils.dragoISIN(cellData, rowData.params.dragoId.value.c)
+      utils.poolISIN(cellData, rowData.params.dragoId.value.c)
     return (
       <FlatButton
         label="View"

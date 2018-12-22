@@ -53,7 +53,11 @@ const Eventful_Epics = [
   Eventful.getPoolTransactionsEpic
 ]
 
-const Pools_Epics = [Pools.getPoolDetailsEpic, Pools.getTokensBalancesEpic]
+const Pools_Epics = [
+  Pools.getPoolDetailsEpic,
+  Pools.getTokensBalancesEpic,
+  Pools.getPoolsGroupDetailsEpic
+]
 
 // https://github.com/redux-observable/redux-observable/issues/263#issuecomment-334625730
 

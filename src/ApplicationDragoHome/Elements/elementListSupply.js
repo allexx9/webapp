@@ -200,7 +200,7 @@ class ElementListSupply extends PureComponent {
   actionButton(cellData, rowData) {
     const { match } = this.props
     const url =
-      rowData.dragoId + '/' + utils.dragoISIN(cellData, rowData.dragoId)
+      rowData.dragoId + '/' + utils.poolISIN(cellData, rowData.dragoId)
     let poolType = match.path.includes('drago') ? 'drago' : 'vault'
     return (
       <div className={styles.actionButtonContainer}>
@@ -227,7 +227,7 @@ class ElementListSupply extends PureComponent {
   //   const url =
   //     rowData.params.dragoId.value.c +
   //     '/' +
-  //     utils.dragoISIN(cellData, rowData.params.dragoId.value.c)
+  //     utils.poolISIN(cellData, rowData.params.dragoId.value.c)
   //   return (
   //     <FlatButton
   //       label="View"

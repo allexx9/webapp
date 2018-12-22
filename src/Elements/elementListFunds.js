@@ -203,13 +203,13 @@ class ElementListFunds extends PureComponent {
 
   renderISIN = rowData => {
     const id = rowData.dragoId || rowData.id
-    return utils.dragoISIN(rowData.symbol, id)
+    return utils.poolISIN(rowData.symbol, id)
   }
 
   actionButton(cellData, rowData) {
     const { match } = this.props
     const id = rowData.dragoId || rowData.id
-    const url = id + '/' + utils.dragoISIN(cellData, id)
+    const url = id + '/' + utils.poolISIN(cellData, id)
     let poolType = match.path.includes('vault') ? 'vault' : 'drago'
     return (
       <div className={styles.actionButtonContainer}>
@@ -236,7 +236,7 @@ class ElementListFunds extends PureComponent {
   //   const url =
   //     rowData.params.dragoId.value.c +
   //     '/' +
-  //     utils.dragoISIN(cellData, rowData.params.dragoId.value.c)
+  //     utils.poolISIN(cellData, rowData.params.dragoId.value.c)
   //   return (
   //     <FlatButton
   //       label="View"

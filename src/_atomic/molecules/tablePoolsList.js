@@ -1,12 +1,15 @@
+import { Actions } from '../../_redux/actions'
 import {
   AutoSizer,
   Column,
   SortDirection,
   SortIndicator,
-  Table
+  Table,
+  createTableMultiSort
 } from 'react-virtualized'
 import { Col, Row } from 'react-flexbox-grid'
 import { Link, withRouter } from 'react-router-dom'
+import { connect } from 'react-redux'
 import BlokiesIcon from '../atoms/blokiesIcon'
 import FlatButton from 'material-ui/FlatButton'
 import PoolCode from '../atoms/poolCode'
@@ -21,35 +24,19 @@ class TablePoolsList extends PureComponent {
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
     tableHeight: PropTypes.number,
-    tableWidth: PropTypes.number
+    tableWidth: PropTypes.number,
+    getInfoOnListUpdate: PropTypes.bool,
+    dispatch: PropTypes.func.isRequired
   }
 
   static defaultProps = {
     tableHeight: 650,
-    tableWidth: 600
+    tableWidth: 600,
+    getInfoOnListUpdate: true
   }
 
   constructor(props, context) {
     super(props, context)
-    const { list } = this.props
-    const sortDirection = SortDirection.DESC
-    const sortedList = list
-    const rowCount = list.length
-    this.state = {
-      disableHeader: false,
-      headerHeight: 30,
-      height: props.tableHeight,
-      width: props.tableWidth,
-      hideIndexRow: false,
-      overscanRowCount: 10,
-      rowHeight: 60,
-      rowCount: rowCount,
-      scrollToIndex: undefined,
-      sortDirection,
-      sortedList,
-      useDynamicRowHeight: false
-    }
-
     this._getRowHeight = this._getRowHeight.bind(this)
     this._headerRenderer = this._headerRenderer.bind(this)
     this._noRowsRenderer = this._noRowsRenderer.bind(this)
@@ -59,15 +46,41 @@ class TablePoolsList extends PureComponent {
     this._sort = this._sort.bind(this)
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    const { list } = nextProps
+  state = {}
+
+  static getDerivedStateFromProps(props) {
+    const { list } = props
     const sortedList = list
     const rowCount = list.length
-    this.setState({
-      sortedList: sortedList,
-      rowCount: rowCount
-    })
+    const sortDirection = SortDirection.DESC
+    props.dispatch(Actions.pools.getPoolsGroupDetails([1, 2, 3]))
+    return {
+      sortedList,
+      rowCount,
+      disableHeader: false,
+      headerHeight: 30,
+      height: props.tableHeight,
+      width: props.tableWidth,
+      hideIndexRow: false,
+      overscanRowCount: 10,
+      rowHeight: 60,
+      scrollToIndex: undefined,
+      sortDirection,
+      useDynamicRowHeight: false
+    }
   }
+
+  // const headerRenderer = ({ dataKey, label }) => {
+  //   const showSortIndicator = sortState.sortBy.includes(dataKey);
+  //   return (
+  //     <>
+  //       <span title={label}>{label}</span>
+  //       {showSortIndicator && (
+  //         <SortIndicator sortDirection={sortState.sortDirection[dataKey]} />
+  //       )}
+  //     </>
+  //   );
+  // };
 
   render() {
     const {
@@ -170,7 +183,7 @@ class TablePoolsList extends PureComponent {
   actionButton(rowData) {
     const { match } = this.props
     const id = rowData.details.dragoId || rowData.details.id
-    const url = id + '/' + utils.dragoISIN(rowData.details.symbol, id)
+    const url = id + '/' + utils.poolISIN(rowData.details.symbol, id)
     let poolType = match.path.includes('vault') ? 'vault' : 'drago'
     return (
       <div className={styles.actionButtonContainer}>
@@ -284,4 +297,4 @@ class TablePoolsList extends PureComponent {
   }
 }
 
-export default withRouter(TablePoolsList)
+export default withRouter(connect()(TablePoolsList))

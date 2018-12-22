@@ -40,3 +40,10 @@ export const getPoolsSingleDetails = createAction(
     options
   })
 )
+
+export const getPoolsGroupDetails = createAction(
+  TYPE_.POOLS_GROUP_DETAILS_GET,
+  poolsIdArray => ({
+    poolsIdArray
+  })
+)

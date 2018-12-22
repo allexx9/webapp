@@ -2,7 +2,7 @@
 // This file is part of RigoBlock.
 
 import * as abis from '../../contracts/abi'
-import { UTILITY_CONTRACT_ADDRESS } from '../../utils/const'
+import { MULTI_BALANCE_CONTRACT_ADDRESS } from '../../utils/const'
 import { WETH_ADDRESSES } from '../../utils/const'
 import Registry from '../registry'
 
@@ -759,7 +759,7 @@ class DragoWeb3 {
     const instance = this._instance
     const getMultipleBalancesInstance = new api.eth.Contract(
       abis.getMultipleBalances,
-      UTILITY_CONTRACT_ADDRESS[networkId]
+      MULTI_BALANCE_CONTRACT_ADDRESS[networkId]
     )
     tokenAddresses = tokenAddresses.map(address => address.toLowerCase())
     return getMultipleBalancesInstance.methods

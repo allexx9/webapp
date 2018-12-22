@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
+import styles from './poolCode.module.css'
 import utils from '../../_utils/utils'
 
 export default class PoolCode extends Component {
@@ -10,6 +11,16 @@ export default class PoolCode extends Component {
 
   render() {
     const { symbol, id } = this.props
-    return <div>{utils.dragoISIN(symbol, id)}</div>
+    let isinArray = utils.poolISIN(symbol, id, { array: true })
+    let code = (
+      <div>
+        <span className={styles.first}>{isinArray[0]}</span>
+        <span className={styles.second}>{isinArray[1]}</span>
+        <span className={styles.third}>{isinArray[2]}</span>
+        <span className={styles.fourth}>{isinArray[3]}</span>
+      </div>
+    )
+
+    return <div>{code}</div>
   }
 }
