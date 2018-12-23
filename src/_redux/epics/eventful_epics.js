@@ -179,21 +179,21 @@ const getPoolsSingleTransactions$ = (
 ) => {
   return options.drago
     ? from(
-        utils.getTransactionsDragoOptV2(
-          networkInfo,
-          poolAddress,
-          accounts,
-          options
-        )
+      utils.getTransactionsDragoOptV2(
+        networkInfo,
+        poolAddress,
+        accounts,
+        options
       )
+    )
     : from(
-        utils.getTransactionsVaultOptV2(
-          networkInfo,
-          poolAddress,
-          accounts,
-          options
-        )
+      utils.getTransactionsVaultOptV2(
+        networkInfo,
+        poolAddress,
+        accounts,
+        options
       )
+    )
 }
 
 export const getAccountsTransactionsEpic = (action$, state$) => {

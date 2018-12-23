@@ -5,9 +5,8 @@ import { getTransactionsSingleDrago } from './getTransactionsSingleDrago'
 import { logToEvent } from '../blockChain/logToEvent'
 import BigNumber from 'bignumber.js'
 import PoolApi from '../../PoolsApi/src'
-import Web3 from 'web3'
-import Web3Wrapper from '../../_utils/web3Wrapper/src'
 import moment from 'moment'
+import { getFromBlock, getWeb3 } from '../../_utils/misc'
 
 /**
  * Get the event logs from a the Drago registry
@@ -49,41 +48,17 @@ export const getTransactionsDragoOptV2 = async (
     return [Array(0), Array(0), Array(0)]
   }
 
-  let web3
-  switch (options.wallet) {
-    case METAMASK: {
-      web3 = window.web3
-      break
-    }
-    default: {
-      if (HTTP_EVENT_FETCHING) {
-        web3 = new Web3(networkInfo.transportHttp)
-      } else {
-        web3 = Web3Wrapper.getInstance(networkInfo.id)
-      }
-    }
-  }
+  const web3 = getWeb3(networkInfo)
+  let fromBlock = getFromBlock(networkInfo)
 
   const poolApi = new PoolApi(web3)
   let dragoSymbolRegistry = new Map()
-  let fromBlock
-  switch (networkInfo.id) {
-    case 1:
-      fromBlock = '6000000'
-      break
-    case 42:
-      fromBlock = '7000000'
-      break
-    case 3:
-      fromBlock = '3000000'
-      break
-    default:
-      fromBlock = '3000000'
-  }
+
+
 
   console.log(
     `***** ${moment().format()} Utils: ${
-      options.drago ? 'DRAGO' : 'VAULT'
+    options.drago ? 'DRAGO' : 'VAULT'
     } events fetching started *****`
   )
 
@@ -174,13 +149,13 @@ export const getTransactionsDragoOptV2 = async (
       let eventSig
       eventSig = options.drago
         ? [
-            poolApi.contract.dragoeventful.hexSignature.BuyDrago,
-            poolApi.contract.dragoeventful.hexSignature.SellDrago
-          ]
+          poolApi.contract.dragoeventful.hexSignature.BuyDrago,
+          poolApi.contract.dragoeventful.hexSignature.SellDrago
+        ]
         : [
-            poolApi.contract.vaulteventful.hexSignature.BuyVault,
-            poolApi.contract.vaulteventful.hexSignature.SellVault
-          ]
+          poolApi.contract.vaulteventful.hexSignature.BuyVault,
+          poolApi.contract.vaulteventful.hexSignature.SellVault
+        ]
 
       let topicsBuySell = [eventSig, hexPoolAddress, hexAccounts, null]
 
@@ -408,13 +383,13 @@ export const getTransactionsDragoOptV2 = async (
                     // console.log(
                     //   `***** ${moment().format()} Utils: events timestamp fetched *****`
                     // )
-                    balancesList.sort(function(a, b) {
+                    balancesList.sort(function (a, b) {
                       if (a.symbol < b.symbol) return -1
                       if (a.symbol > b.symbol) return 1
                       return 0
                     })
                     logs.reverse()
-                    supply.sort(function(a, b) {
+                    supply.sort(function (a, b) {
                       if (a.symbol < b.symbol) return -1
                       if (a.symbol > b.symbol) return 1
                       return 0
@@ -439,13 +414,13 @@ export const getTransactionsDragoOptV2 = async (
           if (options.trader) {
             console.log(
               `***** ${moment().format()} Utils: ${
-                options.drago ? 'DRAGO' : 'VAULT'
+              options.drago ? 'DRAGO' : 'VAULT'
               } Holder transactions loaded in ${Seconds_Between_Dates}s *****`
             )
           } else {
             console.log(
               `***** ${moment().format()} Utils: ${
-                options.drago ? 'DRAGO' : 'VAULT'
+              options.drago ? 'DRAGO' : 'VAULT'
               } Manager transactions loaded in ${Seconds_Between_Dates}s *****`
             )
           }
