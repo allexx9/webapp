@@ -7,6 +7,7 @@ export const getWeb3 = (networkInfo, options = { wallet: '' }) => {
     return new Web3(new Web3.providers.HttpProvider('http://localhost:8545'))
   }
   let web3
+
   switch (options.wallet) {
     case METAMASK: {
       if (typeof window !== 'undefined') {
@@ -14,14 +15,17 @@ export const getWeb3 = (networkInfo, options = { wallet: '' }) => {
       } else {
         web3 = 'Test env'
       }
+      console.log('getWeb3 metamask')
       break
     }
     default: {
+      web3 = Web3Wrapper.getInstance(networkInfo.id)
       if (HTTP_EVENT_FETCHING) {
-        web3 = new Web3(networkInfo.transportHttp)
+        web3 = new Web3(web3._rb.network.transportHttp)
       } else {
         web3 = Web3Wrapper.getInstance(networkInfo.id)
       }
+      console.log('getWeb3 default')
     }
   }
   return web3
