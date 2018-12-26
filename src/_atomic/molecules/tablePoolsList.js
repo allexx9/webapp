@@ -4,8 +4,8 @@ import {
   Column,
   SortDirection,
   SortIndicator,
-  Table,
-  createTableMultiSort
+  Table
+  // createTableMultiSort
 } from 'react-virtualized'
 import { Col, Row } from 'react-flexbox-grid'
 import { Link, withRouter } from 'react-router-dom'
@@ -13,8 +13,11 @@ import { connect } from 'react-redux'
 import BlokiesIcon from '../atoms/blokiesIcon'
 import FlatButton from 'material-ui/FlatButton'
 import PoolCode from '../atoms/poolCode'
+import PoolPrices from '../atoms/poolPrices'
+import PoolUnits from '../atoms/poolUnits'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
+import _ from 'lodash'
 import styles from './tablePoolsList.module.css'
 import utils from '../../_utils/utils'
 
@@ -46,14 +49,26 @@ class TablePoolsList extends PureComponent {
     this._sort = this._sort.bind(this)
   }
 
-  state = {}
+  state = {
+    sortedList: []
+  }
 
-  static getDerivedStateFromProps(props) {
+  static getDerivedStateFromProps(props, state) {
     const { list } = props
     const sortedList = list
     const rowCount = list.length
     const sortDirection = SortDirection.DESC
-    props.dispatch(Actions.pools.getPoolsGroupDetails([1, 2, 3]))
+    const propsPoolsIds = sortedList
+      .map(pool => Number(pool.details.id))
+      .sort((a, b) => a - b)
+    const statePoolsIds = state.sortedList
+      .map(pool => Number(pool.details.id))
+      .sort((a, b) => a - b)
+    const hasPoolListChanged = _.isEqual(propsPoolsIds, statePoolsIds)
+    if (!hasPoolListChanged) {
+      console.log('dispatch', propsPoolsIds)
+      props.dispatch(Actions.pools.getPoolsGroupDetails(propsPoolsIds))
+    }
     return {
       sortedList,
       rowCount,
@@ -156,6 +171,30 @@ class TablePoolsList extends PureComponent {
                     flexShrink={1}
                   />
                   <Column
+                    width={100}
+                    disableSort
+                    label="SUPPLY"
+                    cellDataGetter={({ rowData }) => rowData.drgvalue}
+                    dataKey="supply"
+                    className={styles.exampleColumn}
+                    cellRenderer={({ rowData }) =>
+                      this.renderPoolUnits(rowData)
+                    }
+                    flexShrink={1}
+                  />
+                  <Column
+                    width={235}
+                    disableSort
+                    label="PRICE"
+                    cellDataGetter={({ rowData }) => rowData.drgvalue}
+                    dataKey="price"
+                    className={styles.exampleColumn}
+                    cellRenderer={({ rowData }) =>
+                      this.renderPoolPrices(rowData)
+                    }
+                    flexShrink={1}
+                  />
+                  <Column
                     width={210}
                     disableSort
                     label="ACTIONS"
@@ -173,6 +212,16 @@ class TablePoolsList extends PureComponent {
         </Col>
       </Row>
     )
+  }
+
+  renderPoolUnits(rowData) {
+    const { totalSupply } = rowData.details
+    return totalSupply ? <PoolUnits units={totalSupply} /> : <div />
+  }
+
+  renderPoolPrices(rowData) {
+    const { buyPrice, sellPrice } = rowData.details
+    return <PoolPrices buyPrice={buyPrice} sellPrice={sellPrice} />
   }
 
   renderISIN = rowData => {

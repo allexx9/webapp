@@ -178,7 +178,7 @@ export const getDragoDetails = async (
     sellPrice,
     buyPrice,
     totalSupply: formatCoins(new BigNumber(dragoTotalSupply), 4),
-    totalSupplyBaseUnits: BigNumber(dragoTotalSupply),
+    totalSupplyBaseUnits: new BigNumber(dragoTotalSupply),
     dragoETHBalance: formatEth(dragoETH, 4),
     dragoETHBalanceWei: new BigNumber(dragoETH),
     dragoWETHBalance: formatEth(dragoWETH, 4),

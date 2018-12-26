@@ -16,6 +16,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import styles from './elementListFunds.module.css'
 import utils from '../_utils/utils'
+import PoolUnits from '../atoms/poolUnits'
 
 class ElementListFunds extends PureComponent {
   static propTypes = {
@@ -403,13 +404,8 @@ class ElementListFunds extends PureComponent {
     return <span>{utils.dateFromTimeStamp(timestamp)}</span>
   }
 
-  renderDrgValue(rowData) {
-    return (
-      <div>
-        {new BigNumber(rowData.drgvalue).toFixed(4)}{' '}
-        <small>{rowData.symbol}</small>
-      </div>
-    )
+  renderPoolUnits(rowData) {
+    return <PoolUnits units={rowData.drgvalue} symbol={rowData.symbol} />
   }
 
   _getDatum(list, index) {

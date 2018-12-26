@@ -15,7 +15,6 @@ export const getWeb3 = (networkInfo, options = { wallet: '' }) => {
       } else {
         web3 = 'Test env'
       }
-      console.log('getWeb3 metamask')
       break
     }
     default: {
@@ -25,7 +24,6 @@ export const getWeb3 = (networkInfo, options = { wallet: '' }) => {
       } else {
         web3 = Web3Wrapper.getInstance(networkInfo.id)
       }
-      console.log('getWeb3 default')
     }
   }
   return web3

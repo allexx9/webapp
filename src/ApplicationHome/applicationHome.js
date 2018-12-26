@@ -41,7 +41,7 @@ class ApplicationHome extends PureComponent {
     showCommunityButtons: true
   }
 
-  componentDidMount() {}
+  componentDidMount() { }
 
   componentWillUnmount = () => {
     window.removeEventListener('scroll', this.handleScroll)
@@ -148,107 +148,113 @@ class ApplicationHome extends PureComponent {
             <img src="/img/social/twitter.svg" height="32px" alt="" />
           </a>
         </div>
-        <Row>
-          <Col xs={12}>
-            <div>
-              <div className={'joyride-home-logo'}>
-                <Row>
-                  <Col xs={12}>
-                    <div className={styles.mainlogo}>
-                      <img
-                        style={{ height: '80px' }}
-                        src="/img/Logo-RigoblockRGB-OUT-01.png"
-                        alt=""
-                      />
-                    </div>
-                    <h2 style={{ color: '#054186' }}>
-                      The leading crypto platform for asset management.
+        <div className={styles.contentContainer}>
+          <Row>
+            <Col xs={12}>
+              <div>
+                <div className={'joyride-home-logo'}>
+                  <Row>
+                    <Col xs={12}>
+                      <div className={styles.mainlogo}>
+                        <img
+                          style={{ height: '80px' }}
+                          src="/img/Logo-RigoblockRGB-OUT-01.png"
+                          alt=""
+                        />
+                      </div>
+                      <h2 style={{ color: '#054186' }}>
+                        The leading crypto platform for asset management.
                     </h2>
-                    <p className={styles.subHeadline}>
-                      <b className={styles.txtDotted}>Simple</b>,{' '}
-                      <b className={styles.txtDottedYellow}>transparent</b>,{' '}
-                      <b className={styles.txtDotted}>meritocratic</b> and{' '}
-                      <b className={styles.txtDottedYellow}>democratic</b>.
+                      <p className={styles.subHeadline}>
+                        <b className={styles.txtDotted}>Simple</b>,{' '}
+                        <b className={styles.txtDottedYellow}>transparent</b>,{' '}
+                        <b className={styles.txtDotted}>meritocratic</b> and{' '}
+                        <b className={styles.txtDottedYellow}>democratic</b>.
                     </p>
-                  </Col>
-                </Row>
-              </div>
+                    </Col>
+                  </Row>
+                </div>
 
-              <div className={styles.buttonLogoContainer}>
-                <Row>
-                  <Col xs={6}>
-                    <div style={{ textAlign: 'right', marginRight: '22px' }}>
-                      <FlatButton
-                        labelPosition="before"
-                        label="Explore"
-                        labelStyle={{
-                          color: '#054186',
-                          fontWeight: '600',
-                          fontSize: '20px'
-                        }}
-                        onClick={onClickExplore}
-                        style={buttonExplore}
-                      />
-                    </div>
-                  </Col>
-                  <Col xs={6}>
-                    <div style={{ textAlign: 'left', marginLeft: '22px' }}>
-                      <Link to="/drago">
+                <div className={styles.buttonLogoContainer}>
+                  <Row>
+                    <Col xs={6}>
+                      <div style={{ textAlign: 'right', marginRight: '22px' }}>
                         <FlatButton
                           labelPosition="before"
-                          label="Create a pool"
+                          label="Explore"
                           labelStyle={{
-                            color: '#ffffff',
+                            color: '#054186',
                             fontWeight: '600',
                             fontSize: '20px'
                           }}
-                          onClick={onClickCreatePool}
-                          id="joyride-home-create-pool"
-                          style={buttonCreateDrago}
+                          onClick={onClickExplore}
+                          style={buttonExplore}
                         />
-                      </Link>
-                    </div>
+                      </div>
+                    </Col>
+                    <Col xs={6}>
+                      <div style={{ textAlign: 'left', marginLeft: '22px' }}>
+                        <Link to="/drago">
+                          <FlatButton
+                            labelPosition="before"
+                            label="Create a pool"
+                            labelStyle={{
+                              color: '#ffffff',
+                              fontWeight: '600',
+                              fontSize: '20px'
+                            }}
+                            onClick={onClickCreatePool}
+                            id="joyride-home-create-pool"
+                            style={buttonCreateDrago}
+                          />
+                        </Link>
+                      </div>
+                    </Col>
+                  </Row>
+                </div>
+                <Row>
+                  <Col xs={12}>
+                    <Row>
+                      <Paper style={detailsBox} zDepth={1}>
+                        <Col xs={12} className={'joyride-home-search'}>
+                          <div className={styles.filterBox}>
+                            Search for pools
+                          <FilterPoolsField
+                              filter={this.filter}
+                              hintText={<SearchIcon text={'Search...'} />}
+                              floatingLabelText=""
+                            />
+                          </div>
+                        </Col>
+                        <Col xs={12}>
+                          <ProgressBar progress={listLoadingProgress} />
+                        </Col>
+                        <Col xs={12}>
+                          <div className={styles.poolsList}>
+                            <ElementListWrapper
+                              list={this.filterPools()}
+                              location={location}
+                              pagination={{
+                                display: 5,
+                                number: 1
+                              }}
+                              autoLoading={false}
+                              tableHeight={330}
+                            >
+                              <TablePoolsList />
+                            </ElementListWrapper>
+                          </div>
+
+                        </Col>
+                      </Paper>
+                    </Row>
                   </Col>
                 </Row>
               </div>
-              <Row>
-                <Col xs={12}>
-                  <Row>
-                    <Paper style={detailsBox} zDepth={1}>
-                      <Col xs={12} className={'joyride-home-search'}>
-                        <div className={styles.filterBox}>
-                          Search for pools
-                          <FilterPoolsField
-                            filter={this.filter}
-                            hintText={<SearchIcon text={'Search...'} />}
-                            floatingLabelText=""
-                          />
-                        </div>
-                      </Col>
-                      <Col xs={12}>
-                        <ProgressBar progress={listLoadingProgress} />
-                      </Col>
-                      <Col xs={12}>
-                        <ElementListWrapper
-                          list={this.filterPools()}
-                          location={location}
-                          pagination={{
-                            display: 5,
-                            number: 1
-                          }}
-                          autoLoading={false}
-                          tableHeight={330}
-                        >
-                          <TablePoolsList />
-                        </ElementListWrapper>
-                      </Col>
-                    </Paper>
-                  </Row>
-                </Col>
-              </Row>
-            </div>
-          </Col>
-        </Row>
+            </Col>
+          </Row>
+        </div>
+
         <ElementBottomStatusBar
           blockNumber={endpoint.prevBlockNumber}
           networkName={endpoint.networkInfo.name}
@@ -282,7 +288,7 @@ class ApplicationHome extends PureComponent {
                       alt=""
                     />
                   }
-                  // hoverColor={Colors.blue300}
+                // hoverColor={Colors.blue300}
                 />
               </a>
 
@@ -302,7 +308,7 @@ class ApplicationHome extends PureComponent {
                   }}
                   style={buttonTelegram}
                   icon={<Chat color="#ffca57" />}
-                  // hoverColor={Colors.blue300}
+                // hoverColor={Colors.blue300}
                 />
               </a>
             </div>

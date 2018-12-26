@@ -58,14 +58,12 @@ class DragoRegistryWeb3 {
     if (!Array.isArray(poolsIdArray)) {
       throw new Error('poolsIdArray needs to be an array of token addresses')
     }
-    console.log(this._contractAddress)
     const api = this._api
     const networkId = await api.eth.net.getId()
     const getMultiPoolsDataInstance = new api.eth.Contract(
       abis.getMultiPoolsData,
       MULTI_POOL_DATA_CONTRACT_ADDRESS[networkId]
     )
-    console.log(this._contractAddress, MULTI_POOL_DATA_CONTRACT_ADDRESS[networkId], poolsIdArray)
     return getMultiPoolsDataInstance.methods
       .queryMultiDataFromId(this._contractAddress, poolsIdArray)
       .call({})

@@ -1,239 +1,160 @@
-[
-	{
+[{
 		"constant": true,
-		"inputs": [
-			{
-				"name": "_dragoAddresses",
-				"type": "address[]"
-			}
-		],
-		"name": "queryMultiData",
-		"outputs": [
-			{
-				"components": [
-					{
-						"name": "name",
-						"type": "string"
-					},
-					{
-						"name": "symbol",
-						"type": "string"
-					},
-					{
-						"name": "sellPrice",
-						"type": "uint256"
-					},
-					{
-						"name": "buyPrice",
-						"type": "uint256"
-					},
-					{
-						"name": "owner",
-						"type": "address"
-					},
-					{
-						"name": "feeCollector",
-						"type": "address"
-					},
-					{
-						"name": "dragoDao",
-						"type": "address"
-					},
-					{
-						"name": "ratio",
-						"type": "uint256"
-					},
-					{
-						"name": "transactionFee",
-						"type": "uint256"
-					},
-					{
-						"name": "totalSupply",
-						"type": "uint256"
-					},
-					{
-						"name": "ethBalance",
-						"type": "uint256"
-					},
-					{
-						"name": "minPeriod",
-						"type": "uint32"
-					},
-					{
-						"name": "id",
-						"type": "uint256"
-					},
-					{
-						"name": "drago",
-						"type": "address"
-					}
-				],
-				"name": "",
-				"type": "tuple[]"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [
-			{
-				"name": "_drago",
+		"inputs": [{
+				"name": "_dragoRegistry",
 				"type": "address"
-			}
-		],
-		"name": "queryData",
-		"outputs": [
-			{
-				"components": [
-					{
-						"name": "name",
-						"type": "string"
-					},
-					{
-						"name": "symbol",
-						"type": "string"
-					},
-					{
-						"name": "sellPrice",
-						"type": "uint256"
-					},
-					{
-						"name": "buyPrice",
-						"type": "uint256"
-					},
-					{
-						"name": "owner",
-						"type": "address"
-					},
-					{
-						"name": "feeCollector",
-						"type": "address"
-					},
-					{
-						"name": "dragoDao",
-						"type": "address"
-					},
-					{
-						"name": "ratio",
-						"type": "uint256"
-					},
-					{
-						"name": "transactionFee",
-						"type": "uint256"
-					},
-					{
-						"name": "totalSupply",
-						"type": "uint256"
-					},
-					{
-						"name": "ethBalance",
-						"type": "uint256"
-					},
-					{
-						"name": "minPeriod",
-						"type": "uint32"
-					},
-					{
-						"name": "id",
-						"type": "uint256"
-					},
-					{
-						"name": "drago",
-						"type": "address"
-					}
-				],
-				"name": "dragoData",
-				"type": "tuple"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [
+			},
 			{
 				"name": "_dragoAddresses",
 				"type": "address[]"
 			}
 		],
 		"name": "queryMultiDataFromAddress",
-		"outputs": [
-			{
-				"components": [
-					{
-						"name": "name",
-						"type": "string"
-					},
-					{
-						"name": "symbol",
-						"type": "string"
-					},
-					{
-						"name": "sellPrice",
-						"type": "uint256"
-					},
-					{
-						"name": "buyPrice",
-						"type": "uint256"
-					},
-					{
-						"name": "owner",
-						"type": "address"
-					},
-					{
-						"name": "feeCollector",
-						"type": "address"
-					},
-					{
-						"name": "dragoDao",
-						"type": "address"
-					},
-					{
-						"name": "ratio",
-						"type": "uint256"
-					},
-					{
-						"name": "transactionFee",
-						"type": "uint256"
-					},
-					{
-						"name": "totalSupply",
-						"type": "uint256"
-					},
-					{
-						"name": "ethBalance",
-						"type": "uint256"
-					},
-					{
-						"name": "minPeriod",
-						"type": "uint32"
-					},
-					{
-						"name": "id",
-						"type": "uint256"
-					},
-					{
-						"name": "drago",
-						"type": "address"
-					}
-				],
-				"name": "",
-				"type": "tuple[]"
-			}
-		],
+		"outputs": [{
+			"components": [{
+					"name": "name",
+					"type": "string"
+				},
+				{
+					"name": "symbol",
+					"type": "string"
+				},
+				{
+					"name": "sellPrice",
+					"type": "uint256"
+				},
+				{
+					"name": "buyPrice",
+					"type": "uint256"
+				},
+				{
+					"name": "owner",
+					"type": "address"
+				},
+				{
+					"name": "feeCollector",
+					"type": "address"
+				},
+				{
+					"name": "dragoDao",
+					"type": "address"
+				},
+				{
+					"name": "ratio",
+					"type": "uint256"
+				},
+				{
+					"name": "transactionFee",
+					"type": "uint256"
+				},
+				{
+					"name": "totalSupply",
+					"type": "uint256"
+				},
+				{
+					"name": "ethBalance",
+					"type": "uint256"
+				},
+				{
+					"name": "minPeriod",
+					"type": "uint32"
+				},
+				{
+					"name": "id",
+					"type": "uint256"
+				},
+				{
+					"name": "drago",
+					"type": "address"
+				}
+			],
+			"name": "",
+			"type": "tuple[]"
+		}],
 		"payable": false,
 		"stateMutability": "view",
 		"type": "function"
 	},
 	{
 		"constant": true,
-		"inputs": [
+		"inputs": [{
+				"name": "_dragoRegistry",
+				"type": "address"
+			},
 			{
+				"name": "_dragoAddress",
+				"type": "address"
+			}
+		],
+		"name": "queryDataFromAddress",
+		"outputs": [{
+			"components": [{
+					"name": "name",
+					"type": "string"
+				},
+				{
+					"name": "symbol",
+					"type": "string"
+				},
+				{
+					"name": "sellPrice",
+					"type": "uint256"
+				},
+				{
+					"name": "buyPrice",
+					"type": "uint256"
+				},
+				{
+					"name": "owner",
+					"type": "address"
+				},
+				{
+					"name": "feeCollector",
+					"type": "address"
+				},
+				{
+					"name": "dragoDao",
+					"type": "address"
+				},
+				{
+					"name": "ratio",
+					"type": "uint256"
+				},
+				{
+					"name": "transactionFee",
+					"type": "uint256"
+				},
+				{
+					"name": "totalSupply",
+					"type": "uint256"
+				},
+				{
+					"name": "ethBalance",
+					"type": "uint256"
+				},
+				{
+					"name": "minPeriod",
+					"type": "uint32"
+				},
+				{
+					"name": "id",
+					"type": "uint256"
+				},
+				{
+					"name": "drago",
+					"type": "address"
+				}
+			],
+			"name": "dragoData",
+			"type": "tuple"
+		}],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [{
 				"name": "_dragoRegistry",
 				"type": "address"
 			},
@@ -243,82 +164,74 @@
 			}
 		],
 		"name": "queryDataFromId",
-		"outputs": [
-			{
-				"components": [
-					{
-						"name": "name",
-						"type": "string"
-					},
-					{
-						"name": "symbol",
-						"type": "string"
-					},
-					{
-						"name": "sellPrice",
-						"type": "uint256"
-					},
-					{
-						"name": "buyPrice",
-						"type": "uint256"
-					},
-					{
-						"name": "owner",
-						"type": "address"
-					},
-					{
-						"name": "feeCollector",
-						"type": "address"
-					},
-					{
-						"name": "dragoDao",
-						"type": "address"
-					},
-					{
-						"name": "ratio",
-						"type": "uint256"
-					},
-					{
-						"name": "transactionFee",
-						"type": "uint256"
-					},
-					{
-						"name": "totalSupply",
-						"type": "uint256"
-					},
-					{
-						"name": "ethBalance",
-						"type": "uint256"
-					},
-					{
-						"name": "minPeriod",
-						"type": "uint32"
-					},
-					{
-						"name": "id",
-						"type": "uint256"
-					},
-					{
-						"name": "drago",
-						"type": "address"
-					}
-				],
-				"name": "dragoData",
-				"type": "tuple"
-			},
-			{
-				"name": "drago",
-				"type": "address"
-			}
-		],
+		"outputs": [{
+			"components": [{
+					"name": "name",
+					"type": "string"
+				},
+				{
+					"name": "symbol",
+					"type": "string"
+				},
+				{
+					"name": "sellPrice",
+					"type": "uint256"
+				},
+				{
+					"name": "buyPrice",
+					"type": "uint256"
+				},
+				{
+					"name": "owner",
+					"type": "address"
+				},
+				{
+					"name": "feeCollector",
+					"type": "address"
+				},
+				{
+					"name": "dragoDao",
+					"type": "address"
+				},
+				{
+					"name": "ratio",
+					"type": "uint256"
+				},
+				{
+					"name": "transactionFee",
+					"type": "uint256"
+				},
+				{
+					"name": "totalSupply",
+					"type": "uint256"
+				},
+				{
+					"name": "ethBalance",
+					"type": "uint256"
+				},
+				{
+					"name": "minPeriod",
+					"type": "uint32"
+				},
+				{
+					"name": "id",
+					"type": "uint256"
+				},
+				{
+					"name": "drago",
+					"type": "address"
+				}
+			],
+			"name": "dragoData",
+			"type": "tuple"
+		}],
 		"payable": false,
 		"stateMutability": "view",
 		"type": "function"
 	},
 	{
 		"constant": true,
-		"inputs": [
-			{
+		"inputs": [{
 				"name": "_dragoRegistry",
 				"type": "address"
 			},
@@ -328,70 +241,67 @@
 			}
 		],
 		"name": "queryMultiDataFromId",
-		"outputs": [
-			{
-				"components": [
-					{
-						"name": "name",
-						"type": "string"
-					},
-					{
-						"name": "symbol",
-						"type": "string"
-					},
-					{
-						"name": "sellPrice",
-						"type": "uint256"
-					},
-					{
-						"name": "buyPrice",
-						"type": "uint256"
-					},
-					{
-						"name": "owner",
-						"type": "address"
-					},
-					{
-						"name": "feeCollector",
-						"type": "address"
-					},
-					{
-						"name": "dragoDao",
-						"type": "address"
-					},
-					{
-						"name": "ratio",
-						"type": "uint256"
-					},
-					{
-						"name": "transactionFee",
-						"type": "uint256"
-					},
-					{
-						"name": "totalSupply",
-						"type": "uint256"
-					},
-					{
-						"name": "ethBalance",
-						"type": "uint256"
-					},
-					{
-						"name": "minPeriod",
-						"type": "uint32"
-					},
-					{
-						"name": "id",
-						"type": "uint256"
-					},
-					{
-						"name": "drago",
-						"type": "address"
-					}
-				],
-				"name": "",
-				"type": "tuple[]"
-			}
-		],
+		"outputs": [{
+			"components": [{
+					"name": "name",
+					"type": "string"
+				},
+				{
+					"name": "symbol",
+					"type": "string"
+				},
+				{
+					"name": "sellPrice",
+					"type": "uint256"
+				},
+				{
+					"name": "buyPrice",
+					"type": "uint256"
+				},
+				{
+					"name": "owner",
+					"type": "address"
+				},
+				{
+					"name": "feeCollector",
+					"type": "address"
+				},
+				{
+					"name": "dragoDao",
+					"type": "address"
+				},
+				{
+					"name": "ratio",
+					"type": "uint256"
+				},
+				{
+					"name": "transactionFee",
+					"type": "uint256"
+				},
+				{
+					"name": "totalSupply",
+					"type": "uint256"
+				},
+				{
+					"name": "ethBalance",
+					"type": "uint256"
+				},
+				{
+					"name": "minPeriod",
+					"type": "uint32"
+				},
+				{
+					"name": "id",
+					"type": "uint256"
+				},
+				{
+					"name": "drago",
+					"type": "address"
+				}
+			],
+			"name": "",
+			"type": "tuple[]"
+		}],
 		"payable": false,
 		"stateMutability": "view",
 		"type": "function"

@@ -12,12 +12,12 @@
   font-weight: 700;
 }
 
-.symbolLegendText{
+.symbolLegendText {
   font-weight: 700;
   opacity: 0.7;
 }
 
-.symbolText{
+.symbolText {
   font-size: 18px;
   font-weight: 700;
   opacity: 0.9;
@@ -47,6 +47,10 @@
   margin-top: 15px;
 }
 
+.headerRow {
+  border-bottom: 1px solid rgb(224, 224, 224);
+}
+
 .headerRow,
 .evenRow,
 .oddRow {
@@ -58,9 +62,8 @@
 }
 
 .headerColumn {
-  margin-right: 0px !important;
   text-transform: none;
-  border-bottom: 1px solid rgb(224, 224, 224);
+
 }
 
 .exampleColumn {
@@ -92,13 +95,14 @@
 }
 
 .chart {
-/* min-width: 200px; */
-box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 10px 1px;
-border-radius: 4px 4px 4px 4px;
-margin: 10px;
-/* height: 145px; */
-/* width: 200px; */
+  /* min-width: 200px; */
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 10px 1px;
+  border-radius: 4px 4px 4px 4px;
+  margin: 10px;
+  /* height: 145px; */
+  /* width: 200px; */
 }
+
 .actionButtonContainer {
   right: 25px;
   top: 10px;

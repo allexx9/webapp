@@ -13,6 +13,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import styles from './tablePoolTransactions.module.css'
 import utils from '../../_utils/utils'
+import PoolUnits from '../atoms/poolUnits'
 
 // const list = Immutable.List(generateRandomList());
 
@@ -136,7 +137,7 @@ class TablePoolTransactions extends PureComponent {
                     cellDataGetter={({ rowData }) => rowData.drgvalue}
                     dataKey="drg"
                     className={styles.exampleColumn}
-                    cellRenderer={({ rowData }) => this.renderDrgValue(rowData)}
+                    cellRenderer={({ rowData }) => this.renderPoolUnits(rowData)}
                     flexShrink={1}
                   />
                   <Column
@@ -178,8 +179,8 @@ class TablePoolTransactions extends PureComponent {
         {new BigNumber(ethValue).toFixed(4)} <small>ETH</small>
       </div>
     ) : (
-      ''
-    )
+        ''
+      )
   }
 
   renderTx(transactionHash) {
@@ -243,13 +244,9 @@ class TablePoolTransactions extends PureComponent {
     return <span>{utils.dateFromTimeStamp(timestamp)}</span>
   }
 
-  renderDrgValue(rowData) {
-    return (
-      <div>
-        {new BigNumber(rowData.drgvalue).toFixed(4)}{' '}
-        <small>{rowData.symbol}</small>
-      </div>
-    )
+  renderPoolUnits(rowData) {
+    return <PoolUnits units={rowData.drgvalue} symbol={rowData.symbol} />
+
   }
 
   _getDatum(list, index) {

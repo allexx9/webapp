@@ -3,10 +3,11 @@
 import * as TYPE_ from '../../actions/const'
 import { Actions } from '../../actions/'
 import { BigNumber } from 'bignumber.js'
-import { Observable, from, timer } from 'rxjs'
+import { from, timer } from 'rxjs'
 import { finalize, flatMap, map, mergeMap, retryWhen } from 'rxjs/operators'
 import { ofType } from 'redux-observable'
 import utils from '../../../_utils/utils'
+import { formatCoins, formatEth } from '../../../_utils/format'
 
 //
 // GET DETAILS FOR A GROUP OF POOLS
@@ -26,26 +27,67 @@ export const getPoolsGroupDetailsEpic = (action$, state$) => {
         networkInfo,
         state$
       ).pipe(
-        map(results => {
-          console.log(results)
-          return results
-        }),
-        flatMap(results => {
-          let actionsArray = results.map(pool => {
-            Actions.drago.updateDragoSelectedDetails(pool)
+        map(poolsArray => {
+          const formattedArray = poolsArray.map(pool => {
+            const [
+              name,
+              symbol,
+              sellPrice,
+              buyPrice,
+              owner,
+              feeCollector,
+              dragoDao,
+              ratio,
+              transactionFee,
+              totalSupply,
+              ethBalance,
+              minPeriod,
+              id,
+              ,
+            ] = pool
+            return {
+              id,
+              name: name.charAt(0).toUpperCase() + name.slice(1),
+              symbol: symbol,
+              addressOwner: owner.toLowerCase(),
+              addressDao: dragoDao.toLowerCase(),
+              sellPrice: formatEth(sellPrice, 4),
+              buyPrice: formatEth(buyPrice, 4),
+              totalSupply: formatCoins(new BigNumber(totalSupply), 4),
+              totalSupplyBaseUnits: new BigNumber(totalSupply),
+              dragoETHBalance: formatEth(ethBalance, 4),
+              dragoETHBalanceWei: new BigNumber(ethBalance),
+              minPeriod,
+              ratio,
+              transactionFee,
+              feeCollector: feeCollector.toLowerCase()
+
+            }
           })
+
+          return formattedArray
+        }),
+        flatMap(poolsArray => {
+          let actionsArray = poolsArray.map(pool => {
+            const payload = {
+              payload: { details: { ...pool } },
+              meta: { poolId: pool.id }
+            }
+            return Actions.pools.writeItemPoolsList(payload)
+          }
+          )
           return from(actionsArray)
+        }),
+        retryWhen(error => {
+          let scalingDuration = 5000
+          return error.pipe(
+            mergeMap(error => {
+              console.warn(error)
+              return timer(scalingDuration)
+            }),
+            finalize(() => console.log('We are done!'))
+          )
         })
-        // retryWhen(error => {
-        //   let scalingDuration = 5000
-        //   return error.pipe(
-        //     mergeMap(error => {
-        //       console.warn(error)
-        //       return timer(scalingDuration)
-        //     }),
-        //     finalize(() => console.log('We are done!'))
-        //   )
-        // })
       )
     }),
     retryWhen(error => {

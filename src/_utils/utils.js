@@ -250,7 +250,7 @@ class utilities {
         datasets: [
           {
             data,
-            backgroundColor: palette('tol', data.length).map(function(hex) {
+            backgroundColor: palette('tol', data.length).map(function (hex) {
               return '#' + hex
             })
           }
@@ -450,10 +450,10 @@ class utilities {
       dragoId,
       symbol.toUpperCase()
     ]
-    return options.array ? isinArray : isinArray.join()
+    return options.array ? isinArray : isinArray.join('')
   }
 
-  logger = (function() {
+  logger = (function () {
     let pub = {}
 
     pub.enable = function enableLogger() {
@@ -464,7 +464,7 @@ class utilities {
 
     pub.disable = function disableLogger() {
       this.oldConsoleLog = console.log
-      window['console']['log'] = function() {}
+      window['console']['log'] = function () { }
     }
 
     return pub
