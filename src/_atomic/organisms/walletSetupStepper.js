@@ -119,7 +119,7 @@ class WalletSetupStepper extends Component {
     try {
       await poolApi.contract.rigotokenfaucet.drip1Token(accounts[0])
     } catch (error) {
-      console.log(error)
+
       this.setState({ errorMsg: 'You can request 0.5 tokens every 48 hours.' })
     }
   }
@@ -326,7 +326,7 @@ class WalletSetupStepper extends Component {
                 )}
 
                 <a
-                  href="https://community.rigoblock.com/t/how-to-unlock-your-metamask-wallet/53"
+                  href="https://discordapp.com/invite/FXd8EU8"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -385,8 +385,15 @@ class WalletSetupStepper extends Component {
                 {!holdsTokens && (
                   <div>
                     <p>
-                      You need at least 1 GRG token to access our platform. Get
-                      some by clicking the button below!
+                      You need at least 1 GRG token to access our platform.
+                      Reach out on {' '}
+                      <a
+                        href="https://t.me/rigoblockprotocol"
+                        target="blank"
+                      >
+                        Telegram
+                      </a>{' '}
+                      and ask us about the Token Sale!
                     </p>
                   </div>
                 )}

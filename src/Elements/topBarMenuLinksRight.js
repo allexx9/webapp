@@ -266,7 +266,7 @@ class NavLinks extends Component {
                 primaryText="Community"
                 containerElement={
                   <a
-                    href="https://community.rigoblock.com/"
+                    href="https://discordapp.com/invite/FXd8EU8"
                     rel="noopener noreferrer"
                     target="_blank"
                   >

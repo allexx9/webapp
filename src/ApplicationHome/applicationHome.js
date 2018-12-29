@@ -403,7 +403,7 @@ class ApplicationHome extends PureComponent {
               </a>
 
               <a
-                href="https://community.rigoblock.com"
+                href="https://discordapp.com/invite/FXd8EU8"
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.communityButton}

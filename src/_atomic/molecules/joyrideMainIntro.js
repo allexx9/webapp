@@ -69,7 +69,7 @@ class JoyrideMainIntro extends React.Component {
               </div>
               <div className={styles.efxDescriptionMore}>
                 <a
-                  href="https://community.rigoblock.com/t/rigoblock-dapp/52"
+                  href="https://rigoblock.com"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -111,7 +111,7 @@ class JoyrideMainIntro extends React.Component {
                 </div> */}
                   <div>
                     <a
-                      href="https://community.rigoblock.com"
+                      href="https://discordapp.com/invite/FXd8EU8"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -125,7 +125,7 @@ class JoyrideMainIntro extends React.Component {
               <Col xs={6}>
                 {!hasGRGBalance && (
                   <div className={styles.minimumBalance}>
-                    Please REGISTER to receive 1 free GRG to access the platform
+                    Participate to Token Sale and receive your GRG access token
                   </div>
                 )}
 
@@ -148,10 +148,10 @@ class JoyrideMainIntro extends React.Component {
                     )}
                     <div className={styles.icoButton}>
                       <FlatButton
-                        href="https://tokenmarket.net/preregistration/rigoblock/enter"
+                        href="https://tokenmarket.net/crowdsale/rigoblock/terms_of_service"
                         target="_blank"
                         labelPosition="before"
-                        label="Register"
+                        label="Contribute"
                         labelStyle={{
                           color: '#ffffff',
                           fontWeight: '600',
