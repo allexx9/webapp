@@ -42,7 +42,7 @@ class Interfaces {
   }
 
   getAccountsParity() {
-    console.log(`${this.constructor.name} -> getAccountsParity`)
+
     const api = this._api
     let accounts = {}
     let arrayPromises = []
@@ -97,14 +97,14 @@ class Interfaces {
               })
           })
           return Promise.all(arrayPromises).then(() => {
-            console.log('Parity getAccounts', accounts)
+
             // const accountsData = {...results}
             // console.log(accountsData)
             return accounts
           })
         })
         .catch(error => {
-          console.log('getAccounts', error)
+
           return {}
         })
     )
@@ -123,7 +123,7 @@ class Interfaces {
       // Check if MetaMask is connected to the same network as the endpoint
       let accounts = await web3.eth.getAccounts()
       let metaMaskNetworkId = await web3.eth.net.getId()
-      console.log('Account MM: ', accounts, metaMaskNetworkId)
+
       let isMetaMaskLocked = accounts.length === 0 ? true : false
       let currentState = { ...this._success }
       if (metaMaskNetworkId !== parityNetworkId) {
@@ -233,7 +233,7 @@ class Interfaces {
   }
 
   attachInterfaceInfuraV2 = async () => {
-    console.log(`${this.constructor.name} -> Interface Infura`)
+
     const api = this._api
     try {
       let accountsMetaMask
@@ -280,7 +280,7 @@ class Interfaces {
         ...stateUpdate
       }
       // this._success = result
-      console.log(`${this.constructor.name} -> Done`)
+
       return result
     } catch (error) {
       let currentState = this._error
@@ -298,7 +298,7 @@ class Interfaces {
   }
 
   attachInterfaceRigoBlockV2 = async () => {
-    console.log(`${this.constructor.name} -> Interface RigoBlock`)
+
     const api = this._api
     let accountsParity = {}
     let accountsMetaMask = {}
@@ -360,7 +360,7 @@ class Interfaces {
         ...currentState,
         ...stateUpdate
       }
-      console.log('Error attachInterfaceRigoBlock', error)
+
       throw new Error(this._error)
     }
   }

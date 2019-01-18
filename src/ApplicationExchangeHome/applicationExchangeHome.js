@@ -90,7 +90,7 @@ class ApplicationExchangeHome extends PureComponent {
           defaultRelay.defaultTokensPair.quoteTokenSymbol
         ]
     }
-    console.log('***** MOUNT *****')
+
     try {
       const walletAddress = endpoint.accounts.find(
         account => account.source === 'MetaMask'
@@ -155,14 +155,14 @@ class ApplicationExchangeHome extends PureComponent {
         this.props.dispatch(
           Actions.exchange.updateUiPanelProperties(
             this.updateUi(ui, 'relayBox').disableBox({
-              disabledMsg: 'Please create a fund.'
+              disabledMsg: 'Please create a Drago.'
             })
           )
         )
         this.props.dispatch(
           Actions.exchange.updateUiPanelProperties(
             this.updateUi(ui, 'orderBox').disableBox({
-              disabledMsg: 'Please create a fund.'
+              disabledMsg: 'Please create a Drago.'
             })
           )
         )
@@ -173,7 +173,7 @@ class ApplicationExchangeHome extends PureComponent {
   }
 
   componentWillUnmount = () => {
-    console.log('***** UNMOUNT *****')
+
     const { selectedExchange } = this.props.exchange
     // Stopping exchange contract events
     this.props.dispatch(Actions.exchange.monitorEventsStop(selectedExchange))
@@ -219,7 +219,7 @@ class ApplicationExchangeHome extends PureComponent {
       managerAccount: walletAddress.address.toLowerCase()
     }
 
-    console.log(fundDetails)
+
 
     this.props.dispatch(Actions.exchange.updateSelectedFund(fundDetails))
 

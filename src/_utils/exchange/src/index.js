@@ -50,7 +50,7 @@ class Exchange {
             return formatFunction(results)
           })
           .catch(err => {
-            console.log(err)
+
             throw new Error(err)
           })
       default:
@@ -59,7 +59,7 @@ class Exchange {
   }
 
   getAggregatedOrders = (baseToken, quoteToken) => {
-    console.log(`Fetching aggregated orders from ${this._exchange}`)
+
     if (!baseToken) {
       throw new Error('baseToken needs to be set')
     }
@@ -83,7 +83,7 @@ class Exchange {
   }
 
   submbitOrder = signedOrder => {
-    console.log(`Submitting order to ${this._exchange}`)
+
     if (!signedOrder) {
       throw new Error('signedOrder needs to be set')
     }
@@ -159,7 +159,7 @@ class Exchange {
   }
 
   getOrders = (baseToken, quoteToken) => {
-    console.log(`${this._exchange}: Fetching orders.`)
+
     if (!baseToken) {
       throw new Error('baseToken needs to be set')
     }
@@ -187,7 +187,7 @@ class Exchange {
   }
 
   getHistoricalPricesData = (baseToken, quoteToken, startDate) => {
-    console.log(`Fetching historical prices from ${this._exchange}`)
+
     if (!baseToken) {
       throw new Error('baseToken needs to be set')
     }
@@ -223,7 +223,7 @@ class Exchange {
     return this.returnResults(() => {
       switch (this._exchange) {
         case ERCdEX:
-          console.log(`Connecting to WS ${this._exchange}`)
+
           return this._call[this._transport].getTicker[this._exchange](
             this._network,
             baseToken,
@@ -244,7 +244,7 @@ class Exchange {
   getTickers = (
     symbols = SupportedExchanges.Ethfinex.tickersTokenPairs.toString()
   ) => {
-    console.log(`${this._exchange}: Fetching tokens prices`)
+
     // I have only added Ethfinex so far, because this function return every tokens price
     // and we use the data to calcuate the funds assets value.
     // Ethfinex will be our source of truth for the moment.

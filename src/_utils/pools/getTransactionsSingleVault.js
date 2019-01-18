@@ -152,7 +152,7 @@ export const getTransactionsSingleVault = async (
   let eventsFilterBuySell
 
   if (options.trader) {
-    console.log('getTransactionsSingleVault : Trader transactions')
+
     eventsFilterBuySell = [
       [contract.hexSignature.BuyVault, contract.hexSignature.SellVault],
       [hexPoolAddress],
@@ -160,7 +160,7 @@ export const getTransactionsSingleVault = async (
       null
     ]
   } else {
-    console.log('getTransactionsSingleVault: Manager transactions')
+
     eventsFilterBuySell = [
       [
         contract.hexSignature.BuyVault,
@@ -197,7 +197,7 @@ export const getTransactionsSingleVault = async (
           .catch(error => {
             // Sometimes Infura returns null for api.eth.getBlockByNumber, therefore we are assigning a fake timestamp to avoid
             // other issues in the app.
-            console.log(error)
+
             log.timestamp = new Date()
             return log
           })

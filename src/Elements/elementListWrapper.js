@@ -80,7 +80,7 @@ class ElementListWrapper extends Component {
   }
 
   filter = filter => {
-    console.log(filter)
+
     this.setState(
       {
         filter

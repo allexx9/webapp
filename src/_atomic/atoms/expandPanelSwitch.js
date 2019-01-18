@@ -18,7 +18,7 @@ export default class ExpandPanelSwitch extends Component {
   }
 
   toggleSwitch(event) {
-    console.log(event)
+
   }
 
   render() {

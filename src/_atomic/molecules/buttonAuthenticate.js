@@ -16,7 +16,7 @@ class ButtonAuthenticate extends Component {
   }
 
   buttonAuthClick = () => {
-    console.log('auth')
+
     this.props.onAuthEF()
   }
 

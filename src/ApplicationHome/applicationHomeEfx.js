@@ -222,10 +222,10 @@ class ApplicationHomeEfx extends PureComponent {
                 <Row>
                   <Col xs={12}>
                     <h2 style={{ color: '#054186' }}>
-                      The leading crypto platform for asset management.
+                      ORGANIZE YOUR TOKENS
                     </h2>
                     <p style={{ color: '#054186' }}>
-                      In collaboration with <b>Ethfinex Trustless</b>.
+                      In collaboration with <b>Ethfinex</b>.
                     </p>
                   </Col>
                 </Row>
@@ -255,7 +255,7 @@ class ApplicationHomeEfx extends PureComponent {
                     <Link to="/drago">
                       <FlatButton
                         labelPosition="before"
-                        label="Create a pool"
+                        label="EXPLORE DRAGO"
                         labelStyle={{
                           color: '#ffffff',
                           fontWeight: '600',

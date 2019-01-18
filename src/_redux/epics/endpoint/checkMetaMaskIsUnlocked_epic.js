@@ -119,7 +119,7 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
           )
         }),
         exhaustMap(newEndpoint => {
-          console.log('***** FETCH ACCOUNT TRANSACTIONS *****')
+
           let optionsManager = {
             balance: false,
             supply: true,

@@ -58,7 +58,7 @@ class ElementNotificationsDrawer extends Component {
       api,
       recentTransactions
     )
-    console.log(newRecentTransactions)
+
     this.props.dispatch(
       this.updateTransactionsQueueAction(newRecentTransactions)
     )

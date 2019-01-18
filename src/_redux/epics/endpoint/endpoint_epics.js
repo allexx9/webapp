@@ -37,7 +37,7 @@ const attachInterfacePromise = async (api, endpoint) => {
   let newEndpoint
   switch (selectedEndpointName) {
     case INFURA:
-      console.log(`endpoint_epic -> ${INFURA}`)
+
       try {
         newEndpoint = await blockchain.attachInterfaceInfuraV2(api, networkId)
       } catch (err) {
@@ -55,7 +55,7 @@ const attachInterfacePromise = async (api, endpoint) => {
     //   newEndpoint = await blockchain.attachInterfaceRigoBlockV2(api, networkId)
     //   break
     default:
-      console.log(`endpoint_epic -> ${INFURA}`)
+
       try {
         newEndpoint = await blockchain.attachInterfaceInfuraV2(api, networkId)
       } catch (err) {
@@ -146,7 +146,7 @@ export const attachInterfaceEpic = (action$, state$) =>
         mergeMap((error, i) => {
           console.warn(error)
           const retryAttempt = i + 1
-          console.log(`Attempt ${retryAttempt}`)
+
           return timer(scalingDuration)
         }),
         finalize(() => console.log('We are done!'))
@@ -186,7 +186,7 @@ export const monitorAccountsEpic = (action$, state$) => {
       return monitorAccounts$(state$).pipe(
         takeUntil(action$.pipe(ofType(TYPE_.MONITOR_ACCOUNTS_STOP))),
         mergeMap(accountsUpdate => {
-          console.log(accountsUpdate)
+
           const observablesArray = Array(0)
 
           observablesArray.push(
@@ -318,13 +318,13 @@ export const monitorAccountsEpic = (action$, state$) => {
           return Observable.concat(...observablesArray)
         }),
         retryWhen(error => {
-          console.log('monitorAccountsEpic')
+
           let scalingDuration = 3000
           return error.pipe(
             mergeMap((error, i) => {
               console.warn(error)
               const retryAttempt = i + 1
-              console.log(` monitorAccountsEpic Attempt ${retryAttempt}`)
+
               // retry after 1s, 2s, etc...
               return timer(scalingDuration)
             }),

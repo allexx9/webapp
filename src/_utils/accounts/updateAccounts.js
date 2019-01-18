@@ -22,8 +22,8 @@ export const updateAccounts = async (api, blockNumber, endpoint) => {
   } else {
     newBlockNumber = blockNumber
   }
-  console.log(`endpoint_epic -> Last block: ` + prevBlockNumber)
-  console.log(`endpoint_epic -> New block: ` + newBlockNumber.toFixed())
+
+
   // console.log(`endpoint_epic -> Last nonce: ` + prevNonce)
 
   if (new BigNumber(prevBlockNumber).gte(new BigNumber(newBlockNumber))) {
@@ -105,7 +105,7 @@ export const updateAccounts = async (api, blockNumber, endpoint) => {
           Number(prevBlockNumber) !== 0 &&
           Number(prevNonce) !== 0
         ) {
-          console.log(`ETH ${account.name} balance changed.`)
+
           fetchTransactions = true
           let secondaryText = []
           let balDifference = prevEthBalance.minus(newEthBalance)
@@ -113,7 +113,7 @@ export const updateAccounts = async (api, blockNumber, endpoint) => {
             Web3.utils.fromWei(balDifference.toString(16))
           ).toFixed(3)
           if (balDifference.gt(new BigNumber(0))) {
-            console.log(`endpoint_epic -> You transferred ${balDifString} ETH!`)
+
             secondaryText[0] = `You transferred ${balDifString} ETH!`
             secondaryText[1] = utils.dateFromTimeStamp(new Date())
           } else {
@@ -141,7 +141,7 @@ export const updateAccounts = async (api, blockNumber, endpoint) => {
           Number(prevBlockNumber) !== 0 &&
           Number(prevNonce) !== 0
         ) {
-          console.log(`GRG ${account.name} balance changed.`)
+
           fetchTransactions = true
           let secondaryText = []
           let balDifference = prevGrgBalance.minus(newgrgBalance)
@@ -149,7 +149,7 @@ export const updateAccounts = async (api, blockNumber, endpoint) => {
             Web3.utils.fromWei(balDifference.toString(16))
           ).toFixed(3)
           if (balDifference.gt(new BigNumber(0))) {
-            console.log(`endpoint_epic -> You transferred ${balDifString} GRG!`)
+
             secondaryText[0] = `You transferred ${balDifString} GRG!`
             secondaryText[1] = utils.dateFromTimeStamp(new Date())
           } else {

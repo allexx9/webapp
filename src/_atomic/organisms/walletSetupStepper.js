@@ -74,7 +74,7 @@ class WalletSetupStepper extends Component {
   static getDerivedStateFromProps(props, state) {
     const locked = props.endpoint.isMetaMaskLocked
     const correctNetwork = props.endpoint.isMetaMaskNetworkCorrect
-    const holdsTokens = new BigNumber(props.endpoint.grgBalance).gte(1)
+    const holdsTokens = new BigNumber(props.endpoint.grgBalance).gte(0) //removed GRG access requirement
     // console.log(props.endpoint.grgBalance)
     // console.log(holdsTokens)
     if (locked !== state.locked) {

@@ -100,7 +100,7 @@ export const getOrderBookFromRelayEpic = action$ => {
           return { type: TYPE_.ORDERBOOK_INIT, payload: { ...payload } }
         }),
         catchError(error => {
-          console.log(error)
+
           return Observable.of({
             type: TYPE_.QUEUE_ERROR_NOTIFICATION,
             payload: ERRORS.ERR_EXCHANGE_ORDER_BOOK_FETCH
@@ -242,7 +242,7 @@ export const resetLiquidityAndTokenBalancesEpic = action$ => {
   return action$.pipe(
     ofType(TYPE_.UPDATE_LIQUIDITY_AND_TOKENS_BALANCE_RESET),
     exhaustMap(() => {
-      console.log(TYPE_.UPDATE_LIQUIDITY_AND_TOKENS_BALANCE_RESET)
+
       const payload = {
         loading: false,
         liquidity: {

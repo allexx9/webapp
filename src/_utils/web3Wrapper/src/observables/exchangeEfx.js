@@ -14,7 +14,7 @@ const exchangeEfxV0$ = (web3, networkId) => {
     error$.pipe(
       tap(err => {
         console.error(err)
-        console.info(`Retrying in: ${CONSTANTS.RETRY_DELAY} ms.`)
+
       }),
       delay(CONSTANTS.RETRY_DELAY)
     )
