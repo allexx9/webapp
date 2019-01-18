@@ -88,7 +88,8 @@ class ApplicationVaultHome extends Component {
     if (endpoint.loading) {
       return <Loading />
     }
-    const showApp = !openWalletSetup && !endpoint.grgBalance.eq(0)
+    //const showApp = !openWalletSetup && !endpoint.grgBalance.eq(0)
+    const showApp = !openWalletSetup
     return (
       <div style={{ height: '100%' }} ref={node => (this.node = node)}>
         {user.isManager &&

@@ -55,7 +55,7 @@ class JoyrideEfxIntro extends React.Component {
                 infrastructure on{' '}
                 <b className={styles.efxDotted}>Ethfinex Trustless</b>. With
                 just a few clicks, traders can now <b>deploy</b> fully
-                transparent and auditable <b>digital asset pools</b>, based
+                transparent and auditable <b>digital token pools</b>, based
                 around trust and with minimal start up costs.
                 <br />
                 <br /> <b className={styles.rbDotted}>RigoBlock </b>is a{' '}
@@ -78,22 +78,17 @@ class JoyrideEfxIntro extends React.Component {
               <div style={{ fontWeight: 700 }}>
                 {hasGRGBalance && (
                   <div className={styles.icoDate}>
-                    <a
-                      href="https://tokenmarket.net/blockchain/ethereum/assets/rigoblock/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      RigoBlock ICO:
-                    </a>{' '}
-                    18. Dec 2018 - 18. Jan 2019
+                    <a>
+                      GRG gives you the full benefit of Proof of Performance.
+                    </a>
                   </div>
                 )}
                 <div className={styles.icoButton}>
                   <FlatButton
-                    href="https://www.ethfinex.com/token-sales/5c18bcc6af5c05cd089adb9d/RigoBlock"
+                    href="https://tokenmarket.net/crowdsale/rigoblock/terms_of_service"
                     target="_blank"
                     labelPosition="before"
-                    label="Contribute"
+                    label="Purchase GRG"
                     labelStyle={{
                       color: '#ffffff',
                       fontWeight: '600',

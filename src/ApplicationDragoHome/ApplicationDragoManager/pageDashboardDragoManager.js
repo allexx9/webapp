@@ -49,7 +49,7 @@ class PageDashboardDragoManager extends Component {
   }
 
   componentDidMount() {
-    console.log('componentDidMount')
+
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -77,7 +77,7 @@ class PageDashboardDragoManager extends Component {
   }
 
   handlesnackBarRequestClose = () => {
-    console.log('click snack')
+
     this.setState({
       snackBar: false,
       snackBarMsg: ''
@@ -168,7 +168,7 @@ class PageDashboardDragoManager extends Component {
                       icon={<ActionList color={'#054186'} />}
                     />
                     <Tab
-                      label="Funds"
+                      label="Dragos"
                       className={styles.detailsTab}
                       onActive={() =>
                         scrollToElement('#funds-section', { offset: -165 })
@@ -223,7 +223,7 @@ class PageDashboardDragoManager extends Component {
                         this.Dragos = section
                       }}
                     />
-                    <SectionHeader titleText="POOLS" />
+                    <SectionHeader titleText="DRAGOS" />
                   </Col>
                 </Row>
                 <Row>
@@ -232,7 +232,7 @@ class PageDashboardDragoManager extends Component {
                       <ElementFundCreateAction accounts={accounts} />
                     </div>
 
-                    <div className={styles.sectionParagraph}>Your funds:</div>
+                    <div className={styles.sectionParagraph}>Your Dragos:</div>
                     <ElementListWrapper
                       list={dragoList}
                       loading={this.state.loading}
@@ -264,7 +264,7 @@ class PageDashboardDragoManager extends Component {
                 <Row>
                   <Col xs={12}>
                     <div className={styles.sectionParagraph}>
-                      Your funds last 20 transactions:
+                      Your Dragos' last 20 transactions:
                     </div>
 
                     <ElementListWrapper

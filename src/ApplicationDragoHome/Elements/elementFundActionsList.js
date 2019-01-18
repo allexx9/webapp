@@ -45,7 +45,7 @@ export default class ElementFundActionsList extends Component {
     this.setState({
       openMenuActions: false
     })
-    console.log(value)
+
     switch (value) {
       case 'wrapETH':
         this.setState({

@@ -5,7 +5,7 @@ export const genericRetryStrategy = (
   error,
   { maxRetryAttempts = 3, scalingDuration = 1000, excludedStatusCodes = [] }
 ) => {
-  console.log(error)
+
   return error.pipe(
     mergeMap((error, i) => {
       const retryAttempt = i + 1

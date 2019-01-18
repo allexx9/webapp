@@ -157,7 +157,7 @@ class utilities {
         )
       })
     } catch (err) {
-      console.log(err)
+
     }
   }
 
@@ -293,9 +293,9 @@ class utilities {
       // 1.1 Checking if it's a transaction belonging to a Parity account
       if (value.parityId) {
         // 1.2 Checking if the transaction has been accepted (it has got an blockNumber)
-        console.log(`Checking if blockhash undefined`)
+
         if (typeof value.receipt !== 'undefined') {
-          console.log(value.receipt.blockNumber)
+
           // 1.3 Checing if it has blocknumber. It it has it, then no need to proceed further.
           value.receipt.blockNumber.eq(0)
             ? (checkTransaction = true)
@@ -304,7 +304,7 @@ class utilities {
         if (!checkTransaction) {
           return null
         }
-        console.log(`Checking request on Parity wallet`)
+
         api.parity
           .checkRequest(value.parityId, [])
           .then(hash => {
@@ -313,12 +313,12 @@ class utilities {
               api.eth.getTransactionByHash(hash).then(receipt => {
                 value.receipt = receipt
                 if (receipt.blockHash) {
-                  console.log('executed')
+
                   value.status = 'executed'
                   value.timestamp = new Date()
                   // shouldTransactionListUpdate = true
                 } else {
-                  console.log('pending')
+
                   value.status = 'pending'
                   value.timestamp = new Date()
                   // shouldTransactionListUpdate = true

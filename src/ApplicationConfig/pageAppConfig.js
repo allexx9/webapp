@@ -25,7 +25,7 @@ class PageAppConfig extends Component {
   }
 
   onToggleMockMode = (event, isInputChecked) => {
-    console.log(isInputChecked)
+
     this.props.dispatch(
       Actions.app.updateAppConfig({
         isMock: isInputChecked
@@ -58,7 +58,7 @@ class PageAppConfig extends Component {
     let isAllowed = accounts.findIndex(account => {
       return allowedAccounts.includes(account.address.toLowerCase())
     })
-    console.log(isAllowed)
+
     if (isAllowed !== -1) {
       return (
         <div className={styles.mockModeContainer}>

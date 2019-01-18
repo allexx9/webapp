@@ -19,7 +19,7 @@ const contract = web3 => {
           'toBlock ' + endBlock,
           'chuckSize ' + chunkSize
         )
-        console.log(contract)
+
         const chunks = blockChunks(3000000, endBlock, chunkSize)
         arrayPromises = chunks.map(async chunk => {
           let chunkOptions = {
@@ -27,11 +27,11 @@ const contract = web3 => {
             fromBlock: chunk.fromBlock,
             toBlock: chunk.toBlock
           }
-          console.log(events, chunkOptions)
+
           return contract.getPastEvents(events, chunkOptions)
         })
         return await Promise.all(arrayPromises).then(results => {
-          console.log(results)
+
           let events = Array(0).concat(...results)
           return events
         })

@@ -425,8 +425,8 @@ class PageFundDetailsVaultTrader extends Component {
       },
       (error, events) => {
         if (!error) {
-          console.log(`${this.constructor.name} -> New contract event.`)
-          console.log(events)
+
+
           this.initVault()
         }
       }

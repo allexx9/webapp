@@ -89,17 +89,17 @@ class TokenLockInfo extends Component {
   }
 
   isBalanceSufficient = (amount, liquidity) => {
-    console.log(amount, new BigNumber(liquidity).toFixed())
-    console.log(this.state.baseTokenRelock, this.state.quoteTokenRelock)
+
+
     if (this.state.baseTokenRelock || this.state.quoteTokenRelock) {
       return true
     }
-    console.log(amount, new BigNumber(liquidity).toFixed())
+
     return new BigNumber(liquidity).gte(new BigNumber(amount))
   }
 
   isLockTimeGreaterThanCurrent = (currentLockTime, newLockTime) => {
-    console.log(currentLockTime, newLockTime)
+
     return newLockTime > currentLockTime - 1
   }
 
@@ -182,7 +182,7 @@ class TokenLockInfo extends Component {
       }
     } catch (error) {}
     const web3 = new Web3()
-    console.log(web3)
+
     const poolApi = await new PoolApi(window.web3)
     switch (action) {
       case 'lock':
@@ -210,7 +210,7 @@ class TokenLockInfo extends Component {
           showActionRequestMsg: true
         })
 
-        console.log(time)
+
         console.log(
           selectedFund.managerAccount,
           selectedFund.details.address,
@@ -254,7 +254,7 @@ class TokenLockInfo extends Component {
             time,
             isOldERC20
           )
-          console.log(receipt)
+
           transactionDetails.status = 'executed'
           transactionDetails.receipt = receipt
           transactionDetails.hash = receipt.transactionHash
@@ -319,7 +319,7 @@ class TokenLockInfo extends Component {
         break
       case 'unlock':
         // Unloking
-        console.log(baseTokenSelected)
+
         if (
           !this.isBalanceSufficient(
             toBaseUnitAmount(new BigNumber(amount), decimals),
@@ -328,7 +328,7 @@ class TokenLockInfo extends Component {
               : selectedFund.liquidity.quoteToken.balanceWrapper
           )
         ) {
-          console.log(amount, selectedFund.liquidity.baseToken.balanceWrapper)
+
           this.setState({
             errorText: 'You cannot unlock more than locked amount'
           })
@@ -388,9 +388,9 @@ class TokenLockInfo extends Component {
           )
         )
         try {
-          console.log(amount)
-          console.log(new BigNumber(amount).toFixed())
-          console.log(toBaseUnitAmount(new BigNumber(amount), decimals))
+
+
+
           console.log(
             web3.utils.toHex(toBaseUnitAmount(new BigNumber(amount), decimals))
           )
@@ -404,7 +404,7 @@ class TokenLockInfo extends Component {
               ? '0x' + amount.toString(16)
               : '0x' +
                 toBaseUnitAmount(new BigNumber(amount), decimals).toString(16)
-          console.log(amount.toString(16))
+
           await poolApi.contract.drago.init(selectedFund.details.address)
           receipt = await poolApi.contract.drago.operateOnExchangeEFXUnlock(
             selectedFund.managerAccount,
@@ -482,7 +482,7 @@ class TokenLockInfo extends Component {
   }
 
   onChangeAmount = (amount, baseToken, errorText, options = {}) => {
-    console.log(amount, baseToken, errorText, options)
+
     let relock = options.relock || false
     baseToken === true
       ? this.setState({
@@ -499,14 +499,14 @@ class TokenLockInfo extends Component {
   }
 
   onChangeTime = (amount, baseToken, errorText) => {
-    console.log(amount, baseToken, errorText)
+
     baseToken === true
       ? this.setState({ baseTokenLockTime: amount, errorText })
       : this.setState({ quoteTokenLockTime: amount, errorText })
   }
 
   onCheckToken = token => {
-    console.log(token)
+
     switch (token) {
       case 'baseTokenSelected':
         this.setState({

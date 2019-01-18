@@ -36,7 +36,7 @@ export default class FundSelector extends PureComponent {
       return (
         <MenuItem
           key={'noFundsSelector'}
-          primaryText={'Please create a fund to start trading.'}
+          primaryText={'Please create a Drago and feed it with some ETH.'}
         />
       )
     }

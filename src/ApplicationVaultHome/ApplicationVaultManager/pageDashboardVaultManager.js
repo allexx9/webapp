@@ -189,7 +189,7 @@ class PageDashboardVaultManager extends Component {
                       icon={<ActionList color={'#607D8B'} />}
                     />
                     <Tab
-                      label="Holding"
+                      label="Vaults"
                       className={styles.detailsTab}
                       onActive={() =>
                         scrollToElement('#funds-section', { offset: -165 })

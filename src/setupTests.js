@@ -19,7 +19,7 @@ process.on('warning', e => {
   // process.exit(1)
 })
 process.on('error', e => {
-  console.log('err')
+
   console.error(e.stack)
   // process.exit(1)
 })

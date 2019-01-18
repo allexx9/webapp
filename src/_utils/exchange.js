@@ -20,14 +20,14 @@ export const setAllowaceOnExchangeThroughDrago = (
   // var provider = account.source === 'MetaMask' ? window.web3 : api
   const poolApi = new PoolApi(window.web3)
   poolApi.contract.drago.init(selectedFund.details.address)
-  console.log('selectedFund.details.address ', selectedFund.details.address)
+
   console.log(
     'tokenTransferProxyAddress ',
     selectedExchange.tokenTransferProxyAddress
   )
-  console.log('token.address ', token.address)
-  console.log('selectedFund.managerAccount ', selectedFund.managerAccount)
-  console.log('amount ', amount)
+
+
+
   return poolApi.contract.drago.setInfiniteAllowaceOnExchange(
     selectedFund.managerAccount,
     token.address,
@@ -55,7 +55,7 @@ export const getOrdersFromRelayERCdEX = (
   baseTokenAddress,
   quoteTokenAddress
 ) => {
-  console.log('Fetching open orders from ERCdEX')
+
   if (!networkId) {
     throw new Error('networkId needs to be set')
   }
@@ -79,7 +79,7 @@ export const getOrdersFromRelayERCdEX = (
     },
     json: true // Automatically stringifies the body to JSON
   }
-  console.log(options)
+
   return rp(options)
 }
 
@@ -88,7 +88,7 @@ export const getTradeHistoryLogsFromRelayERCdEX = (
   baseTokenAddress,
   quoteTokenAddress
 ) => {
-  console.log('Fetching transactions log from ERCdEX')
+
   if (!networkId) {
     throw new Error('networkId needs to be set')
   }
@@ -109,7 +109,7 @@ export const getTradeHistoryLogsFromRelayERCdEX = (
     },
     json: true // Automatically stringifies the body to JSON
   }
-  console.log(options)
+
   return rp(options)
 }
 
@@ -148,7 +148,7 @@ export const getHistoricalPricesDataFromERCdEX = (
       return historical
     })
     .catch(error => {
-      console.log(error)
+
       return []
     })
 }
@@ -313,13 +313,13 @@ export const formatOrders = (orders, orderType) => {
 export const signOrder = async (order, selectedExchange, walletAddress) => {
   const baseTokenDecimals = order.selectedTokensPair.baseToken.decimals
   const quoteTokenDecimals = order.selectedTokensPair.quoteToken.decimals
-  console.log(baseTokenDecimals, quoteTokenDecimals)
+
   let makerTokenAmount, takerTokenAmount
   const zeroEx = new ZeroEx(window.web3.currentProvider, selectedExchange)
-  console.log(order.orderFillAmount, order.orderPrice)
+
   switch (order.orderType) {
     case 'asks':
-      console.log('asks')
+
       makerTokenAmount = new BigNumber(order.orderFillAmount)
       takerTokenAmount = new BigNumber(order.orderFillAmount).times(
         new BigNumber(order.orderPrice)
@@ -334,7 +334,7 @@ export const signOrder = async (order, selectedExchange, walletAddress) => {
       )
       break
     case 'bids':
-      console.log('bids')
+
       makerTokenAmount = new BigNumber(order.orderFillAmount).times(
         new BigNumber(order.orderPrice)
       )
@@ -349,7 +349,7 @@ export const signOrder = async (order, selectedExchange, walletAddress) => {
       )
       break
     default:
-      console.log('asks')
+
       makerTokenAmount = new BigNumber(order.orderFillAmount)
       takerTokenAmount = new BigNumber(order.orderFillAmount).times(
         new BigNumber(order.orderPrice)
@@ -377,7 +377,7 @@ export const signOrder = async (order, selectedExchange, walletAddress) => {
   // }
   // console.log(orderToBeSigned)
   const orderHash = ZeroEx.getOrderHashHex(orderToBeSigned)
-  console.log(ZeroEx.isValidOrderHash(orderHash))
+
   const shouldAddPersonalMessagePrefix = true
   const signer = await zeroEx.getAvailableAddressesAsync()
   const ecSignature = await zeroEx.signOrderHashAsync(
@@ -385,8 +385,8 @@ export const signOrder = async (order, selectedExchange, walletAddress) => {
     signer[0],
     shouldAddPersonalMessagePrefix
   )
-  console.log(`signer address ${walletAddress}`)
-  console.log(ZeroEx.isValidSignature(orderHash, ecSignature, walletAddress))
+
+
   // Append signature to order
   const signedOrder = {
     ...orderToBeSigned,
@@ -396,7 +396,7 @@ export const signOrder = async (order, selectedExchange, walletAddress) => {
 }
 
 export const submitOrderToRelayEFX = async (efxOrder, networkId) => {
-  console.log(efxOrder)
+
   // const ZeroExConfig = {
   //   networkId: 42
   //   // exchangeContractAddress: this._network.id
@@ -428,7 +428,7 @@ export const cancelOrderFromRelayEFX = async (
   signature,
   networkId
 ) => {
-  console.log(signature)
+
   // const ZeroExConfig = {
   //   networkId: 42
   //   // exchangeContractAddress: this._network.id
@@ -457,7 +457,7 @@ export const cancelOrderFromRelayEFX = async (
 }
 
 export const submitOrderToRelay = async signedOrder => {
-  console.log(signedOrder)
+
   const ZeroExConfig = {
     networkId: 42
     // exchangeContractAddress: this._network.id
@@ -479,7 +479,7 @@ export const submitOrderToRelay = async signedOrder => {
 }
 
 export const softCancelOrderFromRelayERCdEX = async signedOrder => {
-  console.log(signedOrder)
+
   const relayerApiUrl = `https://api.ercdex.com/api/orders/soft-cancel`
   // const relayerClient = new HttpClient(relayerApiUrl);
   // const response = await relayerClient.submitOrderAsync(signedOrder);
@@ -517,7 +517,7 @@ export const getFees = async (order, networkId) => {
     },
     json: true // Automatically stringifies the body to JSON
   }
-  console.log(options.qs)
+
   return rp(options)
 }
 
@@ -525,8 +525,8 @@ export const getTokenAllowance = async (token, ownerAddress, ZeroExConfig) => {
   if (token.symbol === 'ETH') {
     return true
   }
-  console.log(token.symbol)
-  console.log(ZeroExConfig)
+
+
   const zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig)
   return zeroEx.token.getProxyAllowanceAsync(token.address, ownerAddress)
 }
@@ -573,7 +573,7 @@ export const getMarketTakerOrder = async (
     },
     json: true // Automatically stringifies the body to JSON
   }
-  console.log(options.qs)
+
   return rp(options)
 }
 
@@ -591,9 +591,9 @@ export const fillOrderToExchange = async (
     DECIMALS
   )
   const takerAddress = await zeroEx.getAvailableAddressesAsync()
-  console.log(takerAddress)
-  console.log(fillTakerTokenAmount)
-  console.log(signedOrder)
+
+
+
   const txHash = await zeroEx.exchange.fillOrderAsync(
     signedOrder,
     fillTakerTokenAmount,
@@ -604,7 +604,7 @@ export const fillOrderToExchange = async (
     }
   )
   const txReceipt = await zeroEx.awaitTransactionMinedAsync(txHash)
-  console.log('FillOrder transaction receipt: ', txReceipt)
+
 }
 
 export const fillOrderToExchangeViaProxy = async (
@@ -618,7 +618,7 @@ export const fillOrderToExchangeViaProxy = async (
 
   const order = signedOrder
 
-  console.log(JSON.stringify(signedOrder))
+
 
   const orderAddresses = [
     order.maker,
@@ -675,7 +675,7 @@ export const cancelOrderOnExchangeViaProxy = async (
 
   const order = signedOrder
 
-  console.log(JSON.stringify(signedOrder))
+
 
   const orderAddresses = [
     order.maker,
@@ -787,28 +787,28 @@ class Exchange {
     let api
     if (this._onWs) {
       try {
-        console.log('Network: ', this._network.name)
-        console.log('Connecting to: ', this._wss)
+
+
         api = new Web3(this._wss)
         api._rb = {}
         api._rb.network = this._network
         this.api = api
         return new api.eth.Contract(this._exchangeAbi, this._exchangeAddress)
       } catch (error) {
-        console.log('Connection error: ', error)
+
         return error
       }
     } else {
       try {
-        console.log('Network: ', this._network.name)
-        console.log('Connecting to: ', this._https)
+
+
         api = new Web3(this._https)
         api._rb = {}
         api._rb.network = this._network
         this.api = api
         return new api.eth.Contract(this._exchangeAbi, this._exchangeAddress)
       } catch (error) {
-        console.log('Connection error: ', error)
+
         return error
       }
     }
@@ -865,7 +865,7 @@ class Exchange {
   }
 
   submitOrderToRelay = async signedOrder => {
-    console.log(signedOrder)
+
     const relayerApiUrl = 'https://api.kovan.radarrelay.com/0x/v0/order'
     let options = {
       method: 'POST',
@@ -876,15 +876,15 @@ class Exchange {
 
     rp(options)
       .then(function(parsedBody) {
-        console.log(parsedBody)
+
       })
       .catch(function(err) {
-        console.log(err)
+
       })
   }
 
   updateOrderToOrderBook = (order, orders, action) => {
-    console.log(order, orders, action)
+
     let orderPrice, orderAmount, orderType
     this._baseTokenAddress === order.makerTokenAddress
       ? (orderType = 'asks')
@@ -935,7 +935,7 @@ class Exchange {
 
     switch (action) {
       case 'add':
-        console.log(action)
+
         switch (orderType) {
           case 'asks':
             newOrders.asksOrders.push(orderObject)
@@ -947,7 +947,7 @@ class Exchange {
         }
         break
       case 'remove':
-        console.log(action)
+
         switch (orderType) {
           case 'asks':
             newOrders.asksOrders = orders.asksOrders.filter(oldOrder => {
@@ -965,7 +965,7 @@ class Exchange {
       default:
         newOrders = { ...orders }
     }
-    console.log(newOrders)
+
     return newOrders
   }
 }

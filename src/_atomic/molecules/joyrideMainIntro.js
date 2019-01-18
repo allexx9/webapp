@@ -136,14 +136,9 @@ class JoyrideMainIntro extends React.Component {
                   <div style={{ fontWeight: 700 }}>
                     {hasGRGBalance && (
                       <div className={styles.icoDate}>
-                        <a
-                          href="https://tokenmarket.net/blockchain/ethereum/assets/rigoblock/"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          RigoBlock ICO:
-                        </a>{' '}
-                        18. Dec 2018 - 18. Jan 2019
+                      <a>
+                        GRG gives you the full benefit of Proof of Performance.
+                      </a>
                       </div>
                     )}
                     <div className={styles.icoButton}>
@@ -151,7 +146,7 @@ class JoyrideMainIntro extends React.Component {
                         href="https://tokenmarket.net/crowdsale/rigoblock/terms_of_service"
                         target="_blank"
                         labelPosition="before"
-                        label="Contribute"
+                        label="Purchase GRG"
                         labelStyle={{
                           color: '#ffffff',
                           fontWeight: '600',

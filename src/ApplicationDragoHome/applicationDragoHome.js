@@ -85,7 +85,8 @@ class ApplicationDragoHome extends Component {
         ? true
         : false
 
-    const showApp = !openWalletSetup && !endpoint.grgBalance.eq(0)
+    //const showApp = !openWalletSetup && !endpoint.grgBalance.eq(0)
+    const showApp = !openWalletSetup
     return (
       <div style={{ height: '100%' }} ref={node => (this.node = node)}>
         {user.isManager && showApp && (
