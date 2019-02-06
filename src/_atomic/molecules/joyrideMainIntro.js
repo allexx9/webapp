@@ -137,16 +137,15 @@ class JoyrideMainIntro extends React.Component {
                     {hasGRGBalance && (
                       <div className={styles.icoDate}>
                       <a>
-                        GRG gives you the full benefit of Proof of Performance.
+                        GRG gives you the full benefit of Proof of Performance. Receive GRG by operating a Vault.
                       </a>
                       </div>
                     )}
                     <div className={styles.icoButton}>
                       <FlatButton
-                        href="https://tokenmarket.net/crowdsale/rigoblock/terms_of_service"
-                        target="_blank"
+                        href="https://beta.rigoblock.com/#/app/web/vault/dashboard"
                         labelPosition="before"
-                        label="Purchase GRG"
+                        label="Earn GRG"
                         labelStyle={{
                           color: '#ffffff',
                           fontWeight: '600',

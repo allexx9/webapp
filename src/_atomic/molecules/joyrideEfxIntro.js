@@ -61,9 +61,8 @@ class JoyrideEfxIntro extends React.Component {
                 <br /> <b className={styles.rbDotted}>RigoBlock </b>is a{' '}
                 <b>blockchain protocol</b> for <b>decentralized</b> asset
                 management. It is an abstracted and generalized standard, built
-                and deployed on the Ethereum public blockchain and portable to
-                multiple blockchains, which streamlines the creation and
-                management of complex <b>applications for asset management</b>.
+                and deployed on the Ethereum public blockchain, which streamlines the creation and
+                management of <b>applications for asset management</b>.
               </div>
             </div>
           </Col>
@@ -79,16 +78,15 @@ class JoyrideEfxIntro extends React.Component {
                 {hasGRGBalance && (
                   <div className={styles.icoDate}>
                     <a>
-                      GRG gives you the full benefit of Proof of Performance.
+                      GRG gives you the full benefit of Proof of Performance. Receive GRG by operating a Vault.
                     </a>
                   </div>
                 )}
                 <div className={styles.icoButton}>
                   <FlatButton
-                    href="https://tokenmarket.net/crowdsale/rigoblock/terms_of_service"
-                    target="_blank"
+                    href="https://beta.rigoblock.com/#/app/web/vault/dashboard"
                     labelPosition="before"
-                    label="Purchase GRG"
+                    label="Earn GRG"
                     labelStyle={{
                       color: '#ffffff',
                       fontWeight: '600',
