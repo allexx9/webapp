@@ -85,7 +85,8 @@ export const RELAYS = {
 }
 
 export const DEFAULT_RELAY = {
-  kovan: 'ERCdEX',
+  //kovan: 'ERCdEX',
+  kovan: 'Ethfinex',
   ropsten: 'Ethfinex',
   mainnet: 'Ethfinex'
 }
@@ -314,6 +315,14 @@ export const EXCHANGES = {
     mainnet: {}
   },
   Ethfinex: {
+    kovan: {
+      tokenTransferProxy: '0x0000000000000000000000000000000000000000',
+      exchangeContractAddress: '0x35dD2932454449b14Cee11A94d3674a936d5d7b2', // 0x V2 address EFX HOT WALLET 0x9faf5515f177F3A8a845D48C19032b33Cc54C09C
+      feeRecipient: '',
+      networkId: 42,
+      name: 'Ethfinex',
+      taker: 'NULL_ADDRESS'
+    },
     ropsten: {
       // Old contracts
       // tokenTransferProxy: '0xcc040edf6e508c4372a62b1a902c69dcc52ceb1d'

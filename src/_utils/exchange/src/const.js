@@ -29,7 +29,7 @@ export const SupportedExchanges = {
     }
   },
   Ethfinex: {
-    supportedNetworks: ['1', '3'],
+    supportedNetworks: ['1', '3', '42'],
     tickersTokenPairs: ['tZRXETH', 'tMKRETH', 'tGNTETH'],
     http: {
       mainnet: 'https://api.ethfinex.com',

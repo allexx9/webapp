@@ -116,7 +116,7 @@ const getPoolDetails$ = (poolId, networkInfo, options, state$) => {
               buyPrice: null,
               sellPrice: null,
               totalSupply: null,
-              created: '01 January 1970',
+              created: 'date loading',
               balanceDRG: null
             })
           : observer.next({
@@ -130,7 +130,7 @@ const getPoolDetails$ = (poolId, networkInfo, options, state$) => {
               buyPrice: null,
               sellPrice: null,
               totalSupply: null,
-              created: '01 January 1970',
+              created: 'date loading',
               balanceDRG: null,
               fee: null
             })
@@ -214,7 +214,7 @@ export const getPoolDetailsEpic = (action$, state$) => {
               relayName = Ethfinex
               break
             case 42:
-              relayName = ERCdEX
+              relayName = Ethfinex //ERCdEX
               break
             default:
               relayName = Ethfinex

@@ -800,7 +800,7 @@ export const TRADE_TOKENS_PAIRS = {
       exchanges: [Ethfinex]
     },
     [ETH]: {
-      networks: [1, 3],
+      networks: [1, 3, 42],
       symbol: ETH,
       exchanges: [Ethfinex]
     },
