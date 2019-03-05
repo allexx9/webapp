@@ -4,7 +4,7 @@ const NETWORKS = {
   ganache: 'http://localhost:8545',
   mainnet: 'https://mainnet.infura.io/v3/d48872aa1c00471c825e9d856c3c3138',
   ropsten: 'https://ropsten.infura.io/v3/d48872aa1c00471c825e9d856c3c3138',
-  kovan: 'https://kovan.infura.io/v3/d48872aa1c00471c825e9d856c3c3138'
+  kovan: 'https://kovan.infura.io/v3/2861272b6af34e5894e1b911b6da73db'
 }
 
 module.exports = {
