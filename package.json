@@ -73,12 +73,12 @@
     "shallowequal": "^1.1.0",
     "style-loader": "^0.23.0",
     "universal-cookie": "^3.0.7",
-    "web3": "^1.0.0-beta.36",
-    "web3-core": "^1.0.0-beta.36",
-    "web3-eth-abi": "^1.0.0-beta.36",
-    "web3-eth-contract": "^1.0.0-beta.36",
-    "web3-eth-personal": "^1.0.0-beta.36",
-    "web3-net": "^1.0.0-beta.36",
+    "web3": "1.0.0-beta.36",
+    "web3-core": "1.0.0-beta.36",
+    "web3-eth-abi": "1.0.0-beta.36",
+    "web3-eth-contract": "1.0.0-beta.36",
+    "web3-eth-personal": "1.0.0-beta.36",
+    "web3-net": "1.0.0-beta.36",
     "websocket": "^1.0.26"
   },
   "scripts": {

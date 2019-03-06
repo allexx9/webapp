@@ -78,18 +78,19 @@ export const RELAYS = {
       baseTokenSymbol: 'ETH',
       quoteTokenSymbol: 'USDT'
     },
-    supportedNetworks: ['1', '3'],
+    supportedNetworks: ['1', '3', '42'],
     isTokenWrapper: true,
     meta: {}
   }
 }
 
 export const DEFAULT_RELAY = {
-  //kovan: 'ERCdEX',
   kovan: 'Ethfinex',
   ropsten: 'Ethfinex',
   mainnet: 'Ethfinex'
 }
+
+//kovan: 'ERCdEX',
 
 // export const ERCdEX = "ERCdEX"
 // export const Ethfinex = "Ethfinex"
@@ -316,12 +317,12 @@ export const EXCHANGES = {
   },
   Ethfinex: {
     kovan: {
-      tokenTransferProxy: '0x0000000000000000000000000000000000000000',
-      exchangeContractAddress: '0x35dD2932454449b14Cee11A94d3674a936d5d7b2', // 0x V2 address EFX HOT WALLET 0x9faf5515f177F3A8a845D48C19032b33Cc54C09C
+      tokenTransferProxy: '0x087Eed4Bc1ee3DE49BeFbd66C662B434B15d49d4', // 0xV1 addresses
+      exchangeContractAddress: '0x90fe2af704b34e0224bf2299c838e04d4dcf1364', // 0xV2 0x35dD2932454449b14Cee11A94d3674a936d5d7b2
       feeRecipient: '',
       networkId: 42,
       name: 'Ethfinex',
-      taker: 'NULL_ADDRESS'
+      taker: '0x9faf5515f177F3A8a845D48C19032b33Cc54C09C' // EFX HOT WALLET
     },
     ropsten: {
       // Old contracts
