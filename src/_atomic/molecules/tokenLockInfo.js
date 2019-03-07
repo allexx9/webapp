@@ -108,7 +108,7 @@ class TokenLockInfo extends Component {
       selectedFund,
       selectedTokensPair,
       selectedRelay,
-      selectedExchange
+      selectedExchange // TODO: must be reviewed with 0xv2 migration
     } = this.props
     const {
       baseTokenSelected,
