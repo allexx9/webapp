@@ -76,7 +76,7 @@ export const getVaultDetails = async (
                   try {
                     date = dateFromTimeStampHuman(result.timestamp)
                   } catch (error) {
-                    date = '01 January 1970'
+                    date = 'date loading'
                   }
                   return date
                 })
@@ -85,10 +85,10 @@ export const getVaultDetails = async (
                   throw new Error(error)
                 })
             } else {
-              return '01 January 1970'
+              return 'date loading'
             }
           } else {
-            return '01 January 1970'
+            return 'date loading'
           }
         })
         .catch(error => {
