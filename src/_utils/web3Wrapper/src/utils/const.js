@@ -67,16 +67,16 @@ export const ENDPOINTS = {
     name: 'INFURA',
     https: {
       42: {
-        dev: 'https://kovan.infura.io/metamask',
-        prod: 'https://kovan.infura.io/metamask'
+        dev: 'https://kovan.infura.io/v3/dc30ca8fb7824f42976ece0e74884807',
+        prod: 'https://kovan.infura.io/v3/dc30ca8fb7824f42976ece0e74884807'
       },
       3: {
-        dev: 'https://ropsten.infura.io/metamask',
-        prod: 'https://ropsten.infura.io/metamask'
+        dev: 'https://ropsten.infura.io/v3/dc30ca8fb7824f42976ece0e74884807',
+        prod: 'https://ropsten.infura.io/v3/dc30ca8fb7824f42976ece0e74884807'
       },
       1: {
-        dev: 'https://mainnet.infura.io/metamask',
-        prod: 'https://mainnet.infura.io/metamask'
+        dev: 'https://mainnet.infura.io/v3/dc30ca8fb7824f42976ece0e74884807',
+        prod: 'https://mainnet.infura.io/v3/dc30ca8fb7824f42976ece0e74884807'
       }
     },
     wss: {
