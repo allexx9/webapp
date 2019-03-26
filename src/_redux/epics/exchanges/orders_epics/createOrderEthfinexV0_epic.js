@@ -52,18 +52,46 @@ const newMakerOrderV0 = (orderSide, options, state$) => {
 
   const web3 = new Web3()
 
+  const ERC20_METHOD_ABI = {
+    constant: false,
+    inputs: [
+        {
+            name: 'tokenContract',
+            type: 'address',
+        },
+    ],
+    name: 'ERC20Token',
+    outputs: [],
+    payable: false,
+    stateMutability: 'nonpayable',
+    type: 'function',
+  }
+
+  const makerAssetData = web3.eth.abi.encodeFunctionCall(
+    ERC20_METHOD_ABI,
+    [makerTokenAddress.toLowerCase()]
+  )
+
+  const takerAssetData = web3.eth.abi.encodeFunctionCall(
+    ERC20_METHOD_ABI,
+    [takerTokenAddress.toLowerCase()]
+  )
+
   const order = {
-    expirationUnixTimestampSec: orderExpirationTime.toString(),
+    expirationTimeSeconds: orderExpirationTime.toString(),
     feeRecipient: selectedExchange.feeRecipient.toLowerCase(),
 
-    maker: selectedFund.details.address.toLowerCase(),
+    makerAddress: selectedFund.details.address.toLowerCase(),
+    makerAssetData: makerAssetData, // assetDataUtils.encodeERC20AssetData(makerTokenAddress.toLowerCase()),
     makerFee: web3.utils.toBN('0'),
-    makerTokenAddress: makerTokenAddress.toLowerCase(),
+    //makerTokenAddress: makerTokenAddress.toLowerCase(),
 
     salt: ZeroEx.generatePseudoRandomSalt(),
-    taker: selectedExchange.taker.toLowerCase(),
+    senderAddress: selectedExchange.feeRecipient.toLowerCase(), // hot wallet
+    takerAddress: '0x0000000000000000000000000000000000000000',
+    takerAssetData: takerAssetData, // assetDataUtils.encodeERC20AssetData(takerTokenAddress.toLowerCase()),
     takerFee: web3.utils.toBN('0'),
-    takerTokenAddress: takerTokenAddress.toLowerCase(),
+    //takerTokenAddress: takerTokenAddress.toLowerCase(),
 
     exchangeContractAddress: selectedExchange.exchangeContractAddress.toLowerCase()
   }

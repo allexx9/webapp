@@ -682,12 +682,12 @@ export const cancelOrderOnExchangeViaProxy = async (
   const order = signedOrder
 
 
-
+  // TODO: add senderAddress and check format
   const orderAddresses = [
-    order.maker,
-    order.taker,
-    order.makerTokenAddress,
-    order.takerTokenAddress,
+    order.makerAddress,
+    order.takerAddress,
+    order.makerAssetData,
+    order.takerAssetData,
     order.feeRecipient
   ]
   const orderValues = [
@@ -695,7 +695,7 @@ export const cancelOrderOnExchangeViaProxy = async (
     order.takerTokenAmount,
     order.makerFee,
     order.takerFee,
-    order.expirationUnixTimestampSec,
+    order.expirationTimeSeconds,
     order.salt
   ]
   console.log(
