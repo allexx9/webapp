@@ -275,9 +275,9 @@ const getAccountOrdersFromRelay$ = (
   )
 
 export const getAccountOrdersEpic = action$ => {
-  return action$.pipe(
-    ofType(customRelayAction(FETCH_ACCOUNT_ORDERS_START)),
-    mergeMap(action => {
+  return action$
+    .ofType(customRelayAction(FETCH_ACCOUNT_ORDERS_START))
+    .mergeMap(action => {
       return Observable.concat(
         // Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: true }}),
         zip(
@@ -310,7 +310,6 @@ export const getAccountOrdersEpic = action$ => {
         // Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: false }}),
       )
     })
-  )
 }
 
 //
@@ -356,40 +355,37 @@ const getAssetsPricesDataFromERCdEX$ = (
     })
 
 export const getAssetsPricesDataFromERCdEXEpic = action$ => {
-  return action$.pipe(
-    ofType(FETCH_ASSETS_PRICE_DATA),
-    mergeMap(action => {
-      const observableArray = () => {
-        const observableArray = Array(0)
-        for (let property in action.payload.assets) {
-          if (action.payload.assets.hasOwnProperty(property)) {
-            // console.log(action.payload.assets[property])
-            observableArray.push(
-              getAssetsPricesDataFromERCdEX$(
-                action.payload.networkId,
-                action.payload.assets[property].symbol,
-                action.payload.assets[property].address,
-                action.payload.quoteToken,
-                new Date(
-                  (Math.floor(Date.now() / 1000) - 86400 * 7) * 1000
-                ).toISOString()
-              )
+  return action$.ofType(FETCH_ASSETS_PRICE_DATA).mergeMap(action => {
+    const observableArray = () => {
+      const observableArray = Array(0)
+      for (let property in action.payload.assets) {
+        if (action.payload.assets.hasOwnProperty(property)) {
+          // console.log(action.payload.assets[property])
+          observableArray.push(
+            getAssetsPricesDataFromERCdEX$(
+              action.payload.networkId,
+              action.payload.assets[property].symbol,
+              action.payload.assets[property].address,
+              action.payload.quoteToken,
+              new Date(
+                (Math.floor(Date.now() / 1000) - 86400 * 7) * 1000
+              ).toISOString()
             )
-          }
+          )
         }
-        return observableArray
       }
-      return Observable.forkJoin(observableArray()).map(result => {
-        const arrayToObject = (arr, keyField) =>
-          Object.assign({}, ...arr.map(item => ({ [item[keyField]]: item })))
-        const assetsCharts = arrayToObject(result, 'symbol')
-        return {
-          type: UPDATE_SELECTED_DRAGO_DETAILS,
-          payload: {
-            assetsCharts
-          }
+      return observableArray
+    }
+    return Observable.forkJoin(observableArray()).map(result => {
+      const arrayToObject = (arr, keyField) =>
+        Object.assign({}, ...arr.map(item => ({ [item[keyField]]: item })))
+      const assetsCharts = arrayToObject(result, 'symbol')
+      return {
+        type: UPDATE_SELECTED_DRAGO_DETAILS,
+        payload: {
+          assetsCharts
         }
-      })
+      }
     })
-  )
+  })
 }
