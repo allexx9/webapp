@@ -10,7 +10,7 @@
     "@manaflair/redux-batch": "^0.1.0",
     "@rigoblock/contracts": "^0.3.8",
     "@rigoblock/exchange-connector": "^0.0.12",
-    "@sentry/browser": "4.3.4",
+    "@sentry/browser": "^4.3.4",
     "@types/web3": "^1.0.12",
     "babel-plugin-transform-remove-console": "^6.9.4",
     "babel-register": "^6.26.0",
