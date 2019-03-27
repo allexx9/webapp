@@ -44,13 +44,15 @@ const setTokenAllowance$ = (
   )
 
 export const setTokenAllowanceEpic = action$ => {
-  return action$.ofType(SET_TOKEN_ALLOWANCE).mergeMap(action => {
-    return setTokenAllowance$(
-      action.payload.tokenAddress,
-      action.payload.ownerAddress,
-      action.payload.spenderAddress,
-      action.payload.ZeroExConfig
-    )
+  return action$.pipe(
+    ofType(SET_TOKEN_ALLOWANCE),
+    mergeMap(action => {
+      return setTokenAllowance$(
+        action.payload.tokenAddress,
+        action.payload.ownerAddress,
+        action.payload.spenderAddress,
+        action.payload.ZeroExConfig
+      )
       .map(() => {
         return {
           type: UPDATE_TRADE_TOKENS_PAIR,
@@ -63,7 +65,8 @@ export const setTokenAllowanceEpic = action$ => {
         console.warn(err)
         return of(false)
       })
-  })
+    })
+  )
 }
 
 //
