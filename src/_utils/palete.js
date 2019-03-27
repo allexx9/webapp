@@ -810,13 +810,13 @@ let palette = (function() {
 })()
 
 /** @typedef {function(number): string} */
-palette.ColorFunction
+palette.ColorFunction // eslint-disable-line no-unused-expressions
 
 /** @typedef {!Array<string>} */
-palette.Palette
+palette.Palette // eslint-disable-line no-unused-expressions
 
 /** @typedef {!Object<number, palette.Palette>|!Array<palette.Palette>} */
-palette.PalettesList
+palette.PalettesList // eslint-disable-line no-unused-expressions
 
 /**
  * @typedef {
@@ -832,7 +832,7 @@ palette.PalettesList
  *     setColorFunction: function(palette.ColorFunction, boolean=, boolean=),
  *     color: function(number, ...?): ?string}}
  */
-palette.SchemeType
+palette.SchemeType // eslint-disable-line no-unused-expressions
 
 /* mpn65 palette start here. ************************************************/
 
