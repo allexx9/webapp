@@ -67,34 +67,43 @@ const newMakerOrderV0 = (orderSide, options, state$) => {
     type: 'function',
   }
 
-  const makerAssetData = web3.eth.abi.encodeFunctionCall(
+  const encodedMakerToken = web3.eth.abi.encodeFunctionCall(
     ERC20_METHOD_ABI,
     [makerTokenAddress.toLowerCase()]
   )
 
-  const takerAssetData = web3.eth.abi.encodeFunctionCall(
+  const encodedTakerToken = web3.eth.abi.encodeFunctionCall(
     ERC20_METHOD_ABI,
     [takerTokenAddress.toLowerCase()]
   )
 
   const order = {
-    expirationTimeSeconds: orderExpirationTime.toString(),
-    feeRecipient: selectedExchange.feeRecipient.toLowerCase(),
-
+    // TODO: check inputs, exchange is 0xV2, relayer is hot wallet
     makerAddress: selectedFund.details.address.toLowerCase(),
-    makerAssetData: makerAssetData, // assetDataUtils.encodeERC20AssetData(makerTokenAddress.toLowerCase()),
+    takerAddress: '0x0000000000000000000000000000000000000000',
+
+    feeRecipientAddress: selectedExchange.feeRecipient.toLowerCase(),
+    senderAddress: selectedExchange.feeRecipient.toLowerCase(), // hot wallet
+
+    //makerAssetAmount: web3.utils.toBN('0'), // we try without defining the amounts first
+
+    //takerAssetAmount: web3.utils.toBN('0'), // we try without defining the amounts first
+
     makerFee: web3.utils.toBN('0'),
-    //makerTokenAddress: makerTokenAddress.toLowerCase(),
+
+    takerFee: web3.utils.toBN('0'),
+
+    expirationTimeSeconds: orderExpirationTime.toString(),
 
     salt: ZeroEx.generatePseudoRandomSalt(),
-    senderAddress: selectedExchange.feeRecipient.toLowerCase(), // hot wallet
-    takerAddress: '0x0000000000000000000000000000000000000000',
-    takerAssetData: takerAssetData, // assetDataUtils.encodeERC20AssetData(takerTokenAddress.toLowerCase()),
-    takerFee: web3.utils.toBN('0'),
-    //takerTokenAddress: takerTokenAddress.toLowerCase(),
 
-    exchangeContractAddress: selectedExchange.exchangeContractAddress.toLowerCase()
+    makerAssetData: encodedMakerToken, // assetDataUtils.encodeERC20AssetData(makerTokenAddress.toLowerCase()),
+
+    takerAssetData: encodedTakerToken, // assetDataUtils.encodeERC20AssetData(takerTokenAddress.toLowerCase()),
+
+    exchangeAddress: selectedExchange.exchangeContractAddress.toLowerCase()
   }
+
   const makerOrder = {
     details: {
       order: order,
