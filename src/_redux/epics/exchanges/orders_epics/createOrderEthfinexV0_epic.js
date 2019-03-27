@@ -85,9 +85,9 @@ const newMakerOrderV0 = (orderSide, options, state$) => {
     feeRecipientAddress: selectedExchange.feeRecipient.toLowerCase(),
     senderAddress: selectedExchange.feeRecipient.toLowerCase(), // hot wallet
 
-    //makerAssetAmount: web3.utils.toBN('0'), // we try without defining the amounts first
+    makerAssetAmount: web3.utils.toBN('0'), // we try without defining the amounts first
 
-    //takerAssetAmount: web3.utils.toBN('0'), // we try without defining the amounts first
+    takerAssetAmount: web3.utils.toBN('0'), // we try without defining the amounts first
 
     makerFee: web3.utils.toBN('0'),
 

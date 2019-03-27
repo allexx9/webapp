@@ -314,7 +314,7 @@ export const EXCHANGES = {
     kovan: {
       tokenTransferProxy: '0x087Eed4Bc1ee3DE49BeFbd66C662B434B15d49d4', // 0xV1 addresses
       exchangeContractAddress: '0x90fe2af704b34e0224bf2299c838e04d4dcf1364', // 0xV2 0x35dD2932454449b14Cee11A94d3674a936d5d7b2
-      feeRecipient: '',
+      feeRecipient: '0x9faf5515f177F3A8a845D48C19032b33Cc54C09C',
       networkId: 42,
       name: 'Ethfinex',
       taker: '0x9faf5515f177F3A8a845D48C19032b33Cc54C09C' // EFX HOT WALLET

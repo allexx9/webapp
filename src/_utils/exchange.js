@@ -6,11 +6,15 @@ import * as abis from '../PoolsApi/src/contracts/abi'
 import { BigNumber } from '@0xproject/utils'
 import { INFURA, KOVAN, PROD, WS } from './const'
 import { ZeroEx } from '0x.js'
+//import { signatureUtils, orderHashUtils } from '@0x/oder-utils' // TODO: deprecate old 0x.js library
 import Web3 from 'web3'
-import {AbiCoder} from 'web3-eth-abi' // this is new
 // import ReconnectingWebSocket from 'reconnectingwebsocket'
 import PoolApi from '../PoolsApi/src'
 import rp from 'request-promise'
+
+const { signatureUtils, orderHashUtils } = require('@0x/order-utils')
+const { MetamaskSubprovider } = require('@0x/subproviders')
+const { SignatureType } = require('@0x/types')
 
 export const setAllowaceOnExchangeThroughDrago = (
   selectedFund,
@@ -317,6 +321,7 @@ export const signOrder = async (order, selectedExchange, walletAddress) => {
 
   let makerAssetAmount, takerAssetAmount
   const zeroEx = new ZeroEx(window.web3.currentProvider, selectedExchange)
+  const fee_rate = 0.0025
 
   switch (order.orderType) {
     case 'asks':
@@ -325,6 +330,7 @@ export const signOrder = async (order, selectedExchange, walletAddress) => {
       takerAssetAmount = new BigNumber(order.orderFillAmount).times(
         new BigNumber(order.orderPrice)
       )
+      .times(1 - fee_rate) // TODO: verify
       makerAssetAmount = ZeroEx.toBaseUnitAmount(
         makerAssetAmount,
         baseTokenDecimals
@@ -340,6 +346,7 @@ export const signOrder = async (order, selectedExchange, walletAddress) => {
         new BigNumber(order.orderPrice)
       )
       takerAssetAmount = new BigNumber(order.orderFillAmount)
+      .times(1 - fee_rate) // TODO: verify
       makerAssetAmount = ZeroEx.toBaseUnitAmount(
         makerAssetAmount,
         quoteTokenDecimals
@@ -355,6 +362,7 @@ export const signOrder = async (order, selectedExchange, walletAddress) => {
       takerAssetAmount = new BigNumber(order.orderFillAmount).times(
         new BigNumber(order.orderPrice)
       )
+      .times(1 - fee_rate)
       makerAssetAmount = ZeroEx.toBaseUnitAmount(
         makerAssetAmount,
         baseTokenDecimals
@@ -369,7 +377,12 @@ export const signOrder = async (order, selectedExchange, walletAddress) => {
     makerAssetAmount,
     takerAssetAmount
   }
-  let orderToBeSigned = { ...order.details.order, ...tokensAmounts }
+
+  order.details.order.makerAssetAmount = makerAssetAmount
+  order.details.order.takerAssetAmount = takerAssetAmount
+
+  //let orderToBeSigned = { ...order.details.order, ...tokensAmounts }
+  let orderToBeSigned = { ...order.details.order }
   // const fees = await getFees(orderToBeSigned, selectedExchange.networkId)
   // console.log(fees)
   // orderToBeSigned = {
@@ -377,27 +390,37 @@ export const signOrder = async (order, selectedExchange, walletAddress) => {
   //   ...fees
   // }
   // console.log(orderToBeSigned)
-  const orderHash = ZeroEx.getOrderHashHex(orderToBeSigned)
 
-  //const shouldAddPersonalMessagePrefix = true
   const signer = await zeroEx.getAvailableAddressesAsync()
-  const ecSignature = await zeroEx.signOrderHashAsync(
-    orderHash,
+
+  const provider = window.web3.currentProvider.isMetaMask
+                  ? new MetamaskSubprovider(window.web3.currentProvider)
+                  : window.web3.currentProvider
+
+  const signedOrderDefaultType = await signatureUtils.ecSignOrderAsync(
+    provider,
+    orderToBeSigned,
     signer[0]
   )
 
-  const abiCoder = new AbiCoder()
+  const defaultSignature = signedOrderDefaultType.signature
+  const ecSignature = defaultSignature.slice(0, -2)
+  //const ecSignature = await signatureUtils.parseECSignature(signedOrderDefaultType.signature)
+  const signatureType = SignatureType.Wallet.toString() // 0x04
+  const typedSignature = ecSignature.concat(0, signatureType)
 
-  const typedSignature = abiCoder.encodeParameters(
-    ['uint256','string'],
-    [ecSignature, '4'] // signatureType.Wallet
-  )
+  signedOrderDefaultType.signature = typedSignature
 
+  const signedOrder = {
+    ...signedOrderDefaultType
+  }
+
+/*
   // Append signature to order
   const signedOrder = {
     ...orderToBeSigned,
     typedSignature
-  }
+  }*/
   return signedOrder
 }
 
@@ -421,6 +444,7 @@ export const submitOrderToRelayEFX = async (efxOrder, networkId) => {
     default:
       relayerApiUrl = `https://test.ethfinex.com/trustless/v1/w/on`
   }
+  efxOrder.fee_rate = '0.0025'
   let options = {
     method: 'POST',
     uri: relayerApiUrl,
