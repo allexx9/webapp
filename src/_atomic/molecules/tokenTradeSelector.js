@@ -84,7 +84,7 @@ export default class TokenTradeSelector extends PureComponent {
         )
       }
     )
-    selectedQuoteToken !== selectedTradeTokensPair.quoteToken.symbol // eslint-disable-line no-unused-expressions
+    selectedQuoteToken !== selectedTradeTokensPair.quoteToken.symbol
       ? menu.unshift(
           <MenuItem
             key={this.selectMessage}
