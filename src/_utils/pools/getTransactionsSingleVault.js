@@ -18,6 +18,19 @@ export const getTransactionsSingleVault = async (
   switch (options.wallet) {
     case METAMASK: {
       web3 = window.web3
+      /*if (typeof window.ethereum !== 'undefined') {
+        web3 = new Web3(window.ethereum)
+        try {
+          await window.ethereum.enable()
+          console.warn('User allowed account access')
+        } catch (error) {
+          console.warn('User denied account access')
+        }
+      } else if (typeof window.web3 !== 'undefined') {
+        web3 = window.web3
+        //web3 = new Web3(window.web3.currentProvider)
+        //try {} catch (error) {}
+      }*/
       break
     }
     default: {

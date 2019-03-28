@@ -21,11 +21,11 @@ class JoyrideMainIntro extends React.Component {
 
   checkWalletBalance = async () => {
     // Modern dapp browsers...
-    if (window.ethereum) {
+    if (typeof window.ethereum !== 'undefined') {
       try {
         await window.ethereum.enable()
       } catch (error) {}
-    } else if (window.web3) {
+    } else if (typeof window.web3 !== 'undefined') {
     }
     // Non-dapp browsers...
     else {

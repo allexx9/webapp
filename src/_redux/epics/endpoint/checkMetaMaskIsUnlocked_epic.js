@@ -20,18 +20,37 @@ import { ofType } from 'redux-observable'
 import { sha3_512 } from 'js-sha3'
 import BigNumber from 'bignumber.js'
 import Web3Wrapper from '../../../_utils/web3Wrapper/src'
+import Web3 from 'web3'
 import shallowequal from 'shallowequal'
 
 //
 // CHECK THAT METAMASK IS UNLOCKED AND UPDATE ACTIVE ACCOUNT
 //
 
-const checkMetaMaskIsUnlocked$ = endpoint => {
+const checkMetaMaskIsUnlocked$ = async (endpoint) => {
   let newEndpoint = { ...endpoint }
   let oldAccounts = [].concat(endpoint.accounts)
   let newAccounts = []
   let metaMaskAccountAddress = ''
   const web3Metamask = window.web3
+  /*
+  let web3Metamask = {}
+  if (typeof window.ethereum !== 'undefined') {
+    web3Metamask = new Web3(window.ethereum)
+    try {
+      await window.ethereum.enable()
+    } catch (error) {}
+  }
+  // Legacy dapp browsers...
+  else if (typeof window.web3 !== 'undefined') {
+    web3Metamask = window.web3
+    try {
+      // Use Mist/MetaMask's provider.
+      //web3Metamask = new Web3(window.web3.currentProvider)
+      //web3Metamask = window.web3
+    } catch (error) {}
+  }
+  */
   const api = Web3Wrapper.getInstance(endpoint.networkInfo.id)
   // console.log('checkMetaMaskIsUnlocked$')
   return from(web3Metamask.eth.getAccounts()).pipe(

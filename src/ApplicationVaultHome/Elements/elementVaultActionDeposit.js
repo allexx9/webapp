@@ -193,8 +193,20 @@ export default class ElementVaultActionDeposit extends Component {
     this.setState({
       sending: true
     })
+    //let web3
     if (this.state.account.source === 'MetaMask') {
       const web3 = window.web3
+      /*if (typeof window.ethereum !== 'undefined') {
+        web3 = new Web3(window.ethereum)
+        try {
+          await window.ethereum.enable()
+        } catch (error) {
+          console.warn('User denied account access')
+        }
+      } else if (typeof window.web3 !== 'undefined') {
+          web3 = window.web3
+        }
+      }*/
       poolApi = new PoolApi(web3)
       poolApi.contract.drago.init(vaultDetails.address)
       poolApi.contract.drago
