@@ -5,8 +5,6 @@
   "homepage": "./",
   "dependencies": {
     "0x.js": "0.37.2",
-    "@0x/order-utils": "^7.0.2",
-    "@0x/subproviders": "^4.0.4",
     "@manaflair/redux-batch": "^0.1.0",
     "@rigoblock/contracts": "^0.3.8",
     "@rigoblock/exchange-connector": "^0.0.12",
