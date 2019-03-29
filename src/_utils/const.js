@@ -99,9 +99,9 @@ export const DEFAULT_RELAY = {
 export const EP_INFURA_KV = 'https://kovan.infura.io/v3/dc30ca8fb7824f42976ece0e74884807'
 export const EP_INFURA_RP = 'https://ropsten.infura.io/v3/dc30ca8fb7824f42976ece0e74884807'
 export const EP_INFURA_MN = 'https://mainnet.infura.io/v3/dc30ca8fb7824f42976ece0e74884807'
-export const EP_INFURA_KV_WS = 'wss://kovan.infura.io/ws'
-export const EP_INFURA_RP_WS = 'wss://ropsten.infura.io/ws'
-export const EP_INFURA_MN_WS = 'wss://mainnet.infura.io/ws'
+export const EP_INFURA_KV_WS = 'wss://kovan.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807'
+export const EP_INFURA_RP_WS = 'wss://ropsten.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807'
+export const EP_INFURA_MN_WS = 'wss://mainnet.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807'
 
 // Parity - Kovan
 export const EP_RIGOBLOCK_KV_DEV = 'https://kovan.dev.endpoint.network/rpc'
@@ -181,16 +181,16 @@ export const ENDPOINTS = {
     },
     wss: {
       kovan: {
-        dev: 'wss://kovan.infura.io/ws',
-        prod: 'wss://kovan.infura.io/ws'
+        dev: 'wss://kovan.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807',
+        prod: 'wss://kovan.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807'
       },
       ropsten: {
-        dev: 'wss://ropsten.infura.io/ws',
-        prod: 'wss://ropsten.infura.io/ws'
+        dev: 'wss://ropsten.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807',
+        prod: 'wss://ropsten.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807'
       },
       mainnet: {
-        dev: 'wss://mainnet.infura.io/ws',
-        prod: 'wss://mainnet.infura.io/ws'
+        dev: 'wss://mainnet.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807',
+        prod: 'wss://mainnet.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807'
       }
     }
   },
@@ -313,8 +313,8 @@ export const EXCHANGES = {
   Ethfinex: {
     kovan: {
       tokenTransferProxy: '0x087Eed4Bc1ee3DE49BeFbd66C662B434B15d49d4', // 0xV1 addresses
-      exchangeContractAddress: '0x90fe2af704b34e0224bf2299c838e04d4dcf1364', // 0xV2 0x35dD2932454449b14Cee11A94d3674a936d5d7b2
-      feeRecipient: '',
+      exchangeContractAddress: '0x35dD2932454449b14Cee11A94d3674a936d5d7b2',
+      feeRecipient: '0x9faf5515f177F3A8a845D48C19032b33Cc54C09C',
       networkId: 42,
       name: 'Ethfinex',
       taker: '0x9faf5515f177F3A8a845D48C19032b33Cc54C09C' // EFX HOT WALLET
@@ -334,7 +334,7 @@ export const EXCHANGES = {
     },
     mainnet: {
       tokenTransferProxy: '0x7e03d2b8edc3585ecd8a5807661fff0830a0b603',
-      exchangeContractAddress: '0xdcdb42c9a256690bd153a7b409751adfc8dd5851',
+      exchangeContractAddress: '0x4f833a24e1f95d70f028921e27040ca56e09ab0b',
       feeRecipient: '0x61b9898c9b60a159fc91ae8026563cd226b7a0c1',
       networkId: 1,
       name: 'Ethfinex',

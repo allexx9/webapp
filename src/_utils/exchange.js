@@ -6,10 +6,15 @@ import * as abis from '../PoolsApi/src/contracts/abi'
 import { BigNumber } from '@0xproject/utils'
 import { INFURA, KOVAN, PROD, WS } from './const'
 import { ZeroEx } from '0x.js'
+//import { signatureUtils, orderHashUtils } from '@0x/oder-utils' // TODO: deprecate old 0x.js library
 import Web3 from 'web3'
 // import ReconnectingWebSocket from 'reconnectingwebsocket'
 import PoolApi from '../PoolsApi/src'
 import rp from 'request-promise'
+
+//const { signatureUtils, orderHashUtils } = require('@0x/order-utils')
+//const { MetamaskSubprovider } = require('@0x/subproviders')
+//const { SignatureType } = require('@0x/types')
 
 export const setAllowaceOnExchangeThroughDrago = (
   selectedFund,
@@ -259,11 +264,11 @@ export const formatOrders = (orders, orderType) => {
   let formattedOrders = orders.map(order => {
     switch (orderType) {
       case 'asks':
-        orderPrice = new BigNumber(order.takerTokenAmount)
-          .div(new BigNumber(order.makerTokenAmount))
+        orderPrice = new BigNumber(order.takerAssetAmount)
+          .div(new BigNumber(order.makerAssetAmount))
           .toFixed(7)
         orderAmount = new BigNumber(
-          web3.utils.fromWei(order.makerTokenAmount, 'ether')
+          web3.utils.fromWei(order.makerAssetAmount, 'ether')
         ).toFixed(5)
         remainingAmount = new BigNumber(
           web3.utils.fromWei(order.remainingTakerTokenAmount, 'ether')
@@ -272,24 +277,24 @@ export const formatOrders = (orders, orderType) => {
       case 'bids':
         orderPrice = new BigNumber(1)
           .div(
-            new BigNumber(order.takerTokenAmount).div(
-              new BigNumber(order.makerTokenAmount)
+            new BigNumber(order.takerAssetAmount).div(
+              new BigNumber(order.makerAssetAmount)
             )
           )
           .toFixed(7)
         orderAmount = new BigNumber(
-          web3.utils.fromWei(order.takerTokenAmount, 'ether')
+          web3.utils.fromWei(order.takerAssetAmount, 'ether')
         ).toFixed(5)
         remainingAmount = new BigNumber(
           web3.utils.fromWei(order.remainingTakerTokenAmount, 'ether')
         ).toFixed(5)
         break
       default:
-        orderPrice = new BigNumber(order.takerTokenAmount)
-          .div(new BigNumber(order.makerTokenAmount))
+        orderPrice = new BigNumber(order.takerAssetAmount)
+          .div(new BigNumber(order.makerAssetAmount))
           .toFixed(7)
         orderAmount = new BigNumber(
-          web3.utils.fromWei(order.makerTokenAmount, 'ether')
+          web3.utils.fromWei(order.makerAssetAmount, 'ether')
         ).toFixed(5)
         remainingAmount = new BigNumber(
           web3.utils.fromWei(order.remainingTakerTokenAmount, 'ether')
@@ -314,61 +319,70 @@ export const signOrder = async (order, selectedExchange, walletAddress) => {
   const baseTokenDecimals = order.selectedTokensPair.baseToken.decimals
   const quoteTokenDecimals = order.selectedTokensPair.quoteToken.decimals
 
-  let makerTokenAmount, takerTokenAmount
+  let makerAssetAmount, takerAssetAmount
   const zeroEx = new ZeroEx(window.web3.currentProvider, selectedExchange)
+  const fee_rate = 0.0025
 
   switch (order.orderType) {
     case 'asks':
 
-      makerTokenAmount = new BigNumber(order.orderFillAmount)
-      takerTokenAmount = new BigNumber(order.orderFillAmount).times(
+      makerAssetAmount = new BigNumber(order.orderFillAmount)
+      takerAssetAmount = new BigNumber(order.orderFillAmount).times(
         new BigNumber(order.orderPrice)
       )
-      makerTokenAmount = ZeroEx.toBaseUnitAmount(
-        makerTokenAmount,
+      .times(1 - fee_rate) // TODO: verify
+      makerAssetAmount = ZeroEx.toBaseUnitAmount(
+        makerAssetAmount,
         baseTokenDecimals
       )
-      takerTokenAmount = ZeroEx.toBaseUnitAmount(
-        takerTokenAmount,
+      takerAssetAmount = ZeroEx.toBaseUnitAmount(
+        takerAssetAmount,
         quoteTokenDecimals
       )
       break
     case 'bids':
 
-      makerTokenAmount = new BigNumber(order.orderFillAmount).times(
+      makerAssetAmount = new BigNumber(order.orderFillAmount).times(
         new BigNumber(order.orderPrice)
       )
-      takerTokenAmount = new BigNumber(order.orderFillAmount)
-      makerTokenAmount = ZeroEx.toBaseUnitAmount(
-        makerTokenAmount,
+      takerAssetAmount = new BigNumber(order.orderFillAmount)
+      .times(1 - fee_rate) // TODO: verify
+      makerAssetAmount = ZeroEx.toBaseUnitAmount(
+        makerAssetAmount,
         quoteTokenDecimals
       )
-      takerTokenAmount = ZeroEx.toBaseUnitAmount(
-        takerTokenAmount,
+      takerAssetAmount = ZeroEx.toBaseUnitAmount(
+        takerAssetAmount,
         baseTokenDecimals
       )
       break
     default:
 
-      makerTokenAmount = new BigNumber(order.orderFillAmount)
-      takerTokenAmount = new BigNumber(order.orderFillAmount).times(
+      makerAssetAmount = new BigNumber(order.orderFillAmount)
+      takerAssetAmount = new BigNumber(order.orderFillAmount).times(
         new BigNumber(order.orderPrice)
       )
-      makerTokenAmount = ZeroEx.toBaseUnitAmount(
-        makerTokenAmount,
+      .times(1 - fee_rate)
+      makerAssetAmount = ZeroEx.toBaseUnitAmount(
+        makerAssetAmount,
         baseTokenDecimals
       )
-      takerTokenAmount = ZeroEx.toBaseUnitAmount(
-        takerTokenAmount,
+      takerAssetAmount = ZeroEx.toBaseUnitAmount(
+        takerAssetAmount,
         quoteTokenDecimals
       )
       break
   }
   const tokensAmounts = {
-    makerTokenAmount,
-    takerTokenAmount
+    makerAssetAmount,
+    takerAssetAmount
   }
-  let orderToBeSigned = { ...order.details.order, ...tokensAmounts }
+
+  order.details.order.makerAssetAmount = makerAssetAmount
+  order.details.order.takerAssetAmount = takerAssetAmount
+
+  //let orderToBeSigned = { ...order.details.order, ...tokensAmounts }
+  let orderToBeSigned = { ...order.details.order }
   // const fees = await getFees(orderToBeSigned, selectedExchange.networkId)
   // console.log(fees)
   // orderToBeSigned = {
@@ -376,21 +390,42 @@ export const signOrder = async (order, selectedExchange, walletAddress) => {
   //   ...fees
   // }
   // console.log(orderToBeSigned)
-  const orderHash = ZeroEx.getOrderHashHex(orderToBeSigned)
 
-  const shouldAddPersonalMessagePrefix = true
+  const provider = window.web3.currentProvider.isMetaMask
+                  ? new Web3(window.ethereum)
+                  : window.web3.currentProvider
+  const web3 = new Web3(provider)
+
+  const orderHash = web3.utils.soliditySha3(orderToBeSigned)
   const signer = await zeroEx.getAvailableAddressesAsync()
-  const ecSignature = await zeroEx.signOrderHashAsync(
-    orderHash,
-    signer[0],
-    shouldAddPersonalMessagePrefix
+  const ecSignature = await web3.eth.personal.sign(orderHash, signer[0])
+
+  // comment as revert from 0x apis
+  /*const signedOrderDefaultType = await signatureUtils.ecSignOrderAsync(
+    provider,
+    orderToBeSigned,
+    signer[0]
   )
+
+  const defaultSignature = signedOrderDefaultType.signature
+  const ecSignature = defaultSignature.slice(0, -2)
+  //const ecSignature = await signatureUtils.parseECSignature(signedOrderDefaultType.signature)*/
+  //const signatureType = (0, 4) //SignatureType.Wallet.toString() // 0x04
+  const typedSignature = ecSignature.concat(0, 4)
+  //
+  //console.log(ecSignature)
+
+
+  /*signedOrderDefaultType.signature = typedSignature
+  const signedOrder = {
+    ...signedOrderDefaultType
+  }*/
 
 
   // Append signature to order
   const signedOrder = {
     ...orderToBeSigned,
-    ecSignature
+    typedSignature
   }
   return signedOrder
 }
@@ -415,6 +450,7 @@ export const submitOrderToRelayEFX = async (efxOrder, networkId) => {
     default:
       relayerApiUrl = `https://test.ethfinex.com/trustless/v1/w/on`
   }
+  efxOrder.fee_rate = '0.0025'
   let options = {
     method: 'POST',
     uri: relayerApiUrl,
@@ -515,8 +551,8 @@ export const getFees = async (order, networkId) => {
     qs: {
       makerTokenAddress: order.makerTokenAddress,
       takerTokenAddress: order.takerTokenAddress,
-      makerTokenAmount: new BigNumber(order.makerTokenAmount).toFixed(),
-      takerTokenAmount: new BigNumber(order.takerTokenAmount).toFixed(),
+      makerAssetAmount: new BigNumber(order.makerAssetAmount).toFixed(),
+      takerAssetAmount: new BigNumber(order.takerAssetAmount).toFixed(),
       maker: order.maker,
       taker: order.taker,
       networkId: networkId
@@ -634,8 +670,8 @@ export const fillOrderToExchangeViaProxy = async (
     order.feeRecipient
   ]
   const orderValues = [
-    order.makerTokenAmount,
-    order.takerTokenAmount,
+    order.makerAssetAmount,
+    order.takerAssetAmount,
     order.makerFee,
     order.takerFee,
     order.expirationUnixTimestampSec,
@@ -682,20 +718,20 @@ export const cancelOrderOnExchangeViaProxy = async (
   const order = signedOrder
 
 
-
+  // TODO: add senderAddress and check format
   const orderAddresses = [
-    order.maker,
-    order.taker,
-    order.makerTokenAddress,
-    order.takerTokenAddress,
+    order.makerAddress,
+    order.takerAddress,
+    order.makerAssetData,
+    order.takerAssetData,
     order.feeRecipient
   ]
   const orderValues = [
-    order.makerTokenAmount,
-    order.takerTokenAmount,
+    order.makerAssetAmount,
+    order.takerAssetAmount,
     order.makerFee,
     order.takerFee,
-    order.expirationUnixTimestampSec,
+    order.expirationTimeSeconds,
     order.salt
   ]
   console.log(
@@ -828,35 +864,35 @@ class Exchange {
     let formattedOrders = orders.map(order => {
       switch (orderType) {
         case 'asks':
-          orderPrice = new BigNumber(order.takerTokenAmount)
-            .div(new BigNumber(order.makerTokenAmount))
+          orderPrice = new BigNumber(order.takerAssetAmount)
+            .div(new BigNumber(order.makerAssetAmount))
             .toFixed(7)
           orderAmount = new BigNumber(
-            this.api.utils.fromWei(order.makerTokenAmount, 'ether')
+            this.api.utils.fromWei(order.makerAssetAmount, 'ether')
           ).toFixed(5)
           break
         case 'bids':
           orderPrice = new BigNumber(1)
             .div(
-              new BigNumber(order.takerTokenAmount).div(
-                new BigNumber(order.makerTokenAmount)
+              new BigNumber(order.takerAssetAmount).div(
+                new BigNumber(order.makerAssetAmount)
               )
             )
             .toFixed(7)
           orderAmount = new BigNumber(
-            this.api.utils.fromWei(order.takerTokenAmount, 'ether')
+            this.api.utils.fromWei(order.takerAssetAmount, 'ether')
           ).toFixed(5)
           break
         default:
           orderPrice = new BigNumber(1)
             .div(
-              new BigNumber(order.takerTokenAmount).div(
-                new BigNumber(order.makerTokenAmount)
+              new BigNumber(order.takerAssetAmount).div(
+                new BigNumber(order.makerAssetAmount)
               )
             )
             .toFixed(7)
           orderAmount = new BigNumber(
-            this.api.utils.fromWei(order.takerTokenAmount, 'ether')
+            this.api.utils.fromWei(order.takerAssetAmount, 'ether')
           ).toFixed(5)
           break
       }
@@ -900,35 +936,35 @@ class Exchange {
       : (orderType = 'bids')
     switch (orderType) {
       case 'asks':
-        orderPrice = new BigNumber(order.takerTokenAmount)
-          .div(new BigNumber(order.makerTokenAmount))
+        orderPrice = new BigNumber(order.takerAssetAmount)
+          .div(new BigNumber(order.makerAssetAmount))
           .toFixed(7)
         orderAmount = new BigNumber(
-          this.api.utils.fromWei(order.makerTokenAmount, 'ether')
+          this.api.utils.fromWei(order.makerAssetAmount, 'ether')
         ).toFixed(5)
         break
       case 'bids':
         orderPrice = new BigNumber(1)
           .div(
-            new BigNumber(order.takerTokenAmount).div(
-              new BigNumber(order.makerTokenAmount)
+            new BigNumber(order.takerAssetAmount).div(
+              new BigNumber(order.makerAssetAmount)
             )
           )
           .toFixed(7)
         orderAmount = new BigNumber(
-          this.api.utils.fromWei(order.takerTokenAmount, 'ether')
+          this.api.utils.fromWei(order.takerAssetAmount, 'ether')
         ).toFixed(5)
         break
       default:
         orderPrice = new BigNumber(1)
           .div(
-            new BigNumber(order.takerTokenAmount).div(
-              new BigNumber(order.makerTokenAmount)
+            new BigNumber(order.takerAssetAmount).div(
+              new BigNumber(order.makerAssetAmount)
             )
           )
           .toFixed(7)
         orderAmount = new BigNumber(
-          this.api.utils.fromWei(order.takerTokenAmount, 'ether')
+          this.api.utils.fromWei(order.takerAssetAmount, 'ether')
         ).toFixed(5)
         break
     }
