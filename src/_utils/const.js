@@ -313,7 +313,7 @@ export const EXCHANGES = {
   Ethfinex: {
     kovan: {
       tokenTransferProxy: '0x087Eed4Bc1ee3DE49BeFbd66C662B434B15d49d4', // 0xV1 addresses
-      exchangeContractAddress: '0x90fe2af704b34e0224bf2299c838e04d4dcf1364', // 0xV2 0x35dD2932454449b14Cee11A94d3674a936d5d7b2
+      exchangeContractAddress: '0x35dD2932454449b14Cee11A94d3674a936d5d7b2',
       feeRecipient: '0x9faf5515f177F3A8a845D48C19032b33Cc54C09C',
       networkId: 42,
       name: 'Ethfinex',
@@ -334,7 +334,7 @@ export const EXCHANGES = {
     },
     mainnet: {
       tokenTransferProxy: '0x7e03d2b8edc3585ecd8a5807661fff0830a0b603',
-      exchangeContractAddress: '0xdcdb42c9a256690bd153a7b409751adfc8dd5851',
+      exchangeContractAddress: '0x4f833a24e1f95d70f028921e27040ca56e09ab0b',
       feeRecipient: '0x61b9898c9b60a159fc91ae8026563cd226b7a0c1',
       networkId: 1,
       name: 'Ethfinex',
