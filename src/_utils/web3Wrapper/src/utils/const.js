@@ -81,16 +81,16 @@ export const ENDPOINTS = {
     },
     wss: {
       42: {
-        dev: 'wss://kovan.infura.io/ws',
-        prod: 'wss://kovan.infura.io/ws'
+        dev: 'wss://kovan.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807',
+        prod: 'wss://kovan.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807'
       },
       3: {
-        dev: 'wss://ropsten.infura.io/ws',
-        prod: 'wss://ropsten.infura.io/ws'
+        dev: 'wss://ropsten.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807',
+        prod: 'wss://ropsten.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807'
       },
       1: {
-        dev: 'wss://mainnet.infura.io/ws',
-        prod: 'wss://mainnet.infura.io/ws'
+        dev: 'wss://mainnet.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807',
+        prod: 'wss://mainnet.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807'
       }
     }
   },

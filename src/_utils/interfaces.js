@@ -8,6 +8,7 @@ import {
 import BigNumber from 'bignumber.js'
 import PoolsApi from '../PoolsApi/src'
 import Web3Wrapper from './web3Wrapper/src/web3Wrapper'
+import Web3 from 'web3'
 import utils from '../_utils/utils'
 
 class Interfaces {
@@ -112,7 +113,19 @@ class Interfaces {
 
   getAccountsMetamask = async () => {
     // console.log(`${this.constructor.name} -> getAccountsMetamask`)
-    const web3 = window.web3
+    //const web3 = window.web3
+    let web3
+    if (typeof window.ethereum !== 'undefined') {
+      web3 = new Web3(window.ethereum)
+      try {
+        await window.ethereum.enable()
+      } catch (error) {
+        console.warn('User denied account access')
+      }
+    } else if (typeof window.web3 !== 'undefined') {
+      web3 = window.web3
+      //try {} catch (error) {}
+    }
     const parityNetworkId = this._parityNetworkId
     let accountsMetaMask = {}
     if (typeof web3 === 'undefined') {

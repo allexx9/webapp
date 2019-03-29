@@ -99,9 +99,9 @@ export const DEFAULT_RELAY = {
 export const EP_INFURA_KV = 'https://kovan.infura.io/v3/dc30ca8fb7824f42976ece0e74884807'
 export const EP_INFURA_RP = 'https://ropsten.infura.io/v3/dc30ca8fb7824f42976ece0e74884807'
 export const EP_INFURA_MN = 'https://mainnet.infura.io/v3/dc30ca8fb7824f42976ece0e74884807'
-export const EP_INFURA_KV_WS = 'wss://kovan.infura.io/ws'
-export const EP_INFURA_RP_WS = 'wss://ropsten.infura.io/ws'
-export const EP_INFURA_MN_WS = 'wss://mainnet.infura.io/ws'
+export const EP_INFURA_KV_WS = 'wss://kovan.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807'
+export const EP_INFURA_RP_WS = 'wss://ropsten.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807'
+export const EP_INFURA_MN_WS = 'wss://mainnet.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807'
 
 // Parity - Kovan
 export const EP_RIGOBLOCK_KV_DEV = 'https://kovan.dev.endpoint.network/rpc'
@@ -181,16 +181,16 @@ export const ENDPOINTS = {
     },
     wss: {
       kovan: {
-        dev: 'wss://kovan.infura.io/ws',
-        prod: 'wss://kovan.infura.io/ws'
+        dev: 'wss://kovan.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807',
+        prod: 'wss://kovan.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807'
       },
       ropsten: {
-        dev: 'wss://ropsten.infura.io/ws',
-        prod: 'wss://ropsten.infura.io/ws'
+        dev: 'wss://ropsten.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807',
+        prod: 'wss://ropsten.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807'
       },
       mainnet: {
-        dev: 'wss://mainnet.infura.io/ws',
-        prod: 'wss://mainnet.infura.io/ws'
+        dev: 'wss://mainnet.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807',
+        prod: 'wss://mainnet.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807'
       }
     }
   },
