@@ -1,7 +1,7 @@
 import * as TYPE_ from '../../../actions/const'
 import { Actions } from '../../../actions/'
 import { Observable, of } from 'rxjs'
-import { ZeroEx } from '0x.js'
+import { signatureUtils/*, orderHashUtils*/ } from '@0x/oder-utils'
 import { map, mergeMap, tap } from 'rxjs/operators'
 import { ofType } from 'redux-observable'
 import Web3 from 'web3'
@@ -95,7 +95,7 @@ const newMakerOrderV0 = (orderSide, options, state$) => {
 
     expirationTimeSeconds: orderExpirationTime.toString(),
 
-    salt: ZeroEx.generatePseudoRandomSalt(),
+    salt: signatureUtils.generatePseudoRandomSalt(),
 
     makerAssetData: encodedMakerToken, // assetDataUtils.encodeERC20AssetData(makerTokenAddress.toLowerCase()),
 

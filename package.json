@@ -1,10 +1,9 @@
 {
   "name": "rigoblock-frontend",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "homepage": "./",
   "dependencies": {
-    "0x.js": "0.37.2",
     "@0x/order-utils": "^7.0.2",
     "@0x/subproviders": "^4.0.4",
     "@manaflair/redux-batch": "^0.1.0",
@@ -38,7 +37,7 @@
     "node-sass-chokidar": "^1.3.3",
     "npm": "^6.4.1",
     "prop-types": "^15.6.0",
-    "react": "^16.3.2",
+    "react": "^16.8.6",
     "react-chartist": "^0.13.1",
     "react-collapsible": "^2.3.1",
     "react-content-loader": "^3.1.2",

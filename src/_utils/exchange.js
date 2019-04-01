@@ -5,8 +5,8 @@ import * as abis from '../PoolsApi/src/contracts/abi'
 // import { BigNumber } from 'bignumber.js'
 import { BigNumber } from '@0xproject/utils'
 import { INFURA, KOVAN, PROD, WS } from './const'
-import { ZeroEx } from '0x.js'
-//import { signatureUtils, orderHashUtils } from '@0x/oder-utils' // TODO: deprecate old 0x.js library
+//import { ZeroEx } from '0x.js'
+import { signatureUtils, orderHashUtils } from '@0x/oder-utils' // TODO: deprecate old 0x.js library
 import Web3 from 'web3'
 // import ReconnectingWebSocket from 'reconnectingwebsocket'
 import PoolApi from '../PoolsApi/src'
@@ -300,7 +300,7 @@ export const formatOrders = (orders, orderType) => {
           web3.utils.fromWei(order.remainingTakerTokenAmount, 'ether')
         ).toFixed(5)
     }
-    let orderHash = ZeroEx.getOrderHashHex(order)
+    let orderHash = orderHashUtils.getOrderHashHex(order)
     let orderObject = {
       order,
       dateCreated: order.dateCreated,
