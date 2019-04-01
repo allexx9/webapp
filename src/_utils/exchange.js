@@ -12,9 +12,9 @@ import Web3 from 'web3'
 import PoolApi from '../PoolsApi/src'
 import rp from 'request-promise'
 
-const { signatureUtils, orderHashUtils } = require('@0x/order-utils')
-const { MetamaskSubprovider } = require('@0x/subproviders')
-const { SignatureType } = require('@0x/types')
+//const { signatureUtils, orderHashUtils } = require('@0x/order-utils')
+//const { MetamaskSubprovider } = require('@0x/subproviders')
+//const { SignatureType } = require('@0x/types')
 
 export const setAllowaceOnExchangeThroughDrago = (
   selectedFund,
@@ -391,13 +391,17 @@ export const signOrder = async (order, selectedExchange, walletAddress) => {
   // }
   // console.log(orderToBeSigned)
 
-  const signer = await zeroEx.getAvailableAddressesAsync()
-
   const provider = window.web3.currentProvider.isMetaMask
-                  ? new MetamaskSubprovider(window.web3.currentProvider)
+                  ? new Web3(window.ethereum)
                   : window.web3.currentProvider
+  const web3 = new Web3(provider)
 
-  const signedOrderDefaultType = await signatureUtils.ecSignOrderAsync(
+  const orderHash = web3.utils.soliditySha3(orderToBeSigned)
+  const signer = await zeroEx.getAvailableAddressesAsync()
+  const ecSignature = await web3.eth.personal.sign(orderHash, signer[0])
+
+  // comment as revert from 0x apis
+  /*const signedOrderDefaultType = await signatureUtils.ecSignOrderAsync(
     provider,
     orderToBeSigned,
     signer[0]
@@ -405,22 +409,24 @@ export const signOrder = async (order, selectedExchange, walletAddress) => {
 
   const defaultSignature = signedOrderDefaultType.signature
   const ecSignature = defaultSignature.slice(0, -2)
-  //const ecSignature = await signatureUtils.parseECSignature(signedOrderDefaultType.signature)
-  const signatureType = SignatureType.Wallet.toString() // 0x04
-  const typedSignature = ecSignature.concat(0, signatureType)
+  //const ecSignature = await signatureUtils.parseECSignature(signedOrderDefaultType.signature)*/
+  //const signatureType = (0, 4) //SignatureType.Wallet.toString() // 0x04
+  const typedSignature = ecSignature.concat(0, 4)
+  //
+  //console.log(ecSignature)
 
-  signedOrderDefaultType.signature = typedSignature
 
+  /*signedOrderDefaultType.signature = typedSignature
   const signedOrder = {
     ...signedOrderDefaultType
-  }
+  }*/
 
-/*
+
   // Append signature to order
   const signedOrder = {
     ...orderToBeSigned,
     typedSignature
-  }*/
+  }
   return signedOrder
 }
 

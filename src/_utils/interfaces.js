@@ -113,8 +113,8 @@ class Interfaces {
 
   getAccountsMetamask = async () => {
     // console.log(`${this.constructor.name} -> getAccountsMetamask`)
-    const web3 = window.web3
-    /*let web3
+    //const web3 = window.web3
+    let web3
     if (typeof window.ethereum !== 'undefined') {
       web3 = new Web3(window.ethereum)
       try {
@@ -125,7 +125,7 @@ class Interfaces {
     } else if (typeof window.web3 !== 'undefined') {
       web3 = window.web3
       //try {} catch (error) {}
-    }*/
+    }
     const parityNetworkId = this._parityNetworkId
     let accountsMetaMask = {}
     if (typeof web3 === 'undefined') {

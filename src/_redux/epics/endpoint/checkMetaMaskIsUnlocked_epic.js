@@ -32,25 +32,21 @@ const checkMetaMaskIsUnlocked$ = async (endpoint) => {
   let oldAccounts = [].concat(endpoint.accounts)
   let newAccounts = []
   let metaMaskAccountAddress = ''
-  const web3Metamask = window.web3
-  /*
+  //const web3Metamask = window.web3
+  // the following generates eventEmitter leak
   let web3Metamask = {}
   if (typeof window.ethereum !== 'undefined') {
     web3Metamask = new Web3(window.ethereum)
-    try {
+    // following has a potential conflict
+    /*try {
       await window.ethereum.enable()
-    } catch (error) {}
+    } catch (error) {
+      console.warn('User denied account access')
+    }*/
   }
-  // Legacy dapp browsers...
-  else if (typeof window.web3 !== 'undefined') {
+  else {
     web3Metamask = window.web3
-    try {
-      // Use Mist/MetaMask's provider.
-      //web3Metamask = new Web3(window.web3.currentProvider)
-      //web3Metamask = window.web3
-    } catch (error) {}
   }
-  */
   const api = Web3Wrapper.getInstance(endpoint.networkInfo.id)
   // console.log('checkMetaMaskIsUnlocked$')
   return from(web3Metamask.eth.getAccounts()).pipe(
