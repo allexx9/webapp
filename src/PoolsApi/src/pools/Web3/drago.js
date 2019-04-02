@@ -101,7 +101,7 @@ class DragoWeb3 {
    *
    * @param {*} managerAccountAddress     The address of the owner of the fund
    * @param {*} dragoAddress              The address of the fund.
-   * @param {*} exchangeContractAddress   The address of the exchange (Ethfinex for example)
+   * @param {*} exchangeAddress   The address of the exchange (Ethfinex for example)
    * @param {*} tokenAddress              The address of the token to be un-locked.
    * @param {*} tokenWrapper              The address of the token wrapper.
    * @param {*} toBeWrapped               The amount in base units to be unwrapped. A baseUnit is defined as the smallest denomination of a token.
@@ -112,7 +112,7 @@ class DragoWeb3 {
   operateOnExchangeEFXLock = async (
     managerAccountAddress,
     dragoAddress,
-    exchangeContractAddress,
+    exchangeAddress,
     tokenAddress,
     tokenWrapper,
     toBeWrapped,
@@ -125,8 +125,8 @@ class DragoWeb3 {
     if (!dragoAddress) {
       throw new Error('dragoAddress needs to be provided')
     }
-    if (!exchangeContractAddress) {
-      throw new Error('exchangeContractAddress needs to be provided')
+    if (!exchangeAddress) {
+      throw new Error('exchangeAddress needs to be provided')
     }
     // if (!tokenAddress) {
     //   throw new Error('tokenAddress needs to be provided')
@@ -195,7 +195,7 @@ class DragoWeb3 {
     ])
 
     return instance.methods
-      .operateOnExchange(exchangeContractAddress, [encodedABI])
+      .operateOnExchange(exchangeAddress, [encodedABI])
       .estimateGas(options)
       .then(gasEstimate => {
 
@@ -203,7 +203,7 @@ class DragoWeb3 {
       })
       .then(() => {
         return instance.methods
-          .operateOnExchange(exchangeContractAddress, [encodedABI])
+          .operateOnExchange(exchangeAddress, [encodedABI])
           .send(options)
       })
   }
@@ -213,7 +213,7 @@ class DragoWeb3 {
    *
    * @param {*} managerAccountAddress   The address of the owner of the fund
    * @param {*} dragoAddress            The address of the fund.
-   * @param {*} exchangeContractAddress The address of the exchange (Ethfinex for example)
+   * @param {*} exchangeAddress The address of the exchange (Ethfinex for example)
    * @param {*} tokenAddress            The address of the token to be un-locked.
    * @param {*} tokenWrapper            The address of the token wrapper.
    * @param {*} toBeUnwrapped           The amount in base units to be unwrapped. A baseUnit is defined as the smallest denomination of a token.
@@ -222,7 +222,7 @@ class DragoWeb3 {
   operateOnExchangeEFXUnlock = async (
     managerAccountAddress,
     dragoAddress,
-    exchangeContractAddress,
+    exchangeAddress,
     tokenAddress,
     tokenWrapper,
     toBeUnwrapped
@@ -233,8 +233,8 @@ class DragoWeb3 {
     if (!dragoAddress) {
       throw new Error('dragoAddress needs to be provided')
     }
-    if (!exchangeContractAddress) {
-      throw new Error('exchangeContractAddress needs to be provided')
+    if (!exchangeAddress) {
+      throw new Error('exchangeAddress needs to be provided')
     }
     if (!tokenWrapper) {
       throw new Error('tokenWrapper needs to be provided')
@@ -309,7 +309,7 @@ class DragoWeb3 {
     ])
 
     return instance.methods
-      .operateOnExchange(exchangeContractAddress, [encodedABI])
+      .operateOnExchange(exchangeAddress, [encodedABI])
       .estimateGas(options)
       .then(gasEstimate => {
 
@@ -317,7 +317,7 @@ class DragoWeb3 {
       })
       .then(() => {
         return instance.methods
-          .operateOnExchange(exchangeContractAddress, [encodedABI])
+          .operateOnExchange(exchangeAddress, [encodedABI])
           .send(options)
       })
   }
@@ -438,12 +438,12 @@ class DragoWeb3 {
 
 
     console.log(
-      'ZeroExConfig.exchangeContractAddress    ',
-      ZeroExConfig.exchangeContractAddress
+      'ZeroExConfig.exchangeAddress    ',
+      ZeroExConfig.exchangeAddress
     )
     return instance.methods
       .operateOnExchangeDirectly(
-        ZeroExConfig.exchangeContractAddress,
+        ZeroExConfig.exchangeAddress,
         encodedABI
       )
       .estimateGas(options)
@@ -454,7 +454,7 @@ class DragoWeb3 {
       .then(() => {
         return instance.methods
           .operateOnExchangeDirectly(
-            ZeroExConfig.exchangeContractAddress,
+            ZeroExConfig.exchangeAddress,
             encodedABI
           )
           .send(options)
@@ -466,7 +466,7 @@ class DragoWeb3 {
     orderAddresses,
     orderValues,
     cancelTakerTokenAmount,
-    exchangeContractAddress
+    exchangeAddress
   ) => {
     if (!managerAccount) {
       throw new Error('managerAccount needs to be provided')
@@ -480,8 +480,8 @@ class DragoWeb3 {
     if (!cancelTakerTokenAmount) {
       throw new Error('cancelTakerTokenAmount needs to be provided')
     }
-    if (!exchangeContractAddress) {
-      throw new Error('exchangeContractAddress need to be provided')
+    if (!exchangeAddress) {
+      throw new Error('exchangeAddress need to be provided')
     }
     const instance = this._instance
     const api = this._api
@@ -505,7 +505,7 @@ class DragoWeb3 {
 
 
     return instance.methods
-      .operateOnExchangeDirectly(exchangeContractAddress, encodedABI)
+      .operateOnExchangeDirectly(exchangeAddress, encodedABI)
       .estimateGas(options)
       .then(gasEstimate => {
 
@@ -513,7 +513,7 @@ class DragoWeb3 {
       })
       .then(() => {
         return instance.methods
-          .operateOnExchangeDirectly(exchangeContractAddress, encodedABI)
+          .operateOnExchangeDirectly(exchangeAddress, encodedABI)
           .send(options)
       })
   }

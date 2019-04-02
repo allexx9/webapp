@@ -16,7 +16,7 @@ export const fakeOrders = {
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "makerTokenAddress": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
         "takerTokenAddress": "0xe41d2489571d322189246dafa5ebde1f4699f498",
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "salt": "15051590473824836540081964682087951801078427709697994574444988647775148458834",
         "makerFee": "0",
         "takerFee": "0",
@@ -34,7 +34,7 @@ export const fakeOrders = {
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "makerTokenAddress": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
         "takerTokenAddress": "0xe41d2489571d322189246dafa5ebde1f4699f498",
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "salt": "48999540255380484034705004684142030108708601981039195104484257496772543373280",
         "makerFee": "0",
         "takerFee": "0",
@@ -52,7 +52,7 @@ export const fakeOrders = {
           "r": "0x9e3e3ea788bc84022a36754b629abaebbb3365016c33b3f599e49618e9a81ee3",
           "s": "0x144b0bda484e2c30df21377856f7272f6fe88c0e44d3b07f10d8751a01c42206"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524693598",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x83cd52ea737ad8d0315b16b3a6bd0a92529f14c1",
@@ -70,7 +70,7 @@ export const fakeOrders = {
           "r": "0x12e672d491b025b8ab816f11ff93d3986655edc31d1319763f1e09ab205d4726",
           "s": "0x473debf9d3261fe90bb98fd941c9369c2e6734d77b69646f6477fa40510a30d0"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1525465683",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0xc30f370b4ca500ef0ef78a22f5ab8cd445760784",
@@ -88,7 +88,7 @@ export const fakeOrders = {
           "r": "0x25887bdea869f6cf8e1a7895c1a115d0dbad58452bbde9e5466d9ae769c1ce88",
           "s": "0x311a840f9e0a5c1b739f4e52727a13dc063c94d215a9ed35c86ffdfcb681bc8e"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524792653",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0xc9ce6a33f8d077950b49f8e100fbef3732fbff5d",
@@ -106,7 +106,7 @@ export const fakeOrders = {
           "r": "0x178b097db04415264eccb959eb46da17d693f0bc68462683bd7245b6f2eb6cb4",
           "s": "0x412e91611ce3e831b9e7e4da5a2cd3ac157426bbc5280403e178b937d428a9e7"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524095217",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x3c1e5807e023622af499e1024954961ba865ed33",
@@ -124,7 +124,7 @@ export const fakeOrders = {
           "r": "0xa933203396c47b43fe88acb2b066ebbf54c7b485ff727a61f1568fd21a72ba16",
           "s": "0x0561a218109365e33eb75a7dc2a968d65628090a03cbde993e4199bad21f6b5e"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524063391",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x3c1e5807e023622af499e1024954961ba865ed33",
@@ -142,7 +142,7 @@ export const fakeOrders = {
           "r": "0xd7856c1ccd078c752f62d3e30eb68e8fdce124b2ebc6c28a894c70eb7a58c7dc",
           "s": "0x016bc6f4920f792db4aa742f853b94e36886d22046a069166274da7bde0b1560"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524156435",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0xf4590ac24a5c7861b673ef5df5c1dceb9bd79d20",
@@ -160,7 +160,7 @@ export const fakeOrders = {
           "r": "0x3e53aa9ec58a5d7e7fb7dfbc36c625919a2942b68dca56b3e1e5705171b5dc63",
           "s": "0x7393e068a264c1411dfd8ec8456bc5ef55fb16812687dc8d630eb4535c893ef5"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524618467",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x84482be4c27f0d896fc5c099c2b9ba57eca66c6a",
@@ -178,7 +178,7 @@ export const fakeOrders = {
           "r": "0x3d63b27ca885e57e418f59e84c4b6f32d91c0cf97ee700044e93b4dec55a268c",
           "s": "0x38a720e84538c0f6be0dc98caccc0a4f2f94a0ebd8a20f51ace9558e2e314182"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524323727",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0xa89a99d84524e913794722fb64701fac767ff915",
@@ -196,7 +196,7 @@ export const fakeOrders = {
           "r": "0xfa6b68868cf8c62ba97047800dcd23458206b417847be974e73d1b9fa9df0b19",
           "s": "0x7203ba7fc3b8c2a3ff5af35c3384a1cc27da5b7918a9ffede59c272a16d64a22"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1525563344",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0xdadbb833990b96db1fd1615930b02963df8ec7ce",
@@ -214,7 +214,7 @@ export const fakeOrders = {
           "r": "0xba8da11963df1e993bdebcd96227de165c915367ca258f97aa295d6ca815e714",
           "s": "0x0ec7030467226fd866ed2130d5091a8fe08074e8101d4f7492049053afb57b59"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1525384439",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x5e2a064a97aacb83abdab6dc42d6d981de8b5522",
@@ -232,7 +232,7 @@ export const fakeOrders = {
           "r": "0x6911d3cbbd083db9d0ac614f36cd4d8680c90541053605d7ccd4b649392d0c2f",
           "s": "0x5081ec74231fa7c636d4d85e911ca7746efb2c09e18babaad26153c536a46aeb"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1526211323",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0xa74fc05891ef8aa3ef7df96c72934bdc2b0287c4",
@@ -250,7 +250,7 @@ export const fakeOrders = {
           "r": "0x0e817b25c0f0c93bad3fa080912f349306cdbe05df70122f8262408d857a64c6",
           "s": "0x4cf51a3635426dd2e5e323125810f1f760f36395a5bc22b930352c406f7609e4"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524764325",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0xad677d1a42ecfaa147217b07c1edefb62c6fa629",
@@ -268,7 +268,7 @@ export const fakeOrders = {
           "r": "0xf1a69b4b85de67d1ae849979b3ce411917c9c2d14c183faaa77ab5fcb3ea49bf",
           "s": "0x3c88bae2a9eb06b3aa2d4a5e1e24ede8a888f0c3567b4e4562e3759d57239cb3"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1525470322",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0xf4a8e405481a15923c13022016ea33827ae87469",
@@ -286,7 +286,7 @@ export const fakeOrders = {
           "r": "0xb11a2997d95a8f6c60bfb86f64e2c362fd9f1cfeaf7f5eddd79072dad3bcb249",
           "s": "0x42158ceab18e730026822f3d85e3e104f6708ce8ffe35d1361a9811a979d630c"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1525470387",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0xf4a8e405481a15923c13022016ea33827ae87469",
@@ -304,7 +304,7 @@ export const fakeOrders = {
           "r": "0x85f0c2a60f56ec7efb62df275572f328d76c1e0779f6ce70796b468ce348fa22",
           "s": "0x58b28d0f2a148507a28012815b54d0eb5ad7021456a66372e998c66c0e995799"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1526378875",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x0124bb3550b7941250dffed2203bd81c449b6ecb",
@@ -322,7 +322,7 @@ export const fakeOrders = {
           "r": "0x858943d2e60faae001617349cfd458345cae2be4d66173bd344321b58afdf69d",
           "s": "0x49eb8a4f390e7b479fbcb620ebb33a2a7990afd3aa7cb0fcf1a9f009b293cc31"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524074610",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x12bbc1b6d2155f75a9cd1c28ead0887b198e5ee0",
@@ -340,7 +340,7 @@ export const fakeOrders = {
           "r": "0x088348091e4d46d4af568cbcc11eff9df5190b3835b7a0eac80673ca2925e447",
           "s": "0x6a1124c2b7ae2401538da1eeef887f42822099fbbdcc787aa42d76095736f31d"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524074605",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x12bbc1b6d2155f75a9cd1c28ead0887b198e5ee0",
@@ -358,7 +358,7 @@ export const fakeOrders = {
           "r": "0x90f00796e99d4237dfce30242cbe8980ca743073e59339fe9a7be718a4bef2ab",
           "s": "0x64c0a904e80cfd5b52e01c384d97745f1a09643f91dfa9a2b77e55a76003f7bb"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524074602",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x12bbc1b6d2155f75a9cd1c28ead0887b198e5ee0",
@@ -376,7 +376,7 @@ export const fakeOrders = {
           "r": "0x0829d322e93699f5e31aa4a93710d18cda03f500d5971f6ab76b0d17108881a6",
           "s": "0x3c26bdc56d7833c5ed61aa497ad85dffba7e20bdc9162b5919d80af10cc34a01"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524074591",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x12bbc1b6d2155f75a9cd1c28ead0887b198e5ee0",
@@ -394,7 +394,7 @@ export const fakeOrders = {
           "r": "0xe25106a8aaab28f43bd582db8d050975d64c2976476377fa49fe8d1d1a6008f7",
           "s": "0x6f0f4abfb786dddcb00cac2ed55758d4ae79979b741eb68bdf16163d8d2194d8"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1526462617",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x513e76e3976e97120e7e6cc327ec7d5710b790b3",
@@ -407,7 +407,7 @@ export const fakeOrders = {
         "takerTokenAddress": "0xe41d2489571d322189246dafa5ebde1f4699f498",
         "takerTokenAmount": "200069832402234636871"
       }, {
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "maker": "0x3496b716605d96ecb50c10fea2e0baf11439bd7c",
         "taker": "0x0000000000000000000000000000000000000000",
         "makerTokenAddress": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
@@ -426,7 +426,7 @@ export const fakeOrders = {
         }
       }],
       "asks": [{
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "maker": "0xb036ae3d480a5eff5a22ce3f9db669e326e5f937",
         "taker": "0x0000000000000000000000000000000000000000",
         "makerTokenAddress": "0xe41d2489571d322189246dafa5ebde1f4699f498",
@@ -449,7 +449,7 @@ export const fakeOrders = {
           "r": "0x6c1bffa8365ee22b49ed8719b8d5bb3689b501438f7a596ea276f2f9bbdeff28",
           "s": "0x64ba8150a6cff7adefdb7aa0827e2c188cbefb834793a7cc6ab08f2cb60575cb"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524707752",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x886ca108c5a5578417ce7e94d145da3bb10b1441",
@@ -467,7 +467,7 @@ export const fakeOrders = {
           "r": "0x2a769edfe2d5e6ad87bc219f9e776a6c3b3c9c86c008d97efd312082119e3e96",
           "s": "0x58ad895fa5be1e655e495df4d1fb86aa5ea07f5adbec876277ef5a7b1868070b"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524707798",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x886ca108c5a5578417ce7e94d145da3bb10b1441",
@@ -485,7 +485,7 @@ export const fakeOrders = {
           "r": "0xe70d3247f149bc12749eb843ed52b7ad4f320fa44d09028385a60c2bd03f3cdb",
           "s": "0x43e071b4d446ab834acc68b81f98d938c6a012918c5e635b827a1b746fd44d8a"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524707847",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x886ca108c5a5578417ce7e94d145da3bb10b1441",
@@ -503,7 +503,7 @@ export const fakeOrders = {
           "r": "0x2ec81bb09abe024e98a0b5b5216beb3e9cfed3a0aa7be98f2d68b43a2a142302",
           "s": "0x5b0f22ad417d6554ae9050fd11ff798887d11635ad9f92ebc43efc3e2651c397"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524707891",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x886ca108c5a5578417ce7e94d145da3bb10b1441",
@@ -521,7 +521,7 @@ export const fakeOrders = {
           "r": "0x9281e69528fa850079af4ef15a59c5a07095f29160eb8db11f7d4b8cbeea7893",
           "s": "0x7b867d1f1b016939f913d8a1cec4b03255a9834bedc3d195cd0b2519d396b277"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1526283671",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x1bc4775f60b7a53b6008d54fe9071795011ae6a0",
@@ -539,7 +539,7 @@ export const fakeOrders = {
           "r": "0x88f22b21b00945a52dcf4e06f93e8d4b26862cedabe104961e1e05b95dc6d24e",
           "s": "0x00fedb12999846342314edc682aa57e3c4208735b0d67f7efcd6f2eb8e5a6679"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1525553135",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x0c36aac9588fa75e519c77843be314ffcaff3325",
@@ -557,7 +557,7 @@ export const fakeOrders = {
           "r": "0x9cc425bda9e1560f46c1089629a5881415369755e20b4c3a7ad40b6b70212356",
           "s": "0x0fc100c06f8d29fb31a6c212e2c011e4c3931e687cb8fd2cadf9d952e459dbd9"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524056330",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x6886d00b20cc64280010c789afe54b3791c01ec6",
@@ -575,7 +575,7 @@ export const fakeOrders = {
           "r": "0x5714bf7d1beb5fd8e97378f5ac3dc9f634c99ca46913044f49fc43b3fefe2d9b",
           "s": "0x1c1f04549a21dd35c4d1d13a168fcca12c8c9d6f3746bdad4f1a9190c48ac90f"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1526589758",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0xb5f3bac656079e3ae9798650ce009d0caca86ea1",
@@ -593,7 +593,7 @@ export const fakeOrders = {
           "r": "0xdea4e9119cec1eab5bd47e7a4e6a0c2e41daeda8863f800d48f985442c606977",
           "s": "0x765a7c1ebe1b45f4ad9bed9a1715e6baa22f419321dea9c9fc2bec085fd80904"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524694724",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0xaaa21488d380648c240a6444996b8ee81fb5b762",
@@ -611,7 +611,7 @@ export const fakeOrders = {
           "r": "0x416231b1421385157d02d72687e9186c849d34df73bfe558854ba3e2927dc02d",
           "s": "0x10a1dfb2e17b746534afd6ad4435d63eb2c106a2e651983105beb139c24a4d75"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1525776299",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x071fe1bec0354a53e8239f2891fb1a594e29ef4c",
@@ -629,7 +629,7 @@ export const fakeOrders = {
           "r": "0xda754e607c34d3dcab4912000d8db31e7ef22cc262b308499cfd2cd1b0839100",
           "s": "0x38cb472c97835bb3ce2b3f1a2ee2cb8532da4d132b375362694d76c9c563422b"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524599787",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x0757095e2171a5200457be9191046a36a78196e1",
@@ -647,7 +647,7 @@ export const fakeOrders = {
           "r": "0x5db62ce48169028508e647b32888b415d9038308aa0fc81cef78c348b440e839",
           "s": "0x7fb7be8ca6175caa4da80d9d8c0716647ce1dc3be3c909821abedc9eb9385246"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524600004",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x53d2ee894046c6beeed1f80b608013c846722755",
@@ -665,7 +665,7 @@ export const fakeOrders = {
           "r": "0x27f29eeeba688b3d4ddc55c6d4db34f5a7aa651a40ea6d1977bfcd7bbb021aae",
           "s": "0x5bfbf7dfab84851637bfe0fd55041169a3de276693d5fbb1f762197d51a0d3af"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524599761",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x0757095e2171a5200457be9191046a36a78196e1",
@@ -683,7 +683,7 @@ export const fakeOrders = {
           "r": "0x29d3258e7746c80cedc5028ef9479ea2b35e197385bf0f97778e2c2966d836e3",
           "s": "0x4cce355e88053fa1a45f5a944c8cce09c4c537be5e21e6a8f466b58fab0c4f03"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524599975",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x53d2ee894046c6beeed1f80b608013c846722755",
@@ -701,7 +701,7 @@ export const fakeOrders = {
           "r": "0x05f60502c09c4b53f89e3e88dc6656901bf18828c357501349c0f0b76a2884af",
           "s": "0x6775536ebdfcaa4995cf97a1047819916394e492ed7f159ca50fa8353778364a"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524600166",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x71289140d2a749733933a7875dd4fc3ae3b68a8f",
@@ -719,7 +719,7 @@ export const fakeOrders = {
           "r": "0x7ebf0db0a30ff735362b3c297a9b76ffd8903b564bde100007b51d6e0577ed3b",
           "s": "0x7f9fc86a038c890f5b23794611202a49a7b1eaac1154bc05f5ada2847a76cbda"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1525369166",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0xf4a8e405481a15923c13022016ea33827ae87469",
@@ -737,7 +737,7 @@ export const fakeOrders = {
           "r": "0xa871275344bdaba7c897c444486f544bcf49e11c7b4287042628995325aa4f93",
           "s": "0x253cce8d006052116cede98b253086920a12d2b10011ad63fd5f3b2e26589385"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1526501166",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x896e3f061ec207e51d72613859ad22d6891ab297",
@@ -755,7 +755,7 @@ export const fakeOrders = {
           "r": "0xc637f3e1e657a050b3c6734b7052029798b5409fe84f197449800e700b863088",
           "s": "0x5f49923afc2e34c0c29f20ce1e16a31304dcf5dca9f102810fd38cb2c29888b6"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524600136",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x71289140d2a749733933a7875dd4fc3ae3b68a8f",
@@ -773,7 +773,7 @@ export const fakeOrders = {
           "r": "0x0cfd5d7cbe212e0cf3262bdcc1fcd9919ec0da17b89a025fb68b7d5fc9aefd39",
           "s": "0x020d723b8f24cea46c582e8f53277ecd6aa20e0024e1ac617b64d69417152ff2"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524599724",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x0757095e2171a5200457be9191046a36a78196e1",
@@ -791,7 +791,7 @@ export const fakeOrders = {
           "r": "0x970a04fc277cb69a66d2258626a5c30b5c92b8f260c4ea4484f4a272a34abb10",
           "s": "0x371c56997a595750ea78f4855cc5cd361bd7f100e334117b7dc38b670a459dd6"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524599923",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x53d2ee894046c6beeed1f80b608013c846722755",
@@ -809,7 +809,7 @@ export const fakeOrders = {
           "r": "0xd26e7ceabdc61aa5029ab7a70a2a879602e5239c3b091200aa94188a2e935c4c",
           "s": "0x42be8b0b8b789f98516582d37ebd219925da17ac6c3d22b6d34c70f3d561e680"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1525547068",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x00251666f79ae54decc079a9b4f64aed8da751ac",
@@ -827,7 +827,7 @@ export const fakeOrders = {
           "r": "0xf77b9cd8afc48c1b34a6d1bf5d54bd63759f31a4765b911972db06013f1567e3",
           "s": "0x6c3e69cfa9802210a2b3d900e85db3c1e04fcb305e5c80939b5b850d4d60402a"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524412926",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x0069942d0e0835dc6b229ab1039b96f0e95dbf94",
@@ -845,7 +845,7 @@ export const fakeOrders = {
           "r": "0xf23e2906e0afaceed8651f30216022ab3e9300fcb625f448c00d1605a4e4c10e",
           "s": "0x0e41f4cdb7c2f65fd3d78dcb52d0a4d63fa525d2849aeb1c2b8060d7b9def3e0"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524599688",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x0757095e2171a5200457be9191046a36a78196e1",
@@ -863,7 +863,7 @@ export const fakeOrders = {
           "r": "0xc6cc1fe32743d8e04705b7472a72209a35a2454858eeedb5a9af63bc141eb7bf",
           "s": "0x4623e218536702fd1d00a4d90d26191364caaf1fcd23d60d34c7009e994b12ee"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1525865299",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0xc30f370b4ca500ef0ef78a22f5ab8cd445760784",
@@ -881,7 +881,7 @@ export const fakeOrders = {
           "r": "0xfe7d53f1af71b7380b8254e42f0f2ccea83ce74204744b49829c955059bd29e3",
           "s": "0x5e8b7ea4f34e308557f29569b5c1056d5db4d8b810b4371d1035c8fff02929d9"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524429305",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0xc7e27f39829b36f3fc749d78ecead2525e328717",
@@ -899,7 +899,7 @@ export const fakeOrders = {
           "r": "0xe9a8bec334050b5122d5b80c98ca1d0037d158f85ee44c70b8ebb973865151e4",
           "s": "0x061f25e0ac7fa7eefb24543dca56293381e45618f8b9b58e8805514a1e80bd6c"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1526053743",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x0069942d0e0835dc6b229ab1039b96f0e95dbf94",
@@ -917,7 +917,7 @@ export const fakeOrders = {
           "r": "0x07424cf4d676f6877a7827735a61fedff5117a3b5a33f291e9d1768286acc38d",
           "s": "0x46c3dc72ff2bd9a073ba0c2610de07bf7e7d854e28e83483b4b23a4b966236bd"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524600100",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x71289140d2a749733933a7875dd4fc3ae3b68a8f",
@@ -935,7 +935,7 @@ export const fakeOrders = {
           "r": "0xa5715daf0e4c32d834080bed2cd1382323855b3369d9af5eefb9ba1ed044bbdd",
           "s": "0x61cd94802bef015e596ff432fee8ef1d953641709f679e490354bb6659d3cbc0"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1525558352",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0xddcc096ff7fd2774ad8c4a2de10fd4f755dbab1a",
@@ -953,7 +953,7 @@ export const fakeOrders = {
           "r": "0x199aee0fe2d680d4e3b451910edd21428d731845f42df4e3577efff5cb3ca9ca",
           "s": "0x21060c5a6d542d0f7dd97e0ad1df5090f97240ccf3b10a8e98c4d010e5bd64f5"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524599888",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x53d2ee894046c6beeed1f80b608013c846722755",
@@ -966,7 +966,7 @@ export const fakeOrders = {
         "takerTokenAddress": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
         "takerTokenAmount": "17580000000000000000"
       }, {
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "maker": "0x3496b716605d96ecb50c10fea2e0baf11439bd7c",
         "taker": "0x0000000000000000000000000000000000000000",
         "makerTokenAddress": "0xe41d2489571d322189246dafa5ebde1f4699f498",
@@ -989,7 +989,7 @@ export const fakeOrders = {
           "r": "0x5ecec0380c65b3fb72a199bfd8cda624f8dc3c3a4f394f25e720551879235061",
           "s": "0x4e5b8b2be9d0ee0ab1991540ce87016c15450a551145ebecbd9330a259532d12"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524594219",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x2f0a3b2c951290faa57e3395bac7ff28cb4e14a4",
@@ -1007,7 +1007,7 @@ export const fakeOrders = {
           "r": "0x67f5066b25c0112a8ac6fe9cd0f8326881168fd3913a04a6a86f1ecde66bf19d",
           "s": "0x320a6ebaa671582d6f913d32c7e468ba0568bf381cb5652b72a92078006b952a"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524599620",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x0757095e2171a5200457be9191046a36a78196e1",
@@ -1025,7 +1025,7 @@ export const fakeOrders = {
           "r": "0xe6d7a4acc5d80073525ddebc5b3cdc43af39ab762e89a6804ea262441783472f",
           "s": "0x0ba226aa258dd77af29308e13e5c51bb783d8d41f8892c4ba0baa30014a8ab80"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524074569",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x12bbc1b6d2155f75a9cd1c28ead0887b198e5ee0",
@@ -1043,7 +1043,7 @@ export const fakeOrders = {
           "r": "0xb3be6bec01112a58caf1f9bd6012737ffae4d95dda1b87cd18ab445668d36a9b",
           "s": "0x73eb800088f625c3e2fd935f71ed565faa7b50f3f7346657e0791582a8f811a2"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1526401282",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0xc30f370b4ca500ef0ef78a22f5ab8cd445760784",
@@ -1061,7 +1061,7 @@ export const fakeOrders = {
           "r": "0x70109d142e2efa99e8ae440084012f26c351c3361864a2bde2675d25d2934f66",
           "s": "0x71a45272ad0cfad0903aff8ce1e4a31a2309e8abde3ce6c8665aa42f7045b04e"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1525795556",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x4c8981d5b40c7e7a62baee91faf0249a284086c2",
@@ -1079,7 +1079,7 @@ export const fakeOrders = {
           "r": "0xcd36c07b31b748178398569a2231fadef678d612eb39df5a42bf0023de4a70b9",
           "s": "0x4d4c93c5f85976511b5f0d5e15346be62af92ddf59fe7503a4d79789119249a0"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524599859",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x53d2ee894046c6beeed1f80b608013c846722755",
@@ -1097,7 +1097,7 @@ export const fakeOrders = {
           "r": "0xaacac23d0bc359c9db28a0d0af1f197a79d959d140cc52b100a2ef032f50ca98",
           "s": "0x36d902e1b67c7964805b25e024d1f1031e91ea7ef9a9b3ded2fa34ed52c7cb92"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1526211288",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0xa74fc05891ef8aa3ef7df96c72934bdc2b0287c4",
@@ -1115,7 +1115,7 @@ export const fakeOrders = {
           "r": "0xf579451cf7a566d2a98a0c81fb5bac6194af03f70abdf284ddf64557f34de73a",
           "s": "0x39a7a49e49db2760375cd3842dadabcef9660b95ed6af7e44693d78f0ff25adb"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524594342",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x2f0a3b2c951290faa57e3395bac7ff28cb4e14a4",
@@ -1133,7 +1133,7 @@ export const fakeOrders = {
           "r": "0x56bf288ba2191872a3b90e41c085967b5e239f17b8efa51d361e84b4de30b272",
           "s": "0x77140c3241450e1398c92eb04fb6ef9fc2606644485167d983a0778b5c206be9"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524080913",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x36c323c3a40e01c0507b9aa8bc7b094dc831c9d2",
@@ -1161,7 +1161,7 @@ export const fakeOrders = {
           "r": "0xb6c0a46924f826aa31e0d559c8d2715d60c41942843b3b5bad76a48ec2eddce8",
           "s": "0x1cf989f46778ed27ef63ddfd1c2e4cd41910c4abb108c1eabc8e2968cfdabdfc"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1525667449",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0xdadbb833990b96db1fd1615930b02963df8ec7ce",
@@ -1179,7 +1179,7 @@ export const fakeOrders = {
           "r": "0xdd29c67f674dc24e3ddeabae4e4f1009c5031db18dc4ff54cf232cde28f8633e",
           "s": "0x37e04750ddad9358eb3e371498e809f035b70fabe77876f80e525445bfc312ab"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524684050",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0xdb2f8004ef60ca5ba2b2ae9b8825b3d37205ff3d",
@@ -1197,7 +1197,7 @@ export const fakeOrders = {
           "r": "0x6d08159969fe7aa6537f9b3bc2ae240e7962db0f75d94e83d6ac03a8e2854d7e",
           "s": "0x01ef953c56fc8cd57aecebaf7363dcfa7a82cfdc55ea205621d9ec7eacc142e4"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1525885502",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x166cb548f6ba0378ca56738d2fbecb39a749fc26",
@@ -1215,7 +1215,7 @@ export const fakeOrders = {
           "r": "0xfd993bfbf64943fc60c6418a5151a16d8f178ca9dda8ff63297a899170e4f4ea",
           "s": "0x435d86c67489aa8c411914847e84935a6ed7ce33ea009027d9f093cb199aaa78"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524776840",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x3994b774754703e78b2f3e273cfd8978e7a984cb",
@@ -1233,7 +1233,7 @@ export const fakeOrders = {
           "r": "0x7aad9bbb4b1f087c22b4fdcf993ed5f01c4e5b4e4445263e1acce23898cd3ebd",
           "s": "0x5e7b414129d72ee939ad0f1fa07a00dc41778e26d82f70512434aec8caffaa46"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524072552",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x12bbc1b6d2155f75a9cd1c28ead0887b198e5ee0",
@@ -1251,7 +1251,7 @@ export const fakeOrders = {
           "r": "0x426fa8e884389b05b60b36a4d0074b5790f7eee1d6513334221d8ab63c8f54cf",
           "s": "0x30cc138a8d26d2cedf6d2a9ee56e80b4793f5d0fae85c78f900b43a8efa83ec4"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1525718683",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0xab7da328c5a31ed4200a22ed3f1d5798765a6934",
@@ -1269,7 +1269,7 @@ export const fakeOrders = {
           "r": "0xd62154c2f4d070d3eaf153b9500fe87e249d9f3301d97d68556a8000f66af1c2",
           "s": "0x6b11ad82f00ad7f854d3f3a92357c20eee90b96213dfbb43c22bab249b3954dd"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524072548",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x12bbc1b6d2155f75a9cd1c28ead0887b198e5ee0",
@@ -1287,7 +1287,7 @@ export const fakeOrders = {
           "r": "0x216fc3e5aaf0ceffb8ce83c4f1c49f9078b75f9bbb95e6a35a57018241d930e3",
           "s": "0x6242c858d386b324e7ef8115767c3f023e41b5d145456488c78bb820cfcb1015"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524072542",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x12bbc1b6d2155f75a9cd1c28ead0887b198e5ee0",
@@ -1305,7 +1305,7 @@ export const fakeOrders = {
           "r": "0xe273f9319c26d1cca77992e4eb680e313436f793e2d803c2329244105cb2cb3f",
           "s": "0x6f4eab52ef4e77f26bb1af0b2f50ef1abc7be4b0bf4f7747531c946e4e54bdc5"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524072538",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x12bbc1b6d2155f75a9cd1c28ead0887b198e5ee0",
@@ -1323,7 +1323,7 @@ export const fakeOrders = {
           "r": "0xc9b01e019e1f6c9eb22c3f70ac337596096d08d4f3eabe14d62fe74ac8184ab8",
           "s": "0x53ad4130741d315bce400cee5e85a0337f11e15f6d34b7ff9a645ea456fdcd5f"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1526414820",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0xce50e2064a1bfc4e4e3475dac3045cfddf838b05",
@@ -1341,7 +1341,7 @@ export const fakeOrders = {
           "r": "0xc9fdd7665f543272bfd8b545c56cc23dfb460fb554a2b7f80284f4ba04cddafd",
           "s": "0x3467a42df801d6378c7def5f5506b5a5e86c57a29a027489eae0fd0099e41e17"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524072534",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x12bbc1b6d2155f75a9cd1c28ead0887b198e5ee0",
@@ -1359,7 +1359,7 @@ export const fakeOrders = {
           "r": "0x90f3b443b288c17f625187ba1b7accabea238148ee74aa7c6d1d35364ea9090c",
           "s": "0x15b328389066f2b3299f25994e220558af77ae1d3440ab052fa7408b4100a31e"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1526044072",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x395d48020ef5e29168706e16258db6c6c4d7d317",
@@ -1377,7 +1377,7 @@ export const fakeOrders = {
           "r": "0xb5ea8a8f8475fe4cbd508c0777e1c57b2243cc71f91a535d6eb6917ae0e59f58",
           "s": "0x49f21c9ff6a8024ec4a376109a5ab29183fbb5243b7c199300165f1cd04deeeb"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1526178594",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0xf5d8ba26df01ff031ec0c91a839fbdbbe324d109",
@@ -1395,7 +1395,7 @@ export const fakeOrders = {
           "r": "0xadf5e9b9d3a00f8b4cabfe5652ba277e35675b25f64e0e4643dfbbbdafd99390",
           "s": "0x06bf7ef966ac867f8c36b56599379b8d77744fe25b5bf54e17f6971f8e734662"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1526211199",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0xa74fc05891ef8aa3ef7df96c72934bdc2b0287c4",
@@ -1413,7 +1413,7 @@ export const fakeOrders = {
           "r": "0x5d90244b6a055c0b0fb5465abd4cdfb43fdf8117f63b55aedee04276f92c09b8",
           "s": "0x63d43be6b6726304370d20b7c5b74bd1a32e9f5b8780c1204999ab722f72942a"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1526579665",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x4c8981d5b40c7e7a62baee91faf0249a284086c2",
@@ -1426,7 +1426,7 @@ export const fakeOrders = {
         "takerTokenAddress": "0xd26114cd6ee289accf82350c8d8487fedb8a0c07",
         "takerTokenAmount": "5000000000000000000"
       }, {
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "maker": "0x76f30f4bb5d71377cac22f6ddc39c7b3afe6e377",
         "taker": "0x0000000000000000000000000000000000000000",
         "makerTokenAddress": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
@@ -1449,7 +1449,7 @@ export const fakeOrders = {
           "r": "0x650d8b84ba1ab695e428df09c4b1fa2da13d4bf8e2594a660aa4b58f0979b9d6",
           "s": "0x7dc95effae4e8d9679fc1408c74c37e5997386373ef2aa76a9c9bb1d99234a35"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524085797",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x9b4e28020b94b28f9f09ede87f588e89c283cffd",
@@ -1468,7 +1468,7 @@ export const fakeOrders = {
           "r": "0xdff686c22e09957f255f01e650a4821bcc7fd4a60d79e8dd425d551856360e91",
           "s": "0x6bcb80ce4e1524dd68836069fa136b722e560bed3114bcee67352e09aba915ed"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524291808",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0xf5d8ba26df01ff031ec0c91a839fbdbbe324d109",
@@ -1486,7 +1486,7 @@ export const fakeOrders = {
           "r": "0x51c272de9eb77e17029c1a61a80fd21e12c2623f2637002b0caa69b0b75d9cfb",
           "s": "0x7eba8eda19e9cd9d2ae73ea26101cc65e384a681771b7c3bb8faf9b312fdba2f"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524291698",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0xf5d8ba26df01ff031ec0c91a839fbdbbe324d109",
@@ -1504,7 +1504,7 @@ export const fakeOrders = {
           "r": "0x349fc60247fdd903ff6858fc3e181dd9420d5d2430d2a28d03a0a19c0d28c97f",
           "s": "0x3702811f003aecb587bd783371c760639dae7f9df08b13cb7a049e594b2be542"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524173341",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x642bce8b0cdad1972a039d22d13542bbec792dc7",
@@ -1522,7 +1522,7 @@ export const fakeOrders = {
           "r": "0x84313627a8205eb4d532765e156e5eabdb3611dd2cd37941ee2b2a3cc6693572",
           "s": "0x48378e3917847f1af2f5af0a2311de668f2764ed788832f1077f198fa1e974e3"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524291748",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0xf5d8ba26df01ff031ec0c91a839fbdbbe324d109",
@@ -1540,7 +1540,7 @@ export const fakeOrders = {
           "r": "0x202100ede0ff18883805164cc080b4ab874dc510aa7c6d41033024385304dbf8",
           "s": "0x07c5019ca998725876a602c7a39a3849dcc9dfe423c299a895907797acb1210f"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1525623441",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0xaaa21488d380648c240a6444996b8ee81fb5b762",
@@ -1558,7 +1558,7 @@ export const fakeOrders = {
           "r": "0xc476706ed76fc74af90ab6e9b8736b3cf79adf6fa0f95bbbf7793a7591fc1e62",
           "s": "0x3e1168292b833fd89a16f02755d3000f852d321ec81ba85cf10d2a9749622404"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524056304",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x6886d00b20cc64280010c789afe54b3791c01ec6",
@@ -1576,7 +1576,7 @@ export const fakeOrders = {
           "r": "0x68f86f22b46c9ff968d5dd88c2cf49f068325df8ac95432ae618e904d5f858ca",
           "s": "0x437e8c4ca6416382501d4a9db90190ac4c46977d414de8f4b1c6bc375fcdb632"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524192165",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x000c1cac6fef87de3fb1e3b15bb1b5311020e1c3",
@@ -1594,7 +1594,7 @@ export const fakeOrders = {
           "r": "0xbe36d5b95552449656e0b2bf8ca1ac738e6775fc868405813644dbddd1e1b692",
           "s": "0x59e77c4577ab86bbf38155b6656b7244c718d9bbcf68001742d5f62dffa4a1d4"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524194591",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0x3994b774754703e78b2f3e273cfd8978e7a984cb",
@@ -1612,7 +1612,7 @@ export const fakeOrders = {
           "r": "0x51646eb1b5a77d3d6f4b7e65a4947192669f1fae74ed7ea3471d03455a24c935",
           "s": "0x1744bb528d6f2915c467a3ec092094c8894d288386612e31574221ada33679c4"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1526211230",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0xa74fc05891ef8aa3ef7df96c72934bdc2b0287c4",
@@ -1630,7 +1630,7 @@ export const fakeOrders = {
           "r": "0x4e23efdc925472d046fdc6d4fbb129d16bc6732c258558ef3426ec12bcf16991",
           "s": "0x71ea02b8ee2a2f4545fd2db254619a60b051ba002c6cc012f67bc8127e6376a7"
         },
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "expirationUnixTimestampSec": "1524192522",
         "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
         "maker": "0xc94a5180e638d1704eeaccc3df08fa0982bd7ac9",
@@ -1643,7 +1643,7 @@ export const fakeOrders = {
         "takerTokenAddress": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
         "takerTokenAmount": "185152201600000000"
       }, {
-        "exchangeContractAddress": "0x12459c951127e0c374ff9105dda097662a027093",
+        "exchangeAddress": "0x12459c951127e0c374ff9105dda097662a027093",
         "maker": "0x76f30f4bb5d71377cac22f6ddc39c7b3afe6e377",
         "taker": "0x0000000000000000000000000000000000000000",
         "makerTokenAddress": "0xd26114cd6ee289accf82350c8d8487fedb8a0c07",

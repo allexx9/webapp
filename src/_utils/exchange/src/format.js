@@ -1,6 +1,6 @@
 import { BigNumber } from 'bignumber.js'
 import { ERCdEX, Ethfinex } from './const'
-import { ZeroEx } from '0x.js'
+import { orderHashUtils } from '0x.js'
 import Web3 from 'web3'
 import moment from 'moment'
 
@@ -23,7 +23,7 @@ const formatOrdersFromAggregateERCdEX = orders => {
 
 export const formatOrdersFromERCdEX = (orders, orderType) => {
   let orderPrice, orderAmount
-  let web3 = new Web3(Web3.currentProvider)
+  let web3 = new Web3(Web3.currentProvider) // TODO: new way to inject web3
   let formattedOrders = orders.map(order => {
     switch (orderType) {
       case 'asks':
@@ -49,7 +49,7 @@ export const formatOrdersFromERCdEX = (orders, orderType) => {
       default:
         return null
     }
-    let orderHash = ZeroEx.getOrderHashHex(order)
+    let orderHash = orderHashUtils.getOrderHashHex(order)
     let orderObject = {
       order,
       orderAmount,

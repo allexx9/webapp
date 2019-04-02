@@ -1,9 +1,13 @@
 import * as TYPE_ from '../../../actions/const'
 import { Actions } from '../../../actions/'
 import { Observable, of } from 'rxjs'
-import { signatureUtils/*, orderHashUtils*/ } from '@0x/oder-utils'
+import { signatureUtils, generatePseudoRandomSalt } from '0x.js'
 import { map, mergeMap, tap } from 'rxjs/operators'
 import { ofType } from 'redux-observable'
+import {
+    assetDataUtils,
+    BigNumber
+} from '0x.js'
 import Web3 from 'web3'
 import moment from 'moment'
 
@@ -67,6 +71,7 @@ const newMakerOrderV0 = (orderSide, options, state$) => {
     type: 'function',
   }
 
+/*
   const encodedMakerToken = web3.eth.abi.encodeFunctionCall(
     ERC20_METHOD_ABI,
     [makerTokenAddress.toLowerCase()]
@@ -76,6 +81,7 @@ const newMakerOrderV0 = (orderSide, options, state$) => {
     ERC20_METHOD_ABI,
     [takerTokenAddress.toLowerCase()]
   )
+*/
 
   const order = {
     // TODO: check inputs, exchange is 0xV2, relayer is hot wallet
@@ -86,22 +92,19 @@ const newMakerOrderV0 = (orderSide, options, state$) => {
     senderAddress: selectedExchange.feeRecipient.toLowerCase(), // hot wallet
 
     makerAssetAmount: web3.utils.toBN('0'), // we try without defining the amounts first
-
     takerAssetAmount: web3.utils.toBN('0'), // we try without defining the amounts first
 
-    makerFee: web3.utils.toBN('0'),
-
-    takerFee: web3.utils.toBN('0'),
+    makerFee: new BigNumber(0).toString(),
+    takerFee: new BigNumber(0).toString(),
 
     expirationTimeSeconds: orderExpirationTime.toString(),
 
-    salt: signatureUtils.generatePseudoRandomSalt(),
+    salt: generatePseudoRandomSalt().toString(),
 
-    makerAssetData: encodedMakerToken, // assetDataUtils.encodeERC20AssetData(makerTokenAddress.toLowerCase()),
+    makerAssetData: assetDataUtils.encodeERC20AssetData(makerTokenAddress.toLowerCase()),
+    takerAssetData: assetDataUtils.encodeERC20AssetData(takerTokenAddress.toLowerCase()),
 
-    takerAssetData: encodedTakerToken, // assetDataUtils.encodeERC20AssetData(takerTokenAddress.toLowerCase()),
-
-    exchangeAddress: selectedExchange.exchangeContractAddress.toLowerCase()
+    exchangeAddress: selectedExchange.exchangeAddress.toLowerCase()
   }
 
   const makerOrder = {

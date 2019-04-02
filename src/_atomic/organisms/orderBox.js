@@ -117,6 +117,8 @@ class OrderBox extends Component {
 
     let balanceWrapper, decimals, orderAmountBaseUnit, tokenSymbol
 
+/*
+// TODO: remove after testing
     // Checking if the locked balance is enough.
     switch (selectedOrder.orderType) {
       case 'asks':
@@ -154,6 +156,7 @@ class OrderBox extends Component {
         break
       default:
     }
+*/
 
     if (!this.state.orderOptions.quickOrder) {
       this.setState({
@@ -348,7 +351,7 @@ class OrderBox extends Component {
 
     const { selectedTokensPair } = this.props.exchange
 
-    if (orderType === 'asks') {
+    /*if (orderType === 'asks') {
       if (
         moment
           .unix(selectedTokensPair.baseTokenLockWrapExpire)
@@ -371,7 +374,7 @@ class OrderBox extends Component {
         })
         return
       }
-    }
+    }*/
     this.setState({
       showWarnMsg: ''
     })

@@ -283,7 +283,7 @@ export const EXCHANGES = {
   ERCdEX: {
     kovan: {
       tokenTransferProxy: '0x087eed4bc1ee3de49befbd66c662b434b15d49d4',
-      exchangeContractAddress: '0x90fe2af704b34e0224bf2299c838e04d4dcf1364',
+      exchangeAddress: '0x90fe2af704b34e0224bf2299c838e04d4dcf1364',
       feeRecipient: '',
       networkId: 42,
       name: 'ERCdEX',
@@ -291,7 +291,7 @@ export const EXCHANGES = {
     },
     ropsten: {
       tokenTransferProxy: '0x4e9aad8184de8833365fea970cd9149372fdf1e6',
-      exchangeContractAddress: '0x1d8643aae25841322ecde826862a9fa922770981',
+      exchangeAddress: '0x1d8643aae25841322ecde826862a9fa922770981',
       feeRecipient: '',
       networkId: 3,
       name: 'ERCdEX',
@@ -302,7 +302,7 @@ export const EXCHANGES = {
   Rigoblock: {
     kovan: {
       tokenTransferProxy: '0xcc040edf6e508c4372a62b1a902c69dcc52ceb1d',
-      exchangeContractAddress: '0xf307de6528fa16473d8f6509b7b1d8851320dba5',
+      exchangeAddress: '0xf307de6528fa16473d8f6509b7b1d8851320dba5',
       feeRecipient: '',
       networkId: 42,
       name: 'Rigoblock',
@@ -313,7 +313,7 @@ export const EXCHANGES = {
   Ethfinex: {
     kovan: {
       tokenTransferProxy: '0x087Eed4Bc1ee3DE49BeFbd66C662B434B15d49d4', // 0xV1 addresses
-      exchangeContractAddress: '0x35dD2932454449b14Cee11A94d3674a936d5d7b2',
+      exchangeAddress: '0x35dD2932454449b14Cee11A94d3674a936d5d7b2',
       feeRecipient: '0x9faf5515f177F3A8a845D48C19032b33Cc54C09C',
       networkId: 42,
       name: 'Ethfinex',
@@ -322,11 +322,11 @@ export const EXCHANGES = {
     ropsten: {
       // Old contracts
       // tokenTransferProxy: '0xcc040edf6e508c4372a62b1a902c69dcc52ceb1d'
-      // exchangeContractAddress: '0x1d8643aae25841322ecde826862a9fa922770981',
+      // exchangeAddress: '0x1d8643aae25841322ecde826862a9fa922770981',
 
       // Rigoblock ammended contract for EFX
       tokenTransferProxy: '0xeea64eebd1f2dc273cfc79cbdda23b69c6b5588',
-      exchangeContractAddress: '0x1d8643aae25841322ecde826862a9fa922770981',
+      exchangeAddress: '0x1d8643aae25841322ecde826862a9fa922770981',
       feeRecipient: '0x9faf5515f177f3a8a845d48c19032b33cc54c09c',
       networkId: 3,
       name: 'Ethfinex',
@@ -334,7 +334,7 @@ export const EXCHANGES = {
     },
     mainnet: {
       tokenTransferProxy: '0x7e03d2b8edc3585ecd8a5807661fff0830a0b603',
-      exchangeContractAddress: '0x4f833a24e1f95d70f028921e27040ca56e09ab0b',
+      exchangeAddress: '0x4f833a24e1f95d70f028921e27040ca56e09ab0b',
       feeRecipient: '0x61b9898c9b60a159fc91ae8026563cd226b7a0c1',
       networkId: 1,
       name: 'Ethfinex',

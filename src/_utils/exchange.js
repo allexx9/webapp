@@ -2,19 +2,29 @@
 // This file is part of RigoBlock.
 
 import * as abis from '../PoolsApi/src/contracts/abi'
-// import { BigNumber } from 'bignumber.js'
-import { BigNumber } from '@0xproject/utils'
 import { INFURA, KOVAN, PROD, WS } from './const'
-//import { ZeroEx } from '0x.js'
-import { signatureUtils, orderHashUtils } from '@0x/oder-utils' // TODO: deprecate old 0x.js library
+import {
+    //assetDataUtils,
+    BigNumber,
+    ContractWrappers,
+    //generatePseudoRandomSalt,
+    //Order,
+    orderHashUtils,
+    signatureUtils,
+    //SignerType
+} from '0x.js'
+import { Web3Wrapper } from '@0x/web3-wrapper'
+import { MetamaskSubprovider } from '@0x/subproviders'
+//import { ECSignature, SignatureType, SignedOrder, ValidatorSignature } from '@0x/types';
+import { SignatureType } from '@0x/types';
+//import ExchangeConnectorWrapper from './exchangeConnector'
+//import { EFX } from 'efx-api-node'
+
+//import { signatureUtils, orderHashUtils } from '@0x/oder-utils' // TODO: deprecate old 0x.js library
 import Web3 from 'web3'
 // import ReconnectingWebSocket from 'reconnectingwebsocket'
 import PoolApi from '../PoolsApi/src'
 import rp from 'request-promise'
-
-//const { signatureUtils, orderHashUtils } = require('@0x/order-utils')
-//const { MetamaskSubprovider } = require('@0x/subproviders')
-//const { SignatureType } = require('@0x/types')
 
 export const setAllowaceOnExchangeThroughDrago = (
   selectedFund,
@@ -320,8 +330,17 @@ export const signOrder = async (order, selectedExchange, walletAddress) => {
   const quoteTokenDecimals = order.selectedTokensPair.quoteToken.decimals
 
   let makerAssetAmount, takerAssetAmount
-  const zeroEx = new ZeroEx(window.web3.currentProvider, selectedExchange)
-  const fee_rate = 0.0025
+  //const zeroEx = new ZeroEx(window.web3.currentProvider, selectedExchange)
+  const providerEngine = window.web3.currentProvider.isMetaMask
+                    ? new MetamaskSubprovider(window.web3.currentProvider)
+                    : window.web3.currentProvider
+
+  //const contractWrappers = new ContractWrappers(providerEngine, { networkId: selectedExchange.networkId })
+  // Initialize the Web3Wrapper, this provides helper functions around fetching
+  // account information, balances, general contract logs
+  const web3Wrapper = new Web3Wrapper(providerEngine)
+
+  const fee_rate = 0.0025 // in case of ethfinex // TODO: pass this and settle spread in dedicated subfunction
 
   switch (order.orderType) {
     case 'asks':
@@ -331,11 +350,11 @@ export const signOrder = async (order, selectedExchange, walletAddress) => {
         new BigNumber(order.orderPrice)
       )
       .times(1 - fee_rate) // TODO: verify
-      makerAssetAmount = ZeroEx.toBaseUnitAmount(
+      makerAssetAmount = Web3Wrapper.toBaseUnitAmount(
         makerAssetAmount,
         baseTokenDecimals
       )
-      takerAssetAmount = ZeroEx.toBaseUnitAmount(
+      takerAssetAmount = Web3Wrapper.toBaseUnitAmount(
         takerAssetAmount,
         quoteTokenDecimals
       )
@@ -347,11 +366,11 @@ export const signOrder = async (order, selectedExchange, walletAddress) => {
       )
       takerAssetAmount = new BigNumber(order.orderFillAmount)
       .times(1 - fee_rate) // TODO: verify
-      makerAssetAmount = ZeroEx.toBaseUnitAmount(
+      makerAssetAmount = Web3Wrapper.toBaseUnitAmount(
         makerAssetAmount,
         quoteTokenDecimals
       )
-      takerAssetAmount = ZeroEx.toBaseUnitAmount(
+      takerAssetAmount = Web3Wrapper.toBaseUnitAmount(
         takerAssetAmount,
         baseTokenDecimals
       )
@@ -363,11 +382,11 @@ export const signOrder = async (order, selectedExchange, walletAddress) => {
         new BigNumber(order.orderPrice)
       )
       .times(1 - fee_rate)
-      makerAssetAmount = ZeroEx.toBaseUnitAmount(
+      makerAssetAmount = Web3Wrapper.toBaseUnitAmount(
         makerAssetAmount,
         baseTokenDecimals
       )
-      takerAssetAmount = ZeroEx.toBaseUnitAmount(
+      takerAssetAmount = Web3Wrapper.toBaseUnitAmount(
         takerAssetAmount,
         quoteTokenDecimals
       )
@@ -378,8 +397,14 @@ export const signOrder = async (order, selectedExchange, walletAddress) => {
     takerAssetAmount
   }
 
-  order.details.order.makerAssetAmount = makerAssetAmount
-  order.details.order.takerAssetAmount = takerAssetAmount
+  order.details.order.makerAssetAmount = makerAssetAmount.toString()
+  order.details.order.takerAssetAmount = takerAssetAmount.toString()
+
+  // NOTE: mock test of normal transaction
+  // overwriting variables
+  const signer = await web3Wrapper.getAvailableAddressesAsync()
+  order.details.order.makerAddress = signer.toString()
+  order.details.order.expirationTimeSeconds = new BigNumber(1554209301 + 36000).toString()
 
   //let orderToBeSigned = { ...order.details.order, ...tokensAmounts }
   let orderToBeSigned = { ...order.details.order }
@@ -391,50 +416,45 @@ export const signOrder = async (order, selectedExchange, walletAddress) => {
   // }
   // console.log(orderToBeSigned)
 
-  const provider = window.web3.currentProvider.isMetaMask
-                  ? new Web3(window.ethereum)
-                  : window.web3.currentProvider
-  const web3 = new Web3(provider)
+  //const signer = await web3Wrapper.getAvailableAddressesAsync()
 
-  const orderHash = web3.utils.soliditySha3(orderToBeSigned)
-  const signer = await zeroEx.getAvailableAddressesAsync()
-  const ecSignature = await web3.eth.personal.sign(orderHash, signer[0])
-
-  // comment as revert from 0x apis
-  /*const signedOrderDefaultType = await signatureUtils.ecSignOrderAsync(
-    provider,
+  const signedOrderDefaultType = await signatureUtils.ecSignOrderAsync(
+    providerEngine,
     orderToBeSigned,
     signer[0]
   )
 
+/*
   const defaultSignature = signedOrderDefaultType.signature
-  const ecSignature = defaultSignature.slice(0, -2)
-  //const ecSignature = await signatureUtils.parseECSignature(signedOrderDefaultType.signature)*/
-  //const signatureType = (0, 4) //SignatureType.Wallet.toString() // 0x04
-  const typedSignature = ecSignature.concat(0, 4)
-  //
-  //console.log(ecSignature)
+  const vrsSignature = await defaultSignature.slice(0, -2)
+  const signatureWallerType = await signatureUtils.convertToSignatureWithType(
+    vrsSignature,
+    SignatureType.Wallet // same as await vrsSignature.concat(0, 4)
+  )
+  signedOrderDefaultType.signature = signatureWallerType
+  const signedOrderWalletType = signedOrderDefaultType
 
-
-  /*signedOrderDefaultType.signature = typedSignature
-  const signedOrder = {
-    ...signedOrderDefaultType
-  }*/
-
-
-  // Append signature to order
-  const signedOrder = {
-    ...orderToBeSigned,
-    typedSignature
-  }
-  return signedOrder
+  // signature validation
+  const signedOrderHashHex = await orderHashUtils.getOrderHashHex(orderToBeSigned) // or signed Order? this could lead to issues in validating
+  const isValidSignature = await signatureUtils.isValidWalletSignatureAsync(
+    providerEngine,
+    signedOrderHashHex,
+    signatureWallerType,
+    order.details.order.makerAddress
+    )
+  console.log(isValidSignature, signatureWallerType)
+*/
+  const signedWalletOrder = {
+      ...signedOrderDefaultType
+    }
+  return signedWalletOrder
 }
 
 export const submitOrderToRelayEFX = async (efxOrder, networkId) => {
 
   // const ZeroExConfig = {
   //   networkId: 42
-  //   // exchangeContractAddress: this._network.id
+  //   // exchangeAddress: this._network.id
   // }
   let relayerApiUrl
   switch (networkId) {
@@ -470,7 +490,7 @@ export const cancelOrderFromRelayEFX = async (
 
   // const ZeroExConfig = {
   //   networkId: 42
-  //   // exchangeContractAddress: this._network.id
+  //   // exchangeAddress: this._network.id
   // }
   let relayerApiUrl
   switch (networkId) {
@@ -502,7 +522,7 @@ export const submitOrderToRelay = async signedOrder => {
 
   const ZeroExConfig = {
     networkId: 42
-    // exchangeContractAddress: this._network.id
+    // exchangeAddress: this._network.id
   }
   const relayerApiUrl = `https://api.ercdex.com/api/standard/${
     ZeroExConfig.networkId
@@ -528,7 +548,7 @@ export const softCancelOrderFromRelayERCdEX = async signedOrder => {
   // console.log(response)
 
   const signature = JSON.stringify(signedOrder.order.ecSignature)
-  const oderHash = ZeroEx.getOrderHashHex(signedOrder.order)
+  const oderHash = await orderHashUtils.getOrderHashHex(signedOrder.order)
   let options = {
     method: 'POST',
     uri: relayerApiUrl,
@@ -569,7 +589,7 @@ export const getTokenAllowance = async (token, ownerAddress, ZeroExConfig) => {
   }
 
 
-  const zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig)
+  const zeroEx = new ContractWrappers(window.web3.currentProvider, ZeroExConfig)
   return zeroEx.token.getProxyAllowanceAsync(token.address, ownerAddress)
 }
 
@@ -579,7 +599,7 @@ export const setTokenAllowance = async (
   spenderAddress,
   ZeroExConfig
 ) => {
-  const zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig)
+  const zeroEx = new ContractWrappers(window.web3.currentProvider, ZeroExConfig)
   return zeroEx.token.setUnlimitedAllowanceAsync(
     tokenAddress,
     ownerAddress,
@@ -588,7 +608,7 @@ export const setTokenAllowance = async (
 }
 
 export const getAvailableAccounts = async ZeroExConfig => {
-  const zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig)
+  const zeroEx = new ContractWrappers(window.web3.currentProvider, ZeroExConfig)
   return await zeroEx.getAvailableAddressesAsync()
 }
 
@@ -627,8 +647,8 @@ export const fillOrderToExchange = async (
   // const zeroEx = this._zeroEx
   const DECIMALS = 18
   const shouldThrowOnInsufficientBalanceOrAllowance = true
-  const zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig)
-  const fillTakerTokenAmount = ZeroEx.toBaseUnitAmount(
+  const zeroEx = new ContractWrappers(window.web3.currentProvider, ZeroExConfig)
+  const fillTakerTokenAmount = Web3Wrapper.toBaseUnitAmount(
     new BigNumber(amount),
     DECIMALS
   )
@@ -649,6 +669,7 @@ export const fillOrderToExchange = async (
 
 }
 
+// TODO: update 0x order format
 export const fillOrderToExchangeViaProxy = async (
   selectedFund,
   signedOrder,
@@ -684,7 +705,7 @@ export const fillOrderToExchangeViaProxy = async (
   console.log(
     orderAddresses,
     orderValues,
-    ZeroEx.toBaseUnitAmount(new BigNumber(amount), DECIMALS).toString(),
+    Web3Wrapper.toBaseUnitAmount(new BigNumber(amount), DECIMALS).toString(),
     shouldThrowOnInsufficientBalanceOrAllowance,
     v,
     r,
@@ -698,7 +719,7 @@ export const fillOrderToExchangeViaProxy = async (
     selectedFund.managerAccount,
     orderAddresses,
     orderValues,
-    ZeroEx.toBaseUnitAmount(new BigNumber(amount), DECIMALS).toString(),
+    Web3Wrapper.toBaseUnitAmount(new BigNumber(amount), DECIMALS).toString(),
     shouldThrowOnInsufficientBalanceOrAllowance,
     v,
     r,
@@ -737,7 +758,7 @@ export const cancelOrderOnExchangeViaProxy = async (
   console.log(
     orderAddresses,
     orderValues,
-    ZeroEx.toBaseUnitAmount(
+    Web3Wrapper.toBaseUnitAmount(
       new BigNumber(cancelTakerTokenAmount),
       DECIMALS
     ).toString()
@@ -750,11 +771,11 @@ export const cancelOrderOnExchangeViaProxy = async (
     selectedFund.managerAccount,
     orderAddresses,
     orderValues,
-    ZeroEx.toBaseUnitAmount(
+    Web3Wrapper.toBaseUnitAmount(
       new BigNumber(cancelTakerTokenAmount),
       DECIMALS
     ).toString(),
-    signedOrder.exchangeContractAddress
+    signedOrder.exchangeAddress
   )
 }
 
@@ -805,9 +826,9 @@ class Exchange {
 
     const ZeroExConfig = {
       networkId: this._network.id
-      // exchangeContractAddress: this._network.id
+      // exchangeAddress: this._network.id
     }
-    this._zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig)
+    this._zeroEx = new ContractWrappers(window.web3.currentProvider, ZeroExConfig)
   }
 
   get timeout() {
@@ -896,7 +917,7 @@ class Exchange {
           ).toFixed(5)
           break
       }
-      let orderHash = ZeroEx.getOrderHashHex(order)
+      let orderHash = orderHashUtils.getOrderHashHex(order)
       let orderObject = {
         order,
         orderAmount,
@@ -904,6 +925,7 @@ class Exchange {
         orderPrice,
         orderHash
       }
+      console.log(orderObject)
       return orderObject
     })
     return formattedOrders
@@ -968,7 +990,7 @@ class Exchange {
         ).toFixed(5)
         break
     }
-    // var orderHash = ZeroEx.getOrderHashHex(order)
+    // var orderHash = await orderHashUtils.getOrderHashHex(order)
     let orderObject = {
       order,
       orderAmount,

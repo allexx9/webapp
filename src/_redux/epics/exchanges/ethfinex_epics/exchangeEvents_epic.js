@@ -2,7 +2,7 @@
 
 import * as TYPE_ from '../../../actions/const'
 import { Actions } from '../../../actions'
-import { BigNumber } from '@0xproject/utils'
+import { BigNumber } from '0x.js'
 import { ERC20_TOKENS } from '../../../../_utils/tokens'
 import {
   concat,
@@ -27,7 +27,7 @@ const getPastExchangeEvents$ = (fund, exchange, state$) => {
   const web3 = Web3Wrapper.getInstance(networkInfo.id)
   const efxEchangeContract = new web3.eth.Contract(
     exchangeEfxV0Abi,
-    exchange.exchangeContractAddress.toLowerCase()
+    exchange.exchangeAddress.toLowerCase()
   )
   const makerAddress = '0x' + fund.address.substr(2).padStart(64, '0')
   const chunkSize = 100000
