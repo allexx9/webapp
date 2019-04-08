@@ -26,6 +26,8 @@ import rp from 'request-promise'
 const { MetamaskSubprovider } = require('@0x/subproviders')
 const { SignatureType } = require('@0x/types')
 
+const EFX = require('efx-api-node')
+
 export const setAllowaceOnExchangeThroughDrago = (
   selectedFund,
   token,
@@ -330,16 +332,41 @@ export const signOrder = async (order, selectedExchange, walletAddress) => {
   const quoteTokenDecimals = order.selectedTokensPair.quoteToken.decimals
   console.log(baseTokenDecimals, quoteTokenDecimals)
   let makerAssetAmount, takerAssetAmount
+  // selectedExchange.ethfinex? apply rules
+
+/*
+  const web3 = new Web3(window.ethereum)
+  const efx = await EFX(web3, {
+    api: 'https://test.ethfinex.com/trustless/v1' // overwrite network api
+  })
+*/
+
   const fee_rate = 0.0025
   console.log(order.orderFillAmount, order.orderPrice)
+
+  /*let buySymbol
+  let sellSymbol
+  let sellCurrency
+  let buyCurrency*/
+
   switch (order.orderType) {
+
     case 'asks':
       console.log('asks')
+
+      // new part
+      /*buySymbol = order.selectedTokensPair.quoteToken.symbol
+      sellSymbol = order.selectedTokensPair.baseToken.symbol
+      sellCurrency = await efx.config['0x'].tokenRegistry[sellSymbol]
+      buyCurrency = await efx.config['0x'].tokenRegistry[buySymbol]*/
+
       makerAssetAmount = new BigNumber(order.orderFillAmount)
+      //.times(1 + (sellCurrency.settleSpread || 0)) // TODO: fix, returns error
       takerAssetAmount = new BigNumber(order.orderFillAmount).times(
         new BigNumber(order.orderPrice)
       )
       .times(1 - fee_rate) // TODO: verify
+      //.times(1 + (buyCurrency.settleSpread || 0)) // TODO: fix, returns error
       makerAssetAmount = Web3Wrapper.toBaseUnitAmount(
         makerAssetAmount,
         baseTokenDecimals
@@ -351,11 +378,19 @@ export const signOrder = async (order, selectedExchange, walletAddress) => {
       break
     case 'bids':
       console.log('bids')
+
+      /*buySymbol = order.selectedTokensPair.baseToken
+      sellSymbol = order.selectedTokensPair.quoteToken
+      sellCurrency = efx.config['0x'].tokenRegistry[sellSymbol]
+      buyCurrency = efx.config['0x'].tokenRegistry[buySymbol]*/
+
       makerAssetAmount = new BigNumber(order.orderFillAmount).times(
         new BigNumber(order.orderPrice)
       )
+      // .times(1 + (sellCurrency.settleSpread || 0)) // TODO: fix, returns error
       takerAssetAmount = new BigNumber(order.orderFillAmount)
       .times(1 - fee_rate) // TODO: verify
+      // .times(1 + (buyCurrency.settleSpread || 0)) // TODO: fix, returns error
       makerAssetAmount = Web3Wrapper.toBaseUnitAmount(
         makerAssetAmount,
         quoteTokenDecimals
@@ -383,6 +418,7 @@ export const signOrder = async (order, selectedExchange, walletAddress) => {
       .times(1 - fee_rate) // TODO: verify
       break
   }
+
   const tokensAmounts = {
     makerAssetAmount,
     takerAssetAmount
