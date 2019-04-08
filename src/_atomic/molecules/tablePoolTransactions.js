@@ -245,7 +245,7 @@ class TablePoolTransactions extends PureComponent {
   }
 
   renderPoolUnits(rowData) {
-    return <PoolUnits units={rowData.drgvalue} symbol={rowData.symbol} />
+    return <PoolUnits units={rowData.drgvalue.toString()} symbol={rowData.symbol} />
 
   }
 

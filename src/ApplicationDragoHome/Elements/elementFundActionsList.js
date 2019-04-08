@@ -115,8 +115,10 @@ export default class ElementFundActionsList extends Component {
           <Menu desktop={true} onChange={this.openActionForm}>
             <Subheader inset={false}>Drago</Subheader>
             <MenuItem value="setPrice" primaryText="Set Prices" />
+            {/*
             <Subheader inset={false}>Exchange</Subheader>
             <MenuItem value="wrapETH" primaryText="Wrap ETH" />
+            */}
           </Menu>
         </Popover>
         {this.state.showActionMenuItem.wrapETH ? (
