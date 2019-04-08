@@ -277,6 +277,12 @@ class OrderBox extends Component {
             selectedOrder.orderType === 'asks'
               ? (-Math.abs(selectedOrder.orderFillAmount)).toString()
               : selectedOrder.orderFillAmount
+
+          // TODO: try adjust price here
+          /*const EFX = require('efx-api-node')
+          const web3 = new EFX.Web3(window.web3.currentProvider) // current ethereum provider
+          const efx = await EFX( web3 )*/
+
           const efxOrder = {
             type: 'EXCHANGE LIMIT',
             symbol: efxSymbol,
