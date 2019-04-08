@@ -134,7 +134,7 @@ class ApplicationHome extends PureComponent {
             <img src="/img/social/discord.svg" height="32px" alt="" />
           </a>
           <a
-            href="https://www.facebook.com/RigoBlocks"
+            href="https://www.facebook.com/RigoBlockProtocol"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -163,14 +163,22 @@ class ApplicationHome extends PureComponent {
                         />
                       </div>
                       <h2 style={{ color: '#054186' }}>
-                        The leading crypto platform for asset management.
-                    </h2>
-                      <p className={styles.subHeadline}>
-                        <b className={styles.txtDotted}>Simple</b>,{' '}
-                        <b className={styles.txtDottedYellow}>transparent</b>,{' '}
-                        <b className={styles.txtDotted}>meritocratic</b> and{' '}
-                        <b className={styles.txtDottedYellow}>democratic</b>.
-                    </p>
+                        ORGANIZE YOUR TOKENS. PLATFORM IS BETA, USE AT YOUR OWN RISK.
+                      </h2>
+                      <Link to="/vault">
+                        <p className={styles.subHeadline}>
+                          <b className={styles.txtDottedYellow}>
+                            Vault: create your custodial service
+                          </b>{' '}
+                        </p>
+                      </Link>
+                      <Link to="/drago">
+                        <p className={styles.subHeadline}>
+                          <b className={styles.txtDottedYellow}>
+                            Drago: trade on decentralized exchanges
+                          </b>{' '}
+                        </p>
+                      </Link>
                     </Col>
                   </Row>
                 </div>
@@ -197,7 +205,7 @@ class ApplicationHome extends PureComponent {
                         <Link to="/drago">
                           <FlatButton
                             labelPosition="before"
-                            label="Create a pool"
+                            label="EXPLORE DRAGO"
                             labelStyle={{
                               color: '#ffffff',
                               fontWeight: '600',
@@ -293,7 +301,7 @@ class ApplicationHome extends PureComponent {
               </a>
 
               <a
-                href="https://community.rigoblock.com"
+                href="https://discordapp.com/invite/FXd8EU8"
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.communityButton}

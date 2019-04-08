@@ -1,7 +1,8 @@
 import {
   DEFAULT_NETWORK_NAME,
   ERC20_TOKENS,
-  ERCdEX,
+  // ERCdEX,
+  Ethfinex,
   EXCHANGES,
   RELAYS,
   TRADE_TOKENS_PAIRS
@@ -9,8 +10,8 @@ import {
 import BigNumber from 'bignumber.js'
 
 const NETWORK_NAME = DEFAULT_NETWORK_NAME
-const BASE_TOKEN = ERC20_TOKENS[NETWORK_NAME].ZRX
-const QUOTE_TOKEN = ERC20_TOKENS[NETWORK_NAME].WETH
+const BASE_TOKEN = ERC20_TOKENS[NETWORK_NAME].ETH // ZRX
+const QUOTE_TOKEN = ERC20_TOKENS[NETWORK_NAME].USDT // WETH
 
 export const exchange = {
   tradesHistory: [],
@@ -76,8 +77,8 @@ export const exchange = {
     valid: false
   },
   walletAddress: '',
-  selectedExchange: EXCHANGES.ERCdEX[NETWORK_NAME],
-  selectedRelay: RELAYS[ERCdEX],
+  selectedExchange: EXCHANGES.Ethfinex[NETWORK_NAME], // ERCdEX
+  selectedRelay: RELAYS[Ethfinex], // ERCdEX
   availableRelays: {},
   selectedTokensPair: {
     baseToken: BASE_TOKEN,
@@ -124,7 +125,7 @@ export const exchange = {
     spread: '0'
   },
   relay: {
-    url: 'https://api.ercdex.com/api/standard',
+    url: 'https://test.ethfinex.com/trustless/v1/w/on', // url: 'https://api.ercdex.com/api/standard',
     networkId: '42'
   },
   prices: {

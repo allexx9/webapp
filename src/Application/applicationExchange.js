@@ -95,7 +95,7 @@ class ApplicationExchangePage extends Component {
     //     </MuiThemeProvider>
     //   )
     // }
-    const allowedNetworks = [3, 1]
+    const allowedNetworks = [42, 3, 1]
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
         <Grid fluid className={styles.maincontainer}>

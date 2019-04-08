@@ -166,7 +166,7 @@ class PageDashboardDragoTrader extends Component {
                       icon={<ActionList color={'#054186'} />}
                     />
                     <Tab
-                      label="Holding"
+                      label="Holdings"
                       className={styles.detailsTab}
                       onActive={() =>
                         scrollToElement('#holding-section', { offset: -165 })
@@ -225,7 +225,7 @@ class PageDashboardDragoTrader extends Component {
                         this.Dragos = section
                       }}
                     />
-                    <SectionHeader titleText="HOLDING" />
+                    <SectionHeader titleText="DRAGO HOLDINGS" />
                   </Col>
                 </Row>
                 <Row>

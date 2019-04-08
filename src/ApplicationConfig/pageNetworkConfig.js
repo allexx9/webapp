@@ -157,8 +157,10 @@ class PageNetworkConfig extends Component {
             <Paper className={styles.paperContainer} zDepth={1}>
               <p>Please select a blockchain.</p>
               <p>
-                RigoBlock protocol is currently deployed on <b>Kovan</b> and{' '}
-                <b>Ropsten</b> networks only.
+                RigoBlock protocol is currently deployed on the Ethereum{' '}
+                <b>Mainnet</b>
+                 ,{' '} <b>Ropsten</b> and{' '}
+                <b>Kovan</b> networks.
               </p>
               <DropDownMenu
                 value={this.state.selectedNetwork}
@@ -166,7 +168,7 @@ class PageNetworkConfig extends Component {
               >
                 <MenuItem
                   value={0}
-                  disabled={true}
+                  disabled={false}
                   primaryText="Ethereum Kovan"
                 />
                 <MenuItem value={1} primaryText="Ethereum Ropsten" />
@@ -221,7 +223,7 @@ class PageNetworkConfig extends Component {
                   />
                   <MenuItem
                     value={1}
-                    disabled={disabledRemote}
+                    disabled={true}
                     primaryText="RigoBlock"
                   />
                   <MenuItem

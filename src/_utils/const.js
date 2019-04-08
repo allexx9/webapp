@@ -78,14 +78,14 @@ export const RELAYS = {
       baseTokenSymbol: 'ETH',
       quoteTokenSymbol: 'USDT'
     },
-    supportedNetworks: ['1', '3'],
+    supportedNetworks: ['1', '3', '42'],
     isTokenWrapper: true,
     meta: {}
   }
 }
 
 export const DEFAULT_RELAY = {
-  kovan: 'ERCdEX',
+  kovan: 'Ethfinex',
   ropsten: 'Ethfinex',
   mainnet: 'Ethfinex'
 }
@@ -94,13 +94,13 @@ export const DEFAULT_RELAY = {
 // export const Ethfinex = "Ethfinex"
 
 // Blockchain endpoint
-export const EP_INFURA_KV = 'https://kovan.infura.io/metamask'
-export const EP_INFURA_RP = 'https://ropsten.infura.io/metamask'
+export const EP_INFURA_KV = 'https://kovan.infura.io/v3/dc30ca8fb7824f42976ece0e74884807'
+export const EP_INFURA_RP = 'https://ropsten.infura.io/v3/dc30ca8fb7824f42976ece0e74884807'
 export const EP_INFURA_MN =
-  'https://mainnet.infura.io/v3/3fe47e5272bc4d38b6f0b247d94a6cd1'
-export const EP_INFURA_KV_WS = 'wss://kovan.infura.io/ws'
-export const EP_INFURA_RP_WS = 'wss://ropsten.infura.io/ws'
-export const EP_INFURA_MN_WS = 'wss://mainnet.infura.io/ws'
+  'https://mainnet.infura.io/v3/dc30ca8fb7824f42976ece0e74884807'
+export const EP_INFURA_KV_WS = 'wss://kovan.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807'
+export const EP_INFURA_RP_WS = 'wss://ropsten.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807'
+export const EP_INFURA_MN_WS = 'wss://mainnet.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807'
 
 // Parity - Kovan
 export const EP_RIGOBLOCK_KV_DEV = 'https://kovan.dev.endpoint.network/rpc'
@@ -159,41 +159,41 @@ export const KOVAN_ETHERSCAN = 'https://kovan.etherscan.io/'
 export const ROPSTEN_ETHERSCAN = 'https://ropsten.etherscan.io/'
 export const MAINNET_ETHERSCAN = 'https://etherscan.io/'
 
-//mainnet.infura.io/v3/3fe47e5272bc4d38b6f0b247d94a6cd1
+//mainnet.infura.io/v3/dc30ca8fb7824f42976ece0e74884807
 
 export const ENDPOINTS = {
   infura: {
     name: 'infura',
     https: {
       kovan: {
-        dev: 'https://kovan.infura.io/metamask',
-        prod: 'https://kovan.infura.io/metamask'
+        dev: 'https://kovan.infura.io/v3/dc30ca8fb7824f42976ece0e74884807',
+        prod: 'https://kovan.infura.io/v3/dc30ca8fb7824f42976ece0e74884807'
       },
       ropsten: {
-        dev: 'https://ropsten.infura.io/metamask',
-        prod: 'https://ropsten.infura.io/metamask'
+        dev: 'https://ropsten.infura.io/v3/dc30ca8fb7824f42976ece0e74884807',
+        prod: 'https://ropsten.infura.io/v3/dc30ca8fb7824f42976ece0e74884807'
       },
       // mainnet: {
-      //   dev: 'https://mainnet.infura.io/metamask',
-      //   prod: 'https://mainnet.infura.io/metamask'
+      //   dev: 'https://mainnet.infura.io/v3/dc30ca8fb7824f42976ece0e74884807',
+      //   prod: 'https://mainnet.infura.io/v3/dc30ca8fb7824f42976ece0e74884807'
       // }
       mainnet: {
-        dev: 'https://mainnet.infura.io/v3/3fe47e5272bc4d38b6f0b247d94a6cd1',
-        prod: 'https://mainnet.infura.io/v3/3fe47e5272bc4d38b6f0b247d94a6cd1'
+        dev: 'https://mainnet.infura.io/v3/dc30ca8fb7824f42976ece0e74884807',
+        prod: 'https://mainnet.infura.io/v3/dc30ca8fb7824f42976ece0e74884807'
       }
     },
     wss: {
       kovan: {
-        dev: 'wss://kovan.infura.io/ws',
-        prod: 'wss://kovan.infura.io/ws'
+        dev: 'wss://kovan.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807',
+        prod: 'wss://kovan.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807'
       },
       ropsten: {
-        dev: 'wss://ropsten.infura.io/ws',
-        prod: 'wss://ropsten.infura.io/ws'
+        dev: 'wss://ropsten.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807',
+        prod: 'wss://ropsten.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807'
       },
       mainnet: {
-        dev: 'wss://mainnet.infura.io/ws',
-        prod: 'wss://mainnet.infura.io/ws'
+        dev: 'wss://mainnet.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807',
+        prod: 'wss://mainnet.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807'
       }
     }
   },
@@ -314,6 +314,14 @@ export const EXCHANGES = {
     mainnet: {}
   },
   Ethfinex: {
+    kovan: {
+      tokenTransferProxy: '0x0000000000000000000000000000000000000000',
+      exchangeContractAddress: '0x35dD2932454449b14Cee11A94d3674a936d5d7b2', // 0x V2 address EFX HOT WALLET 0x9faf5515f177F3A8a845D48C19032b33Cc54C09C
+      feeRecipient: '0x9faf5515f177F3A8a845D48C19032b33Cc54C09C',
+      networkId: 42,
+      name: 'Ethfinex',
+      taker: 'NULL_ADDRESS'
+    },
     ropsten: {
       // Old contracts
       // tokenTransferProxy: '0xcc040edf6e508c4372a62b1a902c69dcc52ceb1d'

@@ -409,6 +409,9 @@ export const submitOrderToRelayEFX = async (efxOrder, networkId) => {
     case 3:
       relayerApiUrl = `https://test.ethfinex.com/trustless/v1/w/on`
       break
+    case 42:
+      relayerApiUrl = `https://test.ethfinex.com/trustless/v1/w/on`
+      break
     default:
       relayerApiUrl = `https://test.ethfinex.com/trustless/v1/w/on`
   }
@@ -439,6 +442,9 @@ export const cancelOrderFromRelayEFX = async (
       relayerApiUrl = `https://api.ethfinex.com/trustless/v1/w/oc`
       break
     case 3:
+      relayerApiUrl = `https://test.ethfinex.com/trustless/v1/w/oc`
+      break
+    case 42:
       relayerApiUrl = `https://test.ethfinex.com/trustless/v1/w/oc`
       break
     default:
@@ -745,10 +751,11 @@ class Exchange {
       ercdex: 'https://api.ercdex.com/api/standard'
     }
     // Infura does not support WebSocket on Kovan network yet. Disabling.
-    this._onWs =
+    this._onWs = ws
+    /*this._onWs =
       this._network.name === KOVAN && this._endpoint.name === INFURA
         ? false
-        : ws
+        : ws*/
     // Setting production or development endpoints
     if (prod) {
       this._https = endpointInfo.https[this._network.name].prod

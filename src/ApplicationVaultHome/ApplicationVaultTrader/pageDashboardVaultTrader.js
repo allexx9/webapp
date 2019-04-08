@@ -167,7 +167,7 @@ class PageDashboardVaultTrader extends Component {
                       icon={<ActionList color={'#607D8B'} />}
                     />
                     <Tab
-                      label="Holding"
+                      label="Holdings"
                       className={styles.detailsTab}
                       onActive={() =>
                         scrollToElement('#holding-section', { offset: -165 })
@@ -227,7 +227,7 @@ class PageDashboardVaultTrader extends Component {
                       }}
                     />
                     <SectionHeader
-                      titleText="VAULTS"
+                      titleText="VAULT HOLDINGS"
                       textStyle={{ backgroundColor: Colors.blueGrey500 }}
                       fundType="vault"
                     />

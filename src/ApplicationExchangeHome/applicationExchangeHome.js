@@ -169,14 +169,14 @@ class ApplicationExchangeHome extends PureComponent {
         this.props.dispatch(
           Actions.exchange.updateUiPanelProperties(
             this.updateUi(ui, 'relayBox').disableBox({
-              disabledMsg: 'Please create a fund.'
+              disabledMsg: 'Please create a Drago.'
             })
           )
         )
         this.props.dispatch(
           Actions.exchange.updateUiPanelProperties(
             this.updateUi(ui, 'orderBox').disableBox({
-              disabledMsg: 'Please create a fund.'
+              disabledMsg: 'Please create a Drago.'
             })
           )
         )

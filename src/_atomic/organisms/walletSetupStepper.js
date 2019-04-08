@@ -74,7 +74,7 @@ class WalletSetupStepper extends Component {
   static getDerivedStateFromProps(props, state) {
     const locked = props.endpoint.isMetaMaskLocked
     const correctNetwork = props.endpoint.isMetaMaskNetworkCorrect
-    const holdsTokens = new BigNumber(props.endpoint.grgBalance).gte(1)
+    const holdsTokens = new BigNumber(props.endpoint.grgBalance).gte(1) // modify to remove GRG req
     // console.log(props.endpoint.grgBalance)
     // console.log(holdsTokens)
     if (locked !== state.locked) {
@@ -385,8 +385,13 @@ class WalletSetupStepper extends Component {
                 {!holdsTokens && (
                   <div>
                     <p>
-                      You need at least 1 GRG token to access our platform. Get
-                      some by clicking the button below!
+                      You need at least 1 GRG token to access our platform. Reach out on {' '}
+                      <a
+                        href="https://discordapp.com/invite/FXd8EU8"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      > our Discord channel
+                      </a>{' '} to know more.
                     </p>
                   </div>
                 )}

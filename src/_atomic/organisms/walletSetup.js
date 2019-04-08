@@ -30,7 +30,7 @@ class WalletSetup extends Component {
 
   static getDerivedStateFromProps(props) {
     return props.endpoint.isMetaMaskLocked ||
-      !props.endpoint.isMetaMaskNetworkCorrect ||
+      !props.endpoint.isMetaMaskNetworkCorrect || // comment following line to remove GRG req
       props.endpoint.grgBalance.eq(0)
       ? {
           openWalletSetup: true

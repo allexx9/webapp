@@ -124,7 +124,7 @@ export default class ElementBottomStatusBar extends PureComponent {
     return (
       <Row className={styles.networkStatus} between="xs">
         <Col xs={6} className={styles.copyright}>
-          ©2018 RigoBlock. All rights reserved. {GIT_HASH}
+          ©2019 RigoBlock. {GIT_HASH}
         </Col>
         <Col xs={6} className={styles.networkStatusCounter}>
           <div className={styles.networkDataContainer}>

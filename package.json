@@ -6,7 +6,6 @@
   "dependencies": {
     "0x.js": "0.37.2",
     "@manaflair/redux-batch": "^0.1.0",
-    "@rigoblock/exchange-connector": "^0.0.10",
     "@sentry/browser": "^4.3.4",
     "@types/web3": "^1.0.12",
     "bignumber.js": "^7.2.1",
@@ -84,7 +83,6 @@
     "analyze": "find build/static/js/ -maxdepth 1 -type f -name '*.js' -exec bash -c 'npx source-map-explorer {} &' \\;"
   },
   "devDependencies": {
-    "@rigoblock/deployer": "^0.1.11",
     "@rigoblock/contracts": "^0.3.8",
     "cross-env": "^5.2.0",
     "deep-freeze": "^0.0.1",

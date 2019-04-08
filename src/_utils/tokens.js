@@ -337,8 +337,27 @@ export const MOCK_ERC20_TOKENS = {
 
 export const ERC20_TOKENS = {
   kovan: {
+    ETH: {
+      symbol: 'ETH',
+      isOldERC20: false,
+      symbolTicker: {
+        Ethfinex: 'ETH'
+      },
+      address: '0x0',
+      decimals: 18,
+      name: 'Ether',
+      wrappers: {
+        Ethfinex: {
+          symbol: 'ETHW',
+          decimals: 18,
+          address: '0x02fcb8a7D3Eae24dBd0Bc67Fdb5dE13E3ec7Cf93',
+          name: 'ETH Wrapper'
+        }
+      }
+    },
     WETH: {
       symbol: 'WETH',
+      isOldERC20: false,
       symbolTicker: {
         Ethfinex: 'ETH'
       },
@@ -349,6 +368,7 @@ export const ERC20_TOKENS = {
     },
     ZRX: {
       symbol: 'ZRX',
+      isOldERC20: false,
       symbolTicker: {
         Ethfinex: 'ZRX'
       },
@@ -359,6 +379,7 @@ export const ERC20_TOKENS = {
     },
     GNT: {
       symbol: 'GNT',
+      isOldERC20: false,
       symbolTicker: {
         Ethfinex: 'GNT'
       },
@@ -369,6 +390,7 @@ export const ERC20_TOKENS = {
     },
     MKR: {
       symbol: 'MKR',
+      isOldERC20: false,
       symbolTicker: {
         Ethfinex: 'MKR'
       },
@@ -379,13 +401,21 @@ export const ERC20_TOKENS = {
     },
     USDT: {
       symbol: 'USDT',
+      isOldERC20: true,
       symbolTicker: {
         Ethfinex: 'USD'
       },
-      address: '0x3487A04103859A6d95ba0bAFdCf1Ca521490176E',
-      decimals: 18,
+      address: '0xD92EEe71478e115FCc5342fa44242e7896B8aF3b',
+      decimals: 6,
       name: 'Tether USD',
-      wrappers: {}
+      wrappers: {
+        Ethfinex: {
+          symbol: 'USDTW',
+          decimals: 6,
+          address: '0xcC64620c47a9cD6Aa4a5265b48c85911DfB0005d',
+          name: 'USDTWrapper'
+        }
+      }
     },
     GRG: {
       symbol: 'GRG',
@@ -788,7 +818,7 @@ export const TRADE_TOKENS_PAIRS = {
       exchanges: [ERCdEX]
     },
     [ZRX]: {
-      networks: [42],
+      networks: [1, 42],
       symbol: ZRX,
       exchanges: [ERCdEX]
     }
@@ -800,7 +830,7 @@ export const TRADE_TOKENS_PAIRS = {
       exchanges: [Ethfinex]
     },
     [ETH]: {
-      networks: [1, 3],
+      networks: [1, 3, 42],
       symbol: ETH,
       exchanges: [Ethfinex]
     },
@@ -810,7 +840,7 @@ export const TRADE_TOKENS_PAIRS = {
       exchanges: [Ethfinex]
     },
     [ZRX]: {
-      networks: [1],
+      networks: [1, 42],
       symbol: ZRX,
       exchanges: [Ethfinex]
     },
@@ -867,7 +897,7 @@ export const TRADE_TOKENS_PAIRS = {
       exchanges: [Ethfinex]
     },
     [ZRX]: {
-      networks: [1],
+      networks: [1, 42],
       symbol: ZRX,
       exchanges: [Ethfinex]
     },

@@ -158,7 +158,7 @@ export const getPoolDetailsEpic = (action$, state$) => {
               relayName = Ethfinex
               break
             case 42:
-              relayName = ERCdEX
+              relayName = Ethfinex
               break
             default:
               relayName = Ethfinex

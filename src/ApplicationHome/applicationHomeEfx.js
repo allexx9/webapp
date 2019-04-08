@@ -166,7 +166,7 @@ class ApplicationHomeEfx extends PureComponent {
                 <Row>
                   <Col xs={12}>
                     <h2 style={{ color: '#054186' }}>
-                      The leading crypto platform for asset management.
+                      ORGANIZE YOUR TOKENS. PLATFORM IS BETA, USE AT YOUR OWN RISK.
                     </h2>
                     <p style={{ color: '#054186' }}>
                       In collaboration with <b>Ethfinex Trustless</b>.
@@ -199,7 +199,7 @@ class ApplicationHomeEfx extends PureComponent {
                     <Link to="/drago">
                       <FlatButton
                         labelPosition="before"
-                        label="Create a pool"
+                        label="EXPLORE DRAGO"
                         labelStyle={{
                           color: '#ffffff',
                           fontWeight: '600',
@@ -287,7 +287,7 @@ class ApplicationHomeEfx extends PureComponent {
               </a>
 
               <a
-                href="https://community.rigoblock.com"
+                href="https://discordapp.com/invite/FXd8EU8"
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.communityButton}
