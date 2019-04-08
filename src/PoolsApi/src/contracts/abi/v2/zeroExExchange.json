@@ -476,7 +476,7 @@
             },
             {
                 "indexed": true,
-                "name": "feeRecipient",
+                "name": "feeRecipientAddress",
                 "type": "address"
             },
             {
@@ -533,7 +533,7 @@
             },
             {
                 "indexed": true,
-                "name": "feeRecipient",
+                "name": "feeRecipientAddress",
                 "type": "address"
             },
             {

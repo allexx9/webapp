@@ -3,13 +3,28 @@
 
 import * as abis from '../PoolsApi/src/contracts/abi'
 // import { BigNumber } from 'bignumber.js'
-import { BigNumber } from '@0xproject/utils'
 import { INFURA, KOVAN, PROD, WS } from './const'
-import { ZeroEx } from '0x.js'
 import Web3 from 'web3'
+import {
+    assetDataUtils,
+    BigNumber,
+    ContractWrappers,
+    generatePseudoRandomSalt,
+    Order,
+    orderHashUtils,
+    signatureUtils,
+    SignedOrder,
+    // SignatureType
+} from '0x.js'
+import { Web3Wrapper } from '@0x/web3-wrapper'
+
 // import ReconnectingWebSocket from 'reconnectingwebsocket'
 import PoolApi from '../PoolsApi/src'
 import rp from 'request-promise'
+
+// const { signatureUtils, orderHashUtils } = require('@0x/order-utils')
+const { MetamaskSubprovider } = require('@0x/subproviders')
+const { SignatureType } = require('@0x/types')
 
 export const setAllowaceOnExchangeThroughDrago = (
   selectedFund,
@@ -259,11 +274,11 @@ export const formatOrders = (orders, orderType) => {
   let formattedOrders = orders.map(order => {
     switch (orderType) {
       case 'asks':
-        orderPrice = new BigNumber(order.takerTokenAmount)
-          .div(new BigNumber(order.makerTokenAmount))
+        orderPrice = new BigNumber(order.takerAssetAmount)
+          .div(new BigNumber(order.makerAssetAmount))
           .toFixed(7)
         orderAmount = new BigNumber(
-          web3.utils.fromWei(order.makerTokenAmount, 'ether')
+          web3.utils.fromWei(order.makerAssetAmount, 'ether')
         ).toFixed(5)
         remainingAmount = new BigNumber(
           web3.utils.fromWei(order.remainingTakerTokenAmount, 'ether')
@@ -272,30 +287,30 @@ export const formatOrders = (orders, orderType) => {
       case 'bids':
         orderPrice = new BigNumber(1)
           .div(
-            new BigNumber(order.takerTokenAmount).div(
-              new BigNumber(order.makerTokenAmount)
+            new BigNumber(order.takerAssetAmount).div(
+              new BigNumber(order.makerAssetAmount)
             )
           )
           .toFixed(7)
         orderAmount = new BigNumber(
-          web3.utils.fromWei(order.takerTokenAmount, 'ether')
+          web3.utils.fromWei(order.takerAssetAmount, 'ether')
         ).toFixed(5)
         remainingAmount = new BigNumber(
           web3.utils.fromWei(order.remainingTakerTokenAmount, 'ether')
         ).toFixed(5)
         break
       default:
-        orderPrice = new BigNumber(order.takerTokenAmount)
-          .div(new BigNumber(order.makerTokenAmount))
+        orderPrice = new BigNumber(order.takerAssetAmount)
+          .div(new BigNumber(order.makerAssetAmount))
           .toFixed(7)
         orderAmount = new BigNumber(
-          web3.utils.fromWei(order.makerTokenAmount, 'ether')
+          web3.utils.fromWei(order.makerAssetAmount, 'ether')
         ).toFixed(5)
         remainingAmount = new BigNumber(
           web3.utils.fromWei(order.remainingTakerTokenAmount, 'ether')
         ).toFixed(5)
     }
-    let orderHash = ZeroEx.getOrderHashHex(order)
+    let orderHash = orderHashUtils.getOrderHashHex(order)
     let orderObject = {
       order,
       dateCreated: order.dateCreated,
@@ -314,59 +329,63 @@ export const signOrder = async (order, selectedExchange, walletAddress) => {
   const baseTokenDecimals = order.selectedTokensPair.baseToken.decimals
   const quoteTokenDecimals = order.selectedTokensPair.quoteToken.decimals
   console.log(baseTokenDecimals, quoteTokenDecimals)
-  let makerTokenAmount, takerTokenAmount
-  const zeroEx = new ZeroEx(window.web3.currentProvider, selectedExchange)
+  let makerAssetAmount, takerAssetAmount
+  const fee_rate = 0.0025
   console.log(order.orderFillAmount, order.orderPrice)
   switch (order.orderType) {
     case 'asks':
       console.log('asks')
-      makerTokenAmount = new BigNumber(order.orderFillAmount)
-      takerTokenAmount = new BigNumber(order.orderFillAmount).times(
+      makerAssetAmount = new BigNumber(order.orderFillAmount)
+      takerAssetAmount = new BigNumber(order.orderFillAmount).times(
         new BigNumber(order.orderPrice)
       )
-      makerTokenAmount = ZeroEx.toBaseUnitAmount(
-        makerTokenAmount,
+      .times(1 - fee_rate) // TODO: verify
+      makerAssetAmount = Web3Wrapper.toBaseUnitAmount(
+        makerAssetAmount,
         baseTokenDecimals
       )
-      takerTokenAmount = ZeroEx.toBaseUnitAmount(
-        takerTokenAmount,
+      takerAssetAmount = Web3Wrapper.toBaseUnitAmount(
+        takerAssetAmount,
         quoteTokenDecimals
       )
       break
     case 'bids':
       console.log('bids')
-      makerTokenAmount = new BigNumber(order.orderFillAmount).times(
+      makerAssetAmount = new BigNumber(order.orderFillAmount).times(
         new BigNumber(order.orderPrice)
       )
-      takerTokenAmount = new BigNumber(order.orderFillAmount)
-      makerTokenAmount = ZeroEx.toBaseUnitAmount(
-        makerTokenAmount,
+      takerAssetAmount = new BigNumber(order.orderFillAmount)
+      .times(1 - fee_rate) // TODO: verify
+      makerAssetAmount = Web3Wrapper.toBaseUnitAmount(
+        makerAssetAmount,
         quoteTokenDecimals
       )
-      takerTokenAmount = ZeroEx.toBaseUnitAmount(
-        takerTokenAmount,
+      takerAssetAmount = Web3Wrapper.toBaseUnitAmount(
+        takerAssetAmount,
         baseTokenDecimals
       )
       break
     default:
       console.log('asks')
-      makerTokenAmount = new BigNumber(order.orderFillAmount)
-      takerTokenAmount = new BigNumber(order.orderFillAmount).times(
+      makerAssetAmount = new BigNumber(order.orderFillAmount)
+      takerAssetAmount = new BigNumber(order.orderFillAmount).times(
         new BigNumber(order.orderPrice)
       )
-      makerTokenAmount = ZeroEx.toBaseUnitAmount(
-        makerTokenAmount,
+      .times(1 - fee_rate) // TODO: verify
+      makerAssetAmount = Web3Wrapper.toBaseUnitAmount(
+        makerAssetAmount,
         baseTokenDecimals
       )
-      takerTokenAmount = ZeroEx.toBaseUnitAmount(
-        takerTokenAmount,
+      takerAssetAmount = Web3Wrapper.toBaseUnitAmount(
+        takerAssetAmount,
         quoteTokenDecimals
       )
+      .times(1 - fee_rate) // TODO: verify
       break
   }
   const tokensAmounts = {
-    makerTokenAmount,
-    takerTokenAmount
+    makerAssetAmount,
+    takerAssetAmount
   }
   let orderToBeSigned = { ...order.details.order, ...tokensAmounts }
   // const fees = await getFees(orderToBeSigned, selectedExchange.networkId)
@@ -376,30 +395,48 @@ export const signOrder = async (order, selectedExchange, walletAddress) => {
   //   ...fees
   // }
   // console.log(orderToBeSigned)
-  const orderHash = ZeroEx.getOrderHashHex(orderToBeSigned)
-  console.log(ZeroEx.isValidOrderHash(orderHash))
-  const shouldAddPersonalMessagePrefix = true
-  const signer = await zeroEx.getAvailableAddressesAsync()
-  const ecSignature = await zeroEx.signOrderHashAsync(
-    orderHash,
+
+  const providerEngine = window.web3.currentProvider.isMetaMask
+                  ? new MetamaskSubprovider(window.web3.currentProvider)
+                  : window.web3.currentProvider
+
+  const contractWrappers = new ContractWrappers(providerEngine, { networkId: selectedExchange.networkId })
+  const web3Wrapper = new Web3Wrapper(providerEngine)
+  const signer = await web3Wrapper.getAvailableAddressesAsync()
+
+  const signedOrder = await signatureUtils.ecSignOrderAsync(
+    providerEngine,
+    orderToBeSigned,
     signer[0],
-    shouldAddPersonalMessagePrefix
+  )
+  const vrsSignature = await signedOrder.signature.slice(0, -2)
+  const walletSignature = await signatureUtils.convertToSignatureWithType(vrsSignature, SignatureType.Wallet)
+  signedOrder.signature = walletSignature
+  const typedSignedOrder = signedOrder
+
+  const orderHashHex = await orderHashUtils.getOrderHashHex(orderToBeSigned)
+  console.log(await signatureUtils.isValidWalletSignatureAsync(
+          providerEngine,
+          orderHashHex,
+          walletSignature,
+          signedOrder.makerAddress // dragoAddress
+    )
   )
   console.log(`signer address ${walletAddress}`)
-  console.log(ZeroEx.isValidSignature(orderHash, ecSignature, walletAddress))
+  // console.log(signatureUtils.isValidSignature(orderHash, ecSignature, walletAddress))
   // Append signature to order
-  const signedOrder = {
+  /*const signedOrder = {
     ...orderToBeSigned,
     ecSignature
-  }
-  return signedOrder
+  }*/
+  return typedSignedOrder
 }
 
 export const submitOrderToRelayEFX = async (efxOrder, networkId) => {
   console.log(efxOrder)
   // const ZeroExConfig = {
   //   networkId: 42
-  //   // exchangeContractAddress: this._network.id
+  //   // exchangeAddress: this._network.id
   // }
   let relayerApiUrl
   switch (networkId) {
@@ -415,6 +452,7 @@ export const submitOrderToRelayEFX = async (efxOrder, networkId) => {
     default:
       relayerApiUrl = `https://test.ethfinex.com/trustless/v1/w/on`
   }
+  efxOrder.fee_rate = '0.0025'
   let options = {
     method: 'POST',
     uri: relayerApiUrl,
@@ -434,7 +472,7 @@ export const cancelOrderFromRelayEFX = async (
   console.log(signature)
   // const ZeroExConfig = {
   //   networkId: 42
-  //   // exchangeContractAddress: this._network.id
+  //   // exchangeAddress: this._network.id
   // }
   let relayerApiUrl
   switch (networkId) {
@@ -466,7 +504,7 @@ export const submitOrderToRelay = async signedOrder => {
   console.log(signedOrder)
   const ZeroExConfig = {
     networkId: 42
-    // exchangeContractAddress: this._network.id
+    // exchangeAddress: this._network.id
   }
   const relayerApiUrl = `https://api.ercdex.com/api/standard/${
     ZeroExConfig.networkId
@@ -484,6 +522,7 @@ export const submitOrderToRelay = async signedOrder => {
   return rp(options)
 }
 
+/*
 export const softCancelOrderFromRelayERCdEX = async signedOrder => {
   console.log(signedOrder)
   const relayerApiUrl = `https://api.ercdex.com/api/orders/soft-cancel`
@@ -505,6 +544,7 @@ export const softCancelOrderFromRelayERCdEX = async signedOrder => {
 
   return rp(options)
 }
+*/
 
 export const getFees = async (order, networkId) => {
   const relayerApiUrl = `https://api.ercdex.com/api/fees`
@@ -515,8 +555,8 @@ export const getFees = async (order, networkId) => {
     qs: {
       makerTokenAddress: order.makerTokenAddress,
       takerTokenAddress: order.takerTokenAddress,
-      makerTokenAmount: new BigNumber(order.makerTokenAmount).toFixed(),
-      takerTokenAmount: new BigNumber(order.takerTokenAmount).toFixed(),
+      makerAssetAmount: new BigNumber(order.makerAssetAmount).toFixed(),
+      takerAssetAmount: new BigNumber(order.takerAssetAmount).toFixed(),
       maker: order.maker,
       taker: order.taker,
       networkId: networkId
@@ -527,23 +567,25 @@ export const getFees = async (order, networkId) => {
   return rp(options)
 }
 
+// TODO: verify return values
 export const getTokenAllowance = async (token, ownerAddress, ZeroExConfig) => {
   if (token.symbol === 'ETH') {
     return true
   }
   console.log(token.symbol)
   console.log(ZeroExConfig)
-  const zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig)
+  const zeroEx = new ContractWrappers(window.web3.currentProvider, ZeroExConfig)
   return zeroEx.token.getProxyAllowanceAsync(token.address, ownerAddress)
 }
 
+// TODO: verify return values
 export const setTokenAllowance = async (
   tokenAddress,
   ownerAddress,
   spenderAddress,
   ZeroExConfig
 ) => {
-  const zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig)
+  const zeroEx = new ContractWrappers(window.web3.currentProvider, ZeroExConfig)
   return zeroEx.token.setUnlimitedAllowanceAsync(
     tokenAddress,
     ownerAddress,
@@ -552,8 +594,17 @@ export const setTokenAllowance = async (
 }
 
 export const getAvailableAccounts = async ZeroExConfig => {
-  const zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig)
-  return await zeroEx.getAvailableAddressesAsync()
+  const providerEngine = window.web3.currentProvider.isMetaMask
+                  ? new MetamaskSubprovider(window.web3.currentProvider)
+                  : window.web3.currentProvider
+/*
+  const ZeroExConfig = {
+    networkId: 42
+    // exchangeAddress: this._network.id
+  }*/
+  const contractWrappers = new ContractWrappers(providerEngine, { networkId: ZeroExConfig.networkId })
+  const web3Wrapper = new Web3Wrapper(providerEngine)
+  return await web3Wrapper.getAvailableAddressesAsync()
 }
 
 export const getMarketTakerOrder = async (
@@ -591,8 +642,8 @@ export const fillOrderToExchange = async (
   // const zeroEx = this._zeroEx
   const DECIMALS = 18
   const shouldThrowOnInsufficientBalanceOrAllowance = true
-  const zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig)
-  const fillTakerTokenAmount = ZeroEx.toBaseUnitAmount(
+  const zeroEx = new ContractWrappers(window.web3.currentProvider, ZeroExConfig)
+  const fillTakerTokenAmount = Web3Wrapper.toBaseUnitAmount(
     new BigNumber(amount),
     DECIMALS
   )
@@ -627,18 +678,18 @@ export const fillOrderToExchangeViaProxy = async (
   console.log(JSON.stringify(signedOrder))
 
   const orderAddresses = [
-    order.maker,
-    order.taker,
-    order.makerTokenAddress,
-    order.takerTokenAddress,
-    order.feeRecipient
+    order.makerAddress,
+    order.takerAddress,
+    order.makerAssetData,
+    order.takerAssetData,
+    order.feeRecipientAddress
   ]
   const orderValues = [
-    order.makerTokenAmount,
-    order.takerTokenAmount,
+    order.makerAssetAmount,
+    order.takerAssetAmount,
     order.makerFee,
     order.takerFee,
-    order.expirationUnixTimestampSec,
+    order.expirationTimeSeconds,
     order.salt
   ]
   const v = order.ecSignature.v
@@ -648,7 +699,7 @@ export const fillOrderToExchangeViaProxy = async (
   console.log(
     orderAddresses,
     orderValues,
-    ZeroEx.toBaseUnitAmount(new BigNumber(amount), DECIMALS).toString(),
+    Web3Wrapper.toBaseUnitAmount(new BigNumber(amount), DECIMALS).toString(),
     shouldThrowOnInsufficientBalanceOrAllowance,
     v,
     r,
@@ -662,7 +713,7 @@ export const fillOrderToExchangeViaProxy = async (
     selectedFund.managerAccount,
     orderAddresses,
     orderValues,
-    ZeroEx.toBaseUnitAmount(new BigNumber(amount), DECIMALS).toString(),
+    Web3Wrapper.toBaseUnitAmount(new BigNumber(amount), DECIMALS).toString(),
     shouldThrowOnInsufficientBalanceOrAllowance,
     v,
     r,
@@ -684,24 +735,24 @@ export const cancelOrderOnExchangeViaProxy = async (
   console.log(JSON.stringify(signedOrder))
 
   const orderAddresses = [
-    order.maker,
-    order.taker,
-    order.makerTokenAddress,
-    order.takerTokenAddress,
-    order.feeRecipient
+    order.makerAddress,
+    order.takerAddress,
+    order.makerAssetData,
+    order.takerAssetData,
+    order.feeRecipientAddress
   ]
   const orderValues = [
-    order.makerTokenAmount,
-    order.takerTokenAmount,
+    order.makerAssetAmount,
+    order.takerAssetAmount,
     order.makerFee,
     order.takerFee,
-    order.expirationUnixTimestampSec,
+    order.expirationTimeSeconds,
     order.salt
   ]
   console.log(
     orderAddresses,
     orderValues,
-    ZeroEx.toBaseUnitAmount(
+    Web3Wrapper.toBaseUnitAmount(
       new BigNumber(cancelTakerTokenAmount),
       DECIMALS
     ).toString()
@@ -714,11 +765,11 @@ export const cancelOrderOnExchangeViaProxy = async (
     selectedFund.managerAccount,
     orderAddresses,
     orderValues,
-    ZeroEx.toBaseUnitAmount(
+    Web3Wrapper.toBaseUnitAmount(
       new BigNumber(cancelTakerTokenAmount),
       DECIMALS
     ).toString(),
-    signedOrder.exchangeContractAddress
+    signedOrder.exchangeAddress
   )
 }
 
@@ -767,9 +818,9 @@ class Exchange {
 
     const ZeroExConfig = {
       networkId: this._network.id
-      // exchangeContractAddress: this._network.id
+      // exchangeAddress: this._network.id
     }
-    this._zeroEx = new ZeroEx(window.web3.currentProvider, ZeroExConfig)
+    this._zeroEx = new ContractWrappers(window.web3.currentProvider, ZeroExConfig)
   }
 
   get timeout() {
@@ -826,39 +877,39 @@ class Exchange {
     let formattedOrders = orders.map(order => {
       switch (orderType) {
         case 'asks':
-          orderPrice = new BigNumber(order.takerTokenAmount)
-            .div(new BigNumber(order.makerTokenAmount))
+          orderPrice = new BigNumber(order.takerAssetAmount)
+            .div(new BigNumber(order.makerAssetAmount))
             .toFixed(7)
           orderAmount = new BigNumber(
-            this.api.utils.fromWei(order.makerTokenAmount, 'ether')
+            this.api.utils.fromWei(order.makerAssetAmount, 'ether')
           ).toFixed(5)
           break
         case 'bids':
           orderPrice = new BigNumber(1)
             .div(
-              new BigNumber(order.takerTokenAmount).div(
-                new BigNumber(order.makerTokenAmount)
+              new BigNumber(order.takerAssetAmount).div(
+                new BigNumber(order.makerAssetAmount)
               )
             )
             .toFixed(7)
           orderAmount = new BigNumber(
-            this.api.utils.fromWei(order.takerTokenAmount, 'ether')
+            this.api.utils.fromWei(order.takerAssetAmount, 'ether')
           ).toFixed(5)
           break
         default:
           orderPrice = new BigNumber(1)
             .div(
-              new BigNumber(order.takerTokenAmount).div(
-                new BigNumber(order.makerTokenAmount)
+              new BigNumber(order.takerAssetAmount).div(
+                new BigNumber(order.makerAssetAmount)
               )
             )
             .toFixed(7)
           orderAmount = new BigNumber(
-            this.api.utils.fromWei(order.takerTokenAmount, 'ether')
+            this.api.utils.fromWei(order.takerAssetAmount, 'ether')
           ).toFixed(5)
           break
       }
-      let orderHash = ZeroEx.getOrderHashHex(order)
+      let orderHash = orderHashUtils.getOrderHashHex(order)
       let orderObject = {
         order,
         orderAmount,
@@ -898,35 +949,35 @@ class Exchange {
       : (orderType = 'bids')
     switch (orderType) {
       case 'asks':
-        orderPrice = new BigNumber(order.takerTokenAmount)
-          .div(new BigNumber(order.makerTokenAmount))
+        orderPrice = new BigNumber(order.takerAssetAmount)
+          .div(new BigNumber(order.makerAssetAmount))
           .toFixed(7)
         orderAmount = new BigNumber(
-          this.api.utils.fromWei(order.makerTokenAmount, 'ether')
+          this.api.utils.fromWei(order.makerAssetAmount, 'ether')
         ).toFixed(5)
         break
       case 'bids':
         orderPrice = new BigNumber(1)
           .div(
-            new BigNumber(order.takerTokenAmount).div(
-              new BigNumber(order.makerTokenAmount)
+            new BigNumber(order.takerAssetAmount).div(
+              new BigNumber(order.makerAssetAmount)
             )
           )
           .toFixed(7)
         orderAmount = new BigNumber(
-          this.api.utils.fromWei(order.takerTokenAmount, 'ether')
+          this.api.utils.fromWei(order.takerAssetAmount, 'ether')
         ).toFixed(5)
         break
       default:
         orderPrice = new BigNumber(1)
           .div(
-            new BigNumber(order.takerTokenAmount).div(
-              new BigNumber(order.makerTokenAmount)
+            new BigNumber(order.takerAssetAmount).div(
+              new BigNumber(order.makerAssetAmount)
             )
           )
           .toFixed(7)
         orderAmount = new BigNumber(
-          this.api.utils.fromWei(order.takerTokenAmount, 'ether')
+          this.api.utils.fromWei(order.takerAssetAmount, 'ether')
         ).toFixed(5)
         break
     }

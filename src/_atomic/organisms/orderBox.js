@@ -18,7 +18,7 @@ import styles from './orderBox.module.css'
 import { Actions } from '../../_redux/actions'
 import { connect } from 'react-redux'
 import {
-  fillOrderToExchangeViaProxy,
+  fillOrderToExchangeViaProxy, // TODO: upgrade to 0x v2
   signOrder,
   submitOrderToRelayEFX
 } from '../../_utils/exchange'

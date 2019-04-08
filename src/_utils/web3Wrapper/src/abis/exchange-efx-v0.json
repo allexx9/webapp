@@ -360,7 +360,7 @@
     "type": "address"
   }, {
     "indexed": true,
-    "name": "feeRecipient",
+    "name": "feeRecipientAddress",
     "type": "address"
   }, {
     "indexed": false,
@@ -405,7 +405,7 @@
     "type": "address"
   }, {
     "indexed": true,
-    "name": "feeRecipient",
+    "name": "feeRecipientAddress",
     "type": "address"
   }, {
     "indexed": false,

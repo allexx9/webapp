@@ -214,7 +214,7 @@ class TokenLockInfo extends Component {
         console.log(
           selectedFund.managerAccount,
           selectedFund.details.address,
-          selectedExchange.exchangeContractAddress,
+          selectedExchange.feeRecipientAddress,
           tokenAddress,
           tokenWrapperAddress,
           toBaseUnitAmount(new BigNumber(amount), decimals),
@@ -247,7 +247,7 @@ class TokenLockInfo extends Component {
           receipt = await poolApi.contract.drago.operateOnExchangeEFXLock(
             selectedFund.managerAccount,
             selectedFund.details.address,
-            selectedExchange.exchangeContractAddress,
+            selectedExchange.feeRecipientAddress,
             tokenAddress,
             tokenWrapperAddress,
             toBeLocked,
@@ -361,7 +361,7 @@ class TokenLockInfo extends Component {
         console.log(
           selectedFund.managerAccount,
           selectedFund.details.address,
-          selectedExchange.exchangeContractAddress,
+          selectedExchange.feeRecipientAddress,
           tokenAddress,
           tokenWrapperAddress,
           toBaseUnitAmount(new BigNumber(amount), decimals)
@@ -409,7 +409,7 @@ class TokenLockInfo extends Component {
           receipt = await poolApi.contract.drago.operateOnExchangeEFXUnlock(
             selectedFund.managerAccount,
             selectedFund.details.address,
-            selectedExchange.exchangeContractAddress,
+            selectedExchange.feeRecipientAddress,
             tokenAddress,
             tokenWrapperAddress,
             toBeUnlocked

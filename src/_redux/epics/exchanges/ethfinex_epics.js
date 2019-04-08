@@ -3,7 +3,7 @@
 import * as ERRORS from '../../../_const/errors'
 import * as TYPE_ from '../../actions/const'
 import { Actions } from '../../actions/'
-import { BigNumber } from '@0xproject/utils'
+import { BigNumber } from '0x.js'
 import { Observable, from, of, timer, zip,   concat, } from 'rxjs'
 import {
   auditTime,

@@ -1,6 +1,16 @@
 import * as TYPE_ from '../../../actions/const'
 import { Actions } from '../../../actions/'
-import { ZeroEx } from '0x.js'
+import {
+    assetDataUtils,
+    BigNumber,
+    ContractWrappers,
+    generatePseudoRandomSalt,
+    Order,
+    orderHashUtils,
+    signatureUtils,
+    SignedOrder,
+    SignatureType
+} from '0x.js';
 import { map, mergeMap, tap } from 'rxjs/operators'
 import { of,   concat, } from 'rxjs'
 import { ofType } from 'redux-observable'
@@ -53,19 +63,20 @@ const newMakerOrderV0 = (orderSide, options, state$) => {
   const web3 = new Web3()
 
   const order = {
-    expirationUnixTimestampSec: orderExpirationTime.toString(),
-    feeRecipient: selectedExchange.feeRecipient.toLowerCase(),
+    expirationTimeSeconds: orderExpirationTime.toString(),
+    feeRecipientAddress: selectedExchange.feeRecipientAddress.toLowerCase(),
 
-    maker: selectedFund.details.address.toLowerCase(),
-    makerFee: web3.utils.toBN('0'),
-    makerTokenAddress: makerTokenAddress.toLowerCase(),
+    makerAddress: selectedFund.details.address.toLowerCase(),
+    makerAssetData: assetDataUtils.encodeERC20AssetData(makerTokenAddress.toLowerCase()),
+    makerFee: new BigNumber(0).toString(), // web3.utils.toBN('0'),
 
-    salt: ZeroEx.generatePseudoRandomSalt(),
-    taker: selectedExchange.taker.toLowerCase(),
-    takerFee: web3.utils.toBN('0'),
-    takerTokenAddress: takerTokenAddress.toLowerCase(),
+    salt: generatePseudoRandomSalt(),
+    senderAddress: selectedExchange.feeRecipientAddress.toLowerCase(), // hot wallet
+    takerAddress: '0x0000000000000000000000000000000000000000',
+    takerAssetData: assetDataUtils.encodeERC20AssetData(takerTokenAddress.toLowerCase()),
+    takerFee: new BigNumber(0).toString(), // web3.utils.toBN('0'),
 
-    exchangeContractAddress: selectedExchange.exchangeContractAddress.toLowerCase()
+    exchangeAddress: selectedExchange.exchangeAddress.toLowerCase()
   }
   const makerOrder = {
     details: {

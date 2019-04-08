@@ -4,7 +4,7 @@
   "private": true,
   "homepage": "./",
   "dependencies": {
-    "0x.js": "0.37.2",
+    "0x.js": "^6.0.5",
     "@manaflair/redux-batch": "^0.1.0",
     "@sentry/browser": "^4.3.4",
     "@types/web3": "^1.0.12",
