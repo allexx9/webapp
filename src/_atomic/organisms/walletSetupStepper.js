@@ -326,7 +326,7 @@ class WalletSetupStepper extends Component {
                 )}
 
                 <a
-                  href="https://help.rigoblock.com"
+                  href="https://discordapp.com/invite/FXd8EU8"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
