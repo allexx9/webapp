@@ -557,8 +557,8 @@ export const getFees = async (order, networkId) => {
       takerTokenAddress: order.takerTokenAddress,
       makerAssetAmount: new BigNumber(order.makerAssetAmount).toFixed(),
       takerAssetAmount: new BigNumber(order.takerAssetAmount).toFixed(),
-      maker: order.maker,
-      taker: order.taker,
+      maker: order.makerAddress,
+      taker: order.takerAddress,
       networkId: networkId
     },
     json: true // Automatically stringifies the body to JSON
