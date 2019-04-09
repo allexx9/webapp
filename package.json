@@ -84,6 +84,8 @@
   },
   "devDependencies": {
     "@rigoblock/contracts": "^0.3.8",
+    "@rigoblock/exchange-connector": "^0.0.12",
+    "@rigoblock/deployer": "^0.1.11",
     "cross-env": "^5.2.0",
     "deep-freeze": "^0.0.1",
     "del": "^3.0.0",
