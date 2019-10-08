@@ -124,6 +124,16 @@ class WalletSetupStepper extends Component {
     }
   }
 
+  isMetaMaskProvider = async () => {
+    if (window.ethereum.isMetaMask) {
+      return true
+    }
+  }
+
+  enableMetaMask = async() => {
+    await window.ethereum.enable()
+  }
+
   renderStepActions(step) {
     const { locked, correctNetwork, holdsTokens, stepIndex } = this.state
     const { networkInfo } = this.props.endpoint
@@ -131,7 +141,7 @@ class WalletSetupStepper extends Component {
     const buttonDisable = () => {
       switch (step) {
         case 0:
-          return locked
+          return locked || this.isMetaMaskProvider
         case 1:
           return !correctNetwork || locked
         case 2:
@@ -318,12 +328,32 @@ class WalletSetupStepper extends Component {
                     <span className={styles.unlockedText}>unlocked</span>.
                   </p>
                 )}
-                {locked && (
+                {locked && !window.web3.currentProvider.isMetaMask && (
                   <p>
                     We have detected that your wallet is{' '}
                     <span className={styles.lockedText}>locked</span>.
                   </p>
                 )}
+                {locked && window.web3.currentProvider.isMetaMask && (
+                  <p>
+                    {' '}
+                    <span className={styles.lockedText}>Connect MetaMask</span>
+                    <div className={styles.homeLink}>
+                      <FlatButton
+                        label="CONNECT"
+                        disableTouchRipple={true}
+                        disableFocusRipple={true}
+                        onClick={this.enableMetaMask}
+                        style={buttonExit}
+                        labelStyle={{
+                          color: '#064286'
+                          // fontWeight: 700
+                        }}
+                      />
+                    </div>
+                  </p>
+                )}
+
 
                 <a
                   href="https://discordapp.com/invite/FXd8EU8"
