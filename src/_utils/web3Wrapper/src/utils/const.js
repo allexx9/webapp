@@ -20,10 +20,10 @@ export const PARITY_REGISTRY_ADDRESSES = {
 }
 
 export const RB_API = {
-  3: 'https://api-ropsten.endpoint.network',
-  1: 'https://api.endpoint.network',
-  [ROPSTEN]: 'https://api-ropsten.endpoint.network',
-  [MAINNET]: 'https://api.endpoint.network'
+  3: 'https://ropsten.infura.io/v3/dc30ca8fb7824f42976ece0e74884807',
+  1: 'https://mainnet.infura.io/v3/dc30ca8fb7824f42976ece0e74884807',
+  [ROPSTEN]: 'https://ropsten.infura.io/v3/dc30ca8fb7824f42976ece0e74884807',
+  [MAINNET]: 'https://mainnet.infura.io/v3/dc30ca8fb7824f42976ece0e74884807'
 }
 
 export const EFX_EXCHANGE_CONTRACT = {

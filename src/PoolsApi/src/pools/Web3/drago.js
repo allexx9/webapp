@@ -307,12 +307,94 @@ class DragoWeb3 {
       s,
       validUntil
     ])
-    console.log(encodedABI)
+
     return instance.methods
       .operateOnExchange(exchangeAddress, [encodedABI])
       .estimateGas(options)
       .then(gasEstimate => {
-        console.log(gasEstimate)
+
+        options.gas = gasEstimate
+      })
+      .then(() => {
+        return instance.methods
+          .operateOnExchange(exchangeAddress, [encodedABI])
+          .send(options)
+      })
+  }
+
+  /**
+   * Requests are proxied through the fund smart contract. The exchange is address(0) and must be approved.
+   *
+   * @param {*} managerAccountAddress   The address of the owner of the fund
+   * @param {*} dragoAddress            The address of the fund.
+   * @param {*} targetAddress           The address of the pool operator self custody.
+   * @param {*} tokenAddress            The address of the token to be un-locked.
+   * @param {*} toBeTransferred         The amount in base units to be transferred. A baseUnit is defined as the smallest denomination of a token.
+   * @returns                           A promise resolving the smart contract method called.
+   */
+  operateOnExchangeSelfCustody = async (
+    managerAccountAddress,
+    dragoAddress,
+    targetAddress,
+    tokenAddress,
+    toBeTransferred
+  ) => {
+    if (!managerAccountAddress) {
+      throw new Error('accountAddress needs to be provided')
+    }
+    if (!dragoAddress) {
+      throw new Error('dragoAddress needs to be provided')
+    }
+    if (!targetAddress) {
+      throw new Error('targetAddress needs to be provided')
+    }
+    if (targetAddress === '0x0000000000000000000000000000000000000000') {
+      throw new Error('targetAddress cannot be address 0x0')
+    }
+    if (!toBeTransferred) {
+      throw new Error('toBeUnWrapped needs to be provided')
+    }
+
+
+    const instance = this._instance
+    const api = this._api
+    let options = {
+      from: managerAccountAddress
+    }
+
+    if (tokenAddress === '0x0') {
+      tokenAddress = '0x0000000000000000000000000000000000000000'
+    }
+    const exchangeAddress = '0x0000000000000000000000000000000000000000'
+    const contractMethod = {
+      name: 'transferToSelfCustody',
+      type: 'function',
+      inputs: [
+          {
+            type: 'address',
+            name: 'selfCustodyAccount'
+          },
+          {
+            type: 'address',
+            name: 'token'
+          },
+          {
+            type: 'uint256',
+            name: 'amount'
+          }
+        ]
+    }
+    const encodedABI = await api.eth.abi.encodeFunctionCall(contractMethod, [
+      targetAddress,
+      tokenAddress,
+      toBeTransferred
+    ])
+
+    return instance.methods
+      .operateOnExchange(exchangeAddress, [encodedABI])
+      .estimateGas(options)
+      .then(gasEstimate => {
+
         options.gas = gasEstimate
       })
       .then(() => {
