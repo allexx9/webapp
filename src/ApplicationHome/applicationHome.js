@@ -120,13 +120,6 @@ class ApplicationHome extends PureComponent {
       <div className={styles.body}>
         <div className={styles.socialsContainer}>
           <a
-            href="https://t.me/rigoblockprotocol"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <img src="/img/social/telegram.svg" height="32px" alt="" />
-          </a>
-          <a
             href="https://discordapp.com/channels/rigoblock"
             target="_blank"
             rel="noopener noreferrer"
@@ -163,19 +156,19 @@ class ApplicationHome extends PureComponent {
                         />
                       </div>
                       <h2 style={{ color: '#054186' }}>
-                        ORGANIZE YOUR TOKENS. PLATFORM IS BETA, USE AT YOUR OWN RISK.
+                        This project is in beta. Use at your own risk.
                       </h2>
                       <Link to="/vault">
                         <p className={styles.subHeadline}>
                           <b className={styles.txtDottedYellow}>
-                            Vault: create your custodial service
+                            Vault: the Pool for Custody
                           </b>{' '}
                         </p>
                       </Link>
                       <Link to="/drago">
                         <p className={styles.subHeadline}>
                           <b className={styles.txtDottedYellow}>
-                            Drago: trade on decentralized exchanges
+                            Drago: the Pool for Track Record
                           </b>{' '}
                         </p>
                       </Link>
@@ -189,7 +182,7 @@ class ApplicationHome extends PureComponent {
                       <div style={{ textAlign: 'right', marginRight: '22px' }}>
                         <FlatButton
                           labelPosition="before"
-                          label="Explore"
+                          label="TOUR"
                           labelStyle={{
                             color: '#054186',
                             fontWeight: '600',
@@ -220,6 +213,7 @@ class ApplicationHome extends PureComponent {
                     </Col>
                   </Row>
                 </div>
+                {/*
                 <Row>
                   <Col xs={12}>
                     <Row>
@@ -258,6 +252,7 @@ class ApplicationHome extends PureComponent {
                     </Row>
                   </Col>
                 </Row>
+                */}
               </div>
             </Col>
           </Row>
@@ -272,6 +267,7 @@ class ApplicationHome extends PureComponent {
         {this.state.showCommunityButtons && (
           <div className={styles.telegramButtonContainer}>
             <div>
+              {/*
               <a
                 href="https://t.me/rigoblockprotocol"
                 target="_blank"
@@ -299,6 +295,7 @@ class ApplicationHome extends PureComponent {
                 // hoverColor={Colors.blue300}
                 />
               </a>
+              */}
 
               <a
                 href="https://discordapp.com/invite/FXd8EU8"
@@ -308,7 +305,7 @@ class ApplicationHome extends PureComponent {
               >
                 <FlatButton
                   labelPosition="before"
-                  label="Join our Community"
+                  label="Join the Community"
                   labelStyle={{
                     color: '#054186',
                     fontWeight: '600',

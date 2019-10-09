@@ -24,7 +24,7 @@ export default class PoolPrices extends Component {
             <Row>
               <div className={classNames(styles.actionContainer, styles.buy)}>
                 <Col xs={12}>
-                  <div className={classNames(styles.buySellText)}>Buy</div>
+                  <div className={classNames(styles.buySellText)}>Bid</div>
                 </Col>
                 <Col xs={12}>
                   {buyPrice} <small>ETH</small>
@@ -35,7 +35,7 @@ export default class PoolPrices extends Component {
           <Col xs={6}>
             <div className={classNames(styles.actionContainer, styles.sell)}>
               <Col xs={12}>
-                <div className={classNames(styles.buySellText)}>Sell</div>
+                <div className={classNames(styles.buySellText)}>Offer</div>
               </Col>
               <Col xs={12}>
                 {sellPrice} <small>ETH</small>
