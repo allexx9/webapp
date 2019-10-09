@@ -187,7 +187,7 @@ class ElementFundActionSelfCustody extends Component {
               onChange={this.onChangeTransfer}
             >
               <MenuItem value={'transfer ETH'} primaryText="Transfer ETH" />
-              {/*}<MenuItem value={'transfer Token'} primaryText="Transfer Token" />{*/}
+              <MenuItem value={'transfer Token'} primaryText="Transfer Token" />
             </DropDownMenu>
           </Col>
         </Row>
