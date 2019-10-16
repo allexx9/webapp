@@ -1,6 +1,6 @@
 import * as Colors from 'material-ui/styles/colors'
 import { Col, Row } from 'react-flexbox-grid'
-import { GIT_HASH } from '../_utils/const'
+//import { GIT_HASH } from '../_utils/const'
 import AccessTime from 'material-ui/svg-icons/device/access-time'
 import NotificationWifi from 'material-ui/svg-icons/notification/wifi'
 import PropTypes from 'prop-types'

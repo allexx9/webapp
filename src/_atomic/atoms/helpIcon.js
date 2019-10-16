@@ -33,9 +33,9 @@ export default class HelpIcon extends Component {
 
   onClickTooltipContent(e) {
     // do not hide tooltip when clicking inside tooltip content area
-    console.log('clickl')
+
     e.stopPropagation()
-    console.log('clickl')
+
   }
 
   render() {

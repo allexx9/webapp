@@ -242,7 +242,7 @@ export const resetLiquidityAndTokenBalancesEpic = action$ => {
   return action$.pipe(
     ofType(TYPE_.UPDATE_LIQUIDITY_AND_TOKENS_BALANCE_RESET),
     exhaustMap(() => {
-      console.log(TYPE_.UPDATE_LIQUIDITY_AND_TOKENS_BALANCE_RESET)
+
       const payload = {
         loading: false,
         liquidity: {

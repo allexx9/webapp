@@ -479,7 +479,7 @@ class ElementVaultActions extends React.Component {
     poolApi.contract.vault
       .buyVault(accountAddress, amount)
       .then(receipt => {
-        console.log(receipt)
+
         this.props.dispatch(
           Actions.pools.getPoolsSingleDetails(vaultDetails.vaultId, {
             poolType: 'vault',
@@ -515,7 +515,7 @@ class ElementVaultActions extends React.Component {
         this.props.snackBar(errorArray[0])
         transactionDetails.status = 'error'
         transactionDetails.error = errorArray[0]
-        console.log(error)
+
         this.props.dispatch(
           Actions.transactions.addTransactionToQueueAction(
             transactionId,
@@ -579,7 +579,7 @@ class ElementVaultActions extends React.Component {
     poolApi.contract.vault
       .sellVault(accountAddress, amount)
       .then(receipt => {
-        console.log(receipt)
+
         this.props.dispatch(
           Actions.pools.getPoolsSingleDetails(vaultDetails.vaultId, {
             poolType: 'vault',
@@ -615,7 +615,7 @@ class ElementVaultActions extends React.Component {
         this.props.snackBar(errorArray[0])
         transactionDetails.status = 'error'
         transactionDetails.error = errorArray[0]
-        console.log(error)
+
         this.props.dispatch(
           Actions.transactions.addTransactionToQueueAction(
             transactionId,
@@ -830,7 +830,7 @@ class ElementVaultActions extends React.Component {
     ]
 
     if (openAuth) {
-      console.log(vaultDetails)
+
       return (
         <div>
           {/* <RaisedButton label="Trade" primary={true} onClick={this.handleOpen}

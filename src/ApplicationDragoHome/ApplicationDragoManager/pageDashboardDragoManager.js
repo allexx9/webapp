@@ -49,7 +49,7 @@ class PageDashboardDragoManager extends Component {
   }
 
   componentDidMount() {
-    console.log('componentDidMount')
+
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -70,7 +70,7 @@ class PageDashboardDragoManager extends Component {
   }
 
   handlesnackBarRequestClose = () => {
-    console.log('click snack')
+
     this.setState({
       snackBar: false,
       snackBarMsg: ''

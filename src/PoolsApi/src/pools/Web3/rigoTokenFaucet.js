@@ -38,12 +38,12 @@ class RigoTokenFaucetWeb3 {
     let options = {
       from: fromAddress
     }
-    console.log(instance)
+
     return instance.methods
       .drip1Token()
       .estimateGas(options)
       .then(gasEstimate => {
-        console.log(gasEstimate)
+
         options.gas = gasEstimate
       })
       .then(() => {

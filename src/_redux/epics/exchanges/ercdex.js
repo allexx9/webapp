@@ -61,18 +61,18 @@ const reconnectingWebsocket$ = (relay, networkId, baseToken, quoteToken) => {
       utils.getTokenSymbolForRelay(relay.name, quoteToken)
     )
     websocket.onmessage = msg => {
-      console.log('WebSocket message.')
-      console.log(msg)
+
+
       return observer.next(msg.data)
     }
     websocket.onclose = msg => {
       // websocket.send(`unsub:ticker`);
-      console.log(msg)
+
       // return msg.wasClean ? observer.complete() : null
     }
     websocket.onerror = error => {
-      console.log(error)
-      console.log('WebSocket error.')
+
+
       // return observer.error(error)
     }
     return () => websocket.close()
@@ -141,13 +141,13 @@ export const orderBookEpic = (action$, state$) => {
     }),
     bufferCount(1),
     map(ticker => {
-      console.log(RELAY_MSG_FROM_WEBSOCKET)
+
       const currentState = state$.value
       const lastItem = ticker[0].pop()
       return [lastItem, currentState]
     }),
     tap(val => {
-      console.log(val)
+
       return val
     }),
     switchMap(ticker =>

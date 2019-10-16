@@ -10,12 +10,12 @@ export const isNodeConnected$ = (action$, state$) =>
       return !currentState.app.isConnected
     }),
     tap(val => {
-      console.log(val)
+
       return val
     }),
     skipWhile(val => val === true),
     tap(val => {
-      console.log('not skipped')
+
       return val
     })
   )

@@ -24,6 +24,7 @@ class Endpoint {
     this._endpoint = Object.assign({}, endpointInfo)
     this._network = Object.assign({}, networkInfo)
     this._prod = prod
+
     // Infura does not support WebSocket on Kovan network yet. Disabling.
     this._onWs = ws
     /*this._onWs =
@@ -52,7 +53,7 @@ class Endpoint {
 
   _checkLocal = () => {
     if (typeof window.parity !== 'undefined') {
-      console.log('Found Parity!')
+
       return true
     }
     return false
@@ -61,26 +62,27 @@ class Endpoint {
   _checkWeb3 = async () => {
     // Checking if Web3 has been injected by the browser (Mist/MetaMask)
     if (typeof window.web3 !== 'undefined') {
-      console.log('Found MetaMask!')
-      // if (typeof window.ethereum !== 'undefined') {
-      //   try {
-      //     // Request account access if needed
-      //     await window.ethereum.enable()
-      //     console.warn('User allowed account access')
-      //   } catch (error) {
-      //     console.warn('User denied account access')
-      //   }
-      // }
+
+      if (typeof window.ethereum !== 'undefined') {
+        try {
+          // Request account access if needed
+          await window.ethereum.enable()
+          console.warn('User allowed account access')
+        } catch (error) {
+          console.warn('User denied account access')
+        }
+      }
       try {
-        window.web3 = new Web3(window.web3.currentProvider)
+        //window.web3 = new Web3(window.web3.currentProvider)
+        window.web3 = new Web3(window.ethereum)
       } catch (error) {
-        console.log(error)
+
       }
       window.web3._rb = {}
       window.web3._rb.network = this._network
       window.web3._rb.wss = ENDPOINTS.infura.wss[this._network.name].dev
     } else {
-      console.log('No web3? You should consider trying MetaMask!')
+
     }
   }
 
@@ -98,7 +100,7 @@ class Endpoint {
 
     let api
     if (this._checkLocal()) {
-      console.log(`Endpoint: local`)
+
       window.parity.api._rb = {}
       window.parity.api._rb.network = this._network
       return window.parity.api
@@ -110,12 +112,12 @@ class Endpoint {
       api._rb.network = this._network
       api._rb.network.transportWs = this._wss
       api._rb.network.transportHttp = this._https
-      console.log('Network: ', this._network.name)
-      console.log('Connecting to WebSocket: ', this._wss)
-      console.log(api)
+
+
+
       return api
     } catch (error) {
-      console.log('Connection error: ', error)
+
       return error
     }
 

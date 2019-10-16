@@ -129,7 +129,7 @@ export const getTransactionsSingleDrago = async (
   let eventsFilterBuySell
 
   if (options.trader) {
-    console.log('getTransactionsSingleDrago: Trader transactions')
+
     eventsFilterBuySell = [
       [contract.hexSignature.BuyDrago, contract.hexSignature.SellDrago],
       [hexPoolAddress],
@@ -137,7 +137,7 @@ export const getTransactionsSingleDrago = async (
       null
     ]
   } else {
-    console.log('getTransactionsSingleDrago: Manager transactions')
+
     eventsFilterBuySell = [
       [
         contract.hexSignature.BuyDrago,
@@ -174,7 +174,7 @@ export const getTransactionsSingleDrago = async (
           .catch(error => {
             // Sometimes Infura returns null for api.eth.getBlockByNumber, therefore we are assigning a fake timestamp to avoid
             // other issues in the app.
-            console.log(error)
+
             log.timestamp = new Date()
             return log
           })

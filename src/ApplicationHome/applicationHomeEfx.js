@@ -169,7 +169,7 @@ class ApplicationHomeEfx extends PureComponent {
                       ORGANIZE YOUR TOKENS. PLATFORM IS BETA, USE AT YOUR OWN RISK.
                     </h2>
                     <p style={{ color: '#054186' }}>
-                      In collaboration with <b>Ethfinex Trustless</b>.
+                      In collaboration with <b>Ethfinex</b>.
                     </p>
                   </Col>
                 </Row>

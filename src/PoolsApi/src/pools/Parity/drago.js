@@ -126,11 +126,11 @@ class DragoParity {
       from: accountAddress
     }
     const values = [accountAddress, exchangeAddress, cfd, tradeId]
-    console.log(exchangeAddress)
+
     return instance.cancelOrderCFDExchange
       .estimateGas(options, values)
       .then(gasEstimate => {
-        console.log(gasEstimate.toFormat())
+
         options.gas = gasEstimate.times(1.2).toFixed(0)
         return instance.cancelOrderCFDExchange.postTransaction(options, values)
       })
@@ -154,11 +154,11 @@ class DragoParity {
       from: accountAddress
     }
     const values = [exchangeAddress, amount]
-    console.log(exchangeAddress)
+
     return instance.depositToExchange
       .estimateGas(options, values)
       .then(gasEstimate => {
-        console.log(gasEstimate.toFormat())
+
         options.gas = gasEstimate.times(1.2).toFixed(0)
         return instance.depositToExchange.postTransaction(options, values)
       })
@@ -205,11 +205,11 @@ class DragoParity {
       adjustment,
       stake
     ]
-    console.log(exchangeAddress)
+
     return instance.depositToExchange
       .estimateGas(options, values)
       .then(gasEstimate => {
-        console.log(gasEstimate.toFormat())
+
         options.gas = gasEstimate.times(1.2).toFixed(0)
         return instance.depositToExchange.postTransaction(options, values)
       })

@@ -14,7 +14,7 @@ class CheckBoxQuickOrder extends PureComponent {
   static defaultProps = {}
 
   onCheck = (event, checked) => {
-    console.log(checked)
+
     this.props.onCheck({ quickOrder: checked })
   }
 

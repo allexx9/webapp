@@ -271,7 +271,7 @@ class ElementFundActionSetPrice extends Component {
   onChangeSellPrice = (event, sellPrice) => {
     const { buyPrice } = this.state
     const error = validatePositiveNumber(sellPrice)
-    console.log(sellPrice)
+
     if (sellPrice === '') {
       this.setState({
         sellPrice: '',
@@ -344,7 +344,7 @@ class ElementFundActionSetPrice extends Component {
     poolApi.contract.drago
       .setPrices(account.address, buyPrice, sellPrice)
       .then(receipt => {
-        console.log(receipt)
+
         this.props.dispatch(
           Actions.pools.getPoolsSingleDetails(dragoDetails.dragoId, {
             poolType: 'drago',

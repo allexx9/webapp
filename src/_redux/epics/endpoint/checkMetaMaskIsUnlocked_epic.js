@@ -20,18 +20,33 @@ import { ofType } from 'redux-observable'
 import { sha3_512 } from 'js-sha3'
 import BigNumber from 'bignumber.js'
 import Web3Wrapper from '../../../_utils/web3Wrapper/src'
+import Web3 from 'web3'
 import shallowequal from 'shallowequal'
 
 //
 // CHECK THAT METAMASK IS UNLOCKED AND UPDATE ACTIVE ACCOUNT
 //
 
-const checkMetaMaskIsUnlocked$ = endpoint => {
+const checkMetaMaskIsUnlocked$ = async (endpoint) => {
   let newEndpoint = { ...endpoint }
   let oldAccounts = [].concat(endpoint.accounts)
   let newAccounts = []
   let metaMaskAccountAddress = ''
-  const web3Metamask = window.web3
+  //const web3Metamask = window.web3
+  // the following generates eventEmitter leak
+  let web3Metamask = {}
+  if (typeof window.ethereum !== 'undefined') {
+    web3Metamask = new Web3(window.ethereum)
+    // following has a potential conflict
+    /*try {
+      await window.ethereum.enable()
+    } catch (error) {
+      console.warn('User denied account access')
+    }*/
+  }
+  else {
+    web3Metamask = window.web3
+  }
   const api = Web3Wrapper.getInstance(endpoint.networkInfo.id)
   // console.log('checkMetaMaskIsUnlocked$')
   return from(web3Metamask.eth.getAccounts()).pipe(
@@ -119,7 +134,7 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
           )
         }),
         exhaustMap(newEndpoint => {
-          console.log('***** FETCH ACCOUNT TRANSACTIONS *****')
+
           let optionsManager = {
             balance: false,
             supply: true,

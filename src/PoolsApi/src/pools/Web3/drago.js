@@ -155,6 +155,14 @@ class DragoWeb3 {
     console.log(`time ${time}`)
     console.log(`isOldERC20 ${isOldERC20}`)
 
+
+
+
+
+
+
+
+
     const instance = this._instance
     const api = this._api
     let options = {
@@ -193,12 +201,12 @@ class DragoWeb3 {
       time,
       isOldERC20
     ])
-    console.log(encodedABI)
+
     return instance.methods
       .operateOnExchange(exchangeAddress, [encodedABI])
       .estimateGas(options)
       .then(gasEstimate => {
-        console.log(gasEstimate)
+
         options.gas = gasEstimate
       })
       .then(() => {
@@ -436,15 +444,15 @@ class DragoWeb3 {
       spenderAddress,
       amount
     ])
-    console.log(encodedABI)
-    console.log('tokenAddress ', tokenAddress)
-    console.log('ownerAddress ', ownerAddress)
-    console.log('spenderAddress ', spenderAddress)
+
+
+
+
     return instance.methods
       .operateOnExchangeDirectly(tokenAddress, encodedABI)
       .estimateGas(options)
       .then(gasEstimate => {
-        console.log(gasEstimate)
+
         options.gas = gasEstimate
       })
       .then(() => {
@@ -508,17 +516,17 @@ class DragoWeb3 {
 
     // const encodedABI = '0xbc61394a00000000000000000000000040584e290e5c56114c8bcf72fa3d403d1166b3d700000000000000000000000000000000000000000000000000000000000000000000000000000000000000001dad4783cf3fe3085c1426157ab175a6119a04ba000000000000000000000000d0a1e359811322d97991e03f863a0c30c2cf029c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002386f26fc10000000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001638384d81aace3db94ad2d6f00aaa892a70c34850dcb894fde0f5eb1c50fd50b4320c16df400000000000000000000000000000000000000000000000000000000000003e80000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000001c969d3a50aab834aee8f7ee57a885746502933168c63071c6c270848ad502032b466238fa9e7bc9f9a5dd3e0ca738512b0ba16ecf770f12369d65a4cd293a6fac'
 
-    console.log(encodedABI)
-    console.log('orderAddresses ', orderAddresses)
-    console.log('orderValues ', orderValues)
-    console.log('amount ', amount)
+
+
+
+
     console.log(
       'shouldThrowOnInsufficientBalanceOrAllowance ',
       shouldThrowOnInsufficientBalanceOrAllowance
     )
-    console.log('v ', v)
-    console.log('r ', r)
-    console.log('s ', s)
+
+
+
     console.log(
       'ZeroExConfig.exchangeAddress    ',
       ZeroExConfig.exchangeAddress
@@ -530,7 +538,7 @@ class DragoWeb3 {
       )
       .estimateGas(options)
       .then(gasEstimate => {
-        console.log(gasEstimate)
+
         options.gas = gasEstimate
       })
       .then(() => {
@@ -590,7 +598,7 @@ class DragoWeb3 {
       .operateOnExchangeDirectly(exchangeAddress, encodedABI)
       .estimateGas(options)
       .then(gasEstimate => {
-        console.log(gasEstimate)
+
         options.gas = gasEstimate
       })
       .then(() => {
@@ -614,13 +622,13 @@ class DragoWeb3 {
     let options = {
       from: accountAddress
     }
-    console.log(spenderAddress)
-    console.log(tokenAddress)
+
+
     return instance.methods
       .setInfiniteAllowance(spenderAddress, tokenAddress)
       .estimateGas(options)
       .then(gasEstimate => {
-        console.log(gasEstimate)
+
         options.gas = gasEstimate
       })
       .then(() => {
@@ -640,7 +648,7 @@ class DragoWeb3 {
       .buyDrago()
       .estimateGas(options)
       .then(gasEstimate => {
-        console.log(gasEstimate)
+
         options.gas = gasEstimate
       })
       .then(() =>
@@ -650,7 +658,7 @@ class DragoWeb3 {
           // .on('confirmation', function(confirmationNumber, receipt) {})
           // .on('receipt', function(receipt) {})
           .then(result => {
-            console.log(result)
+
             return result
           })
       )
@@ -667,12 +675,12 @@ class DragoWeb3 {
     let options = {
       from: accountAddress
     }
-    console.log(amount)
+
     return instance.methods
       .sellDrago(amount)
       .estimateGas(options)
       .then(gasEstimate => {
-        console.log(gasEstimate)
+
         options.gas = gasEstimate
       })
       .then(() => {
@@ -708,10 +716,10 @@ class DragoWeb3 {
       )
       .estimateGas(options)
       .then(gasEstimate => {
-        console.log(gasEstimate)
+
         // console.log(gasEstimate.toFormat())
         options.gas = gasEstimate
-        console.log(instance)
+
         return instance.methods
           .setPrices(
             sellPriceWei,
@@ -737,9 +745,9 @@ class DragoWeb3 {
     if (!amount) {
       throw new Error('amount needs to be provided')
     }
-    console.log(`wrapperAddress ${wrapperAddress}`)
-    console.log(`managerAccountAddress ${managerAccountAddress}`)
-    console.log(`amount ${amount}`)
+
+
+
 
     const instance = this._instance
     const api = this._api
@@ -769,7 +777,7 @@ class DragoWeb3 {
       .operateOnExchange(wrapperAddress, [encodedABI])
       .estimateGas(options)
       .then(gasEstimate => {
-        console.log(gasEstimate)
+
         options.gas = gasEstimate
       })
       .then(() => {
@@ -789,9 +797,9 @@ class DragoWeb3 {
     if (!amount) {
       throw new Error('amount needs to be provided')
     }
-    console.log(`wrapperAddress ${wrapperAddress}`)
-    console.log(`managerAccountAddress ${managerAccountAddress}`)
-    console.log(`amount ${amount}`)
+
+
+
 
     const instance = this._instance
     const api = this._api
@@ -817,12 +825,12 @@ class DragoWeb3 {
       wrapperAddress,
       amount
     ])
-    console.log(encodedABI)
+
     return instance.methods
       .operateOnExchange(wrapperAddress, [encodedABI])
       .estimateGas(options)
       .then(gasEstimate => {
-        console.log(gasEstimate)
+
         options.gas = gasEstimate
       })
       .then(() => {

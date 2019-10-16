@@ -40,13 +40,13 @@ class ErcdexAllowance extends Component {
         selectedExchange,
         amount
       )
-      console.log(result)
+
       selectedTokensPair.quoteTokenAllowance = isInputChecked
       this.props.dispatch(
         Actions.exchange.updateSelectedTradeTokensPair(selectedTokensPair)
       )
     } catch (error) {
-      console.log(error)
+
       utils.notificationError(notificationEngine, serializeError(error).message)
     }
   }
@@ -68,13 +68,13 @@ class ErcdexAllowance extends Component {
         selectedExchange,
         amount
       )
-      console.log(result)
+
       selectedTokensPair.baseTokenAllowance = isInputChecked
       this.props.dispatch(
         Actions.exchange.updateSelectedTradeTokensPair(selectedTokensPair)
       )
     } catch (error) {
-      console.log(error)
+
     }
   }
 

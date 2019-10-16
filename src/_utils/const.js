@@ -24,9 +24,9 @@ export const DS = '/'
 export const DRG_ISIN = 'DR'
 export const LOGGER = true
 // Set connetions to production server
-export const PROD = false
+export const PROD = true
 // Set connetions to WebSocketSecure or HTTPs
-export const WS = false
+export const WS = true
 // Address of the Parity registry of smart contracts
 export const REGISTRY_KOVAN = '0xfAb104398BBefbd47752E7702D9fE23047E1Bca3'
 // Address of RigoToken GRG
@@ -89,6 +89,8 @@ export const DEFAULT_RELAY = {
   ropsten: 'Ethfinex',
   mainnet: 'Ethfinex'
 }
+
+//kovan: 'ERCdEX',
 
 // export const ERCdEX = "ERCdEX"
 // export const Ethfinex = "Ethfinex"

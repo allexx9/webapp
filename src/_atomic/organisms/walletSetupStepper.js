@@ -119,7 +119,7 @@ class WalletSetupStepper extends Component {
     try {
       await poolApi.contract.rigotokenfaucet.drip1Token(accounts[0])
     } catch (error) {
-      console.log(error)
+
       this.setState({ errorMsg: 'You can request 0.5 tokens every 48 hours.' })
     }
   }
