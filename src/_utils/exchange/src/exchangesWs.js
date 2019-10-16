@@ -48,7 +48,7 @@ export const getTicker = {
       ...wsOptions
     )
     websocket.addEventListener('open', () => {
-
+      console.log('WebSocket open.')
       try {
         websocket.send(`sub:ticker`)
         websocket.send(

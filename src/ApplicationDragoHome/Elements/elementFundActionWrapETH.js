@@ -315,7 +315,7 @@ class ElementFundActionWrapETH extends Component {
     poolApi.contract.drago
       .unWrapETHZeroEx(WETHaddress, account.address, toBeUnWrapped)
       .then(receipt => {
-
+        console.log(receipt)
         // Adding transaciont to the queue
         // Parity returns an internal transaction ID straighaway. The transaction then needs to be authorized inside the wallet.
         // MetaMask returns a receipt of the transaction once it has been mined by the network. It can take a long time.
@@ -409,7 +409,7 @@ class ElementFundActionWrapETH extends Component {
     poolApi.contract.drago
       .wrapETHZeroEx(WETHaddress, account.address, toBeWrapped)
       .then(receipt => {
-
+        console.log(receipt)
         // Adding transaction to the queue
         // Parity returns an internal transaction ID straighaway. The transaction then needs to be authorized inside the wallet.
         // MetaMask returns a receipt of the transaction once it has been mined by the network. It can take a long time.
@@ -435,7 +435,7 @@ class ElementFundActionWrapETH extends Component {
         }
       })
       .catch(error => {
-
+        console.log(error)
         const errorArray = error.message.split(/\r?\n/)
         this.props.dispatch(
           Actions.notifications.queueWarningNotification(errorArray[0])

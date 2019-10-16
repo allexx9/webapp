@@ -28,7 +28,7 @@ export default class OrderPrice extends Component {
 
   onChangePrice = event => {
     // Checking valid positive number
-
+    console.log(event.target.value)
     try {
       if (!new BigNumber(event.target.value).gt(0)) {
         this.setState({

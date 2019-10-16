@@ -93,7 +93,7 @@ class OrderBox extends Component {
       orderAmountError: error,
       orderFillAmount: amount
     }
-
+    console.log(amount)
     this.props.dispatch(Actions.exchange.updateOrder(payload))
   }
 
@@ -102,7 +102,7 @@ class OrderBox extends Component {
       orderPriceError: error,
       orderPrice: amount
     }
-
+    console.log(amount)
     this.props.dispatch(Actions.exchange.updateOrder(payload))
   }
 
@@ -160,16 +160,16 @@ class OrderBox extends Component {
         orderRawDialogOpen: true
       })
     }
-
+    console.log('Selected order', selectedOrder)
     try {
       let signedOrder = await signOrder(
         selectedOrder,
         selectedExchange,
         walletAddress
       )
-
-
-
+      console.log('Selected order', selectedOrder)
+      console.log('Signed order', signedOrder)
+      console.log(signedOrder)
       const payload = {
         details: { order: signedOrder }
       }
@@ -234,7 +234,7 @@ class OrderBox extends Component {
           selectedOrder.orderFillAmount,
           selectedExchange
         )
-
+        console.log(receipt)
         transactionDetails.status = 'executed'
         transactionDetails.receipt = receipt
         transactionDetails.hash = receipt.transactionHash
@@ -250,7 +250,7 @@ class OrderBox extends Component {
           selectedFund.details.address
         )
       } catch (error) {
-
+        console.log(serializeError(error))
         const errorArray = serializeError(error).message.split(/\r?\n/)
         transactionDetails.status = 'error'
         transactionDetails.error = errorArray[0]
@@ -267,11 +267,11 @@ class OrderBox extends Component {
         )
       }
     } else {
-
+      console.log(selectedOrder)
       let signedOrder = selectedOrder.details.order
       try {
         if (selectedRelay.name === 'Ethfinex') {
-
+          console.log('Ethfinex order')
           let efxSymbol = `t${selectedOrder.selectedTokensPair.baseToken.symbol.toUpperCase()}${selectedOrder.selectedTokensPair.quoteToken.symbolTicker.Ethfinex.toUpperCase()}`
           let efxAmount =
             selectedOrder.orderType === 'asks'
@@ -289,8 +289,8 @@ class OrderBox extends Component {
           this.setState({
             efxOrder
           })
-
-
+          console.log(efxSymbol, efxAmount, selectedOrder.orderPrice)
+          console.log(efxOrder)
           let parsedBody = await submitOrderToRelayEFX(
             efxOrder,
             endpoint.networkInfo.id
@@ -309,7 +309,7 @@ class OrderBox extends Component {
           if (this.state.orderOptions.quickOrder) {
             this.onCancelOrder()
           }
-
+          console.log(parsedBody)
         }
       } catch (error) {
         const errorArray = serializeError(error).message.split(/\r?\n/)
@@ -321,7 +321,7 @@ class OrderBox extends Component {
             transactionDetails
           )
         )
-
+        console.log(error)
         const notificationEngine = notificationWrapper.getInstance()
         utils.notificationError(
           notificationEngine,
@@ -345,7 +345,7 @@ class OrderBox extends Component {
   onSelectOrderType = () => {}
 
   onBuySell = async orderType => {
-
+    console.log(orderType)
     const { selectedTokensPair } = this.props.exchange
 
     if (orderType === 'asks') {

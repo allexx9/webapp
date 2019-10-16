@@ -62,31 +62,6 @@ const newMakerOrderV0 = (orderSide, options, state$) => {
 
   const web3 = new Web3()
 
-  const ERC20_METHOD_ABI = {
-    constant: false,
-    inputs: [
-        {
-            name: 'tokenContract',
-            type: 'address',
-        },
-    ],
-    name: 'ERC20Token',
-    outputs: [],
-    payable: false,
-    stateMutability: 'nonpayable',
-    type: 'function',
-  }
-
-  const encodedMakerToken = web3.eth.abi.encodeFunctionCall(
-    ERC20_METHOD_ABI,
-    [makerTokenAddress.toLowerCase()]
-  )
-
-  const encodedTakerToken = web3.eth.abi.encodeFunctionCall(
-    ERC20_METHOD_ABI,
-    [takerTokenAddress.toLowerCase()]
-  )
-
   const order = {
     expirationTimeSeconds: orderExpirationTime.toString(),
     feeRecipientAddress: selectedExchange.feeRecipientAddress.toLowerCase(),
@@ -103,7 +78,6 @@ const newMakerOrderV0 = (orderSide, options, state$) => {
 
     exchangeAddress: selectedExchange.exchangeAddress.toLowerCase()
   }
-
   const makerOrder = {
     details: {
       order: order,

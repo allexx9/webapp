@@ -50,12 +50,12 @@ class OrdersHistoryBox extends Component {
       amount: order.orderAmount
     }
     try {
-
+      console.log(order.order.id)
       const sig = await utils.sign(
         parseInt(order.order.id, 10).toString(16),
         this.props.exchange.walletAddress
       )
-
+      console.log(sig)
       let parsedBody = await cancelOrderFromRelayEFX(
         order.order.id,
         sig,
@@ -69,9 +69,9 @@ class OrdersHistoryBox extends Component {
           transactionDetails
         )
       )
-
+      console.log(parsedBody)
     } catch (error) {
-
+      console.log(serializeError(error))
       const errorArray = serializeError(error).message.split(/\r?\n/)
       transactionDetails.status = 'error'
       transactionDetails.error = errorArray[0]

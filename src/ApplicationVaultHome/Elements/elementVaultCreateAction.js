@@ -54,7 +54,7 @@ class ElementVaultCreateAction extends React.Component {
   }
 
   handleOpen = () => {
-
+    console.log('open')
     this.setState({
       open: true,
       openAuth: false,
@@ -155,7 +155,7 @@ class ElementVaultCreateAction extends React.Component {
       poolApi.contract.vaultfactory
         .createVault(vaultName, vaultSymbol, this.state.account.address)
         .then(receipt => {
-
+          console.log(receipt)
           // this.props.snackBar('Deploy awaiting for authorization')
           if (account.source === 'MetaMask') {
             transactionDetails.status = 'executed'
@@ -189,7 +189,7 @@ class ElementVaultCreateAction extends React.Component {
           )
           transactionDetails.status = 'error'
           transactionDetails.error = errorArray[0]
-
+          console.log(error)
           this.props.dispatch(
             Actions.transactions.addTransactionToQueueAction(
               transactionId,

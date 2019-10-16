@@ -32,7 +32,7 @@ export default class TokenAmountInputField extends Component {
 
   onChangeAmount = event => {
     // Checking valid positive number
-
+    console.log(event.target.value)
     let amountError = 'Please enter a valid positive number'
     try {
       if (!new BigNumber(event.target.value).gt(0)) {
@@ -63,7 +63,7 @@ export default class TokenAmountInputField extends Component {
       )
       return
     }
-
+    console.log('ok')
     this.props.onChangeAmount(event.target.value, this.props.isBaseToken, '')
   }
 

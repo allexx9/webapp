@@ -103,7 +103,7 @@ export class App extends Component {
 
   callback = data => {
     const { action, index, type } = data
-
+    console.log(action, index, type)
   }
 
   getChildContext() {

@@ -52,8 +52,8 @@ const reconnectingWebsocketBook$ = (relay, networkId, baseToken, quoteToken) =>
       let ask = BOOK.psnap.asks[0]
       if (bid >= ask) {
         let lm = [moment.utc().format(), 'bid(' + bid + ')>=ask(' + ask + ')']
-
-
+        console.log(lm.join('/') + '\n')
+        console.log(lm.join('/'))
       }
     }
     const unsubscribePromise = ethfinex.raw.ws
@@ -405,7 +405,7 @@ export const getAccountOrdersEpic = action$ =>
             baseToken
           ).pipe(
             map(orders => {
-
+              console.log(orders)
               return {
                 type: TYPE_.UPDATE_FUND_ORDERS,
                 payload: {

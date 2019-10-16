@@ -60,7 +60,7 @@ export default class ElementVaultActionDeposit extends Component {
       lineHeight: '20px',
       fontSize: 16
     }
-
+    console.log(this.props)
     return (
       <Dialog
         title={this.renderHeader()}
@@ -205,7 +205,7 @@ export default class ElementVaultActionDeposit extends Component {
           api.utils.toWei(this.state.amount).toString()
         )
         .then(result => {
-
+          console.log(result)
           this.setState({
             sending: false
           })

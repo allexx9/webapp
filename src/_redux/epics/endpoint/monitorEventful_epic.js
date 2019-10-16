@@ -39,7 +39,7 @@ export const monitorEventfulEpic = (action$, state$) => {
       return monitorEventful$(state$).pipe(
         takeUntil(action$.pipe(ofType(TYPE_.MONITOR_ACCOUNTS_STOP))),
         tap(val => {
-
+          console.log(val)
           return val
         }),
         flatMap(() => {
@@ -78,13 +78,13 @@ export const monitorEventfulEpic = (action$, state$) => {
           return concat(...observablesArray)
         }),
         retryWhen(error => {
-
+          console.log('monitorEventfulEpic')
           let scalingDuration = 10000
           return error.pipe(
             mergeMap((error, i) => {
               console.warn(error)
               const retryAttempt = i + 1
-
+              console.log(`monitorEventfulEpic Attempt ${retryAttempt}`)
               return timer(scalingDuration)
             }),
             finalize(() => console.log('We are done!'))

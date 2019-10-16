@@ -15,7 +15,7 @@ export const getRelayConfEpic = (action$, state$) =>
   action$.pipe(
     ofType(utils.customRelayAction(TYPE_.RELAY_GET_CONF),
     mergeMap(action => {
-
+      console.log(action)
       const { relay, tokensPair } = action.payload
       const networkId = state$.value.endpoint.networkInfo.id
       const tsYesterday = new Date(

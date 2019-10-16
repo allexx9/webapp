@@ -66,7 +66,7 @@ class DragoWeb3 {
       .buyVault()
       .estimateGas(options)
       .then(gasEstimate => {
-
+        console.log(gasEstimate)
         options.gas = gasEstimate
       })
       .then(() => {
@@ -85,12 +85,12 @@ class DragoWeb3 {
     let options = {
       from: accountAddress
     }
-
+    console.log(amount)
     return instance.methods
       .sellVault(amount)
       .estimateGas(options)
       .then(gasEstimate => {
-
+        console.log(gasEstimate)
         options.gas = gasEstimate
       })
       .then(() => {
@@ -117,10 +117,10 @@ class DragoWeb3 {
       .setTransactionFee(basisPoints)
       .estimateGas(options)
       .then(gasEstimate => {
-
+        console.log(gasEstimate)
         // console.log(gasEstimate.toFormat())
         options.gas = gasEstimate
-
+        console.log(instance)
         return instance.methods.setTransactionFee(basisPoints).send(options)
       })
       .catch(error => {

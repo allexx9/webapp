@@ -63,7 +63,7 @@ class ApplicationHomePage extends Component {
 
   static getDerivedStateFromProps(props) {
     const { endpoint } = props
-    const hasGRGBalance = new BigNumber(endpoint.grgBalance).gte(0) //removed GRG access requirement
+    const hasGRGBalance = new BigNumber(endpoint.grgBalance).gte(1)
     return {
       hasGRGBalance
     }

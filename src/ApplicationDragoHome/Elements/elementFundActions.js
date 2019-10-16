@@ -478,7 +478,7 @@ class ElementFundActions extends React.Component {
       symbol: dragoDetails.symbol.toUpperCase(),
       amount: this.state.amountSummary
     }
-
+    console.log(transactionDetails)
     this.props.dispatch(
       Actions.transactions.addTransactionToQueueAction(
         transactionId,
@@ -505,15 +505,15 @@ class ElementFundActions extends React.Component {
     poolApi.contract.drago
       .buyDrago(account.address, amount)
       .then(receipt => {
-
-
+        console.log('executed')
+        console.log(receipt)
         poolApi.contract.drago
           .balanceOf(account.address)
           .then(balance => {
-
+            console.log(balance)
           })
           .catch(e => console.warn(e))
-
+        console.log('Account monitoring - > DRAGO details fetch.')
         this.props.dispatch(
           Actions.pools.getPoolsSingleDetails(dragoDetails.dragoId, {
             poolType: 'drago',
@@ -552,7 +552,7 @@ class ElementFundActions extends React.Component {
         )
         transactionDetails.status = 'error'
         transactionDetails.error = errorArray[0]
-
+        console.log(error)
         this.props.dispatch(
           Actions.transactions.addTransactionToQueueAction(
             transactionId,
@@ -620,14 +620,14 @@ class ElementFundActions extends React.Component {
     poolApi.contract.drago
       .sellDrago(account.address, amount)
       .then(receipt => {
-
+        console.log(receipt)
         poolApi.contract.drago
           .balanceOf(account.address)
           .then(balance => {
-
+            console.log(balance)
           })
           .catch(e => console.warn(e))
-
+        console.log('Account monitoring - > DRAGO details fetch.')
         this.props.dispatch(
           Actions.pools.getPoolsSingleDetails(dragoDetails.dragoId, {
             poolType: 'drago',
@@ -665,7 +665,7 @@ class ElementFundActions extends React.Component {
         )
         transactionDetails.status = 'error'
         transactionDetails.error = errorArray[0]
-
+        console.log(error)
         this.props.dispatch(
           Actions.transactions.addTransactionToQueueAction(
             transactionId,

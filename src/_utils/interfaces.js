@@ -8,7 +8,6 @@ import {
 import BigNumber from 'bignumber.js'
 import PoolsApi from '../PoolsApi/src'
 import Web3Wrapper from './web3Wrapper/src/web3Wrapper'
-import Web3 from 'web3'
 import utils from '../_utils/utils'
 
 class Interfaces {
@@ -98,14 +97,14 @@ class Interfaces {
               })
           })
           return Promise.all(arrayPromises).then(() => {
-
+            console.log('Parity getAccounts', accounts)
             // const accountsData = {...results}
             // console.log(accountsData)
             return accounts
           })
         })
         .catch(error => {
-
+          console.log('getAccounts', error)
           return {}
         })
     )
@@ -124,7 +123,7 @@ class Interfaces {
       // Check if MetaMask is connected to the same network as the endpoint
       let accounts = await web3.eth.getAccounts()
       let metaMaskNetworkId = await web3.eth.net.getId()
-
+      console.log('Account MM: ', accounts, metaMaskNetworkId)
       let isMetaMaskLocked = accounts.length === 0 ? true : false
       let currentState = { ...this._success }
       if (metaMaskNetworkId !== parityNetworkId) {
@@ -361,7 +360,7 @@ class Interfaces {
         ...currentState,
         ...stateUpdate
       }
-
+      console.log('Error attachInterfaceRigoBlock', error)
       throw new Error(this._error)
     }
   }

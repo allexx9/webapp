@@ -33,7 +33,7 @@ export default (web3, networkId) => {
     error$.pipe(
       tap(err => {
         console.error(err.message)
-
+        console.info(`Retrying in: ${CONSTANTS.RETRY_DELAY} ms.`)
       }),
       delay(4000)
     )
