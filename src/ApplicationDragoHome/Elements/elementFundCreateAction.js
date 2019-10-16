@@ -58,7 +58,7 @@ class ElementFundCreateAction extends React.Component {
   }
 
   handleOpen = () => {
-
+    console.log('open')
     this.setState({
       open: true,
       openAuth: false,
@@ -156,13 +156,13 @@ class ElementFundCreateAction extends React.Component {
     this.setState({
       sending: true
     })
-
+    console.log(dragoName)
     poolApi = new PoolApi(provider)
     poolApi.contract.dragofactory.init().then(() => {
       poolApi.contract.dragofactory
         .createDrago(dragoName, dragoSymbol, this.state.account.address)
         .then(receipt => {
-
+          console.log(receipt)
           if (account.source === 'MetaMask') {
             transactionDetails.status = 'executed'
             transactionDetails.receipt = receipt
@@ -189,14 +189,14 @@ class ElementFundCreateAction extends React.Component {
           // })
         })
         .catch(error => {
-
+          console.log(error)
           const errorArray = error.message.split(/\r?\n/)
           this.props.dispatch(
             Actions.notifications.queueWarningNotification(errorArray[0])
           )
           transactionDetails.status = 'error'
           transactionDetails.error = errorArray[0]
-
+          console.log(error)
           this.props.dispatch(
             Actions.transactions.addTransactionToQueueAction(
               transactionId,

@@ -61,15 +61,15 @@ class JoyrideEfxIntro extends React.Component {
                 <br /> <b className={styles.rbDotted}>RigoBlock </b>is a{' '}
                 <b>blockchain protocol</b> for <b>decentralized</b> asset
                 management. It is an abstracted and generalized standard, built
-                and deployed on the Ethereum public blockchain, which streamlines the creation and
-                management of <b>applications for asset management</b>.
+                and deployed on the Ethereum public blockchain, which facilitates
+                the creation and management of <b>applications for asset management</b>.
               </div>
             </div>
           </Col>
           <Col xs={4}>
             {!hasGRGBalance && (
               <div className={styles.minimumBalance}>
-                Participate to the Public Sale, get 1 free GRG and access the platform
+                Please purchase 1 GRG to access the platform
               </div>
             )}
 
@@ -77,16 +77,15 @@ class JoyrideEfxIntro extends React.Component {
               <div style={{ fontWeight: 700 }}>
                 {hasGRGBalance && (
                   <div className={styles.icoDate}>
-                    <a>
-                      GRG gives you the full benefit of Proof of Performance. Receive GRG by operating a Vault.
-                    </a>
+                    GRG gives you the full benefit of Proof of Performance.
                   </div>
                 )}
                 <div className={styles.icoButton}>
                   <FlatButton
-                    href="https://beta.rigoblock.com/#/app/web/vault/dashboard"
+                    href="https://rigoblock.com"
+                    target="_blank"
                     labelPosition="before"
-                    label="Earn GRG"
+                    label="Purchase GRG"
                     labelStyle={{
                       color: '#ffffff',
                       fontWeight: '600',
@@ -117,7 +116,7 @@ class JoyrideEfxIntro extends React.Component {
             {' '}
             <div className={styles.efxDescriptionMore}>
               <a
-                href="https://rigoblock.com"
+                href="https://discordapp.com/invite/FXd8EU8"
                 target="_blank"
                 rel="noopener noreferrer"
               >

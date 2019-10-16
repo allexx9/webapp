@@ -9,6 +9,7 @@ import erc20 from './v2/erc20.json'
 import ethusd from './v2/ethusd.json'
 import exchange from './v2/exchange.json'
 import fundproxy from './v2/fundProxy.json'
+import getMultiPoolsData from './v2/getMultiPoolsData.json'
 import getMultipleBalances from './v2/getMultipleBalances.json'
 import parityregister from './v2/parityRegister.json'
 import rigotoken from './v2/rigoToken-v2.json'
@@ -56,5 +57,6 @@ export {
   rigotokenfaucet,
   weth,
   zeroExExchange,
-  getMultipleBalances
+  getMultipleBalances,
+  getMultiPoolsData
 }

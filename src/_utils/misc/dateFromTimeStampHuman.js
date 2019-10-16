@@ -6,6 +6,6 @@ export const dateFromTimeStampHuman = timestamp => {
     return date
   } catch (error) {
     console.warn(error)
-    return 'date loading'
+    return '-'
   }
 }

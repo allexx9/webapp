@@ -1,11 +1,10 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-// import { Observable } from 'rxjs';
 import * as TYPE_ from '../../actions/const'
 import { Actions } from '../../actions'
 import { DEBUGGING, INFURA } from '../../../_utils/const'
 import { Interfaces } from '../../../_utils/interfaces'
-import { Observable, defer, from, timer } from 'rxjs'
+import { concat, defer, from, of, timer } from 'rxjs'
 import {
   delay,
   finalize,
@@ -37,7 +36,7 @@ const attachInterfacePromise = async (api, endpoint) => {
   let newEndpoint
   switch (selectedEndpointName) {
     case INFURA:
-
+      console.log(`endpoint_epic -> ${INFURA}`)
       try {
         newEndpoint = await blockchain.attachInterfaceInfuraV2(api, networkId)
       } catch (err) {
@@ -55,7 +54,7 @@ const attachInterfacePromise = async (api, endpoint) => {
     //   newEndpoint = await blockchain.attachInterfaceRigoBlockV2(api, networkId)
     //   break
     default:
-
+      console.log(`endpoint_epic -> ${INFURA}`)
       try {
         newEndpoint = await blockchain.attachInterfaceInfuraV2(api, networkId)
       } catch (err) {
@@ -90,52 +89,52 @@ export const attachInterfaceEpic = (action$, state$) =>
           const currentAccountsAddressHash = sha3_512(accounts.toString())
           const savedAccountsAddressHash = state$.value.app.accountsAddressHash
           if (currentAccountsAddressHash !== savedAccountsAddressHash) {
-            return Observable.concat(
-              Observable.of(
-                Actions.drago.updateTransactionsDragoHolder([
+            return concat(
+              of(
+                Actions.drago.updateDragoTransactionsHolder([
                   Array(0),
                   Array(0),
                   Array(0)
                 ])
               ),
-              Observable.of(
-                Actions.drago.updateTransactionsDragoManager([
+              of(
+                Actions.drago.updateDragoTransactionsManager([
                   Array(0),
                   Array(0),
                   Array(0)
                 ])
               ),
-              Observable.of(
-                Actions.vault.updateTransactionsVaultHolder([
+              of(
+                Actions.vault.updateVaultTransactionsHolder([
                   Array(0),
                   Array(0),
                   Array(0)
                 ])
               ),
-              Observable.of(
-                Actions.vault.updateTransactionsVaultManager([
+              of(
+                Actions.vault.updateVaultTransactionsManager([
                   Array(0),
                   Array(0),
                   Array(0)
                 ])
               ),
-              Observable.of(
+              of(
                 Actions.app.updateAppStatus({
                   appLoading: false,
                   accountsAddressHash: currentAccountsAddressHash
                 })
               ),
-              Observable.of(Actions.endpoint.updateInterface(endpoint))
+              of(Actions.endpoint.updateInterface(endpoint))
             )
           }
-          return Observable.concat(
-            Observable.of(
+          return concat(
+            of(
               Actions.app.updateAppStatus({
                 appLoading: false,
                 accountsAddressHash: currentAccountsAddressHash
               })
             ),
-            Observable.of(Actions.endpoint.updateInterface(endpoint))
+            of(Actions.endpoint.updateInterface(endpoint))
           )
         })
       )
@@ -146,7 +145,7 @@ export const attachInterfaceEpic = (action$, state$) =>
         mergeMap((error, i) => {
           console.warn(error)
           const retryAttempt = i + 1
-
+          console.log(`Attempt ${retryAttempt}`)
           return timer(scalingDuration)
         }),
         finalize(() => console.log('We are done!'))
@@ -186,15 +185,15 @@ export const monitorAccountsEpic = (action$, state$) => {
       return monitorAccounts$(state$).pipe(
         takeUntil(action$.pipe(ofType(TYPE_.MONITOR_ACCOUNTS_STOP))),
         mergeMap(accountsUpdate => {
-
+          console.log(accountsUpdate)
           const observablesArray = Array(0)
 
           observablesArray.push(
-            Observable.of(Actions.endpoint.updateInterface(accountsUpdate[0]))
+            of(Actions.endpoint.updateInterface(accountsUpdate[0]))
           )
           if (accountsUpdate[1].length !== 0)
             observablesArray.push(
-              Observable.of({
+              of({
                 type: TYPE_.QUEUE_ACCOUNT_NOTIFICATION,
                 payload: accountsUpdate[1]
               })
@@ -207,8 +206,8 @@ export const monitorAccountsEpic = (action$, state$) => {
               // ) {
               //   console.log('Account monitoring - > DRAGO details fetch.')
               //   observablesArray.push(
-              //     Observable.of(
-              //       Actions.drago.getPoolDetails(
+              //     of(
+              //       Actions.pools.getPoolsSingleDetails(
               //         currentState.transactionsDrago.selectedDrago.details
               //           .dragoId,
               //         action.payload.api,
@@ -225,8 +224,8 @@ export const monitorAccountsEpic = (action$, state$) => {
               // ) {
               //   console.log('Account monitoring - > VAULT details fetch.')
               //   observablesArray.push(
-              //     Observable.of(
-              //       Actions.drago.getPoolDetails(
+              //     of(
+              //       Actions.pools.getPoolsSingleDetails(
               //         currentState.transactionsVault.selectedVault.details
               //           .vaultId,
               //         action.payload.api,
@@ -237,12 +236,12 @@ export const monitorAccountsEpic = (action$, state$) => {
               //     )
               //   )
               // }
-              // observablesArray.push(Observable.of(DEBUGGING.DUMB_ACTION))
+              // observablesArray.push(of(DEBUGGING.DUMB_ACTION))
               console.log(
                 'Account monitoring - > DRAGO transactions fetch trader'
               )
               observablesArray.push(
-                Observable.of(
+                of(
                   Actions.endpoint.getAccountsTransactions(
                     null,
                     currentState.endpoint.accounts,
@@ -260,7 +259,7 @@ export const monitorAccountsEpic = (action$, state$) => {
                 'Account monitoring - > DRAGO transactions fetch manager'
               )
               observablesArray.push(
-                Observable.of(
+                of(
                   Actions.endpoint.getAccountsTransactions(
                     null,
                     currentState.endpoint.accounts,
@@ -278,9 +277,9 @@ export const monitorAccountsEpic = (action$, state$) => {
               console.log(
                 'Account monitoring - > VAULT transactions fetch manager'
               )
-              observablesArray.push(Observable.of(DEBUGGING.DUMB_ACTION))
+              observablesArray.push(of(DEBUGGING.DUMB_ACTION))
               observablesArray.push(
-                Observable.of(
+                of(
                   Actions.endpoint.getAccountsTransactions(
                     null,
                     currentState.endpoint.accounts,
@@ -298,7 +297,7 @@ export const monitorAccountsEpic = (action$, state$) => {
                 'Account monitoring - > VAULT transactions fetch trader'
               )
               observablesArray.push(
-                Observable.of(
+                of(
                   Actions.endpoint.getAccountsTransactions(
                     null,
                     currentState.endpoint.accounts,
@@ -315,16 +314,16 @@ export const monitorAccountsEpic = (action$, state$) => {
             }
           }
 
-          return Observable.concat(...observablesArray)
+          return concat(...observablesArray)
         }),
         retryWhen(error => {
-
+          console.log('monitorAccountsEpic')
           let scalingDuration = 3000
           return error.pipe(
             mergeMap((error, i) => {
               console.warn(error)
               const retryAttempt = i + 1
-
+              console.log(` monitorAccountsEpic Attempt ${retryAttempt}`)
               // retry after 1s, 2s, etc...
               return timer(scalingDuration)
             }),

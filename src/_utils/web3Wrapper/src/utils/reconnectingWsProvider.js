@@ -5,9 +5,7 @@ let Ws
 let _btoa = null
 let parseURL = null
 if (typeof window !== 'undefined' && typeof window.WebSocket !== 'undefined') {
-  Ws = function(url, protocols) {
-    return new window.WebSocket(url, protocols)
-  }
+  Ws = window['WebSocket']
   _btoa = btoa
   parseURL = function(url) {
     return new URL(url)
@@ -30,7 +28,6 @@ if (typeof window !== 'undefined' && typeof window.WebSocket !== 'undefined') {
   }
 }
 // Default connection ws://localhost:8546
-
 let WebsocketProvider = function WebsocketProvider(url, options) {
   let _this = this
   this.responseCallbacks = {}

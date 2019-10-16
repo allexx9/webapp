@@ -2,6 +2,7 @@
 import ButtonManage from '../../_atomic/atoms/buttonManage'
 import ElementFundActionSetPrice from '../Elements/elementFundActionSetPrice'
 import ElementFundActionWrapETH from '../Elements/elementFundActionWrapETH'
+import ElementFundActionSelfCustody from '../Elements/elementFundActionSelfCustody'
 import Menu from 'material-ui/Menu'
 import MenuItem from 'material-ui/MenuItem'
 import Popover, { PopoverAnimationVertical } from 'material-ui/Popover'
@@ -24,7 +25,8 @@ export default class ElementFundActionsList extends Component {
       placeOrder: false,
       cancelOrder: false,
       finalizeOrder: false,
-      setPrice: false
+      setPrice: false,
+      selfCustody:false
     }
   }
 
@@ -45,7 +47,7 @@ export default class ElementFundActionsList extends Component {
     this.setState({
       openMenuActions: false
     })
-
+    console.log(value)
     switch (value) {
       case 'wrapETH':
         this.setState({
@@ -89,6 +91,13 @@ export default class ElementFundActionsList extends Component {
           }
         })
         break
+      case 'selfCustody':
+        this.setState({
+          showActionMenuItem: {
+            selfCustody: !this.state.showActionMenuItem.selfCustody
+          }
+        })
+        break
       default:
         return null
     }
@@ -115,10 +124,14 @@ export default class ElementFundActionsList extends Component {
           <Menu desktop={true} onChange={this.openActionForm}>
             <Subheader inset={false}>Drago</Subheader>
             <MenuItem value="setPrice" primaryText="Set Prices" />
-            <Subheader inset={false}>Exchange</Subheader>
-            <MenuItem value="wrapETH" primaryText="Wrap ETH" />
+            <MenuItem value="selfCustody" primaryText="Self Custody" />
+            {/*}
+            <Subheader inset={false}>WETH</Subheader>
+            <MenuItem value="wrapETH" primaryText="Wrap Unwrap" />
+            {*/}
           </Menu>
         </Popover>
+        {/*}
         {this.state.showActionMenuItem.wrapETH ? (
           <ElementFundActionWrapETH
             accounts={accounts}
@@ -126,8 +139,16 @@ export default class ElementFundActionsList extends Component {
             openActionForm={this.openActionForm}
           />
         ) : null}
+        {*/}
         {this.state.showActionMenuItem.setPrice ? (
           <ElementFundActionSetPrice
+            accounts={accounts}
+            dragoDetails={dragoDetails}
+            openActionForm={this.openActionForm}
+          />
+        ) : null}
+        {this.state.showActionMenuItem.selfCustody ? (
+          <ElementFundActionSelfCustody
             accounts={accounts}
             dragoDetails={dragoDetails}
             openActionForm={this.openActionForm}

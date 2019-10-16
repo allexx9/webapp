@@ -14,10 +14,11 @@ import CopyContent from 'material-ui/svg-icons/content/content-copy'
 import ElementFundActionsList from '../Elements/elementFundActionsList'
 import ElementFundNotFound from '../../Elements/elementFundNotFound'
 import ElementListAssets from '../Elements/elementListAssets'
-import ElementListTransactions from '../Elements/elementListTransactions'
+import TablePoolTransactions from '../../_atomic/molecules/tablePoolTransactions'
 import ElementListWrapper from '../../Elements/elementListWrapper'
 import ElementNoAdminAccess from '../../Elements/elementNoAdminAccess'
 import ElementPriceBox from '../Elements/elementPricesBox'
+import EstimatedPriceText from '../../_atomic/atoms/estimatedPriceText'
 import FundHeader from '../../_atomic/molecules/fundHeader'
 import InfoTable from '../../Elements/elementInfoTable'
 import Loading from '../../_atomic/atoms/loading'
@@ -65,14 +66,14 @@ class PageFundDetailsDragoManager extends Component {
 
     // Getting Drago details and transactions
     this.props.dispatch(
-      Actions.drago.getPoolDetails(dragoId, { poolType: 'drago' })
+      Actions.pools.getPoolsSingleDetails(dragoId, { poolType: 'drago' })
     )
   }
 
   componentWillUnmount() {
     this.props.dispatch(Actions.tokens.priceTickersStop())
     this.props.dispatch(Actions.exchange.getPortfolioChartDataStop())
-    this.props.dispatch(Actions.drago.updateSelectedDrago({}, { reset: true }))
+    this.props.dispatch(Actions.drago.resetDragoSelectedDetails())
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -84,7 +85,6 @@ class PageFundDetailsDragoManager extends Component {
     stateUpdate = !utils.shallowEqual(this.state, nextState)
     propsUpdate = !utils.shallowEqual(this.props, nextProps)
     if (stateUpdate || propsUpdate) {
-      // console.log(`${this.constructor.name} -> shouldComponentUpdate -> Proceedding with rendering.`);
     }
     return stateUpdate || propsUpdate
   }
@@ -225,9 +225,9 @@ class PageFundDetailsDragoManager extends Component {
 
     let totalAssetsValue = 0
     let tableLiquidity = [
-      ['Liquidity', 'Calculating...', [<small key="dragoLiqEth">ETH</small>]],
-      ['Porfolio value', 'N/A', [<small key="dragoPortEth">ETH</small>]],
-      ['Total', 'Calculating...', [<small key="dragoPortTotEth">ETH</small>]]
+      ['Liquidity', '-', [<small key="dragoLiqEth">ETH</small>]],
+      ['Porfolio value', '-', [<small key="dragoLiqEth" />]],
+      ['Total', '-', [<small key="dragoPortTotEth">ETH</small>]]
     ]
 
     // Show pool balance
@@ -267,7 +267,7 @@ class PageFundDetailsDragoManager extends Component {
     }
 
     // Show estimated prices
-    let estimatedPrice = 'N/A'
+    let estimatedPrice = '-'
     if (dragoValues.estimatedPrice !== -1) {
       estimatedPrice = formatPrice(dragoValues.estimatedPrice)
     }
@@ -363,15 +363,6 @@ class PageFundDetailsDragoManager extends Component {
                       />
                     </Col>
                   </Row>
-                  {/* <Row>
-                    <Col xs={12}>
-                      <AssetsPieChartWrapper
-                        poolAssetsList={dragoAssetsList}
-                        assetsPrices={assetsPrices.current}
-                        poolETHBalance={dragoDetails.dragoETHBalance}
-                      />
-                    </Col>
-                  </Row> */}
                   <Row>
                     <Col xs={12} md={6}>
                       <SectionTitle titleText="DETAILS" />
@@ -405,7 +396,7 @@ class PageFundDetailsDragoManager extends Component {
                                   </div>
                                 </Col>
                                 <Col xs={6} style={{ textAlign: 'center' }}>
-                                  {estimatedPrice} <small>ETH</small>
+                                  <EstimatedPriceText price={estimatedPrice} />
                                 </Col>
                               </Row>
                               <Row>
@@ -539,7 +530,7 @@ class PageFundDetailsDragoManager extends Component {
                         number: 1
                       }}
                     >
-                      <ElementListTransactions />
+                      <TablePoolTransactions />
                     </ElementListWrapper>
                   </Col>
                 </Row>

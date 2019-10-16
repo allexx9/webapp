@@ -27,23 +27,23 @@ export const formatOrdersFromERCdEX = (orders, orderType) => {
   let formattedOrders = orders.map(order => {
     switch (orderType) {
       case 'asks':
-        orderPrice = new BigNumber(order.takerTokenAmount)
-          .div(new BigNumber(order.makerTokenAmount))
+        orderPrice = new BigNumber(order.takerAssetAmount)
+          .div(new BigNumber(order.makerAssetAmount))
           .toFixed(7)
         orderAmount = new BigNumber(
-          web3.utils.fromWei(Web3.utils.toBN(order.makerTokenAmount), 'ether')
+          web3.utils.fromWei(Web3.utils.toBN(order.makerAssetAmount), 'ether')
         ).toFixed(5)
         break
       case 'bids':
         orderPrice = new BigNumber(1)
           .div(
-            new BigNumber(order.takerTokenAmount).div(
-              new BigNumber(order.makerTokenAmount)
+            new BigNumber(order.takerAssetAmount).div(
+              new BigNumber(order.makerAssetAmount)
             )
           )
           .toFixed(7)
         orderAmount = new BigNumber(
-          web3.utils.fromWei(Web3.utils.toBN(order.takerTokenAmount), 'ether')
+          web3.utils.fromWei(Web3.utils.toBN(order.takerAssetAmount), 'ether')
         ).toFixed(5)
         break
       default:

@@ -22,8 +22,8 @@ export const updateAccounts = async (api, blockNumber, endpoint) => {
   } else {
     newBlockNumber = blockNumber
   }
-
-
+  console.log(`endpoint_epic -> Last block: ` + prevBlockNumber)
+  console.log(`endpoint_epic -> New block: ` + newBlockNumber.toFixed())
   // console.log(`endpoint_epic -> Last nonce: ` + prevNonce)
 
   if (new BigNumber(prevBlockNumber).gte(new BigNumber(newBlockNumber))) {
@@ -36,12 +36,12 @@ export const updateAccounts = async (api, blockNumber, endpoint) => {
     return [newEndpoint, notifications, fetchTransactions]
   }
 
-  const accounts = [].concat(endpoint.accounts)
-  if (accounts.length !== 0) {
+  const prevAccounts = [].concat(endpoint.accounts)
+  if (prevAccounts.length !== 0) {
     let newNonce
     try {
       newNonce = await api.eth
-        .getTransactionCount(accounts[0].address)
+        .getTransactionCount(prevAccounts[0].address)
         .catch(err => err)
     } catch (err) {
       console.warn(`Error getTransactionCount`)
@@ -53,13 +53,9 @@ export const updateAccounts = async (api, blockNumber, endpoint) => {
     try {
       const poolApi = new PoolApi(api)
       await poolApi.contract.rigotoken.init()
+
       // Checking GRG balance
-      const grgQueries = accounts.map(account => {
-        // console.log(
-        //   `endpoint_epic -> API call getBalance RigoToken-> applicationDragoHome: Getting balance of account ${
-        //     account.address
-        //   }`
-        // )
+      const grgQueries = prevAccounts.map(account => {
         return poolApi.contract.rigotoken
           .balanceOf(account.address)
           .catch(err => {
@@ -69,17 +65,13 @@ export const updateAccounts = async (api, blockNumber, endpoint) => {
       })
 
       // Checking ETH balance
-      const ethQueries = accounts.map(account => {
-        // console.log(
-        //   `endpoint_epic -> API call getBalance -> applicationDragoHome: Getting balance of account ${
-        //     account.address
-        //   }`
-        // )
+      const ethQueries = prevAccounts.map(account => {
         return api.eth.getBalance(account.address, 'latest').catch(err => {
           console.warn('Error ethQueries')
           return new Error(err)
         })
       })
+
       let ethBalances
       let grgBalances
       try {
@@ -89,7 +81,7 @@ export const updateAccounts = async (api, blockNumber, endpoint) => {
         console.warn(err)
         return new Error(err)
       }
-      const prevAccounts = [].concat(endpoint.accounts)
+      // const prevAccounts = [].concat(endpoint.accounts)
       prevAccounts.forEach(function(account, index) {
         // Checking ETH balance
         const newEthBalance = new BigNumber(ethBalances[index])
@@ -105,7 +97,7 @@ export const updateAccounts = async (api, blockNumber, endpoint) => {
           Number(prevBlockNumber) !== 0 &&
           Number(prevNonce) !== 0
         ) {
-
+          console.log(`ETH ${account.name} balance changed.`)
           fetchTransactions = true
           let secondaryText = []
           let balDifference = prevEthBalance.minus(newEthBalance)
@@ -113,7 +105,7 @@ export const updateAccounts = async (api, blockNumber, endpoint) => {
             Web3.utils.fromWei(balDifference.toString(16))
           ).toFixed(3)
           if (balDifference.gt(new BigNumber(0))) {
-
+            console.log(`endpoint_epic -> You transferred ${balDifString} ETH!`)
             secondaryText[0] = `You transferred ${balDifString} ETH!`
             secondaryText[1] = utils.dateFromTimeStamp(new Date())
           } else {
@@ -141,7 +133,7 @@ export const updateAccounts = async (api, blockNumber, endpoint) => {
           Number(prevBlockNumber) !== 0 &&
           Number(prevNonce) !== 0
         ) {
-
+          console.log(`GRG ${account.name} balance changed.`)
           fetchTransactions = true
           let secondaryText = []
           let balDifference = prevGrgBalance.minus(newgrgBalance)
@@ -149,7 +141,7 @@ export const updateAccounts = async (api, blockNumber, endpoint) => {
             Web3.utils.fromWei(balDifference.toString(16))
           ).toFixed(3)
           if (balDifference.gt(new BigNumber(0))) {
-
+            console.log(`endpoint_epic -> You transferred ${balDifString} GRG!`)
             secondaryText[0] = `You transferred ${balDifString} GRG!`
             secondaryText[1] = utils.dateFromTimeStamp(new Date())
           } else {
@@ -184,18 +176,19 @@ export const updateAccounts = async (api, blockNumber, endpoint) => {
           new BigNumber(0)
         ),
         accounts: [].concat(
-          accounts.map((account, index) => {
+          prevAccounts.map((account, index) => {
+            let newAccount = { ...account }
             const ethBalance = ethBalances[index]
-            account.ethBalance = new BigNumber(
+            newAccount.ethBalance = new BigNumber(
               Web3.utils.fromWei(ethBalance)
             ).toFixed(3)
-            account.ethBalanceWei = new BigNumber(ethBalance)
+            newAccount.ethBalanceWei = new BigNumber(ethBalance)
             const grgBalance = grgBalances[index]
-            account.grgBalance = new BigNumber(
+            newAccount.grgBalance = new BigNumber(
               Web3.utils.fromWei(grgBalance)
             ).toFixed(3)
-            account.grgBalanceWei = new BigNumber(grgBalance)
-            return account
+            newAccount.grgBalanceWei = new BigNumber(grgBalance)
+            return newAccount
           })
         )
       }

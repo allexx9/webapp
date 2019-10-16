@@ -1,8 +1,18 @@
 import * as TYPE_ from '../../../actions/const'
 import { Actions } from '../../../actions/'
-import { Observable, of } from 'rxjs'
-import { ZeroEx } from '0x.js'
+import {
+    assetDataUtils,
+    BigNumber,
+    ContractWrappers,
+    generatePseudoRandomSalt,
+    Order,
+    orderHashUtils,
+    signatureUtils,
+    SignedOrder,
+    SignatureType
+} from '0x.js';
 import { map, mergeMap, tap } from 'rxjs/operators'
+import { of,   concat, } from 'rxjs'
 import { ofType } from 'redux-observable'
 import Web3 from 'web3'
 import moment from 'moment'
@@ -52,58 +62,22 @@ const newMakerOrderV0 = (orderSide, options, state$) => {
 
   const web3 = new Web3()
 
-  const ERC20_METHOD_ABI = {
-    constant: false,
-    inputs: [
-        {
-            name: 'tokenContract',
-            type: 'address',
-        },
-    ],
-    name: 'ERC20Token',
-    outputs: [],
-    payable: false,
-    stateMutability: 'nonpayable',
-    type: 'function',
-  }
-
-  const encodedMakerToken = web3.eth.abi.encodeFunctionCall(
-    ERC20_METHOD_ABI,
-    [makerTokenAddress.toLowerCase()]
-  )
-
-  const encodedTakerToken = web3.eth.abi.encodeFunctionCall(
-    ERC20_METHOD_ABI,
-    [takerTokenAddress.toLowerCase()]
-  )
-
   const order = {
-    // TODO: check inputs, exchange is 0xV2, relayer is hot wallet
-    makerAddress: selectedFund.details.address.toLowerCase(),
-    takerAddress: '0x0000000000000000000000000000000000000000',
-
-    feeRecipientAddress: selectedExchange.feeRecipient.toLowerCase(),
-    senderAddress: selectedExchange.feeRecipient.toLowerCase(), // hot wallet
-
-    makerAssetAmount: web3.utils.toBN('0'), // we try without defining the amounts first
-
-    takerAssetAmount: web3.utils.toBN('0'), // we try without defining the amounts first
-
-    makerFee: web3.utils.toBN('0'),
-
-    takerFee: web3.utils.toBN('0'),
-
     expirationTimeSeconds: orderExpirationTime.toString(),
+    feeRecipientAddress: selectedExchange.feeRecipientAddress.toLowerCase(),
 
-    salt: ZeroEx.generatePseudoRandomSalt(),
+    makerAddress: selectedFund.details.address.toLowerCase(),
+    makerAssetData: assetDataUtils.encodeERC20AssetData(makerTokenAddress.toLowerCase()),
+    makerFee: new BigNumber(0).toString(), // web3.utils.toBN('0'),
 
-    makerAssetData: encodedMakerToken, // assetDataUtils.encodeERC20AssetData(makerTokenAddress.toLowerCase()),
+    salt: generatePseudoRandomSalt(),
+    senderAddress: selectedExchange.feeRecipientAddress.toLowerCase(), // hot wallet
+    takerAddress: '0x0000000000000000000000000000000000000000',
+    takerAssetData: assetDataUtils.encodeERC20AssetData(takerTokenAddress.toLowerCase()),
+    takerFee: new BigNumber(0).toString(), // web3.utils.toBN('0'),
 
-    takerAssetData: encodedTakerToken, // assetDataUtils.encodeERC20AssetData(takerTokenAddress.toLowerCase()),
-
-    exchangeAddress: selectedExchange.exchangeContractAddress.toLowerCase()
+    exchangeAddress: selectedExchange.exchangeAddress.toLowerCase()
   }
-
   const makerOrder = {
     details: {
       order: order,
@@ -128,9 +102,7 @@ const createOrderEthfinexV0Epic = (action$, state$) => {
     ofType(utils.customRelayAction(TYPE_.ORDER_CREATE)),
     mergeMap(action => {
       const { orderSide, options } = action.payload
-      return Observable.concat(
-        of(newMakerOrderV0(orderSide, options, state$))
-      ).pipe(
+      return concat(of(newMakerOrderV0(orderSide, options, state$))).pipe(
         map(order => {
           return Actions.exchange.updateOrder(order)
         }),

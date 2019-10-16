@@ -70,7 +70,6 @@ class ElementListSupply extends PureComponent {
       sortedList: sortedList,
       rowCount: rowCount
     })
-    // console.log(`${this.constructor.name} -> UNSAFE_componentWillReceiveProps`);
   }
 
   render() {
@@ -201,7 +200,7 @@ class ElementListSupply extends PureComponent {
   actionButton(cellData, rowData) {
     const { match } = this.props
     const url =
-      rowData.dragoId + '/' + utils.dragoISIN(cellData, rowData.dragoId)
+      rowData.dragoId + '/' + utils.poolISIN(cellData, rowData.dragoId)
     let poolType = match.path.includes('drago') ? 'drago' : 'vault'
     return (
       <div className={styles.actionButtonContainer}>
@@ -228,7 +227,7 @@ class ElementListSupply extends PureComponent {
   //   const url =
   //     rowData.params.dragoId.value.c +
   //     '/' +
-  //     utils.dragoISIN(cellData, rowData.params.dragoId.value.c)
+  //     utils.poolISIN(cellData, rowData.params.dragoId.value.c)
   //   return (
   //     <FlatButton
   //       label="View"
@@ -295,7 +294,7 @@ class ElementListSupply extends PureComponent {
                   this.props.assetsPrices[token.symbol].priceEth
                 ).toFixed(5)
               ) : (
-                <small>N/A</small>
+                <small>-</small>
               )}{' '}
               <small className={styles.symbolLegendText}>ETH</small>
             </Col> */}
@@ -338,7 +337,7 @@ class ElementListSupply extends PureComponent {
     }
     return (
       <div>
-        <small>N/A</small>
+        <small>-</small>
       </div>
     )
   }
@@ -361,7 +360,7 @@ class ElementListSupply extends PureComponent {
     // }
     return (
       <div className={styles.valueText}>
-        <small>N/A</small>
+        <small>-</small>
       </div>
     )
   }

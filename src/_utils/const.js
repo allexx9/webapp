@@ -24,9 +24,9 @@ export const DS = '/'
 export const DRG_ISIN = 'DR'
 export const LOGGER = true
 // Set connetions to production server
-export const PROD = true
+export const PROD = false
 // Set connetions to WebSocketSecure or HTTPs
-export const WS = true
+export const WS = false
 // Address of the Parity registry of smart contracts
 export const REGISTRY_KOVAN = '0xfAb104398BBefbd47752E7702D9fE23047E1Bca3'
 // Address of RigoToken GRG
@@ -90,15 +90,14 @@ export const DEFAULT_RELAY = {
   mainnet: 'Ethfinex'
 }
 
-//kovan: 'ERCdEX',
-
 // export const ERCdEX = "ERCdEX"
 // export const Ethfinex = "Ethfinex"
 
 // Blockchain endpoint
 export const EP_INFURA_KV = 'https://kovan.infura.io/v3/dc30ca8fb7824f42976ece0e74884807'
 export const EP_INFURA_RP = 'https://ropsten.infura.io/v3/dc30ca8fb7824f42976ece0e74884807'
-export const EP_INFURA_MN = 'https://mainnet.infura.io/v3/dc30ca8fb7824f42976ece0e74884807'
+export const EP_INFURA_MN =
+  'https://mainnet.infura.io/v3/dc30ca8fb7824f42976ece0e74884807'
 export const EP_INFURA_KV_WS = 'wss://kovan.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807'
 export const EP_INFURA_RP_WS = 'wss://ropsten.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807'
 export const EP_INFURA_MN_WS = 'wss://mainnet.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807'
@@ -160,7 +159,7 @@ export const KOVAN_ETHERSCAN = 'https://kovan.etherscan.io/'
 export const ROPSTEN_ETHERSCAN = 'https://ropsten.etherscan.io/'
 export const MAINNET_ETHERSCAN = 'https://etherscan.io/'
 
-//mainnet.infura.io/v3/3fe47e5272bc4d38b6f0b247d94a6cd1
+//mainnet.infura.io/v3/dc30ca8fb7824f42976ece0e74884807
 
 export const ENDPOINTS = {
   infura: {
@@ -174,6 +173,10 @@ export const ENDPOINTS = {
         dev: 'https://ropsten.infura.io/v3/dc30ca8fb7824f42976ece0e74884807',
         prod: 'https://ropsten.infura.io/v3/dc30ca8fb7824f42976ece0e74884807'
       },
+      // mainnet: {
+      //   dev: 'https://mainnet.infura.io/v3/dc30ca8fb7824f42976ece0e74884807',
+      //   prod: 'https://mainnet.infura.io/v3/dc30ca8fb7824f42976ece0e74884807'
+      // }
       mainnet: {
         dev: 'https://mainnet.infura.io/v3/dc30ca8fb7824f42976ece0e74884807',
         prod: 'https://mainnet.infura.io/v3/dc30ca8fb7824f42976ece0e74884807'
@@ -283,16 +286,16 @@ export const EXCHANGES = {
   ERCdEX: {
     kovan: {
       tokenTransferProxy: '0x087eed4bc1ee3de49befbd66c662b434b15d49d4',
-      exchangeContractAddress: '0x90fe2af704b34e0224bf2299c838e04d4dcf1364',
-      feeRecipient: '',
+      exchangeAddress: '0x90fe2af704b34e0224bf2299c838e04d4dcf1364',
+      feeRecipientAddress: '',
       networkId: 42,
       name: 'ERCdEX',
       taker: 'NULL_ADDRESS'
     },
     ropsten: {
       tokenTransferProxy: '0x4e9aad8184de8833365fea970cd9149372fdf1e6',
-      exchangeContractAddress: '0x1d8643aae25841322ecde826862a9fa922770981',
-      feeRecipient: '',
+      exchangeAddress: '0x1d8643aae25841322ecde826862a9fa922770981',
+      feeRecipientAddress: '',
       networkId: 3,
       name: 'ERCdEX',
       taker: 'NULL_ADDRESS'
@@ -302,8 +305,8 @@ export const EXCHANGES = {
   Rigoblock: {
     kovan: {
       tokenTransferProxy: '0xcc040edf6e508c4372a62b1a902c69dcc52ceb1d',
-      exchangeContractAddress: '0xf307de6528fa16473d8f6509b7b1d8851320dba5',
-      feeRecipient: '',
+      exchangeAddress: '0xf307de6528fa16473d8f6509b7b1d8851320dba5',
+      feeRecipientAddress: '',
       networkId: 42,
       name: 'Rigoblock',
       taker: 'NULL_ADDRESS'
@@ -312,30 +315,30 @@ export const EXCHANGES = {
   },
   Ethfinex: {
     kovan: {
-      tokenTransferProxy: '0x087Eed4Bc1ee3DE49BeFbd66C662B434B15d49d4', // 0xV1 addresses
-      exchangeContractAddress: '0x35dD2932454449b14Cee11A94d3674a936d5d7b2',
-      feeRecipient: '0x9faf5515f177F3A8a845D48C19032b33Cc54C09C',
+      tokenTransferProxy: '0x0000000000000000000000000000000000000000',
+      exchangeAddress: '0x35dd2932454449b14cee11a94d3674a936d5d7b2', // 0x V2 address EFX HOT WALLET 0x9faf5515f177F3A8a845D48C19032b33Cc54C09C
+      feeRecipientAddress: '0x9faf5515f177f3a8a845d48c19032b33cc54c09c',
       networkId: 42,
       name: 'Ethfinex',
-      taker: '0x9faf5515f177F3A8a845D48C19032b33Cc54C09C' // EFX HOT WALLET
+      taker: 'NULL_ADDRESS'
     },
     ropsten: {
       // Old contracts
       // tokenTransferProxy: '0xcc040edf6e508c4372a62b1a902c69dcc52ceb1d'
-      // exchangeContractAddress: '0x1d8643aae25841322ecde826862a9fa922770981',
+      // exchangeAddress: '0x1d8643aae25841322ecde826862a9fa922770981',
 
       // Rigoblock ammended contract for EFX
       tokenTransferProxy: '0xeea64eebd1f2dc273cfc79cbdda23b69c6b5588',
-      exchangeContractAddress: '0x1d8643aae25841322ecde826862a9fa922770981',
-      feeRecipient: '0x9faf5515f177f3a8a845d48c19032b33cc54c09c',
+      exchangeAddress: '0x1d8643aae25841322ecde826862a9fa922770981',
+      feeRecipientAddress: '0x9faf5515f177f3a8a845d48c19032b33cc54c09c',
       networkId: 3,
       name: 'Ethfinex',
       taker: '0x9faf5515f177f3a8a845d48c19032b33cc54c09c'
     },
     mainnet: {
       tokenTransferProxy: '0x7e03d2b8edc3585ecd8a5807661fff0830a0b603',
-      exchangeContractAddress: '0x4f833a24e1f95d70f028921e27040ca56e09ab0b',
-      feeRecipient: '0x61b9898c9b60a159fc91ae8026563cd226b7a0c1',
+      exchangeAddress: '0x4f833a24e1f95d70f028921e27040ca56e09ab0b',
+      feeRecipientAddress: '0x61b9898c9b60a159fc91ae8026563cd226b7a0c1',
       networkId: 1,
       name: 'Ethfinex',
       taker: '0x61b9898c9b60a159fc91ae8026563cd226b7a0c1'
@@ -344,19 +347,20 @@ export const EXCHANGES = {
 }
 
 export const defaultDragoDetails = {
-  address: '0x0',
-  name: 'Null',
-  symbol: 'Null',
-  dragoId: 'Null',
-  addressOwner: '0x0',
-  addressGroup: '0x0',
-  sellPrice: '0.0000',
-  buyPrice: '0.0000',
-  fee: '0.0000',
-  created: '0000-00-00',
-  totalSupply: '0.0000',
-  dragoETHBalance: '0.0000',
-  dragoWETHBalance: '0.0000'
+  address: null,
+  name: null,
+  symbol: null,
+  addressOwner: null,
+  addressGroup: null,
+  buyPrice: null,
+  sellPrice: null,
+  created: '-',
+  totalSupply: null,
+  totalSupplyBaseUnits: null,
+  dragoETHBalance: null,
+  dragoETHBalanceWei: null,
+  dragoWETHBalance: null,
+  balanceDRG: null
 }
 
 export const poolStyle = {

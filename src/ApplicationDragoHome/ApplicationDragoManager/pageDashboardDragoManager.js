@@ -10,7 +10,6 @@ import CopyContent from 'material-ui/svg-icons/content/content-copy'
 import ElementAccountBox from '../../Elements/elementAccountBox'
 import ElementFundCreateAction from '../Elements/elementFundCreateAction'
 import ElementListSupply from '../Elements/elementListSupply'
-import ElementListTransactions from '../Elements/elementListTransactions'
 import ElementListWrapper from '../../Elements/elementListWrapper'
 import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types'
@@ -21,6 +20,7 @@ import Snackbar from 'material-ui/Snackbar'
 import Sticky from 'react-stickynode'
 import UserDashboardHeader from '../../_atomic/atoms/userDashboardHeader'
 import scrollToElement from 'scroll-to-element'
+import TablePoolTransactions from '../../_atomic/molecules/tablePoolTransactions'
 import utils from '../../_utils/utils'
 
 import styles from './pageDashboardDragoManager.module.css'
@@ -49,7 +49,7 @@ class PageDashboardDragoManager extends Component {
   }
 
   componentDidMount() {
-
+    console.log('componentDidMount')
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -58,13 +58,6 @@ class PageDashboardDragoManager extends Component {
     propsUpdate = !utils.shallowEqual(this.props, nextProps)
     stateUpdate = !utils.shallowEqual(this.state, nextState)
     if (stateUpdate || propsUpdate) {
-      // console.log('State updated ', stateUpdate)
-      // console.log('Props updated ', propsUpdate)
-      // console.log(
-      //   `${
-      //     this.constructor.name
-      //   } -> shouldComponentUpdate -> Proceeding with rendering.`
-      // )
     }
     return stateUpdate || propsUpdate
   }
@@ -77,7 +70,7 @@ class PageDashboardDragoManager extends Component {
   }
 
   handlesnackBarRequestClose = () => {
-
+    console.log('click snack')
     this.setState({
       snackBar: false,
       snackBarMsg: ''
@@ -264,7 +257,7 @@ class PageDashboardDragoManager extends Component {
                 <Row>
                   <Col xs={12}>
                     <div className={styles.sectionParagraph}>
-                      Your Dragos' last 20 transactions:
+                      Your Dragos last 20 transactions:
                     </div>
 
                     <ElementListWrapper
@@ -278,7 +271,7 @@ class PageDashboardDragoManager extends Component {
                         number: 1
                       }}
                     >
-                      <ElementListTransactions />
+                      <TablePoolTransactions />
                     </ElementListWrapper>
                   </Col>
                 </Row>

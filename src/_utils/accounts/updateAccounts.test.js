@@ -1,9 +1,9 @@
 import { updateAccounts } from './updateAccounts'
 
 import { MSG_NETWORK_STATUS_OK, NETWORK_OK } from '../../_utils/const'
-import { promisify } from 'util'
 import BigNumber from 'bignumber.js'
 import PoolsApi from '../../PoolsApi/src/index.js'
+import deepFreeze from 'deep-freeze'
 
 jest.mock('../../PoolsApi/src/index.js')
 
@@ -54,7 +54,11 @@ PoolsApi.mockImplementation(() => {
   }
 })
 
+let prevLog
+
 beforeEach(function() {
+  prevLog = console.log
+  console.log = () => {}
   balanceIncrease = 0
   nonceIncrease = 0
   api = {
@@ -86,21 +90,21 @@ beforeEach(function() {
           address: '0x01',
           ethBalance: '10.000',
           grgBalance: '20.000',
-          ethBalanceWei: '10000000000000000000',
-          grgBalanceWei: '20000000000000000000'
+          ethBalanceWei: new BigNumber('10000000000000000000'),
+          grgBalanceWei: new BigNumber('20000000000000000000')
         },
         {
           name: 'Parity',
           address: '0x02',
           ethBalance: '10.000',
           grgBalance: '20.000',
-          ethBalanceWei: '10000000000000000000',
-          grgBalanceWei: '20000000000000000000'
+          ethBalanceWei: new BigNumber('10000000000000000000'),
+          grgBalanceWei: new BigNumber('20000000000000000000')
         }
       ],
       prevBlockNumber: 10,
-      ethBalance: '20000000000000000000',
-      grgBalance: '40000000000000000000'
+      ethBalance: new BigNumber('20000000000000000000'),
+      grgBalance: new BigNumber('40000000000000000000')
     }
   }
 
@@ -112,11 +116,15 @@ beforeEach(function() {
   }
 })
 
+afterEach(() => {
+  console.log = prevLog
+})
+
 const createMockStore = state => {
   return {
     state,
     getState: function() {
-      return this.state
+      return deepFreeze(this.state)
     }
   }
 }

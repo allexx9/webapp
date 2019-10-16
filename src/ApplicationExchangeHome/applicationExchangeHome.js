@@ -29,6 +29,7 @@ import TokenPrice from '../_atomic/atoms/tokenPrice'
 import TokenTradeSelector from '../_atomic/molecules/tokenTradeSelector'
 import Web3Wrapper from '../_utils/web3Wrapper/src'
 import styles from './applicationExchangeHome.module.css'
+import u from 'updeep'
 import utils from '../_utils/utils'
 
 // import { getData } from "../_utils/data"
@@ -59,16 +60,29 @@ class ApplicationExchangeHome extends PureComponent {
   }
 
   updateUi = (ui, boxName) => {
-    let newUi = Object.assign({}, ui)
     return {
       enableBox: () => {
-        newUi.panels[boxName].disabled = false
-        newUi.panels[boxName].disabledMsg = ''
+        const uiUpdate = {
+          panels: {
+            [boxName]: {
+              disabled: false,
+              disabledMsg: ''
+            }
+          }
+        }
+        const newUi = u(uiUpdate, ui)
         return newUi
       },
       disableBox: (options = { disabledMsg: '' }) => {
-        newUi.panels[boxName].disabled = true
-        newUi.panels[boxName].disabledMsg = options.disabledMsg
+        const uiUpdate = {
+          panels: {
+            [boxName]: {
+              disabled: true,
+              disabledMsg: options.disabledMsg
+            }
+          }
+        }
+        const newUi = u(uiUpdate, ui)
         return newUi
       }
     }
@@ -90,7 +104,7 @@ class ApplicationExchangeHome extends PureComponent {
           defaultRelay.defaultTokensPair.quoteTokenSymbol
         ]
     }
-
+    console.log('***** MOUNT *****')
     try {
       const walletAddress = endpoint.accounts.find(
         account => account.source === 'MetaMask'
@@ -173,7 +187,7 @@ class ApplicationExchangeHome extends PureComponent {
   }
 
   componentWillUnmount = () => {
-
+    console.log('***** UNMOUNT *****')
     const { selectedExchange } = this.props.exchange
     // Stopping exchange contract events
     this.props.dispatch(Actions.exchange.monitorEventsStop(selectedExchange))
@@ -219,7 +233,7 @@ class ApplicationExchangeHome extends PureComponent {
       managerAccount: walletAddress.address.toLowerCase()
     }
 
-
+    console.log(fundDetails)
 
     this.props.dispatch(Actions.exchange.updateSelectedFund(fundDetails))
 

@@ -1,4 +1,3 @@
-// import Immutable from 'immutable'
 import { Col, Row } from 'react-flexbox-grid'
 import ContentLoader from 'react-content-loader'
 import FilterPoolsField from '../_atomic/atoms/filterPoolsField'
@@ -80,7 +79,7 @@ class ElementListWrapper extends Component {
   }
 
   filter = filter => {
-
+    console.log(filter)
     this.setState(
       {
         filter

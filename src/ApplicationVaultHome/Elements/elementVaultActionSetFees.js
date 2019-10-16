@@ -332,8 +332,8 @@ class ElementVaultActionSetFees extends Component {
     poolApi.contract.vault
       .setTransactionFee(this.state.account.address, price)
       .then(receipt => {
-
-        Actions.drago.getPoolDetails(
+        console.log(receipt)
+        Actions.pools.getPoolsSingleDetails(
           vaultDetails.vaultDetails.vaultId,
           provider,
           {
@@ -367,7 +367,7 @@ class ElementVaultActionSetFees extends Component {
         this.props.snackBar(errorArray[0])
         transactionDetails.status = 'error'
         transactionDetails.error = errorArray[0]
-
+        console.log(error)
         this.props.dispatch(
           Actions.transactions.addTransactionToQueueAction(
             transactionId,

@@ -4,10 +4,11 @@ import { DRG_ISIN } from './const'
 import { ERCdEX, Ethfinex } from './const'
 import { MOCK_ERC20_TOKENS } from './tokens'
 import { dateFromTimeStampHuman } from './misc'
-import { getBlockChunks } from './blockChain'
 import {
+  filterPools,
   getDragoDetails,
   getDragoLiquidityAndTokenBalances,
+  getPoolsGroupDetails,
   getTokenWrapperLockTime,
   getTransactionsDragoOptV2,
   getTransactionsSingleDrago,
@@ -15,10 +16,11 @@ import {
   getTransactionsVaultOptV2,
   getVaultDetails
 } from './pools'
+import { getBlockChunks } from './blockChain'
 import { toBaseUnitAmount, toUnitAmount } from './format'
 import { updateAccounts } from './accounts'
 import BigNumber from 'bignumber.js'
-import ElementNotification from '../Elements/elementNotification'
+import ElementNotification from '../_atomic/molecules/elementNotification'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import PoolApi from '../PoolsApi/src'
 import PropTypes from 'prop-types'
@@ -51,6 +53,7 @@ class NotificationAlert extends Component {
 
 class utilities {
   blockChunks = getBlockChunks
+  filterPools = filterPools
 
   sign = (toSign, account) => {
     // metamask will take care of the 3rd parameter, "password"
@@ -157,7 +160,7 @@ class utilities {
         )
       })
     } catch (err) {
-
+      console.log(err)
     }
   }
 
@@ -222,36 +225,40 @@ class utilities {
     assetsPrices,
     dragoETHBalance
   ) => {
-    let labels = Array(0)
-    let data = Array(0)
-    dragoAssetsList.forEach(asset => {
-      if (typeof assetsPrices[asset.symbol] !== 'undefined') {
-        if (typeof assetsPrices[asset.symbol].priceEth !== 'undefined') {
-          const value = new BigNumber(
-            assetsPrices[asset.symbol].priceEth
-          ).times(
-            toUnitAmount(
-              new BigNumber(asset.balances.total),
-              asset.decimals
-            ).toFixed(5)
-          )
-          labels.push(asset.symbol)
-          data.push(value.toFixed(5))
+    try {
+      let labels = Array(0)
+      let data = Array(0)
+      dragoAssetsList.forEach(asset => {
+        if (typeof assetsPrices[asset.symbol] !== 'undefined') {
+          if (typeof assetsPrices[asset.symbol].priceEth !== 'undefined') {
+            const value = new BigNumber(
+              assetsPrices[asset.symbol].priceEth
+            ).times(
+              toUnitAmount(
+                new BigNumber(asset.balances.total),
+                asset.decimals
+              ).toFixed(5)
+            )
+            labels.push(asset.symbol)
+            data.push(value.toFixed(5))
+          }
         }
+      })
+      data.push(new BigNumber(dragoETHBalance).toFixed(5))
+      labels.push('ETH')
+      return {
+        datasets: [
+          {
+            data,
+            backgroundColor: palette('tol', data.length).map(function (hex) {
+              return '#' + hex
+            })
+          }
+        ],
+        labels
       }
-    })
-    data.push(new BigNumber(dragoETHBalance).toFixed(5))
-    labels.push('ETH')
-    return {
-      datasets: [
-        {
-          data,
-          backgroundColor: palette('tol', data.length).map(function(hex) {
-            return '#' + hex
-          })
-        }
-      ],
-      labels
+    } catch (err) {
+      console.warn(err)
     }
   }
 
@@ -293,9 +300,9 @@ class utilities {
       // 1.1 Checking if it's a transaction belonging to a Parity account
       if (value.parityId) {
         // 1.2 Checking if the transaction has been accepted (it has got an blockNumber)
-
+        console.log(`Checking if blockhash undefined`)
         if (typeof value.receipt !== 'undefined') {
-
+          console.log(value.receipt.blockNumber)
           // 1.3 Checing if it has blocknumber. It it has it, then no need to proceed further.
           value.receipt.blockNumber.eq(0)
             ? (checkTransaction = true)
@@ -304,7 +311,7 @@ class utilities {
         if (!checkTransaction) {
           return null
         }
-
+        console.log(`Checking request on Parity wallet`)
         api.parity
           .checkRequest(value.parityId, [])
           .then(hash => {
@@ -313,12 +320,12 @@ class utilities {
               api.eth.getTransactionByHash(hash).then(receipt => {
                 value.receipt = receipt
                 if (receipt.blockHash) {
-
+                  console.log('executed')
                   value.status = 'executed'
                   value.timestamp = new Date()
                   // shouldTransactionListUpdate = true
                 } else {
-
+                  console.log('pending')
                   value.status = 'pending'
                   value.timestamp = new Date()
                   // shouldTransactionListUpdate = true
@@ -358,6 +365,8 @@ class utilities {
 
   getVaultDetails = getVaultDetails
 
+  getPoolsGroupDetails = getPoolsGroupDetails
+
   getTokenWrapperLockTime = getTokenWrapperLockTime
 
   getDragoLiquidity = async (dragoAddress, api) => {
@@ -374,9 +383,8 @@ class utilities {
   getDragoLiquidityAndTokenBalances = getDragoLiquidityAndTokenBalances
 
   shallowEqual(objA, objB, component = '') {
-    //
     if (objA === objB) {
-      // console.log(`${this.constructor.name} -> objA === objB -> ${component}`)
+      // console.log(`shallowEqual -> objA === objB -> ${component}`)
       return true
     }
 
@@ -386,7 +394,7 @@ class utilities {
       typeof objB !== 'object' ||
       objB === null
     ) {
-      // console.log(`${this.constructor.name} -> objA !== 'object' -> ${component}`)
+      // console.log(`shallowEqual-> objA !== 'object' -> ${component}`)
       return false
     }
 
@@ -394,7 +402,7 @@ class utilities {
     let keysB = Object.keys(objB)
 
     if (keysA.length !== keysB.length) {
-      // console.log(`${this.constructor.name} -> keysA.length  -> ${component}`)
+      // console.log(`shallowEqual -> keysA.length  -> ${component}`)
       return false
     }
 
@@ -404,7 +412,7 @@ class utilities {
       if (!bHasOwnProperty(keysA[i]) || objA[keysA[i]] !== objB[keysA[i]]) {
         // console.log(objA[keysA[i]], objB[keysA[i]])
         // console.log(
-        //   `${this.constructor.name} -> Test for A's keys different from B  -> ${component}`
+        //   `shallowEqual -> Test for A's keys different from B  -> ${component}`
         // )
         return false
       }
@@ -433,11 +441,19 @@ class utilities {
     return `${Ethfinex.toUpperCase()}_${action}`
   }
 
-  dragoISIN(symbol, dragoId) {
-    return DRG_ISIN + dragoId.toString().padStart(7, '0') + symbol.toUpperCase()
+  poolISIN(symbol, dragoId, options = { array: false }) {
+    dragoId = dragoId.toString()
+    let padding = dragoId.padStart(7, '0')
+    const isinArray = [
+      DRG_ISIN,
+      padding.slice(0, padding.length - dragoId.length),
+      dragoId,
+      symbol.toUpperCase()
+    ]
+    return options.array ? isinArray : isinArray.join('')
   }
 
-  logger = (function() {
+  logger = (function () {
     let pub = {}
 
     pub.enable = function enableLogger() {
@@ -448,7 +464,7 @@ class utilities {
 
     pub.disable = function disableLogger() {
       this.oldConsoleLog = console.log
-      window['console']['log'] = function() {}
+      window['console']['log'] = function () { }
     }
 
     return pub

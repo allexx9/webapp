@@ -12,10 +12,12 @@ import { toUnitAmount } from '../../_utils/format'
 import BigNumber from 'bignumber.js'
 import BlokiesIcon from '../../_atomic/atoms/blokiesIcon'
 import FlatButton from 'material-ui/FlatButton'
+import PoolCode from '../../_atomic/atoms/poolCode'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import styles from './elementListBalances.module.css'
 import utils from '../../_utils/utils'
+import PoolUnits from '../atoms/poolUnits'
 
 // import ChartBox from '../../_atomic/organisms/chartBox'
 
@@ -71,7 +73,6 @@ class ElementListFunds extends PureComponent {
       sortedList: sortedList,
       rowCount: rowCount
     })
-    // console.log(`${this.constructor.name} -> UNSAFE_componentWillReceiveProps`);
   }
 
   render() {
@@ -200,13 +201,14 @@ class ElementListFunds extends PureComponent {
   }
 
   renderISIN = rowData => {
-    return utils.dragoISIN(rowData.symbol, rowData.vaultId)
+    const id = rowData.vaultId || rowData.id
+    return <PoolCode symbol={rowData.symbol} id={id} />
   }
 
   actionButton(cellData, rowData) {
     const { match } = this.props
-    const url =
-      rowData.vaultId + '/' + utils.dragoISIN(cellData, rowData.vaultId)
+    const id = rowData.vaultId || rowData.id
+    const url = id + '/' + utils.poolISIN(cellData, id)
     let poolType = match.path.includes('drago') ? 'drago' : 'vault'
     return (
       <div className={styles.actionButtonContainer}>
@@ -233,7 +235,7 @@ class ElementListFunds extends PureComponent {
   //   const url =
   //     rowData.params.vaultId.value.c +
   //     '/' +
-  //     utils.dragoISIN(cellData, rowData.params.vaultId.value.c)
+  //     utils.poolISIN(cellData, rowData.params.vaultId.value.c)
   //   return (
   //     <FlatButton
   //       label="View"
@@ -300,7 +302,7 @@ class ElementListFunds extends PureComponent {
                   this.props.assetsPrices[token.symbol].priceEth
                 ).toFixed(5)
               ) : (
-                <small>N/A</small>
+                <small>-</small>
               )}{' '}
               <small className={styles.symbolLegendText}>ETH</small>
             </Col> */}
@@ -343,7 +345,7 @@ class ElementListFunds extends PureComponent {
     }
     return (
       <div>
-        <small>N/A</small>
+        <small>-</small>
       </div>
     )
   }
@@ -366,7 +368,7 @@ class ElementListFunds extends PureComponent {
     // }
     return (
       <div className={styles.valueText}>
-        <small>N/A</small>
+        <small>-</small>
       </div>
     )
   }
@@ -400,13 +402,8 @@ class ElementListFunds extends PureComponent {
     return <span>{utils.dateFromTimeStamp(timestamp)}</span>
   }
 
-  renderDrgValue(rowData) {
-    return (
-      <div>
-        {new BigNumber(rowData.drgvalue).toFixed(4)}{' '}
-        <small>{rowData.symbol}</small>
-      </div>
-    )
+  renderPoolUnits(rowData) {
+    return <PoolUnits units={rowData.drgvalue} symbol={rowData.symbol} />
   }
 
   _getDatum(list, index) {
@@ -473,8 +470,8 @@ class ElementListFunds extends PureComponent {
     const { list } = this.props
     return list
       .sortBy(item => item.timestamp)
-      .update(
-        list => (sortDirection === SortDirection.DESC ? list : list.reverse())
+      .update(list =>
+        sortDirection === SortDirection.DESC ? list : list.reverse()
       )
   }
 

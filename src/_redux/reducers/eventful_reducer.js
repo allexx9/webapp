@@ -2,28 +2,14 @@
 
 import * as TYPE_ from '../actions/const'
 import initialState from './initialState'
+import u from 'updeep'
 
 export function eventfulDragoReducer(
   state = initialState.transactionsDrago,
   action
 ) {
   switch (action.type) {
-    case TYPE_.UPDATE_DRAGOS_LIST: {
-      let newList = [].concat(state.dragosList.list.concat(action.payload.list))
-      newList.sort(function(a, b) {
-        if (a.symbol < b.symbol) return -1
-        if (a.symbol > b.symbol) return 1
-        return 0
-      })
-      return {
-        ...state,
-        dragosList: {
-          list: newList,
-          lastFetchRange: action.payload.lastFetchRange
-        }
-      }
-    }
-    case TYPE_.UPDATE_TRANSACTIONS_DRAGO_HOLDER:
+    case TYPE_.DRAGO_HOLDER_TRANSACTIONS_UPDATE:
       return {
         ...state,
         holder: {
@@ -31,8 +17,7 @@ export function eventfulDragoReducer(
           logs: action.payload[1]
         }
       }
-
-    case TYPE_.UPDATE_TRANSACTIONS_DRAGO_MANAGER:
+    case TYPE_.DRAGO_MANAGER_TRANSACTIONS_UPDATE:
       return {
         ...state,
         manager: {
@@ -42,35 +27,12 @@ export function eventfulDragoReducer(
         }
       }
 
-    case TYPE_.UPDATE_SELECTED_DRAGO_DETAILS: {
-      return {
-        ...state,
-        selectedDrago: {
-          ...state.selectedDrago,
-          values: {
-            ...state.selectedDrago.values,
-            ...(action.payload.values || {})
-          },
-          details: {
-            ...state.selectedDrago.details,
-            ...(action.payload.details || {})
-          },
-          transactions: [
-            ...(action.payload.transactions ||
-              [].concat(state.selectedDrago.transactions))
-          ],
-          assets: [
-            ...(action.payload.assets || [].concat(state.selectedDrago.assets))
-          ],
-          assetsCharts: {
-            ...state.selectedDrago.assetsCharts,
-            ...(action.payload.assetsCharts || {})
-          }
-        }
-      }
+    case TYPE_.DRAGO_SELECTED_DETAILS_UPDATE: {
+      const newDetails = u(action.payload, state.selectedDrago)
+      return { ...state, selectedDrago: { ...newDetails } }
     }
 
-    case TYPE_.UPDATE_SELECTED_DRAGO_DETAILS_RESET:
+    case TYPE_.DRAGO_SELECTED_DETAILS_RESET:
       return {
         ...state,
         selectedDrago: {
@@ -86,10 +48,8 @@ export function eventfulDragoReducer(
         }
       }
 
-    case TYPE_.UPDATE_SELECTED_DRAGO_DETAILS_CHART_ASSETS_MARKET_DATA_INIT: {
-      // console.log(action)
+    case TYPE_.SELECTED_DRAGO_DETAILS_UPDATE_CHART_ASSETS_MARKET_DATA_INIT: {
       let selectedDrago = { ...state.selectedDrago }
-      // console.log(selectedDrago)
       selectedDrago.assetsCharts = {
         ...selectedDrago.assetsCharts,
         ...action.payload
@@ -100,41 +60,40 @@ export function eventfulDragoReducer(
       }
     }
 
-    case TYPE_.UPDATE_SELECTED_DRAGO_DETAILS_CHART_ASSETS_MARKET_ADD_DATAPOINT: {
+    case TYPE_.SELECTED_DRAGO_DETAILS_UPDATE_CHART_ASSETS_MARKET_ADD_DATAPOINT: {
       let selectedDrago = { ...state.selectedDrago }
-      // console.log(action)
-      // console.log(Object.keys(action.payload)[0])
-      // console.log(action.payload[Object.keys(action.payload)[0]])
       let symbol = Object.keys(action.payload)[0]
       let newTicker = action.payload[symbol].data
-      let oldData = selectedDrago.assetsCharts[symbol].data
-      // let newChartData = [...state.chartData]
-      // console.log(newTicker.epoch, oldData[oldData.length - 1].epoch)
+      let oldData = [].concat(selectedDrago.assetsCharts[symbol].data)
       if (newTicker.epoch === oldData[oldData.length - 1].epoch) {
         oldData[oldData.length - 1] = newTicker
         // console.log('first')
         return {
-          ...state,
-          selectedDrago: { ...state.selectedDrago, ...selectedDrago }
+          ...state
         }
       }
       if (newTicker.epoch === oldData[oldData.length - 2].epoch) {
         oldData[oldData.length - 2] = newTicker
         // console.log('second')
         return {
-          ...state,
-          selectedDrago: { ...state.selectedDrago, ...selectedDrago }
+          ...state
         }
       }
 
-      // oldData.pop()
       // console.log('***** NEW *****')
-      // console.log(action.payload)
       oldData.push(newTicker)
-      selectedDrago.assetsCharts[symbol].data = oldData
       return {
         ...state,
-        selectedDrago: { ...state.selectedDrago, ...selectedDrago }
+        selectedDrago: {
+          ...state.selectedDrago,
+          assetsCharts: {
+            ...state.selectedDrago.assetsCharts,
+            [symbol]: {
+              ...state.selectedDrago.assetsCharts[symbol],
+              data: [].concat(oldData)
+            }
+          }
+        }
       }
     }
 
@@ -148,22 +107,7 @@ export function eventfulVaultReducer(
   action
 ) {
   switch (action.type) {
-    case TYPE_.UPDATE_VAULTS_LIST: {
-      let newList = [].concat(state.vaultsList.list.concat(action.payload.list))
-      newList.sort(function(a, b) {
-        if (a.symbol < b.symbol) return -1
-        if (a.symbol > b.symbol) return 1
-        return 0
-      })
-      return {
-        ...state,
-        vaultsList: {
-          list: newList,
-          lastFetchRange: action.payload.lastFetchRange
-        }
-      }
-    }
-    case TYPE_.UPDATE_TRANSACTIONS_VAULT_HOLDER:
+    case TYPE_.VAULT_HOLDER_TRANSACTIONS_UPDATE:
       return {
         ...state,
         holder: {
@@ -171,7 +115,7 @@ export function eventfulVaultReducer(
           logs: action.payload[1]
         }
       }
-    case TYPE_.UPDATE_TRANSACTIONS_VAULT_MANAGER:
+    case TYPE_.VAULT_MANAGER_TRANSACTIONS_UPDATE:
       return {
         ...state,
         manager: {
@@ -179,21 +123,14 @@ export function eventfulVaultReducer(
           logs: action.payload[1]
         }
       }
-    case TYPE_.UPDATE_SELECTED_VAULT_DETAILS:
-      return {
-        ...state,
-        selectedVault: {
-          details: {
-            ...state.selectedVault.details,
-            ...(action.payload.details || {})
-          },
-          transactions: [
-            ...(action.payload.transactions ||
-              [].concat(state.selectedVault.transactions))
-          ]
-        }
-      }
-    case TYPE_.UPDATE_SELECTED_VAULT_DETAILS_RESET:
+
+    case TYPE_.VAULT_SELECTED_DETAILS_UPDATE: {
+      const newDetails = u(action.payload, state.selectedVault)
+      console.log(newDetails)
+      return { ...state, selectedVault: { ...newDetails } }
+    }
+
+    case TYPE_.VAULT_SELECTED_DETAILS_RESET:
       return {
         ...state,
         selectedVault: {

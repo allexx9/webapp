@@ -4,7 +4,7 @@
 import * as TYPE_ from '../../actions/const'
 // import { Actions } from '../../actions'
 import { DEBUGGING } from '../../../_utils/const'
-import { Observable, merge, timer } from 'rxjs'
+import { Observable, concat, merge, of, timer } from 'rxjs'
 import {
   finalize,
   flatMap,
@@ -39,18 +39,18 @@ export const monitorEventfulEpic = (action$, state$) => {
       return monitorEventful$(state$).pipe(
         takeUntil(action$.pipe(ofType(TYPE_.MONITOR_ACCOUNTS_STOP))),
         tap(val => {
-
+          console.log(val)
           return val
         }),
         flatMap(() => {
           const observablesArray = Array(0)
           // const currentState = state$.value
-          observablesArray.push(Observable.of(DEBUGGING.DUMB_ACTION))
+          observablesArray.push(of(DEBUGGING.DUMB_ACTION))
           // if (currentState.transactionsDrago.selectedDrago.details.dragoId) {
           //   console.log('Account monitoring - > DRAGO details fetch.')
           //   observablesArray.push(
-          //     Observable.of(
-          //       Actions.drago.getPoolDetails(
+          //     of(
+          //       Actions.pools.getPoolsSingleDetails(
           //         currentState.transactionsDrago.selectedDrago.details.dragoId,
           //
           //         {
@@ -64,8 +64,8 @@ export const monitorEventfulEpic = (action$, state$) => {
           // if (currentState.transactionsVault.selectedVault.details.vaultId) {
           //   console.log('Account monitoring - > VAULT details fetch.')
           //   observablesArray.push(
-          //     Observable.of(
-          //       Actions.drago.getPoolDetails(
+          //     of(
+          //       Actions.pools.getPoolsSingleDetails(
           //         currentState.transactionsVault.selectedVault.details.vaultId,
 
           //         {
@@ -75,16 +75,16 @@ export const monitorEventfulEpic = (action$, state$) => {
           //     )
           //   )
           // }
-          return Observable.concat(...observablesArray)
+          return concat(...observablesArray)
         }),
         retryWhen(error => {
-
+          console.log('monitorEventfulEpic')
           let scalingDuration = 10000
           return error.pipe(
             mergeMap((error, i) => {
               console.warn(error)
               const retryAttempt = i + 1
-
+              console.log(`monitorEventfulEpic Attempt ${retryAttempt}`)
               return timer(scalingDuration)
             }),
             finalize(() => console.log('We are done!'))
@@ -92,7 +92,7 @@ export const monitorEventfulEpic = (action$, state$) => {
         })
         // catchError(error => {
         //   console.log(error)
-        //   return Observable.of({
+        //   return of({
         //     type: TYPE_.QUEUE_ERROR_NOTIFICATION,
         //     payload: 'Error: cannot subscribe to eventful.'
         //   })

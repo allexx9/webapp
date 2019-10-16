@@ -2,22 +2,22 @@
 
 import BlokiesIcon from './blokiesIcon'
 import PropTypes from 'prop-types'
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
 
-export default class IdentityIcon extends PureComponent {
+export default class IdentityIcon extends Component {
   static propTypes = {
     address: PropTypes.string.isRequired,
     size: PropTypes.number,
     customStyle: PropTypes.object
   }
 
+  shouldComponentUpdate(nextProps) {
+    return !this.props.address === nextProps.address
+  }
+
   static defaultProps = {
     size: 25,
     customStyle: {}
-  }
-
-  static contextTypes = {
-    api: PropTypes.object.isRequired
   }
 
   render() {

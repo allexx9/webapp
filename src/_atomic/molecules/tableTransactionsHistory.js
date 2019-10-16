@@ -45,9 +45,9 @@ class TableTranscationsHistory extends Component {
   }
 
   onClickOrder = id => {
-
+    console.log(id)
     let order = this.props.orders[id]
-
+    console.log(order)
     this.props.dispatch(this.updateOrder(order))
   }
 

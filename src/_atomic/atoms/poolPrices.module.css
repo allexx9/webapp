@@ -1,0 +1,32 @@
+.buySellText {
+  font-size: 14px;
+  font-weight: 700;
+  opacity: 0.7;
+}
+
+.buy {
+  background-color: #55aa55;
+  border-color: #55aa55;
+}
+
+.sell {
+  background-color: #f44336c7;
+  border-color: #f44336c7;
+}
+
+.actionContainer {
+  /* box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px;  */
+  padding: 2px;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 4px;
+  color: white;
+  font-weight: 700;
+  text-align: center;
+  width: 105px;
+}
+
+.container {
+  padding-left: 8px;
+  padding-right: 12px;
+}

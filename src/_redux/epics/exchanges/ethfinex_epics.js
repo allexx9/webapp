@@ -3,8 +3,8 @@
 import * as ERRORS from '../../../_const/errors'
 import * as TYPE_ from '../../actions/const'
 import { Actions } from '../../actions/'
-import { BigNumber } from '@0xproject/utils'
-import { Observable, from, timer, zip } from 'rxjs'
+import { BigNumber } from '0x.js'
+import { Observable, from, of, timer, zip,   concat, } from 'rxjs'
 import {
   auditTime,
   catchError,
@@ -52,8 +52,8 @@ const reconnectingWebsocketBook$ = (relay, networkId, baseToken, quoteToken) =>
       let ask = BOOK.psnap.asks[0]
       if (bid >= ask) {
         let lm = [moment.utc().format(), 'bid(' + bid + ')>=ask(' + ask + ')']
-
-
+        console.log(lm.join('/') + '\n')
+        console.log(lm.join('/'))
       }
     }
     const unsubscribePromise = ethfinex.raw.ws
@@ -276,7 +276,7 @@ export const initRelayWebSocketBookEpic = action$ =>
         ),
         catchError(error => {
           console.warn(error)
-          return Observable.of({
+          return of({
             type: TYPE_.QUEUE_ERROR_NOTIFICATION,
             payload: error
           })
@@ -352,7 +352,7 @@ export const initRelayWebSocketTickerEpic = (action$, state$) =>
         ),
         catchError(error => {
           console.warn(error)
-          return Observable.of({
+          return of({
             type: TYPE_.QUEUE_ERROR_NOTIFICATION,
             payload: 'Error connecting to price ticker.'
           })
@@ -405,7 +405,7 @@ export const getAccountOrdersEpic = action$ =>
             baseToken
           ).pipe(
             map(orders => {
-
+              console.log(orders)
               return {
                 type: TYPE_.UPDATE_FUND_ORDERS,
                 payload: {
@@ -415,12 +415,12 @@ export const getAccountOrdersEpic = action$ =>
               }
             }),
             catchError(() => {
-              return Observable.concat(
-                Observable.of({
+              return concat(
+                of({
                   type: TYPE_.QUEUE_ERROR_NOTIFICATION,
                   payload: 'Error fetching account orders.'
                 }),
-                Observable.of(
+                of(
                   Actions.exchange.updateAccountSignature({
                     valid: false
                   })

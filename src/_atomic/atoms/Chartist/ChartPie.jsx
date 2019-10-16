@@ -15,8 +15,8 @@ class ChartPie extends Component {
   }
 
   static defaultProps = {
-    width: 400,
-    height: 250
+    width: 350,
+    height: 200
   }
 
   render() {

@@ -98,6 +98,11 @@
   background-color: #fff;
 }
 
+.contentContainer {
+  width: 1200px;
+  margin: auto;
+}
+
 .shadow {
   box-shadow: -60px 0px 40px -90px #000000, 60px 0px 40px -90px #000000 !important;
 }
@@ -271,4 +276,8 @@
   margin-right: 15px;
   margin-left: 15px;
   margin-bottom: 15px;
+}
+
+.poolsList {
+  text-align: left;
 }

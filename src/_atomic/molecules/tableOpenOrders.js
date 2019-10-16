@@ -53,17 +53,16 @@ class TableOpenOrders extends Component {
               <Col xs={2}>{formatPrice(order.orderPrice)}</Col>
               <Col xs={2}>{Math.abs(order.orderAmount).toString()}</Col>
               {/* <Col xs={2}>
-                  {new Date(order.order.expirationUnixTimestampSec*1000).toLocaleString()}
+                  {new Date(order.order.expirationTimeSeconds*1000).toLocaleString()}
                 </Col> */}
               <Col xs={6} className={styles.tableHeaderCellAction}>
-                <a
+                <button
                   id={key}
-                  href={null}
                   onClick={event => this.onCancelOrder(event, key)}
                   className={styles.cancelLink}
                 >
                   Cancel
-                </a>
+                </button>
               </Col>
             </Row>
           </Col>

@@ -1,5 +1,3 @@
-// import Immutable from 'immutable'
-// import { Col, Grid, Row } from 'react-flexbox-grid'
 import { connect } from 'react-redux'
 import Loading from '../atoms/loading'
 import PropTypes from 'prop-types'

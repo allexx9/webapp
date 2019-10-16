@@ -42,7 +42,7 @@ class RigoTokenFaucetParity {
       .estimateGas(options, values)
       .then(gasEstimate => {
         options.gas = gasEstimate.times(1.2).toFixed(0)
-
+        console.log(`${options.gas}`)
         return instance.drip1Token.postTransaction(options, values)
       })
   }

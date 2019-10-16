@@ -8,7 +8,6 @@ import {
 import BigNumber from 'bignumber.js'
 import PoolsApi from '../PoolsApi/src'
 import Web3Wrapper from './web3Wrapper/src/web3Wrapper'
-import Web3 from 'web3'
 import utils from '../_utils/utils'
 
 class Interfaces {
@@ -43,7 +42,7 @@ class Interfaces {
   }
 
   getAccountsParity() {
-
+    console.log(`getAccountsParity`)
     const api = this._api
     let accounts = {}
     let arrayPromises = []
@@ -63,7 +62,7 @@ class Interfaces {
                 .getBalance(k)
                 .then(balance => {
                   accounts[k].ethBalance = utils.formatFromWei(balance)
-                  accounts[k].ethBalanceWei = balance
+                  accounts[k].ethBalanceWei = new BigNumber(balance)
                   accounts[k].name = accountsParity[k].name
                   accounts[k].source = 'parity'
                   return accounts
@@ -78,7 +77,7 @@ class Interfaces {
                 .balanceOf(k)
                 .then(grgBalance => {
                   accounts[k].grgBalance = utils.formatFromWei(grgBalance)
-                  accounts[k].grgBalanceWei = grgBalance
+                  accounts[k].grgBalanceWei = new BigNumber(grgBalance)
                   return accounts
                 })
                 .catch(() => {
@@ -98,34 +97,22 @@ class Interfaces {
               })
           })
           return Promise.all(arrayPromises).then(() => {
-
+            console.log('Parity getAccounts', accounts)
             // const accountsData = {...results}
             // console.log(accountsData)
             return accounts
           })
         })
         .catch(error => {
-
+          console.log('getAccounts', error)
           return {}
         })
     )
   }
 
   getAccountsMetamask = async () => {
-    // console.log(`${this.constructor.name} -> getAccountsMetamask`)
-    //const web3 = window.web3
-    let web3
-    if (typeof window.ethereum !== 'undefined') {
-      web3 = new Web3(window.ethereum)
-      try {
-        await window.ethereum.enable()
-      } catch (error) {
-        console.warn('User denied account access')
-      }
-    } else if (typeof window.web3 !== 'undefined') {
-      web3 = window.web3
-      //try {} catch (error) {}
-    }
+    // console.log(`getAccountsMetamask`)
+    const web3 = window.web3
     const parityNetworkId = this._parityNetworkId
     let accountsMetaMask = {}
     if (typeof web3 === 'undefined') {
@@ -136,7 +123,7 @@ class Interfaces {
       // Check if MetaMask is connected to the same network as the endpoint
       let accounts = await web3.eth.getAccounts()
       let metaMaskNetworkId = await web3.eth.net.getId()
-
+      console.log('Account MM: ', accounts, metaMaskNetworkId)
       let isMetaMaskLocked = accounts.length === 0 ? true : false
       let currentState = { ...this._success }
       if (metaMaskNetworkId !== parityNetworkId) {
@@ -226,11 +213,11 @@ class Interfaces {
             ethBalance: new BigNumber(web3.utils.fromWei(ethBalance)).toFixed(
               3
             ),
-            ethBalanceWei: ethBalance,
+            ethBalanceWei: new BigNumber(ethBalance),
             grgBalance: new BigNumber(web3.utils.fromWei(grgBalance)).toFixed(
               3
             ),
-            grgBalanceWei: grgBalance,
+            grgBalanceWei: new BigNumber(grgBalance),
             name: 'MetaMask',
             source: 'MetaMask',
             nonce: nonce
@@ -246,7 +233,7 @@ class Interfaces {
   }
 
   attachInterfaceInfuraV2 = async () => {
-
+    console.log(`Interface Infura`)
     const api = this._api
     try {
       let accountsMetaMask
@@ -293,7 +280,7 @@ class Interfaces {
         ...stateUpdate
       }
       // this._success = result
-
+      console.log(`attachInterfaceInfuraV2 -> Done`)
       return result
     } catch (error) {
       let currentState = this._error
@@ -305,13 +292,13 @@ class Interfaces {
         ...currentState,
         ...stateUpdate
       }
-      console.warn(`${this.constructor.name} -> Error`, error)
+      console.warn(`attachInterfaceInfuraV2 -> Error`, error)
       throw this._error
     }
   }
 
   attachInterfaceRigoBlockV2 = async () => {
-
+    console.log(`attachInterfaceRigoBlockV2 -> Interface RigoBlock`)
     const api = this._api
     let accountsParity = {}
     let accountsMetaMask = {}
@@ -373,7 +360,7 @@ class Interfaces {
         ...currentState,
         ...stateUpdate
       }
-
+      console.log('Error attachInterfaceRigoBlock', error)
       throw new Error(this._error)
     }
   }

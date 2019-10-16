@@ -69,7 +69,7 @@ class JoyrideMainIntro extends React.Component {
               </div>
               <div className={styles.efxDescriptionMore}>
                 <a
-                  href="https://rigoblock.com"
+                  href="https://discordapp.com/invite/FXd8EU8"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -125,7 +125,7 @@ class JoyrideMainIntro extends React.Component {
               <Col xs={6}>
                 {!hasGRGBalance && (
                   <div className={styles.minimumBalance}>
-                    Participate to Token Sale and receive your GRG access token
+                    Please purchase 1 GRG to access the platform
                   </div>
                 )}
 
@@ -136,16 +136,15 @@ class JoyrideMainIntro extends React.Component {
                   <div style={{ fontWeight: 700 }}>
                     {hasGRGBalance && (
                       <div className={styles.icoDate}>
-                      <a>
-                        GRG gives you the full benefit of Proof of Performance. Receive GRG by operating a Vault.
-                      </a>
+                        GRG gives you the full benefit of Proof of Performance.
                       </div>
                     )}
                     <div className={styles.icoButton}>
                       <FlatButton
-                        href="https://beta.rigoblock.com/#/app/web/vault/dashboard"
+                        href="https://rigoblock.com"
+                        target="_blank"
                         labelPosition="before"
-                        label="Earn GRG"
+                        label="Purchase GRG"
                         labelStyle={{
                           color: '#ffffff',
                           fontWeight: '600',

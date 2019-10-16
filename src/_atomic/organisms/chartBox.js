@@ -2,7 +2,7 @@ import { Col, Row } from 'react-flexbox-grid'
 import { fitWidth } from 'react-stockcharts/lib/helper'
 import BoxDecorator from '../molecules/boxDecorator'
 import BoxTitle from '../atoms/boxTitle'
-import CandleStickChartWithMACDIndicator from './CandleStickChartWithMACDIndicator'
+import CandleStickChartWithMACDIndicator from './candleStickChartWithMACDIndicator'
 import ErrorBoundary from './errorBoundary'
 import Loading from '../atoms/loading'
 import Paper from 'material-ui/Paper'
@@ -66,7 +66,7 @@ class ChartBox extends Component {
                   <Col xs={12}>
                     <ErrorBoundary>
                       <CandleStickChartWithMACDIndicator
-                        data={this.props.data}
+                        initialData={this.props.data}
                       />
                     </ErrorBoundary>
                   </Col>

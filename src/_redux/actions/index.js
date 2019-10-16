@@ -1,19 +1,19 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
 import { IS_MANAGER } from './const'
-import app from './app_actions'
-import drago from './drago_actions'
+import { app, drago, pools, vault } from './dapp/'
 import endpoint from './endpoint_actions'
 import exchange from './exchange_actions'
 import notifications from './notifications_actions'
 import tokens from './tokens_actions'
 import transactions from './transactions'
-import vault from './vault_actions'
 
 class actions {
   app = app
 
   drago = drago
+
+  pools = pools
 
   exchange = exchange
 

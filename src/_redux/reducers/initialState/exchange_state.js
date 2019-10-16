@@ -1,7 +1,7 @@
 import {
   DEFAULT_NETWORK_NAME,
   ERC20_TOKENS,
-  //ERCdEX,
+  // ERCdEX,
   Ethfinex,
   EXCHANGES,
   RELAYS,
@@ -125,8 +125,7 @@ export const exchange = {
     spread: '0'
   },
   relay: {
-    //url: 'https://api.ercdex.com/api/standard',
-    url: 'https://test.ethfinex.com/trustless/v1/w/on',
+    url: 'https://test.ethfinex.com/trustless/v1/w/on', // url: 'https://api.ercdex.com/api/standard',
     networkId: '42'
   },
   prices: {

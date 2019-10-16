@@ -1,28 +1,10 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
-// import { Observable } from 'rxjs';
-import 'rxjs/add/observable/concat'
-import 'rxjs/add/observable/dom/webSocket'
-import 'rxjs/add/observable/fromPromise'
-import 'rxjs/add/observable/of'
-import 'rxjs/add/operator/bufferCount'
-import 'rxjs/add/operator/bufferTime'
-import 'rxjs/add/operator/catch'
-import 'rxjs/add/operator/delay'
-import 'rxjs/add/operator/filter'
-import 'rxjs/add/operator/map'
-import 'rxjs/add/operator/mapTo'
-import 'rxjs/add/operator/mergeMap'
-import 'rxjs/add/operator/reduce'
-import 'rxjs/add/operator/retryWhen'
-import 'rxjs/add/operator/switchMap'
-import 'rxjs/add/operator/takeUntil'
-import 'rxjs/observable/fromEvent'
-import 'rxjs/observable/timer'
-import { Observable } from 'rxjs'
+import { Observable, forkJoin, from, of, zip,   concat, } from 'rxjs'
 import {
   bufferCount,
   bufferTime,
+  catchError,
   filter,
   map,
   mergeMap,
@@ -31,9 +13,6 @@ import {
   tap
 } from 'rxjs/operators'
 import { ofType } from 'redux-observable'
-// import { timer } from 'rxjs/observable/timer'
-import 'rxjs/add/observable/forkJoin'
-import { zip } from 'rxjs/observable/zip'
 import Exchange from '../../../_utils/exchange/src/index'
 import utils from '../../../_utils/utils'
 
@@ -58,7 +37,7 @@ import {
   UPDATE_CURRENT_TOKEN_PRICE,
   UPDATE_ELEMENT_LOADING,
   UPDATE_FUND_ORDERS,
-  UPDATE_SELECTED_DRAGO_DETAILS
+  DRAGO_SELECTED_DETAILS_UPDATE
 } from '../../../_redux/actions/const'
 
 //
@@ -82,18 +61,18 @@ const reconnectingWebsocket$ = (relay, networkId, baseToken, quoteToken) => {
       utils.getTokenSymbolForRelay(relay.name, quoteToken)
     )
     websocket.onmessage = msg => {
-
-
+      console.log('WebSocket message.')
+      console.log(msg)
       return observer.next(msg.data)
     }
     websocket.onclose = msg => {
       // websocket.send(`unsub:ticker`);
-
+      console.log(msg)
       // return msg.wasClean ? observer.complete() : null
     }
     websocket.onerror = error => {
-
-
+      console.log(error)
+      console.log('WebSocket error.')
       // return observer.error(error)
     }
     return () => websocket.close()
@@ -162,17 +141,17 @@ export const orderBookEpic = (action$, state$) => {
     }),
     bufferCount(1),
     map(ticker => {
-
+      console.log(RELAY_MSG_FROM_WEBSOCKET)
       const currentState = state$.value
       const lastItem = ticker[0].pop()
       return [lastItem, currentState]
     }),
     tap(val => {
-
+      console.log(val)
       return val
     }),
     switchMap(ticker =>
-      Observable.of(
+      of(
         {
           type: RELAY_GET_ORDERS,
           payload: {
@@ -207,7 +186,7 @@ const getCandlesData$ = (
   //   name: 'ERCdEX'
   // }
   const exchange = new Exchange(relay.name, networkId)
-  return Observable.fromPromise(
+  return from(
     exchange.getHistoricalPricesData(
       utils.getTokenSymbolForRelay(relay.name, baseToken),
       utils.getTokenSymbolForRelay(relay.name, quoteToken),
@@ -226,9 +205,9 @@ export const getCandlesSingleDataEpic = action$ => {
       action$.ofType(customRelayAction(FETCH_CANDLES_DATA_SINGLE_STOP))
     ),
     mergeMap(action => {
-
-      return Observable.concat(
-        Observable.of({
+      console.log(action)
+      return concat(
+        of({
           type: UPDATE_ELEMENT_LOADING,
           payload: { marketBox: true }
         }),
@@ -246,7 +225,7 @@ export const getCandlesSingleDataEpic = action$ => {
             }
           })
         ),
-        Observable.of({
+        of({
           type: UPDATE_ELEMENT_LOADING,
           payload: { marketBox: false }
         })
@@ -265,7 +244,7 @@ const getAccountOrdersFromRelay$ = (
   baseTokenAddress,
   quoteTokenAddress
 ) =>
-  Observable.fromPromise(
+  from(
     getOrdersFromRelayERCdEX(
       networkId,
       maker,
@@ -275,41 +254,48 @@ const getAccountOrdersFromRelay$ = (
   )
 
 export const getAccountOrdersEpic = action$ => {
-  return action$
-    .ofType(customRelayAction(FETCH_ACCOUNT_ORDERS_START))
-    .mergeMap(action => {
-      return Observable.concat(
-        // Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: true }}),
+  return action$.pipe(
+    ofType(customRelayAction(FETCH_ACCOUNT_ORDERS_START)),
+    mergeMap(action => {
+      return concat(
+        // of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: true }}),
         zip(
           getAccountOrdersFromRelay$(
             action.payload.networkId,
             action.payload.maker,
             action.payload.baseTokenAddress,
             action.payload.quoteTokenAddress
-          ).map(orders => {
-
-            return formatOrders(orders, 'asks')
-          }),
+          ).pipe(
+            map(orders => {
+              console.log(orders)
+              return formatOrders(orders, 'asks')
+            })
+          ),
           getAccountOrdersFromRelay$(
             action.payload.networkId,
             action.payload.maker,
             action.payload.quoteTokenAddress,
             action.payload.baseTokenAddress
-          ).map(orders => {
-            return formatOrders(orders, 'bids')
-          })
-        ).map(orders => {
-
-          return {
-            type: UPDATE_FUND_ORDERS,
-            payload: {
-              open: orders[0].concat(orders[1])
+          ).pipe(
+            map(orders => {
+              return formatOrders(orders, 'bids')
+            })
+          )
+        ).pipe(
+          map(orders => {
+            console.log(orders[0].concat(orders[1]))
+            return {
+              type: UPDATE_FUND_ORDERS,
+              payload: {
+                open: orders[0].concat(orders[1])
+              }
             }
-          }
-        })
-        // Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: false }}),
+          })
+        )
+        // of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: false }}),
       )
     })
+  )
 }
 
 //
@@ -323,15 +309,15 @@ const getAssetsPricesDataFromERCdEX$ = (
   quoteTokenAddress,
   startDate
 ) =>
-  Observable.fromPromise(
+  from(
     getHistoricalPricesDataFromERCdEX(
       networkId,
       baseTokenAddress,
       quoteTokenAddress,
       startDate
     )
-  )
-    .map(result => {
+  ).pipe(
+    map(result => {
       const data = {
         symbol: symbol,
         startDate,
@@ -343,49 +329,53 @@ const getAssetsPricesDataFromERCdEX$ = (
         error: ''
       }
       return data
-    })
-    .catch(error => {
+    }),
+    catchError(error => {
       const data = {
         symbol: symbol,
         startDate,
         data: [],
         error
       }
-      return Observable.of(data)
+      return of(data)
     })
+  )
 
 export const getAssetsPricesDataFromERCdEXEpic = action$ => {
-  return action$.ofType(FETCH_ASSETS_PRICE_DATA).mergeMap(action => {
-    const observableArray = () => {
-      const observableArray = Array(0)
-      for (let property in action.payload.assets) {
-        if (action.payload.assets.hasOwnProperty(property)) {
-          // console.log(action.payload.assets[property])
-          observableArray.push(
-            getAssetsPricesDataFromERCdEX$(
-              action.payload.networkId,
-              action.payload.assets[property].symbol,
-              action.payload.assets[property].address,
-              action.payload.quoteToken,
-              new Date(
-                (Math.floor(Date.now() / 1000) - 86400 * 7) * 1000
-              ).toISOString()
+  return action$.pipe(
+    ofType(FETCH_ASSETS_PRICE_DATA),
+    mergeMap(action => {
+      const observableArray = () => {
+        const observableArray = Array(0)
+        for (let property in action.payload.assets) {
+          if (action.payload.assets.hasOwnProperty(property)) {
+            // console.log(action.payload.assets[property])
+            observableArray.push(
+              getAssetsPricesDataFromERCdEX$(
+                action.payload.networkId,
+                action.payload.assets[property].symbol,
+                action.payload.assets[property].address,
+                action.payload.quoteToken,
+                new Date(
+                  (Math.floor(Date.now() / 1000) - 86400 * 7) * 1000
+                ).toISOString()
+              )
             )
-          )
+          }
         }
+        return observableArray
       }
-      return observableArray
-    }
-    return Observable.forkJoin(observableArray()).map(result => {
-      const arrayToObject = (arr, keyField) =>
-        Object.assign({}, ...arr.map(item => ({ [item[keyField]]: item })))
-      const assetsCharts = arrayToObject(result, 'symbol')
-      return {
-        type: UPDATE_SELECTED_DRAGO_DETAILS,
-        payload: {
-          assetsCharts
+      return forkJoin(observableArray()).map(result => {
+        const arrayToObject = (arr, keyField) =>
+          Object.assign({}, ...arr.map(item => ({ [item[keyField]]: item })))
+        const assetsCharts = arrayToObject(result, 'symbol')
+        return {
+          type: DRAGO_SELECTED_DETAILS_UPDATE,
+          payload: {
+            assetsCharts
+          }
         }
-      }
+      })
     })
-  })
+  )
 }

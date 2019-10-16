@@ -1,25 +1,19 @@
 import * as Colors from 'material-ui/styles/colors'
-import { APP, DS } from '../_utils/const.js'
-import { Link, withRouter } from 'react-router-dom'
 import { Toolbar, ToolbarGroup, ToolbarSeparator } from 'material-ui/Toolbar'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router-dom'
 import AccountIcon from 'material-ui/svg-icons/action/account-circle'
 import ArrowDropDown from 'material-ui/svg-icons/navigation/arrow-drop-down'
-import Chat from 'material-ui/svg-icons/communication/chat'
 import FlatButton from 'material-ui/FlatButton'
-import Help from 'material-ui/svg-icons/action/help'
+// import Help from 'material-ui/svg-icons/action/help'
+import { Actions } from '../_redux/actions'
+import Badge from 'material-ui/Badge'
 import IconButton from 'material-ui/IconButton'
-import IconMenu from 'material-ui/IconMenu'
 import Menu from 'material-ui/Menu'
 import MenuItem from 'material-ui/MenuItem'
-import NotificationWifi from 'material-ui/svg-icons/notification/wifi'
 import Popover from 'material-ui/Popover'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
-import Settings from 'material-ui/svg-icons/action/settings'
-// import ElementNotificationsDrawer from '.Elements/elementNotificationsDrawer'
-import { Actions } from '../_redux/actions'
-import Badge from 'material-ui/Badge'
 import styles from './elements.module.css'
 import utils from '../_utils/utils'
 
@@ -94,7 +88,6 @@ class NavLinks extends Component {
     propsUpdate = !utils.shallowEqual(this.props, nextProps)
     stateUpdate = !utils.shallowEqual(this.state, nextState)
     if (stateUpdate || propsUpdate) {
-      // console.log(`${this.constructor.name} -> shouldComponentUpdate: TRUE -> Proceedding with rendering.`);
     }
     return stateUpdate || propsUpdate
   }
@@ -160,7 +153,7 @@ class NavLinks extends Component {
   }
 
   render() {
-    const { location, user } = this.props
+    const { user } = this.props
     const { transactions } = this.props
     // let userTypeDisabled = false;
     let userTypeLabel = 'HOLDER'
@@ -232,105 +225,55 @@ class NavLinks extends Component {
                 />
               </Menu>
             </Popover>
-
-            <IconMenu
-              iconButtonElement={
-                <IconButton>
-                  <AccountIcon />
-                </IconButton>
-              }
-              iconStyle={menuStyles.profileIcon.closed}
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-              desktop={true}
-            >
-              <MenuItem
-                leftIcon={<Settings />}
-                value="config"
-                primaryText="Config"
-                containerElement={
-                  <Link
-                    to={
-                      DS +
-                      APP +
-                      DS +
-                      this.buildUrlPath(location) +
-                      DS +
-                      'config'
-                    }
-                  />
-                }
-              />
-              <MenuItem
-                leftIcon={<Chat />}
-                value="community"
-                primaryText="Community"
-                containerElement={
-                  <a
-                    href="https://discordapp.com/invite/FXd8EU8"
-                    rel="noopener noreferrer"
-                    target="_blank"
+            <div style={{ marginLeft: '6px' }}>
+              {' '}
+              {transactions.pending > 0 ? (
+                <div
+                  className={this.state.transactionsDrawerNetworkButtonStyle}
+                >
+                  <Badge
+                    badgeContent={transactions.pending}
+                    secondary={true}
+                    style={{
+                      padding: '0px !important'
+                    }}
+                    badgeStyle={{
+                      top: 0,
+                      right: 0,
+                      fontSize: '10px',
+                      width: '20px',
+                      height: '20px',
+                      backgroundColor: 'rgb(255, 174, 0)',
+                      fontWeight: '700'
+                    }}
                   >
-                    Community
-                  </a>
-                }
-              />
-              {/* <MenuItem
-                leftIcon={<Help />}
-                value="help"
-                primaryText="Help"
-                containerElement={
-                  <a
-                    href="https://help.rigoblock.com/"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                  >
-                    Help
-                  </a>
-                }
-              /> */}
-            </IconMenu>
-            {transactions.pending > 0 ? (
-              <div className={this.state.transactionsDrawerNetworkButtonStyle}>
-                <Badge
-                  badgeContent={transactions.pending}
-                  secondary={true}
-                  style={{
-                    padding: '0px !important'
-                  }}
-                  badgeStyle={{
-                    top: 0,
-                    right: 0,
-                    fontSize: '10px',
-                    width: '20px',
-                    height: '20px',
-                    backgroundColor: 'rgb(255, 174, 0)',
-                    fontWeight: '700'
-                  }}
+                    <IconButton
+                      tooltip="Account"
+                      onClick={this.handleToggleNotifications}
+                      iconStyle={
+                        this.state.transactionsDrawerNetworkButtonIconStyle
+                      }
+                    >
+                      <AccountIcon />
+                    </IconButton>
+                  </Badge>
+                </div>
+              ) : (
+                <div
+                  className={this.state.transactionsDrawerNetworkButtonStyle}
                 >
                   <IconButton
-                    tooltip="Network"
+                    tooltip="Account"
                     onClick={this.handleToggleNotifications}
                     iconStyle={
                       this.state.transactionsDrawerNetworkButtonIconStyle
                     }
                   >
-                    <NotificationWifi />
+                    <AccountIcon />
                   </IconButton>
-                </Badge>
-              </div>
-            ) : (
-              <div className={this.state.transactionsDrawerNetworkButtonStyle}>
-                <IconButton
-                  tooltip="Network"
-                  onClick={this.handleToggleNotifications}
-                  iconStyle={
-                    this.state.transactionsDrawerNetworkButtonIconStyle
-                  }
-                >
-                  <NotificationWifi />
-                </IconButton>
-              </div>
-            )}
+                </div>
+              )}
+            </div>
           </ToolbarGroup>
         </ToolbarGroup>
       </Toolbar>

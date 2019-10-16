@@ -1,23 +1,19 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
 
+import * as Endpoint from './endpoint'
+import * as Eventful from './eventful_epics'
+import * as Pools from './pools'
+import * as Tokens from './token_epics'
+import { ERCdEX, Ethfinex } from './exchanges'
 import { catchError } from 'rxjs/operators'
 import { combineEpics } from 'redux-observable'
 import {
-  // relayWebSocketEpic,
   getLiquidityAndTokenBalancesEpic,
   getOrderBookFromRelayEpic,
   getTradeHistoryLogsFromRelayERCdEXEpic,
   resetLiquidityAndTokenBalancesEpic,
-  // updateFundLiquidityEpic,
   updateLiquidityAndTokenBalancesEpic
-  // getAssetsPricesDataFromERCdEXEpic
 } from './exchange_epics'
-
-import * as Drago from './drago_epics'
-import * as Endpoint from './endpoint'
-import * as Eventful from './eventful_epics'
-import * as Tokens from './token_epics'
-import { ERCdEX, Ethfinex } from './exchanges'
 
 const ERCdEX_Epics = [
   ERCdEX.getCandlesSingleDataEpic,
@@ -57,7 +53,11 @@ const Eventful_Epics = [
   Eventful.getPoolTransactionsEpic
 ]
 
-const Drago_Epics = [Drago.getPoolDetailsEpic, Drago.getTokensBalancesEpic]
+const Pools_Epics = [
+  Pools.getPoolDetailsEpic,
+  Pools.getTokensBalancesEpic,
+  Pools.getPoolsGroupDetailsEpic
+]
 
 // https://github.com/redux-observable/redux-observable/issues/263#issuecomment-334625730
 
@@ -81,28 +81,10 @@ export const rootEpic = combineAndIsolateEpics(
   ...Ethfinex_Epics,
   ...Tokens_Epics,
   ...Eventful_Epics,
-  ...Drago_Epics,
+  ...Pools_Epics,
   getOrderBookFromRelayEpic,
   getLiquidityAndTokenBalancesEpic,
   updateLiquidityAndTokenBalancesEpic,
-  // updateFundLiquidityEpic,
   resetLiquidityAndTokenBalancesEpic,
   getTradeHistoryLogsFromRelayERCdEXEpic
 )
-
-// export const rootEpic = (...args) =>
-//   combineEpics(
-//     ...Endpoint_Epics,
-//     ...ERCdEX_Epics,
-//     ...Ethfinex_Epics,
-//     ...Tokens_Epics,
-//     ...Eventful_Epics,
-//     ...Drago_Epics,
-//     getOrderBookFromRelayEpic,
-//     getLiquidityAndTokenBalancesEpic,
-//     updateLiquidityAndTokenBalancesEpic,
-//     updateFundLiquidityEpic,
-//     resetLiquidityAndTokenBalancesEpic,
-//     getTradeHistoryLogsFromRelayERCdEXEpic
-//     // getAssetsPricesDataFromERCdEXEpic
-//   )(...args)

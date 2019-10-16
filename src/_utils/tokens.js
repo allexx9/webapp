@@ -818,7 +818,7 @@ export const TRADE_TOKENS_PAIRS = {
       exchanges: [ERCdEX]
     },
     [ZRX]: {
-      networks: [42],
+      networks: [1, 42],
       symbol: ZRX,
       exchanges: [ERCdEX]
     }
@@ -840,7 +840,7 @@ export const TRADE_TOKENS_PAIRS = {
       exchanges: [Ethfinex]
     },
     [ZRX]: {
-      networks: [1],
+      networks: [1, 42],
       symbol: ZRX,
       exchanges: [Ethfinex]
     },

@@ -1,6 +1,7 @@
 import { withRouter } from 'react-router-dom'
 import AppBar from 'material-ui/AppBar'
-import ElementNotificationsDrawer from '../Elements/elementNotificationsDrawer'
+// import ElementNotificationsDrawer from '../Elements/elementNotificationsDrawer'
+import ElementTopBarAccountStatus from '../_atomic/molecules/elementTopBarAccountStatus'
 import NavLinksLeft from './topBarMenuLinksLeft'
 import NavLinksRight from './topBarMenuLinksRight'
 import PropTypes from 'prop-types'
@@ -44,7 +45,7 @@ class TopBarMenu extends Component {
               </li>
               <li>
                 <a
-                  href="https://discordapp.com/invite/FXd8EU8"
+                  href="https://discordapp.com/invite/FXd8EU8/"
                   rel="noopener noreferrer"
                   target="_blank"
                 >
@@ -86,7 +87,7 @@ class TopBarMenu extends Component {
             background: 'linear-gradient(135deg,rgb(5, 65, 134),rgb(1, 17, 36))'
           }}
         />
-        <ElementNotificationsDrawer
+        <ElementTopBarAccountStatus
           notificationsOpen={this.props.transactionsDrawerOpen}
         />
         <div className={'joyride-notifications'} />

@@ -15,7 +15,7 @@ export const getDragoDetails = async (
   // Initializing Drago API
   //
 
-  let web3 = getWeb3(options, networkInfo)
+  let web3 = getWeb3(networkInfo, options)
   let fromBlock = getFromBlock(networkInfo)
 
   const poolApi = new PoolApi(web3)
@@ -75,7 +75,7 @@ export const getDragoDetails = async (
                   try {
                     date = dateFromTimeStampHuman(result.timestamp)
                   } catch (error) {
-                    date = 'date loading'
+                    date = '-'
                   }
                   return date
                 })
@@ -84,10 +84,10 @@ export const getDragoDetails = async (
                   throw new Error(error)
                 })
             } else {
-              return 'date loading'
+              return '-'
             }
           } else {
-            return 'date loading'
+            return '-'
           }
         })
         .catch(error => {
@@ -178,7 +178,9 @@ export const getDragoDetails = async (
     sellPrice,
     buyPrice,
     totalSupply: formatCoins(new BigNumber(dragoTotalSupply), 4),
+    totalSupplyBaseUnits: new BigNumber(dragoTotalSupply),
     dragoETHBalance: formatEth(dragoETH, 4),
+    dragoETHBalanceWei: new BigNumber(dragoETH),
     dragoWETHBalance: formatEth(dragoWETH, 4),
     balanceDRG: formatCoins(balanceDRG, 4)
   }

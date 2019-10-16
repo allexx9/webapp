@@ -20,14 +20,14 @@ export const PARITY_REGISTRY_ADDRESSES = {
 }
 
 export const RB_API = {
-  3: 'https://api-ropsten.endpoint.network',
-  1: 'https://api.endpoint.network',
-  [ROPSTEN]: 'https://api-ropsten.endpoint.network',
-  [MAINNET]: 'https://api.endpoint.network'
+  3: 'https://ropsten.infura.io/v3/dc30ca8fb7824f42976ece0e74884807',
+  1: 'https://mainnet.infura.io/v3/dc30ca8fb7824f42976ece0e74884807',
+  [ROPSTEN]: 'https://ropsten.infura.io/v3/dc30ca8fb7824f42976ece0e74884807',
+  [MAINNET]: 'https://mainnet.infura.io/v3/dc30ca8fb7824f42976ece0e74884807'
 }
 
 export const EFX_EXCHANGE_CONTRACT = {
-  42: '0x35dD2932454449b14Cee11A94d3674a936d5d7b2',
+  42: '0x35dD2932454449b14Cee11A94d3674a936d5d7b2', // EFX HOT WALLET 0x9faf5515f177F3A8a845D48C19032b33Cc54C09C
   3: '0x1D8643aaE25841322ecdE826862A9FA922770981', // mock address
   1: '0x4f833a24e1f95d70f028921e27040ca56e09ab0b',
   [KOVAN]: '0x35dD2932454449b14Cee11A94d3674a936d5d7b2',

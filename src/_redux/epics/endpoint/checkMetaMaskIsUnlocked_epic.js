@@ -5,7 +5,6 @@ import * as TYPE_ from '../../actions/const'
 import { Actions } from '../../actions'
 import { DEBUGGING } from '../../../_utils/const'
 import { Interfaces } from '../../../_utils/interfaces'
-import { Observable, from, of, timer } from 'rxjs'
 import {
   catchError,
   distinctUntilChanged,
@@ -16,37 +15,23 @@ import {
   retryWhen,
   timeout
 } from 'rxjs/operators'
+import { concat, from, of, timer } from 'rxjs'
 import { ofType } from 'redux-observable'
 import { sha3_512 } from 'js-sha3'
 import BigNumber from 'bignumber.js'
 import Web3Wrapper from '../../../_utils/web3Wrapper/src'
-import Web3 from 'web3'
 import shallowequal from 'shallowequal'
 
 //
 // CHECK THAT METAMASK IS UNLOCKED AND UPDATE ACTIVE ACCOUNT
 //
 
-const checkMetaMaskIsUnlocked$ = async (endpoint) => {
+const checkMetaMaskIsUnlocked$ = endpoint => {
   let newEndpoint = { ...endpoint }
   let oldAccounts = [].concat(endpoint.accounts)
   let newAccounts = []
   let metaMaskAccountAddress = ''
-  //const web3Metamask = window.web3
-  // the following generates eventEmitter leak
-  let web3Metamask = {}
-  if (typeof window.ethereum !== 'undefined') {
-    web3Metamask = new Web3(window.ethereum)
-    // following has a potential conflict
-    /*try {
-      await window.ethereum.enable()
-    } catch (error) {
-      console.warn('User denied account access')
-    }*/
-  }
-  else {
-    web3Metamask = window.web3
-  }
+  const web3Metamask = window.web3
   const api = Web3Wrapper.getInstance(endpoint.networkInfo.id)
   // console.log('checkMetaMaskIsUnlocked$')
   return from(web3Metamask.eth.getAccounts()).pipe(
@@ -134,7 +119,7 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
           )
         }),
         exhaustMap(newEndpoint => {
-
+          console.log('***** FETCH ACCOUNT TRANSACTIONS *****')
           let optionsManager = {
             balance: false,
             supply: true,
@@ -160,21 +145,21 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
             DEBUGGING.initAccountsTransactionsInEpic &&
             !newEndpoint.isMetaMaskLocked
               ? [
-                  Observable.of(
+                  of(
                     Actions.endpoint.getAccountsTransactions(
                       null,
                       newEndpoint.accounts,
                       optionsHolder
                     )
                   ),
-                  Observable.of(
+                  of(
                     Actions.endpoint.getAccountsTransactions(
                       null,
                       newEndpoint.accounts,
                       optionsManager
                     )
                   ),
-                  Observable.of(
+                  of(
                     Actions.endpoint.getAccountsTransactions(
                       null,
                       newEndpoint.accounts,
@@ -186,7 +171,7 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
                       }
                     )
                   ),
-                  Observable.of(
+                  of(
                     Actions.endpoint.getAccountsTransactions(
                       null,
                       newEndpoint.accounts,
@@ -201,9 +186,9 @@ export const checkMetaMaskIsUnlockedEpic = (action$, state$) => {
                 ]
               : []
           delete newEndpoint.prevBlockNumber
-          return Observable.concat(
-            Observable.of(Actions.endpoint.updateInterface(newEndpoint)),
-            Observable.of(
+          return concat(
+            of(Actions.endpoint.updateInterface(newEndpoint)),
+            of(
               Actions.app.updateAppStatus({
                 accountsAddressHash: accountsAddressHash
               })

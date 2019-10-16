@@ -2,7 +2,7 @@
 
 import * as TYPE_ from '../../../actions/const'
 import { Actions } from '../../../actions'
-import { BigNumber } from '@0xproject/utils'
+import { BigNumber } from '0x.js'
 import { ERC20_TOKENS } from '../../../../_utils/tokens'
 import {
   concat,
@@ -27,7 +27,7 @@ const getPastExchangeEvents$ = (fund, exchange, state$) => {
   const web3 = Web3Wrapper.getInstance(networkInfo.id)
   const efxEchangeContract = new web3.eth.Contract(
     exchangeEfxV0Abi,
-    exchange.exchangeContractAddress.toLowerCase()
+    exchange.exchangeAddress.toLowerCase()
   )
   const makerAddress = '0x' + fund.address.substr(2).padStart(64, '0')
   const chunkSize = 100000
@@ -206,12 +206,12 @@ const processTradesHistory = (trades, state$) => {
         new BigNumber(trade.returnValues.filledMakerTokenAmount),
         makerDecimals
       )
-
+      // console.log(makerAmount.toFixed(5))
       takerAmount = toUnitAmount(
         new BigNumber(trade.returnValues.filledTakerTokenAmount),
         takerDecimals
       )
-
+      // console.log(takerAmount.toFixed(5))
       transaction.price = takerAmount.div(makerAmount).toFixed(5)
       transaction.amount = makerAmount.toFixed(5)
 
@@ -228,12 +228,12 @@ const processTradesHistory = (trades, state$) => {
         new BigNumber(trade.returnValues.filledTakerTokenAmount),
         takerDecimals
       )
-
+      // console.log(makerAmount.toFixed(5))
       takerAmount = toUnitAmount(
         new BigNumber(trade.returnValues.filledMakerTokenAmount),
         takerDecimals
       )
-
+      // console.log(takerAmount.toFixed(5), takerDecimals)
       transaction.amount = toUnitAmount(
         new BigNumber(trade.returnValues.filledTakerTokenAmount),
         makerDecimals
@@ -248,6 +248,7 @@ const processTradesHistory = (trades, state$) => {
       transaction.quoteTokenSymbol = tokensSymbols.get(makerTokenAddress)
       return transaction
     }
+    return null
   })
   return tradeHistory
 }
@@ -256,7 +257,7 @@ const ethfinexEventful$ = (fund, networkInfo) => {
   const web3 = Web3Wrapper.getInstance(networkInfo.id)
   return web3.rigoblock.ob.exchangeEfxV0$.pipe(
     filter(val => {
-      return val.returnValues.maker.toLowerCase() === fund.address.toLowerCase()
+      return val.returnValues.makerAddress.toLowerCase() === fund.address.toLowerCase()
     }),
     map(val => [val])
   )

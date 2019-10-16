@@ -3,10 +3,9 @@
 import * as ERRORS from '../../_const/errors'
 import * as TYPE_ from '../actions/const'
 import { Actions } from '../actions/'
-import { Observable, from, timer } from 'rxjs'
+import { Observable, concat, from, of, timer } from 'rxjs'
 import {
   catchError,
-  concat,
   exhaustMap,
   map,
   mergeMap,
@@ -100,8 +99,8 @@ export const getOrderBookFromRelayEpic = action$ => {
           return { type: TYPE_.ORDERBOOK_INIT, payload: { ...payload } }
         }),
         catchError(error => {
-
-          return Observable.of({
+          console.log(error)
+          return of({
             type: TYPE_.QUEUE_ERROR_NOTIFICATION,
             payload: ERRORS.ERR_EXCHANGE_ORDER_BOOK_FETCH
           })
@@ -168,12 +167,12 @@ export const getOrderBookFromRelayEpic = action$ => {
 //     mergeMap(action => {
 //       return Observable.pipe(
 //         concat(
-//           Observable.of({
+//           of({
 //             type: TYPE_.UPDATE_ELEMENT_LOADING,
 //             payload: { liquidity: true }
 //           }),
 //           updateFundLiquidity$(action.payload.fundAddress, action.payload.api),
-//           Observable.of({
+//           of({
 //             type: TYPE_.UPDATE_ELEMENT_LOADING,
 //             payload: { liquidity: false }
 //           })
@@ -213,9 +212,10 @@ const updateLiquidityAndTokenBalances$ = (fundAddress, state$) => {
           }
         }
       }
-      return Observable.concat(
-        Observable.of(Actions.exchange.updateSelectedFund(payload)),
-        Observable.of(
+
+      return concat(
+        of(Actions.exchange.updateSelectedFund(payload)),
+        of(
           Actions.exchange.updateSelectedTradeTokensPair({
             baseTokenLockWrapExpire: liquidity.baseTokenLockWrapExpire,
             quoteTokenLockWrapExpire: liquidity.quoteTokenLockWrapExpire
@@ -242,7 +242,7 @@ export const resetLiquidityAndTokenBalancesEpic = action$ => {
   return action$.pipe(
     ofType(TYPE_.UPDATE_LIQUIDITY_AND_TOKENS_BALANCE_RESET),
     exhaustMap(() => {
-
+      console.log(TYPE_.UPDATE_LIQUIDITY_AND_TOKENS_BALANCE_RESET)
       const payload = {
         loading: false,
         liquidity: {
@@ -257,9 +257,7 @@ export const resetLiquidityAndTokenBalancesEpic = action$ => {
           }
         }
       }
-      return Observable.concat(
-        Observable.of(Actions.exchange.updateSelectedFund(payload))
-      )
+      return of(Actions.exchange.updateSelectedFund(payload))
     })
   )
 }
@@ -316,7 +314,7 @@ export const getTradeHistoryLogsFromRelayERCdEXEpic = action$ => {
     mergeMap(action => {
       return Observable.pipe(
         concat(
-          // Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: true }}),
+          // of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: true }}),
           getTradeHistoryLogsFromRelayERCdEX$(
             action.payload.networkId,
             action.payload.baseTokenAddress,
@@ -336,7 +334,7 @@ export const getTradeHistoryLogsFromRelayERCdEXEpic = action$ => {
               }
             })
           )
-          // Observable.of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: false }}),
+          // of({ type: UPDATE_ELEMENT_LOADING, payload: { marketBox: false }}),
         )
       )
     })

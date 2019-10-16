@@ -2,7 +2,7 @@
 // This file is part of RigoBlock.
 
 import * as abis from '../../contracts/abi'
-import { UTILITY_CONTRACT_ADDRESS } from '../../utils/const'
+import { MULTI_BALANCE_CONTRACT_ADDRESS } from '../../utils/const'
 import { WETH_ADDRESSES } from '../../utils/const'
 import Registry from '../registry'
 
@@ -101,7 +101,7 @@ class DragoWeb3 {
    *
    * @param {*} managerAccountAddress     The address of the owner of the fund
    * @param {*} dragoAddress              The address of the fund.
-   * @param {*} exchangeContractAddress   The address of the exchange (Ethfinex for example)
+   * @param {*} exchangeAddress   The address of the exchange (Ethfinex for example)
    * @param {*} tokenAddress              The address of the token to be un-locked.
    * @param {*} tokenWrapper              The address of the token wrapper.
    * @param {*} toBeWrapped               The amount in base units to be unwrapped. A baseUnit is defined as the smallest denomination of a token.
@@ -112,7 +112,7 @@ class DragoWeb3 {
   operateOnExchangeEFXLock = async (
     managerAccountAddress,
     dragoAddress,
-    exchangeContractAddress,
+    exchangeAddress,
     tokenAddress,
     tokenWrapper,
     toBeWrapped,
@@ -125,8 +125,8 @@ class DragoWeb3 {
     if (!dragoAddress) {
       throw new Error('dragoAddress needs to be provided')
     }
-    if (!exchangeContractAddress) {
-      throw new Error('exchangeContractAddress needs to be provided')
+    if (!exchangeAddress) {
+      throw new Error('exchangeAddress needs to be provided')
     }
     // if (!tokenAddress) {
     //   throw new Error('tokenAddress needs to be provided')
@@ -146,14 +146,14 @@ class DragoWeb3 {
     if (tokenAddress === '0x0') {
       tokenAddress = '0x0000000000000000000000000000000000000000'
     }
-
-
-
-
-
-
-
-
+    console.log(`managerAccountAddress ${managerAccountAddress}`)
+    console.log(`dragoAddress ${dragoAddress}`)
+    console.log(`exchangeContractAddres ${exchangeAddress}`)
+    console.log(`tokenAddress ${tokenAddress}`)
+    console.log(`tokenWrapper ${tokenWrapper}`)
+    console.log(`toBeWrapped ${toBeWrapped}`)
+    console.log(`time ${time}`)
+    console.log(`isOldERC20 ${isOldERC20}`)
 
     const instance = this._instance
     const api = this._api
@@ -193,17 +193,17 @@ class DragoWeb3 {
       time,
       isOldERC20
     ])
-
+    console.log(encodedABI)
     return instance.methods
-      .operateOnExchange(exchangeContractAddress, [encodedABI])
+      .operateOnExchange(exchangeAddress, [encodedABI])
       .estimateGas(options)
       .then(gasEstimate => {
-
+        console.log(gasEstimate)
         options.gas = gasEstimate
       })
       .then(() => {
         return instance.methods
-          .operateOnExchange(exchangeContractAddress, [encodedABI])
+          .operateOnExchange(exchangeAddress, [encodedABI])
           .send(options)
       })
   }
@@ -213,7 +213,7 @@ class DragoWeb3 {
    *
    * @param {*} managerAccountAddress   The address of the owner of the fund
    * @param {*} dragoAddress            The address of the fund.
-   * @param {*} exchangeContractAddress The address of the exchange (Ethfinex for example)
+   * @param {*} exchangeAddress The address of the exchange (Ethfinex for example)
    * @param {*} tokenAddress            The address of the token to be un-locked.
    * @param {*} tokenWrapper            The address of the token wrapper.
    * @param {*} toBeUnwrapped           The amount in base units to be unwrapped. A baseUnit is defined as the smallest denomination of a token.
@@ -222,7 +222,7 @@ class DragoWeb3 {
   operateOnExchangeEFXUnlock = async (
     managerAccountAddress,
     dragoAddress,
-    exchangeContractAddress,
+    exchangeAddress,
     tokenAddress,
     tokenWrapper,
     toBeUnwrapped
@@ -233,8 +233,8 @@ class DragoWeb3 {
     if (!dragoAddress) {
       throw new Error('dragoAddress needs to be provided')
     }
-    if (!exchangeContractAddress) {
-      throw new Error('exchangeContractAddress needs to be provided')
+    if (!exchangeAddress) {
+      throw new Error('exchangeAddress needs to be provided')
     }
     if (!tokenWrapper) {
       throw new Error('tokenWrapper needs to be provided')
@@ -243,12 +243,12 @@ class DragoWeb3 {
       throw new Error('toBeUnWrapped needs to be provided')
     }
 
-
-
-
-
-
-
+    console.log(`managerAccountAddress ${managerAccountAddress}`)
+    console.log(`dragoAddress ${dragoAddress}`)
+    console.log(`exchangeContractAddres ${exchangeAddress}`)
+    console.log(`tokenAddress ${tokenAddress}`)
+    console.log(`tokenWrapper ${tokenWrapper}`)
+    console.log(`toBeUnWrapped ${toBeUnwrapped}`)
     const instance = this._instance
     const api = this._api
     let options = {
@@ -309,7 +309,7 @@ class DragoWeb3 {
     ])
 
     return instance.methods
-      .operateOnExchange(exchangeContractAddress, [encodedABI])
+      .operateOnExchange(exchangeAddress, [encodedABI])
       .estimateGas(options)
       .then(gasEstimate => {
 
@@ -317,7 +317,89 @@ class DragoWeb3 {
       })
       .then(() => {
         return instance.methods
-          .operateOnExchange(exchangeContractAddress, [encodedABI])
+          .operateOnExchange(exchangeAddress, [encodedABI])
+          .send(options)
+      })
+  }
+
+  /**
+   * Requests are proxied through the fund smart contract. The exchange is address(0) and must be approved.
+   *
+   * @param {*} managerAccountAddress   The address of the owner of the fund
+   * @param {*} dragoAddress            The address of the fund.
+   * @param {*} targetAddress           The address of the pool operator self custody.
+   * @param {*} tokenAddress            The address of the token to be un-locked.
+   * @param {*} toBeTransferred         The amount in base units to be transferred. A baseUnit is defined as the smallest denomination of a token.
+   * @returns                           A promise resolving the smart contract method called.
+   */
+  operateOnExchangeSelfCustody = async (
+    managerAccountAddress,
+    dragoAddress,
+    targetAddress,
+    tokenAddress,
+    toBeTransferred
+  ) => {
+    if (!managerAccountAddress) {
+      throw new Error('accountAddress needs to be provided')
+    }
+    if (!dragoAddress) {
+      throw new Error('dragoAddress needs to be provided')
+    }
+    if (!targetAddress) {
+      throw new Error('targetAddress needs to be provided')
+    }
+    if (targetAddress === '0x0000000000000000000000000000000000000000') {
+      throw new Error('targetAddress cannot be address 0x0')
+    }
+    if (!toBeTransferred) {
+      throw new Error('toBeUnWrapped needs to be provided')
+    }
+
+
+    const instance = this._instance
+    const api = this._api
+    let options = {
+      from: managerAccountAddress
+    }
+
+    if (tokenAddress === '0x0') {
+      tokenAddress = '0x0000000000000000000000000000000000000000'
+    }
+    const exchangeAddress = '0x0000000000000000000000000000000000000000'
+    const contractMethod = {
+      name: 'transferToSelfCustody',
+      type: 'function',
+      inputs: [
+          {
+            type: 'address',
+            name: 'selfCustodyAccount'
+          },
+          {
+            type: 'address',
+            name: 'token'
+          },
+          {
+            type: 'uint256',
+            name: 'amount'
+          }
+        ]
+    }
+    const encodedABI = await api.eth.abi.encodeFunctionCall(contractMethod, [
+      targetAddress,
+      tokenAddress,
+      toBeTransferred
+    ])
+
+    return instance.methods
+      .operateOnExchange(exchangeAddress, [encodedABI])
+      .estimateGas(options)
+      .then(gasEstimate => {
+
+        options.gas = gasEstimate
+      })
+      .then(() => {
+        return instance.methods
+          .operateOnExchange(exchangeAddress, [encodedABI])
           .send(options)
       })
   }
@@ -354,15 +436,15 @@ class DragoWeb3 {
       spenderAddress,
       amount
     ])
-
-
-
-
+    console.log(encodedABI)
+    console.log('tokenAddress ', tokenAddress)
+    console.log('ownerAddress ', ownerAddress)
+    console.log('spenderAddress ', spenderAddress)
     return instance.methods
       .operateOnExchangeDirectly(tokenAddress, encodedABI)
       .estimateGas(options)
       .then(gasEstimate => {
-
+        console.log(gasEstimate)
         options.gas = gasEstimate
       })
       .then(() => {
@@ -426,35 +508,35 @@ class DragoWeb3 {
 
     // const encodedABI = '0xbc61394a00000000000000000000000040584e290e5c56114c8bcf72fa3d403d1166b3d700000000000000000000000000000000000000000000000000000000000000000000000000000000000000001dad4783cf3fe3085c1426157ab175a6119a04ba000000000000000000000000d0a1e359811322d97991e03f863a0c30c2cf029c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002386f26fc10000000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001638384d81aace3db94ad2d6f00aaa892a70c34850dcb894fde0f5eb1c50fd50b4320c16df400000000000000000000000000000000000000000000000000000000000003e80000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000001c969d3a50aab834aee8f7ee57a885746502933168c63071c6c270848ad502032b466238fa9e7bc9f9a5dd3e0ca738512b0ba16ecf770f12369d65a4cd293a6fac'
 
-
-
-
-
+    console.log(encodedABI)
+    console.log('orderAddresses ', orderAddresses)
+    console.log('orderValues ', orderValues)
+    console.log('amount ', amount)
     console.log(
       'shouldThrowOnInsufficientBalanceOrAllowance ',
       shouldThrowOnInsufficientBalanceOrAllowance
     )
-
-
-
+    console.log('v ', v)
+    console.log('r ', r)
+    console.log('s ', s)
     console.log(
-      'ZeroExConfig.exchangeContractAddress    ',
-      ZeroExConfig.exchangeContractAddress
+      'ZeroExConfig.exchangeAddress    ',
+      ZeroExConfig.exchangeAddress
     )
     return instance.methods
       .operateOnExchangeDirectly(
-        ZeroExConfig.exchangeContractAddress,
+        ZeroExConfig.exchangeAddress,
         encodedABI
       )
       .estimateGas(options)
       .then(gasEstimate => {
-
+        console.log(gasEstimate)
         options.gas = gasEstimate
       })
       .then(() => {
         return instance.methods
           .operateOnExchangeDirectly(
-            ZeroExConfig.exchangeContractAddress,
+            ZeroExConfig.exchangeAddress,
             encodedABI
           )
           .send(options)
@@ -466,7 +548,7 @@ class DragoWeb3 {
     orderAddresses,
     orderValues,
     cancelTakerTokenAmount,
-    exchangeContractAddress
+    exchangeAddress
   ) => {
     if (!managerAccount) {
       throw new Error('managerAccount needs to be provided')
@@ -480,8 +562,8 @@ class DragoWeb3 {
     if (!cancelTakerTokenAmount) {
       throw new Error('cancelTakerTokenAmount needs to be provided')
     }
-    if (!exchangeContractAddress) {
-      throw new Error('exchangeContractAddress need to be provided')
+    if (!exchangeAddress) {
+      throw new Error('exchangeAddress need to be provided')
     }
     const instance = this._instance
     const api = this._api
@@ -499,21 +581,21 @@ class DragoWeb3 {
 
     // const encodedABI = '0xbc61394a00000000000000000000000040584e290e5c56114c8bcf72fa3d403d1166b3d700000000000000000000000000000000000000000000000000000000000000000000000000000000000000001dad4783cf3fe3085c1426157ab175a6119a04ba000000000000000000000000d0a1e359811322d97991e03f863a0c30c2cf029c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002386f26fc10000000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001638384d81aace3db94ad2d6f00aaa892a70c34850dcb894fde0f5eb1c50fd50b4320c16df400000000000000000000000000000000000000000000000000000000000003e80000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000001c969d3a50aab834aee8f7ee57a885746502933168c63071c6c270848ad502032b466238fa9e7bc9f9a5dd3e0ca738512b0ba16ecf770f12369d65a4cd293a6fac'
 
-
-
-
-
-
+    console.log(encodedABI)
+    console.log('orderAddresses ', orderAddresses)
+    console.log('orderValues ', orderValues)
+    console.log('cancelTakerTokenAmount ', cancelTakerTokenAmount)
+    console.log('exchangeAddress ', exchangeAddress)
     return instance.methods
-      .operateOnExchangeDirectly(exchangeContractAddress, encodedABI)
+      .operateOnExchangeDirectly(exchangeAddress, encodedABI)
       .estimateGas(options)
       .then(gasEstimate => {
-
+        console.log(gasEstimate)
         options.gas = gasEstimate
       })
       .then(() => {
         return instance.methods
-          .operateOnExchangeDirectly(exchangeContractAddress, encodedABI)
+          .operateOnExchangeDirectly(exchangeAddress, encodedABI)
           .send(options)
       })
   }
@@ -532,13 +614,13 @@ class DragoWeb3 {
     let options = {
       from: accountAddress
     }
-
-
+    console.log(spenderAddress)
+    console.log(tokenAddress)
     return instance.methods
       .setInfiniteAllowance(spenderAddress, tokenAddress)
       .estimateGas(options)
       .then(gasEstimate => {
-
+        console.log(gasEstimate)
         options.gas = gasEstimate
       })
       .then(() => {
@@ -558,7 +640,7 @@ class DragoWeb3 {
       .buyDrago()
       .estimateGas(options)
       .then(gasEstimate => {
-
+        console.log(gasEstimate)
         options.gas = gasEstimate
       })
       .then(() =>
@@ -568,7 +650,7 @@ class DragoWeb3 {
           // .on('confirmation', function(confirmationNumber, receipt) {})
           // .on('receipt', function(receipt) {})
           .then(result => {
-
+            console.log(result)
             return result
           })
       )
@@ -585,12 +667,12 @@ class DragoWeb3 {
     let options = {
       from: accountAddress
     }
-
+    console.log(amount)
     return instance.methods
       .sellDrago(amount)
       .estimateGas(options)
       .then(gasEstimate => {
-
+        console.log(gasEstimate)
         options.gas = gasEstimate
       })
       .then(() => {
@@ -626,10 +708,10 @@ class DragoWeb3 {
       )
       .estimateGas(options)
       .then(gasEstimate => {
-
+        console.log(gasEstimate)
         // console.log(gasEstimate.toFormat())
         options.gas = gasEstimate
-
+        console.log(instance)
         return instance.methods
           .setPrices(
             sellPriceWei,
@@ -655,9 +737,9 @@ class DragoWeb3 {
     if (!amount) {
       throw new Error('amount needs to be provided')
     }
-
-
-
+    console.log(`wrapperAddress ${wrapperAddress}`)
+    console.log(`managerAccountAddress ${managerAccountAddress}`)
+    console.log(`amount ${amount}`)
 
     const instance = this._instance
     const api = this._api
@@ -687,7 +769,7 @@ class DragoWeb3 {
       .operateOnExchange(wrapperAddress, [encodedABI])
       .estimateGas(options)
       .then(gasEstimate => {
-
+        console.log(gasEstimate)
         options.gas = gasEstimate
       })
       .then(() => {
@@ -707,9 +789,9 @@ class DragoWeb3 {
     if (!amount) {
       throw new Error('amount needs to be provided')
     }
-
-
-
+    console.log(`wrapperAddress ${wrapperAddress}`)
+    console.log(`managerAccountAddress ${managerAccountAddress}`)
+    console.log(`amount ${amount}`)
 
     const instance = this._instance
     const api = this._api
@@ -735,12 +817,12 @@ class DragoWeb3 {
       wrapperAddress,
       amount
     ])
-
+    console.log(encodedABI)
     return instance.methods
       .operateOnExchange(wrapperAddress, [encodedABI])
       .estimateGas(options)
       .then(gasEstimate => {
-
+        console.log(gasEstimate)
         options.gas = gasEstimate
       })
       .then(() => {
@@ -759,7 +841,7 @@ class DragoWeb3 {
     const instance = this._instance
     const getMultipleBalancesInstance = new api.eth.Contract(
       abis.getMultipleBalances,
-      UTILITY_CONTRACT_ADDRESS[networkId]
+      MULTI_BALANCE_CONTRACT_ADDRESS[networkId]
     )
     tokenAddresses = tokenAddresses.map(address => address.toLowerCase())
     return getMultipleBalancesInstance.methods

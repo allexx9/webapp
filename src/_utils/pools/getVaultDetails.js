@@ -15,8 +15,8 @@ export const getVaultDetails = async (
   // Initializing Vault API
   //
 
-  let web3 = getWeb3(options, networkInfo)
-  let fromBlock = getFromBlock(networkInfo)
+  const web3 = getWeb3(networkInfo, options)
+  const fromBlock = getFromBlock(networkInfo)
 
   const poolApi = new PoolApi(web3)
 
@@ -76,7 +76,7 @@ export const getVaultDetails = async (
                   try {
                     date = dateFromTimeStampHuman(result.timestamp)
                   } catch (error) {
-                    date = 'date loading'
+                    date = '-'
                   }
                   return date
                 })
@@ -85,10 +85,10 @@ export const getVaultDetails = async (
                   throw new Error(error)
                 })
             } else {
-              return 'date loading'
+              return '-'
             }
           } else {
-            return 'date loading'
+            return '-'
           }
         })
         .catch(error => {

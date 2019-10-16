@@ -2,7 +2,10 @@
 // This file is part of RigoBlock.
 
 import * as abis from '../../contracts/abi'
-import { DRAGOREGISTRY } from '../../utils/const'
+import {
+  DRAGOREGISTRY,
+  MULTI_POOL_DATA_CONTRACT_ADDRESS
+} from '../../utils/const'
 import Registry from '../registry'
 
 class DragoRegistryWeb3 {
@@ -15,6 +18,7 @@ class DragoRegistryWeb3 {
     this._registry = new Registry(api)
     this._constunctorName = this.constructor.name
     this._contractName = DRAGOREGISTRY
+    this._contractAddress = ''
   }
 
   get instance() {
@@ -29,6 +33,7 @@ class DragoRegistryWeb3 {
     const contractName = this._contractName
     return this._registry.instance(contractAbi, contractName).then(contract => {
       this._instance = contract
+      this._contractAddress = contract._address
       return this._instance
     })
   }
@@ -47,6 +52,21 @@ class DragoRegistryWeb3 {
     }
     const instance = this._instance
     return instance.methods.fromAddress(dragoAddress).call({})
+  }
+
+  queryMultiDataFromId = async poolsIdArray => {
+    if (!Array.isArray(poolsIdArray)) {
+      throw new Error('poolsIdArray needs to be an array of token addresses')
+    }
+    const api = this._api
+    const networkId = await api.eth.net.getId()
+    const getMultiPoolsDataInstance = new api.eth.Contract(
+      abis.getMultiPoolsData,
+      MULTI_POOL_DATA_CONTRACT_ADDRESS[networkId]
+    )
+    return getMultiPoolsDataInstance.methods
+      .queryMultiDataFromId(this._contractAddress, poolsIdArray)
+      .call({})
   }
 }
 

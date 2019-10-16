@@ -60,10 +60,6 @@ class ApplicationDragoHome extends Component {
   }
 
   componentDidUpdate() {
-    // The following code is needed to fix a bug in tables. The scrolling posision is reset at every component re-render.
-    // Setting the page scroll position
-    // console.log(`${this.constructor.name} -> componentDidUpdate`);
-    // const element = ReactDOM.findDOMNode(this);
     const element = this.node
     if (element !== null) {
       window.scrollTo(0, this.scrollPosition)
@@ -85,8 +81,7 @@ class ApplicationDragoHome extends Component {
         ? true
         : false
 
-    //const showApp = !openWalletSetup && !endpoint.grgBalance.eq(0)
-    const showApp = !openWalletSetup
+    const showApp = !openWalletSetup && !endpoint.grgBalance.eq(0) // comment last part if want to remove grg req
     return (
       <div style={{ height: '100%' }} ref={node => (this.node = node)}>
         {user.isManager && showApp && (

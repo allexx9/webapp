@@ -15,6 +15,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import styles from './elementListBalances.module.css'
 import utils from '../../_utils/utils'
+import PoolUnits from '../../_atomic/atoms/poolUnits'
 
 // import ChartBox from '../../_atomic/organisms/chartBox'
 
@@ -70,7 +71,6 @@ class ElementListBalances extends PureComponent {
       sortedList: sortedList,
       rowCount: rowCount
     })
-    // console.log(`${this.constructor.name} -> UNSAFE_componentWillReceiveProps`);
   }
 
   render() {
@@ -200,7 +200,7 @@ class ElementListBalances extends PureComponent {
   actionButton(cellData, rowData) {
     const { match } = this.props
     const url =
-      rowData.dragoId + '/' + utils.dragoISIN(cellData, rowData.dragoId)
+      rowData.dragoId + '/' + utils.poolISIN(cellData, rowData.dragoId)
     let poolType = match.path.includes('drago') ? 'drago' : 'vault'
     return (
       <div className={styles.actionButtonContainer}>
@@ -227,7 +227,7 @@ class ElementListBalances extends PureComponent {
   //   const url =
   //     rowData.params.dragoId.value.c +
   //     '/' +
-  //     utils.dragoISIN(cellData, rowData.params.dragoId.value.c)
+  //     utils.poolISIN(cellData, rowData.params.dragoId.value.c)
   //   return (
   //     <FlatButton
   //       label="View"
@@ -294,7 +294,7 @@ class ElementListBalances extends PureComponent {
                   this.props.assetsPrices[token.symbol].priceEth
                 ).toFixed(5)
               ) : (
-                <small>N/A</small>
+                <small>-</small>
               )}{' '}
               <small className={styles.symbolLegendText}>ETH</small>
             </Col> */}
@@ -337,7 +337,7 @@ class ElementListBalances extends PureComponent {
     }
     return (
       <div>
-        <small>N/A</small>
+        <small>-</small>
       </div>
     )
   }
@@ -360,7 +360,7 @@ class ElementListBalances extends PureComponent {
     // }
     return (
       <div className={styles.valueText}>
-        <small>N/A</small>
+        <small>-</small>
       </div>
     )
   }
@@ -369,13 +369,8 @@ class ElementListBalances extends PureComponent {
     return <span>{utils.dateFromTimeStamp(timestamp)}</span>
   }
 
-  renderDrgValue(rowData) {
-    return (
-      <div>
-        {new BigNumber(rowData.drgvalue).toFixed(4)}{' '}
-        <small>{rowData.symbol}</small>
-      </div>
-    )
+  renderPoolUnits(rowData) {
+    return <PoolUnits units={rowData.drgvalue} symbol={rowData.symbol} />
   }
 
   _getDatum(list, index) {

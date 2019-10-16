@@ -9,47 +9,20 @@ import {
   NETWORK_OK
 } from '../../_utils/const'
 
-import { exchange } from './initialState/index'
+import { app, exchange, poolsList } from './initialState/index'
 
 import BigNumber from 'bignumber.js'
 
 const initialState = {
-  app: {
-    isConnected: false,
-    isSyncing: false,
-    syncStatus: {},
-    appLoading: true,
-    retryTimeInterval: 0,
-    connectionRetries: 0,
-    lastBlockNumberUpdate: 0,
-    accountsAddressHash: '',
-    errorEventfulSubscription: false,
-    config: {
-      isMock: false
-    },
-    transactionsDrawerOpen: false
-  },
-  notifications: {
-    engine: ''
-  },
+  app,
+  notifications: {},
+  poolsList: poolsList,
   exchange: exchange,
   transactions: {
     queue: new Map(),
     pending: 0
   },
   transactionsDrago: {
-    dragosList: {
-      list: [],
-      lastFetchRange: {
-        chunk: {
-          key: 0,
-          toBlock: 0,
-          fromBlock: 0
-        },
-        startBlock: 0,
-        lastBlock: 0
-      }
-    },
     holder: {
       balances: [],
       logs: []
@@ -71,18 +44,6 @@ const initialState = {
     }
   },
   transactionsVault: {
-    vaultsList: {
-      list: [],
-      lastFetchRange: {
-        chunk: {
-          key: 0,
-          toBlock: 0,
-          fromBlock: 0
-        },
-        startBlock: 0,
-        lastBlock: 0
-      }
-    },
     holder: {
       balances: [],
       logs: []

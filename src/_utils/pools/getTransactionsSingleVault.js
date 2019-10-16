@@ -1,10 +1,8 @@
-import { HTTP_EVENT_FETCHING, METAMASK } from '../const'
 import { formatCoins, formatEth } from './../format'
 import { getBlockChunks } from '../blockChain/getBlockChunks'
 import BigNumber from 'bignumber.js'
 import PoolApi from '../../PoolsApi/src'
-import Web3 from 'web3'
-import Web3Wrapper from '../../_utils/web3Wrapper/src'
+import { getFromBlock, getWeb3 } from '../../_utils/misc'
 
 export const getTransactionsSingleVault = async (
   poolAddress,
@@ -14,39 +12,14 @@ export const getTransactionsSingleVault = async (
     limit: 20
   }
 ) => {
-  let web3
-  switch (options.wallet) {
-    case METAMASK: {
-      web3 = window.web3
-      break
-    }
-    default: {
-      if (HTTP_EVENT_FETCHING) {
-        web3 = new Web3(networkInfo.transportHttp)
-      } else {
-        web3 = Web3Wrapper.getInstance(networkInfo.id)
-      }
-    }
-  }
+  const web3 = getWeb3(networkInfo)
+  let fromBlock = getFromBlock(networkInfo)
 
   const poolApi = new PoolApi(web3)
 
   await poolApi.contract.vaulteventful.init()
   const contract = poolApi.contract.vaulteventful
-  let fromBlock
-  switch (networkInfo.id) {
-    case 1:
-      fromBlock = '6000000'
-      break
-    case 42:
-      fromBlock = '7000000'
-      break
-    case 3:
-      fromBlock = '3000000'
-      break
-    default:
-      fromBlock = '3000000'
-  }
+
 
   const logToEvent = log => {
     const key = web3.utils.sha3(JSON.stringify(log))
@@ -152,7 +125,7 @@ export const getTransactionsSingleVault = async (
   let eventsFilterBuySell
 
   if (options.trader) {
-
+    console.log('getTransactionsSingleVault : Trader transactions')
     eventsFilterBuySell = [
       [contract.hexSignature.BuyVault, contract.hexSignature.SellVault],
       [hexPoolAddress],
@@ -160,7 +133,7 @@ export const getTransactionsSingleVault = async (
       null
     ]
   } else {
-
+    console.log('getTransactionsSingleVault: Manager transactions')
     eventsFilterBuySell = [
       [
         contract.hexSignature.BuyVault,
@@ -197,19 +170,17 @@ export const getTransactionsSingleVault = async (
           .catch(error => {
             // Sometimes Infura returns null for api.eth.getBlockByNumber, therefore we are assigning a fake timestamp to avoid
             // other issues in the app.
-
+            console.log(error)
             log.timestamp = new Date()
             return log
           })
       })
       return Promise.all(logPromises).then(results => {
-        results.sort(function(x, y) {
+        results.sort(function (x, y) {
           return y.timestamp - x.timestamp
         })
         console.log(
-          `${
-            this.constructor.name
-          } -> Single Vault Transactions list loaded: trader ${options.trader}`
+          `getTransactionsSingleVault -> Single Vault Transactions list loaded: trader ${options.trader}`
         )
         return results
       })

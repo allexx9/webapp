@@ -1,5 +1,5 @@
 // Copyright 2016-2017 Rigo Investment Sagl.
-import 'babel-polyfill'
+// import 'babel-polyfill'
 import 'react-virtualized/styles.css'
 import * as Sentry from '@sentry/browser'
 import { Actions } from './_redux/actions'
@@ -7,21 +7,41 @@ import { Redirect, Route, Router, Switch } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { notificationWrapper } from './_utils/notificationWrapper'
 import AppLoading from './Elements/elementAppLoading'
-import ApplicationConfigPage from './Application/applicationConfig'
-import ApplicationDragoPage from './Application/applicationDrago'
-import ApplicationExchangePage from './Application/applicationExchange'
-import ApplicationHomeEfxPage from './Application/applicationHomeEfxPage'
-import ApplicationHomePage from './Application/applicationHomePage'
-import ApplicationVaultPage from './Application/applicationVault'
+// import ApplicationConfigPage from './Application/applicationConfig'
+// import ApplicationDragoPage from './Application/applicationDrago'
+// import ApplicationExchangePage from './Application/applicationExchange'
+// import ApplicationHomeEfxPage from './Application/applicationHomeEfxPage'
+// import ApplicationHomePage from './Application/applicationHomePage'
+// import ApplicationVaultPage from './Application/applicationVault'
 import Endpoint from './_utils/endpoint'
 import NotificationSystem from 'react-notification-system'
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { Component, Suspense, lazy } from 'react'
 import ReactGA from 'react-ga'
 import Whoops404 from './Application/whoops404'
 import createHashHistory from 'history/createHashHistory'
 import styles from './App.module.css'
 import utils from './_utils/utils'
+
+
+const ApplicationHomePage = lazy(() =>
+  import('./Application/applicationHomePage')
+)
+const ApplicationConfigPage = lazy(() =>
+  import('./Application/applicationConfig')
+)
+const ApplicationDragoPage = lazy(() =>
+  import('./Application/applicationDrago')
+)
+const ApplicationExchangePage = lazy(() =>
+  import('./Application/applicationExchange')
+)
+const ApplicationHomeEfxPage = lazy(() =>
+  import('./Application/applicationHomeEfxPage')
+)
+const ApplicationVaultPage = lazy(() =>
+  import('./Application/applicationVault')
+)
 
 let appHashPath = 'web'
 
@@ -83,7 +103,7 @@ export class App extends Component {
 
   callback = data => {
     const { action, index, type } = data
-
+    console.log(action, index, type)
   }
 
   getChildContext() {
@@ -115,6 +135,12 @@ export class App extends Component {
       this.props.dispatch(Actions.endpoint.checkMetaMaskIsUnlocked())
     }
     this.props.dispatch(Actions.endpoint.monitorAccountsStart())
+    let options = {
+      topics: [null, null, null, null],
+      fromBlock: 0,
+      toBlock: 'latest'
+    }
+    this.props.dispatch(Actions.pools.getPoolsList(options))
     this.setState({ run: true })
   }
 
@@ -193,42 +219,56 @@ export class App extends Component {
           </Router>
         ) : (
           <Router history={history}>
-            <Switch>
-              <Route
-                exact
-                path={'/ethfinex'}
-                component={ApplicationHomeEfxPage}
-              />
-              <Route
-                exact
-                path={'/app/' + appHashPath + '/home'}
-                component={ApplicationHomePage}
-              />
-              <Route
-                path={'/app/' + appHashPath + '/vault'}
-                component={ApplicationVaultPage}
-              />
-              <Route
-                path={'/app/' + appHashPath + '/drago'}
-                component={ApplicationDragoPage}
-              />
-              <Route
-                path={'/app/' + appHashPath + '/exchange'}
-                component={ApplicationExchangePage}
-              />
-              <Route
-                path={'/app/' + appHashPath + '/config'}
-                component={ApplicationConfigPage}
-              />
-              <Redirect
-                from="/exchange/"
-                to={'/app/' + appHashPath + '/exchange'}
-              />
-              <Redirect from="/vault/" to={'/app/' + appHashPath + '/vault'} />
-              <Redirect from="/drago" to={'/app/' + appHashPath + '/drago'} />
-              <Redirect from="/" to={'/app/' + appHashPath + '/home'} />
-              <Route component={Whoops404} />
-            </Switch>
+            <Suspense fallback={<AppLoading />}>
+              <Switch>
+                <Route
+                  exact
+                  path={'/ethfinex'}
+                  render={props => <ApplicationHomeEfxPage {...props} />}
+                  // component={ApplicationHomeEfxPage}
+                />
+                <Route
+                  exact
+                  path={'/app/' + appHashPath + '/home'}
+                  render={props => <ApplicationHomePage {...props} />}
+                  // component={ApplicationHomePage}
+                />
+                <Route
+                  path={'/app/' + appHashPath + '/vault'}
+                  render={props => <ApplicationVaultPage {...props} />}
+                  // component={ApplicationVaultPage}
+                />
+                <Route
+                  path={'/app/' + appHashPath + '/drago'}
+                  render={props => <ApplicationDragoPage {...props} />}
+                  // component={ApplicationDragoPage}
+                />
+                <Route
+                  path={'/app/' + appHashPath + '/exchange'}
+                  render={props => <ApplicationExchangePage {...props} />}
+                  // component={ApplicationExchangePage}
+                />
+                <Route
+                  path={'/app/' + appHashPath + '/config'}
+                  render={props => <ApplicationConfigPage {...props} />}
+                  // component={ApplicationConfigPage}
+                />
+                <Redirect
+                  from="/exchange/"
+                  to={'/app/' + appHashPath + '/exchange'}
+                />
+                <Redirect
+                  from="/vault/"
+                  to={'/app/' + appHashPath + '/vault'}
+                />
+                <Redirect from="/drago" to={'/app/' + appHashPath + '/drago'} />
+                <Redirect from="/" to={'/app/' + appHashPath + '/home'} />
+                <Route
+                  render={props => <Whoops404 {...props} />}
+                  // component={Whoops404}
+                />
+              </Switch>
+            </Suspense>
           </Router>
         )}
       </div>

@@ -11,7 +11,6 @@ import BigNumber from 'bignumber.js'
 import CopyContent from 'material-ui/svg-icons/content/content-copy'
 import ElementAccountBox from '../../Elements/elementAccountBox'
 import ElementListBalances from '../Elements/elementListBalances'
-import ElementListTransactions from '../Elements/elementListTransactions'
 import ElementListWrapper from '../../Elements/elementListWrapper'
 import Paper from 'material-ui/Paper'
 import PropTypes from 'prop-types'
@@ -20,6 +19,7 @@ import Search from 'material-ui/svg-icons/action/search'
 import SectionHeader from '../../_atomic/atoms/sectionHeader'
 import Snackbar from 'material-ui/Snackbar'
 import Sticky from 'react-stickynode'
+import TablePoolTransactions from '../../_atomic/molecules/tablePoolTransactions'
 import UserDashboardHeader from '../../_atomic/atoms/userDashboardHeader'
 import scrollToElement from 'scroll-to-element'
 import utils from '../../_utils/utils'
@@ -52,22 +52,9 @@ class PageDashboardVaultTrader extends Component {
   componentDidMount = () => {}
 
   UNSAFE_componentWillReceiveProps(nextProps) {
-    // Updating the lists on each new block if the accounts balances have changed
-    // Doing this this to improve performances by avoiding useless re-rendering
-    // const { accounts } = this.props.endpoint
-    // const { api } = this.context
-    // const options = { balance: true, supply: false, limit: 20, trader: true, drago: true }
-    // console.log(`${this.constructor.name} -> UNSAFE_componentWillReceiveProps-> nextProps received.`);
-    // Updating the transaction list if there have been a change in total accounts balance and the previous balance is
-    // different from 0 (balances are set to 0 on app loading)
     const currentBalance = new BigNumber(this.props.endpoint.ethBalance)
     const nextBalance = new BigNumber(nextProps.endpoint.ethBalance)
     if (!currentBalance.eq(nextBalance) && !currentBalance.eq(0)) {
-      console.log(
-        `${
-          this.constructor.name
-        } -> UNSAFE_componentWillReceiveProps -> Accounts have changed.`
-      )
     }
   }
 
@@ -77,13 +64,6 @@ class PageDashboardVaultTrader extends Component {
     propsUpdate = !utils.shallowEqual(this.props, nextProps)
     stateUpdate = !utils.shallowEqual(this.state, nextState)
     if (stateUpdate || propsUpdate) {
-      // console.log('State updated ', stateUpdate)
-      // console.log('Props updated ', propsUpdate)
-      // console.log(
-      //   `${
-      //     this.constructor.name
-      //   } -> shouldComponentUpdate -> Proceedding with rendering.`
-      // )
     }
     return stateUpdate || propsUpdate
   }
@@ -304,7 +284,7 @@ class PageDashboardVaultTrader extends Component {
                         number: 1
                       }}
                     >
-                      <ElementListTransactions />
+                      <TablePoolTransactions />
                     </ElementListWrapper>
                   </Col>
                 </Row>

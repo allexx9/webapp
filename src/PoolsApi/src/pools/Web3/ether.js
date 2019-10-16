@@ -25,7 +25,6 @@ class EtherWeb3 {
       to: toAddress,
       value: amount.toString()
     }
-
     return this._api.eth.sendTransaction(options)
   }
 }

@@ -1,7 +1,6 @@
 import { ENDPOINTS, INFURA } from './utils/const'
 import Web3 from 'web3'
 import Web3WsProvider from './utils/reconnectingWsProvider'
-import contract from './utils/contract'
 import exchangeEfxV0$ from './observables/exchangeEfx'
 import getEventful$ from './observables/eventful'
 import newBlock from './observables/newBlock'
@@ -24,7 +23,6 @@ class Web3Wrapper {
           nodeStatus$: nodeStatus$(this.web3),
           newBlock$: newBlock(this.web3, networkId)
         },
-        utils: { contract: contract(this.web3) },
         endpoint: transport
       }
     })
