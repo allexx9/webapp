@@ -1,6 +1,6 @@
 const path = require('path')
 const Web3 = require('web3')
-const Deployer = require('@rigoblock/deployer').Deployer
+const Deployer = require('@rgbk/deployer').Deployer
 const { GAS_ESTIMATE } = require('../constants')
 
 const deploy = async (
@@ -17,7 +17,7 @@ const deploy = async (
   const networkId = await web3.eth.net.getId()
   const artifactsDir = path.resolve(
     __dirname,
-    '../../../node_modules/@rigoblock/contracts/artifacts'
+    '../../../node_modules/@rgbk/contracts/artifacts'
   )
   // console.log(artifactsDir)
   const deployerOpts = {

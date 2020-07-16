@@ -1,4 +1,4 @@
-import ExchangeConnector from '@rigoblock/exchange-connector'
+import ExchangeConnector from '@rgbk/exchange-connector'
 
 let ExchangeConnectorWrapper = (function() {
   let instance
