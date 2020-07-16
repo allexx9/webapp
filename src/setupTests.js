@@ -4,7 +4,7 @@ import bootstrap from './test/deploy/bootstrap'
 import c from 'chalk'
 import ganache from 'ganache-cli'
 import logger from './test/deploy/logger'
-import pkg from '@rigoblock/contracts/package.json'
+import pkg from '@rgbk/contracts/package.json'
 import web3 from './test/web3'
 
 require('jest-extended')

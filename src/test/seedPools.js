@@ -1,9 +1,9 @@
 import { GANACHE_NETWORK_ID, GAS_ESTIMATE } from './constants'
 import { poolsList } from './dragoList'
 import Web3 from 'web3'
-import dragoArtifact from '@rigoblock/contracts/artifacts/Drago.json'
-import vaultArtifact from '@rigoblock/contracts/artifacts/Vault.json'
-// import fetchContracts from '@rigoblock/contracts'
+import dragoArtifact from '@rgbk/contracts/artifacts/Drago.json'
+import vaultArtifact from '@rgbk/contracts/artifacts/Vault.json'
+// import fetchContracts from '@rgbk/contracts'
 import { toBaseUnitAmount } from '../_utils/format'
 import BigNumber from 'bignumber.js'
 
