@@ -114,7 +114,7 @@ class ApplicationHomeEfxPage extends Component {
   }
 
   state = {
-    hasGRGBalance: true,
+    hasGRGBalance: false,
     run: false
   }
 
