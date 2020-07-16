@@ -46,7 +46,7 @@ class ApplicationHomePage extends Component {
   }
 
   state = {
-    hasGRGBalance: false,
+    hasGRGBalance: true,
     run: false,
     newJoyrideKey: 0
   }
