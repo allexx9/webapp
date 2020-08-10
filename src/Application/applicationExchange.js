@@ -126,6 +126,7 @@ class ApplicationExchangePage extends Component {
                                 ) : (
                                     allowedNetworks.includes(endpoint.networkInfo.id) && (
                                         <div>
+                                            <ApplicationExchangeHome key={'Exchange' + endpoint.lastMetaMaskUpdateTime} location={location}/>
                                         </div>
                                     )
                                 )}
