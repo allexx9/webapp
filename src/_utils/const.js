@@ -94,13 +94,13 @@ export const DEFAULT_RELAY = {
 // export const Ethfinex = "Ethfinex"
 
 // Blockchain endpoint
-export const EP_INFURA_KV = 'https://kovan.infura.io/v3/dc30ca8fb7824f42976ece0e74884807'
-export const EP_INFURA_RP = 'https://ropsten.infura.io/v3/dc30ca8fb7824f42976ece0e74884807'
+export const EP_INFURA_KV = 'https://kovan.infura.io/v3/849b88c4f4314d85ab768b15adcc99fd'
+export const EP_INFURA_RP = 'https://ropsten.infura.io/v3/849b88c4f4314d85ab768b15adcc99fd'
 export const EP_INFURA_MN =
-  'https://mainnet.infura.io/v3/dc30ca8fb7824f42976ece0e74884807'
-export const EP_INFURA_KV_WS = 'wss://kovan.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807'
-export const EP_INFURA_RP_WS = 'wss://ropsten.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807'
-export const EP_INFURA_MN_WS = 'wss://mainnet.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807'
+  'https://mainnet.infura.io/v3/849b88c4f4314d85ab768b15adcc99fd'
+export const EP_INFURA_KV_WS = 'wss://kovan.infura.io/ws/v3/849b88c4f4314d85ab768b15adcc99fd'
+export const EP_INFURA_RP_WS = 'wss://ropsten.infura.io/ws/v3/849b88c4f4314d85ab768b15adcc99fd'
+export const EP_INFURA_MN_WS = 'wss://mainnet.infura.io/ws/v3/849b88c4f4314d85ab768b15adcc99fd'
 
 // Parity - Kovan
 export const EP_RIGOBLOCK_KV_DEV = 'https://kovan.dev.endpoint.network/rpc'
@@ -159,41 +159,41 @@ export const KOVAN_ETHERSCAN = 'https://kovan.etherscan.io/'
 export const ROPSTEN_ETHERSCAN = 'https://ropsten.etherscan.io/'
 export const MAINNET_ETHERSCAN = 'https://etherscan.io/'
 
-//mainnet.infura.io/v3/dc30ca8fb7824f42976ece0e74884807
+//mainnet.infura.io/v3/849b88c4f4314d85ab768b15adcc99fd
 
 export const ENDPOINTS = {
   infura: {
     name: 'infura',
     https: {
       kovan: {
-        dev: 'https://kovan.infura.io/v3/dc30ca8fb7824f42976ece0e74884807',
-        prod: 'https://kovan.infura.io/v3/dc30ca8fb7824f42976ece0e74884807'
+        dev: 'https://kovan.infura.io/v3/849b88c4f4314d85ab768b15adcc99fd',
+        prod: 'https://kovan.infura.io/v3/849b88c4f4314d85ab768b15adcc99fd'
       },
       ropsten: {
-        dev: 'https://ropsten.infura.io/v3/dc30ca8fb7824f42976ece0e74884807',
-        prod: 'https://ropsten.infura.io/v3/dc30ca8fb7824f42976ece0e74884807'
+        dev: 'https://ropsten.infura.io/v3/849b88c4f4314d85ab768b15adcc99fd',
+        prod: 'https://ropsten.infura.io/v3/849b88c4f4314d85ab768b15adcc99fd'
       },
       // mainnet: {
-      //   dev: 'https://mainnet.infura.io/v3/dc30ca8fb7824f42976ece0e74884807',
-      //   prod: 'https://mainnet.infura.io/v3/dc30ca8fb7824f42976ece0e74884807'
+      //   dev: 'https://mainnet.infura.io/v3/849b88c4f4314d85ab768b15adcc99fd',
+      //   prod: 'https://mainnet.infura.io/v3/849b88c4f4314d85ab768b15adcc99fd'
       // }
       mainnet: {
-        dev: 'https://mainnet.infura.io/v3/dc30ca8fb7824f42976ece0e74884807',
-        prod: 'https://mainnet.infura.io/v3/dc30ca8fb7824f42976ece0e74884807'
+        dev: 'https://mainnet.infura.io/v3/849b88c4f4314d85ab768b15adcc99fd',
+        prod: 'https://mainnet.infura.io/v3/849b88c4f4314d85ab768b15adcc99fd'
       }
     },
     wss: {
       kovan: {
-        dev: 'wss://kovan.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807',
-        prod: 'wss://kovan.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807'
+        dev: 'wss://kovan.infura.io/ws/v3/849b88c4f4314d85ab768b15adcc99fd',
+        prod: 'wss://kovan.infura.io/ws/v3/849b88c4f4314d85ab768b15adcc99fd'
       },
       ropsten: {
-        dev: 'wss://ropsten.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807',
-        prod: 'wss://ropsten.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807'
+        dev: 'wss://ropsten.infura.io/ws/v3/849b88c4f4314d85ab768b15adcc99fd',
+        prod: 'wss://ropsten.infura.io/ws/v3/849b88c4f4314d85ab768b15adcc99fd'
       },
       mainnet: {
-        dev: 'wss://mainnet.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807',
-        prod: 'wss://mainnet.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807'
+        dev: 'wss://mainnet.infura.io/ws/v3/849b88c4f4314d85ab768b15adcc99fd',
+        prod: 'wss://mainnet.infura.io/ws/v3/849b88c4f4314d85ab768b15adcc99fd'
       }
     }
   },

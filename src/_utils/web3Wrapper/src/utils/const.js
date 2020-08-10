@@ -20,10 +20,10 @@ export const PARITY_REGISTRY_ADDRESSES = {
 }
 
 export const RB_API = {
-  3: 'https://ropsten.infura.io/v3/dc30ca8fb7824f42976ece0e74884807',
-  1: 'https://mainnet.infura.io/v3/dc30ca8fb7824f42976ece0e74884807',
-  [ROPSTEN]: 'https://ropsten.infura.io/v3/dc30ca8fb7824f42976ece0e74884807',
-  [MAINNET]: 'https://mainnet.infura.io/v3/dc30ca8fb7824f42976ece0e74884807'
+  3: 'https://ropsten.infura.io/v3/849b88c4f4314d85ab768b15adcc99fd',
+  1: 'https://mainnet.infura.io/v3/849b88c4f4314d85ab768b15adcc99fd',
+  [ROPSTEN]: 'https://ropsten.infura.io/v3/849b88c4f4314d85ab768b15adcc99fd',
+  [MAINNET]: 'https://mainnet.infura.io/v3/849b88c4f4314d85ab768b15adcc99fd'
 }
 
 export const EFX_EXCHANGE_CONTRACT = {
@@ -67,30 +67,30 @@ export const ENDPOINTS = {
     name: 'INFURA',
     https: {
       42: {
-        dev: 'https://kovan.infura.io/v3/dc30ca8fb7824f42976ece0e74884807',
-        prod: 'https://kovan.infura.io/v3/dc30ca8fb7824f42976ece0e74884807'
+        dev: 'https://kovan.infura.io/v3/849b88c4f4314d85ab768b15adcc99fd',
+        prod: 'https://kovan.infura.io/v3/849b88c4f4314d85ab768b15adcc99fd'
       },
       3: {
-        dev: 'https://ropsten.infura.io/v3/dc30ca8fb7824f42976ece0e74884807',
-        prod: 'https://ropsten.infura.io/v3/dc30ca8fb7824f42976ece0e74884807'
+        dev: 'https://ropsten.infura.io/v3/849b88c4f4314d85ab768b15adcc99fd',
+        prod: 'https://ropsten.infura.io/v3/849b88c4f4314d85ab768b15adcc99fd'
       },
       1: {
-        dev: 'https://mainnet.infura.io/v3/dc30ca8fb7824f42976ece0e74884807',
-        prod: 'https://mainnet.infura.io/v3/dc30ca8fb7824f42976ece0e74884807'
+        dev: 'https://mainnet.infura.io/v3/849b88c4f4314d85ab768b15adcc99fd',
+        prod: 'https://mainnet.infura.io/v3/849b88c4f4314d85ab768b15adcc99fd'
       }
     },
     wss: {
       42: {
-        dev: 'wss://kovan.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807',
-        prod: 'wss://kovan.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807'
+        dev: 'wss://kovan.infura.io/ws/v3/849b88c4f4314d85ab768b15adcc99fd',
+        prod: 'wss://kovan.infura.io/ws/v3/849b88c4f4314d85ab768b15adcc99fd'
       },
       3: {
-        dev: 'wss://ropsten.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807',
-        prod: 'wss://ropsten.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807'
+        dev: 'wss://ropsten.infura.io/ws/v3/849b88c4f4314d85ab768b15adcc99fd',
+        prod: 'wss://ropsten.infura.io/ws/v3/849b88c4f4314d85ab768b15adcc99fd'
       },
       1: {
-        dev: 'wss://mainnet.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807',
-        prod: 'wss://mainnet.infura.io/ws/v3/dc30ca8fb7824f42976ece0e74884807'
+        dev: 'wss://mainnet.infura.io/ws/v3/849b88c4f4314d85ab768b15adcc99fd',
+        prod: 'wss://mainnet.infura.io/ws/v3/849b88c4f4314d85ab768b15adcc99fd'
       }
     }
   },
