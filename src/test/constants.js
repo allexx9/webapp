@@ -2,9 +2,9 @@ const path = require('path')
 
 const NETWORKS = {
   ganache: 'http://localhost:8545',
-  mainnet: 'https://mainnet.infura.io/v3/dc30ca8fb7824f42976ece0e74884807',
-  ropsten: 'https://ropsten.infura.io/v3/dc30ca8fb7824f42976ece0e74884807',
-  kovan: 'https://kovan.infura.io/v3/dc30ca8fb7824f42976ece0e74884807'
+  mainnet: 'https://mainnet.infura.io/v3/849b88c4f4314d85ab768b15adcc99fd',
+  ropsten: 'https://ropsten.infura.io/v3/849b88c4f4314d85ab768b15adcc99fd',
+  kovan: 'https://kovan.infura.io/v3/849b88c4f4314d85ab768b15adcc99fd'
 }
 
 module.exports = {

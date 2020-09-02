@@ -112,11 +112,11 @@ class NavLinksLeft extends PureComponent {
         icon: <ActionAccountBalance color="white" />
       },
       { label: 'drago', to: 'drago', icon: <ActionShowChart color="white" /> },
-      {
-        label: 'market',
-        to: 'exchange',
-        icon: <ActionPolymer color="white" />
-      }
+      //{
+      //  label: 'market',
+      //  to: 'exchange',
+      //  icon: <ActionPolymer color="white" />
+      //}
     ]
     const linksShort = [
       { label: 'home', to: 'home', icon: <ActionHome color="#054186" /> },
@@ -130,11 +130,11 @@ class NavLinksLeft extends PureComponent {
         to: 'drago',
         icon: <ActionShowChart color="#054186" />
       },
-      {
-        label: 'market',
-        to: 'exchange',
-        icon: <ActionPolymer color="#054186" />
-      }
+      //{
+      //  label: 'market',
+      //  to: 'exchange',
+      //  icon: <ActionPolymer color="#054186" />
+     // }
     ]
     return (
       <Toolbar style={{ background: '', paddingLeft: '38px' }}>
