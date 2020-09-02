@@ -63,6 +63,33 @@
   padding-top: 25px;
 }
 
+.backToPayRueButtonContainer {
+  position: fixed;
+  left: 25px;
+  bottom: 15px;
+  padding: 24px 0;
+}
+
+.backToPayRueButton {
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+  background: #007aff;
+  border-radius: 40px;
+  min-width: 200px;
+  min-height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+}
+.backToPayRueButton svg {
+  fill: #fff;
+  margin: 0 10px 0 0;
+}
+
 .telegramButtonContainer {
   /* opacity:0;  make things invisible upon start */
   -webkit-animation: slideInFromBottom ease-in 1;
